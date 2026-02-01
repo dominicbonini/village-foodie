@@ -1,63 +1,88 @@
-"use client";
+'use client';
 
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import type { VillageEvent } from "@/types";
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { divIcon } from 'leaflet';
+import { Event } from '../types';
+
+// 1. Create the Custom Icons
+const truckIcon = divIcon({
+  className: 'custom-icon',
+  html: '<div style="font-size: 24px; line-height: 1;">🚚</div>',
+  iconSize: [25, 25],
+  iconAnchor: [12, 12],
+  popupAnchor: [0, -10]
+});
+
+const plateIcon = divIcon({
+  className: 'custom-icon',
+  html: '<div style="font-size: 24px; line-height: 1;">🍽️</div>',
+  iconSize: [25, 25],
+  iconAnchor: [12, 12],
+  popupAnchor: [0, -10]
+});
+
+const defaultIcon = divIcon({
+  className: 'custom-icon',
+  html: '<div style="font-size: 24px; line-height: 1;">📍</div>',
+  iconSize: [25, 25],
+  iconAnchor: [12, 12],
+  popupAnchor: [0, -10]
+});
 
 interface MapViewProps {
-  events: VillageEvent[];
+  events: Event[];
 }
 
 export default function MapView({ events }: MapViewProps) {
   return (
-    <div className="h-full w-full min-h-[400px] rounded-xl overflow-hidden border border-[#354F52]/20">
-      <MapContainer
-        center={[52.1901, 0.5456]}
-        zoom={12}
-        className="h-full w-full"
-        scrollWheelZoom={true}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {events.map((event, idx) => (
-          <Marker
-            key={`${event.date}-${event.truckName}-${event.venueName}-${idx}`}
+    <MapContainer 
+      center={[52.1901, 0.5456]} 
+      zoom={12} 
+      style={{ height: '100%', width: '100%' }}
+    >
+      <TileLayer
+        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      
+      {events.map((event, index) => {
+        if (!event.venueLat || !event.venueLong) return null;
+
+        let iconToUse = defaultIcon;
+        if (event.type === 'Mobile') iconToUse = truckIcon;
+        if (event.type === 'Static') iconToUse = plateIcon;
+
+        return (
+          <Marker 
+            key={`${event.truckName}-${index}`} 
             position={[event.venueLat, event.venueLong]}
+            icon={iconToUse}
           >
             <Popup>
-              <div className="min-w-[200px]">
-                <span className="text-xl" role="img" aria-hidden>
-                  {event.type === "Mobile" ? "🚚" : "🍽️"}
+              <div className="text-center">
+                <span className="text-2xl block mb-1">
+                   {event.type === 'Mobile' ? '🚚' : '🍽️'}
                 </span>
-                <p className="font-bold text-[#354F52] mt-1">{event.truckName}</p>
-                {event.truckCuisine && (
-                  <span className="text-xs text-[#84A98C] font-medium">
-                    {event.truckCuisine}
-                  </span>
-                )}
-                <p className="text-sm text-[#354F52]/80 mt-1">{event.venueName}</p>
-                {(event.startTime || event.endTime) && (
-                  <p className="text-sm text-[#E76F51] font-medium">
-                    {event.startTime} – {event.endTime}
-                  </p>
-                )}
-                {event.notes && (
-                  <p className="text-xs text-[#354F52]/70 mt-1">{event.notes}</p>
-                )}
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${event.venueLat},${event.venueLong}`}
+                <strong className="block text-slate-800">{event.truckName}</strong>
+                <p className="text-sm text-slate-600 m-0">{event.venueName}</p>
+                <p className="text-xs text-orange-600 font-bold mt-1">
+                  {event.startTime} - {event.endTime}
+                </p>
+                {/* This link was the problem - it is fixed now */}
+                <a 
+                  href={`https://www.google.com/maps/search/?api=1&query=${event.venueLat},${event.venueLong}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 inline-block text-sm font-medium text-[#E76F51] hover:underline"
+                  className="block mt-2 bg-slate-700 text-white text-xs py-1 px-2 rounded hover:bg-slate-600 no-underline"
                 >
-                  Get directions →
+                  Get Directions
                 </a>
               </div>
             </Popup>
           </Marker>
-        ))}
-      </MapContainer>
-    </div>
+        );
+      })}
+    </MapContainer>
   );
 }
