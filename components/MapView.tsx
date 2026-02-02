@@ -4,7 +4,8 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { divIcon } from 'leaflet';
 
-// --- INTERNAL TYPES (Safety First) ---
+// --- THE FIX: Internal Type Definition ---
+// We define this HERE so we don't depend on external files that might be missing.
 interface VillageEvent {
   id: string;
   date: string;
@@ -16,10 +17,10 @@ interface VillageEvent {
   venueLat?: number;
   venueLong?: number;
 }
-// -------------------------------------
+// -----------------------------------------
 
 const truckIcon = divIcon({
-  className: 'custom-icon', // Removes default white square
+  className: 'custom-icon',
   html: '<div style="font-size: 24px; line-height: 1;">🚚</div>',
   iconSize: [30, 30],
   iconAnchor: [15, 15]
@@ -54,18 +55,15 @@ export default function MapView({ events }: MapViewProps) {
 
         const typeClean = event.type ? event.type.trim().toLowerCase() : '';
         
-        // --- LOGIC FIX: Default to Truck ---
+        // Default to Truck, switch to Plate if static
         let iconToUse = truckIcon; 
-        
-        // Only switch to Plate if it is explicitly static
         if (typeClean === 'static') {
             iconToUse = plateIcon;
         }
-        // -----------------------------------
 
         const mapLink = 'https://www.google.com/maps/search/?api=1&query=' + event.venueLat + ',' + event.venueLong;
 
-        // Better time formatting
+        // Time formatting
         let timeDisplay = '';
         if (event.startTime && event.endTime) {
             timeDisplay = event.startTime + ' - ' + event.endTime;
