@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { VillageEvent } from '@/types'; // <--- IMPORTING FROM SHARED FILE
+import { VillageEvent } from '@/types'; // Using shared types
 
 // --- DYNAMIC MAP IMPORT ---
 const MapView = dynamic(() => import('@/components/MapView'), { 
@@ -13,7 +13,6 @@ const MapView = dynamic(() => import('@/components/MapView'), {
     </div>
   )
 });
-
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv';
 
@@ -31,11 +30,15 @@ export default function Home() {
         const rows = csvText.split('\n').slice(1);
         
         const parsedEvents: VillageEvent[] = rows.map((row, index) => {
+          // Robust CSV parsing
           const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => 
             cell.replace(/^"|"$/g, '').trim()
           );
 
-          // MAPPING COLUMNS (Added Notes at Index 9)
+          // --- EXACT COLUMN MAPPING ---
+          // 0: Date, 1: Start, 2: End, 3: Truck, 4: Venue
+          // 5: Notes (Pre-order advised), 6: Source (Skip), 7: Lat, 8: Long, 9: Cuisine
+          
           return {
             id: `event-${index}`,
             date: cols[0] || '',
@@ -43,11 +46,16 @@ export default function Home() {
             endTime: cols[2] || '',
             truckName: cols[3] || 'Unknown Truck',
             venueName: cols[4] || '',
-            postcode: cols[5] || '',
-            type: cols[6] || 'Mobile',       
+            
+            // LOGISTICS NOTE (Col F / Index 5)
+            notes: cols[5] || '', 
+
+            // CUISINE TYPE (Col J / Index 9)
+            // If empty, default to 'Mobile'
+            type: cols[9] || 'Mobile',       
+            
             venueLat: cols[7] ? parseFloat(cols[7]) : undefined,
             venueLong: cols[8] ? parseFloat(cols[8]) : undefined,
-            notes: cols[9] || '', // Capturing "Pre-order advised" etc.
           };
         }).filter(e => e.date); 
 
@@ -62,7 +70,7 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // --- HELPER: GROUP EVENTS BY DATE ---
+  // Group events by Date
   const groupedEvents = events.reduce((groups, event) => {
     const date = event.date;
     if (!groups[date]) {
@@ -110,42 +118,45 @@ export default function Home() {
           <div className="p-8 text-center text-slate-500">Loading food...</div>
         ) : (
           <>
-            {/* --- LIST VIEW (Restored Grouping & Features) --- */}
+            {/* LIST VIEW */}
             {view === 'list' && (
               <div className="p-4 space-y-6">
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                   <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* Date Header */}
                     <h2 className="text-slate-500 font-bold text-sm uppercase tracking-wider mb-3 ml-1">
                       {date}
                     </h2>
                     
-                    {/* Event Cards */}
                     <div className="space-y-3">
                       {dateEvents.map((event) => {
-                         // Build Map Link
+                         const isStatic = event.type?.toLowerCase().includes('static');
+                         
+                         // Fixed Google Maps Link
                          const mapLink = event.venueLat && event.venueLong 
                            ? `https://www.google.com/maps/search/?api=1&query=${event.venueLat},${event.venueLong}`
-                           : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueName + ' ' + event.postcode)}`;
+                           : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueName)}`;
 
                          return (
                           <div key={event.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden">
-                            {/* "Static" Badge if needed */}
-                            {event.type?.toLowerCase() === 'static' && (
-                               <div className="absolute top-0 right-0 bg-slate-100 text-slate-500 text-[10px] px-2 py-1 rounded-bl-lg font-bold">
-                                 POP-UP
-                               </div>
-                            )}
-
+                            
                             <div className="flex items-start gap-4">
+                              {/* Icon based on Static vs Mobile */}
                               <div className="bg-slate-50 h-12 w-12 rounded-full flex items-center justify-center text-2xl shrink-0 border border-slate-100">
-                                {event.type?.toLowerCase() === 'static' ? '🍽️' : '🚚'}
+                                {isStatic ? '🍽️' : '🚚'}
                               </div>
                               
                               <div className="flex-1">
-                                <h3 className="font-bold text-slate-900 text-lg leading-tight">
-                                  {event.truckName}
-                                </h3>
+                                <div className="flex justify-between items-start">
+                                    <h3 className="font-bold text-slate-900 text-lg leading-tight">
+                                      {event.truckName}
+                                    </h3>
+                                    {/* CUISINE BADGE (Col J) */}
+                                    {event.type && event.type !== 'Mobile' && !isStatic && (
+                                        <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500 bg-slate-100 px-2 py-1 rounded-md ml-2 whitespace-nowrap">
+                                            {event.type}
+                                        </span>
+                                    )}
+                                </div>
                                 
                                 <p className="text-slate-600 text-sm mt-1">
                                   {event.venueName}
@@ -156,7 +167,6 @@ export default function Home() {
                                     {event.startTime} - {event.endTime}
                                   </span>
                                   
-                                  {/* Directions Link */}
                                   <a 
                                     href={mapLink}
                                     target="_blank"
@@ -167,10 +177,13 @@ export default function Home() {
                                   </a>
                                 </div>
 
-                                {/* Notes Section (Pre-order, Special, etc.) */}
+                                {/* NOTES SECTION (Col F) - Clean Style */}
                                 {event.notes && (
-                                  <div className="mt-3 text-xs text-slate-500 bg-slate-50 p-2 rounded border border-slate-100 italic">
-                                    💡 {event.notes}
+                                  <div className="mt-2 flex items-start gap-1.5">
+                                    <span className="text-[10px] leading-4 mt-0.5">ℹ️</span>
+                                    <span className="text-xs text-slate-600 font-medium leading-relaxed italic">
+                                      {event.notes}
+                                    </span>
                                   </div>
                                 )}
                               </div>
@@ -184,7 +197,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* --- MAP VIEW --- */}
+            {/* MAP VIEW */}
             {view === 'map' && (
                <div className="h-[calc(100vh-80px)] w-full relative z-0">
                  <MapView events={events} />
