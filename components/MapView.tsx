@@ -3,31 +3,37 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { divIcon } from 'leaflet';
-import { Event } from '../types';
+
+// --- INTERNAL TYPES (Safety First) ---
+interface VillageEvent {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  truckName: string;
+  venueName: string;
+  type?: string;
+  venueLat?: number;
+  venueLong?: number;
+}
+// -------------------------------------
 
 const truckIcon = divIcon({
-  className: 'custom-icon',
-  html: '<div style="font-size: 24px;">🚚</div>',
+  className: 'custom-icon', // Removes default white square
+  html: '<div style="font-size: 24px; line-height: 1;">🚚</div>',
   iconSize: [30, 30],
   iconAnchor: [15, 15]
 });
 
 const plateIcon = divIcon({
   className: 'custom-icon',
-  html: '<div style="font-size: 24px;">🍽️</div>',
-  iconSize: [30, 30],
-  iconAnchor: [15, 15]
-});
-
-const defaultIcon = divIcon({
-  className: 'custom-icon',
-  html: '<div style="font-size: 24px;">📍</div>',
+  html: '<div style="font-size: 24px; line-height: 1;">🍽️</div>',
   iconSize: [30, 30],
   iconAnchor: [15, 15]
 });
 
 interface MapViewProps {
-  events: Event[];
+  events: VillageEvent[];
 }
 
 export default function MapView({ events }: MapViewProps) {
@@ -43,46 +49,57 @@ export default function MapView({ events }: MapViewProps) {
       />
       
       {events.map((event, index) => {
+        // Skip invalid coordinates
         if (!event.venueLat || !event.venueLong) return null;
 
         const typeClean = event.type ? event.type.trim().toLowerCase() : '';
         
-        let iconToUse = defaultIcon;
-        if (typeClean === 'mobile') iconToUse = truckIcon;
-        if (typeClean === 'static') iconToUse = plateIcon;
+        // --- LOGIC FIX: Default to Truck ---
+        let iconToUse = truckIcon; 
+        
+        // Only switch to Plate if it is explicitly static
+        if (typeClean === 'static') {
+            iconToUse = plateIcon;
+        }
+        // -----------------------------------
 
-        // Safe map link generation
-        const mapLink = 'http://maps.google.com/?q=' + event.venueLat + ',' + event.venueLong;
+        const mapLink = 'https://www.google.com/maps/search/?api=1&query=' + event.venueLat + ',' + event.venueLong;
 
-        // Check if we have times to display
-        const hasTime = event.startTime || event.endTime;
+        // Better time formatting
+        let timeDisplay = '';
+        if (event.startTime && event.endTime) {
+            timeDisplay = event.startTime + ' - ' + event.endTime;
+        } else if (event.startTime) {
+            timeDisplay = 'From ' + event.startTime;
+        }
+
+        const uniqueKey = event.date + '-' + event.truckName + '-' + index;
 
         return (
           <Marker 
-            key={index} 
+            key={uniqueKey} 
             position={[event.venueLat, event.venueLong]}
             icon={iconToUse}
           >
             <Popup>
-              <div className="text-center">
+              <div className="text-center min-w-[150px]">
                 <span className="text-3xl block mb-2">
-                   {typeClean === 'mobile' ? '🚚' : (typeClean === 'static' ? '🍽️' : '📍')}
+                   {typeClean === 'static' ? '🍽️' : '🚚'}
                 </span>
-                <strong className="block text-slate-800 text-lg">{event.truckName}</strong>
-                <p className="text-sm text-slate-600 m-0">{event.venueName}</p>
+                <strong className="block text-slate-900 text-lg mb-1">{event.truckName}</strong>
+                <p className="text-sm text-slate-600 mb-2">{event.venueName}</p>
                 
-                {/* Only render this if times actually exist */}
-                {hasTime && (
-                  <p className="text-xs text-orange-600 font-bold mt-1 mb-2">
-                    {event.startTime} - {event.endTime}
-                  </p>
+                {timeDisplay && (
+                  <div className="text-xs text-orange-700 font-bold bg-orange-50 inline-block px-2 py-1 rounded mb-3">
+                    {timeDisplay}
+                  </div>
                 )}
 
                 <a 
                   href={mapLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-slate-700 text-white text-xs py-2 px-4 rounded-full hover:bg-slate-600 no-underline"
+                  className="block w-full bg-slate-800 text-white text-xs py-2 rounded-md hover:bg-slate-700 no-underline"
                 >
                   Get Directions
                 </a>

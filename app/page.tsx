@@ -1,153 +1,148 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import { fetchEvents, parseUKDate } from "@/utils/fetchData";
-import type { VillageEvent } from "@/types";
-import EventCard from "@/components/EventCard";
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 
-const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
+// --- 1. DYNAMIC MAP IMPORT (Prevents HTTP 500 Error) ---
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
+      Loading Map...
+    </div>
+  )
+});
 
-type Tab = "list" | "map";
-
-function getOrdinal(n: number): string {
-  const s = ["th", "st", "nd", "rd"];
-  const v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+// --- 2. INTERNAL TYPE DEFINITION (Prevents Import Errors) ---
+interface VillageEvent {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  truckName: string;
+  venueName: string;
+  type?: string;
+  venueLat?: number;
+  venueLong?: number;
 }
 
-function getDateLabel(dateStr: string): string {
-  const date = parseUKDate(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.round((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Tomorrow";
-  if (diffDays === -1) return "Yesterday";
-
-  const dayName = d.toLocaleDateString("en-GB", { weekday: "long" });
-  const day = d.getDate();
-  const month = d.toLocaleDateString("en-GB", { month: "short" });
-  return `${dayName} ${getOrdinal(day)} ${month}`;
-}
-
-function groupEventsByDate(events: VillageEvent[]): { label: string; events: VillageEvent[] }[] {
-  const groups: Map<string, VillageEvent[]> = new Map();
-
-  for (const event of events) {
-    const key = event.date;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key)!.push(event);
-  }
-
-  const sortedKeys = [...groups.keys()].sort((a, b) => {
-    return parseUKDate(a).getTime() - parseUKDate(b).getTime();
-  });
-
-  return sortedKeys.map((key) => ({
-    label: getDateLabel(key),
-    events: groups.get(key)!,
-  }));
-}
+// --- 3. YOUR GOOGLE SHEET LINK ---
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv';
 
 export default function Home() {
-  const [tab, setTab] = useState<Tab>("list");
   const [events, setEvents] = useState<VillageEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [view, setView] = useState<'list' | 'map'>('list');
 
   useEffect(() => {
-    fetchEvents()
-      .then(setEvents)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load events"))
-      .finally(() => setLoading(false));
+    const fetchData = async () => {
+      try {
+        const response = await fetch(CSV_URL);
+        const csvText = await response.text();
+        
+        const rows = csvText.split('\n').slice(1); // Remove header
+        
+        const parsedEvents: VillageEvent[] = rows.map((row, index) => {
+          // Robust CSV parsing
+          const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => 
+            cell.replace(/^"|"$/g, '').trim()
+          );
+
+          // Mapping Columns 0-8
+          return {
+            id: `event-${index}`,
+            date: cols[0] || '',
+            startTime: cols[1] || '',
+            endTime: cols[2] || '',
+            truckName: cols[3] || 'Unknown Truck',
+            venueName: cols[4] || '',
+            type: cols[6] || 'Mobile',       
+            venueLat: cols[7] ? parseFloat(cols[7]) : undefined,
+            venueLong: cols[8] ? parseFloat(cols[8]) : undefined,
+          };
+        }).filter(e => e.date); 
+
+        setEvents(parsedEvents);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const grouped = groupEventsByDate(events);
-
   return (
-    <div className="flex min-h-screen flex-col bg-[#F9F9F9]">
-      <header className="sticky top-0 z-10 border-b border-[#354F52]/20 bg-white/95 backdrop-blur">
-        <div className="mx-auto max-w-2xl px-4 py-4">
-          <h1 className="text-xl font-bold text-[#354F52]">Village Foodie</h1>
-          <p className="text-sm text-[#354F52]/70">
-            Find food trucks & pub kitchens near you
-          </p>
+    <main className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Header */}
+      <header className="bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div className="max-w-md mx-auto flex justify-between items-center">
+          <h1 className="text-xl font-bold">Village Foodie 🚚</h1>
+          
+          {/* View Toggles */}
+          <div className="flex bg-slate-800 rounded-lg p-1">
+            <button
+              onClick={() => setView('list')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                view === 'list' 
+                  ? 'bg-white text-slate-900 shadow-sm' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              List
+            </button>
+            <button
+              onClick={() => setView('map')}
+              className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${
+                view === 'map' 
+                  ? 'bg-white text-slate-900 shadow-sm' 
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Map
+            </button>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto pb-24">
-        <div className="mx-auto max-w-2xl px-4 py-6">
-          {loading ? (
-            <p className="text-center text-[#354F52]/70">Loading events…</p>
-          ) : error ? (
-            <p className="rounded-lg bg-[#E76F51]/10 p-4 text-center text-[#E76F51]">
-              {error}
-            </p>
-          ) : tab === "list" ? (
-            <div className="space-y-6">
-              {grouped.length === 0 ? (
-                <p className="text-center text-[#354F52]/70">No events scheduled.</p>
-              ) : (
-                grouped.map(({ label, events: dayEvents }) => (
-                  <section key={label}>
-                    <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[#354F52]/80">
-                      {label}
-                    </h2>
-                    <div className="space-y-3">
-                      {dayEvents.map((event, idx) => (
-                        <EventCard
-                          key={`${event.date}-${event.truckName}-${event.venueName}-${idx}`}
-                          event={event}
-                        />
-                      ))}
+      {/* Content Area */}
+      <div className="flex-1 max-w-md mx-auto w-full relative">
+        {loading ? (
+          <div className="p-8 text-center text-slate-500">Loading food...</div>
+        ) : (
+          <>
+            {/* LIST VIEW */}
+            {view === 'list' && (
+              <div className="p-4 space-y-4">
+                {events.map((event) => (
+                  <div key={event.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
+                    <div className="bg-slate-100 h-12 w-12 rounded-full flex items-center justify-center text-2xl">
+                      {event.type?.toLowerCase() === 'static' ? '🍽️' : '🚚'}
                     </div>
-                  </section>
-                ))
-              )}
-            </div>
-          ) : (
-            <div className="h-[calc(100vh-12rem)] min-h-[400px]">
-              {events.length === 0 ? (
-                <p className="text-center text-[#354F52]/70">No events to show on map.</p>
-              ) : (
-                <MapView events={events} />
-              )}
-            </div>
-          )}
-        </div>
-      </main>
+                    <div>
+                      <h2 className="font-bold text-slate-800">{event.truckName}</h2>
+                      <p className="text-sm text-slate-600">
+                        {event.date} • {event.venueName}
+                      </p>
+                      <p className="text-xs text-orange-600 font-semibold">
+                        {event.startTime} - {event.endTime}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
-      <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-[#354F52]/20 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl">
-          <button
-            onClick={() => setTab("list")}
-            className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
-              tab === "list"
-                ? "border-b-2 border-[#84A98C] text-[#354F52]"
-                : "text-[#354F52]/60"
-            }`}
-          >
-            📅 List
-          </button>
-          <button
-            onClick={() => setTab("map")}
-            className={`flex-1 py-4 text-center text-sm font-medium transition-colors ${
-              tab === "map"
-                ? "border-b-2 border-[#84A98C] text-[#354F52]"
-                : "text-[#354F52]/60"
-            }`}
-          >
-            🗺️ Map
-          </button>
-        </div>
-      </nav>
-    </div>
+            {/* MAP VIEW (Full Height Fix) */}
+            {view === 'map' && (
+               <div className="h-[calc(100vh-80px)] w-full relative z-0">
+                 <MapView events={events} />
+               </div>
+            )}
+          </>
+        )}
+      </div>
+    </main>
   );
 }
