@@ -325,10 +325,13 @@ export default function Home() {
             )}
 
             {/* MAP VIEW */}
-            {/* Height Logic: Mobile = Calc(100vh-Header), Desktop = 80vh and wider container */}
             {view === 'map' && (
                <div className="h-[calc(100vh-180px)] md:h-[calc(100vh-140px)] w-full relative z-0 md:rounded-xl md:overflow-hidden md:mt-4 md:border md:border-slate-200 shadow-sm">
-                 <MapView events={filteredEvents} />
+                 <MapView 
+                    events={filteredEvents} 
+                    userLocation={userLocation}  // <--- Passing User Location
+                    radius={distanceFilter}      // <--- Passing Filter Selection
+                 />
                </div>
             )}
           </>
