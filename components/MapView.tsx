@@ -31,9 +31,10 @@ interface MapViewProps {
 export default function MapView({ events }: MapViewProps) {
   return (
     <MapContainer 
-      center={[52.1901, 0.5456]} 
-      zoom={12} 
-      style={{ height: '100%', width: '100%' }}
+    center={[52.16, 0.55]}  // <-- Centered perfectly between your 4 towns
+    zoom={10}               // <-- Zoomed out slightly to see the whole area
+    style={{ height: '100%', width: '100%' }}
+  
     >
       <TileLayer
         attribution='© OpenStreetMap contributors'
