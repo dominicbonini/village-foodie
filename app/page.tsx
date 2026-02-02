@@ -57,7 +57,7 @@ export default function Home() {
   // --- FILTERS & USER STATE ---
   const [userPostcode, setUserPostcode] = useState('');
   const [userLocation, setUserLocation] = useState<{lat: number, long: number} | null>(null);
-  const [distanceFilter, setDistanceFilter] = useState<string>('10'); // '5', '10', '20', 'all'
+  const [distanceFilter, setDistanceFilter] = useState<string>('10'); // Defaults to 10 miles
   const [cuisineFilter, setCuisineFilter] = useState<string>('all');
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
 
@@ -123,24 +123,31 @@ export default function Home() {
   };
 
   // --- 3. FILTER LOGIC (The Brain) ---
-  const filteredEvents = useMemo(() => {
+  
+  // Level 1: Filter by Cuisine ONLY (For the Map)
+  // This ensures the map shows ALL Pizza trucks, even if they are 20 miles away.
+  const mapEvents = useMemo(() => {
     return events.filter(event => {
-      // A. Cuisine Filter
       if (cuisineFilter !== 'all') {
         const eventType = event.type?.toLowerCase() || 'mobile';
         if (eventType !== cuisineFilter.toLowerCase()) return false;
       }
+      return true;
+    });
+  }, [events, cuisineFilter]);
 
-      // B. Distance Filter
+  // Level 2: Filter by Distance (For the List)
+  // This takes the Cuisine list and chops it down to just what is nearby.
+  const listEvents = useMemo(() => {
+    return mapEvents.filter(event => {
       if (distanceFilter !== 'all' && userLocation && event.venueLat && event.venueLong) {
         const distKm = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
         const distMiles = distKm * 0.621371;
         if (distMiles > parseInt(distanceFilter)) return false;
       }
-
       return true;
     });
-  }, [events, cuisineFilter, distanceFilter, userLocation]);
+  }, [mapEvents, distanceFilter, userLocation]);
 
   // Extract unique Cuisines for the dropdown
   const cuisineOptions = useMemo(() => {
@@ -148,8 +155,8 @@ export default function Home() {
     return Array.from(types).sort();
   }, [events]);
 
-  // Group filtered events by Date
-  const groupedEvents = filteredEvents.reduce((groups, event) => {
+  // Group LIST events by Date
+  const groupedEvents = listEvents.reduce((groups, event) => {
     const date = event.date;
     if (!groups[date]) groups[date] = [];
     groups[date].push(event);
@@ -328,9 +335,9 @@ export default function Home() {
             {view === 'map' && (
                <div className="h-[calc(100vh-180px)] md:h-[calc(100vh-140px)] w-full relative z-0 md:rounded-xl md:overflow-hidden md:mt-4 md:border md:border-slate-200 shadow-sm">
                  <MapView 
-                    events={filteredEvents} 
-                    userLocation={userLocation}  // <--- Passing User Location
-                    radius={distanceFilter}      // <--- Passing Filter Selection
+                    events={mapEvents}           // <--- UPDATED: Pass 'mapEvents' (Everything)
+                    userLocation={userLocation}
+                    radius={distanceFilter}
                  />
                </div>
             )}

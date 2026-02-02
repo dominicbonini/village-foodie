@@ -48,7 +48,7 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
 
       map.flyTo([userLocation.lat, userLocation.long], zoomLevel, {
         animate: true,
-        duration: 1.5
+        duration: 0.5
       });
       return;
     }
