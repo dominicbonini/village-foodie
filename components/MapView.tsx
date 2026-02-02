@@ -3,20 +3,11 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { divIcon } from 'leaflet';
+import { VillageEvent } from '@/types'; // <--- IMPORTING FROM SHARED FILE
 
-// --- THE FIX: Internal Type Definition ---
-// We define this HERE so we don't depend on external files that might be missing.
-interface VillageEvent {
-  id: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  truckName: string;
-  venueName: string;
-  type?: string;
-  venueLat?: number;
-  venueLong?: number;
-}
+// (Delete the interface VillageEvent { ... } block from here)
+
+
 // -----------------------------------------
 
 const truckIcon = divIcon({

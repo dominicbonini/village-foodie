@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { VillageEvent } from '@/types'; // <--- IMPORTING FROM SHARED FILE
 
 // --- DYNAMIC MAP IMPORT ---
 const MapView = dynamic(() => import('@/components/MapView'), { 
@@ -13,20 +14,6 @@ const MapView = dynamic(() => import('@/components/MapView'), {
   )
 });
 
-// --- INTERNAL TYPE DEFINITION ---
-interface VillageEvent {
-  id: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  truckName: string;
-  venueName: string;
-  postcode?: string;
-  type?: string;
-  venueLat?: number;
-  venueLong?: number;
-  notes?: string; // Added Notes field
-}
 
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv';
 

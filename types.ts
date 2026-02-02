@@ -1,12 +1,13 @@
-export interface Event {
+export interface VillageEvent {
   id: string;
   date: string;
   startTime: string;
   endTime: string;
   truckName: string;
   venueName: string;
-  // These are the new fields we added for the map:
-  type?: 'Mobile' | 'Static';
+  postcode?: string;
+  type?: string;
   venueLat?: number;
   venueLong?: number;
+  notes?: string;
 }
