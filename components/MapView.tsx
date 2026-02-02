@@ -1,98 +1,103 @@
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { divIcon } from 'leaflet';
-import { VillageEvent } from '@/types'; // <--- IMPORTING FROM SHARED FILE
+import { divIcon, LatLngBounds } from 'leaflet';
+import { VillageEvent } from '@/types';
+import { useEffect } from 'react';
 
-// (Delete the interface VillageEvent { ... } block from here)
-
-
-// -----------------------------------------
-
+// Custom Icons logic
 const truckIcon = divIcon({
-  className: 'custom-icon',
-  html: '<div style="font-size: 24px; line-height: 1;">🚚</div>',
+  html: '<div style="font-size: 24px;">🚚</div>',
+  className: 'bg-transparent',
   iconSize: [30, 30],
   iconAnchor: [15, 15]
 });
 
 const plateIcon = divIcon({
-  className: 'custom-icon',
-  html: '<div style="font-size: 24px; line-height: 1;">🍽️</div>',
+  html: '<div style="font-size: 24px;">🍽️</div>',
+  className: 'bg-transparent',
   iconSize: [30, 30],
   iconAnchor: [15, 15]
 });
+
+// --- NEW COMPONENT: AUTO-ZOOM ---
+// This invisible component watches the events and zooms the map to fit them
+function AutoBounds({ events }: { events: VillageEvent[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (events.length === 0) return;
+
+    // 1. Collect all coordinates
+    const coords = events
+      .filter(e => e.venueLat && e.venueLong)
+      .map(e => [e.venueLat!, e.venueLong!] as [number, number]);
+
+    if (coords.length > 0) {
+      // 2. Create a boundary box around them
+      const bounds = new LatLngBounds(coords);
+      
+      // 3. Fly to that box (with some padding so pins aren't on the edge)
+      map.fitBounds(bounds, { padding: [50, 50] });
+    }
+  }, [events, map]); // Run this every time 'events' changes
+
+  return null;
+}
 
 interface MapViewProps {
   events: VillageEvent[];
 }
 
 export default function MapView({ events }: MapViewProps) {
+  // Default view (Bury St Edmunds area) used only if no events are loaded yet
+  const defaultCenter: [number, number] = [52.24, 0.71];
+
   return (
     <MapContainer 
-    center={[52.16, 0.55]}  // <-- Centered perfectly between your 4 towns
-    zoom={10}               // <-- Zoomed out slightly to see the whole area
-    style={{ height: '100%', width: '100%' }}
-  
+      center={defaultCenter} 
+      zoom={11} 
+      style={{ height: '100%', width: '100%' }}
     >
       <TileLayer
-        attribution='© OpenStreetMap contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      
-      {events.map((event, index) => {
-        // Skip invalid coordinates
+
+      {/* ACTIVATE AUTO-ZOOM */}
+      <AutoBounds events={events} />
+
+      {events.map((event) => {
         if (!event.venueLat || !event.venueLong) return null;
-
-        const typeClean = event.type ? event.type.trim().toLowerCase() : '';
         
-        // Default to Truck, switch to Plate if static
-        let iconToUse = truckIcon; 
-        if (typeClean === 'static') {
-            iconToUse = plateIcon;
-        }
-
-        const mapLink = 'https://www.google.com/maps/search/?api=1&query=' + event.venueLat + ',' + event.venueLong;
-
-        // Time formatting
-        let timeDisplay = '';
-        if (event.startTime && event.endTime) {
-            timeDisplay = event.startTime + ' - ' + event.endTime;
-        } else if (event.startTime) {
-            timeDisplay = 'From ' + event.startTime;
-        }
-
-        const uniqueKey = event.date + '-' + event.truckName + '-' + index;
+        const isStatic = event.type?.toLowerCase().includes('static');
 
         return (
           <Marker 
-            key={uniqueKey} 
+            key={event.id} 
             position={[event.venueLat, event.venueLong]}
-            icon={iconToUse}
+            icon={isStatic ? plateIcon : truckIcon}
           >
-            <Popup>
-              <div className="text-center min-w-[150px]">
-                <span className="text-3xl block mb-2">
-                   {typeClean === 'static' ? '🍽️' : '🚚'}
-                </span>
-                <strong className="block text-slate-900 text-lg mb-1">{event.truckName}</strong>
-                <p className="text-sm text-slate-600 mb-2">{event.venueName}</p>
+            <Popup className="text-sm font-sans">
+              <div className="min-w-[200px]">
+                <h3 className="font-bold text-slate-900">{event.truckName}</h3>
+                <p className="text-slate-600 text-xs mt-1">{event.venueName}</p>
                 
-                {timeDisplay && (
-                  <div className="text-xs text-orange-700 font-bold bg-orange-50 inline-block px-2 py-1 rounded mb-3">
-                    {timeDisplay}
-                  </div>
+                {event.type && event.type !== 'Mobile' && (
+                  <span className="inline-block bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded mt-2 font-bold uppercase">
+                    {event.type}
+                  </span>
                 )}
-
-                <a 
-                  href={mapLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-slate-800 text-white text-xs py-2 rounded-md hover:bg-slate-700 no-underline"
-                >
-                  Get Directions
-                </a>
+                
+                <div className="mt-2 pt-2 border-t border-slate-100 flex justify-between items-center">
+                   <span className="text-xs font-bold text-orange-600">
+                     {event.startTime} - {event.endTime}
+                   </span>
+                   <span className="text-[10px] text-slate-400">
+                     {event.date}
+                   </span>
+                </div>
               </div>
             </Popup>
           </Marker>

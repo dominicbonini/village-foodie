@@ -57,7 +57,7 @@ export default function Home() {
   // --- FILTERS & USER STATE ---
   const [userPostcode, setUserPostcode] = useState('');
   const [userLocation, setUserLocation] = useState<{lat: number, long: number} | null>(null);
-  const [distanceFilter, setDistanceFilter] = useState<string>('all'); // '5', '10', '20', 'all'
+  const [distanceFilter, setDistanceFilter] = useState<string>('10'); // '5', '10', '20', 'all'
   const [cuisineFilter, setCuisineFilter] = useState<string>('all');
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
 
