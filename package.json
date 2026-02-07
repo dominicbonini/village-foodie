@@ -2,6 +2,7 @@
   "name": "village-foodie",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,14 +10,19 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@types/leaflet": "^1.9.21",
     "@types/papaparse": "^5.5.2",
+    "dotenv": "^17.2.3",
+    "googleapis": "^171.1.0",
     "leaflet": "^1.9.4",
     "next": "16.1.6",
     "papaparse": "^5.5.3",
+    "puppeteer": "^24.36.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "rrule": "^2.8.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

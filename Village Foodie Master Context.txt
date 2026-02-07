@@ -1,0 +1,108 @@
+VILLAGE FOODIE: Master Context & Architecture
+1. Project Overview
+Village Foodie is a local food truck aggregator.
+
+Objective: Scrape upcoming events from various local food truck websites (squarespace, wix, old HTML sites) and consolidate them into a single Google Sheet database.
+
+Goal: Provide accurate, up-to-date schedules for users to find food trucks in their village.
+
+2. Tech Stack
+Language: Node.js (Modules).
+
+Browser Automation: Puppeteer (Headless Chrome).
+
+AI Engine: Google Gemini 2.5 Flash Lite (via API).
+
+Database: Google Sheets (via Google API).
+
+Key Libraries: googleapis, dotenv.
+
+3. The "Strategy Pattern" Architecture
+The system does not use a "one-size-fits-all" scraper. It uses a Configuration-Driven Architecture. The logic is split between the Code (The Muscle) and the Spreadsheet (The Brain).
+
+A. The Spreadsheet ("The Brain")
+
+The Google Sheet controls the scraper's behavior. We do not hard-code rules in JS if we can avoid it.
+
+Tab: Trucks (Master Config)
+
+Column A: Truck Name (Must match website text loosely).
+
+Column E: Website URL.
+
+Column K (AI Instructions): Natural language rules for specific trucks (e.g., "Recurring: Every Friday at Nethergate").
+
+Column L (Strategy): Defines how to scrape this specific site.
+
+scroll_lazy: For modern infinite-scroll sites (Pizzeria Gusto, Pimp My Fish).
+
+click_next: For calendar widgets with "Next" buttons (My Thai Chef).
+
+manual: For broken/secure sites. Skips network request and generates dates purely from Column K rules (Mac St Kitchen).
+
+frames: For ancient sites using <frameset>.
+
+Tab: Venues (Location DB)
+
+Used for VLOOKUPs to attach Lat/Long coordinates to events.
+
+Crucial: If the scraper finds a venue not in this tab, it will default to using the raw text found on the site.
+
+B. The Scraper Script (run-scraper.js)
+
+The script follows this execution flow:
+
+Read Config: Pulls Truck/Venue data from Google Sheets.
+
+Select Strategy: Checks Column L to pick the right function (performModernScroll, performButtonHunt, etc.).
+
+Navigate: Uses Puppeteer to load the page (with specific timeouts/waits per strategy).
+
+Extract Text: Dumps the raw text (or frames) from the browser.
+
+Fail-Safe: If the text is empty/blocked, it checks Column K. If instructions exist, it switches to "Manual Generation Mode".
+
+AI Processing (Gemini):
+
+Input: Raw Website Text + Reference Calendar + Column K Instructions.
+
+Logic:
+
+Reference Calendar: The code generates a hard-coded list of dates for the next 90 days (e.g., "Fridays: Feb 06, Feb 13..."). The AI must pick from this list to prevent date hallucinations (e.g., calling Feb 7th a Friday).
+
+Name Normalization: Code normalizes "St" -> "Street", "Rd" -> "Road" to match truck names against the DB.
+
+Output: Returns a clean JSON array of events.
+
+Save: Appends new, unique events to the Events tab.
+
+4. Current "Problem Child" Handling
+Truck	Strategy	Known Quirk	Solution
+Mac St Kitchen	manual	HTTP site, blocks scrapers, uses complex recurring dates.	Manual Mode: The script skips the website entirely. It reads Column K ("Every Friday at Nethergate..."), feeds it to the AI, and the AI picks dates from the Reference Calendar.
+Pimp My Fish	scroll_lazy	Heavy site, lazy loading images.	Deep Scan: Script scrolls for 12+ seconds. AI prompt forces a "Deep Scan" to read past the first event.
+My Thai Chef	click_next	Calendar widget.	Button Hunter: Script clicks "Next" 4 times to capture future months.
+5. Maintenance Guide (How to Scale)
+To Add a New Truck:
+
+Add the Name and URL to the Trucks tab.
+
+Determine Strategy:
+
+Standard Site? Leave Column L blank (Defaults to scroll_lazy).
+
+Weird Calendar? Set Column L to click_next.
+
+Recurring Schedule / Broken Site? Set Column L to manual and write the schedule rules in Column K.
+
+Run Scraper: node scripts/run-scraper.js.
+
+To Fix a "Missing" Venue:
+
+If logs show ✅ NEW: Truck @ Unknown, find the venue name on the website and add a new row to the Venues tab with that exact name.
+
+6. Known Code Logic (For AI Reference)
+Duplicate Detection: Uses a composite key: Date|Truck|Venue|Time.
+
+Date Math: We do not let the AI guess dates. We provide a "Cheat Sheet" in the prompt context.
+
+Normalization: The code strips punctuation and standardizes "St/Street" before matching Truck names.

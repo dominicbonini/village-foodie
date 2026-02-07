@@ -5,9 +5,11 @@ export interface VillageEvent {
   endTime: string;
   truckName: string;
   venueName: string;
-  postcode?: string;
-  type?: string;
+  notes?: string;
   venueLat?: number;
   venueLong?: number;
-  notes?: string;
+  type?: string;
+  // --- ADD THESE TWO LINES ---
+  websiteUrl?: string;
+  menuUrl?: string;
 }
