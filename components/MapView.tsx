@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { divIcon, LatLngBounds } from 'leaflet';
 import { VillageEvent } from '@/types';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // --- ICONS (Lightweight Emojis) ---
 const truckIcon = divIcon({
@@ -61,7 +61,7 @@ function formatDateForDisplay(dateStr: string): string {
   return eventDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
 }
 
-// --- CALENDAR LOGIC (Merged from Main Page) ---
+// --- CALENDAR LOGIC ---
 function formatWebDate(dateStr: string, timeStr: string): string {
   const [day, month, year] = dateStr.split('/');
   return `${year}-${month}-${day}T${timeStr}:00`;
@@ -119,15 +119,14 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: Vi
   else if (action === 'ics') downloadICS(event);
 }
 
-// --- SHARE LOGIC (Merged "Fancy this?" wording) ---
+// --- SHARE LOGIC ---
 async function handleShare(event: VillageEvent) {
   const shareUrl = 'https://village-foodie.vercel.app/'; 
-  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:`;
+  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:\n${shareUrl}`;
 
   const shareData = {
     title: `${event.truckName} at ${event.venueName}`,
     text: shareText,
-    url: shareUrl 
   };
 
   try {
@@ -138,7 +137,7 @@ async function handleShare(event: VillageEvent) {
     }
   } catch (err) {
     try {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      await navigator.clipboard.writeText(shareText);
       alert('Event details copied to clipboard! 📋');
     } catch (clipboardErr) {
       console.log('Clipboard failed');
@@ -188,12 +187,16 @@ interface MapViewProps {
 }
 
 export default function MapView({ events, userLocation = null, radius = 'all' }: MapViewProps) {
+  // FIX: Force component to wait for client mount to prevent "Map container reused" error
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const defaultCenter: [number, number] = [52.24, 0.55]; 
   
-  // FIX: Force a unique key on every mount to prevent "Map container is being reused" error
-  const mapKey = useMemo(() => `map-${Date.now()}-${Math.random()}`, []);
-
-  // --- GROUP EVENTS BY LOCATION (Fixes overlapping pins) ---
+  // --- GROUP EVENTS BY LOCATION ---
   const groupedEvents = useMemo(() => {
     const groups: Record<string, VillageEvent[]> = {};
     events.forEach(event => {
@@ -206,9 +209,17 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
     return groups;
   }, [events]);
 
+  // If not mounted yet, render a placeholder to keep layout stable
+  if (!mounted) {
+    return (
+      <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
+        Loading Map...
+      </div>
+    );
+  }
+
   return (
     <MapContainer 
-      key={mapKey} 
       center={defaultCenter} 
       zoom={10} 
       style={{ height: '100%', width: '100%' }}
@@ -235,7 +246,7 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
         const firstEvent = groupEvents[0];
         const isStatic = firstEvent.type?.toLowerCase().includes('static');
         
-        // Calculate distance (using first event is fine since they share location)
+        // Calculate distance
         let distDisplay = null;
         if (userLocation) {
           const km = getDistanceKm(userLocation.lat, userLocation.long, lat, long);

@@ -81,7 +81,6 @@ function formatFriendlyDate(dateStr: string): string {
 // 1. For Web Links (Google/Outlook.com) - Needs hyphens (YYYY-MM-DD)
 function formatWebDate(dateStr: string, timeStr: string): string {
   const [day, month, year] = dateStr.split('/');
-  // Returns 2025-02-20T17:00:00
   return `${year}-${month}-${day}T${timeStr}:00`;
 }
 
@@ -89,13 +88,11 @@ function formatWebDate(dateStr: string, timeStr: string): string {
 function formatICSDate(dateStr: string, timeStr: string): string {
   const [day, month, year] = dateStr.split('/');
   const cleanTime = timeStr.replace(':', '');
-  // Returns 20250220T170000
   return `${year}${month}${day}T${cleanTime}00`;
 }
 
 function getGoogleLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
-  // Google handles basic (compact) format well, but let's match Outlook logic
   const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(event.date, event.endTime)}`;
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
   return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
@@ -153,15 +150,17 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: Vi
   else if (action === 'ics') downloadICS(event);
 }
 
-// --- SHARE LOGIC ---
+// --- FIXED SHARE LOGIC (Text Mode) ---
 async function handleShare(event: VillageEvent) {
   const shareUrl = 'https://village-foodie.vercel.app/'; 
-  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:`;
+  
+  // COMBINE URL INTO TEXT to force phones to share the text
+  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:\n${shareUrl}`;
 
   const shareData = {
     title: `${event.truckName} at ${event.venueName}`,
     text: shareText,
-    url: shareUrl 
+    // url: shareUrl  <-- REMOVED to prevent phone from ignoring 'text'
   };
 
   try {
@@ -172,7 +171,7 @@ async function handleShare(event: VillageEvent) {
     }
   } catch (err) {
     try {
-      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      await navigator.clipboard.writeText(shareText);
       alert('Event details copied to clipboard! 📋');
     } catch (clipboardErr) {
       alert('Could not share. Please copy the URL manually!');
@@ -528,7 +527,7 @@ export default function Home() {
                                           <option value="" disabled>Add to Calendar...</option>
                                           <option value="google">Google Calendar (Web)</option>
                                           <option value="outlook_web">Outlook.com (Web)</option>
-                                          <option value="ics">Apple / Outlook App (File)</option>
+                                          <option value="ics">Apple / Mobile / Outlook</option>
                                        </select>
                                      </span>
                                   </div>
