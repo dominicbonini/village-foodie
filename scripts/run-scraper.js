@@ -90,7 +90,7 @@ function generateDatesFromRule(ruleJSON) {
 
     if (targetDay === undefined) return [];
 
-    for (let i = 0; i < 84; i++) {
+    for (let i = 0; i < 28; i++) {
         const d = new Date();
         d.setDate(today.getDate() + i);
         

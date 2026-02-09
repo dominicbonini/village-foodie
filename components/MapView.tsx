@@ -129,9 +129,11 @@ interface MapViewProps {
 
 export default function MapView({ events, userLocation = null, radius = 'all' }: MapViewProps) {
   const defaultCenter: [number, number] = [52.24, 0.55]; 
-  const mapKey = useMemo(() => Math.random().toString(), []);
+  
+  // FIX: Force a unique key on every mount to prevent "Map container is being reused" error
+  const mapKey = useMemo(() => `map-${Date.now()}-${Math.random()}`, []);
 
-  // --- NEW LOGIC: GROUP EVENTS BY LOCATION ---
+  // --- GROUP EVENTS BY LOCATION (Fixes overlapping pins) ---
   const groupedEvents = useMemo(() => {
     const groups: Record<string, VillageEvent[]> = {};
     events.forEach(event => {

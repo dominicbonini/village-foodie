@@ -37,7 +37,8 @@ function deg2rad(deg: number): number {
 // 2. Fetch coordinates from Postcode
 async function getCoordsFromPostcode(postcode: string): Promise<{lat: number, long: number} | null> {
   try {
-    const cleanPostcode = postcode.replace(/\s/g, '');
+    // FIX: Apply Uppercase transformation ONLY here (when sending data)
+    const cleanPostcode = postcode.toUpperCase().replace(/\s/g, '');
     const res = await fetch(`https://api.postcodes.io/postcodes/${cleanPostcode}`);
     const data = await res.json();
     if (data.status === 200) {
@@ -170,7 +171,10 @@ export default function Home() {
   // --- FILTERS & USER STATE ---
   const [userPostcode, setUserPostcode] = useState('');
   const [userLocation, setUserLocation] = useState<{lat: number, long: number} | null>(null);
+  
+  // DEFAULT DISTANCE: 10 Miles
   const [distanceFilter, setDistanceFilter] = useState<string>('10'); 
+  
   const [cuisineFilter, setCuisineFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all'); 
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
@@ -240,9 +244,32 @@ export default function Home() {
     setIsPostcodeLoading(false);
     if (coords) {
       setUserLocation(coords);
-      localStorage.setItem('user_postcode', code);
+      // FIX: Only convert to uppercase when Saving to storage
+      localStorage.setItem('user_postcode', code.toUpperCase()); 
     } else if (showAlert) {
       alert("Could not find that postcode. Please try again.");
+    }
+  };
+
+  // --- TALLY POPUP HANDLER ---
+  const openTallyPopup = () => {
+    const params = new URLSearchParams();
+    // FIX: Convert to uppercase ONLY when opening the form
+    if (userPostcode) params.set('postcode', userPostcode.toUpperCase()); 
+    if (distanceFilter) params.set('distance', distanceFilter);
+    const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
+
+    if (typeof window !== 'undefined' && (window as any).Tally) {
+      (window as any).Tally.openPopup('81xAKx', {
+        layout: 'modal',
+        width: 400,
+        hiddenFields: {
+          postcode: userPostcode ? userPostcode.toUpperCase() : '',
+          distance: distanceFilter || '10',
+        },
+      });
+    } else {
+      window.open(fallbackUrl, '_blank');
     }
   };
 
@@ -320,8 +347,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
-      {/* TALLY SCRIPT FOR POPUP */}
-      <Script src="https://tally.so/widgets/embed.js" strategy="lazyOnload" />
+      {/* TALLY SCRIPT */}
+      <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
       {/* --- HEADER --- */}
       <header className="bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-md">
@@ -338,7 +365,18 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
             <div className="flex gap-2 flex-1 w-full md:w-auto">
-              <input type="text" placeholder="CB8 0AA" className="w-full bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" value={userPostcode} onChange={(e) => setUserPostcode(e.target.value.toUpperCase())} onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(userPostcode)} />
+              
+              {/* FIX: Controlled Input, but NO .toUpperCase() in handler */}
+              <input 
+                type="text" 
+                placeholder="CB8 0AA" 
+                className="w-full bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
+                value={userPostcode}
+                onChange={(e) => setUserPostcode(e.target.value)} 
+                onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(userPostcode)} 
+                autoComplete="postal-code"
+              />
+
               <button onClick={() => handlePostcodeSearch(userPostcode)} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-2 rounded text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
             </div>
             
@@ -357,10 +395,9 @@ export default function Home() {
               </select>
               
               <select className="bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:outline-none" value={distanceFilter} onChange={(e) => setDistanceFilter(e.target.value)} disabled={!userLocation}>
-                <option value="all">Any Dist.</option>
-                <option value="5">5 Miles</option>
                 <option value="10">10 Miles</option>
                 <option value="20">20 Miles</option>
+                <option value="30">30 Miles</option>
               </select>
             </div>
           </div>
@@ -376,16 +413,25 @@ export default function Home() {
         {/* LIST VIEW */}
         {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
+                
+                {/* --- WELCOME BANNER --- */}
+                <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center shadow-sm">
+                   <h2 className="text-orange-900 font-bold text-lg">Find your next meal 🍔</h2>
+                   <p className="text-orange-800 text-sm mt-1">
+                     Find food trucks and pop-ups visiting villages near you.
+                   </p>
+                </div>
+
                 {Object.keys(groupedEvents).length === 0 && (
-                   <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300">
+                   <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
                       <p className="text-slate-600">No events found matching your filters.</p>
-                      <button onClick={() => {setCuisineFilter('all'); setDistanceFilter('all'); setDateFilter('all');}} className="text-orange-600 text-sm font-bold mt-2 hover:underline">Clear Filters</button>
+                      <button onClick={() => {setCuisineFilter('all'); setDistanceFilter('10'); setDateFilter('all');}} className="text-orange-600 text-sm font-bold mt-2 hover:underline">Clear Filters</button>
                    </div>
                 )}
 
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                   <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider mb-2 ml-1">
+                    <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider mb-2 ml-1 mt-4">
                       {formatFriendlyDate(date)}
                     </h2>
                     <div className="space-y-3">
@@ -491,12 +537,10 @@ export default function Home() {
         )}
       </div>
 
-      {/* --- FLOATING SUBSCRIBE BUTTON --- */}
+      {/* --- FLOATING SUBSCRIBE BUTTON (Uses Tally JS API) --- */}
       <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
         <button 
-          data-tally-open="81xAKx" 
-          data-tally-layout="modal"
-          data-tally-width="400"
+          onClick={openTallyPopup}
           className="pointer-events-auto bg-slate-900 text-white font-bold py-3 px-6 rounded-full shadow-lg border border-slate-700 flex items-center gap-2 hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
         >
           <span>Get Weekly Schedule 🍕</span>
@@ -505,13 +549,11 @@ export default function Home() {
 
       <div className="bg-slate-900 text-slate-300 p-6 text-center mt-auto pb-24">
         <h3 className="text-white font-bold text-lg mb-2">Never miss a slice 🍕</h3>
-        <p className="text-sm mb-4">Get the weekly village food schedule sent to your inbox every Friday.</p>
+        <p className="text-sm mb-4">Get the village food schedule sent to your inbox every week.</p>
         
-        {/* FOOTER BUTTON (Hidden mostly by floating, but good for desktop/context) */}
+        {/* FOOTER BUTTON (Uses Tally JS API) */}
         <button 
-          data-tally-open="81xAKx" 
-          data-tally-layout="modal"
-          data-tally-width="400"
+          onClick={openTallyPopup}
           className="inline-block bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 px-6 rounded-full transition-colors mb-4"
         >
           Get the Schedule
@@ -520,19 +562,29 @@ export default function Home() {
         <div className="text-[10px] text-slate-500 mt-4 flex flex-col gap-2 items-center">
           <p>No Spam (but maybe Pepperoni). Unsubscribe Anytime.</p>
           
-          <div className="flex gap-3 justify-center text-[10px] text-slate-500 mt-2">
-             <Link href="/contact" className="hover:text-slate-400 transition-colors underline decoration-slate-700 underline-offset-2">
-               Contact Us
-             </Link>
-             <span className="text-slate-700">|</span>
-             <Link href="/contact" className="hover:text-slate-400 transition-colors underline decoration-slate-700 underline-offset-2">
-               Add my Business
-             </Link>
-             <span className="text-slate-700">|</span>
-             <Link href="/contact" className="hover:text-slate-400 transition-colors underline decoration-slate-700 underline-offset-2">
-               Report a Problem
-             </Link>
+          <div className="mt-2 text-center">
+             {/* HEADER FOR CONTACT LINKS - DIRECT NEXT.JS LINKS */}
+             <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Contact Us</h4>
+             <div className="flex gap-4 justify-center">
+                {/* FIX: Link to internal route, not Tally */}
+                <Link href="/contact?topic=General%20Enquiry" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
+                  General Enquiry
+                </Link>
+                <span className="text-slate-700">|</span>
+                <Link href="/contact?topic=Add%20Business" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
+                  Add my Business
+                </Link>
+                <span className="text-slate-700">|</span>
+                <Link href="/contact?topic=Report%20Issue" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
+                  Report Issue
+                </Link>
+             </div>
           </div>
+          
+          {/* DISCLAIMER */}
+          <p className="mt-4 opacity-50 max-w-xs text-center leading-relaxed">
+             Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor's social media for last-minute updates.
+          </p>
         </div>
       </div>
     </main>
