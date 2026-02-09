@@ -6,26 +6,29 @@ import { divIcon, LatLngBounds } from 'leaflet';
 import { VillageEvent } from '@/types';
 import { useEffect, useMemo } from 'react';
 
-// --- ICONS ---
+// --- ICONS (Lightweight Emojis) ---
 const truckIcon = divIcon({
-  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">🚚</div>',
+  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));">🚚</div>',
   className: 'bg-transparent',
   iconSize: [30, 30],
-  iconAnchor: [15, 15]
+  iconAnchor: [15, 15],
+  popupAnchor: [0, -10]
 });
 
 const plateIcon = divIcon({
-  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">🍽️</div>',
+  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));">🍽️</div>',
   className: 'bg-transparent',
   iconSize: [30, 30],
-  iconAnchor: [15, 15]
+  iconAnchor: [15, 15],
+  popupAnchor: [0, -10]
 });
 
 const userIcon = divIcon({
-  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));">🏠</div>',
+  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));">🏠</div>',
   className: 'bg-transparent',
   iconSize: [30, 30],
-  iconAnchor: [15, 15]
+  iconAnchor: [15, 15],
+  popupAnchor: [0, -10]
 });
 
 // --- HELPER 1: Distance Calc ---
@@ -58,33 +61,88 @@ function formatDateForDisplay(dateStr: string): string {
   return eventDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
 }
 
-// --- HELPER 3: Calendar Link ---
-function getGoogleCalendarLink(event: VillageEvent): string {
-  if (!event.date || !event.startTime || !event.endTime) return '#';
-  const [day, month, year] = event.date.split('/');
-  const startDateTime = `${year}${month}${day}T${event.startTime.replace(':','')}00`;
-  const endDateTime = `${year}${month}${day}T${event.endTime.replace(':','')}00`;
-  const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
-  const location = event.venueName;
-  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${startDateTime}/${endDateTime}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+// --- CALENDAR LOGIC (Merged from Main Page) ---
+function formatWebDate(dateStr: string, timeStr: string): string {
+  const [day, month, year] = dateStr.split('/');
+  return `${year}-${month}-${day}T${timeStr}:00`;
 }
 
-// --- HELPER 4: Share Logic ---
+function formatICSDate(dateStr: string, timeStr: string): string {
+  const [day, month, year] = dateStr.split('/');
+  const cleanTime = timeStr.replace(':', '');
+  return `${year}${month}${day}T${cleanTime}00`;
+}
+
+function getGoogleLink(event: VillageEvent): string {
+  if (!event.date || !event.startTime || !event.endTime) return '#';
+  const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(event.date, event.endTime)}`;
+  const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
+  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
+}
+
+function getOutlookLink(event: VillageEvent): string {
+  if (!event.date || !event.startTime || !event.endTime) return '#';
+  const start = formatWebDate(event.date, event.startTime);
+  const end = formatWebDate(event.date, event.endTime);
+  const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
+  return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.truckName + ' 🚚')}&startdt=${start}&enddt=${end}&body=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
+}
+
+function downloadICS(event: VillageEvent) {
+  if (!event.date || !event.startTime || !event.endTime) return;
+  const start = formatICSDate(event.date, event.startTime);
+  const end = formatICSDate(event.date, event.endTime);
+  const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
+  
+  const icsContent = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Village Foodie//EN', 'BEGIN:VEVENT',
+    `UID:${event.id}@villagefoodie.co.uk`, `DTSTAMP:${now}`, `DTSTART:${start}`, `DTEND:${end}`,
+    `SUMMARY:${event.truckName} 🚚`, `DESCRIPTION:${event.notes || 'Details at villagefoodie.co.uk'}`,
+    `LOCATION:${event.venueName}`, 'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `${event.truckName.replace(/\s+/g, '_')}.ics`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: VillageEvent) {
+  const action = e.target.value;
+  e.target.value = ''; 
+  if (action === 'google') window.open(getGoogleLink(event), '_blank');
+  else if (action === 'outlook_web') window.open(getOutlookLink(event), '_blank');
+  else if (action === 'ics') downloadICS(event);
+}
+
+// --- SHARE LOGIC (Merged "Fancy this?" wording) ---
 async function handleShare(event: VillageEvent) {
+  const shareUrl = 'https://village-foodie.vercel.app/'; 
+  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:`;
+
   const shareData = {
-    title: `Food Truck: ${event.truckName}`,
-    text: `Found ${event.truckName} at ${event.venueName} on the Village Foodie Map!`,
-    url: window.location.href 
+    title: `${event.truckName} at ${event.venueName}`,
+    text: shareText,
+    url: shareUrl 
   };
+
   try {
-    if (navigator.share) {
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       await navigator.share(shareData);
     } else {
-      await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-      alert('Link copied!');
+      throw new Error('Native share not supported');
     }
   } catch (err) {
-    console.log('Error sharing:', err);
+    try {
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      alert('Event details copied to clipboard! 📋');
+    } catch (clipboardErr) {
+      console.log('Clipboard failed');
+    }
   }
 }
 
@@ -99,12 +157,14 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   const map = useMap();
 
   useEffect(() => {
+    // 1. If User Location exists, Fly to it
     if (userLocation && radius !== 'all') {
       const zoomLevel = radius === '5' ? 12 : radius === '10' ? 11 : 10; 
-      map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
+      map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 1.5 });
       return;
     }
 
+    // 2. Otherwise, fit bounds to show all events
     if (events.length > 0) {
       const coords = events
         .filter(e => e.venueLat && e.venueLong)
@@ -190,7 +250,7 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
             position={[lat, long]}
             icon={isStatic ? plateIcon : truckIcon}
           >
-            <Popup className="custom-popup" minWidth={300} maxWidth={320}>
+            <Popup className="custom-popup" minWidth={280} maxWidth={300}>
                
                {/* SCROLLABLE CONTAINER FOR MULTIPLE EVENTS */}
                <div className="font-sans max-h-[300px] overflow-y-auto pr-1">
@@ -221,18 +281,13 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                 {/* HEADER */}
                                 <div className="flex justify-between items-start">
                                     <div className="flex flex-col gap-0.5 pr-2">
-                                        <h3 className="font-bold text-slate-900 text-lg leading-none !m-0 !p-0">
+                                        <h3 className="font-bold text-slate-900 text-base leading-none !m-0 !p-0">
                                             {event.truckName}
                                         </h3>
-                                        <p className="text-slate-600 text-sm font-medium leading-none !m-0 !p-0">{event.venueName}</p>
+                                        <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{event.venueName}</p>
                                     </div>
 
                                     <div className="flex flex-col items-end gap-1 shrink-0">
-                                        {event.type && event.type !== 'Mobile' && !event.type.toLowerCase().includes('static') && (
-                                            <span className="text-[9px] font-bold uppercase tracking-wide text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
-                                                {event.type}
-                                            </span>
-                                        )}
                                         {distDisplay && index === 0 && (
                                             <span className="text-[9px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap">
                                                 {distDisplay}
@@ -243,22 +298,14 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
 
                                 {/* TIME & DIRECTIONS */}
                                 <div className="flex items-center gap-3 mt-2">
-                                  <span className="text-[11px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">
+                                  <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">
                                     {event.startTime} - {event.endTime}
                                   </span>
                                   
-                                  <a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
-                                    Get Directions
+                                  <a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
+                                    Directions
                                   </a>
                                 </div>
-
-                                {/* NOTES */}
-                                {event.notes && (
-                                  <div className="mt-1.5 flex items-start gap-1">
-                                    <span className="text-[10px] leading-4 opacity-70">ℹ️</span>
-                                    <span className="text-[10px] text-slate-600 font-medium italic !m-0">{event.notes}</span>
-                                  </div>
-                                )}
 
                                 {/* MENU BUTTON */}
                                 {event.menuUrl && (
@@ -267,24 +314,37 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                       href={event.menuUrl} 
                                       target="_blank" 
                                       rel="noopener noreferrer" 
-                                      className="inline-flex items-center justify-center gap-1.5 w-full text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 py-2 rounded-md transition-colors shadow-sm"
+                                      className="inline-flex items-center justify-center gap-1.5 w-full text-[10px] font-bold text-white bg-slate-900 hover:bg-slate-800 py-1.5 rounded-md transition-colors shadow-sm"
                                     >
-                                      <span>📸</span> View Menu
+                                      <span>📸</span> Menu
                                     </a>
                                   </div>
                                 )}
 
-                                {/* FOOTER */}
+                                {/* FOOTER (SHARE / CAL) */}
                                 <div className="flex items-center justify-end gap-3 mt-2">
                                    <button onClick={() => handleShare(event)} className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     Share
                                   </button>
                                   <span className="text-slate-300 text-[10px]">|</span>
-                                  <a href={getGoogleCalendarLink(event)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors">
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                    Cal
-                                  </a>
+                                  
+                                  <div className="relative group flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors cursor-pointer">
+                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                     <span className="relative">
+                                       Cal
+                                       <select 
+                                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                          onChange={(e) => handleCalendarSelect(e, event)}
+                                          value=""
+                                       >
+                                          <option value="" disabled>Add to Calendar...</option>
+                                          <option value="google">Google Calendar (Web)</option>
+                                          <option value="outlook_web">Outlook.com (Web)</option>
+                                          <option value="ics">Apple / Mobile / Outlook</option>
+                                       </select>
+                                     </span>
+                                  </div>
                                 </div>
 
                               </div>

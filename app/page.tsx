@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import Link from 'next/link'; 
@@ -37,7 +37,6 @@ function deg2rad(deg: number): number {
 // 2. Fetch coordinates from Postcode
 async function getCoordsFromPostcode(postcode: string): Promise<{lat: number, long: number} | null> {
   try {
-    // FIX: Apply Uppercase transformation ONLY here (when sending data)
     const cleanPostcode = postcode.toUpperCase().replace(/\s/g, '');
     const res = await fetch(`https://api.postcodes.io/postcodes/${cleanPostcode}`);
     const data = await res.json();
@@ -76,26 +75,37 @@ function formatFriendlyDate(dateStr: string): string {
 }
 
 // ==========================================
-// --- CALENDAR LOGIC (Google, Outlook, ICS) ---
+// --- CALENDAR LOGIC (FIXED) ---
 // ==========================================
 
-function formatCalDate(dateStr: string, timeStr: string): string {
+// 1. For Web Links (Google/Outlook.com) - Needs hyphens (YYYY-MM-DD)
+function formatWebDate(dateStr: string, timeStr: string): string {
+  const [day, month, year] = dateStr.split('/');
+  // Returns 2025-02-20T17:00:00
+  return `${year}-${month}-${day}T${timeStr}:00`;
+}
+
+// 2. For .ICS Files (Apple/Outlook App) - Needs compact (YYYYMMDD)
+function formatICSDate(dateStr: string, timeStr: string): string {
   const [day, month, year] = dateStr.split('/');
   const cleanTime = timeStr.replace(':', '');
+  // Returns 20250220T170000
   return `${year}${month}${day}T${cleanTime}00`;
 }
 
 function getGoogleLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
-  const dates = `${formatCalDate(event.date, event.startTime)}/${formatCalDate(event.date, event.endTime)}`;
+  // Google handles basic (compact) format well, but let's match Outlook logic
+  const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(event.date, event.endTime)}`;
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
   return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
 }
 
 function getOutlookLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
-  const start = formatCalDate(event.date, event.startTime);
-  const end = formatCalDate(event.date, event.endTime);
+  // FIX: Outlook Web needs HYPHENS to parse correctly (YYYY-MM-DD)
+  const start = formatWebDate(event.date, event.startTime);
+  const end = formatWebDate(event.date, event.endTime);
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
   return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.truckName + ' 🚚')}&startdt=${start}&enddt=${end}&body=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
 }
@@ -103,8 +113,9 @@ function getOutlookLink(event: VillageEvent): string {
 function downloadICS(event: VillageEvent) {
   if (!event.date || !event.startTime || !event.endTime) return;
   
-  const start = formatCalDate(event.date, event.startTime);
-  const end = formatCalDate(event.date, event.endTime);
+  // FIX: ICS Files MUST use the compact format (No hyphens)
+  const start = formatICSDate(event.date, event.startTime);
+  const end = formatICSDate(event.date, event.endTime);
   const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
   
   const icsContent = [
@@ -135,18 +146,24 @@ function downloadICS(event: VillageEvent) {
 
 function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: VillageEvent) {
   const action = e.target.value;
-  e.target.value = ''; // Reset dropdown
+  e.target.value = ''; // Reset dropdown so it can be clicked again
+  
   if (action === 'google') window.open(getGoogleLink(event), '_blank');
   else if (action === 'outlook_web') window.open(getOutlookLink(event), '_blank');
   else if (action === 'ics') downloadICS(event);
 }
 
+// --- SHARE LOGIC ---
 async function handleShare(event: VillageEvent) {
+  const shareUrl = 'https://village-foodie.vercel.app/'; 
+  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:`;
+
   const shareData = {
-    title: `Food Truck: ${event.truckName}`,
-    text: `Fancy getting ${event.truckName} at ${event.venueName}? It's on ${event.date} from ${event.startTime}.`,
-    url: window.location.href 
+    title: `${event.truckName} at ${event.venueName}`,
+    text: shareText,
+    url: shareUrl 
   };
+
   try {
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       await navigator.share(shareData);
@@ -155,10 +172,10 @@ async function handleShare(event: VillageEvent) {
     }
   } catch (err) {
     try {
-      await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-      alert('Link copied to clipboard! 📋');
+      await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+      alert('Event details copied to clipboard! 📋');
     } catch (clipboardErr) {
-      alert('Could not share. Copy the URL manually!');
+      alert('Could not share. Please copy the URL manually!');
     }
   }
 }
@@ -170,11 +187,10 @@ export default function Home() {
 
   // --- FILTERS & USER STATE ---
   const [userPostcode, setUserPostcode] = useState('');
+  const postcodeRef = useRef<HTMLInputElement>(null); 
+
   const [userLocation, setUserLocation] = useState<{lat: number, long: number} | null>(null);
-  
-  // DEFAULT DISTANCE: 10 Miles
   const [distanceFilter, setDistanceFilter] = useState<string>('10'); 
-  
   const [cuisineFilter, setCuisineFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all'); 
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
@@ -233,6 +249,9 @@ export default function Home() {
     const savedPostcode = localStorage.getItem('user_postcode');
     if (savedPostcode) {
       setUserPostcode(savedPostcode);
+      if (postcodeRef.current) {
+        postcodeRef.current.value = savedPostcode;
+      }
       handlePostcodeSearch(savedPostcode, false); 
     }
   }, []);
@@ -244,7 +263,6 @@ export default function Home() {
     setIsPostcodeLoading(false);
     if (coords) {
       setUserLocation(coords);
-      // FIX: Only convert to uppercase when Saving to storage
       localStorage.setItem('user_postcode', code.toUpperCase()); 
     } else if (showAlert) {
       alert("Could not find that postcode. Please try again.");
@@ -254,7 +272,6 @@ export default function Home() {
   // --- TALLY POPUP HANDLER ---
   const openTallyPopup = () => {
     const params = new URLSearchParams();
-    // FIX: Convert to uppercase ONLY when opening the form
     if (userPostcode) params.set('postcode', userPostcode.toUpperCase()); 
     if (distanceFilter) params.set('distance', distanceFilter);
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
@@ -365,18 +382,16 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
             <div className="flex gap-2 flex-1 w-full md:w-auto">
-              
-              {/* FIX: Controlled Input, but NO .toUpperCase() in handler */}
+              {/* UNCONTROLLED INPUT to fix cursor jumping */}
               <input 
+                ref={postcodeRef}
                 type="text" 
                 placeholder="CB8 0AA" 
                 className="w-full bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
-                value={userPostcode}
                 onChange={(e) => setUserPostcode(e.target.value)} 
                 onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(userPostcode)} 
                 autoComplete="postal-code"
               />
-
               <button onClick={() => handlePostcodeSearch(userPostcode)} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-2 rounded text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
             </div>
             
@@ -506,13 +521,14 @@ export default function Home() {
                                      <span className="relative">
                                        Add to Cal
                                        <select 
-                                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                           onChange={(e) => handleCalendarSelect(e, event)}
+                                          value="" 
                                        >
-                                          <option value="">Select Calendar...</option>
-                                          <option value="google">Google Calendar</option>
-                                          <option value="outlook_web">Outlook.com</option>
-                                          <option value="ics">Apple / Outlook (App)</option>
+                                          <option value="" disabled>Add to Calendar...</option>
+                                          <option value="google">Google Calendar (Web)</option>
+                                          <option value="outlook_web">Outlook.com (Web)</option>
+                                          <option value="ics">Apple / Outlook App (File)</option>
                                        </select>
                                      </span>
                                   </div>
@@ -566,7 +582,6 @@ export default function Home() {
              {/* HEADER FOR CONTACT LINKS - DIRECT NEXT.JS LINKS */}
              <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Contact Us</h4>
              <div className="flex gap-4 justify-center">
-                {/* FIX: Link to internal route, not Tally */}
                 <Link href="/contact?topic=General%20Enquiry" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
                   General Enquiry
                 </Link>
