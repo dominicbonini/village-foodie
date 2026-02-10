@@ -75,16 +75,14 @@ function formatFriendlyDate(dateStr: string): string {
 }
 
 // ==========================================
-// --- CALENDAR LOGIC (FIXED) ---
+// --- CALENDAR LOGIC ---
 // ==========================================
 
-// 1. For Web Links (Google/Outlook.com) - Needs hyphens (YYYY-MM-DD)
 function formatWebDate(dateStr: string, timeStr: string): string {
   const [day, month, year] = dateStr.split('/');
   return `${year}-${month}-${day}T${timeStr}:00`;
 }
 
-// 2. For .ICS Files (Apple/Outlook App) - Needs compact (YYYYMMDD)
 function formatICSDate(dateStr: string, timeStr: string): string {
   const [day, month, year] = dateStr.split('/');
   const cleanTime = timeStr.replace(':', '');
@@ -100,7 +98,6 @@ function getGoogleLink(event: VillageEvent): string {
 
 function getOutlookLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
-  // FIX: Outlook Web needs HYPHENS to parse correctly (YYYY-MM-DD)
   const start = formatWebDate(event.date, event.startTime);
   const end = formatWebDate(event.date, event.endTime);
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
@@ -109,26 +106,15 @@ function getOutlookLink(event: VillageEvent): string {
 
 function downloadICS(event: VillageEvent) {
   if (!event.date || !event.startTime || !event.endTime) return;
-  
-  // FIX: ICS Files MUST use the compact format (No hyphens)
   const start = formatICSDate(event.date, event.startTime);
   const end = formatICSDate(event.date, event.endTime);
   const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
   
   const icsContent = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Village Foodie//EN',
-    'BEGIN:VEVENT',
-    `UID:${event.id}@villagefoodie.co.uk`,
-    `DTSTAMP:${now}`,
-    `DTSTART:${start}`,
-    `DTEND:${end}`,
-    `SUMMARY:${event.truckName} 🚚`,
-    `DESCRIPTION:${event.notes || 'Details at villagefoodie.co.uk'}`,
-    `LOCATION:${event.venueName}`,
-    'END:VEVENT',
-    'END:VCALENDAR'
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Village Foodie//EN', 'BEGIN:VEVENT',
+    `UID:${event.id}@villagefoodie.co.uk`, `DTSTAMP:${now}`, `DTSTART:${start}`, `DTEND:${end}`,
+    `SUMMARY:${event.truckName} 🚚`, `DESCRIPTION:${event.notes || 'Details at villagefoodie.co.uk'}`,
+    `LOCATION:${event.venueName}`, 'END:VEVENT', 'END:VCALENDAR'
   ].join('\r\n');
 
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
@@ -143,24 +129,20 @@ function downloadICS(event: VillageEvent) {
 
 function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: VillageEvent) {
   const action = e.target.value;
-  e.target.value = ''; // Reset dropdown so it can be clicked again
-  
+  e.target.value = ''; 
   if (action === 'google') window.open(getGoogleLink(event), '_blank');
   else if (action === 'outlook_web') window.open(getOutlookLink(event), '_blank');
   else if (action === 'ics') downloadICS(event);
 }
 
-// --- FIXED SHARE LOGIC (Text Mode) ---
+// --- SHARE LOGIC ---
 async function handleShare(event: VillageEvent) {
   const shareUrl = 'https://village-foodie.vercel.app/'; 
-  
-  // COMBINE URL INTO TEXT to force phones to share the text
-  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:\n${shareUrl}`;
+  const shareText = `How about this for dinner?\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
 
   const shareData = {
     title: `${event.truckName} at ${event.venueName}`,
     text: shareText,
-    // url: shareUrl  <-- REMOVED to prevent phone from ignoring 'text'
   };
 
   try {
@@ -217,7 +199,6 @@ export default function Home() {
             truckName: cols[3] || 'Unknown Truck',
             venueName: cols[4] || '',
             notes: cols[5] || '', 
-            // Original Mapping:
             websiteUrl: cols[6] || '',  
             menuUrl: cols[7] || '',     
             venueLat: cols[8] ? parseFloat(cols[8]) : undefined,  
@@ -260,18 +241,27 @@ export default function Home() {
     setIsPostcodeLoading(true);
     const coords = await getCoordsFromPostcode(code);
     setIsPostcodeLoading(false);
+    
     if (coords) {
       setUserLocation(coords);
-      localStorage.setItem('user_postcode', code.toUpperCase()); 
+      const cleanCode = code.toUpperCase();
+      localStorage.setItem('user_postcode', cleanCode);
+      setUserPostcode(cleanCode); 
     } else if (showAlert) {
       alert("Could not find that postcode. Please try again.");
     }
   };
 
-  // --- TALLY POPUP HANDLER ---
+  const triggerSearch = () => {
+    if (postcodeRef.current) {
+      handlePostcodeSearch(postcodeRef.current.value);
+    }
+  };
+
   const openTallyPopup = () => {
+    const currentCode = postcodeRef.current ? postcodeRef.current.value.toUpperCase() : userPostcode;
     const params = new URLSearchParams();
-    if (userPostcode) params.set('postcode', userPostcode.toUpperCase()); 
+    if (currentCode) params.set('postcode', currentCode); 
     if (distanceFilter) params.set('distance', distanceFilter);
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
 
@@ -280,7 +270,7 @@ export default function Home() {
         layout: 'modal',
         width: 400,
         hiddenFields: {
-          postcode: userPostcode ? userPostcode.toUpperCase() : '',
+          postcode: currentCode,
           distance: distanceFilter || '10',
         },
       });
@@ -289,47 +279,37 @@ export default function Home() {
     }
   };
 
-  // --- 3. FILTER LOGIC ---
   const mapEvents = useMemo(() => {
     const today = new Date();
     today.setHours(0,0,0,0);
     
     return events.filter(event => {
-      // 1. Cuisine
       if (cuisineFilter !== 'all') {
         const eventType = event.type?.toLowerCase() || 'mobile';
         if (eventType !== cuisineFilter.toLowerCase()) return false;
       }
-
-      // 2. Date Filter
       if (dateFilter !== 'all') {
         const eventDate = parseDateString(event.date);
         if (!eventDate) return false;
-
-        // "Today"
         if (dateFilter === 'today') {
            if (eventDate.getTime() !== today.getTime()) return false;
         } 
-        // "Tomorrow"
         else if (dateFilter === 'tomorrow') {
            const tomorrow = new Date(today);
            tomorrow.setDate(tomorrow.getDate() + 1);
            if (eventDate.getTime() !== tomorrow.getTime()) return false;
         } 
-        // "Next 7 Days"
         else if (dateFilter === 'next7') {
            const nextWeek = new Date(today);
            nextWeek.setDate(today.getDate() + 7);
            if (eventDate > nextWeek) return false;
         }
-        // "This Weekend"
         else if (dateFilter === 'weekend') {
-           const dayOfWeek = eventDate.getDay(); // 0 (Sun) - 6 (Sat)
+           const dayOfWeek = eventDate.getDay(); 
            const currentDayOfWeek = today.getDay(); 
            const daysUntilSunday = (7 - currentDayOfWeek) % 7; 
            const nextSunday = new Date(today);
            nextSunday.setDate(today.getDate() + daysUntilSunday);
-           
            if (![0, 5, 6].includes(dayOfWeek)) return false;
            if (eventDate > nextSunday) return false;
         }
@@ -363,7 +343,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
-      {/* TALLY SCRIPT */}
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
       {/* --- HEADER --- */}
@@ -381,17 +360,15 @@ export default function Home() {
 
           <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
             <div className="flex gap-2 flex-1 w-full md:w-auto">
-              {/* UNCONTROLLED INPUT to fix cursor jumping */}
               <input 
                 ref={postcodeRef}
                 type="text" 
                 placeholder="CB8 0AA" 
                 className="w-full bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
-                onChange={(e) => setUserPostcode(e.target.value)} 
-                onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(userPostcode)} 
+                onKeyDown={(e) => e.key === 'Enter' && triggerSearch()} 
                 autoComplete="postal-code"
               />
-              <button onClick={() => handlePostcodeSearch(userPostcode)} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-2 rounded text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
+              <button onClick={triggerSearch} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-2 rounded text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
             </div>
             
             <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
@@ -428,7 +405,6 @@ export default function Home() {
         {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
                 
-                {/* --- WELCOME BANNER --- */}
                 <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center shadow-sm">
                    <h2 className="text-orange-900 font-bold text-lg">Find your next meal 🍔</h2>
                    <p className="text-orange-800 text-sm mt-1">
@@ -501,35 +477,38 @@ export default function Home() {
                                 )}
                                 {event.menuUrl && (
                                   <div className="mt-2">
-                                    <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 w-full text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 py-1.5 rounded-md transition-colors shadow-sm">
+                                    <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 w-full text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 py-2 rounded-md transition-colors shadow-sm">
                                       <span>📸</span> View Menu
                                     </a>
                                   </div>
                                 )}
 
-                                <div className="flex items-center justify-end gap-3 mt-2">
-                                  <button onClick={() => handleShare(event)} className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors">
+                                {/* --- FIXED BUTTONS: NO BORDER, ROUNDED-MD, HOVER ON GROUP --- */}
+                                <div className="flex gap-2 mt-3 justify-end">
+                                  <button 
+                                    onClick={() => handleShare(event)} 
+                                    className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors"
+                                  >
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     Share
                                   </button>
 
-                                  <span className="text-slate-300 text-[10px]">|</span>
-                                  
-                                  <div className="relative group flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors cursor-pointer">
-                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                     <span className="relative">
-                                       Add to Cal
-                                       <select 
-                                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                          onChange={(e) => handleCalendarSelect(e, event)}
-                                          value="" 
-                                       >
-                                          <option value="" disabled>Add to Calendar...</option>
-                                          <option value="google">Google Calendar (Web)</option>
-                                          <option value="outlook_web">Outlook.com (Web)</option>
-                                          <option value="ics">Apple / Mobile / Outlook</option>
-                                       </select>
-                                     </span>
+                                  <div className="relative group">
+                                     {/* Parent Group Hover triggers this button style */}
+                                     <button className="flex items-center justify-center gap-1 bg-slate-100 group-hover:bg-orange-600 group-hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors">
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        Add to Cal
+                                     </button>
+                                     <select 
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onChange={(e) => handleCalendarSelect(e, event)}
+                                        value="" 
+                                     >
+                                        <option value="" disabled>Select Calendar...</option>
+                                        <option value="google">Google Calendar (Web)</option>
+                                        <option value="outlook_web">Outlook.com (Web)</option>
+                                        <option value="ics">Apple / Mobile / Outlook</option>
+                                     </select>
                                   </div>
                                 </div>
 
@@ -552,7 +531,6 @@ export default function Home() {
         )}
       </div>
 
-      {/* --- FLOATING SUBSCRIBE BUTTON (Uses Tally JS API) --- */}
       <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
         <button 
           onClick={openTallyPopup}
@@ -566,7 +544,6 @@ export default function Home() {
         <h3 className="text-white font-bold text-lg mb-2">Never miss a slice 🍕</h3>
         <p className="text-sm mb-4">Get the village food schedule sent to your inbox every week.</p>
         
-        {/* FOOTER BUTTON (Uses Tally JS API) */}
         <button 
           onClick={openTallyPopup}
           className="inline-block bg-orange-600 hover:bg-orange-500 text-white font-bold py-2 px-6 rounded-full transition-colors mb-4"
@@ -578,7 +555,6 @@ export default function Home() {
           <p>No Spam (but maybe Pepperoni). Unsubscribe Anytime.</p>
           
           <div className="mt-2 text-center">
-             {/* HEADER FOR CONTACT LINKS - DIRECT NEXT.JS LINKS */}
              <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Contact Us</h4>
              <div className="flex gap-4 justify-center">
                 <Link href="/contact?topic=General%20Enquiry" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
@@ -595,7 +571,6 @@ export default function Home() {
              </div>
           </div>
           
-          {/* DISCLAIMER */}
           <p className="mt-4 opacity-50 max-w-xs text-center leading-relaxed">
              Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor's social media for last-minute updates.
           </p>

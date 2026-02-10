@@ -122,7 +122,7 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: Vi
 // --- SHARE LOGIC ---
 async function handleShare(event: VillageEvent) {
   const shareUrl = 'https://village-foodie.vercel.app/'; 
-  const shareText = `Fancy this for food? 🚚\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie:\n${shareUrl}`;
+  const shareText = `How about this for dinner?\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
 
   const shareData = {
     title: `${event.truckName} at ${event.venueName}`,
@@ -156,14 +156,12 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   const map = useMap();
 
   useEffect(() => {
-    // 1. If User Location exists, Fly to it
     if (userLocation && radius !== 'all') {
       const zoomLevel = radius === '5' ? 12 : radius === '10' ? 11 : 10; 
-      map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 1.5 });
+      map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
       return;
     }
 
-    // 2. Otherwise, fit bounds to show all events
     if (events.length > 0) {
       const coords = events
         .filter(e => e.venueLat && e.venueLong)
@@ -187,7 +185,6 @@ interface MapViewProps {
 }
 
 export default function MapView({ events, userLocation = null, radius = 'all' }: MapViewProps) {
-  // FIX: Force component to wait for client mount to prevent "Map container reused" error
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -209,7 +206,6 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
     return groups;
   }, [events]);
 
-  // If not mounted yet, render a placeholder to keep layout stable
   if (!mounted) {
     return (
       <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
@@ -332,29 +328,31 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                   </div>
                                 )}
 
-                                {/* FOOTER (SHARE / CAL) */}
-                                <div className="flex items-center justify-end gap-3 mt-2">
-                                   <button onClick={() => handleShare(event)} className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors">
+                                {/* --- FIX: NO BORDER, ROUNDED-MD, HOVER ON GROUP --- */}
+                                <div className="flex gap-2 mt-3 justify-end">
+                                  <button 
+                                    onClick={() => handleShare(event)} 
+                                    className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors"
+                                  >
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     Share
                                   </button>
-                                  <span className="text-slate-300 text-[10px]">|</span>
-                                  
-                                  <div className="relative group flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-slate-700 uppercase tracking-wide transition-colors cursor-pointer">
-                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                     <span className="relative">
-                                       Cal
-                                       <select 
-                                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                          onChange={(e) => handleCalendarSelect(e, event)}
-                                          value=""
-                                       >
-                                          <option value="" disabled>Add to Calendar...</option>
-                                          <option value="google">Google Calendar (Web)</option>
-                                          <option value="outlook_web">Outlook.com (Web)</option>
-                                          <option value="ics">Apple / Mobile / Outlook</option>
-                                       </select>
-                                     </span>
+
+                                  <div className="relative group">
+                                     <button className="flex items-center justify-center gap-1 bg-slate-100 group-hover:bg-orange-600 group-hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors">
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        Add to Cal
+                                     </button>
+                                     <select 
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                        onChange={(e) => handleCalendarSelect(e, event)}
+                                        value="" 
+                                     >
+                                        <option value="" disabled>Select Calendar...</option>
+                                        <option value="google">Google Calendar (Web)</option>
+                                        <option value="outlook_web">Outlook.com (Web)</option>
+                                        <option value="ics">Apple / Mobile / Outlook</option>
+                                     </select>
                                   </div>
                                 </div>
 
