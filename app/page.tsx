@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useRef, Suspense } from 'react'; // <--- Added Suspense
+import { useEffect, useState, useMemo, useRef, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import Link from 'next/link'; 
@@ -199,7 +199,7 @@ async function handleShare(event: VillageEvent) {
   }
 }
 
-// --- MAIN CONTENT COMPONENT (Logic Moved Here) ---
+// --- MAIN CONTENT COMPONENT ---
 function VillageFoodieContent() {
   const searchParams = useSearchParams();
   const [events, setEvents] = useState<VillageEvent[]>([]);
@@ -475,8 +475,8 @@ function VillageFoodieContent() {
 
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                   <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
-                    {/* --- STICKY DATE HEADER --- */}
-                    <div className="sticky top-[190px] md:top-[160px] z-30 bg-slate-50/95 backdrop-blur-sm py-2 mb-2">
+                    {/* --- STICKY DATE HEADER (Adjusted top to 215px) --- */}
+                    <div className="sticky top-[215px] md:top-[160px] z-30 bg-slate-50/95 backdrop-blur-sm py-2 mb-2">
                         <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider">
                            {formatFriendlyDate(date)}
                         </h2>
@@ -502,20 +502,34 @@ function VillageFoodieContent() {
                           // Mobile: Stacked with Header Row (Icon + Name inline)
                           <div key={event.id} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col md:flex-row gap-3 md:items-start">
                             
-                            {/* --- MOBILE HEADER ROW (ICON + NAME) --- */}
-                            <div className="flex items-center gap-3 md:hidden">
-                               <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-0.5">
+                            {/* --- MOBILE HEADER ROW (ICON + NAME + LOCATION + TAG) --- */}
+                            <div className="flex gap-3 md:hidden">
+                               {/* Icon (Left) */}
+                               <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-1">
                                  {isStatic ? '🍽️' : '🚚'}
                                </div>
-                               <div className="min-w-0 flex-1">
-                                  <h3 className="font-bold text-slate-900 text-base leading-tight">
-                                    {event.truckName}
-                                  </h3>
-                                  {event.type && event.type !== 'Mobile' && !isStatic && (
-                                    <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm inline-block mt-1">
-                                      {getCuisineEmoji(event.type)} {event.type}
-                                    </span>
-                                  )}
+                               
+                               {/* Content (Right) */}
+                               <div className="min-w-0 flex-1 flex flex-col">
+                                  {/* Row 1: Name & Cuisine Tag */}
+                                  <div className="flex justify-between items-start">
+                                      <h3 className="font-bold text-slate-900 text-base leading-tight pr-2">
+                                        {event.truckName}
+                                      </h3>
+                                      {event.type && event.type !== 'Mobile' && !isStatic && (
+                                        <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">
+                                          {getCuisineEmoji(event.type)} {event.type}
+                                        </span>
+                                      )}
+                                  </div>
+
+                                  {/* Row 2: Location & Distance */}
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                      <p className="text-slate-600 text-xs font-medium truncate">{event.venueName}</p>
+                                      {distDisplay && (
+                                          <span className="text-[10px] font-bold text-slate-400 bg-slate-50 px-1 py-0.5 rounded border border-slate-100 whitespace-nowrap">{distDisplay}</span>
+                                      )}
+                                  </div>
                                </div>
                             </div>
 
@@ -550,16 +564,6 @@ function VillageFoodieContent() {
                                     </div>
                                 </div>
 
-                                {/* --- MOBILE DETAILS (Since title/icon are in header) --- */}
-                                <div className="md:hidden flex flex-col gap-1">
-                                   <div className="flex justify-between items-start">
-                                      <p className="text-slate-600 text-sm font-medium">{event.venueName}</p>
-                                      {distDisplay && (
-                                          <span className="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap ml-2">{distDisplay}</span>
-                                      )}
-                                   </div>
-                                </div>
-
                                 <div className="flex items-center gap-3 mt-2">
                                   <span className="text-xs font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">{event.startTime} - {event.endTime}</span>
                                   <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">Get Directions</a>
@@ -578,7 +582,7 @@ function VillageFoodieContent() {
                                   </div>
                                 )}
 
-                                {/* --- BUTTONS (Restored to Original Icon Style) --- */}
+                                {/* --- BUTTONS --- */}
                                 <div className="flex gap-2 mt-3 justify-end">
                                   <button 
                                     onClick={() => handleShare(event)} 
