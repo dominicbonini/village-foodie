@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo, useRef } from 'react';
+import { useEffect, useState, useMemo, useRef, Suspense } from 'react'; // <--- Added Suspense
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import Link from 'next/link'; 
@@ -199,7 +199,8 @@ async function handleShare(event: VillageEvent) {
   }
 }
 
-export default function Home() {
+// --- MAIN CONTENT COMPONENT (Logic Moved Here) ---
+function VillageFoodieContent() {
   const searchParams = useSearchParams();
   const [events, setEvents] = useState<VillageEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -474,7 +475,7 @@ export default function Home() {
 
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                   <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
-                    {/* --- STICKY DATE HEADER (UPDATED: SQUARE & TODAY/TOMORROW) --- */}
+                    {/* --- STICKY DATE HEADER --- */}
                     <div className="sticky top-[190px] md:top-[160px] z-30 bg-slate-50/95 backdrop-blur-sm py-2 mb-2">
                         <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider">
                            {formatFriendlyDate(date)}
@@ -669,5 +670,14 @@ export default function Home() {
         </div>
       </div>
     </main>
+  );
+}
+
+// --- MAIN EXPORT: WRAP IN SUSPENSE FOR DEPLOYMENT ---
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-400">Loading...</div>}>
+      <VillageFoodieContent />
+    </Suspense>
   );
 }
