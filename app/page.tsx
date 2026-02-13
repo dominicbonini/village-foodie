@@ -241,10 +241,10 @@ function VillageFoodieContent() {
             venueName: cols[4] || '',
             notes: cols[5] || '', 
             websiteUrl: cols[6] || '',  
-            menuUrl: cols[7] || '',     
+            menuUrl: cols[7] || '',       
             venueLat: cols[8] ? parseFloat(cols[8]) : undefined,  
             venueLong: cols[9] ? parseFloat(cols[9]) : undefined, 
-            type: cols[10] || 'Mobile',                           
+            type: cols[10] || 'Mobile',                            
           };
         })
         .filter(e => {
@@ -475,31 +475,31 @@ function VillageFoodieContent() {
 
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => (
                   <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
-                    {/* --- STICKY DATE HEADER (Adjusted top to 215px) --- */}
-                    <div className="sticky top-[215px] md:top-[160px] z-30 bg-slate-50/95 backdrop-blur-sm py-2 mb-2">
-                        <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider">
+                    {/* --- STICKY DATE HEADER --- */}
+                    <div className="sticky top-[188px] md:top-[144px] z-30 bg-slate-50 py-4">
+                        <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                            {formatFriendlyDate(date)}
                         </h2>
                     </div>
 
                     <div className="space-y-3">
                       {dateEvents.map((event) => {
-                         const isStatic = event.type?.toLowerCase().includes('static');
-                         
-                         let distDisplay = null;
-                         if (userLocation && event.venueLat && event.venueLong) {
-                           const km = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
-                           distDisplay = (km * 0.621371).toFixed(1) + ' miles away';
-                         }
-                         
-                         const mapLink = event.venueLat 
+                          const isStatic = event.type?.toLowerCase().includes('static');
+                          
+                          let distDisplay = null;
+                          if (userLocation && event.venueLat && event.venueLong) {
+                            const km = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
+                            distDisplay = (km * 0.621371).toFixed(1) + ' miles away';
+                          }
+                          
+                          const mapLink = event.venueLat 
                             ? `https://www.google.com/maps/search/?api=1&query=${event.venueLat},${event.venueLong}` 
                             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueName)}`;
 
-                         return (
-                          // RESPONSIVE LAYOUT: 
-                          // Desktop (md): Side-by-side (Icon Left | Content Right)
-                          // Mobile: Stacked with Header Row (Icon + Name inline)
+                          return (
+                           // RESPONSIVE LAYOUT: 
+                           // Desktop (md): Side-by-side (Icon Left | Content Right)
+                           // Mobile: Stacked with Header Row (Icon + Name inline)
                           <div key={event.id} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col md:flex-row gap-3 md:items-start">
                             
                             {/* --- MOBILE HEADER ROW (ICON + NAME + LOCATION + TAG) --- */}
@@ -583,19 +583,26 @@ function VillageFoodieContent() {
                                 )}
 
                                 {/* --- BUTTONS --- */}
-                                <div className="flex gap-2 mt-3 justify-end">
+                                <div className="absolute right-3 top-14 flex flex-col gap-2 md:relative md:top-0 md:right-0 md:flex-row md:mt-3 md:justify-end">
+                                  
+                                  {/* Share Button */}
                                   <button 
                                     onClick={() => handleShare(event)} 
-                                    className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors"
+                                    className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors shadow-sm md:shadow-none"
                                   >
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                                    Share
+                                    <svg className="w-3.5 h-3.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    </svg>
+                                    <span className="hidden md:inline">Share</span>
                                   </button>
 
+                                  {/* Calendar Button */}
                                   <div className="relative group">
-                                     <button className="flex items-center justify-center gap-1 bg-slate-100 group-hover:bg-orange-600 group-hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors">
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                                        Add to Cal
+                                     <button className="flex items-center justify-center gap-1 bg-slate-100 group-hover:bg-orange-600 group-hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors shadow-sm md:shadow-none">
+                                        <svg className="w-3.5 h-3.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span className="hidden md:inline">Add to Cal</span>
                                      </button>
                                      <select 
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -669,7 +676,7 @@ function VillageFoodieContent() {
           </div>
           
           <p className="mt-4 opacity-50 max-w-xs text-center leading-relaxed">
-             Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor's social media for last-minute updates.
+              Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor's social media for last-minute updates.
           </p>
         </div>
       </div>
