@@ -294,7 +294,13 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                         <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{event.venueName}</p>
                                     </div>
 
+                                    {/* FIX: ADDED MISSING CUISINE TYPE & DISTANCE */}
                                     <div className="flex flex-col items-end gap-1 shrink-0">
+                                        {event.type && event.type !== 'Mobile' && !event.type.toLowerCase().includes('static') && (
+                                            <span className="text-[9px] font-bold uppercase tracking-wide text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
+                                                {event.type}
+                                            </span>
+                                        )}
                                         {distDisplay && index === 0 && (
                                             <span className="text-[9px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap">
                                                 {distDisplay}
@@ -328,16 +334,16 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                   </div>
                                 )}
 
-                                {/* --- FIX: NO BORDER, ROUNDED-MD, HOVER ON GROUP --- */}
+                                {/* FOOTER (SHARE / CAL) */}
                                 <div className="flex gap-2 mt-3 justify-end">
-                                  <button 
-                                    onClick={() => handleShare(event)} 
-                                    className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors"
-                                  >
+                                   <button 
+                                     onClick={() => handleShare(event)} 
+                                     className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors"
+                                   >
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                     Share
                                   </button>
-
+                                  
                                   <div className="relative group">
                                      <button className="flex items-center justify-center gap-1 bg-slate-100 group-hover:bg-orange-600 group-hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors">
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -346,7 +352,7 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                      <select 
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         onChange={(e) => handleCalendarSelect(e, event)}
-                                        value="" 
+                                        value=""
                                      >
                                         <option value="" disabled>Select Calendar...</option>
                                         <option value="google">Google Calendar (Web)</option>

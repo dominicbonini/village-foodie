@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import Link from 'next/link'; 
+import { useSearchParams } from 'next/navigation'; 
 import { VillageEvent } from '@/types';
 
 // --- DYNAMIC MAP IMPORT ---
@@ -57,11 +58,22 @@ function parseDateString(dateStr: string): Date | null {
   return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
 }
 
-// --- FORMAT DATE (Friday 6th February) ---
+// --- FORMAT DATE (Today - Friday 13th February) ---
 function formatFriendlyDate(dateStr: string): string {
   const date = parseDateString(dateStr);
   if (!date) return dateStr;
 
+  // Set times to midnight for accurate comparison
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
+
+  // Standard Format
   const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' });
   const monthName = date.toLocaleDateString('en-GB', { month: 'long' });
   const dayNum = date.getDate();
@@ -71,7 +83,33 @@ function formatFriendlyDate(dateStr: string): string {
   else if (dayNum === 2 || dayNum === 22) suffix = 'nd';
   else if (dayNum === 3 || dayNum === 23) suffix = 'rd';
 
-  return `${dayName} ${dayNum}${suffix} ${monthName}`;
+  const standardDate = `${dayName} ${dayNum}${suffix} ${monthName}`;
+
+  // Add Prefix
+  if (checkDate.getTime() === today.getTime()) {
+    return `Today - ${standardDate}`;
+  } else if (checkDate.getTime() === tomorrow.getTime()) {
+    return `Tomorrow - ${standardDate}`;
+  }
+
+  return standardDate;
+}
+
+// --- CUISINE EMOJI HELPER ---
+function getCuisineEmoji(type: string): string {
+  const t = type.toLowerCase();
+  if (t.includes('pizza')) return '🍕';
+  if (t.includes('burger')) return '🍔';
+  if (t.includes('coffee') || t.includes('cafe')) return '☕';
+  if (t.includes('mexican') || t.includes('taco')) return '🌮';
+  if (t.includes('asian') || t.includes('thai') || t.includes('chinese') || t.includes('sushi')) return '🍜';
+  if (t.includes('indian') || t.includes('curry')) return '🍛';
+  if (t.includes('dessert') || t.includes('ice cream') || t.includes('cake') || t.includes('sweet')) return '🍰';
+  if (t.includes('fish')) return '🐟';
+  if (t.includes('greek') || t.includes('kebab') || t.includes('gyro')) return '🥙';
+  if (t.includes('vegan') || t.includes('vegetarian') || t.includes('salad')) return '🥗';
+  if (t.includes('bbq') || t.includes('meat')) return '🍖';
+  return '🍴'; // Default cutlery
 }
 
 // ==========================================
@@ -162,6 +200,7 @@ async function handleShare(event: VillageEvent) {
 }
 
 export default function Home() {
+  const searchParams = useSearchParams();
   const [events, setEvents] = useState<VillageEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'list' | 'map'>('list');
@@ -176,8 +215,9 @@ export default function Home() {
   const [dateFilter, setDateFilter] = useState<string>('all'); 
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
 
-  // --- 1. LOAD DATA ---
+  // --- 1. LOAD DATA & HANDLE URL PARAMS ---
   useEffect(() => {
+    // A. Fetch CSV Data
     const fetchData = async () => {
       try {
         const response = await fetch(`${CSV_URL}&t=${Date.now()}`);
@@ -226,15 +266,28 @@ export default function Home() {
       }
     };
     fetchData();
+
+    // B. Handle URL Params (Deep Linking)
+    const urlPostcode = searchParams.get('postcode');
+    const urlDistance = searchParams.get('distance');
+
+    // Priority: URL Param > LocalStorage
     const savedPostcode = localStorage.getItem('user_postcode');
-    if (savedPostcode) {
-      setUserPostcode(savedPostcode);
+    const targetPostcode = urlPostcode || savedPostcode;
+
+    if (targetPostcode) {
+      setUserPostcode(targetPostcode);
       if (postcodeRef.current) {
-        postcodeRef.current.value = savedPostcode;
+        postcodeRef.current.value = targetPostcode;
       }
-      handlePostcodeSearch(savedPostcode, false); 
+      handlePostcodeSearch(targetPostcode, false); 
     }
-  }, []);
+
+    if (urlDistance) {
+      setDistanceFilter(urlDistance);
+    }
+
+  }, [searchParams]);
 
   const handlePostcodeSearch = async (code: string, showAlert = true) => {
     if (!code) return;
@@ -420,10 +473,14 @@ export default function Home() {
                 )}
 
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => (
-                  <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider mb-2 ml-1 mt-4">
-                      {formatFriendlyDate(date)}
-                    </h2>
+                  <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
+                    {/* --- STICKY DATE HEADER (UPDATED: SQUARE & TODAY/TOMORROW) --- */}
+                    <div className="sticky top-[190px] md:top-[160px] z-30 bg-slate-50/95 backdrop-blur-sm py-2 mb-2">
+                        <h2 className="text-slate-600 font-bold text-xs uppercase tracking-wider">
+                           {formatFriendlyDate(date)}
+                        </h2>
+                    </div>
+
                     <div className="space-y-3">
                       {dateEvents.map((event) => {
                          const isStatic = event.type?.toLowerCase().includes('static');
@@ -439,13 +496,36 @@ export default function Home() {
                             : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.venueName)}`;
 
                          return (
-                          <div key={event.id} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden">
-                            <div className="flex items-start gap-3">
-                              <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-0.5">
+                          // RESPONSIVE LAYOUT: 
+                          // Desktop (md): Side-by-side (Icon Left | Content Right)
+                          // Mobile: Stacked with Header Row (Icon + Name inline)
+                          <div key={event.id} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden flex flex-col md:flex-row gap-3 md:items-start">
+                            
+                            {/* --- MOBILE HEADER ROW (ICON + NAME) --- */}
+                            <div className="flex items-center gap-3 md:hidden">
+                               <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-0.5">
+                                 {isStatic ? '🍽️' : '🚚'}
+                               </div>
+                               <div className="min-w-0 flex-1">
+                                  <h3 className="font-bold text-slate-900 text-base leading-tight">
+                                    {event.truckName}
+                                  </h3>
+                                  {event.type && event.type !== 'Mobile' && !isStatic && (
+                                    <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm inline-block mt-1">
+                                      {getCuisineEmoji(event.type)} {event.type}
+                                    </span>
+                                  )}
+                               </div>
+                            </div>
+
+                            {/* --- DESKTOP ICON (Hidden on Mobile) --- */}
+                            <div className="hidden md:flex bg-slate-50 h-10 w-10 rounded-full items-center justify-center text-xl shrink-0 border border-slate-100 mt-0.5">
                                 {isStatic ? '🍽️' : '🚚'}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex justify-between items-start">
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                                {/* --- DESKTOP TITLE ROW --- */}
+                                <div className="hidden md:flex justify-between items-start">
                                     <div className="flex flex-col pr-2">
                                         <h3 className="font-bold text-slate-900 text-base leading-tight">
                                           {event.websiteUrl ? (
@@ -458,13 +538,27 @@ export default function Home() {
                                     </div>
                                     <div className="flex flex-col items-end gap-1 shrink-0">
                                         {event.type && event.type !== 'Mobile' && !isStatic && (
-                                            <span className="text-[10px] font-bold uppercase tracking-wide text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">{event.type}</span>
+                                            <span className="text-xs font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                                              <span>{getCuisineEmoji(event.type)}</span>
+                                              <span>{event.type}</span>
+                                            </span>
                                         )}
                                         {distDisplay && (
                                             <span className="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap">{distDisplay}</span>
                                         )}
                                     </div>
                                 </div>
+
+                                {/* --- MOBILE DETAILS (Since title/icon are in header) --- */}
+                                <div className="md:hidden flex flex-col gap-1">
+                                   <div className="flex justify-between items-start">
+                                      <p className="text-slate-600 text-sm font-medium">{event.venueName}</p>
+                                      {distDisplay && (
+                                          <span className="text-[10px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap ml-2">{distDisplay}</span>
+                                      )}
+                                   </div>
+                                </div>
+
                                 <div className="flex items-center gap-3 mt-2">
                                   <span className="text-xs font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100">{event.startTime} - {event.endTime}</span>
                                   <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">Get Directions</a>
@@ -483,7 +577,7 @@ export default function Home() {
                                   </div>
                                 )}
 
-                                {/* --- FIXED BUTTONS: NO BORDER, ROUNDED-MD, HOVER ON GROUP --- */}
+                                {/* --- BUTTONS (Restored to Original Icon Style) --- */}
                                 <div className="flex gap-2 mt-3 justify-end">
                                   <button 
                                     onClick={() => handleShare(event)} 
@@ -494,7 +588,6 @@ export default function Home() {
                                   </button>
 
                                   <div className="relative group">
-                                     {/* Parent Group Hover triggers this button style */}
                                      <button className="flex items-center justify-center gap-1 bg-slate-100 group-hover:bg-orange-600 group-hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors">
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                         Add to Cal
@@ -512,7 +605,6 @@ export default function Home() {
                                   </div>
                                 </div>
 
-                              </div>
                             </div>
                           </div>
                         );
