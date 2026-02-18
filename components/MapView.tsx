@@ -5,6 +5,12 @@ import 'leaflet/dist/leaflet.css';
 import { divIcon, LatLngBounds } from 'leaflet';
 import { VillageEvent } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
+import { 
+  getDistanceKm, 
+  getGoogleLink, 
+  getOutlookLink, 
+  downloadICS 
+} from '@/lib/utils';
 
 // --- ICONS (Lightweight Emojis) ---
 const truckIcon = divIcon({
@@ -31,19 +37,7 @@ const userIcon = divIcon({
   popupAnchor: [0, -10]
 });
 
-// --- HELPER 1: Distance Calc ---
-function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371; 
-  const dLat = (lat2 - lat1) * (Math.PI/180);
-  const dLon = (lon2 - lon1) * (Math.PI/180);
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * (Math.PI/180)) * Math.cos(lat2 * (Math.PI/180)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  return R * c;
-}
-
-// --- HELPER 2: Smart Date Formatter ---
+// --- HELPER: Smart Date Formatter (Specific to Map Popup) ---
 function formatDateForDisplay(dateStr: string): string {
   const parts = dateStr.split('/');
   if (parts.length !== 3) return dateStr;
@@ -61,55 +55,7 @@ function formatDateForDisplay(dateStr: string): string {
   return eventDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
 }
 
-// --- CALENDAR LOGIC ---
-function formatWebDate(dateStr: string, timeStr: string): string {
-  const [day, month, year] = dateStr.split('/');
-  return `${year}-${month}-${day}T${timeStr}:00`;
-}
-
-function formatICSDate(dateStr: string, timeStr: string): string {
-  const [day, month, year] = dateStr.split('/');
-  const cleanTime = timeStr.replace(':', '');
-  return `${year}${month}${day}T${cleanTime}00`;
-}
-
-function getGoogleLink(event: VillageEvent): string {
-  if (!event.date || !event.startTime || !event.endTime) return '#';
-  const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(event.date, event.endTime)}`;
-  const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
-  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
-}
-
-function getOutlookLink(event: VillageEvent): string {
-  if (!event.date || !event.startTime || !event.endTime) return '#';
-  const start = formatWebDate(event.date, event.startTime);
-  const end = formatWebDate(event.date, event.endTime);
-  const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
-  return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.truckName + ' 🚚')}&startdt=${start}&enddt=${end}&body=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
-}
-
-function downloadICS(event: VillageEvent) {
-  if (!event.date || !event.startTime || !event.endTime) return;
-  const start = formatICSDate(event.date, event.startTime);
-  const end = formatICSDate(event.date, event.endTime);
-  const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
-  
-  const icsContent = [
-    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Village Foodie//EN', 'BEGIN:VEVENT',
-    `UID:${event.id}@villagefoodie.co.uk`, `DTSTAMP:${now}`, `DTSTART:${start}`, `DTEND:${end}`,
-    `SUMMARY:${event.truckName} 🚚`, `DESCRIPTION:${event.notes || 'Details at villagefoodie.co.uk'}`,
-    `LOCATION:${event.venueName}`, 'END:VEVENT', 'END:VCALENDAR'
-  ].join('\r\n');
-
-  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', `${event.truckName.replace(/\s+/g, '_')}.ics`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+// --- HANDLERS ---
 
 function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: VillageEvent) {
   const action = e.target.value;
@@ -119,7 +65,6 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: Vi
   else if (action === 'ics') downloadICS(event);
 }
 
-// --- SHARE LOGIC ---
 async function handleShare(event: VillageEvent) {
   const shareUrl = 'https://village-foodie.vercel.app/'; 
   const shareText = `How about this for dinner?\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
@@ -294,7 +239,7 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                         <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{event.venueName}</p>
                                     </div>
 
-                                    {/* FIX: ADDED MISSING CUISINE TYPE & DISTANCE */}
+                                    {/* CUISINE TYPE & DISTANCE */}
                                     <div className="flex flex-col items-end gap-1 shrink-0">
                                         {event.type && event.type !== 'Mobile' && !event.type.toLowerCase().includes('static') && (
                                             <span className="text-[9px] font-bold uppercase tracking-wide text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">

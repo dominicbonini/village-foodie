@@ -13,10 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Village Foodie",
-  description: "Hyper-local community calendar for food trucks and pub kitchens in rural UK villages",
+  title: "Village Foodie 🚚",
+  description: "Find local food trucks and pop-ups in your area.",
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚚</text></svg>",
+  },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
