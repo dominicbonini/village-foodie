@@ -14,20 +14,21 @@ interface EventListCardProps {
 export default function EventListCard({ event, distanceMiles }: EventListCardProps) {
   const isStatic = event.type?.toLowerCase().includes('static');
   
-  // --- SMART MAP LINK LOGIC ---
-  // We use the Venue Name to search. This works like a human searching maps.
-  // (We use 'as any' on postcode just in case you add it to your types later, 
-  // but it falls back gracefully to just the Name if missing)
+  // --- SMART NAVIGATION LOGIC ---
+  // 1. Construct the destination string (Name + Postcode)
   const venuePostcode = (event as any).postcode || ''; 
   const addressQuery = [event.venueName, venuePostcode].filter(Boolean).join(', ');
   const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
 
-  // Detect OS to open the native default map app
+  // 2. Detect OS
   const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
   
+  // 3. Generate "Directions Mode" Links
+  // 'daddr' tells Apple Maps this is the Destination Address (automatically calculates from current location)
+  // 'dir/?api=1&destination=' tells Google the same thing.
   const mapLink = isApple
-    ? `http://maps.apple.com/?q=${safeQuery}`                  // Opens Apple Maps on iOS
-    : `https://www.google.com/maps/search/?api=1&query=${safeQuery}`; // Opens Google Maps App
+    ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` 
+    : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
 
   // --- SHARE LOGIC ---
   async function handleShare() {
@@ -74,7 +75,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
         
         {/* === MOBILE LAYOUT === */}
         <div className="flex gap-3 md:hidden">
-            {/* Left Column: Icon + Badge */}
             <div className="flex flex-col items-center gap-1 shrink-0 w-10">
                 <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100">
                     {isStatic ? '🍽️' : '🚚'}
@@ -82,7 +82,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
                 {distDisplayBadge}
             </div>
             
-            {/* Right Column: Content */}
             <div className="min-w-0 flex-1 flex flex-col">
                 <div className="flex justify-between items-start">
                     <h3 className="font-bold text-slate-900 text-base leading-tight pr-2">
@@ -106,7 +105,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
                 <div className="flex items-center gap-3 mt-2">
                     <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">{event.startTime} - {event.endTime}</span>
                     
-                    {/* RESTORED SIMPLE DIRECTIONS LINK */}
                     <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
                         Directions
                     </a>
@@ -155,7 +153,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
                         <div className="flex items-center gap-3 mt-1.5">
                             <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">{event.startTime} - {event.endTime}</span>
                             
-                            {/* RESTORED SIMPLE DIRECTIONS LINK */}
                             <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
                                 Directions
                             </a>
