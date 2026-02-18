@@ -8,18 +8,28 @@ import {
 
 interface EventListCardProps {
   event: VillageEvent;
-  distanceMiles?: number | null; // Raw number, not JSX
+  distanceMiles?: number | null;
 }
 
 export default function EventListCard({ event, distanceMiles }: EventListCardProps) {
   const isStatic = event.type?.toLowerCase().includes('static');
   
-  // Logic for links
-  const mapLink = event.venueLat 
-    ? `https://www.google.com/maps/search/?api=1&query=$${event.venueLat},${event.venueLong}` 
-    : `https://www.google.com/maps/search/?api=1&query=$${encodeURIComponent(event.venueName)}`;
+  // --- SMART MAP LINK LOGIC ---
+  // We use the Venue Name to search. This works like a human searching maps.
+  // (We use 'as any' on postcode just in case you add it to your types later, 
+  // but it falls back gracefully to just the Name if missing)
+  const venuePostcode = (event as any).postcode || ''; 
+  const addressQuery = [event.venueName, venuePostcode].filter(Boolean).join(', ');
+  const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
 
-  // Internal Handlers (Self-contained)
+  // Detect OS to open the native default map app
+  const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
+  
+  const mapLink = isApple
+    ? `http://maps.apple.com/?q=${safeQuery}`                  // Opens Apple Maps on iOS
+    : `https://www.google.com/maps/search/?api=1&query=${safeQuery}`; // Opens Google Maps App
+
+  // --- SHARE LOGIC ---
   async function handleShare() {
     const shareUrl = 'https://village-foodie.vercel.app/'; 
     const shareText = `How about this for dinner?\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
@@ -36,6 +46,7 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
     }
   }
 
+  // --- CALENDAR LOGIC ---
   function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
     const action = e.target.value;
     e.target.value = ''; 
@@ -45,8 +56,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
   }
 
   // --- RENDER HELPERS ---
-  
-  // 1. Distance Badge (Mobile Left Column)
   const distDisplayBadge = distanceMiles ? (
     <div className="mt-1 flex flex-col items-center">
       <span className="text-[10px] font-black text-slate-900 leading-none">{distanceMiles.toFixed(1)}</span>
@@ -54,7 +63,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
     </div>
   ) : null;
 
-  // 2. Distance Text (Desktop Top Right)
   const distDisplayText = distanceMiles ? (
     <span className="text-[9px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap">
         {distanceMiles.toFixed(1)} miles away
@@ -76,7 +84,6 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
             
             {/* Right Column: Content */}
             <div className="min-w-0 flex-1 flex flex-col">
-                {/* Header */}
                 <div className="flex justify-between items-start">
                     <h3 className="font-bold text-slate-900 text-base leading-tight pr-2">
                         {event.websiteUrl ? (
@@ -98,10 +105,13 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
 
                 <div className="flex items-center gap-3 mt-2">
                     <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">{event.startTime} - {event.endTime}</span>
-                    <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">Directions</a>
+                    
+                    {/* RESTORED SIMPLE DIRECTIONS LINK */}
+                    <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
+                        Directions
+                    </a>
                 </div>
 
-                {/* Actions */}
                 <div className="mt-3 flex items-center gap-2">
                     {event.menuUrl && (
                         <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-slate-900 py-2 px-4 rounded-md shadow-sm h-9 transition-colors hover:bg-slate-800">
@@ -128,12 +138,10 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
 
         {/* === DESKTOP LAYOUT === */}
         <div className="hidden md:flex gap-3 items-start">
-            {/* Icon */}
             <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-1">
                 {isStatic ? '🍽️' : '🚚'}
             </div>
             
-            {/* Content */}
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-start">
                     <div className="flex flex-col gap-0.5 pr-2">
@@ -146,7 +154,11 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
                         
                         <div className="flex items-center gap-3 mt-1.5">
                             <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">{event.startTime} - {event.endTime}</span>
-                            <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">Directions</a>
+                            
+                            {/* RESTORED SIMPLE DIRECTIONS LINK */}
+                            <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
+                                Directions
+                            </a>
                         </div>
                     </div>
 

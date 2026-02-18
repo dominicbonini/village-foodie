@@ -217,248 +217,265 @@ async function performFrameDump(page) {
   return combinedText;
 }
 
+// HELPER: Normalize Date (e.g., "1/1/2024" -> "01/01/2024") to ensure matches
+function standardizeDate(dateStr) {
+  if (!dateStr) return "";
+  const parts = dateStr.split('/');
+  if (parts.length !== 3) return dateStr;
+  return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
+}
+
 async function main() {
-  console.log("🚀 Starting Smart Scrape (Clean Notes + Time Fix)...");
+console.log("🚀 Starting Smart Scrape (Strict Deduplication)...");
 
-  if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
-    throw new Error("Missing Credentials in .env.local");
-  }
+if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
+  throw new Error("Missing Credentials in .env.local");
+}
 
-  const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-  const sheets = google.sheets({ version: 'v4', auth });
+const auth = new google.auth.GoogleAuth({
+  credentials: JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS),
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+});
+const sheets = google.sheets({ version: 'v4', auth });
 
-  console.log("📥 Reading Master Data...");
-  const [truckData, venueData, eventData] = await Promise.all([
-    getTabData(sheets, TABS.TRUCKS),
-    getTabData(sheets, TABS.VENUES),
-    getTabData(sheets, TABS.EVENTS)
-  ]);
+console.log("📥 Reading Master Data...");
+const [truckData, venueData, eventData] = await Promise.all([
+  getTabData(sheets, TABS.TRUCKS),
+  getTabData(sheets, TABS.VENUES),
+  getTabData(sheets, TABS.EVENTS)
+]);
 
-  const validTrucks = truckData.map(r => r[0]).filter(Boolean);
-  const validVenues = venueData.map(r => r[0]).filter(Boolean);
-  const existingEvents = new Set(eventData.map(r => `${r[0]}|${r[3]}|${r[4]}|${r[1]}`));
-  
-  const sitesToScrape = [];
+const validTrucks = truckData.map(r => r[0]).filter(Boolean);
+const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
-  truckData.forEach(row => {
-    const hasUrl = row[4] && row[4].startsWith('http');
-    const hasInstructions = row[10] && row[10].length > 10;
-    if (hasUrl || hasInstructions) {
-      sitesToScrape.push({ 
-          name: row[0], url: row[4] || 'about:blank', 
-          instructions: row[10] || "",
-          strategy: (row[11] || 'scroll_lazy').toLowerCase().trim()
-      });
+// --- CHANGE 1: STRICT DEDUPLICATION SET ---
+// We only use Date + Truck + Venue. We ignore Time.
+// We also standardize the date to ensure "01/02/2024" matches "1/2/2024"
+const existingEvents = new Set();
+
+eventData.forEach(row => {
+    const date = standardizeDate(row[0]); 
+    const truck = (row[3] || "").toLowerCase().replace(/[^a-z0-9]/g, ''); // Remove spaces/symbols
+    const venue = (row[4] || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+    
+    // key format: "01/01/2024|pizzatruck|thepub"
+    if (date && truck) {
+        existingEvents.add(`${date}|${truck}|${venue}`);
     }
-  });
-  
-  venueData.forEach(row => {
-    if (row[9] && row[9].startsWith('http')) {
-      sitesToScrape.push({ 
-          name: row[0], url: row[9], instructions: row[10] || "",
-          strategy: (row[11] || 'scroll_lazy').toLowerCase().trim()
-      });
-    }
-  });
+});
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite", generationConfig: { responseMimeType: "application/json" } });
-  
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
-  });
+console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
-  const newRowsToAdd = [];
+const sitesToScrape = [];
 
-  for (const [index, site] of sitesToScrape.entries()) {
-    try {
-      console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.strategy})...`);
-      
-      let cleanText = "";
-      let isManualWithRules = false;
-      const page = await browser.newPage();
-      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-
-      const strategyFunc = STRATEGIES[site.strategy] || STRATEGIES['default'];
-
-      if (site.strategy !== 'manual') {
-        try {
-            const navPromise = page.goto(site.url, { timeout: 25000, waitUntil: 'domcontentloaded' });
-            if (site.url.startsWith('http:')) await Promise.race([navPromise, sleep(12000)]);
-            else await navPromise;
-            await sleep(2000);
-        } catch (e) { console.log("   ⚠️ Navigation warning."); }
-        cleanText = await strategyFunc(page);
-      } else {
-        cleanText = ""; 
-      }
-
-      if (cleanText.length < 50 && site.instructions.length > 10) {
-          console.log("   ✨ Empty/Manual: Parsing Rules for Calculation...");
-          isManualWithRules = true;
-          cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
-      } else if (cleanText.length < 50) {
-          console.log("   ❌ Empty site and no instructions. Skipping.");
-          await page.close();
-          continue;
-      }
-
-      let prompt = "";
-
-      if (isManualWithRules) {
-          // MODE A: FIXED PROMPT
-          prompt = `
-            You are a Logic Extractor. Parse the user's scheduling rules.
-            
-            USER RULES: "${site.instructions}"
-            TRUCK NAME: "${site.name}"
-            
-            CRITICAL INSTRUCTIONS:
-            1. Extract EACH venue separately.
-            2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
-            3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
-            
-            CORRECT FORMAT:
-            [
-              { 
-                "venue": "The Railway Tavern", 
-                "proof": "Mon 2nd - The Railway Tavern",
-                "rawTimeStart": "5pm",     
-                "rawTimeEnd": "7ish",      
-                "freq": "weekly",           
-                "day": "monday",             
-                "pos": "2nd"
-              }
-            ]
-          `;
-      } else {
-          // MODE B: STANDARD EXTRACTION
-          prompt = `
-            You are extracting food truck events for: "${site.name}".
-            Current Date: ${new Date().toDateString()}.
-            
-            TASK: Extract ALL upcoming food truck events from the provided text.
-            
-            CRITICAL RULES:
-            1. **DEEP SCAN:** The text contains multiple days/months. Scan the ENTIRE text block.
-            2. **TODAY/TOMORROW:** If text says "Tonight" or "Tomorrow", convert to dates based on Current Date.
-            3. **DateStart:** MUST be "DD/MM/YYYY".
-            4. **Missing Info:** If "TRUCK NAME" is in text, use it. Default to "${site.name}".
-            5. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-            6. Venue Name Fuzzy Match: ${JSON.stringify(validVenues)}.
-
-            RETURN JSON:
-            [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
-
-            WEBSITE TEXT:
-            ${cleanText.slice(0, 150000)} 
-          `;
-      }
-
-      try {
-        console.log("   🤖 Sending to AI...");
-        const result = await generateContentWithRetry(model, prompt);
-        
-        if (isManualWithRules) {
-             console.log("   🔍 DEBUG AI RAW:", JSON.stringify(result, null, 2));
-        }
-
-        let finalEvents = [];
-
-        if (isManualWithRules && Array.isArray(result) && result[0].freq) {
-             console.log(`   🧮 AI returned ${result.length} rules. Calculating dates deterministically...`);
-             for (const rule of result) {
-                 const dates = generateDatesFromRule(rule);
-                 console.log(`      -> Rule (${rule.freq} ${rule.day} ${rule.pos||''}): Generated ${dates.length} dates.`);
-                 
-                 const tStart = parseTime(rule.rawTimeStart) || "Contact Venue";
-                 let tEnd = parseTime(rule.rawTimeEnd) || "Contact Venue";
-                 
-                 // CLEANUP LOGIC: If start is unknown, wipe end time
-                 if (tStart === "Contact Venue") {
-                     tEnd = "";
-                 }
-
-                 for (const date of dates) {
-                     finalEvents.push({
-                         "DateStart": date,
-                         "TimeStart": tStart,
-                         "TimeEnd": tEnd,
-                         "Truck Name": site.name,
-                         "Venue Name": rule.venue,
-                         "Notes": "" // Force empty notes
-                     });
-                 }
-             }
-        } else {
-            finalEvents = result;
-        }
-
-        if (Array.isArray(finalEvents)) {
-          console.log(`   📋 Processing ${finalEvents.length} events...`);
-          let newCount = 0;
-          let dupCount = 0;
-          
-          for (const event of finalEvents) {
-            const truckName = (event["Truck Name"] || "").trim();
-            const venueName = (event["Venue Name"] || "").trim();
-            
-            if (!truckName) continue;
-
-            const normTruck = normalizeName(truckName);
-            const normVenue = normalizeName(venueName);
-
-            const matchedTruck = validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
-            const matchedVenue = validVenues.find(v => normalizeName(v).includes(normVenue) || normVenue.includes(normalizeName(v)));
-            
-            const finalVenue = matchedVenue || venueName || "Unknown";
-            const finalTruck = matchedTruck || truckName; 
-
-            if (matchedTruck || site.strategy === 'manual' || finalTruck.toLowerCase().includes(normalizeName(site.name))) {
-                const key = `${event.DateStart}|${finalTruck}|${finalVenue}|${event.TimeStart}`;
-                if (!existingEvents.has(key)) {
-                    console.log(`   ✅ NEW: ${finalTruck} @ ${finalVenue} (${event.DateStart}) [${event.TimeStart}]`);
-                    newRowsToAdd.push([
-                    event.DateStart, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, "" // Empty notes here too
-                    ]);
-                    existingEvents.add(key);
-                    newCount++;
-                } else {
-                    dupCount++;
-                }
-            } else {
-                console.log(`      ❌ REJECTED: Truck '${truckName}' (Normalized: ${normTruck}) not found.`);
-            }
-          }
-          console.log(`   📊 Summary: ${newCount} new, ${dupCount} duplicates skipped.`);
-        }
-      } catch (e) { console.error("   ❌ AI Failed:", e.message); }
-
-      await page.close();
-
-    } catch (error) {
-      console.error(`❌ Error on ${site.name}:`, error.message);
-    }
-  }
-
-  await browser.close();
-
-  if (newRowsToAdd.length > 0) {
-    console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${TABS.EVENTS}!A:F`,
-      valueInputOption: 'USER_ENTERED',
-      resource: { values: newRowsToAdd },
+truckData.forEach(row => {
+  const hasUrl = row[4] && row[4].startsWith('http');
+  const hasInstructions = row[10] && row[10].length > 10;
+  if (hasUrl || hasInstructions) {
+    sitesToScrape.push({ 
+        name: row[0], url: row[4] || 'about:blank', 
+        instructions: row[10] || "",
+        strategy: (row[11] || 'scroll_lazy').toLowerCase().trim()
     });
-    console.log("🎉 Database Sync Complete!");
-  } else {
-    console.log("\n💤 No new events found.");
   }
+});
+
+venueData.forEach(row => {
+  if (row[9] && row[9].startsWith('http')) {
+    sitesToScrape.push({ 
+        name: row[0], url: row[9], instructions: row[10] || "",
+        strategy: (row[11] || 'scroll_lazy').toLowerCase().trim()
+    });
+  }
+});
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite", generationConfig: { responseMimeType: "application/json" } });
+
+const browser = await puppeteer.launch({
+  headless: "new",
+  args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
+});
+
+const newRowsToAdd = [];
+
+for (const [index, site] of sitesToScrape.entries()) {
+  try {
+    console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.strategy})...`);
+    
+    let cleanText = "";
+    let isManualWithRules = false;
+    const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
+    const strategyFunc = STRATEGIES[site.strategy] || STRATEGIES['default'];
+
+    if (site.strategy !== 'manual') {
+      try {
+          const navPromise = page.goto(site.url, { timeout: 25000, waitUntil: 'domcontentloaded' });
+          if (site.url.startsWith('http:')) await Promise.race([navPromise, sleep(12000)]);
+          else await navPromise;
+          await sleep(2000);
+      } catch (e) { console.log("   ⚠️ Navigation warning."); }
+      cleanText = await strategyFunc(page);
+    } else {
+      cleanText = ""; 
+    }
+
+    if (cleanText.length < 50 && site.instructions.length > 10) {
+        console.log("   ✨ Empty/Manual: Parsing Rules for Calculation...");
+        isManualWithRules = true;
+        cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
+    } else if (cleanText.length < 50) {
+        console.log("   ❌ Empty site and no instructions. Skipping.");
+        await page.close();
+        continue;
+    }
+
+    let prompt = "";
+    if (isManualWithRules) {
+        prompt = `
+          You are a Logic Extractor. Parse the user's scheduling rules.
+          USER RULES: "${site.instructions}"
+          TRUCK NAME: "${site.name}"
+          CRITICAL INSTRUCTIONS:
+          1. Extract EACH venue separately.
+          2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
+          3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
+          CORRECT FORMAT:
+          [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
+        `;
+    } else {
+        prompt = `
+          You are extracting food truck events for: "${site.name}".
+          Current Date: ${new Date().toDateString()}.
+          TASK: Extract ALL upcoming food truck events from the provided text.
+          CRITICAL RULES:
+          1. **DEEP SCAN:** The text contains multiple days/months. Scan the ENTIRE text block.
+          2. **TODAY/TOMORROW:** If text says "Tonight" or "Tomorrow", convert to dates based on Current Date.
+          3. **DateStart:** MUST be "DD/MM/YYYY".
+          4. **Missing Info:** If "TRUCK NAME" is in text, use it. Default to "${site.name}".
+          5. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
+          6. Venue Name Fuzzy Match: ${JSON.stringify(validVenues)}.
+          RETURN JSON:
+          [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
+          WEBSITE TEXT:
+          ${cleanText.slice(0, 150000)} 
+        `;
+    }
+
+    try {
+      console.log("   🤖 Sending to AI...");
+      const result = await generateContentWithRetry(model, prompt);
+      
+      let finalEvents = [];
+      if (isManualWithRules && Array.isArray(result) && result[0].freq) {
+           for (const rule of result) {
+               const dates = generateDatesFromRule(rule);
+               const tStart = parseTime(rule.rawTimeStart) || "Contact Venue";
+               let tEnd = parseTime(rule.rawTimeEnd) || "Contact Venue";
+               if (tStart === "Contact Venue") tEnd = "";
+
+               for (const date of dates) {
+                   finalEvents.push({
+                       "DateStart": date,
+                       "TimeStart": tStart,
+                       "TimeEnd": tEnd,
+                       "Truck Name": site.name,
+                       "Venue Name": rule.venue,
+                       "Notes": "" 
+                   });
+               }
+           }
+      } else {
+          finalEvents = result;
+      }
+
+      if (Array.isArray(finalEvents)) {
+        console.log(`   📋 Processing ${finalEvents.length} events...`);
+        let newCount = 0;
+        let dupCount = 0;
+        
+        for (const event of finalEvents) {
+          const truckName = (event["Truck Name"] || "").trim();
+          const venueName = (event["Venue Name"] || "").trim();
+          
+          if (!truckName) continue;
+
+          const normTruck = normalizeName(truckName);
+          const normVenue = normalizeName(venueName);
+
+          const matchedTruck = validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
+          const matchedVenue = validVenues.find(v => normalizeName(v).includes(normVenue) || normVenue.includes(normalizeName(v)));
+          
+          const finalVenue = matchedVenue || venueName || "Unknown";
+          
+          // Unknown Truck Logic
+          let finalTruck = matchedTruck;
+          let notes = "";
+
+          if (!matchedTruck) {
+              if (truckName.toLowerCase().includes(normalizeName(site.name))) {
+                  finalTruck = site.name;
+              } else {
+                  finalTruck = truckName; 
+                  notes = "[⚠️ NEW TRUCK]"; 
+                  console.log(`      ⚠️  ALERT: New Truck Discovered: "${truckName}"`);
+              }
+          } else {
+              finalTruck = matchedTruck;
+          }
+
+          // --- CHANGE 2: NEW DEDUPLICATION CHECK ---
+          // 1. Clean the incoming data exactly like we cleaned the sheet data
+          const cleanDate = standardizeDate(event.DateStart);
+          const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+          // 2. Generate key WITHOUT Time
+          const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
+          
+          if (!existingEvents.has(key)) {
+              console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
+              newRowsToAdd.push([
+                  event.DateStart, 
+                  event.TimeStart, 
+                  event.TimeEnd, 
+                  finalTruck, 
+                  finalVenue, 
+                  notes 
+              ]);
+              existingEvents.add(key); // Add to current set to prevent immediate duplicates
+              newCount++;
+          } else {
+              dupCount++;
+          }
+        }
+        console.log(`   📊 Summary: ${newCount} new, ${dupCount} duplicates skipped.`);
+      }
+    } catch (e) { console.error("   ❌ AI Failed:", e.message); }
+
+    await page.close();
+
+  } catch (error) {
+    console.error(`❌ Error on ${site.name}:`, error.message);
+  }
+}
+
+await browser.close();
+
+if (newRowsToAdd.length > 0) {
+  console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: SPREADSHEET_ID,
+    range: `${TABS.EVENTS}!A:F`,
+    valueInputOption: 'USER_ENTERED',
+    resource: { values: newRowsToAdd },
+  });
+  console.log("🎉 Database Sync Complete!");
+} else {
+  console.log("\n💤 No new events found.");
+}
 }
 
 async function getTabData(sheets, rangeName) {
