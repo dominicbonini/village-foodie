@@ -9,7 +9,10 @@ export interface VillageEvent {
   venueLat?: number;
   venueLong?: number;
   type?: string;
-  // --- ADD THESE TWO LINES ---
   websiteUrl?: string;
   menuUrl?: string;
+  // --- ADDED LOCATION FIELDS ---
+  postcode?: string;
+  village?: string;
+  town?: string;
 }

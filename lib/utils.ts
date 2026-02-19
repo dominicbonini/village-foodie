@@ -97,7 +97,6 @@ export function getCuisineEmoji(type: string): string {
   if (t.includes('bbq') || t.includes('meat')) return '🍖';
   return '🍴'; // Default cutlery
 }
-
 // ==========================================
 // --- CALENDAR LOGIC ---
 // ==========================================
@@ -113,11 +112,22 @@ export function formatICSDate(dateStr: string, timeStr: string): string {
   return `${year}${month}${day}T${cleanTime}00`;
 }
 
+// Helper to build a highly specific location string for calendar mapping
+export function getFullLocation(event: VillageEvent): string {
+  const postcode = (event as any).postcode || '';
+  const settlement = (event as any).village || (event as any).town || '';
+  
+  // This array filters out missing data so you don't end up with weird floating commas
+  return [event.venueName, settlement, postcode].filter(Boolean).join(', ');
+}
+
 export function getGoogleLink(event: VillageEvent): string {
   if (!event.date || !event.startTime || !event.endTime) return '#';
   const dates = `${formatICSDate(event.date, event.startTime)}/${formatICSDate(event.date, event.endTime)}`;
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
-  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
+  const fullLocation = getFullLocation(event);
+  
+  return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.truckName + ' 🚚')}&dates=${dates}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(fullLocation)}`;
 }
 
 export function getOutlookLink(event: VillageEvent): string {
@@ -125,7 +135,9 @@ export function getOutlookLink(event: VillageEvent): string {
   const start = formatWebDate(event.date, event.startTime);
   const end = formatWebDate(event.date, event.endTime);
   const details = `Food Truck: ${event.truckName} at ${event.venueName}. ${event.notes || ''}`;
-  return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.truckName + ' 🚚')}&startdt=${start}&enddt=${end}&body=${encodeURIComponent(details)}&location=${encodeURIComponent(event.venueName)}`;
+  const fullLocation = getFullLocation(event);
+  
+  return `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent(event.truckName + ' 🚚')}&startdt=${start}&enddt=${end}&body=${encodeURIComponent(details)}&location=${encodeURIComponent(fullLocation)}`;
 }
 
 export function downloadICS(event: VillageEvent) {
@@ -133,12 +145,13 @@ export function downloadICS(event: VillageEvent) {
   const start = formatICSDate(event.date, event.startTime);
   const end = formatICSDate(event.date, event.endTime);
   const now = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 15) + 'Z';
+  const fullLocation = getFullLocation(event);
   
   const icsContent = [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Village Foodie//EN', 'BEGIN:VEVENT',
     `UID:${event.id}@villagefoodie.co.uk`, `DTSTAMP:${now}`, `DTSTART:${start}`, `DTEND:${end}`,
     `SUMMARY:${event.truckName} 🚚`, `DESCRIPTION:${event.notes || 'Details at villagefoodie.co.uk'}`,
-    `LOCATION:${event.venueName}`, 'END:VEVENT', 'END:VCALENDAR'
+    `LOCATION:${fullLocation}`, 'END:VEVENT', 'END:VCALENDAR'
   ].join('\r\n');
 
   const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });

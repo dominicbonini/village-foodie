@@ -33,12 +33,14 @@ export function useVillageData(
             endTime: cols[2] || '',
             truckName: cols[3] || 'Unknown Truck',
             venueName: cols[4] || '',
-            notes: cols[5] || '', 
-            websiteUrl: cols[6] || '',  
-            menuUrl: cols[7] || '',       
-            venueLat: cols[8] ? parseFloat(cols[8]) : undefined,  
-            venueLong: cols[9] ? parseFloat(cols[9]) : undefined, 
-            type: cols[10] || 'Mobile',                            
+            village: cols[5] || '',               // NEW: Column F
+            postcode: cols[6] || '',              // NEW: Column G
+            notes: cols[7] || '',                 // SHIFTED: Column H
+            websiteUrl: cols[8] || '',            // SHIFTED: Column I
+            menuUrl: cols[9] || '',               // SHIFTED: Column J
+            venueLat: cols[10] ? parseFloat(cols[10]) : undefined, // SHIFTED: Column K
+            venueLong: cols[11] ? parseFloat(cols[11]) : undefined, // SHIFTED: Column L
+            type: cols[12] || 'Mobile',           // SHIFTED: Column M
           };
         })
         .filter(e => {

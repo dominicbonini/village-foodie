@@ -14,17 +14,24 @@ interface EventListCardProps {
 export default function EventListCard({ event, distanceMiles }: EventListCardProps) {
   const isStatic = event.type?.toLowerCase().includes('static');
   
-  // --- SMART NAVIGATION LOGIC ---
-  // 1. Construct the destination string (Name + Postcode)
-  const venuePostcode = (event as any).postcode || ''; 
-  const addressQuery = [event.venueName, venuePostcode].filter(Boolean).join(', ');
-  const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
+// --- VENUE FORMATTING ---
+const venueDisplay = event.village && 
+!event.venueName.toLowerCase().includes(event.village.toLowerCase())
+  ? `${event.venueName} - ${event.village}`
+  : event.venueName;
+
+// --- SMART NAVIGATION LOGIC ---
+// 1. Construct the destination string (Name + Postcode) using the new venueDisplay
+// No need for 'as any' anymore since postcode is in your types!
+const venuePostcode = event.postcode || ''; 
+const addressQuery = [venueDisplay, venuePostcode].filter(Boolean).join(', ');
+const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
 
   // 2. Detect OS
   const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
   
   // 3. Generate "Directions Mode" Links
-  // 'daddr' tells Apple Maps this is the Destination Address (automatically calculates from current location)
+  // 'daddr' tells Apple Maps this is the Destination Address
   // 'dir/?api=1&destination=' tells Google the same thing.
   const mapLink = isApple
     ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` 
@@ -33,8 +40,8 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
   // --- SHARE LOGIC ---
   async function handleShare() {
     const shareUrl = 'https://village-foodie.vercel.app/'; 
-    const shareText = `How about this for dinner?\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
-    const shareData = { title: `${event.truckName} at ${event.venueName}`, text: shareText };
+    const shareText = `How about this for dinner?\n${event.truckName} is at ${venueDisplay} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
+    const shareData = { title: `${event.truckName} at ${venueDisplay}`, text: shareText };
 
     try {
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -58,9 +65,9 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
 
   // --- RENDER HELPERS ---
   const distDisplayBadge = distanceMiles ? (
-    <div className="mt-1 flex flex-col items-center">
-      <span className="text-[10px] font-black text-slate-900 leading-none">{distanceMiles.toFixed(1)}</span>
-      <span className="text-[8px] font-bold text-slate-500 uppercase leading-none">miles</span>
+    <div className="mt-1 flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-md py-1 w-full shadow-sm">
+      <span className="text-[10px] font-bold text-slate-600 leading-none">{distanceMiles.toFixed(1)}</span>
+      <span className="text-[8px] font-medium text-slate-500 leading-none lowercase mt-0.5">miles</span>
     </div>
   ) : null;
 
@@ -99,13 +106,13 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
                 </div>
 
                 <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-slate-600 text-xs font-medium truncate">{event.venueName}</p>
+                    <p className="text-slate-600 text-xs font-medium truncate">{venueDisplay}</p>
                 </div>
 
                 <div className="flex items-center gap-3 mt-2">
                     <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">{event.startTime} - {event.endTime}</span>
                     
-                    <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
+                    <a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
                         Directions
                     </a>
                 </div>
@@ -148,12 +155,12 @@ export default function EventListCard({ event, distanceMiles }: EventListCardPro
                                 <a href={event.websiteUrl} target="_blank" rel="noopener noreferrer" className="hover:text-orange-700 hover:underline decoration-2 underline-offset-2 transition-colors">{event.truckName}</a>
                             ) : event.truckName}
                         </h3>
-                        <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{event.venueName}</p>
+                        <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{venueDisplay}</p>
                         
                         <div className="flex items-center gap-3 mt-1.5">
                             <span className="text-[10px] font-bold text-orange-800 bg-orange-50 px-2 py-0.5 rounded-md border border-orange-100 whitespace-nowrap">{event.startTime} - {event.endTime}</span>
                             
-                            <a href={mapLink} target="_blank" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
+                            <a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-2 transition-colors">
                                 Directions
                             </a>
                         </div>
