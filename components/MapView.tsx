@@ -9,7 +9,9 @@ import {
   getDistanceKm, 
   getGoogleLink, 
   getOutlookLink, 
-  downloadICS 
+  downloadICS,
+  getCuisineEmoji,
+  formatFriendlyDate 
 } from '@/lib/utils';
 
 // --- ICONS (Lightweight Emojis) ---
@@ -60,17 +62,61 @@ function formatDateForDisplay(dateStr: string): string {
 function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>, event: VillageEvent) {
   const action = e.target.value;
   e.target.value = ''; 
-  if (action === 'google') window.open(getGoogleLink(event), '_blank');
-  else if (action === 'outlook_web') window.open(getOutlookLink(event), '_blank');
-  else if (action === 'ics') downloadICS(event);
+
+  // Recreate the venue logic so the calendar drops a perfect pin
+  const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
+    ? `${event.venueName} - ${event.village}`
+    : event.venueName;
+  const venuePostcode = event.postcode || ''; 
+  const addressQuery = [venueDisplay, venuePostcode].filter(Boolean).join(', ');
+
+  const calendarEvent = {
+    ...event,
+    venueName: addressQuery
+  };
+
+  if (action === 'google') window.open(getGoogleLink(calendarEvent), '_blank');
+  else if (action === 'outlook_web') window.open(getOutlookLink(calendarEvent), '_blank');
+  else if (action === 'ics') downloadICS(calendarEvent);
 }
 
 async function handleShare(event: VillageEvent) {
-  const shareUrl = 'https://village-foodie.vercel.app/'; 
-  const shareText = `How about this for dinner?\n${event.truckName} is at ${event.venueName} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
+  const displayUrl = 'villagefoodie.co.uk'; 
+
+  // Format Venue
+  const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
+    ? `${event.venueName} - ${event.village}`
+    : event.venueName;
+  
+  // Smart Emoji & Cuisine Logic
+  const cuisine = event.type ? getCuisineEmoji(event.type) : '🍴';
+  const introEmoji = cuisine !== '🍴' ? cuisine : '🤤';
+  const foodName = event.type && event.type !== 'Mobile' ? event.type : 'street food';
+  
+  // Format the Date Sentence
+  const friendlyDate = formatFriendlyDate(event.date).replace(' - ', ' '); 
+  let dateSentence = '';
+  
+  if (friendlyDate.startsWith('Today')) {
+    dateSentence = 'today'; 
+  } else if (friendlyDate.startsWith('Tomorrow')) {
+    dateSentence = friendlyDate.replace('Tomorrow', 'tomorrow'); 
+  } else {
+    dateSentence = `on ${friendlyDate}`; 
+  }
+
+  // Clean up the Menu URL
+  let menuText = '';
+  if (event.menuUrl) {
+    const cleanMenuUrl = event.menuUrl.replace(/^https?:\/\/(www\.)?/, '');
+    menuText = `\n\nCheck out the menu: ${cleanMenuUrl}`; 
+  }
+
+  // Combine into a natural, personal SMS
+  const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nFound on ${displayUrl} 🚚`;
 
   const shareData = {
-    title: `${event.truckName} at ${event.venueName}`,
+    title: `${event.truckName} at ${venueDisplay}`,
     text: shareText,
   };
 
@@ -78,15 +124,14 @@ async function handleShare(event: VillageEvent) {
     if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       await navigator.share(shareData);
     } else {
-      throw new Error('Native share not supported');
-    }
-  } catch (err) {
-    try {
       await navigator.clipboard.writeText(shareText);
       alert('Event details copied to clipboard! 📋');
-    } catch (clipboardErr) {
-      console.log('Clipboard failed');
     }
+  } catch (err: any) {
+    if (err.name === 'AbortError' || err.message.includes('abort')) {
+      return;
+    }
+    console.error('Share failed:', err);
   }
 }
 
@@ -210,6 +255,11 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                   {groupEvents.map((event, index) => {
                      const displayDate = formatDateForDisplay(event.date);
                      
+                     // Generate dynamic Venue Display
+                     const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
+                       ? `${event.venueName} - ${event.village}`
+                       : event.venueName;
+                     
                      return (
                       <div key={event.id} className={index > 0 ? "mt-4 pt-4 border-t border-slate-200 border-dashed" : ""}>
                           {/* DATE HEADER */}
@@ -236,17 +286,18 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                                         <h3 className="font-bold text-slate-900 text-base leading-none !m-0 !p-0">
                                             {event.truckName}
                                         </h3>
-                                        <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{event.venueName}</p>
+                                        <p className="text-slate-600 text-xs font-medium leading-none !m-0 !p-0 mt-1">{venueDisplay}</p>
                                     </div>
 
                                     {/* CUISINE TYPE & DISTANCE */}
                                     <div className="flex flex-col items-end gap-1 shrink-0">
                                         {event.type && event.type !== 'Mobile' && !event.type.toLowerCase().includes('static') && (
-                                            <span className="text-[9px] font-bold uppercase tracking-wide text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 whitespace-nowrap">
-                                                {event.type}
+                                            <span className="text-[9px] font-bold text-orange-900 bg-orange-100 px-1.5 py-0.5 rounded border border-orange-200 shadow-sm whitespace-nowrap flex items-center gap-1">
+                                                <span>{getCuisineEmoji(event.type)}</span>
+                                                <span>{event.type}</span>
                                             </span>
                                         )}
-                                        {distDisplay && index === 0 && (
+                                        {distDisplay && (
                                             <span className="text-[9px] font-bold text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 whitespace-nowrap">
                                                 {distDisplay}
                                             </span>

@@ -45,8 +45,6 @@ async function handleShare() {
     // 1. Smart Emoji & Cuisine Logic
     const cuisine = event.type ? getCuisineEmoji(event.type) : '🍴';
     const introEmoji = cuisine !== '🍴' ? cuisine : '🤤';
-    
-    // Grab the cuisine type, fallback to 'street food' if it's missing or generic
     const foodName = event.type && event.type !== 'Mobile' ? event.type : 'street food';
     
     // 2. Format the Date Sentence
@@ -61,15 +59,15 @@ async function handleShare() {
       dateSentence = `on ${friendlyDate}`; 
     }
 
-    // 3. Clean up the Menu URL
+    // 3. Clean up the Menu URL with comfy phrasing
     let menuText = '';
     if (event.menuUrl) {
       const cleanMenuUrl = event.menuUrl.replace(/^https?:\/\/(www\.)?/, '');
-      menuText = `\n\nMenu: ${cleanMenuUrl}`; 
+      menuText = `\n\nCheck out the menu: ${cleanMenuUrl}`; 
     }
 
-    // 4. Combine into a natural, personal SMS using the dynamic food name
-    const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nCheck it out at ${displayUrl} 🚚`;
+    // 4. Combine into a natural, personal SMS
+    const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nFound on ${displayUrl} 🚚`;
     
     const shareData = { 
       title: `${event.truckName} at ${venueDisplay}`, 
