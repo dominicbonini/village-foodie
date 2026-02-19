@@ -40,11 +40,22 @@ const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
 
 // --- SHARE LOGIC ---
 async function handleShare() {
-    const shareUrl = 'https://village-foodie.vercel.app/'; 
-    const friendlyDate = formatFriendlyDate(event.date); // e.g. "Today - Friday 14th February"
+    const displayUrl = 'villagefoodie.co.uk'; 
     
-    // Formatted to read like a natural, informal SMS
-    const shareText = `Fancy this for food? 🤤\n\n${event.truckName} is at ${venueDisplay} on ${friendlyDate} from ${event.startTime} to ${event.endTime}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
+    // 1. Clean up the "-" from the friendly date
+    const friendlyDate = formatFriendlyDate(event.date).replace(' - ', ' '); 
+    
+    // 2. Handle the "on" grammar and force today/tomorrow to lowercase
+    const isRelativeDate = friendlyDate.startsWith('Today') || friendlyDate.startsWith('Tomorrow');
+    const dateSentence = (isRelativeDate ? friendlyDate : `on ${friendlyDate}`)
+      .replace('Today', 'today')
+      .replace('Tomorrow', 'tomorrow');
+
+    // 3. Conditionally add the menu link if the event has one
+    const menuText = event.menuUrl ? `\n\nHere's the menu: ${event.menuUrl}` : '';
+
+    // 4. Combine into a natural, personal SMS
+    const shareText = `Fancy this for food? 🤤\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nCheck it out at ${displayUrl} 🚚`;
     
     const shareData = { 
       title: `${event.truckName} at ${venueDisplay}`, 
@@ -55,12 +66,10 @@ async function handleShare() {
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
-        // Fallback: Copy to clipboard for desktop users
         await navigator.clipboard.writeText(shareText);
         alert('Event details copied to clipboard! 📋');
       }
     } catch (err: any) {
-      // Silently ignore if the user simply swiped away or cancelled the share sheet
       if (err.name === 'AbortError' || err.message.includes('abort')) {
         return;
       }

@@ -13,12 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Village Foodie 🚚",
+  // Using the object format ensures the title cascades properly if you add more pages later
+  title: {
+    default: "Village Foodie 🚚",
+    template: "%s | Village Foodie 🚚",
+  },
   description: "Find local food trucks and pop-ups in your area.",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚚</text></svg>",
+    // URL-encoded the SVG to ensure 100% cross-browser compatibility
+    icon: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚚%3C/text%3E%3C/svg%3E",
   },
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
