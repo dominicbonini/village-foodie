@@ -146,12 +146,20 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   const map = useMap();
 
   useEffect(() => {
+    // 1. If we have a user and a distance, fly the camera to them
     if (userLocation && radius !== 'all') {
-      const zoomLevel = radius === '5' ? 12 : radius === '10' ? 11 : 10; 
+      let zoomLevel = 10; // Fallback
+      
+      // Map specific radius dropdown values to Leaflet zoom levels
+      if (radius === '10') zoomLevel = 11; // Closer zoom
+      if (radius === '20') zoomLevel = 10; // Medium zoom
+      if (radius === '30') zoomLevel = 9;  // Wider zoom to fit 30 miles
+
       map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
       return;
     }
 
+    // 2. Otherwise, auto-fit to show all available events
     if (events.length > 0) {
       const coords = events
         .filter(e => e.venueLat && e.venueLong)

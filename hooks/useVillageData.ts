@@ -33,14 +33,14 @@ export function useVillageData(
             endTime: cols[2] || '',
             truckName: cols[3] || 'Unknown Truck',
             venueName: cols[4] || '',
-            village: cols[5] || '',               // NEW: Column F
-            postcode: cols[6] || '',              // NEW: Column G
-            notes: cols[7] || '',                 // SHIFTED: Column H
-            websiteUrl: cols[8] || '',            // SHIFTED: Column I
-            menuUrl: cols[9] || '',               // SHIFTED: Column J
-            venueLat: cols[10] ? parseFloat(cols[10]) : undefined, // SHIFTED: Column K
-            venueLong: cols[11] ? parseFloat(cols[11]) : undefined, // SHIFTED: Column L
-            type: cols[12] || 'Mobile',           // SHIFTED: Column M
+            village: cols[5] || '',               
+            postcode: cols[6] || '',              
+            notes: cols[7] || '',                 
+            websiteUrl: cols[8] || '',            
+            menuUrl: cols[9] || '',               
+            venueLat: cols[10] ? parseFloat(cols[10]) : undefined, 
+            venueLong: cols[11] ? parseFloat(cols[11]) : undefined, 
+            type: cols[12] || 'Mobile',           
           };
         })
         .filter(e => {
@@ -65,13 +65,13 @@ export function useVillageData(
     fetchData();
   }, []);
 
-  // 2. FILTER & GROUP DATA
-  const groupedEvents = useMemo(() => {
+  // 2. FILTER & GROUP DATA (Separated for Map vs List)
+  const { groupedEvents, mapEvents } = useMemo(() => {
     const today = new Date();
     today.setHours(0,0,0,0);
     
-    // Step A: Filter
-    const filtered = events.filter(event => {
+    // Step A: Base Filter (Date & Cuisine ONLY) - The Map gets this
+    const baseFiltered = events.filter(event => {
       // Cuisine
       if (filters.cuisine !== 'all') {
         const eventType = event.type?.toLowerCase() || 'mobile';
@@ -104,7 +104,11 @@ export function useVillageData(
            if (eventDate > nextSunday) return false;
         }
       }
-      // Distance
+      return true;
+    });
+
+    // Step B: List Filter (Apply Distance to the Base Filter)
+    const listFiltered = baseFiltered.filter(event => {
       if (filters.distance !== 'all' && userLocation && event.venueLat && event.venueLong) {
         const distKm = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
         const distMiles = distKm * 0.621371;
@@ -113,13 +117,18 @@ export function useVillageData(
       return true;
     });
 
-    // Step B: Group by Date
-    return filtered.reduce((groups, event) => {
+    // Step C: Group for the List View
+    const grouped = listFiltered.reduce((groups, event) => {
       const date = event.date;
       if (!groups[date]) groups[date] = [];
       groups[date].push(event);
       return groups;
     }, {} as Record<string, VillageEvent[]>);
+
+    return { 
+      groupedEvents: grouped,   // Has Distance applied (For List)
+      mapEvents: baseFiltered   // NO Distance applied (For Map)
+    };
 
   }, [events, filters, userLocation]);
 
@@ -128,9 +137,6 @@ export function useVillageData(
     const types = new Set(events.map(e => e.type).filter(t => t && t !== 'Mobile' && !t.toLowerCase().includes('static')));
     return Array.from(types).sort();
   }, [events]);
-
-  // 4. FLATTENED EVENTS (For Map)
-  const mapEvents = Object.values(groupedEvents).flat();
 
   return { loading, groupedEvents, mapEvents, cuisineOptions };
 }
