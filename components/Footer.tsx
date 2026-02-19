@@ -17,27 +17,32 @@ export default function Footer({ onOpenTally }: FooterProps) {
         Get the Schedule
       </button>
 
-      <div className="text-[10px] text-slate-500 mt-4 flex flex-col gap-2 items-center">
+      {/* Removed text-slate-500 so it inherits text-slate-300 */}
+      <div className="text-[10px] mt-4 flex flex-col gap-2 items-center">
         <p>No Spam (but maybe Pepperoni). Unsubscribe Anytime.</p>
         
         <div className="mt-2 text-center">
-           <h4 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Contact Us</h4>
+           {/* Changed to text-white to match the top heading */}
+           <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide">Contact Us</h4>
            <div className="flex gap-4 justify-center">
-              <Link href="/contact?topic=General%20Enquiry" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
+              {/* Brightened underline and hover states */}
+              <Link href="/contact?topic=General%20Enquiry" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 General Enquiry
               </Link>
-              <span className="text-slate-700">|</span>
-              <Link href="/contact?topic=Add%20Business" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
+              {/* Removed text-slate-700 */}
+              <span>|</span>
+              <Link href="/contact?topic=Add%20Business" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Add my Business
               </Link>
-              <span className="text-slate-700">|</span>
-              <Link href="/contact?topic=Report%20Issue" className="hover:text-slate-300 transition-colors underline decoration-slate-700 underline-offset-2">
+              <span>|</span>
+              <Link href="/contact?topic=Report%20Issue" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Report Issue
               </Link>
            </div>
         </div>
         
-        <p className="mt-4 opacity-50 max-w-xs text-center leading-relaxed">
+        {/* Removed opacity-50 */}
+        <p className="mt-4 max-w-xs text-center leading-relaxed">
             Disclaimer: Schedules are subject to change by vendors. We do our best, but we are not responsible for cancelled trucks or sold-out burgers. Always check the vendor's social media for last-minute updates.
         </p>
       </div>

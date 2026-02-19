@@ -1,10 +1,11 @@
 import { VillageEvent } from '@/types';
 import { 
-  getCuisineEmoji, 
-  getGoogleLink, 
-  getOutlookLink, 
-  downloadICS 
-} from '@/lib/utils';
+    getCuisineEmoji, 
+    getGoogleLink, 
+    getOutlookLink, 
+    downloadICS,
+    formatFriendlyDate // <-- Add this here
+  } from '@/lib/utils';
 
 interface EventListCardProps {
   event: VillageEvent;
@@ -37,30 +38,51 @@ const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
     ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` 
     : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
 
-  // --- SHARE LOGIC ---
-  async function handleShare() {
+// --- SHARE LOGIC ---
+async function handleShare() {
     const shareUrl = 'https://village-foodie.vercel.app/'; 
-    const shareText = `How about this for dinner?\n${event.truckName} is at ${venueDisplay} on ${event.date}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
-    const shareData = { title: `${event.truckName} at ${venueDisplay}`, text: shareText };
+    const friendlyDate = formatFriendlyDate(event.date); // e.g. "Today - Friday 14th February"
+    
+    // Formatted to read like a natural, informal SMS
+    const shareText = `Fancy this for food? 🤤\n\n${event.truckName} is at ${venueDisplay} on ${friendlyDate} from ${event.startTime} to ${event.endTime}.\n\nFound it on Village Foodie 🚚:\n${shareUrl}`;
+    
+    const shareData = { 
+      title: `${event.truckName} at ${venueDisplay}`, 
+      text: shareText 
+    };
 
     try {
       if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
         await navigator.share(shareData);
       } else {
-        throw new Error('Native share not supported');
+        // Fallback: Copy to clipboard for desktop users
+        await navigator.clipboard.writeText(shareText);
+        alert('Event details copied to clipboard! 📋');
       }
-    } catch (err) {
-      alert('Could not share. Please copy the URL manually!');
+    } catch (err: any) {
+      // Silently ignore if the user simply swiped away or cancelled the share sheet
+      if (err.name === 'AbortError' || err.message.includes('abort')) {
+        return;
+      }
+      console.error('Share failed:', err);
     }
   }
 
-  // --- CALENDAR LOGIC ---
-  function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
+// --- CALENDAR LOGIC ---
+function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
     const action = e.target.value;
     e.target.value = ''; 
-    if (action === 'google') window.open(getGoogleLink(event), '_blank');
-    else if (action === 'outlook_web') window.open(getOutlookLink(event), '_blank');
-    else if (action === 'ics') downloadICS(event);
+
+    // Clone the event and inject our fully formatted address string
+    // This ensures the calendar gets the Venue + Village + Postcode
+    const calendarEvent = {
+      ...event,
+      venueName: addressQuery
+    };
+
+    if (action === 'google') window.open(getGoogleLink(calendarEvent), '_blank');
+    else if (action === 'outlook_web') window.open(getOutlookLink(calendarEvent), '_blank');
+    else if (action === 'ics') downloadICS(calendarEvent);
   }
 
   // --- RENDER HELPERS ---
