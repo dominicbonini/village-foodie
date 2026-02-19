@@ -345,15 +345,16 @@ for (const [index, site] of sitesToScrape.entries()) {
           CORRECT FORMAT:
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
-    } else {
+      } else {
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
+          Current Year: ${new Date().getFullYear()}.
           TASK: Extract ALL upcoming food truck events from the provided text.
           CRITICAL RULES:
           1. **DEEP SCAN:** The text contains multiple days/months. Scan the ENTIRE text block.
           2. **TODAY/TOMORROW:** If text says "Tonight" or "Tomorrow", convert to dates based on Current Date.
-          3. **DateStart:** MUST be "DD/MM/YYYY".
+          3. **DateStart:** MUST be "DD/MM/YYYY". You MUST use the Current Year (${new Date().getFullYear()}) for all dates unless the website explicitly states otherwise. Do NOT use past years like 2025.
           4. **Missing Info:** If "TRUCK NAME" is in text, use it. Default to "${site.name}".
           5. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
           6. Venue Name Fuzzy Match: ${JSON.stringify(validVenues)}.
