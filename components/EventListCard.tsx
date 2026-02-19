@@ -42,20 +42,34 @@ const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
 async function handleShare() {
     const displayUrl = 'villagefoodie.co.uk'; 
     
-    // 1. Clean up the "-" from the friendly date
-    const friendlyDate = formatFriendlyDate(event.date).replace(' - ', ' '); 
+    // 1. Smart Emoji & Cuisine Logic
+    const cuisine = event.type ? getCuisineEmoji(event.type) : '🍴';
+    const introEmoji = cuisine !== '🍴' ? cuisine : '🤤';
     
-    // 2. Handle the "on" grammar and force today/tomorrow to lowercase
-    const isRelativeDate = friendlyDate.startsWith('Today') || friendlyDate.startsWith('Tomorrow');
-    const dateSentence = (isRelativeDate ? friendlyDate : `on ${friendlyDate}`)
-      .replace('Today', 'today')
-      .replace('Tomorrow', 'tomorrow');
+    // Grab the cuisine type, fallback to 'street food' if it's missing or generic
+    const foodName = event.type && event.type !== 'Mobile' ? event.type : 'street food';
+    
+    // 2. Format the Date Sentence
+    const friendlyDate = formatFriendlyDate(event.date).replace(' - ', ' '); 
+    let dateSentence = '';
+    
+    if (friendlyDate.startsWith('Today')) {
+      dateSentence = 'today'; 
+    } else if (friendlyDate.startsWith('Tomorrow')) {
+      dateSentence = friendlyDate.replace('Tomorrow', 'tomorrow'); 
+    } else {
+      dateSentence = `on ${friendlyDate}`; 
+    }
 
-    // 3. Conditionally add the menu link if the event has one
-    const menuText = event.menuUrl ? `\n\nHere's the menu: ${event.menuUrl}` : '';
+    // 3. Clean up the Menu URL
+    let menuText = '';
+    if (event.menuUrl) {
+      const cleanMenuUrl = event.menuUrl.replace(/^https?:\/\/(www\.)?/, '');
+      menuText = `\n\nMenu: ${cleanMenuUrl}`; 
+    }
 
-    // 4. Combine into a natural, personal SMS
-    const shareText = `Fancy this for food? 🤤\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nCheck it out at ${displayUrl} 🚚`;
+    // 4. Combine into a natural, personal SMS using the dynamic food name
+    const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nCheck it out at ${displayUrl} 🚚`;
     
     const shareData = { 
       title: `${event.truckName} at ${venueDisplay}`, 
