@@ -24,7 +24,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 function normalizeName(name) {
     if (!name) return "";
     return name.toLowerCase()
-        .replace(/^the\s+/, '')       // Remove leading "The " for better matching
+        .replace(/^the\s+/, '')       
         .replace(/\bst\b/g, 'street') 
         .replace(/\brd\b/g, 'road')   
         .replace(/&/g, 'and')         
@@ -225,6 +225,13 @@ function standardizeDate(dateStr) {
   return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}/${parts[2]}`;
 }
 
+async function getTabData(sheets, rangeName) {
+  try {
+    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:P` });
+    return resExtended.data.values || [];
+  } catch (error) { return []; }
+}
+
 async function main() {
 console.log("🚀 Starting Smart Scrape (Strict Deduplication)...");
 
@@ -248,7 +255,7 @@ const [truckData, venueData, eventData] = await Promise.all([
 const validTrucks = truckData.map(r => r[0]).filter(Boolean);
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
-// --- CHANGE 1: STRICT DEDUPLICATION SET ---
+// --- STRICT DEDUPLICATION SET ---
 const existingEvents = new Set();
 
 eventData.forEach(row => {
@@ -265,9 +272,8 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
-// --- UPDATED COLUMNS FOR TRUCKS TAB ---
+// TRUCKS TAB
 truckData.forEach(row => {
-  // URL is now in Column G (index 6), Instructions in M (index 12), Strategy in N (index 13)
   const hasUrl = row[6] && row[6].startsWith('http');
   const hasInstructions = row[12] && row[12].length > 10;
   if (hasUrl || hasInstructions) {
@@ -279,7 +285,7 @@ truckData.forEach(row => {
   }
 });
 
-// VENUES TAB REMAINS UNCHANGED
+// VENUES TAB
 venueData.forEach(row => {
   if (row[9] && row[9].startsWith('http')) {
     sitesToScrape.push({ 
@@ -435,23 +441,17 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
               
-              // --- PADDING UP TO COLUMN N (14 columns) ---
+              // --- ALIGNED TO THE NEW 3-TAB EVENTS STRUCTURE ---
               newRowsToAdd.push([
-                  event.DateStart, // A
-                  event.TimeStart, // B
-                  event.TimeEnd,   // C
-                  finalTruck,      // D
-                  finalVenue,      // E
-                  null,            // F (Village)
-                  null,            // G (Postcode)
-                  notes,           // H (Notes)
-                  null,            // I (Website)
-                  null,            // J (Menu URL)
-                  null,            // K (Venue Lat)
-                  null,            // L (Venue Long)
-                  null,            // M (Cuisine)
-                  `URL: ${site.url} | Strategy: ${site.strategy}` // N (Event Source)
+                  event.DateStart, // A: Date
+                  event.TimeStart, // B: Start Time
+                  event.TimeEnd,   // C: End Time
+                  finalTruck,      // D: Truck Name
+                  finalVenue,      // E: Venue Name
+                  notes,           // F: Event Notes
+                  `URL: ${site.url} | Strategy: ${site.strategy}` // G: Event Source / Debug Info
               ]);
+              
               existingEvents.add(key); 
               newCount++;
           } else {
@@ -475,7 +475,7 @@ if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${TABS.EVENTS}!A:N`, // Append range wide enough to catch column N
+    range: `${TABS.EVENTS}!A:G`, // Append exactly 7 columns
     valueInputOption: 'USER_ENTERED',
     resource: { values: newRowsToAdd },
   });
@@ -483,14 +483,6 @@ if (newRowsToAdd.length > 0) {
 } else {
   console.log("\n💤 No new events found.");
 }
-}
-
-async function getTabData(sheets, rangeName) {
-  try {
-    // Range A2:P handles fetching the data. Adjust to wider if needed later.
-    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:P` });
-    return resExtended.data.values || [];
-  } catch (error) { return []; }
 }
 
 main();

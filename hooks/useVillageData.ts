@@ -2,12 +2,16 @@ import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
 import { parseDateString, getDistanceKm } from '@/lib/utils';
 
-// 1. URLs FOR BOTH TABS
-const EVENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv';
+const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub';
+const EVENTS_CSV_URL = `${BASE_CSV_URL}?gid=0&single=true&output=csv`;
+const TRUCKS_CSV_URL = `${BASE_CSV_URL}?gid=28504033&single=true&output=csv`;
+const VENUES_CSV_URL = `${BASE_CSV_URL}?gid=1190852063&single=true&output=csv`;
 
-// IMPORTANT: Using the GID (28504033) from the URL you shared earlier. 
-// If it fails to fetch, you may need to re-publish the sheet to web and check this ID.
-const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv';
+// Robust Helper to strip spaces, punctuation, and "The" for perfect matching
+const cleanKey = (str: string) => {
+    if (!str) return '';
+    return str.toLowerCase().replace(/^the\s+/, '').replace(/[^a-z0-9]/g, '').trim();
+};
 
 export function useVillageData(
   userLocation: { lat: number; long: number } | null,
@@ -16,71 +20,90 @@ export function useVillageData(
   const [events, setEvents] = useState<VillageEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. FETCH DATA
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch both tabs at the same time
-        const [eventsResponse, trucksResponse] = await Promise.all([
+        const [eventsRes, trucksRes, venuesRes] = await Promise.all([
             fetch(`${EVENTS_CSV_URL}&t=${Date.now()}`),
-            fetch(`${TRUCKS_CSV_URL}&t=${Date.now()}`)
+            fetch(`${TRUCKS_CSV_URL}&t=${Date.now()}`),
+            fetch(`${VENUES_CSV_URL}&t=${Date.now()}`)
         ]);
 
-        const eventsCsvText = await eventsResponse.text();
-        const trucksCsvText = await trucksResponse.text();
+        const [eventsCsvText, trucksCsvText, venuesCsvText] = await Promise.all([
+            eventsRes.text(), trucksRes.text(), venuesRes.text()
+        ]);
 
-        // --- PROCESS TRUCKS TAB ---
-        const trucksRows = trucksCsvText.split('\n').slice(1);
-        const truckDataMap = new Map<string, { orderInfo: string, notes: string }>();
-
-        trucksRows.forEach(row => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => 
-                cell.replace(/^"|"$/g, '').trim()
-            );
-            
-            // Assuming Truck Name is Column A (index 0)
-            const truckName = cols[0] || ''; 
-            // Order Info is Column C (index 2), Notes is Column D (index 3)
-            const orderInfo = cols[2] || '';
-            const notes = cols[3] || '';
-
-            if (truckName) {
-                truckDataMap.set(truckName.toLowerCase(), { orderInfo, notes });
+        // --- 1. MAP TRUCKS (Cuisine, URLs, Order Info) ---
+        const truckDataMap = new Map<string, any>();
+        trucksCsvText.split('\n').slice(1).forEach(row => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+            const key = cleanKey(cols[0] || '');
+            if (key) {
+                truckDataMap.set(key, { 
+                    type: cols[1], orderInfo: cols[2], truckNotes: cols[3], websiteUrl: cols[4], menuUrl: cols[5] 
+                });
             }
         });
 
-        // --- PROCESS EVENTS TAB ---
-        const eventsRows = eventsCsvText.split('\n').slice(1);
+        // --- 2. MAP VENUES (Village, Postcode, Lat, Long) ---
+        const venuesList: any[] = [];
+        venuesCsvText.split('\n').slice(1).forEach(row => {
+            // FIXED REGEX TYPO HERE!
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+            const rawName = cols[0] || '';
+            const key = cleanKey(rawName);
+            if (key) {
+                venuesList.push({
+                    rawName: rawName,
+                    cleanKey: key,
+                    village: cols[1] || '',
+                    postcode: cols[2] || '',
+                    lat: parseFloat(cols[3]),
+                    long: parseFloat(cols[4]),
+                });
+            }
+        });
+
+        // --- 3. MASTER JOIN ---
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const parsedEvents: VillageEvent[] = eventsRows.map((row, index) => {
-          const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => 
-            cell.replace(/^"|"$/g, '').trim()
-          );
-
-          const truckName = cols[3] || 'Unknown Truck';
+        const parsedEvents: VillageEvent[] = eventsCsvText.split('\n').slice(1).map((row, index) => {
+          const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
           
-          // Look up this truck in our map to get its specific order info and notes
-          const truckSpecificData = truckDataMap.get(truckName.toLowerCase()) || { orderInfo: '', notes: '' };
+          const rawTruck = cols[3] || '';
+          const rawVenue = cols[4] || '';
+
+          // Look up Truck (Exact cleaned match)
+          const truck = truckDataMap.get(cleanKey(rawTruck)) || {};
+          
+          // Look up Venue (Fuzzy Match: Finds if the names partially overlap)
+          const eventVenueKey = cleanKey(rawVenue);
+          let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
+          
+          // Fallback if exact clean match fails
+          if (!venue && eventVenueKey) {
+             venue = venuesList.find(v => eventVenueKey.includes(v.cleanKey) || v.cleanKey.includes(eventVenueKey));
+          }
+          if (!venue) venue = {}; // Prevent crashes if completely missing
 
           return {
             id: `event-${index}`,
             date: cols[0] || '',
             startTime: cols[1] || '',
             endTime: cols[2] || '',
-            truckName: truckName,
-            venueName: cols[4] || '',
-            village: cols[5] || '',               
-            postcode: cols[6] || '',              
-            // Fallback to event tab notes (cols[7]) if no notes exist on the truck tab
-            notes: truckSpecificData.notes || cols[7] || '',                 
-            orderInfo: truckSpecificData.orderInfo, // Added Order Info from Trucks Tab
-            websiteUrl: cols[8] || '',            
-            menuUrl: cols[9] || '',               
-            venueLat: cols[10] ? parseFloat(cols[10]) : undefined, 
-            venueLong: cols[11] ? parseFloat(cols[11]) : undefined, 
-            type: cols[12] || 'Mobile',           
+            truckName: rawTruck,
+            venueName: rawVenue,
+            village: venue.village || '',               
+            postcode: venue.postcode || '',              
+            venueLat: venue.lat, 
+            venueLong: venue.long, 
+            type: truck.type || 'Mobile',           
+            websiteUrl: truck.websiteUrl || '',            
+            menuUrl: truck.menuUrl || '',               
+            orderInfo: truck.orderInfo || '', 
+            notes: truck.truckNotes || '',
+            eventNotes: cols[5] || '',             
           };
         })
         .filter(e => {
@@ -98,56 +121,42 @@ export function useVillageData(
         setEvents(parsedEvents);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('VillageData Sync Error:', error);
         setLoading(false);
       }
     };
     fetchData();
   }, []);
 
-  // 2. FILTER & GROUP DATA (Separated for Map vs List)
+  // --- FILTERING & DISTANCE CALCULATION ---
   const { groupedEvents, mapEvents } = useMemo(() => {
     const today = new Date();
     today.setHours(0,0,0,0);
     
-    // Step A: Base Filter (Date & Cuisine ONLY) - The Map gets this
     const baseFiltered = events.filter(event => {
-      // Cuisine
       if (filters.cuisine !== 'all') {
         const eventType = event.type?.toLowerCase() || 'mobile';
         if (eventType !== filters.cuisine.toLowerCase()) return false;
       }
-      // Date
       if (filters.date !== 'all') {
         const eventDate = parseDateString(event.date);
         if (!eventDate) return false;
-        if (filters.date === 'today') {
-           if (eventDate.getTime() !== today.getTime()) return false;
-        } 
-        else if (filters.date === 'tomorrow') {
+        if (filters.date === 'today' && eventDate.getTime() !== today.getTime()) return false;
+        if (filters.date === 'tomorrow') {
            const tomorrow = new Date(today);
-           tomorrow.setDate(tomorrow.getDate() + 1);
+           tomorrow.setDate(today.getDate() + 1);
            if (eventDate.getTime() !== tomorrow.getTime()) return false;
-        } 
-        else if (filters.date === 'next7') {
+        }
+        if (filters.date === 'next7') {
            const nextWeek = new Date(today);
            nextWeek.setDate(today.getDate() + 7);
            if (eventDate > nextWeek) return false;
         }
-        else if (filters.date === 'weekend') {
-           const dayOfWeek = eventDate.getDay(); 
-           const currentDayOfWeek = today.getDay(); 
-           const daysUntilSunday = (7 - currentDayOfWeek) % 7; 
-           const nextSunday = new Date(today);
-           nextSunday.setDate(today.getDate() + daysUntilSunday);
-           if (![0, 5, 6].includes(dayOfWeek)) return false;
-           if (eventDate > nextSunday) return false;
-        }
+        if (filters.date === 'weekend' && ![0, 5, 6].includes(eventDate.getDay())) return false;
       }
       return true;
     });
 
-    // Step B: List Filter (Apply Distance to the Base Filter)
     const listFiltered = baseFiltered.filter(event => {
       if (filters.distance !== 'all' && userLocation && event.venueLat && event.venueLong) {
         const distKm = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
@@ -157,7 +166,6 @@ export function useVillageData(
       return true;
     });
 
-    // Step C: Group for the List View
     const grouped = listFiltered.reduce((groups, event) => {
       const date = event.date;
       if (!groups[date]) groups[date] = [];
@@ -165,14 +173,9 @@ export function useVillageData(
       return groups;
     }, {} as Record<string, VillageEvent[]>);
 
-    return { 
-      groupedEvents: grouped,   // Has Distance applied (For List)
-      mapEvents: baseFiltered   // NO Distance applied (For Map)
-    };
-
+    return { groupedEvents: grouped, mapEvents: baseFiltered };
   }, [events, filters, userLocation]);
 
-  // 3. GET CUISINE OPTIONS
   const cuisineOptions = useMemo(() => {
     const types = new Set(events.map(e => e.type).filter(t => t && t !== 'Mobile' && !t.toLowerCase().includes('static')));
     return Array.from(types).sort();

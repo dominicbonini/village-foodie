@@ -12,6 +12,7 @@ export interface VillageEvent {
   type?: string;
   websiteUrl?: string;
   menuUrl?: string;
+  eventNotes?: string;  //
   // --- ADDED LOCATION FIELDS ---
   postcode?: string;
   village?: string;

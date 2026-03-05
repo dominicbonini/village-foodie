@@ -147,7 +147,7 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
             {/* Full Width Stack (Order, Notes, Menu) */}
             <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
                 
-                {/* Order Info (DIV blocks Map 3-line margin bug) */}
+                {/* Order Info */}
                 {event.orderInfo && (
                     <div className="w-full bg-slate-50 border border-slate-200 px-2 py-1.5 rounded-md flex items-center justify-center shrink-0 min-w-0">
                         <div className="text-slate-600 text-[11px] font-medium leading-tight text-center truncate w-full !m-0 !p-0">
@@ -156,11 +156,20 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
                     </div>
                 )}
 
-                {/* Notes (DIV blocks Map 3-line margin bug) */}
+                {/* Truck-level Notes */}
                 {event.notes && (
                     <div className="w-full bg-slate-50 border border-slate-200 px-2 py-1.5 rounded-md flex items-center justify-center shrink-0 min-w-0">
                         <div className="text-slate-600 text-[11px] font-medium leading-tight italic text-center truncate w-full !m-0 !p-0">
                             {event.notes}
+                        </div>
+                    </div>
+                )}
+
+                {/* Event-level Notes */}
+                {event.eventNotes && (
+                    <div className="w-full bg-slate-50 border border-slate-200 px-2 py-1.5 rounded-md flex items-center justify-center shrink-0 min-w-0">
+                        <div className="text-slate-600 text-[11px] font-medium leading-tight italic text-center truncate w-full !m-0 !p-0">
+                            {event.eventNotes}
                         </div>
                     </div>
                 )}
@@ -173,7 +182,7 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
                     </div>
                 )}
                 
-                {/* Action Buttons (Right Aligned, Orange Hover Effects) */}
+                {/* Action Buttons */}
                 <div className="flex gap-2 justify-end mt-0.5 shrink-0">
                     <button onClick={handleShare} className="flex items-center justify-center gap-1 bg-slate-100 hover:bg-orange-600 hover:text-white text-slate-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-colors shadow-sm">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
@@ -198,7 +207,7 @@ function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
     </div>
   );
 
-  // Map Popup Mode (No outer box/padding)
+  // Map Popup Mode
   if (isMapPopup) {
       return cardContent;
   }
