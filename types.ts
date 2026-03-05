@@ -6,6 +6,7 @@ export interface VillageEvent {
   truckName: string;
   venueName: string;
   notes?: string;
+  orderInfo?: string; // <-- ADDED THIS LINE
   venueLat?: number;
   venueLong?: number;
   type?: string;

@@ -2,7 +2,12 @@ import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
 import { parseDateString, getDistanceKm } from '@/lib/utils';
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv';
+// 1. URLs FOR BOTH TABS
+const EVENTS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv';
+
+// IMPORTANT: Using the GID (28504033) from the URL you shared earlier. 
+// If it fails to fetch, you may need to re-publish the sheet to web and check this ID.
+const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv';
 
 export function useVillageData(
   userLocation: { lat: number; long: number } | null,
@@ -15,27 +20,62 @@ export function useVillageData(
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${CSV_URL}&t=${Date.now()}`);
-        const csvText = await response.text();
-        const rows = csvText.split('\n').slice(1);
+        // Fetch both tabs at the same time
+        const [eventsResponse, trucksResponse] = await Promise.all([
+            fetch(`${EVENTS_CSV_URL}&t=${Date.now()}`),
+            fetch(`${TRUCKS_CSV_URL}&t=${Date.now()}`)
+        ]);
+
+        const eventsCsvText = await eventsResponse.text();
+        const trucksCsvText = await trucksResponse.text();
+
+        // --- PROCESS TRUCKS TAB ---
+        const trucksRows = trucksCsvText.split('\n').slice(1);
+        const truckDataMap = new Map<string, { orderInfo: string, notes: string }>();
+
+        trucksRows.forEach(row => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => 
+                cell.replace(/^"|"$/g, '').trim()
+            );
+            
+            // Assuming Truck Name is Column A (index 0)
+            const truckName = cols[0] || ''; 
+            // Order Info is Column C (index 2), Notes is Column D (index 3)
+            const orderInfo = cols[2] || '';
+            const notes = cols[3] || '';
+
+            if (truckName) {
+                truckDataMap.set(truckName.toLowerCase(), { orderInfo, notes });
+            }
+        });
+
+        // --- PROCESS EVENTS TAB ---
+        const eventsRows = eventsCsvText.split('\n').slice(1);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const parsedEvents: VillageEvent[] = rows.map((row, index) => {
+        const parsedEvents: VillageEvent[] = eventsRows.map((row, index) => {
           const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell => 
             cell.replace(/^"|"$/g, '').trim()
           );
+
+          const truckName = cols[3] || 'Unknown Truck';
+          
+          // Look up this truck in our map to get its specific order info and notes
+          const truckSpecificData = truckDataMap.get(truckName.toLowerCase()) || { orderInfo: '', notes: '' };
 
           return {
             id: `event-${index}`,
             date: cols[0] || '',
             startTime: cols[1] || '',
             endTime: cols[2] || '',
-            truckName: cols[3] || 'Unknown Truck',
+            truckName: truckName,
             venueName: cols[4] || '',
             village: cols[5] || '',               
             postcode: cols[6] || '',              
-            notes: cols[7] || '',                 
+            // Fallback to event tab notes (cols[7]) if no notes exist on the truck tab
+            notes: truckSpecificData.notes || cols[7] || '',                 
+            orderInfo: truckSpecificData.orderInfo, // Added Order Info from Trucks Tab
             websiteUrl: cols[8] || '',            
             menuUrl: cols[9] || '',               
             venueLat: cols[10] ? parseFloat(cols[10]) : undefined, 

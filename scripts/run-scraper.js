@@ -249,16 +249,13 @@ const validTrucks = truckData.map(r => r[0]).filter(Boolean);
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
 // --- CHANGE 1: STRICT DEDUPLICATION SET ---
-// We only use Date + Truck + Venue. We ignore Time.
-// We also standardize the date to ensure "01/02/2024" matches "1/2/2024"
 const existingEvents = new Set();
 
 eventData.forEach(row => {
     const date = standardizeDate(row[0]); 
-    const truck = (row[3] || "").toLowerCase().replace(/[^a-z0-9]/g, ''); // Remove spaces/symbols
+    const truck = (row[3] || "").toLowerCase().replace(/[^a-z0-9]/g, ''); 
     const venue = (row[4] || "").toLowerCase().replace(/[^a-z0-9]/g, '');
     
-    // key format: "01/01/2024|pizzatruck|thepub"
     if (date && truck) {
         existingEvents.add(`${date}|${truck}|${venue}`);
     }
@@ -268,18 +265,21 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
+// --- UPDATED COLUMNS FOR TRUCKS TAB ---
 truckData.forEach(row => {
-  const hasUrl = row[4] && row[4].startsWith('http');
-  const hasInstructions = row[10] && row[10].length > 10;
+  // URL is now in Column G (index 6), Instructions in M (index 12), Strategy in N (index 13)
+  const hasUrl = row[6] && row[6].startsWith('http');
+  const hasInstructions = row[12] && row[12].length > 10;
   if (hasUrl || hasInstructions) {
     sitesToScrape.push({ 
-        name: row[0], url: row[4] || 'about:blank', 
-        instructions: row[10] || "",
-        strategy: (row[11] || 'scroll_lazy').toLowerCase().trim()
+        name: row[0], url: row[6] || 'about:blank', 
+        instructions: row[12] || "",
+        strategy: (row[13] || 'scroll_lazy').toLowerCase().trim()
     });
   }
 });
 
+// VENUES TAB REMAINS UNCHANGED
 venueData.forEach(row => {
   if (row[9] && row[9].startsWith('http')) {
     sitesToScrape.push({ 
@@ -411,7 +411,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           const finalVenue = matchedVenue || venueName || "Unknown";
           
-          // Unknown Truck Logic
           let finalTruck = matchedTruck;
           let notes = "";
 
@@ -427,26 +426,33 @@ for (const [index, site] of sitesToScrape.entries()) {
               finalTruck = matchedTruck;
           }
 
-          // --- CHANGE 2: NEW DEDUPLICATION CHECK ---
-          // 1. Clean the incoming data exactly like we cleaned the sheet data
           const cleanDate = standardizeDate(event.DateStart);
           const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
           const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-          // 2. Generate key WITHOUT Time
           const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
           
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
+              
+              // --- PADDING UP TO COLUMN N (14 columns) ---
               newRowsToAdd.push([
-                  event.DateStart, 
-                  event.TimeStart, 
-                  event.TimeEnd, 
-                  finalTruck, 
-                  finalVenue, 
-                  notes 
+                  event.DateStart, // A
+                  event.TimeStart, // B
+                  event.TimeEnd,   // C
+                  finalTruck,      // D
+                  finalVenue,      // E
+                  null,            // F (Village)
+                  null,            // G (Postcode)
+                  notes,           // H (Notes)
+                  null,            // I (Website)
+                  null,            // J (Menu URL)
+                  null,            // K (Venue Lat)
+                  null,            // L (Venue Long)
+                  null,            // M (Cuisine)
+                  `URL: ${site.url} | Strategy: ${site.strategy}` // N (Event Source)
               ]);
-              existingEvents.add(key); // Add to current set to prevent immediate duplicates
+              existingEvents.add(key); 
               newCount++;
           } else {
               dupCount++;
@@ -469,7 +475,7 @@ if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${TABS.EVENTS}!A:F`,
+    range: `${TABS.EVENTS}!A:N`, // Append range wide enough to catch column N
     valueInputOption: 'USER_ENTERED',
     resource: { values: newRowsToAdd },
   });
@@ -481,8 +487,8 @@ if (newRowsToAdd.length > 0) {
 
 async function getTabData(sheets, rangeName) {
   try {
-    const res = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:K` });
-    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:M` });
+    // Range A2:P handles fetching the data. Adjust to wider if needed later.
+    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:P` });
     return resExtended.data.values || [];
   } catch (error) { return []; }
 }
