@@ -122,7 +122,7 @@ if (event.date) {
     }
 }
 
-const orderMessage = encodeURIComponent(`Hi! I found you on Village Foodie 🚚. I saw you are at ${venueDisplay} ${orderDateText}. Could I please order...`);
+const orderMessage = encodeURIComponent(`Hi! I saw you are at ${venueDisplay} ${orderDateText}. I found you on Village Foodie 🚚. Could I please order...`);
 
 const trackOrderClick = (method: string) => {
     console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
@@ -278,12 +278,16 @@ const trackOrderClick = (method: string) => {
   );
 
   if (isMapPopup) {
-      return cardContent;
-  }
+    return cardContent;
+}
 
-  return (
-    <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0">
-        {cardContent}
-    </div>
-  );
+// Create an ID matching the email generator: lowercase and hyphenated
+const safeAnchorId = event.truckName ? event.truckName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
+
+return (
+  // We add the ID here so the browser can scroll to it!
+  <div id={safeAnchorId} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0 scroll-mt-40">
+      {cardContent}
+  </div>
+);
 }
