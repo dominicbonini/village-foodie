@@ -1,3 +1,4 @@
+import { usePostHog } from 'posthog-js/react';
 import { VillageEvent } from '@/types';
 import { 
     getCuisineEmoji, 
@@ -32,6 +33,9 @@ const renderTextWithLinks = (text: string) => {
 };
 
 export default function EventListCard({ event, distanceMiles, isMapPopup = false }: EventListCardProps) {
+  // 👇 INITIALIZE POSTHOG HERE 👇
+  const posthog = usePostHog();
+
   const isStatic = event.type?.toLowerCase().includes('static');
   
   const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
@@ -48,6 +52,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
     : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
 
   async function handleShare() {
+      // TRACK THE SHARE CLICK
+      if (posthog) {
+        posthog.capture('clicked_share', {
+          truck_name: event.truckName,
+          venue: venueDisplay
+        });
+      }
+
       const displayUrl = 'villagefoodie.co.uk'; 
       const cuisine = event.type ? getCuisineEmoji(event.type) : '🍴';
       const introEmoji = cuisine !== '🍴' ? cuisine : '🤤';
@@ -84,6 +96,16 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   function handleCalendarSelect(e: React.ChangeEvent<HTMLSelectElement>) {
       const action = e.target.value;
       e.target.value = ''; 
+      
+      // TRACK THE CALENDAR ADD
+      if (posthog) {
+        posthog.capture('clicked_add_to_calendar', {
+          calendar_type: action,
+          truck_name: event.truckName,
+          venue: venueDisplay
+        });
+      }
+
       const calendarEvent = { ...event, venueName: addressQuery };
 
       if (action === 'google') window.open(getGoogleLink(calendarEvent), '_blank');
@@ -91,42 +113,52 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
       else if (action === 'ics') downloadICS(calendarEvent);
   }
 
-// --- BULLETPROOF BUTTON LOGIC ---
-const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
-const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/\s+/g, '') : '';
-const waPhone = cleanPhone.startsWith('0') ? '44' + cleanPhone.slice(1) : cleanPhone;
+  // --- BULLETPROOF BUTTON LOGIC ---
+  const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
+  const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/\s+/g, '') : '';
+  const waPhone = cleanPhone.startsWith('0') ? '44' + cleanPhone.slice(1) : cleanPhone;
 
-// 🗓️ SMART MESSAGE DATE LOGIC
-let orderDateText = 'today'; // Default fallback
-if (event.date) {
-    const parts = event.date.split('/');
-    if (parts.length === 3) {
-        const eDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-        
-        if (!isNaN(eDate.getTime())) {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            
-            const tomorrow = new Date(today);
-            tomorrow.setDate(tomorrow.getDate() + 1);
+  // 🗓️ SMART MESSAGE DATE LOGIC
+  let orderDateText = 'today'; 
+  if (event.date) {
+      const parts = event.date.split('/');
+      if (parts.length === 3) {
+          const eDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+          
+          if (!isNaN(eDate.getTime())) {
+              const today = new Date();
+              today.setHours(0,0,0,0);
+              
+              const tomorrow = new Date(today);
+              tomorrow.setDate(tomorrow.getDate() + 1);
 
-            if (eDate.getTime() === today.getTime()) {
-                orderDateText = 'today';
-            } else if (eDate.getTime() === tomorrow.getTime()) {
-                orderDateText = 'tomorrow';
-            } else {
-                // Returns "on Monday", "on Tuesday", etc.
-                orderDateText = 'on ' + eDate.toLocaleDateString('en-GB', { weekday: 'long' });
-            }
-        }
-    }
-}
+              if (eDate.getTime() === today.getTime()) {
+                  orderDateText = 'today';
+              } else if (eDate.getTime() === tomorrow.getTime()) {
+                  orderDateText = 'tomorrow';
+              } else {
+                  orderDateText = 'on ' + eDate.toLocaleDateString('en-GB', { weekday: 'long' });
+              }
+          }
+      }
+  }
 
-const orderMessage = encodeURIComponent(`Hi! I saw you are at ${venueDisplay} ${orderDateText}. I found you on Village Foodie 🚚. Could I please order...`);
+  const orderMessage = encodeURIComponent(`Hi! I saw you are at ${venueDisplay} ${orderDateText}. I found you on Village Foodie 🚚. Could I please order...`);
 
-const trackOrderClick = (method: string) => {
-    console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
-};
+  // 👇 POSTHOG TRACKING FUNCTION 👇
+  const trackOrderClick = (method: string) => {
+      console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
+      if (posthog) {
+          posthog.capture('clicked_contact_button', {
+              method: method, 
+              truck_name: event.truckName,
+              venue: venueDisplay,
+              village: event.village,
+              cuisine: event.type
+          });
+      }
+  };
+
   const wantsWebsite = methodsStr.includes('website');
   const wantsWhatsApp = methodsStr.includes('whatsapp');
   const wantsText = methodsStr.includes('text');
@@ -183,19 +215,17 @@ const trackOrderClick = (method: string) => {
                 </div>
             </div>
 
-            {/* UPGRADED TIME & DIRECTIONS */}
             <div className="flex items-center gap-3 mt-1.5 shrink-0">
                 <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
                     {event.startTime} - {event.endTime}
                 </span>
-                <a href={mapLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
+                <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
                     📍 Directions
                 </a>
             </div>
 
             <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
                 
-                {/* PROMINENT INFO CALLOUTS */}
                 {event.notes && (
                     <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md rounded-l-sm flex items-start shrink-0 min-w-0 shadow-sm">
                         <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
@@ -211,39 +241,33 @@ const trackOrderClick = (method: string) => {
                     </div>
                 )}
 
-{/* THE ACTION BAR (Perfectly symmetrical, single-line, fixed order) */}
-{(event.menuUrl || showWebsite || showCall || showWhatsApp || showText) && (
+                {(event.menuUrl || showWebsite || showCall || showWhatsApp || showText) && (
                     <div className="flex flex-wrap justify-center gap-1.5 w-full min-w-0 shrink-0 mt-0.5">
                         
-                        {/* 1. View Menu */}
                         {event.menuUrl && (
-                            <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1.5 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap">
+                            <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu')} className="flex-1 flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1.5 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap">
                                 <span>📸</span> View Menu
                             </a>
                         )}
 
-                        {/* 2. Order Online (Primary Digital) */}
                         {showWebsite && event.orderUrl && event.orderUrl.includes('http') && (
                             <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 🌐 Order Online
                             </a>
                         )}
 
-                        {/* 3. Call (Primary Voice) */}
                         {showCall && cleanPhone && (
                             <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 📞 Call
                             </a>
                         )}
 
-                        {/* 4. WhatsApp (Primary Chat) */}
                         {showWhatsApp && cleanPhone && (
                             <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 💬 WhatsApp
                             </a>
                         )}
 
-                        {/* 5. Text (Secondary Chat) */}
                         {showText && cleanPhone && (
                             <a href={`sms:${cleanPhone}?body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 📱 Text
@@ -252,7 +276,6 @@ const trackOrderClick = (method: string) => {
                     </div>
                 )}
                 
-                {/* UTILITY ACTION BUTTONS (Crisp slate-700 text for strong contrast) */}
                 <div className="flex gap-2 justify-end shrink-0 mt-0.5">
                     <button onClick={handleShare} className="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
@@ -278,21 +301,15 @@ const trackOrderClick = (method: string) => {
   );
 
   if (isMapPopup) {
-    return cardContent;
-}
+      return cardContent;
+  }
 
-if (isMapPopup) {
-    return cardContent;
-}
-
-// --- UNIQUE ID GENERATION (Matches Email Script) ---
-  // Convert DD/MM/YYYY to DD-MM-YYYY
+  // --- UNIQUE ID GENERATION (Matches Email Script) ---
   const dateIdPart = event.date ? event.date.replace(/\//g, '-') : '';
   const rawIdString = `${event.truckName}-${event.venueName}-${dateIdPart}`;
   const safeAnchorId = rawIdString.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
   return (
-    // We added massive, device-specific scroll margins so it clears the sticky headers perfectly!
     <div id={safeAnchorId} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0">
         {cardContent}
     </div>

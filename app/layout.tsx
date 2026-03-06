@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { CSPostHogProvider } from "./providers"; // 👈 We import the provider here
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Village Foodie", // Removed the emoji from here
-    template: "%s | Village Foodie", // Removed the emoji from here
+    default: "Village Foodie",
+    template: "%s | Village Foodie",
   },
   description: "Find local food trucks and pop-ups in your area.",
   icons: {
@@ -33,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* 👇 We wrap the children in the provider 👇 */}
+        <CSPostHogProvider>
+          {children}
+        </CSPostHogProvider>
       </body>
     </html>
   );

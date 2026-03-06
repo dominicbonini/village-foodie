@@ -4,6 +4,7 @@ import { useState, useRef, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation'; 
+import { usePostHog } from 'posthog-js/react'; // 👈 Imported PostHog
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { useVillageData } from '@/hooks/useVillageData';
@@ -25,6 +26,7 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 
 // --- MAIN CONTENT COMPONENT ---
 function VillageFoodieContent() {
+  const posthog = usePostHog(); // 👈 Initialized PostHog hook
   const searchParams = useSearchParams();
   const [view, setView] = useState<'list' | 'map'>('list');
   
@@ -44,49 +46,48 @@ function VillageFoodieContent() {
   // --- CUSTOM HOOK (Data Logic) ---
   const { loading, groupedEvents, mapEvents, cuisineOptions } = useVillageData(userLocation, filters);
 
-// --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
-useEffect(() => {
-  const urlPostcode = searchParams.get('postcode');
-  const urlDistance = searchParams.get('distance');
-  const savedPostcode = localStorage.getItem('user_postcode');
-  const targetPostcode = urlPostcode || savedPostcode;
+  // --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
+  useEffect(() => {
+    const urlPostcode = searchParams.get('postcode');
+    const urlDistance = searchParams.get('distance');
+    const savedPostcode = localStorage.getItem('user_postcode');
+    const targetPostcode = urlPostcode || savedPostcode;
 
-  if (targetPostcode) {
-    setUserPostcode(targetPostcode);
-    if (postcodeRef.current) postcodeRef.current.value = targetPostcode;
-    handlePostcodeSearch(targetPostcode, false); 
-  }
-  if (urlDistance) setFilters(prev => ({ ...prev, distance: urlDistance }));
-}, [searchParams]);
+    if (targetPostcode) {
+      setUserPostcode(targetPostcode);
+      if (postcodeRef.current) postcodeRef.current.value = targetPostcode;
+      handlePostcodeSearch(targetPostcode, false); 
+    }
+    if (urlDistance) setFilters(prev => ({ ...prev, distance: urlDistance }));
+  }, [searchParams]);
 
-// --- EFFECT: SCROLL TO TRUCK AFTER DATA LOADS ---
-useEffect(() => {
-  if (!loading && typeof window !== 'undefined' && window.location.hash) {
-    setTimeout(() => {
-      const id = window.location.hash.substring(1);
-      const element = document.getElementById(id);
-      
-      if (element) {
-        // 1. Check if we are on a mobile screen or desktop
-        const isMobile = window.innerWidth < 768;
+  // --- EFFECT: SCROLL TO TRUCK AFTER DATA LOADS ---
+  useEffect(() => {
+    if (!loading && typeof window !== 'undefined' && window.location.hash) {
+      setTimeout(() => {
+        const id = window.location.hash.substring(1);
+        const element = document.getElementById(id);
         
-        // 2. Set the exact height of your sticky header + sticky date banner (+ an 8px visual gap)
-        const exactHeaderHeight = isMobile ? 236 : 192; 
+        if (element) {
+          // 1. Check if we are on a mobile screen or desktop
+          const isMobile = window.innerWidth < 768;
+          
+          // 2. Set the exact height of your sticky header + sticky date banner (+ an 8px visual gap)
+          const exactHeaderHeight = isMobile ? 236 : 192; 
 
-        // 3. Calculate the exact pixel location on the page
-        const elementPosition = element.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
+          // 3. Calculate the exact pixel location on the page
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
 
-        // 4. Teleport the user to that exact pixel
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'auto'
-        });
-      }
-    }, 100);
-  }
-}, [loading, groupedEvents]);
-
+          // 4. Teleport the user to that exact pixel
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'auto'
+          });
+        }
+      }, 100);
+    }
+  }, [loading, groupedEvents]);
 
   // --- HANDLERS ---
   const handlePostcodeSearch = async (code: string, showAlert = true) => {
@@ -100,6 +101,15 @@ useEffect(() => {
       const cleanCode = code.toUpperCase();
       localStorage.setItem('user_postcode', cleanCode);
       setUserPostcode(cleanCode); 
+      
+      // 👇 TRACK THE POSTCODE SEARCH 👇
+      if (posthog) {
+        posthog.capture('searched_postcode', {
+          postcode: cleanCode,
+          distance_filter: filters.distance
+        });
+      }
+
     } else if (showAlert) {
       alert("Could not find that postcode. Please try again.");
     }
@@ -111,6 +121,13 @@ useEffect(() => {
     if (currentCode) params.set('postcode', currentCode); 
     if (filters.distance) params.set('distance', filters.distance);
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
+
+    // 👇 TRACK NEWSLETTER CLICKS 👇
+    if (posthog) {
+      posthog.capture('clicked_newsletter_subscribe', {
+        postcode: currentCode
+      });
+    }
 
     if (typeof window !== 'undefined' && (window as any).Tally) {
       (window as any).Tally.openPopup('81xAKx', {
