@@ -22,34 +22,46 @@ const cleanKey = (str: string) => {
 const isMatch = (key1: string, key2: string) => {
     if (!key1 || !key2) return false;
     if (key1 === key2) return true;
-    
-    // Fallback: forcefully normalize "street" and "st" so they always match
     const k1 = key1.replace(/street/g, 'st');
     const k2 = key2.replace(/street/g, 'st');
-    
     return k1.includes(k2) || k2.includes(k1);
 };
 
-// 🛡️ BULLETPROOF CSV PARSER
-function parseCSVRow(text: string) {
-    const result = [];
-    let current = '';
+// 🛡️ TRUE CSV PARSER (Handles newlines and commas inside cells perfectly)
+function parseCSV(text: string) {
+    const rows: string[][] = [];
+    let currentRow: string[] = [];
+    let currentCell = '';
     let inQuotes = false;
-    const str = text.replace(/\r/g, ''); // Strip hidden carriage returns
     
-    for (let i = 0; i < str.length; i++) {
-        const char = str[i];
-        if (char === '"') {
-            inQuotes = !inQuotes;
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"' && inQuotes && nextChar === '"') {
+            currentCell += '"'; // Escaped quote
+            i++; 
+        } else if (char === '"') {
+            inQuotes = !inQuotes; // Toggle quote state
         } else if (char === ',' && !inQuotes) {
-            result.push(current.trim());
-            current = '';
+            currentRow.push(currentCell.trim());
+            currentCell = '';
+        } else if ((char === '\n' || char === '\r') && !inQuotes) {
+            if (char === '\r' && nextChar === '\n') i++; // Skip \n if \r\n
+            currentRow.push(currentCell.trim());
+            rows.push(currentRow);
+            currentRow = [];
+            currentCell = '';
         } else {
-            current += char;
+            currentCell += char;
         }
     }
-    result.push(current.trim());
-    return result.map(c => c.replace(/^"|"$/g, '').trim());
+    if (currentCell || currentRow.length > 0) {
+        currentRow.push(currentCell.trim());
+        rows.push(currentRow);
+    }
+    // Clean trailing quotes that Google Sheets sometimes leaves
+    return rows.map(row => row.map(c => c.replace(/^"|"$/g, '').trim()));
 }
 
 export function useVillageData(
@@ -74,9 +86,9 @@ export function useVillageData(
 
         // --- 1. MAP TRUCKS ---
         const trucksList: any[] = [];
-        trucksCsvText.split('\n').slice(1).forEach(row => {
-            if (!row.trim()) return;
-            const cols = parseCSVRow(row);
+        const truckRows = parseCSV(trucksCsvText).slice(1);
+        truckRows.forEach(cols => {
+            if (!cols[0]) return;
             const rawName = cols[0] || '';
             const key = cleanKey(rawName);
             if (key) {
@@ -84,19 +96,21 @@ export function useVillageData(
                     rawName: rawName,
                     cleanKey: key,
                     type: cols[1], 
-                    orderInfo: cols[2], 
-                    truckNotes: cols[3], 
-                    websiteUrl: cols[4], 
-                    menuUrl: cols[5] 
+                    phoneNumber: cols[2],     // C
+                    orderUrl: cols[3],        // D
+                    acceptedMethods: cols[4], // E
+                    truckNotes: cols[5],      // F
+                    websiteUrl: cols[6],      // G
+                    menuUrl: cols[7]          // H
                 });
             }
         });
 
         // --- 2. MAP VENUES ---
         const venuesList: any[] = [];
-        venuesCsvText.split('\n').slice(1).forEach(row => {
-            if (!row.trim()) return;
-            const cols = parseCSVRow(row);
+        const venueRows = parseCSV(venuesCsvText).slice(1);
+        venueRows.forEach(cols => {
+            if (!cols[0]) return;
             const rawName = cols[0] || '';
             const key = cleanKey(rawName);
             if (key) {
@@ -105,8 +119,8 @@ export function useVillageData(
                     cleanKey: key,
                     village: cols[1] || '',
                     postcode: cols[2] || '',
-                    lat: parseFloat(cols[3]),
-                    long: parseFloat(cols[4]),
+                    lat: parseFloat(cols[3] || '0'),
+                    long: parseFloat(cols[4] || '0'),
                 });
             }
         });
@@ -115,26 +129,19 @@ export function useVillageData(
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const parsedEvents: VillageEvent[] = eventsCsvText
-          .split('\n')
+        const parsedEvents: VillageEvent[] = parseCSV(eventsCsvText)
           .slice(1)
-          .filter(row => row.trim() !== '')
-          .map((row, index) => {
-            const cols = parseCSVRow(row);
-            
+          .filter(cols => cols.length > 0 && !!cols[0])
+          .map((cols, index) => {
             const rawDate = cols[0] || '';
             const rawTruck = cols[3] || '';
             const rawVenue = cols[4] || '';
 
-            // Look up Truck (Uses new Aggressive Matcher)
             const eventTruckKey = cleanKey(rawTruck);
-            let truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey));
-            if (!truck) truck = {};
+            let truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey)) || {};
 
-            // Look up Venue (Uses new Aggressive Matcher)
             const eventVenueKey = cleanKey(rawVenue);
-            let venue = venuesList.find(v => isMatch(v.cleanKey, eventVenueKey));
-            if (!venue) venue = {}; 
+            let venue = venuesList.find(v => isMatch(v.cleanKey, eventVenueKey)) || {}; 
 
             const eventObj: VillageEvent = {
               id: `event-${index}`,
@@ -148,9 +155,13 @@ export function useVillageData(
               venueLat: venue.lat, 
               venueLong: venue.long, 
               type: truck.type || 'Mobile',           
+              
+              phoneNumber: truck.phoneNumber || '',
+              orderUrl: truck.orderUrl || '',
+              acceptedMethods: truck.acceptedMethods || '',
+              
               websiteUrl: truck.websiteUrl || '',            
               menuUrl: truck.menuUrl || '',               
-              orderInfo: truck.orderInfo || '', 
               notes: truck.truckNotes || '',
               eventNotes: cols[5] || '',             
             };
@@ -160,7 +171,6 @@ export function useVillageData(
           .filter(e => {
               if (!e.date) return false;
               const eventDate = parseDateString(e.date);
-              // Hide events that happened before today
               return eventDate ? eventDate >= today : false; 
           })
           .sort((a, b) => {
@@ -195,18 +205,31 @@ export function useVillageData(
       if (filters.date !== 'all') {
         const eventDate = parseDateString(event.date);
         if (!eventDate) return false;
+        
         if (filters.date === 'today' && eventDate.getTime() !== today.getTime()) return false;
+        
         if (filters.date === 'tomorrow') {
            const tomorrow = new Date(today);
            tomorrow.setDate(tomorrow.getDate() + 1);
            if (eventDate.getTime() !== tomorrow.getTime()) return false;
         }
+        
         if (filters.date === 'next7') {
            const nextWeek = new Date(today);
            nextWeek.setDate(today.getDate() + 7);
            if (eventDate > nextWeek) return false;
         }
-        if (filters.date === 'weekend' && ![0, 5, 6].includes(eventDate.getDay())) return false;
+        
+        if (filters.date === 'weekend') {
+           const dayOfWeek = eventDate.getDay(); 
+           if (![0, 5, 6].includes(dayOfWeek)) return false;
+           
+           const nextSunday = new Date(today);
+           nextSunday.setDate(today.getDate() + ((7 - today.getDay()) % 7));
+           nextSunday.setHours(23, 59, 59, 999);
+           
+           if (eventDate.getTime() > nextSunday.getTime()) return false;
+        }
       }
       return true;
     });

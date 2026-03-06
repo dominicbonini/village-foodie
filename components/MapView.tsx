@@ -33,7 +33,7 @@ const userIcon = divIcon({
   popupAnchor: [0, -10]
 });
 
-// --- HELPER: Smart Date Formatter (Specific to Map Popup) ---
+// --- HELPER: Returns "Today - Friday 6th March" ---
 function formatDateForDisplay(dateStr: string): string {
   const parts = dateStr.split('/');
   if (parts.length !== 3) return dateStr;
@@ -44,11 +44,17 @@ function formatDateForDisplay(dateStr: string): string {
   
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const formattedDate = eventDate.toLocaleDateString('en-GB', { 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long' 
+  });
   
-  if (eventDate.getTime() === today.getTime()) return 'Today';
-  if (eventDate.getTime() === tomorrow.getTime()) return 'Tomorrow';
+  if (eventDate.getTime() === today.getTime()) return `Today - ${formattedDate}`;
+  if (eventDate.getTime() === tomorrow.getTime()) return `Tomorrow - ${formattedDate}`;
   
-  return eventDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }).toUpperCase();
+  return formattedDate.toUpperCase();
 }
 
 // --- SMART MAP CONTROLLER ---
@@ -62,20 +68,16 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   const map = useMap();
 
   useEffect(() => {
-    // 1. If we have a user and a distance, fly the camera to them
     if (userLocation && radius !== 'all') {
-      let zoomLevel = 10; // Fallback
-      
-      // Map specific radius dropdown values to Leaflet zoom levels
-      if (radius === '10') zoomLevel = 11; // Closer zoom
-      if (radius === '20') zoomLevel = 10; // Medium zoom
-      if (radius === '30') zoomLevel = 9;  // Wider zoom to fit 30 miles
+      let zoomLevel = 10;
+      if (radius === '10') zoomLevel = 11;
+      if (radius === '20') zoomLevel = 10;
+      if (radius === '30') zoomLevel = 9;
 
       map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
       return;
     }
 
-    // 2. Otherwise, auto-fit to show all available events
     if (events.length > 0) {
       const coords = events
         .filter(e => e.venueLat && e.venueLong)
@@ -107,7 +109,6 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
 
   const defaultCenter: [number, number] = [52.24, 0.55]; 
   
-  // --- GROUP EVENTS BY LOCATION ---
   const groupedEvents = useMemo(() => {
     const groups: Record<string, VillageEvent[]> = {};
     events.forEach(event => {
@@ -141,18 +142,14 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
 
       <MapController events={events} userLocation={userLocation} radius={radius} />
 
-      {/* User Location Marker */}
       {userLocation && (
         <Marker position={[userLocation.lat, userLocation.long]} icon={userIcon}>
           <Popup>You are here 🏠</Popup>
         </Marker>
       )}
 
-      {/* RENDER GROUPED MARKERS */}
       {Object.entries(groupedEvents).map(([locKey, groupEvents]) => {
         const [lat, long] = locKey.split(',').map(Number);
-        
-        // Use the first event to decide the icon
         const firstEvent = groupEvents[0];
         const isStatic = firstEvent.type?.toLowerCase().includes('static');
         
@@ -162,16 +159,11 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
             position={[lat, long]}
             icon={isStatic ? plateIcon : truckIcon}
           >
-            {/* Slightly increased maxWidth to accommodate the EventListCard cleanly */}
             <Popup className="custom-popup" minWidth={280} maxWidth={320}>
-               
-               {/* SCROLLABLE CONTAINER FOR MULTIPLE EVENTS */}
                <div className="font-sans max-h-[400px] overflow-y-auto pr-1">
-                  
                   {groupEvents.map((event, index) => {
                      const displayDate = formatDateForDisplay(event.date);
                      
-                     // Calculate distance for this specific event popup
                      let distMiles = null;
                      if (userLocation) {
                        const km = getDistanceKm(userLocation.lat, userLocation.long, lat, long);
@@ -179,18 +171,15 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                      }
                      
                      return (
-                      <div key={event.id} className={index > 0 ? "mt-5 pt-3 border-t border-slate-200 border-dashed" : ""}>
+                      <div key={event.id} className={index > 0 ? "mt-4 pt-4 border-t border-slate-100" : ""}>
                           
-                          {/* DATE HEADER */}
-                          <div className="mb-2 flex justify-between items-center">
-                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                          {/* CLEAN DATE HEADER */}
+                          <div className="mb-2">
+                            <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
                               {displayDate}
                             </span>
                           </div>
 
-                          {/* Unified single source of truth for the event card! 
-                            isMapPopup={true} strips the outer border/padding to fit perfectly in the map.
-                          */}
                           <EventListCard 
                             event={event} 
                             distanceMiles={distMiles} 
