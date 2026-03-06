@@ -293,7 +293,7 @@ if (isMapPopup) {
 
   return (
     // We added massive, device-specific scroll margins so it clears the sticky headers perfectly!
-    <div id={safeAnchorId} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0 scroll-mt-[250px] md:scroll-mt-[200px]">
+    <div id={safeAnchorId} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0">
         {cardContent}
     </div>
   );

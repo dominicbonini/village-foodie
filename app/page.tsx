@@ -62,13 +62,26 @@ useEffect(() => {
 // --- EFFECT: SCROLL TO TRUCK AFTER DATA LOADS ---
 useEffect(() => {
   if (!loading && typeof window !== 'undefined' && window.location.hash) {
-    // Reduced the delay to 100ms for a snappier load
     setTimeout(() => {
       const id = window.location.hash.substring(1);
       const element = document.getElementById(id);
+      
       if (element) {
-        // Changed 'smooth' to 'auto' so it teleports instantly instead of sliding
-        element.scrollIntoView({ behavior: 'auto', block: 'start' });
+        // 1. Check if we are on a mobile screen or desktop
+        const isMobile = window.innerWidth < 768;
+        
+        // 2. Set the exact height of your sticky header + sticky date banner (+ an 8px visual gap)
+        const exactHeaderHeight = isMobile ? 236 : 192; 
+
+        // 3. Calculate the exact pixel location on the page
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
+
+        // 4. Teleport the user to that exact pixel
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'auto'
+        });
       }
     }, 100);
   }
