@@ -33,28 +33,45 @@ const userIcon = divIcon({
   popupAnchor: [0, -10]
 });
 
-// --- HELPER: Returns "Today - Friday 6th March" ---
 function formatDateForDisplay(dateStr: string): string {
+  // Safety Guard: If date is missing or not a string, return a fallback
+  if (!dateStr || typeof dateStr !== 'string') return 'Date TBC';
+
   const parts = dateStr.split('/');
+  
+  // Safety Guard: If it's not the 00/00/0000 format, just return the string as-is
   if (parts.length !== 3) return dateStr;
   
-  const eventDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-  const today = new Date();
-  today.setHours(0,0,0,0);
-  
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  try {
+    const day = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1;
+    const year = parseInt(parts[2]);
+    
+    const eventDate = new Date(year, month, day);
+    
+    // Check if the date is actually valid
+    if (isNaN(eventDate.getTime())) return dateStr;
 
-  const formattedDate = eventDate.toLocaleDateString('en-GB', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'long' 
-  });
-  
-  if (eventDate.getTime() === today.getTime()) return `Today - ${formattedDate}`;
-  if (eventDate.getTime() === tomorrow.getTime()) return `Tomorrow - ${formattedDate}`;
-  
-  return formattedDate.toUpperCase();
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const formattedDate = eventDate.toLocaleDateString('en-GB', { 
+      weekday: 'long', 
+      day: 'numeric', 
+      month: 'long' 
+    });
+    
+    if (eventDate.getTime() === today.getTime()) return `Today - ${formattedDate}`;
+    if (eventDate.getTime() === tomorrow.getTime()) return `Tomorrow - ${formattedDate}`;
+    
+    return formattedDate.toUpperCase();
+  } catch (e) {
+    // If anything at all goes wrong, just return the original string instead of crashing
+    return dateStr;
+  }
 }
 
 // --- SMART MAP CONTROLLER ---
