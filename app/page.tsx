@@ -59,21 +59,21 @@ useEffect(() => {
   if (urlDistance) setFilters(prev => ({ ...prev, distance: urlDistance }));
 }, [searchParams]);
 
-// 👇 ADD THIS BRAND NEW EFFECT RIGHT HERE 👇
 // --- EFFECT: SCROLL TO TRUCK AFTER DATA LOADS ---
 useEffect(() => {
   if (!loading && typeof window !== 'undefined' && window.location.hash) {
-    // We use a tiny 300ms delay to guarantee the cards have painted onto the screen
+    // Reduced the delay to 100ms for a snappier load
     setTimeout(() => {
       const id = window.location.hash.substring(1);
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Changed 'smooth' to 'auto' so it teleports instantly instead of sliding
+        element.scrollIntoView({ behavior: 'auto', block: 'start' });
       }
-    }, 300);
+    }, 100);
   }
 }, [loading, groupedEvents]);
-// 👆 END OF NEW EFFECT 👆
+
 
   // --- HANDLERS ---
   const handlePostcodeSearch = async (code: string, showAlert = true) => {

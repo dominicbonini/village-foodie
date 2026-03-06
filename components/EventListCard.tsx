@@ -286,15 +286,15 @@ if (isMapPopup) {
 }
 
 // --- UNIQUE ID GENERATION (Matches Email Script) ---
-// Convert DD/MM/YYYY to DD-MM-YYYY
-const dateIdPart = event.date ? event.date.replace(/\//g, '-') : '';
-const rawIdString = `${event.truckName}-${event.venueName}-${dateIdPart}`;
-const safeAnchorId = rawIdString.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+  // Convert DD/MM/YYYY to DD-MM-YYYY
+  const dateIdPart = event.date ? event.date.replace(/\//g, '-') : '';
+  const rawIdString = `${event.truckName}-${event.venueName}-${dateIdPart}`;
+  const safeAnchorId = rawIdString.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
 
-return (
-  // We add the UNIQUE ID here so the browser can scroll to the exact event
-  <div id={safeAnchorId} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0 scroll-mt-40">
-      {cardContent}
-  </div>
-);
+  return (
+    // We added massive, device-specific scroll margins so it clears the sticky headers perfectly!
+    <div id={safeAnchorId} className="bg-white p-3 rounded-xl shadow-sm border border-slate-200 relative overflow-hidden min-w-0 scroll-mt-[250px] md:scroll-mt-[200px]">
+        {cardContent}
+    </div>
+  );
 }
