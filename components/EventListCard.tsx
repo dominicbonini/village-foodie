@@ -91,16 +91,42 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
       else if (action === 'ics') downloadICS(calendarEvent);
   }
 
-  // --- BULLETPROOF BUTTON LOGIC ---
-  const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
-  const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/\s+/g, '') : '';
-  const waPhone = cleanPhone.startsWith('0') ? '44' + cleanPhone.slice(1) : cleanPhone;
-  const orderMessage = encodeURIComponent(`Hi! I saw you are at ${venueDisplay} today on Village Foodie 🚚. Could I please order...`);
+// --- BULLETPROOF BUTTON LOGIC ---
+const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
+const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/\s+/g, '') : '';
+const waPhone = cleanPhone.startsWith('0') ? '44' + cleanPhone.slice(1) : cleanPhone;
 
-  const trackOrderClick = (method: string) => {
-      console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
-  };
+// 🗓️ SMART MESSAGE DATE LOGIC
+let orderDateText = 'today'; // Default fallback
+if (event.date) {
+    const parts = event.date.split('/');
+    if (parts.length === 3) {
+        const eDate = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+        
+        if (!isNaN(eDate.getTime())) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
 
+            if (eDate.getTime() === today.getTime()) {
+                orderDateText = 'today';
+            } else if (eDate.getTime() === tomorrow.getTime()) {
+                orderDateText = 'tomorrow';
+            } else {
+                // Returns "on Monday", "on Tuesday", etc.
+                orderDateText = 'on ' + eDate.toLocaleDateString('en-GB', { weekday: 'long' });
+            }
+        }
+    }
+}
+
+const orderMessage = encodeURIComponent(`Hi! I found you on Village Foodie 🚚. I saw you are at ${venueDisplay} ${orderDateText}. Could I please order...`);
+
+const trackOrderClick = (method: string) => {
+    console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
+};
   const wantsWebsite = methodsStr.includes('website');
   const wantsWhatsApp = methodsStr.includes('whatsapp');
   const wantsText = methodsStr.includes('text');
@@ -185,35 +211,41 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                     </div>
                 )}
 
-{/* THE ACTION BAR (Menu + Orders perfectly symmetrical & centered) */}
+{/* THE ACTION BAR (Perfectly symmetrical, single-line, fixed order) */}
 {(event.menuUrl || showWebsite || showCall || showWhatsApp || showText) && (
                     <div className="flex flex-wrap justify-center gap-1.5 w-full min-w-0 shrink-0 mt-0.5">
                         
-                        {/* View Menu */}
+                        {/* 1. View Menu */}
                         {event.menuUrl && (
-                            <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[90px] flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-2 rounded-md transition-colors shadow-sm !no-underline">
+                            <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1.5 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap">
                                 <span>📸</span> View Menu
                             </a>
                         )}
 
-                        {/* Order Buttons (Solid Brand Orange) */}
+                        {/* 2. Order Online (Primary Digital) */}
                         {showWebsite && event.orderUrl && event.orderUrl.includes('http') && (
-                            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className="flex-1 min-w-[90px] flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-2 rounded-md transition-colors shadow-sm">
+                            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 🌐 Order Online
                             </a>
                         )}
-                        {showWhatsApp && cleanPhone && (
-                            <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 min-w-[90px] flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-2 rounded-md transition-colors shadow-sm">
-                                💬 WhatsApp
-                            </a>
-                        )}
+
+                        {/* 3. Call (Primary Voice) */}
                         {showCall && cleanPhone && (
-                            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call')} className="flex-1 min-w-[70px] flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-2 rounded-md transition-colors shadow-sm">
+                            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 📞 Call
                             </a>
                         )}
+
+                        {/* 4. WhatsApp (Primary Chat) */}
+                        {showWhatsApp && cleanPhone && (
+                            <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                                💬 WhatsApp
+                            </a>
+                        )}
+
+                        {/* 5. Text (Secondary Chat) */}
                         {showText && cleanPhone && (
-                            <a href={`sms:${cleanPhone}?body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 min-w-[70px] flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-2 rounded-md transition-colors shadow-sm">
+                            <a href={`sms:${cleanPhone}?body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
                                 📱 Text
                             </a>
                         )}
