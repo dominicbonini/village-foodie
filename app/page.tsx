@@ -44,20 +44,36 @@ function VillageFoodieContent() {
   // --- CUSTOM HOOK (Data Logic) ---
   const { loading, groupedEvents, mapEvents, cuisineOptions } = useVillageData(userLocation, filters);
 
-  // --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
-  useEffect(() => {
-    const urlPostcode = searchParams.get('postcode');
-    const urlDistance = searchParams.get('distance');
-    const savedPostcode = localStorage.getItem('user_postcode');
-    const targetPostcode = urlPostcode || savedPostcode;
+// --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
+useEffect(() => {
+  const urlPostcode = searchParams.get('postcode');
+  const urlDistance = searchParams.get('distance');
+  const savedPostcode = localStorage.getItem('user_postcode');
+  const targetPostcode = urlPostcode || savedPostcode;
 
-    if (targetPostcode) {
-      setUserPostcode(targetPostcode);
-      if (postcodeRef.current) postcodeRef.current.value = targetPostcode;
-      handlePostcodeSearch(targetPostcode, false); 
-    }
-    if (urlDistance) setFilters(prev => ({ ...prev, distance: urlDistance }));
-  }, [searchParams]);
+  if (targetPostcode) {
+    setUserPostcode(targetPostcode);
+    if (postcodeRef.current) postcodeRef.current.value = targetPostcode;
+    handlePostcodeSearch(targetPostcode, false); 
+  }
+  if (urlDistance) setFilters(prev => ({ ...prev, distance: urlDistance }));
+}, [searchParams]);
+
+// 👇 ADD THIS BRAND NEW EFFECT RIGHT HERE 👇
+// --- EFFECT: SCROLL TO TRUCK AFTER DATA LOADS ---
+useEffect(() => {
+  if (!loading && typeof window !== 'undefined' && window.location.hash) {
+    // We use a tiny 300ms delay to guarantee the cards have painted onto the screen
+    setTimeout(() => {
+      const id = window.location.hash.substring(1);
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 300);
+  }
+}, [loading, groupedEvents]);
+// 👆 END OF NEW EFFECT 👆
 
   // --- HANDLERS ---
   const handlePostcodeSearch = async (code: string, showAlert = true) => {
