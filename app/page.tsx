@@ -70,7 +70,8 @@ function VillageFoodieContent() {
         
         if (element) {
           const isMobile = window.innerWidth < 768;
-          const exactHeaderHeight = isMobile ? 236 : 192; 
+          // MATH UPDATED: Compensating for the new padding on the date banner
+          const exactHeaderHeight = isMobile ? 204 : 186; 
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
 
@@ -137,34 +138,34 @@ function VillageFoodieContent() {
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
       {/* --- HEADER --- */}
-      <header className="bg-slate-900 text-white p-4 sticky top-0 z-50 shadow-md">
-        <div className="max-w-4xl mx-auto flex flex-col gap-4">
+      <header className="bg-slate-900 text-white py-3 px-4 md:p-4 sticky top-0 z-50 shadow-md">
+        <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-xl font-bold flex items-center gap-2">
-              Village Foodie <span className="text-2xl">🚚</span>
+            <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
+              Village Foodie <span className="text-xl md:text-2xl">🚚</span>
             </h1>
             <div className="flex bg-slate-800 rounded-lg p-1">
-              <button onClick={() => setView('list')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
-              <button onClick={() => setView('map')} className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
+              <button onClick={() => setView('list')} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
+              <button onClick={() => setView('map')} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+          <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-2 md:p-3 rounded-lg border border-slate-700">
             <div className="flex gap-2 flex-1 w-full md:w-auto">
               <input 
                 ref={postcodeRef} 
                 type="text" 
                 placeholder="CB8 0AA" 
-                className="w-full bg-slate-900 text-white text-base md:text-sm px-3 py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
+                className="w-full bg-slate-900 text-white text-base md:text-sm px-3 py-1.5 md:py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
                 onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(postcodeRef.current?.value || '')} 
                 autoComplete="postal-code" 
               />
-              <button onClick={() => handlePostcodeSearch(postcodeRef.current?.value || '')} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-2 rounded text-base md:text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
+              <button onClick={() => handlePostcodeSearch(postcodeRef.current?.value || '')} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 md:py-2 rounded text-base md:text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
             </div>
             
-            <div className="grid grid-cols-3 md:flex gap-1.5 md:gap-2 w-full md:w-auto pb-1 md:pb-0">
+            <div className="grid grid-cols-3 md:flex gap-1.5 md:gap-2 w-full md:w-auto">
               <select 
-                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-base md:text-sm px-1.5 sm:px-3 py-2 rounded border border-slate-600 focus:outline-none truncate" 
+                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-base md:text-sm px-1.5 sm:px-3 py-1.5 md:py-2 rounded border border-slate-600 focus:outline-none truncate" 
                 value={filters.date} 
                 onChange={(e) => setFilters({...filters, date: e.target.value})}
               >
@@ -176,7 +177,7 @@ function VillageFoodieContent() {
               </select>
 
               <select 
-                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-base md:text-sm px-1.5 sm:px-3 py-2 rounded border border-slate-600 focus:outline-none truncate" 
+                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-base md:text-sm px-1.5 sm:px-3 py-1.5 md:py-2 rounded border border-slate-600 focus:outline-none truncate" 
                 value={filters.cuisine} 
                 onChange={(e) => setFilters({...filters, cuisine: e.target.value})}
               >
@@ -185,7 +186,7 @@ function VillageFoodieContent() {
               </select>
               
               <select 
-                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-base md:text-sm px-1.5 sm:px-3 py-2 rounded border border-slate-600 focus:outline-none truncate" 
+                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-base md:text-sm px-1.5 sm:px-3 py-1.5 md:py-2 rounded border border-slate-600 focus:outline-none truncate" 
                 value={filters.distance} 
                 onChange={(e) => setFilters({...filters, distance: e.target.value})} 
                 disabled={!userLocation}
@@ -229,7 +230,8 @@ function VillageFoodieContent() {
 
                   return (
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
-                        <div className="sticky top-[188px] md:top-[144px] z-30 bg-slate-50 pt-3 pb-2">
+                        {/* FIX: Increased padding-top (pt-5) to add a gap above, decreased padding-bottom (pb-1) to pull cards up */}
+                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 pb-1">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>
