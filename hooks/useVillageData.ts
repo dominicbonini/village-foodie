@@ -27,7 +27,7 @@ const isMatch = (key1: string, key2: string) => {
     return k1.includes(k2) || k2.includes(k1);
 };
 
-// 🛡️ TRUE CSV PARSER (Handles newlines and commas inside cells perfectly)
+// 🛡️ TRUE CSV PARSER
 function parseCSV(text: string) {
     const rows: string[][] = [];
     let currentRow: string[] = [];
@@ -39,15 +39,15 @@ function parseCSV(text: string) {
         const nextChar = text[i + 1];
 
         if (char === '"' && inQuotes && nextChar === '"') {
-            currentCell += '"'; // Escaped quote
+            currentCell += '"'; 
             i++; 
         } else if (char === '"') {
-            inQuotes = !inQuotes; // Toggle quote state
+            inQuotes = !inQuotes; 
         } else if (char === ',' && !inQuotes) {
             currentRow.push(currentCell.trim());
             currentCell = '';
         } else if ((char === '\n' || char === '\r') && !inQuotes) {
-            if (char === '\r' && nextChar === '\n') i++; // Skip \n if \r\n
+            if (char === '\r' && nextChar === '\n') i++; 
             currentRow.push(currentCell.trim());
             rows.push(currentRow);
             currentRow = [];
@@ -60,7 +60,6 @@ function parseCSV(text: string) {
         currentRow.push(currentCell.trim());
         rows.push(currentRow);
     }
-    // Clean trailing quotes that Google Sheets sometimes leaves
     return rows.map(row => row.map(c => c.replace(/^"|"$/g, '').trim()));
 }
 
@@ -96,12 +95,12 @@ export function useVillageData(
                     rawName: rawName,
                     cleanKey: key,
                     type: cols[1], 
-                    phoneNumber: cols[2],     // C
-                    orderUrl: cols[3],        // D
-                    acceptedMethods: cols[4], // E
-                    truckNotes: cols[5],      // F
-                    websiteUrl: cols[6],      // G
-                    menuUrl: cols[7]          // H
+                    phoneNumber: cols[2],     
+                    orderUrl: cols[3],        
+                    acceptedMethods: cols[4], 
+                    truckNotes: cols[5],      
+                    websiteUrl: cols[6],      
+                    menuUrl: cols[7]          
                 });
             }
         });
@@ -197,9 +196,10 @@ export function useVillageData(
     today.setHours(0,0,0,0);
     
     const baseFiltered = events.filter(event => {
+      // 👇 UPDATED: Check if ANY of the cuisines match the selected filter 👇
       if (filters.cuisine !== 'all') {
-        const eventType = event.type?.toLowerCase() || 'mobile';
-        if (eventType !== filters.cuisine.toLowerCase()) return false;
+        const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
+        if (!eventTypes.includes(filters.cuisine.toLowerCase())) return false;
       }
       
       if (filters.date !== 'all') {
@@ -254,8 +254,20 @@ export function useVillageData(
     return { groupedEvents: grouped, mapEvents: baseFiltered };
   }, [events, filters, userLocation]);
 
+  // 👇 UPDATED: Split commas when generating the list of options for the dropdown 👇
   const cuisineOptions = useMemo(() => {
-    const types = new Set(events.map(e => e.type).filter(t => t && t !== 'Mobile' && !t.toLowerCase().includes('static')));
+    const types = new Set<string>();
+    
+    events.forEach(e => {
+        if (e.type && e.type !== 'Mobile' && !e.type.toLowerCase().includes('static')) {
+            // Split by comma, trim whitespace, and add each individually
+            const splitTypes = e.type.split(',').map(t => t.trim());
+            splitTypes.forEach(t => {
+                if (t) types.add(t);
+            });
+        }
+    });
+    
     return Array.from(types).sort();
   }, [events]);
 

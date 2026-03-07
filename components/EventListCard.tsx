@@ -201,11 +201,20 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                 </div>
 
                 <div className="flex flex-col items-end gap-1 shrink-0">
-                    {event.type && event.type !== 'Mobile' && !isStatic && (
-                        <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
-                            <span>{getCuisineEmoji(event.type)}</span>
-                            <span>{event.type}</span>
-                        </span>
+{/* 👇 UPDATED: Splits multiple cuisines by comma into separate badges 👇 */}
+{event.type && event.type !== 'Mobile' && !isStatic && (
+                        <div className="flex flex-wrap gap-1 justify-end">
+                            {event.type.split(',').map((cuisineTag, idx) => {
+                                const cleanCuisine = cuisineTag.trim();
+                                if (!cleanCuisine) return null;
+                                return (
+                                    <span key={idx} className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
+                                        <span>{getCuisineEmoji(cleanCuisine)}</span>
+                                        <span className="capitalize">{cleanCuisine}</span>
+                                    </span>
+                                );
+                            })}
+                        </div>
                     )}
                     {distanceMiles != null && (
                         <span className="hidden md:flex text-[9px] font-bold text-slate-700 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded whitespace-nowrap mt-0.5 shadow-sm">
