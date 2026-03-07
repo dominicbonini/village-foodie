@@ -4,7 +4,7 @@ import { useState, useRef, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation'; 
-import { usePostHog } from 'posthog-js/react'; // 👈 Imported PostHog
+import { usePostHog } from 'posthog-js/react'; 
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { useVillageData } from '@/hooks/useVillageData';
@@ -26,7 +26,7 @@ const MapView = dynamic(() => import('@/components/MapView'), {
 
 // --- MAIN CONTENT COMPONENT ---
 function VillageFoodieContent() {
-  const posthog = usePostHog(); // 👈 Initialized PostHog hook
+  const posthog = usePostHog(); 
   const searchParams = useSearchParams();
   const [view, setView] = useState<'list' | 'map'>('list');
   
@@ -69,17 +69,11 @@ function VillageFoodieContent() {
         const element = document.getElementById(id);
         
         if (element) {
-          // 1. Check if we are on a mobile screen or desktop
           const isMobile = window.innerWidth < 768;
-          
-          // 2. Set the exact height of your sticky header + sticky date banner (+ an 8px visual gap)
           const exactHeaderHeight = isMobile ? 236 : 192; 
-
-          // 3. Calculate the exact pixel location on the page
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
 
-          // 4. Teleport the user to that exact pixel
           window.scrollTo({
             top: offsetPosition,
             behavior: 'auto'
@@ -102,7 +96,6 @@ function VillageFoodieContent() {
       localStorage.setItem('user_postcode', cleanCode);
       setUserPostcode(cleanCode); 
       
-      // 👇 TRACK THE POSTCODE SEARCH 👇
       if (posthog) {
         posthog.capture('searched_postcode', {
           postcode: cleanCode,
@@ -122,7 +115,6 @@ function VillageFoodieContent() {
     if (filters.distance) params.set('distance', filters.distance);
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
 
-    // 👇 TRACK NEWSLETTER CLICKS 👇
     if (posthog) {
       posthog.capture('clicked_newsletter_subscribe', {
         postcode: currentCode
@@ -170,8 +162,13 @@ function VillageFoodieContent() {
               <button onClick={() => handlePostcodeSearch(postcodeRef.current?.value || '')} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-2 rounded text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
             </div>
             
-            <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
-              <select className="bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:outline-none" value={filters.date} onChange={(e) => setFilters({...filters, date: e.target.value})}>
+            {/* 👇 UPDATED: Grid on Mobile, Flex on Desktop 👇 */}
+            <div className="grid grid-cols-3 md:flex gap-1.5 md:gap-2 w-full md:w-auto pb-1 md:pb-0">
+              <select 
+                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-xs sm:text-sm px-1.5 sm:px-3 py-2 rounded border border-slate-600 focus:outline-none truncate" 
+                value={filters.date} 
+                onChange={(e) => setFilters({...filters, date: e.target.value})}
+              >
                 <option value="all">Any Day</option>
                 <option value="today">Today</option>
                 <option value="tomorrow">Tomorrow</option>
@@ -179,18 +176,27 @@ function VillageFoodieContent() {
                 <option value="next7">Next 7 Days</option>
               </select>
 
-              <select className="bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:outline-none" value={filters.cuisine} onChange={(e) => setFilters({...filters, cuisine: e.target.value})}>
+              <select 
+                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-xs sm:text-sm px-1.5 sm:px-3 py-2 rounded border border-slate-600 focus:outline-none truncate" 
+                value={filters.cuisine} 
+                onChange={(e) => setFilters({...filters, cuisine: e.target.value})}
+              >
                 <option value="all">All Food</option>
                 {cuisineOptions.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               
-              <select className="bg-slate-900 text-white text-sm px-3 py-2 rounded border border-slate-600 focus:outline-none" value={filters.distance} onChange={(e) => setFilters({...filters, distance: e.target.value})} disabled={!userLocation}>
+              <select 
+                className="w-full md:w-auto min-w-0 bg-slate-900 text-white text-xs sm:text-sm px-1.5 sm:px-3 py-2 rounded border border-slate-600 focus:outline-none truncate" 
+                value={filters.distance} 
+                onChange={(e) => setFilters({...filters, distance: e.target.value})} 
+                disabled={!userLocation}
+              >
                 <option value="10">10 Miles</option>
                 <option value="20">20 Miles</option>
                 <option value="30">30 Miles</option>
               </select>
             </div>
-          </div>
+                      </div>
         </div>
       </header>
 
@@ -215,7 +221,6 @@ function VillageFoodieContent() {
                 )}
 
                 {Object.entries(groupedEvents).map(([date, dateEvents]) => {
-                  // Sort by distance (Closest First)
                   const sortedEvents = [...dateEvents].sort((a, b) => {
                     if (!userLocation || !a.venueLat || !a.venueLong || !b.venueLat || !b.venueLong) return 0;
                     const distA = getDistanceKm(userLocation.lat, userLocation.long, a.venueLat, a.venueLong);
@@ -274,7 +279,6 @@ function VillageFoodieContent() {
   );
 }
 
-// --- MAIN EXPORT: WRAP IN SUSPENSE FOR DEPLOYMENT ---
 export default function Home() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-400">Loading...</div>}>
