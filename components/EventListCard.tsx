@@ -111,8 +111,16 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   }
 
   const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
-  const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/\s+/g, '') : '';
-  const waPhone = cleanPhone.startsWith('0') ? '44' + cleanPhone.slice(1) : cleanPhone;
+  
+  // 👇 FIX 1: Aggressively strip all spaces, hyphens, and brackets out of the phone number 👇
+  const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/[^\d+]/g, '') : '';
+  
+  // Clean up the WhatsApp number so it definitely starts with 44 and has no + symbol
+  let waPhone = cleanPhone.replace('+', '');
+  if (waPhone.startsWith('0')) {
+      waPhone = '44' + waPhone.slice(1);
+  }
+  
   const hasPhone = cleanPhone !== '';
 
   let orderDateText = 'today'; 
@@ -140,9 +148,11 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   }
 
   const orderMessage = encodeURIComponent(`Hi! I saw you are at ${venueDisplay} ${orderDateText}. I found you on Village Foodie 🚚. Could I please order...`);
+  
+  // 👇 FIX 2: Check if device needs an ampersand or a question mark for SMS links 👇
+  const smsDivider = isApple ? '&' : '?';
 
   const trackOrderClick = (method: string) => {
-      console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
       if (posthog) {
           posthog.capture('clicked_contact_button', {
               method: method, 
@@ -159,16 +169,17 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const showWebsite = wantsWebsite || (!methodsStr && event.orderUrl && event.orderUrl.includes('http'));
 
+  // 👇 FIX 3: Route WhatsApp in the same window, route SMS using the dynamic Apple divider 👇
   function handleMessageSelect(e: React.ChangeEvent<HTMLSelectElement>) {
       const action = e.target.value;
       e.target.value = ''; 
       
       if (action === 'whatsapp') {
           trackOrderClick('WhatsApp');
-          window.open(`https://wa.me/${waPhone}?text=${orderMessage}`, '_blank');
+          window.location.href = `https://wa.me/${waPhone}?text=${orderMessage}`;
       } else if (action === 'text') {
           trackOrderClick('Text');
-          window.location.href = `sms:${cleanPhone}?body=${orderMessage}`;
+          window.location.href = `sms:${cleanPhone}${smsDivider}body=${orderMessage}`;
       }
   }
 
@@ -192,10 +203,8 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </a>
         )}
 
-        {/* 👇 THE UNIFIED SMART MESSAGE LOGIC 👇 */}
         {hasPhone && acceptsWhatsApp && (
             <div className="relative group flex-1">
-                {/* 👇 FIX: Swapped hover: for group-hover: 👇 */}
                 <button className="w-full h-full flex items-center justify-center text-center gap-1 !bg-orange-600 group-hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
                     💬 Message
                 </button>
@@ -207,9 +216,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </div>
         )}
 
-        {/* IF THEY DON'T HAVE WHATSAPP EXPLICITLY, DEFAULT TO DIRECT TEXT */}
+        {/* 👇 FIX 4: Ensured the fallback text button also uses the safe Apple divider 👇 */}
         {hasPhone && !acceptsWhatsApp && (
-            <a href={`sms:${cleanPhone}?body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+            <a href={`sms:${cleanPhone}${smsDivider}body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
                 💬 Message
             </a>
         )}
