@@ -228,7 +228,7 @@ async function getTabData(sheets, rangeName) {
 }
 
 async function main() {
-console.log("🚀 Starting Smart Scrape (Strict Deduplication)...");
+console.log("🚀 Starting Smart Scrape (Strict Deduplication & Smart Match)...");
 
 if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
   throw new Error("Missing Credentials in .env.local");
@@ -266,12 +266,10 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
-// --- ALIGNED TO YOUR EXACT COLUMN HEADERS ---
 truckData.forEach(row => {
-  // Check Column I (Schedule URL) first. If blank, fallback to Column G (Website).
   const targetUrl = row[8] || row[6] || 'about:blank';
-  const aiInstructions = row[14] || ""; // Column O
-  const runStrategy = (row[15] || 'scroll_lazy').toLowerCase().trim(); // Column P
+  const aiInstructions = row[14] || ""; 
+  const runStrategy = (row[15] || 'scroll_lazy').toLowerCase().trim(); 
   
   const hasUrl = targetUrl !== 'about:blank';
   const hasInstructions = aiInstructions.length > 10;
@@ -356,6 +354,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
+          5. VENUE STANDARDIZATION: Match the venue to the exact official name from this list if possible: ${JSON.stringify(validVenues)}. For example, if the rule says "Wickhambrook Memorial Social Centre", output exactly "Wickhambrook MSC".
           CORRECT FORMAT:
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
@@ -372,7 +371,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           4. **DateStart Format:** MUST be "DD/MM/YYYY". Use the Current Year unless the website explicitly states otherwise.
           5. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
           6. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          7. Venue Name Fuzzy Match: ${JSON.stringify(validVenues)}.
+          7. **VENUE STANDARDIZATION:** You MUST map the extracted venue to the exact official name from this list if they refer to the same place: ${JSON.stringify(validVenues)}. For example, if the text says "Wickhambrook Memorial Social Centre", output exactly "Wickhambrook MSC".
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
           WEBSITE TEXT:
@@ -383,8 +382,6 @@ for (const [index, site] of sitesToScrape.entries()) {
     try {
       console.log("   🤖 Sending to AI...");
       const result = await generateContentWithRetry(model, prompt);
-      
-      console.log("   🧠 AI Output:", JSON.stringify(result));
       
       let finalEvents = [];
       
@@ -425,29 +422,85 @@ for (const [index, site] of sitesToScrape.entries()) {
         for (const event of finalEvents) {
           const truckName = (event["Truck Name"] || "").trim();
           const venueName = (event["Venue Name"] || "").trim();
+          const eventNotes = (event["Notes"] || "").trim();
           
           if (!truckName || !event.DateStart) continue;
 
           const normTruck = normalizeName(truckName);
           const normVenue = normalizeName(venueName);
 
-          const matchedTruck = validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
-          const matchedVenue = validVenues.find(v => normalizeName(v).includes(normVenue) || normVenue.includes(normalizeName(v)));
-          
-          const finalVenue = matchedVenue || venueName || "Unknown";
-          
+          // --- 1. TRUCK MATCHER ---
+          let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck);
+          if (!matchedTruck) {
+              matchedTruck = validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
+          }
+
           let finalTruck = matchedTruck;
-          let notes = "";
+          let notes = eventNotes;
 
           if (!matchedTruck) {
               if (truckName.toLowerCase().includes(normalizeName(site.name))) {
                   finalTruck = site.name;
               } else {
                   finalTruck = truckName; 
-                  notes = "[⚠️ NEW TRUCK]"; 
+                  notes = notes ? `[⚠️ NEW TRUCK] ${notes}` : "[⚠️ NEW TRUCK]"; 
               }
+          }
+
+          // --- 2. MULTI-TIER VENUE MATCHER ---
+          let finalVenue = venueName || "Unknown";
+          const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
+          
+          let exactVenueMatches = venueData.filter(v => v[0] && normalizeName(v[0]) === normVenue);
+          
+          if (exactVenueMatches.length === 1) {
+              finalVenue = exactVenueMatches[0][0]; 
+          } else if (exactVenueMatches.length > 1) {
+              let foundSpecific = false;
+              for (const match of exactVenueMatches) {
+                  const locationData = match.slice(1, 8).filter(Boolean).join(" ").toLowerCase();
+                  const locationWords = locationData.split(/[\s,]+/).filter(w => w.length > 3);
+                  
+                  if (locationWords.some(w => eventTextToSearch.includes(w))) {
+                      finalVenue = match[0];
+                      foundSpecific = true;
+                      break;
+                  }
+              }
+              if (!foundSpecific) finalVenue = exactVenueMatches[0][0]; 
           } else {
-              finalTruck = matchedTruck;
+              let fuzzyVenueMatches = venueData.filter(v => {
+                  if (!v[0]) return false;
+                  const normV = normalizeName(v[0]);
+                  const isContained = normVenue.includes(normV) || normV.includes(normVenue);
+                  
+                  if (isContained && normV.length <= 5) {
+                      const rawV = v[0].toLowerCase().replace(/^the\s+/, '').trim();
+                      const regex = new RegExp(`\\b${rawV}\\b`, 'i'); 
+                      return regex.test(eventTextToSearch);
+                  }
+                  return isContained;
+              });
+
+              if (fuzzyVenueMatches.length === 1) {
+                  finalVenue = fuzzyVenueMatches[0][0];
+              } else if (fuzzyVenueMatches.length > 1) {
+                  let foundSpecific = false;
+                  for (const match of fuzzyVenueMatches) {
+                      const locationData = match.slice(1, 8).filter(Boolean).join(" ").toLowerCase();
+                      const locationWords = locationData.split(/[\s,]+/).filter(w => w.length > 3);
+                      
+                      if (locationWords.some(w => eventTextToSearch.includes(w))) {
+                          finalVenue = match[0];
+                          foundSpecific = true;
+                          break;
+                      }
+                  }
+                  if (!foundSpecific) {
+                      fuzzyVenueMatches.sort((a, b) => b[0].length - a[0].length);
+                      finalVenue = fuzzyVenueMatches[0][0];
+                  }
+              }
           }
 
           const cleanDate = standardizeDate(event.DateStart);
