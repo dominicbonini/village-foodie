@@ -112,7 +112,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
   
-  // Clean phone number for links
+  // Clean phone number for links (spaces in your sheet won't break anything!)
   const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/[^\d+]/g, '') : '';
   
   let waPhone = cleanPhone.replace('+', '');
@@ -167,20 +167,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const showWebsite = wantsWebsite || (!methodsStr && event.orderUrl && event.orderUrl.includes('http'));
 
-  // 👇 REVERTED: Back to the original working WhatsApp logic, keeping the strict SMS fixes 👇
-  function handleMessageSelect(e: React.ChangeEvent<HTMLSelectElement>) {
-      const action = e.target.value;
-      e.target.value = ''; 
-      
-      if (action === 'whatsapp') {
-          trackOrderClick('WhatsApp');
-          window.open(`https://wa.me/${waPhone}?text=${orderMessage}`, '_blank');
-      } else if (action === 'text') {
-          trackOrderClick('Text');
-          window.location.href = `sms:${cleanPhone}${smsDivider}body=${orderMessage}`;
-      }
-  }
-
   // --- BUTTON RENDERERS ---
   const MenuBtn = event.menuUrl ? (
     <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu')} className={`${isMapPopup ? 'w-full' : 'flex-1'} flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap`}>
@@ -201,17 +187,11 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </a>
         )}
 
+        {/* 👇 Both links now present a unified "💬 Message" face to the user 👇 */}
         {hasPhone && acceptsWhatsApp && (
-            <div className="relative group flex-1">
-                <button className="w-full h-full flex items-center justify-center text-center gap-1 !bg-orange-600 group-hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
-                    💬 Message
-                </button>
-                <select className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleMessageSelect} value="">
-                    <option value="" disabled>Message via...</option>
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="text">Text Message (SMS)</option>
-                </select>
-            </div>
+            <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                💬 Message
+            </a>
         )}
 
         {hasPhone && !acceptsWhatsApp && (
@@ -228,7 +208,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
     <div className="flex gap-3 items-start w-full min-w-0 font-sans">
         
         <div className="flex flex-col items-center shrink-0 w-10">
-            {/* 👇 FIX: Using the unbreakable Unicode ID for the truck so your editor can't corrupt it 👇 */}
             <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-1">
                 {isStatic ? '🍽️' : "\uD83D\uDE9A"}
             </div>
@@ -291,14 +270,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
                 
                 {event.notes && (
-                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md rounded-l-sm flex items-start shrink-0 min-w-0 shadow-sm">
+                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
                         <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
                             {renderTextWithLinks(event.notes)}
                         </div>
                     </div>
                 )}
                 {event.eventNotes && (
-                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md rounded-l-sm flex items-start shrink-0 min-w-0 shadow-sm">
+                    <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
                         <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
                             ⭐ {renderTextWithLinks(event.eventNotes)}
                         </div>
