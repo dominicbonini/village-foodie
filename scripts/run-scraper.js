@@ -354,7 +354,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
-          5. VENUE STANDARDIZATION: Match the venue to the exact official name from this list if possible: ${JSON.stringify(validVenues)}. For example, if the rule says "Wickhambrook Memorial Social Centre", output exactly "Wickhambrook MSC".
+          5. VENUE STANDARDIZATION: Match the venue to the exact official name from this list if possible: ${JSON.stringify(validVenues)}. For example, if the rule says "Wickhambrook MSC", output exactly "Wickhambrook Memorial Social Centre".
           CORRECT FORMAT:
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
@@ -371,7 +371,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           4. **DateStart Format:** MUST be "DD/MM/YYYY". Use the Current Year unless the website explicitly states otherwise.
           5. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
           6. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          7. **VENUE STANDARDIZATION:** You MUST map the extracted venue to the exact official name from this list if they refer to the same place: ${JSON.stringify(validVenues)}. For example, if the text says "Wickhambrook Memorial Social Centre", output exactly "Wickhambrook MSC".
+          7. **VENUE STANDARDIZATION:** You MUST map the extracted venue to the exact official name from this list if they refer to the same place: ${JSON.stringify(validVenues)}. For example, if the text says "Wickhambrook MSC", output exactly "Wickhambrook Memorial Social Centre".
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
           WEBSITE TEXT:
