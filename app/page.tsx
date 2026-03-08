@@ -70,7 +70,8 @@ function VillageFoodieContent() {
         
         if (element) {
           const isMobile = window.innerWidth < 768;
-          const exactHeaderHeight = isMobile ? 196 : 182; 
+          // 👇 FIX: Math updated to compensate for the 8px of extra padding we added to the dates 👇
+          const exactHeaderHeight = isMobile ? 204 : 190; 
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
 
@@ -144,7 +145,6 @@ function VillageFoodieContent() {
               Village Foodie <span className="text-xl md:text-2xl">🚚</span>
             </h1>
             <div className="flex bg-slate-800 rounded-lg p-1">
-              {/* 👇 FIX: Added window.scrollTo(0,0) to instantly reset the page height when toggling views 👇 */}
               <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
               <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
             </div>
@@ -230,7 +230,8 @@ function VillageFoodieContent() {
 
                   return (
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-3 md:pt-4 pb-1">
+                        {/* 👇 FIX: Increased top padding (pt-5 md:pt-6) to give the date more breathing room below the main header 👇 */}
+                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>

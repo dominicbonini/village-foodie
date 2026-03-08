@@ -352,18 +352,20 @@ for (const [index, site] of sitesToScrape.entries()) {
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
       } else {
+        // --- THIS PROMPT BLOCK HAS BEEN OVERHAULED TO PREVENT DATE HALLUCINATIONS ---
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
           Current Year: ${new Date().getFullYear()}.
-          TASK: Extract ALL upcoming food truck events from the provided text.
+          TASK: Extract upcoming food truck events from the provided text.
           CRITICAL RULES:
-          1. **DEEP SCAN:** The text contains multiple days/months. Scan the ENTIRE text block.
-          2. **TODAY/TOMORROW:** If text says "Tonight" or "Tomorrow", convert to dates based on Current Date.
-          3. **DateStart:** MUST be "DD/MM/YYYY". You MUST use the Current Year (${new Date().getFullYear()}) for all dates unless the website explicitly states otherwise. Do NOT use past years like 2025.
-          4. **Missing Info:** If "TRUCK NAME" is in text, use it. Default to "${site.name}".
-          5. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          6. Venue Name Fuzzy Match: ${JSON.stringify(validVenues)}.
+          1. **STRICT DATE ADHERENCE (NO HALLUCINATING):** You MUST extract dates exactly as they appear in the text. Do NOT invent dates, and do NOT shift past dates into the future. 
+          2. **IGNORE PAST EVENTS:** Compare the dates in the text to the Current Date. If the text is advertising a schedule or event that occurred BEFORE the Current Date, IGNORE IT ENTIRELY. If there are no future events in the text, return an empty array: []
+          3. **TODAY/TOMORROW:** If text explicitly says "Tonight" or "Tomorrow", convert to dates based on the Current Date provided above.
+          4. **DateStart Format:** MUST be "DD/MM/YYYY". Use the Current Year unless the website explicitly states otherwise.
+          5. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
+          6. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
+          7. Venue Name Fuzzy Match: ${JSON.stringify(validVenues)}.
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
           WEBSITE TEXT:
@@ -441,7 +443,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
               
-              // --- ALIGNED TO THE NEW 3-TAB EVENTS STRUCTURE ---
               newRowsToAdd.push([
                   event.DateStart, // A: Date
                   event.TimeStart, // B: Start Time
