@@ -112,6 +112,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
   
+  // Clean phone number for links
   const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/[^\d+]/g, '') : '';
   
   let waPhone = cleanPhone.replace('+', '');
@@ -166,20 +167,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const showWebsite = wantsWebsite || (!methodsStr && event.orderUrl && event.orderUrl.includes('http'));
 
+  // 👇 REVERTED: Back to the original working WhatsApp logic, keeping the strict SMS fixes 👇
   function handleMessageSelect(e: React.ChangeEvent<HTMLSelectElement>) {
       const action = e.target.value;
       e.target.value = ''; 
       
       if (action === 'whatsapp') {
           trackOrderClick('WhatsApp');
-          // 👇 FIX: The "Invisible Link" trick restores the instant app jump without triggering popup blockers 👇
-          const link = document.createElement('a');
-          link.href = `https://wa.me/${waPhone}?text=${orderMessage}`;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          window.open(`https://wa.me/${waPhone}?text=${orderMessage}`, '_blank');
       } else if (action === 'text') {
           trackOrderClick('Text');
           window.location.href = `sms:${cleanPhone}${smsDivider}body=${orderMessage}`;
@@ -233,8 +228,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
     <div className="flex gap-3 items-start w-full min-w-0 font-sans">
         
         <div className="flex flex-col items-center shrink-0 w-10">
+            {/* 👇 FIX: Using the unbreakable Unicode ID for the truck so your editor can't corrupt it 👇 */}
             <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-1">
-                {isStatic ? '🍽️' : '🚚'}
+                {isStatic ? '🍽️' : "\uD83D\uDE9A"}
             </div>
             {distanceMiles != null && (
                 <div className="mt-1.5 flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-md py-1 w-full shadow-sm md:hidden">
