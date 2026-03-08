@@ -18,7 +18,7 @@ const cleanKey = (str: string) => {
         .trim();
 };
 
-// 🤝 AGGRESSIVE FUZZY MATCHER
+// 🤝 AGGRESSIVE FUZZY MATCHER (Kept for fallback purposes)
 const isMatch = (key1: string, key2: string) => {
     if (!key1 || !key2) return false;
     if (key1 === key2) return true;
@@ -137,10 +137,27 @@ export function useVillageData(
             const rawVenue = cols[4] || '';
 
             const eventTruckKey = cleanKey(rawTruck);
-            let truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey)) || {};
+            // Try exact truck match first, fallback to fuzzy
+            let truck = trucksList.find(t => t.cleanKey === eventTruckKey) || 
+                        trucksList.find(t => isMatch(t.cleanKey, eventTruckKey)) || {};
 
             const eventVenueKey = cleanKey(rawVenue);
-            let venue = venuesList.find(v => isMatch(v.cleanKey, eventVenueKey)) || {}; 
+            
+            // 👇 THE FIX: STRICT VENUE MATCHING 👇
+            // 1. Try Exact Match First (Highly accurate because scraper standardizes names)
+            let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
+
+            // 2. Safer Fallback (Only if exact match fails)
+            if (!venue) {
+                venue = venuesList.find(v => {
+                    const fuzzyMatch = isMatch(v.cleanKey, eventVenueKey);
+                    // Anti-Hijacking Safeguard: Block short words like "gate" from using fuzzy match
+                    if (fuzzyMatch && eventVenueKey.length <= 5) {
+                        return false; 
+                    }
+                    return fuzzyMatch;
+                }) || {}; 
+            }
 
             const eventObj: VillageEvent = {
               id: `event-${index}`,
@@ -196,7 +213,6 @@ export function useVillageData(
     today.setHours(0,0,0,0);
     
     const baseFiltered = events.filter(event => {
-      // 👇 UPDATED: Check if ANY of the cuisines match the selected filter 👇
       if (filters.cuisine !== 'all') {
         const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
         if (!eventTypes.includes(filters.cuisine.toLowerCase())) return false;
@@ -254,13 +270,11 @@ export function useVillageData(
     return { groupedEvents: grouped, mapEvents: baseFiltered };
   }, [events, filters, userLocation]);
 
-  // 👇 UPDATED: Split commas when generating the list of options for the dropdown 👇
   const cuisineOptions = useMemo(() => {
     const types = new Set<string>();
     
     events.forEach(e => {
         if (e.type && e.type !== 'Mobile' && !e.type.toLowerCase().includes('static')) {
-            // Split by comma, trim whitespace, and add each individually
             const splitTypes = e.type.split(',').map(t => t.trim());
             splitTypes.forEach(t => {
                 if (t) types.add(t);
