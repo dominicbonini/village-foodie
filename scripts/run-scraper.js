@@ -20,7 +20,7 @@ const STRATEGIES = {
 // HELPER: Sleep
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// HELPER: Name Normalizer (Updated to ignore "The")
+// HELPER: Name Normalizer
 function normalizeName(name) {
     if (!name) return "";
     return name.toLowerCase()
@@ -36,7 +36,6 @@ function parseTime(timeStr) {
     if (!timeStr) return null;
     timeStr = timeStr.toLowerCase().replace(/\s/g, '');
 
-    // "7ish" override
     if (timeStr.includes('7ish')) return '19:00';
 
     if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
@@ -74,8 +73,6 @@ function generateDatesFromRule(ruleJSON) {
     let posRaw = (ruleJSON.pos || "").toLowerCase().replace(/\D/g, ''); 
     
     const posNum = parseInt(posRaw, 10);
-    
-    // Check if it's a specific date (Single Event) vs Recurring Rule
     let isSingleEvent = false;
     
     if (posNum > 5) {
@@ -89,6 +86,8 @@ function generateDatesFromRule(ruleJSON) {
     }
 
     if (targetDay === undefined) return [];
+    
+    const freq = (ruleJSON.freq || "").toLowerCase();
 
     for (let i = 0; i < 28; i++) {
         const d = new Date();
@@ -97,14 +96,14 @@ function generateDatesFromRule(ruleJSON) {
         if (d.getDay() === targetDay) {
             let isMatch = false;
 
-            if (ruleJSON.freq === 'weekly') {
+            if (freq === 'weekly') {
                 if (isSingleEvent) {
                      if (d.getDate() === posNum) isMatch = true;
                 } else {
                      isMatch = true; 
                 }
             } 
-            else if (ruleJSON.freq === 'monthly') {
+            else if (freq === 'monthly') {
                 const dayOfMonth = d.getDate();
                 
                 if (isSingleEvent) {
@@ -125,10 +124,7 @@ function generateDatesFromRule(ruleJSON) {
 
             if (isMatch) {
                 dates.push(d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }));
-                
-                if (isSingleEvent) {
-                    return dates;
-                }
+                if (isSingleEvent) return dates;
             }
         }
     }
@@ -217,7 +213,6 @@ async function performFrameDump(page) {
   return combinedText;
 }
 
-// HELPER: Normalize Date (e.g., "1/1/2024" -> "01/01/2024") to ensure matches
 function standardizeDate(dateStr) {
   if (!dateStr) return "";
   const parts = dateStr.split('/');
@@ -227,7 +222,7 @@ function standardizeDate(dateStr) {
 
 async function getTabData(sheets, rangeName) {
   try {
-    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:P` });
+    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:Q` });
     return resExtended.data.values || [];
   } catch (error) { return []; }
 }
@@ -255,7 +250,6 @@ const [truckData, venueData, eventData] = await Promise.all([
 const validTrucks = truckData.map(r => r[0]).filter(Boolean);
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
-// --- STRICT DEDUPLICATION SET ---
 const existingEvents = new Set();
 
 eventData.forEach(row => {
@@ -272,20 +266,26 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
-// TRUCKS TAB
+// --- ALIGNED TO YOUR EXACT COLUMN HEADERS ---
 truckData.forEach(row => {
-  const hasUrl = row[6] && row[6].startsWith('http');
-  const hasInstructions = row[12] && row[12].length > 10;
+  // Check Column I (Schedule URL) first. If blank, fallback to Column G (Website).
+  const targetUrl = row[8] || row[6] || 'about:blank';
+  const aiInstructions = row[14] || ""; // Column O
+  const runStrategy = (row[15] || 'scroll_lazy').toLowerCase().trim(); // Column P
+  
+  const hasUrl = targetUrl !== 'about:blank';
+  const hasInstructions = aiInstructions.length > 10;
+  
   if (hasUrl || hasInstructions) {
     sitesToScrape.push({ 
-        name: row[0], url: row[6] || 'about:blank', 
-        instructions: row[12] || "",
-        strategy: (row[13] || 'scroll_lazy').toLowerCase().trim()
+        name: row[0], 
+        url: targetUrl, 
+        instructions: aiInstructions,
+        strategy: runStrategy
     });
   }
 });
 
-// VENUES TAB
 venueData.forEach(row => {
   if (row[9] && row[9].startsWith('http')) {
     sitesToScrape.push({ 
@@ -296,7 +296,14 @@ venueData.forEach(row => {
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite", generationConfig: { responseMimeType: "application/json" } });
+
+const model = genAI.getGenerativeModel({ 
+    model: "gemini-2.5-flash-lite", 
+    generationConfig: { 
+        responseMimeType: "application/json",
+        temperature: 0 
+    } 
+});
 
 const browser = await puppeteer.launch({
   headless: "new",
@@ -348,11 +355,11 @@ for (const [index, site] of sitesToScrape.entries()) {
           1. Extract EACH venue separately.
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
+          4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
           CORRECT FORMAT:
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
       } else {
-        // --- THIS PROMPT BLOCK HAS BEEN OVERHAULED TO PREVENT DATE HALLUCINATIONS ---
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
@@ -377,23 +384,33 @@ for (const [index, site] of sitesToScrape.entries()) {
       console.log("   🤖 Sending to AI...");
       const result = await generateContentWithRetry(model, prompt);
       
+      console.log("   🧠 AI Output:", JSON.stringify(result));
+      
       let finalEvents = [];
-      if (isManualWithRules && Array.isArray(result) && result[0].freq) {
+      
+      if (isManualWithRules && Array.isArray(result)) {
            for (const rule of result) {
-               const dates = generateDatesFromRule(rule);
-               const tStart = parseTime(rule.rawTimeStart) || "Contact Venue";
-               let tEnd = parseTime(rule.rawTimeEnd) || "Contact Venue";
-               if (tStart === "Contact Venue") tEnd = "";
+               
+               if (!rule.freq && rule.day) {
+                   rule.freq = "weekly";
+               }
+               
+               if (rule.freq) {
+                   const dates = generateDatesFromRule(rule);
+                   const tStart = parseTime(rule.rawTimeStart) || "Contact Venue";
+                   let tEnd = parseTime(rule.rawTimeEnd) || "Contact Venue";
+                   if (tStart === "Contact Venue") tEnd = "";
 
-               for (const date of dates) {
-                   finalEvents.push({
-                       "DateStart": date,
-                       "TimeStart": tStart,
-                       "TimeEnd": tEnd,
-                       "Truck Name": site.name,
-                       "Venue Name": rule.venue,
-                       "Notes": "" 
-                   });
+                   for (const date of dates) {
+                       finalEvents.push({
+                           "DateStart": date,
+                           "TimeStart": tStart,
+                           "TimeEnd": tEnd,
+                           "Truck Name": site.name,
+                           "Venue Name": rule.venue || "Unknown Venue",
+                           "Notes": "" 
+                       });
+                   }
                }
            }
       } else {
@@ -409,7 +426,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           const truckName = (event["Truck Name"] || "").trim();
           const venueName = (event["Venue Name"] || "").trim();
           
-          if (!truckName) continue;
+          if (!truckName || !event.DateStart) continue;
 
           const normTruck = normalizeName(truckName);
           const normVenue = normalizeName(venueName);
@@ -428,7 +445,6 @@ for (const [index, site] of sitesToScrape.entries()) {
               } else {
                   finalTruck = truckName; 
                   notes = "[⚠️ NEW TRUCK]"; 
-                  console.log(`      ⚠️  ALERT: New Truck Discovered: "${truckName}"`);
               }
           } else {
               finalTruck = matchedTruck;
@@ -444,13 +460,13 @@ for (const [index, site] of sitesToScrape.entries()) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
               
               newRowsToAdd.push([
-                  event.DateStart, // A: Date
-                  event.TimeStart, // B: Start Time
-                  event.TimeEnd,   // C: End Time
-                  finalTruck,      // D: Truck Name
-                  finalVenue,      // E: Venue Name
-                  notes,           // F: Event Notes
-                  `URL: ${site.url} | Strategy: ${site.strategy}` // G: Event Source / Debug Info
+                  event.DateStart, 
+                  event.TimeStart, 
+                  event.TimeEnd,   
+                  finalTruck,      
+                  finalVenue,      
+                  notes,           
+                  `URL: ${site.url} | Strategy: ${site.strategy}` 
               ]);
               
               existingEvents.add(key); 
@@ -476,7 +492,7 @@ if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${TABS.EVENTS}!A:G`, // Append exactly 7 columns
+    range: `${TABS.EVENTS}!A:G`, 
     valueInputOption: 'USER_ENTERED',
     resource: { values: newRowsToAdd },
   });
