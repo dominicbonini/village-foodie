@@ -33,7 +33,6 @@ const renderTextWithLinks = (text: string) => {
 };
 
 export default function EventListCard({ event, distanceMiles, isMapPopup = false }: EventListCardProps) {
-  // 👇 INITIALIZE POSTHOG HERE 👇
   const posthog = usePostHog();
 
   const isStatic = event.type?.toLowerCase().includes('static');
@@ -52,7 +51,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
     : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
 
   async function handleShare() {
-      // TRACK THE SHARE CLICK
       if (posthog) {
         posthog.capture('clicked_share', {
           truck_name: event.truckName,
@@ -97,7 +95,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
       const action = e.target.value;
       e.target.value = ''; 
       
-      // TRACK THE CALENDAR ADD
       if (posthog) {
         posthog.capture('clicked_add_to_calendar', {
           calendar_type: action,
@@ -113,12 +110,11 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
       else if (action === 'ics') downloadICS(calendarEvent);
   }
 
-  // --- BULLETPROOF BUTTON LOGIC ---
   const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
   const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/\s+/g, '') : '';
   const waPhone = cleanPhone.startsWith('0') ? '44' + cleanPhone.slice(1) : cleanPhone;
+  const hasPhone = cleanPhone !== '';
 
-  // 🗓️ SMART MESSAGE DATE LOGIC
   let orderDateText = 'today'; 
   if (event.date) {
       const parts = event.date.split('/');
@@ -145,7 +141,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const orderMessage = encodeURIComponent(`Hi! I saw you are at ${venueDisplay} ${orderDateText}. I found you on Village Foodie 🚚. Could I please order...`);
 
-  // 👇 POSTHOG TRACKING FUNCTION 👇
   const trackOrderClick = (method: string) => {
       console.log(`[TRACKING] User clicked ${method} for ${event.truckName} at ${venueDisplay}`);
       if (posthog) {
@@ -160,13 +155,67 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   };
 
   const wantsWebsite = methodsStr.includes('website');
-  const wantsWhatsApp = methodsStr.includes('whatsapp');
-  const wantsText = methodsStr.includes('text');
+  const acceptsWhatsApp = methodsStr.includes('whatsapp');
 
   const showWebsite = wantsWebsite || (!methodsStr && event.orderUrl && event.orderUrl.includes('http'));
-  const showCall = cleanPhone !== ''; 
-  const showWhatsApp = wantsWhatsApp;
-  const showText = wantsText;
+
+  function handleMessageSelect(e: React.ChangeEvent<HTMLSelectElement>) {
+      const action = e.target.value;
+      e.target.value = ''; 
+      
+      if (action === 'whatsapp') {
+          trackOrderClick('WhatsApp');
+          window.open(`https://wa.me/${waPhone}?text=${orderMessage}`, '_blank');
+      } else if (action === 'text') {
+          trackOrderClick('Text');
+          window.location.href = `sms:${cleanPhone}?body=${orderMessage}`;
+      }
+  }
+
+  // --- BUTTON RENDERERS ---
+  const MenuBtn = event.menuUrl ? (
+    <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu')} className={`${isMapPopup ? 'w-full' : 'flex-1'} flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap`}>
+        <span>📸</span> View Menu
+    </a>
+  ) : null;
+
+  const ContactBtns = (
+    <>
+        {showWebsite && event.orderUrl && event.orderUrl.includes('http') && (
+            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                🌐 Order
+            </a>
+        )}
+        {hasPhone && (
+            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                📞 Call
+            </a>
+        )}
+
+        {/* 👇 THE UNIFIED SMART MESSAGE LOGIC 👇 */}
+        {hasPhone && acceptsWhatsApp && (
+            <div className="relative group flex-1">
+                {/* 👇 FIX: Swapped hover: for group-hover: 👇 */}
+                <button className="w-full h-full flex items-center justify-center text-center gap-1 !bg-orange-600 group-hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                    💬 Message
+                </button>
+                <select className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleMessageSelect} value="">
+                    <option value="" disabled>Message via...</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="text">Text Message (SMS)</option>
+                </select>
+            </div>
+        )}
+
+        {/* IF THEY DON'T HAVE WHATSAPP EXPLICITLY, DEFAULT TO DIRECT TEXT */}
+        {hasPhone && !acceptsWhatsApp && (
+            <a href={`sms:${cleanPhone}?body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                💬 Message
+            </a>
+        )}
+    </>
+  );
+
 
   // === UNIFIED TIGHT CONTENT ===
   const cardContent = (
@@ -201,9 +250,8 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                 </div>
 
                 <div className="flex flex-col items-end gap-1 shrink-0">
-{/* 👇 UPDATED: Splits multiple cuisines by comma into separate badges 👇 */}
-{event.type && event.type !== 'Mobile' && !isStatic && (
-                        <div className="flex flex-wrap gap-1 justify-end">
+                    {event.type && event.type !== 'Mobile' && !isStatic && (
+                        <div className="flex flex-col gap-1 items-end">
                             {event.type.split(',').map((cuisineTag, idx) => {
                                 const cleanCuisine = cuisineTag.trim();
                                 if (!cleanCuisine) return null;
@@ -250,39 +298,22 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                     </div>
                 )}
 
-                {(event.menuUrl || showWebsite || showCall || showWhatsApp || showText) && (
-                    <div className="flex flex-wrap justify-center gap-1.5 w-full min-w-0 shrink-0 mt-0.5">
-                        
-                        {event.menuUrl && (
-                            <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu')} className="flex-1 flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1.5 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap">
-                                <span>📸</span> View Menu
-                            </a>
-                        )}
-
-                        {showWebsite && event.orderUrl && event.orderUrl.includes('http') && (
-                            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
-                                🌐 Order Online
-                            </a>
-                        )}
-
-                        {showCall && cleanPhone && (
-                            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
-                                📞 Call
-                            </a>
-                        )}
-
-                        {showWhatsApp && cleanPhone && (
-                            <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
-                                💬 WhatsApp
-                            </a>
-                        )}
-
-                        {showText && cleanPhone && (
-                            <a href={`sms:${cleanPhone}?body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1.5 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1.5 rounded-md transition-colors shadow-sm whitespace-nowrap">
-                                📱 Text
-                            </a>
-                        )}
-                    </div>
+                {(event.menuUrl || showWebsite || hasPhone) && (
+                    isMapPopup ? (
+                        <div className="flex flex-col gap-1.5 w-full min-w-0 shrink-0 mt-0.5">
+                            {MenuBtn}
+                            {(showWebsite || hasPhone) && (
+                                <div className="flex w-full gap-1.5">
+                                    {ContactBtns}
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="flex w-full gap-1.5 min-w-0 shrink-0 mt-0.5">
+                            {MenuBtn}
+                            {ContactBtns}
+                        </div>
+                    )
                 )}
                 
                 <div className="flex gap-2 justify-end shrink-0 mt-0.5">
@@ -313,7 +344,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
       return cardContent;
   }
 
-  // --- UNIQUE ID GENERATION (Matches Email Script) ---
   const dateIdPart = event.date ? event.date.replace(/\//g, '-') : '';
   const rawIdString = `${event.truckName}-${event.venueName}-${dateIdPart}`;
   const safeAnchorId = rawIdString.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');

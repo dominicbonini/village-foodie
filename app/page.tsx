@@ -70,8 +70,7 @@ function VillageFoodieContent() {
         
         if (element) {
           const isMobile = window.innerWidth < 768;
-          // MATH UPDATED: Compensating for the new padding on the date banner
-          const exactHeaderHeight = isMobile ? 204 : 186; 
+          const exactHeaderHeight = isMobile ? 196 : 182; 
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
 
@@ -145,8 +144,9 @@ function VillageFoodieContent() {
               Village Foodie <span className="text-xl md:text-2xl">🚚</span>
             </h1>
             <div className="flex bg-slate-800 rounded-lg p-1">
-              <button onClick={() => setView('list')} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
-              <button onClick={() => setView('map')} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
+              {/* 👇 FIX: Added window.scrollTo(0,0) to instantly reset the page height when toggling views 👇 */}
+              <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
+              <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
             </div>
           </div>
 
@@ -229,9 +229,8 @@ function VillageFoodieContent() {
                   });
 
                   return (
-                    <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-4">
-                        {/* FIX: Increased padding-top (pt-5) to add a gap above, decreased padding-bottom (pb-1) to pull cards up */}
-                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 pb-1">
+                    <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
+                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-3 md:pt-4 pb-1">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>
