@@ -88,13 +88,18 @@ export function getCuisineEmoji(type: string): string {
   if (t.includes('burger')) return '🍔';
   if (t.includes('coffee') || t.includes('cafe')) return '☕';
   if (t.includes('mexican') || t.includes('taco')) return '🌮';
-  if (t.includes('asian') || t.includes('thai') || t.includes('chinese') || t.includes('sushi')) return '🍜';
+  if (t.includes('asian') || t.includes('thai') || t.includes('chinese')) return '🍜';
   if (t.includes('indian') || t.includes('curry')) return '🍛';
   if (t.includes('dessert') || t.includes('ice cream') || t.includes('cake') || t.includes('sweet')) return '🍰';
-  if (t.includes('fish')) return '🐟';
+  if (t.includes('fish') || t.includes('seafood')|| t.includes('sushi')) return '🐟';
   if (t.includes('greek') || t.includes('kebab') || t.includes('gyro')) return '🥙';
   if (t.includes('vegan') || t.includes('vegetarian') || t.includes('salad')) return '🥗';
   if (t.includes('bbq') || t.includes('meat')) return '🍖';
+  if (t.includes('pie')) return '🥧';
+  if (t.includes('cheese')) return '🧀';
+  if (t.includes('bagel')) return '🥯';
+  if (t.includes('pasta')) return '🍝'; 
+  if (t.includes('crepe') || t.includes('pancake')) return '🥞';
   return '🍴'; // Default cutlery
 }
 // ==========================================
