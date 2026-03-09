@@ -359,7 +359,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
       } else {
-        // --- 🛑 UPDATED PROMPT: STOP HALLUCINATING VENUES 🛑 ---
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
@@ -437,20 +436,21 @@ for (const [index, site] of sitesToScrape.entries()) {
           }
 
           let finalTruck = matchedTruck;
-          let notes = eventNotes;
+          let isNewTruck = false;
 
           if (!matchedTruck) {
               if (truckName.toLowerCase().includes(normalizeName(site.name))) {
                   finalTruck = site.name;
               } else {
                   finalTruck = truckName; 
-                  notes = notes ? `[⚠️ NEW TRUCK] ${notes}` : "[⚠️ NEW TRUCK]"; 
+                  isNewTruck = true;
               }
           }
 
           // --- 2. MULTI-TIER VENUE MATCHER ---
           let finalVenue = venueName || "Unknown";
           const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
+          let isNewVenue = false;
           
           let exactVenueMatches = venueData.filter(v => v[0] && normalizeName(v[0]) === normVenue);
           
@@ -501,8 +501,17 @@ for (const [index, site] of sitesToScrape.entries()) {
                       fuzzyVenueMatches.sort((a, b) => b[0].length - a[0].length);
                       finalVenue = fuzzyVenueMatches[0][0];
                   }
+              } else {
+                  isNewVenue = true; // 🚨 No exact or fuzzy match found!
               }
           }
+
+          // --- 3. CONSOLIDATE AI NOTES ---
+          let aiNotesArr = [];
+          if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
+          if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
+          if (eventNotes) aiNotesArr.push(eventNotes);
+          let notes = aiNotesArr.join(" ");
 
           const cleanDate = standardizeDate(event.DateStart);
           const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -513,16 +522,15 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
               
-              // --- 🛑 FIXED COLUMN ALIGNMENT: FORCES F TO BE BLANK AND H TO HOLD NOTES 🛑 ---
               newRowsToAdd.push([
-                  event.DateStart, // A: DateStart
-                  event.TimeStart, // B: TimeStart
-                  event.TimeEnd,   // C: TimeEnd
-                  finalTruck,      // D: Truck Name
-                  finalVenue,      // E: Venue Name
-                  "",              // F: Event Notes (FORCED BLANK)
-                  `URL: ${site.url} | Strategy: ${site.strategy}`, // G: Event Source
-                  notes            // H: AI Notes
+                  event.DateStart, 
+                  event.TimeStart, 
+                  event.TimeEnd,   
+                  finalTruck,      
+                  finalVenue,      
+                  "",              
+                  `URL: ${site.url} | Strategy: ${site.strategy}`, 
+                  notes            
               ]);
               
               existingEvents.add(key); 
@@ -548,7 +556,7 @@ if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${TABS.EVENTS}!A:H`, // --- 🛑 WIDE APPEND RANGE TO CATCH COLUMN H 🛑 ---
+    range: `${TABS.EVENTS}!A:H`,
     valueInputOption: 'USER_ENTERED',
     resource: { values: newRowsToAdd },
   });

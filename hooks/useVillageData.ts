@@ -143,21 +143,22 @@ export function useVillageData(
 
             const eventVenueKey = cleanKey(rawVenue);
             
-            // 👇 THE FIX: STRICT VENUE MATCHING 👇
-            // 1. Try Exact Match First (Highly accurate because scraper standardizes names)
-            let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
+    // 👇 THE FIX: STRICT VENUE MATCHING 👇
+// 1. Try Exact Match First (Highly accurate because scraper standardizes names)
+let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
 
-            // 2. Safer Fallback (Only if exact match fails)
-            if (!venue) {
-                venue = venuesList.find(v => {
-                    const fuzzyMatch = isMatch(v.cleanKey, eventVenueKey);
-                    // Anti-Hijacking Safeguard: Block short words like "gate" from using fuzzy match
-                    if (fuzzyMatch && eventVenueKey.length <= 5) {
-                        return false; 
-                    }
-                    return fuzzyMatch;
-                }) || {}; 
-            }
+// 2. Safer Fallback (Only if exact match fails)
+if (!venue) {
+    venue = venuesList.find(v => {
+        const fuzzyMatch = isMatch(v.cleanKey, eventVenueKey);
+        // Anti-Hijacking Safeguard: If the official venue name is short (like "gate" or "oak"),
+        // it is too dangerous to fuzzy match because it will hijack longer words. 
+        if (fuzzyMatch && v.cleanKey.length <= 5) {
+            return false; 
+        }
+        return fuzzyMatch;
+    }) || {}; 
+}
 
             const eventObj: VillageEvent = {
               id: `event-${index}`,

@@ -121,8 +121,10 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   }
   
   const hasPhone = cleanPhone !== '';
+  // 👇 FIX: This strictly identifies UK mobile numbers so we don't try to text landlines
+  const isMobileNumber = waPhone.startsWith('447');
 
-  let orderDateText = 'today'; 
+  let orderDateText = 'today';
   if (event.date) {
       const parts = event.date.split('/');
       if (parts.length === 3) {
@@ -187,14 +189,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </a>
         )}
 
-        {/* 👇 Both links now present a unified "💬 Message" face to the user 👇 */}
-        {hasPhone && acceptsWhatsApp && (
+        {/* 👇 FIX: Both message links now strictly require isMobileNumber to be true 👇 */}
+        {hasPhone && isMobileNumber && acceptsWhatsApp && (
             <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
                 💬 Message
             </a>
         )}
 
-        {hasPhone && !acceptsWhatsApp && (
+        {hasPhone && isMobileNumber && !acceptsWhatsApp && (
             <a href={`sms:${cleanPhone}${smsDivider}body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
                 💬 Message
             </a>
