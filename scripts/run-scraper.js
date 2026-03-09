@@ -354,11 +354,12 @@ for (const [index, site] of sitesToScrape.entries()) {
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
-          5. VENUE STANDARDIZATION: Match the venue to the exact official name from this list if possible: ${JSON.stringify(validVenues)}. For example, if the rule says "Wickhambrook MSC", output exactly "Wickhambrook Memorial Social Centre".
+          5. VENUE STANDARDIZATION: Check if the venue is in this list: ${JSON.stringify(validVenues)}. If it is, output the exact official name. **CRITICAL:** If the venue is NOT in the list, just output the exact name from the user rules. Do not pick a random venue.
           CORRECT FORMAT:
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
       } else {
+        // --- 🛑 UPDATED PROMPT: STOP HALLUCINATING VENUES 🛑 ---
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
@@ -371,7 +372,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           4. **DateStart Format:** MUST be "DD/MM/YYYY". Use the Current Year unless the website explicitly states otherwise.
           5. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
           6. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          7. **VENUE STANDARDIZATION:** You MUST map the extracted venue to the exact official name from this list if they refer to the same place: ${JSON.stringify(validVenues)}. For example, if the text says "Wickhambrook MSC", output exactly "Wickhambrook Memorial Social Centre".
+          7. **VENUE STANDARDIZATION:** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If it is (e.g. "Wickhambrook MSC" = "Wickhambrook Memorial Social Centre"), output the official name. **CRITICAL:** If the venue is NOT in the list, output the FULL name exactly as written on the website (e.g. "Ashdon Baptist Church Car Park"). Do NOT guess or pick a random venue from the list. Do NOT put the venue name in the Notes field.
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
           WEBSITE TEXT:
@@ -512,14 +513,16 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
               
+              // --- 🛑 FIXED COLUMN ALIGNMENT: FORCES F TO BE BLANK AND H TO HOLD NOTES 🛑 ---
               newRowsToAdd.push([
-                  event.DateStart, 
-                  event.TimeStart, 
-                  event.TimeEnd,   
-                  finalTruck,      
-                  finalVenue,      
-                  notes,           
-                  `URL: ${site.url} | Strategy: ${site.strategy}` 
+                  event.DateStart, // A: DateStart
+                  event.TimeStart, // B: TimeStart
+                  event.TimeEnd,   // C: TimeEnd
+                  finalTruck,      // D: Truck Name
+                  finalVenue,      // E: Venue Name
+                  "",              // F: Event Notes (FORCED BLANK)
+                  `URL: ${site.url} | Strategy: ${site.strategy}`, // G: Event Source
+                  notes            // H: AI Notes
               ]);
               
               existingEvents.add(key); 
@@ -545,7 +548,7 @@ if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
     spreadsheetId: SPREADSHEET_ID,
-    range: `${TABS.EVENTS}!A:G`, 
+    range: `${TABS.EVENTS}!A:H`, // --- 🛑 WIDE APPEND RANGE TO CATCH COLUMN H 🛑 ---
     valueInputOption: 'USER_ENTERED',
     resource: { values: newRowsToAdd },
   });
