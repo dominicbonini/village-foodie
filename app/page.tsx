@@ -112,8 +112,12 @@ function VillageFoodieContent() {
   const openTallyPopup = () => {
     const currentCode = postcodeRef.current ? postcodeRef.current.value.toUpperCase() : userPostcode;
     const params = new URLSearchParams();
+    
     if (currentCode) params.set('postcode', currentCode); 
-    if (filters.distance) params.set('distance', filters.distance);
+    
+    // Tally dropdown fix: appending " Miles" so it perfectly matches the form option
+    if (filters.distance) params.set('distance', `${filters.distance} Miles`);
+
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
 
     if (posthog) {
@@ -126,7 +130,11 @@ function VillageFoodieContent() {
       (window as any).Tally.openPopup('81xAKx', {
         layout: 'modal',
         width: 400,
-        hiddenFields: { postcode: currentCode, distance: filters.distance || '10' },
+        hiddenFields: { 
+          postcode: currentCode, 
+          // Tally dropdown fix: appending " Miles" to hidden fields payload
+          distance: `${filters.distance || '10'} Miles` 
+        },
       });
     } else {
       window.open(fallbackUrl, '_blank');
@@ -208,11 +216,10 @@ function VillageFoodieContent() {
           <>
             {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
-{/* 👇 The Polished "Native App" Text-Only Header 👇 */}
-<div className="pt-5 pb-3 px-4 text-center">
-   <h2 className="text-slate-800 font-extrabold text-2xl tracking-tight">Find your next meal 🍔</h2>
-   <p className="text-slate-600 text-sm mt-1.5 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
-</div>
+                <div className="pt-5 pb-3 px-4 text-center">
+                   <h2 className="text-slate-800 font-extrabold text-2xl tracking-tight">Find your next meal 🍔</h2>
+                   <p className="text-slate-600 text-sm mt-1.5 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
+                </div>
                 {Object.keys(groupedEvents).length === 0 && (
                    <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
                       <p className="text-slate-600">No events found matching your filters.</p>
