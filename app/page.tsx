@@ -173,7 +173,7 @@ function VillageFoodieContent() {
                 <option value="today">Today</option>
                 <option value="tomorrow">Tomorrow</option>
                 <option value="weekend">This Weekend</option>
-                <option value="next7">Next 7 Days</option>
+
               </select>
 
               <select 
