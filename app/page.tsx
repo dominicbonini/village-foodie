@@ -208,10 +208,10 @@ function VillageFoodieContent() {
           <>
             {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
-{/* 👇 Variation 1: Refined Warmth 👇 */}
-<div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center shadow-sm">
-   <h2 className="text-slate-900 font-extrabold text-lg">Find your next meal 🍔</h2>
-   <p className="text-slate-600 text-sm mt-1 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
+{/* 👇 The Polished "Native App" Text-Only Header 👇 */}
+<div className="pt-5 pb-3 px-4 text-center">
+   <h2 className="text-slate-800 font-extrabold text-2xl tracking-tight">Find your next meal 🍔</h2>
+   <p className="text-slate-600 text-sm mt-1.5 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
 </div>
                 {Object.keys(groupedEvents).length === 0 && (
                    <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
