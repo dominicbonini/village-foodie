@@ -208,11 +208,11 @@ function VillageFoodieContent() {
           <>
             {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
-                <div className="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center shadow-sm">
-                   <h2 className="text-orange-900 font-bold text-lg">Find your next meal 🍔</h2>
-                   <p className="text-orange-800 text-sm mt-1">Find food trucks and pop-ups visiting villages near you.</p>
-                </div>
-
+{/* 👇 Variation 1: Refined Warmth 👇 */}
+<div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center shadow-sm">
+   <h2 className="text-slate-900 font-extrabold text-lg">Find your next meal 🍔</h2>
+   <p className="text-slate-600 text-sm mt-1 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
+</div>
                 {Object.keys(groupedEvents).length === 0 && (
                    <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
                       <p className="text-slate-600">No events found matching your filters.</p>
@@ -230,7 +230,6 @@ function VillageFoodieContent() {
 
                   return (
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        {/* 👇 FIX: Increased top padding (pt-5 md:pt-6) to give the date more breathing room below the main header 👇 */}
                         <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
