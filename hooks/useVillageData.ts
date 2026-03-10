@@ -120,6 +120,8 @@ export function useVillageData(
                     postcode: cols[2] || '',
                     lat: parseFloat(cols[3] || '0'),
                     long: parseFloat(cols[4] || '0'),
+                    // 👇 ADDED: Extract Column G (index 6) for the Venue Phone Number 👇
+                    venuePhone: cols[6] || ''
                 });
             }
         });
@@ -143,22 +145,20 @@ export function useVillageData(
 
             const eventVenueKey = cleanKey(rawVenue);
             
-    // 👇 THE FIX: STRICT VENUE MATCHING 👇
-// 1. Try Exact Match First (Highly accurate because scraper standardizes names)
-let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
+            // 1. Try Exact Match First (Highly accurate because scraper standardizes names)
+            let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
 
-// 2. Safer Fallback (Only if exact match fails)
-if (!venue) {
-    venue = venuesList.find(v => {
-        const fuzzyMatch = isMatch(v.cleanKey, eventVenueKey);
-        // Anti-Hijacking Safeguard: If the official venue name is short (like "gate" or "oak"),
-        // it is too dangerous to fuzzy match because it will hijack longer words. 
-        if (fuzzyMatch && v.cleanKey.length <= 5) {
-            return false; 
-        }
-        return fuzzyMatch;
-    }) || {}; 
-}
+            // 2. Safer Fallback (Only if exact match fails)
+            if (!venue) {
+                venue = venuesList.find(v => {
+                    const fuzzyMatch = isMatch(v.cleanKey, eventVenueKey);
+                    // Anti-Hijacking Safeguard
+                    if (fuzzyMatch && v.cleanKey.length <= 5) {
+                        return false; 
+                    }
+                    return fuzzyMatch;
+                }) || {}; 
+            }
 
             const eventObj: VillageEvent = {
               id: `event-${index}`,
@@ -171,6 +171,8 @@ if (!venue) {
               postcode: venue.postcode || '',              
               venueLat: venue.lat, 
               venueLong: venue.long, 
+              // 👇 ADDED: Attach the venue phone number to the event object 👇
+              venuePhone: venue.venuePhone || '',
               type: truck.type || 'Mobile',           
               
               phoneNumber: truck.phoneNumber || '',

@@ -34,7 +34,7 @@ const renderTextWithLinks = (text: string) => {
 
 export default function EventListCard({ event, distanceMiles, isMapPopup = false }: EventListCardProps) {
   const posthog = usePostHog();
-
+  console.log(`VENUE CHECK -> Venue: ${event.venueName} | Phone: ${event.venuePhone}`);
   const isStatic = event.type?.toLowerCase().includes('static');
   
   const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
@@ -112,7 +112,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
   
-  // Clean phone number for links (spaces in your sheet won't break anything!)
+  // Clean phone number for links
   const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/[^\d+]/g, '') : '';
   
   let waPhone = cleanPhone.replace('+', '');
@@ -121,8 +121,15 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   }
   
   const hasPhone = cleanPhone !== '';
-  // 👇 FIX: This strictly identifies UK mobile numbers so we don't try to text landlines
   const isMobileNumber = waPhone.startsWith('447');
+
+  // 👇 FIX: Venue Phone Fallback Logic 👇
+  const cleanVenuePhone = event.venuePhone ? event.venuePhone.replace(/[^\d+]/g, '') : '';
+  const hasVenuePhone = cleanVenuePhone !== '';
+  // Determine the final number to call and the label to use
+  const targetPhoneToCall = hasPhone ? cleanPhone : cleanVenuePhone;
+  const showCallButton = hasPhone || hasVenuePhone;
+  const callButtonLabel = hasPhone ? "📞 Call" : "📞 Call Venue";
 
   let orderDateText = 'today';
   if (event.date) {
@@ -183,13 +190,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                 🌐 Order
             </a>
         )}
-        {hasPhone && (
-            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
-                📞 Call
+        
+        {/* 👇 FIX: Uses targetPhoneToCall and dynamic label 👇 */}
+        {showCallButton && (
+            <a href={`tel:${targetPhoneToCall}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+                {callButtonLabel}
             </a>
         )}
 
-        {/* 👇 FIX: Both message links now strictly require isMobileNumber to be true 👇 */}
         {hasPhone && isMobileNumber && acceptsWhatsApp && (
             <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
                 💬 Message
@@ -203,7 +211,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
         )}
     </>
   );
-
 
   // === UNIFIED TIGHT CONTENT ===
   const cardContent = (
@@ -226,8 +233,8 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0 min-w-0 pr-2">
                     <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        {event.websiteUrl ? (
-                            <a href={event.websiteUrl} target="_blank" rel="noopener noreferrer" className="hover:text-orange-700 hover:underline transition-colors">
+                        {event.orderUrl && wantsWebsite ? (
+                            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" className="hover:text-orange-700 hover:underline transition-colors">
                                 {event.truckName}
                             </a>
                         ) : event.truckName}
@@ -286,11 +293,11 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                     </div>
                 )}
 
-                {(event.menuUrl || showWebsite || hasPhone) && (
+                {(event.menuUrl || showWebsite || showCallButton) && (
                     isMapPopup ? (
                         <div className="flex flex-col gap-1.5 w-full min-w-0 shrink-0 mt-0.5">
                             {MenuBtn}
-                            {(showWebsite || hasPhone) && (
+                            {(showWebsite || showCallButton) && (
                                 <div className="flex w-full gap-1.5">
                                     {ContactBtns}
                                 </div>

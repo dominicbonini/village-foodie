@@ -12,6 +12,7 @@ export interface VillageEvent {
   postcode?: string;
   venueLat?: number;
   venueLong?: number;
+  venuePhone?: string;  // 👈 The missing piece!
   
   // --- TRUCK DETAILS ---
   type?: string;
