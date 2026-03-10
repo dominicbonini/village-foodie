@@ -226,73 +226,51 @@ function VillageFoodieContent() {
 
               {Object.entries(groupedEvents).map(([date, dateEvents]) => {
                   const now = new Date();
-                  console.log(`RAW DATA FOR ${date}:`, dateEvents);
-                  const isToday = new Date(date).toDateString() === now.toDateString();
+                  
+                  // Failsafe check to see if the group of events is happening today
+                  const sampleEventDate = (dateEvents[0] as any)?.date || '';
+                  const [d, m, y] = sampleEventDate.includes('/') ? sampleEventDate.split('/') : [0,0,0];
+                  const isToday = (parseInt(d) === now.getDate() && parseInt(m) === now.getMonth() + 1 && parseInt(y) === now.getFullYear()) || new Date(date).toDateString() === now.toDateString();
 
-                  // 👇 FIXED: This helper merges Column A (Date) + Column B/C (Time) perfectly 👇
-                  const getActualDate = (timeVal: any) => {
-                     if (!timeVal) return null;
+                  // 👇 FIXED: Simple "Minutes since midnight" calculator
+                  const getMinutes = (timeVal: any) => {
+                     if (!timeVal) return 9999; // Missing time? Send it to the bottom
+                     const match = String(timeVal).match(/(\d{1,2}):(\d{2})/);
+                     if (!match) return 9999; // "TBC"? Send it to the bottom
                      
-                     // Force whatever Google sent us into a string so we can hunt for the HH:MM
-                     const timeString = String(timeVal);
-                     const match = timeString.match(/(\d{1,2}):(\d{2})/);
+                     let h = parseInt(match[1], 10);
+                     let mins = parseInt(match[2], 10);
                      
-                     if (match) {
-                        const baseDate = new Date(date); // Grab the actual day of the event
-                        let hours = parseInt(match[1], 10);
-                        const minutes = parseInt(match[2], 10);
-                        
-                        // Handle 12-hour AM/PM formatting just in case
-                        if (timeString.toLowerCase().includes('pm') && hours < 12) hours += 12;
-                        if (timeString.toLowerCase().includes('am') && hours === 12) hours = 0;
-                        
-                        // Smash them together!
-                        baseDate.setHours(hours, minutes, 0, 0);
-                        return baseDate;
-                     }
-                     return null;
+                     if (String(timeVal).toLowerCase().includes('pm') && h < 12) h += 12;
+                     if (String(timeVal).toLowerCase().includes('am') && h === 12) h = 0;
+                     
+                     return (h * 60) + mins;
                   };
-
-                  // Check every possible variation of how the Google Sheet columns might be named
-                  const getStartTime = (event: any) => event.TimeStart || event.StartTime || event['Start Time'] || event.startTime || event.start;
-                  const getEndTime = (event: any) => event.TimeEnd || event.EndTime || event['Time End'] || event.endTime || event.end;
 
                   // 1. FILTER: Remove finished events ONLY if the event is happening today
                   const activeEvents = dateEvents.filter(event => {
                     if (!isToday) return true; 
 
-                    const eventEnd = getEndTime(event);
-                    if (!eventEnd) return true; 
+                    const endMins = getMinutes((event as any).endTime);
+                    if (endMins === 9999) return true; // Keep TBC visible all day
                     
-                    const endTime = getActualDate(eventEnd);
-                    if (!endTime) return true; 
-                    
-                    return endTime > now;
+                    const nowMins = (now.getHours() * 60) + now.getMinutes();
+                    return endMins > nowMins;
                   });
 
                   if (activeEvents.length === 0) return null;
 
-                  // 2. SORT: Chronological first, Distance second
+                  // 2. SORT: Chronological first (by minutes), Distance second
                   const sortedEvents = activeEvents.sort((a, b) => {
-                    const aStartVal = getStartTime(a);
-                    const bStartVal = getStartTime(b);
+                    const startA = getMinutes((a as any).startTime);
+                    const startB = getMinutes((b as any).startTime);
 
-                    const dateA = getActualDate(aStartVal);
-                    const dateB = getActualDate(bStartVal);
-
-                    const isAValid = dateA !== null;
-                    const isBValid = dateB !== null;
-
-                    // Push trucks with NO valid times (like "Contact Venue") to the bottom
-                    if (isAValid && !isBValid) return -1;
-                    if (!isAValid && isBValid) return 1;
-
-                    // If BOTH have valid times, sort chronologically
-                    if (isAValid && isBValid && dateA.getTime() !== dateB.getTime()) {
-                      return dateA.getTime() - dateB.getTime();
+                    // Primary Sort: Sort chronologically by minutes since midnight
+                    if (startA !== startB) {
+                      return startA - startB;
                     }
 
-                    // Secondary Sort: If both have identical times OR both say "TBC", sort by distance
+                    // Secondary Sort: If both have identical times OR both say "TBC" (9999), sort by distance
                     if (!userLocation || !a.venueLat || !a.venueLong || !b.venueLat || !b.venueLong) return 0;
                     const distA = getDistanceKm(userLocation.lat, userLocation.long, a.venueLat, a.venueLong);
                     const distB = getDistanceKm(userLocation.lat, userLocation.long, b.venueLat, b.venueLong);
