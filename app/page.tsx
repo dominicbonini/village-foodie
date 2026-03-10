@@ -70,7 +70,6 @@ function VillageFoodieContent() {
         
         if (element) {
           const isMobile = window.innerWidth < 768;
-          // 👇 FIX: Math updated to compensate for the 8px of extra padding we added to the dates 👇
           const exactHeaderHeight = isMobile ? 204 : 190; 
           const elementPosition = element.getBoundingClientRect().top;
           const offsetPosition = elementPosition + window.scrollY - exactHeaderHeight;
@@ -115,7 +114,6 @@ function VillageFoodieContent() {
     
     if (currentCode) params.set('postcode', currentCode); 
     
-    // Tally dropdown fix: appending " Miles" so it perfectly matches the form option
     if (filters.distance) params.set('distance', `${filters.distance} Miles`);
 
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
@@ -132,7 +130,6 @@ function VillageFoodieContent() {
         width: 400,
         hiddenFields: { 
           postcode: currentCode, 
-          // Tally dropdown fix: appending " Miles" to hidden fields payload
           distance: `${filters.distance || '10'} Miles` 
         },
       });
@@ -227,8 +224,75 @@ function VillageFoodieContent() {
                    </div>
                 )}
 
-                {Object.entries(groupedEvents).map(([date, dateEvents]) => {
-                  const sortedEvents = [...dateEvents].sort((a, b) => {
+              {Object.entries(groupedEvents).map(([date, dateEvents]) => {
+                  const now = new Date();
+                  console.log(`RAW DATA FOR ${date}:`, dateEvents);
+                  const isToday = new Date(date).toDateString() === now.toDateString();
+
+                  // 👇 FIXED: This helper merges Column A (Date) + Column B/C (Time) perfectly 👇
+                  const getActualDate = (timeVal: any) => {
+                     if (!timeVal) return null;
+                     
+                     // Force whatever Google sent us into a string so we can hunt for the HH:MM
+                     const timeString = String(timeVal);
+                     const match = timeString.match(/(\d{1,2}):(\d{2})/);
+                     
+                     if (match) {
+                        const baseDate = new Date(date); // Grab the actual day of the event
+                        let hours = parseInt(match[1], 10);
+                        const minutes = parseInt(match[2], 10);
+                        
+                        // Handle 12-hour AM/PM formatting just in case
+                        if (timeString.toLowerCase().includes('pm') && hours < 12) hours += 12;
+                        if (timeString.toLowerCase().includes('am') && hours === 12) hours = 0;
+                        
+                        // Smash them together!
+                        baseDate.setHours(hours, minutes, 0, 0);
+                        return baseDate;
+                     }
+                     return null;
+                  };
+
+                  // Check every possible variation of how the Google Sheet columns might be named
+                  const getStartTime = (event: any) => event.TimeStart || event.StartTime || event['Start Time'] || event.startTime || event.start;
+                  const getEndTime = (event: any) => event.TimeEnd || event.EndTime || event['Time End'] || event.endTime || event.end;
+
+                  // 1. FILTER: Remove finished events ONLY if the event is happening today
+                  const activeEvents = dateEvents.filter(event => {
+                    if (!isToday) return true; 
+
+                    const eventEnd = getEndTime(event);
+                    if (!eventEnd) return true; 
+                    
+                    const endTime = getActualDate(eventEnd);
+                    if (!endTime) return true; 
+                    
+                    return endTime > now;
+                  });
+
+                  if (activeEvents.length === 0) return null;
+
+                  // 2. SORT: Chronological first, Distance second
+                  const sortedEvents = activeEvents.sort((a, b) => {
+                    const aStartVal = getStartTime(a);
+                    const bStartVal = getStartTime(b);
+
+                    const dateA = getActualDate(aStartVal);
+                    const dateB = getActualDate(bStartVal);
+
+                    const isAValid = dateA !== null;
+                    const isBValid = dateB !== null;
+
+                    // Push trucks with NO valid times (like "Contact Venue") to the bottom
+                    if (isAValid && !isBValid) return -1;
+                    if (!isAValid && isBValid) return 1;
+
+                    // If BOTH have valid times, sort chronologically
+                    if (isAValid && isBValid && dateA.getTime() !== dateB.getTime()) {
+                      return dateA.getTime() - dateB.getTime();
+                    }
+
+                    // Secondary Sort: If both have identical times OR both say "TBC", sort by distance
                     if (!userLocation || !a.venueLat || !a.venueLong || !b.venueLat || !b.venueLong) return 0;
                     const distA = getDistanceKm(userLocation.lat, userLocation.long, a.venueLat, a.venueLong);
                     const distB = getDistanceKm(userLocation.lat, userLocation.long, b.venueLat, b.venueLong);
@@ -260,8 +324,7 @@ function VillageFoodieContent() {
                         </div>
                     </div>
                   );
-                })}
-              </div>
+                })}</div>
             )}
             {view === 'map' && (
                <div className="h-[calc(100vh-180px)] md:h-[calc(100vh-140px)] w-full relative z-0 md:rounded-xl md:overflow-hidden md:mt-4 md:border md:border-slate-200 shadow-sm">
