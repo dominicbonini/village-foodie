@@ -22,28 +22,26 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Village Foodie 🍔",
     description: "Find local food trucks and pop-ups visiting villages near you.",
-    url: "https://villagefoodie.co.uk", // 👈 IMPORTANT: Update this to your actual domain
+    url: "https://villagefoodie.co.uk", 
     siteName: "Village Foodie",
     images: [
       {
-        url: "/og-image.png", // 👈 This points to an image we need to put in your public folder
+        url: "/og-image.png", 
         width: 1200,
         height: 630,
         alt: "Village Foodie - Find your next meal",
       },
     ],
-    locale: "en_GB", // Tells platforms this is a UK site
+    locale: "en_GB", 
     type: "website",
   },
   twitter: {
-    card: "summary_large_image", // Forces the "Big Image" layout on X/Twitter and iMessage
+    card: "summary_large_image", 
     title: "Village Foodie 🍔",
     description: "Find local food trucks and pop-ups visiting villages near you.",
-    images: ["/og-image.png"], // 👈 Same image as above
+    images: ["/og-image.png"], 
   },
-  icons: {
-    icon: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚚%3C/text%3E%3C/svg%3E",
-  },
+  // 👇 The inline 'icons' block has been completely removed! 👇
 };
 
 export default function RootLayout({
