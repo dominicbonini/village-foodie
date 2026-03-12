@@ -58,7 +58,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
         });
       }
 
-      const displayUrl = 'villagefoodie.co.uk'; 
       const cuisine = event.type ? getCuisineEmoji(event.type) : '🍴';
       const introEmoji = cuisine !== '🍴' ? cuisine : '🤤';
       const foodName = event.type && event.type !== 'Mobile' ? event.type : 'street food';
@@ -75,8 +74,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
         menuText = `\n\nCheck out the menu: ${cleanMenuUrl}`; 
       }
 
-      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nFound on ${displayUrl} 🚚`;
-      const shareData = { title: `${event.truckName} at ${venueDisplay}`, text: shareText };
+      // 👇 UPDATED SHARE TEXT WITH FOMO LINK 👇
+      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nSee the full weekend food truck line-up for the villages here: https://villagefoodie.co.uk 🚚`;
+      const shareData = { text: shareText };
 
       try {
         if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -214,19 +214,16 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 const cardContent = (
     <div className="flex gap-3 items-start w-full min-w-0 font-sans">
         
-        {/* 👇 FIX: w-12 on mobile (48px), md:w-16 on desktop (64px) 👇 */}
         <div className="flex flex-col items-center shrink-0 w-12 md:w-16">
             
             {event.logoUrl ? (
                 <img 
                     src={event.logoUrl} 
                     alt={`${event.truckName} logo`} 
-                    // 👇 FIX: Responsive heights and widths added here 👇
                     className="bg-white h-12 w-12 md:h-16 md:w-16 rounded-full object-cover shrink-0 border border-slate-200 mt-1 shadow-sm transition-all"
                     loading="lazy"
                 />
             ) : (
-                // 👇 FIX: Fallback emoji circle made responsive to match 👇
                 <div className="bg-slate-50 h-12 w-12 md:h-16 md:w-16 rounded-full flex items-center justify-center text-2xl md:text-3xl shrink-0 border border-slate-100 mt-1 shadow-sm transition-all">
                     {isStatic ? '🍽️' : "\uD83D\uDE9A"}
                 </div>
