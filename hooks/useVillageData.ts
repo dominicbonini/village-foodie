@@ -100,7 +100,9 @@ export function useVillageData(
                     acceptedMethods: cols[4], 
                     truckNotes: cols[5],      
                     websiteUrl: cols[6],      
-                    menuUrl: cols[7]          
+                    menuUrl: cols[7],
+                    // 👇 ADDED: Extract Column J (index 9) for Logo URL 👇
+                    logoUrl: cols[9] || ''          
                 });
             }
         });
@@ -120,7 +122,6 @@ export function useVillageData(
                     postcode: cols[2] || '',
                     lat: parseFloat(cols[3] || '0'),
                     long: parseFloat(cols[4] || '0'),
-                    // 👇 ADDED: Extract Column G (index 6) for the Venue Phone Number 👇
                     venuePhone: cols[6] || ''
                 });
             }
@@ -139,20 +140,15 @@ export function useVillageData(
             const rawVenue = cols[4] || '';
 
             const eventTruckKey = cleanKey(rawTruck);
-            // Try exact truck match first, fallback to fuzzy
             let truck = trucksList.find(t => t.cleanKey === eventTruckKey) || 
                         trucksList.find(t => isMatch(t.cleanKey, eventTruckKey)) || {};
 
             const eventVenueKey = cleanKey(rawVenue);
             
-            // 1. Try Exact Match First (Highly accurate because scraper standardizes names)
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
-
-            // 2. Safer Fallback (Only if exact match fails)
             if (!venue) {
                 venue = venuesList.find(v => {
                     const fuzzyMatch = isMatch(v.cleanKey, eventVenueKey);
-                    // Anti-Hijacking Safeguard
                     if (fuzzyMatch && v.cleanKey.length <= 5) {
                         return false; 
                     }
@@ -171,7 +167,6 @@ export function useVillageData(
               postcode: venue.postcode || '',              
               venueLat: venue.lat, 
               venueLong: venue.long, 
-              // 👇 ADDED: Attach the venue phone number to the event object 👇
               venuePhone: venue.venuePhone || '',
               type: truck.type || 'Mobile',           
               
@@ -182,7 +177,10 @@ export function useVillageData(
               websiteUrl: truck.websiteUrl || '',            
               menuUrl: truck.menuUrl || '',               
               notes: truck.truckNotes || '',
-              eventNotes: cols[5] || '',             
+              eventNotes: cols[5] || '',    
+              
+              // 👇 ADDED: Pass the logo down to the UI 👇
+              logoUrl: truck.logoUrl || '',         
             };
 
             return eventObj;

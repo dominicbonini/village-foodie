@@ -20,6 +20,7 @@ export interface VillageEvent {
   menuUrl?: string;
   notes?: string;       // General Truck Notes
   eventNotes?: string;  // Specific Event Notes (From Events Tab)
+  logoUrl?: string;
   
   // --- STRUCTURED ORDER DATA ---
   phoneNumber?: string;

@@ -34,7 +34,7 @@ const renderTextWithLinks = (text: string) => {
 
 export default function EventListCard({ event, distanceMiles, isMapPopup = false }: EventListCardProps) {
   const posthog = usePostHog();
-  console.log(`VENUE CHECK -> Venue: ${event.venueName} | Phone: ${event.venuePhone}`);
+  
   const isStatic = event.type?.toLowerCase().includes('static');
   
   const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
@@ -123,10 +123,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const hasPhone = cleanPhone !== '';
   const isMobileNumber = waPhone.startsWith('447');
 
-  // 👇 FIX: Venue Phone Fallback Logic 👇
   const cleanVenuePhone = event.venuePhone ? event.venuePhone.replace(/[^\d+]/g, '') : '';
   const hasVenuePhone = cleanVenuePhone !== '';
-  // Determine the final number to call and the label to use
+  
   const targetPhoneToCall = hasPhone ? cleanPhone : cleanVenuePhone;
   const showCallButton = hasPhone || hasVenuePhone;
   const callButtonLabel = hasPhone ? "📞 Call" : "📞 Call Venue";
@@ -191,7 +190,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </a>
         )}
         
-        {/* 👇 FIX: Uses targetPhoneToCall and dynamic label 👇 */}
         {showCallButton && (
             <a href={`tel:${targetPhoneToCall}`} onClick={() => trackOrderClick('Call')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
                 {callButtonLabel}
@@ -212,14 +210,28 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
     </>
   );
 
-  // === UNIFIED TIGHT CONTENT ===
-  const cardContent = (
+// === UNIFIED TIGHT CONTENT ===
+const cardContent = (
     <div className="flex gap-3 items-start w-full min-w-0 font-sans">
         
-        <div className="flex flex-col items-center shrink-0 w-10">
-            <div className="bg-slate-50 h-10 w-10 rounded-full flex items-center justify-center text-xl shrink-0 border border-slate-100 mt-1">
-                {isStatic ? '🍽️' : "\uD83D\uDE9A"}
-            </div>
+        {/* 👇 FIX: w-12 on mobile (48px), md:w-16 on desktop (64px) 👇 */}
+        <div className="flex flex-col items-center shrink-0 w-12 md:w-16">
+            
+            {event.logoUrl ? (
+                <img 
+                    src={event.logoUrl} 
+                    alt={`${event.truckName} logo`} 
+                    // 👇 FIX: Responsive heights and widths added here 👇
+                    className="bg-white h-12 w-12 md:h-16 md:w-16 rounded-full object-cover shrink-0 border border-slate-200 mt-1 shadow-sm transition-all"
+                    loading="lazy"
+                />
+            ) : (
+                // 👇 FIX: Fallback emoji circle made responsive to match 👇
+                <div className="bg-slate-50 h-12 w-12 md:h-16 md:w-16 rounded-full flex items-center justify-center text-2xl md:text-3xl shrink-0 border border-slate-100 mt-1 shadow-sm transition-all">
+                    {isStatic ? '🍽️' : "\uD83D\uDE9A"}
+                </div>
+            )}
+            
             {distanceMiles != null && (
                 <div className="mt-1.5 flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-md py-1 w-full shadow-sm md:hidden">
                     <span className="text-[10px] font-bold text-slate-700 leading-none">{distanceMiles.toFixed(1)}</span>

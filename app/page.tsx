@@ -237,8 +237,9 @@ function VillageFoodieContent() {
                             <input 
                                 name="inlinePostcode"
                                 type="text" 
-                                placeholder="postcode..." 
-                                className="flex-1 bg-transparent text-slate-900 text-sm font-semibold px-1 py-1 focus:outline-none placeholder-slate-400 uppercase w-full min-w-0"
+                                placeholder="Postcode..." 
+                                // 👇 FIX: text-base prevents iOS Safari from auto-zooming 👇
+                                className="flex-1 bg-transparent text-slate-900 text-base md:text-sm font-semibold px-1 py-1 focus:outline-none placeholder-slate-400 uppercase w-full min-w-0"
                                 autoComplete="postal-code"
                             />
                             <button 
