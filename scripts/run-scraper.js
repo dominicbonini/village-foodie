@@ -266,6 +266,7 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
+// --- 👇 NEW: COMBO-STRATEGY SPLITTER 👇 ---
 truckData.forEach(row => {
   const targetUrl = row[8] || row[6] || 'about:blank';
   const aiInstructions = row[14] || ""; 
@@ -275,20 +276,30 @@ truckData.forEach(row => {
   const hasInstructions = aiInstructions.length > 10;
   
   if (hasUrl || hasInstructions) {
-    sitesToScrape.push({ 
-        name: row[0], 
-        url: targetUrl, 
-        instructions: aiInstructions,
-        strategy: runStrategy
+    // If the user typed "scroll_lazy, manual", this splits it into two tasks!
+    const strategies = runStrategy.split(',').map(s => s.trim());
+    
+    strategies.forEach(strat => {
+        sitesToScrape.push({ 
+            name: row[0], 
+            url: targetUrl, 
+            instructions: aiInstructions,
+            strategy: strat
+        });
     });
   }
 });
 
 venueData.forEach(row => {
   if (row[9] && row[9].startsWith('http')) {
-    sitesToScrape.push({ 
-        name: row[0], url: row[9], instructions: row[10] || "",
-        strategy: (row[11] || 'scroll_lazy').toLowerCase().trim()
+    const runStrategy = (row[11] || 'scroll_lazy').toLowerCase().trim();
+    const strategies = runStrategy.split(',').map(s => s.trim());
+    
+    strategies.forEach(strat => {
+        sitesToScrape.push({ 
+            name: row[0], url: row[9], instructions: row[10] || "",
+            strategy: strat
+        });
     });
   }
 });

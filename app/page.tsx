@@ -213,10 +213,45 @@ function VillageFoodieContent() {
           <>
             {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
-                <div className="pt-5 pb-3 px-4 text-center">
+<div className="pt-5 pb-3 px-4 text-center">
                    <h2 className="text-slate-800 font-extrabold text-2xl tracking-tight">Find your next meal 🍔</h2>
                    <p className="text-slate-600 text-sm mt-1.5 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
                 </div>
+                
+                {/* 👇 THE NUDGE: Light, clean, modern UI 👇 */}
+                {!userLocation && (
+                    <div className="mx-4 mb-6 flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500">
+                        <form 
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.currentTarget);
+                                const code = formData.get('inlinePostcode') as string;
+                                if (code) {
+                                    if (postcodeRef.current) postcodeRef.current.value = code.toUpperCase(); 
+                                    handlePostcodeSearch(code);
+                                }
+                            }}
+                            className="flex items-center gap-2 bg-white border border-slate-300 rounded-xl p-1.5 shadow-sm max-w-sm w-full focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-50 transition-all"
+                        >
+                            <div className="pl-2 text-lg">📍</div>
+                            <input 
+                                name="inlinePostcode"
+                                type="text" 
+                                placeholder="postcode..." 
+                                className="flex-1 bg-transparent text-slate-900 text-sm font-semibold px-1 py-1 focus:outline-none placeholder-slate-400 uppercase w-full min-w-0"
+                                autoComplete="postal-code"
+                            />
+                            <button 
+                                type="submit" 
+                                disabled={isPostcodeLoading}
+                                className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-bold py-2 px-5 rounded-lg transition-colors disabled:opacity-50 shrink-0"
+                            >
+                                {isPostcodeLoading ? '...' : 'Search'}
+                            </button>
+                        </form>
+                    </div>
+                )}
+
                 {Object.keys(groupedEvents).length === 0 && (
                    <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
                       <p className="text-slate-600">No events found matching your filters.</p>
