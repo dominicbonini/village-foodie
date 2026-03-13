@@ -241,7 +241,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0 min-w-0 pr-2">
                     <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        {/* 👇 THE FIX: Checking true websiteUrl from Column G 👇 */}
                         {event.websiteUrl ? (
                             <a 
                                 href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`} 
@@ -274,10 +273,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                         </div>
                     )}
                     
-                    <span className="text-[10px] font-bold text-orange-900 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
-                        {event.startTime} - {event.endTime}
-                    </span>
-
                     {distanceMiles != null && (
                         <span className="hidden md:flex text-[9px] font-bold text-slate-700 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded whitespace-nowrap mt-0.5 shadow-sm">
                             {distanceMiles.toFixed(1)} miles away
@@ -287,6 +282,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </div>
 
             <div className="flex items-center gap-3 mt-1.5 shrink-0">
+                <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
+                    {event.startTime} - {event.endTime}
+                </span>
                 <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
                     📍 Directions
                 </a>
