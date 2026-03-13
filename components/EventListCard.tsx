@@ -58,6 +58,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
         });
       }
 
+      const displayUrl = 'villagefoodie.co.uk'; 
       const cuisine = event.type ? getCuisineEmoji(event.type) : '🍴';
       const introEmoji = cuisine !== '🍴' ? cuisine : '🤤';
       const foodName = event.type && event.type !== 'Mobile' ? event.type : 'street food';
@@ -74,9 +75,8 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
         menuText = `\n\nCheck out the menu: ${cleanMenuUrl}`; 
       }
 
-      // 👇 UPDATED SHARE TEXT WITH FOMO LINK 👇
-      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nSee the full weekend food truck line-up for the villages here: https://villagefoodie.co.uk 🚚`;
-      const shareData = { text: shareText };
+      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${event.truckName} is at ${venueDisplay} ${dateSentence} from ${event.startTime} to ${event.endTime}.${menuText}\n\nFound on ${displayUrl} 🚚`;
+      const shareData = { title: `${event.truckName} at ${venueDisplay}`, text: shareText };
 
       try {
         if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
@@ -210,12 +210,11 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
     </>
   );
 
-// === UNIFIED TIGHT CONTENT ===
-const cardContent = (
+  // === UNIFIED TIGHT CONTENT ===
+  const cardContent = (
     <div className="flex gap-3 items-start w-full min-w-0 font-sans">
         
         <div className="flex flex-col items-center shrink-0 w-12 md:w-16">
-            
             {event.logoUrl ? (
                 <img 
                     src={event.logoUrl} 
@@ -242,8 +241,14 @@ const cardContent = (
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0 min-w-0 pr-2">
                     <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        {event.orderUrl && wantsWebsite ? (
-                            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" className="hover:text-orange-700 hover:underline transition-colors">
+                        {/* 👇 THE FIX: Checking true websiteUrl from Column G 👇 */}
+                        {event.websiteUrl ? (
+                            <a 
+                                href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="hover:text-orange-700 hover:underline transition-colors"
+                            >
                                 {event.truckName}
                             </a>
                         ) : event.truckName}
@@ -253,7 +258,7 @@ const cardContent = (
                     </div>
                 </div>
 
-                <div className="flex flex-col items-end gap-1 shrink-0">
+                <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
                     {event.type && event.type !== 'Mobile' && !isStatic && (
                         <div className="flex flex-col gap-1 items-end">
                             {event.type.split(',').map((cuisineTag, idx) => {
@@ -268,6 +273,11 @@ const cardContent = (
                             })}
                         </div>
                     )}
+                    
+                    <span className="text-[10px] font-bold text-orange-900 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded shadow-sm whitespace-nowrap">
+                        {event.startTime} - {event.endTime}
+                    </span>
+
                     {distanceMiles != null && (
                         <span className="hidden md:flex text-[9px] font-bold text-slate-700 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded whitespace-nowrap mt-0.5 shadow-sm">
                             {distanceMiles.toFixed(1)} miles away
@@ -277,9 +287,6 @@ const cardContent = (
             </div>
 
             <div className="flex items-center gap-3 mt-1.5 shrink-0">
-                <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
-                    {event.startTime} - {event.endTime}
-                </span>
                 <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
                     📍 Directions
                 </a>
