@@ -228,7 +228,14 @@ async function getTabData(sheets, rangeName) {
 }
 
 async function main() {
-console.log("🚀 Starting Smart Scrape (Strict Deduplication & Smart Match)...");
+// --- 👇 NEW: TARGET MODE SWITCH 👇 ---
+const TARGET_NAME = process.argv[2] ? process.argv[2].toLowerCase().trim() : null;
+
+if (TARGET_NAME) {
+    console.log(`\n🎯 TARGET MODE ACTIVE: Only scraping "${process.argv[2]}"`);
+} else {
+    console.log("\n🚀 Starting Smart Scrape (Full Database Sync)...");
+}
 
 if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
   throw new Error("Missing Credentials in .env.local");
@@ -266,8 +273,11 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
-// --- 👇 NEW: COMBO-STRATEGY SPLITTER 👇 ---
+// --- COMBO-STRATEGY SPLITTER ---
 truckData.forEach(row => {
+  // 👇 NEW: Skip if Target Mode is active and name doesn't match
+  if (TARGET_NAME && (!row[0] || row[0].toLowerCase().trim() !== TARGET_NAME)) return; 
+
   const targetUrl = row[8] || row[6] || 'about:blank';
   const aiInstructions = row[14] || ""; 
   const runStrategy = (row[15] || 'scroll_lazy').toLowerCase().trim(); 
@@ -276,7 +286,6 @@ truckData.forEach(row => {
   const hasInstructions = aiInstructions.length > 10;
   
   if (hasUrl || hasInstructions) {
-    // If the user typed "scroll_lazy, manual", this splits it into two tasks!
     const strategies = runStrategy.split(',').map(s => s.trim());
     
     strategies.forEach(strat => {
@@ -291,6 +300,9 @@ truckData.forEach(row => {
 });
 
 venueData.forEach(row => {
+  // 👇 NEW: Skip if Target Mode is active and name doesn't match
+  if (TARGET_NAME && (!row[0] || row[0].toLowerCase().trim() !== TARGET_NAME)) return;
+
   if (row[9] && row[9].startsWith('http')) {
     const runStrategy = (row[11] || 'scroll_lazy').toLowerCase().trim();
     const strategies = runStrategy.split(',').map(s => s.trim());
