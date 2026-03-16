@@ -228,7 +228,7 @@ async function getTabData(sheets, rangeName) {
 }
 
 async function main() {
-// --- 👇 NEW: TARGET MODE SWITCH 👇 ---
+// --- 👇 TARGET MODE SWITCH 👇 ---
 const TARGET_NAME = process.argv[2] ? process.argv[2].toLowerCase().trim() : null;
 
 if (TARGET_NAME) {
@@ -275,7 +275,6 @@ const sitesToScrape = [];
 
 // --- COMBO-STRATEGY SPLITTER ---
 truckData.forEach(row => {
-  // 👇 NEW: Skip if Target Mode is active and name doesn't match
   if (TARGET_NAME && (!row[0] || row[0].toLowerCase().trim() !== TARGET_NAME)) return; 
 
   const targetUrl = row[8] || row[6] || 'about:blank';
@@ -300,7 +299,6 @@ truckData.forEach(row => {
 });
 
 venueData.forEach(row => {
-  // 👇 NEW: Skip if Target Mode is active and name doesn't match
   if (TARGET_NAME && (!row[0] || row[0].toLowerCase().trim() !== TARGET_NAME)) return;
 
   if (row[9] && row[9].startsWith('http')) {
@@ -332,6 +330,7 @@ const browser = await puppeteer.launch({
 });
 
 const newRowsToAdd = [];
+const newVenuesDetected = new Set(); // Tracks missing venues for Auto-Geocoder
 
 for (const [index, site] of sitesToScrape.entries()) {
   try {
@@ -386,17 +385,23 @@ for (const [index, site] of sitesToScrape.entries()) {
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
           Current Year: ${new Date().getFullYear()}.
+          
+          ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}" (Follow this hint carefully when reading the text below!)` : ""}
+          
           TASK: Extract upcoming food truck events from the provided text.
           CRITICAL RULES:
-          1. **STRICT DATE ADHERENCE (NO HALLUCINATING):** You MUST extract dates exactly as they appear in the text. Do NOT invent dates, and do NOT shift past dates into the future. 
-          2. **IGNORE PAST EVENTS:** Compare the dates in the text to the Current Date. If the text is advertising a schedule or event that occurred BEFORE the Current Date, IGNORE IT ENTIRELY. If there are no future events in the text, return an empty array: []
-          3. **TODAY/TOMORROW:** If text explicitly says "Tonight" or "Tomorrow", convert to dates based on the Current Date provided above.
-          4. **DateStart Format:** MUST be "DD/MM/YYYY". Use the Current Year unless the website explicitly states otherwise.
-          5. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
-          6. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          7. **VENUE STANDARDIZATION:** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If it is (e.g. "Wickhambrook MSC" = "Wickhambrook Memorial Social Centre"), output the official name. **CRITICAL:** If the venue is NOT in the list, output the FULL name exactly as written on the website (e.g. "Ashdon Baptist Church Car Park"). Do NOT guess or pick a random venue from the list. Do NOT put the venue name in the Notes field.
+          1. **STRICT DATE ADHERENCE:** Extract dates exactly as they appear. Do NOT shift past dates into the future. 
+          2. **IGNORE PAST EVENTS:** If the text is advertising an event that occurred BEFORE the Current Date, IGNORE IT.
+          3. **TODAY/TOMORROW:** If text says "Tonight" or "Tomorrow", convert to dates based on the Current Date.
+          4. **DAYS OF THE WEEK (CLICK & COLLECT FIX):** If the website lists locations by Day of the Week (e.g., "Wednesdays", "Thu 12-2") instead of strict calendar dates, mathematically calculate the next immediate date for that day based on the Current Date. NEVER apply a single generic header date to every venue on the page.
+          5. **DateStart Format:** MUST be "DD/MM/YYYY". 
+          6. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
+          7. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
+          8. **VENUE STANDARDIZATION:** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If it is, output the official name. **CRITICAL:** If the venue is NOT in the list, output the FULL name exactly as written on the website. Do NOT guess or pick a random venue. Do NOT put the venue name in the Notes field.
+          
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
+          
           WEBSITE TEXT:
           ${cleanText.slice(0, 150000)} 
         `;
@@ -525,7 +530,8 @@ for (const [index, site] of sitesToScrape.entries()) {
                       finalVenue = fuzzyVenueMatches[0][0];
                   }
               } else {
-                  isNewVenue = true; // 🚨 No exact or fuzzy match found!
+                  isNewVenue = true; 
+                  newVenuesDetected.add(finalVenue); // Track for AI geocoding
               }
           }
 
@@ -587,6 +593,44 @@ if (newRowsToAdd.length > 0) {
 } else {
   console.log("\n💤 No new events found.");
 }
+
+// --- 👇 AUTO-VENUE GEOCODER 👇 ---
+if (newVenuesDetected.size > 0) {
+  console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues...`);
+  const venueList = Array.from(newVenuesDetected).join(", ");
+  
+  const geoPrompt = `
+    You are a UK Geography Expert. I need the Village, Postcode, Latitude, and Longitude for these venues. They are mostly located in Suffolk, Norfolk, Cambridgeshire, and Essex.
+    Return EXACTLY a JSON array. Do not invent coordinates if you are completely unsure, but provide your best accurate estimate.
+    Format: [{"name": "Exact Venue Name", "village": "Village Name", "postcode": "Postcode", "lat": "52.1234", "lng": "0.1234"}]
+    Venues to lookup: ${venueList}
+  `;
+
+  try {
+    const geoResult = await generateContentWithRetry(model, geoPrompt);
+    
+    const newVenueRows = geoResult.map(v => [
+      v.name || "", 
+      v.village || "", 
+      v.postcode || "", 
+      v.lat || "", 
+      v.lng || "", 
+      "", "", "", "", "", // Skip columns F-J to push the warning into Column K (Notes)
+      "[⚠️ VERIFY GPS]" 
+    ]);
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${TABS.VENUES}!A:K`, 
+      valueInputOption: 'USER_ENTERED',
+      resource: { values: newVenueRows },
+    });
+    console.log(`📍 Successfully added ${newVenueRows.length} new locations to the Venues tab!`);
+  } catch (error) {
+    console.error("❌ Failed to auto-generate venue coordinates:", error.message);
+  }
+}
+
 }
 
 main();
