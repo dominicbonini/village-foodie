@@ -8,6 +8,7 @@ import { usePostHog } from 'posthog-js/react';
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { useVillageData } from '@/hooks/useVillageData';
+import Link from 'next/link';
 import { 
   getDistanceKm, 
   getCoordsFromPostcode, 
@@ -113,7 +114,6 @@ function VillageFoodieContent() {
     const params = new URLSearchParams();
     
     if (currentCode) params.set('postcode', currentCode); 
-    
     if (filters.distance) params.set('distance', `${filters.distance} Miles`);
 
     const fallbackUrl = `https://tally.so/r/81xAKx?${params.toString()}`;
@@ -146,9 +146,20 @@ function VillageFoodieContent() {
       <header className="bg-slate-900 text-white py-3 px-4 md:p-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
-              Village Foodie <span className="text-xl md:text-2xl">🚚</span>
-            </h1>
+            
+            <div className="flex items-center gap-3 md:gap-4">
+                <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
+                Village Foodie <span className="text-xl md:text-2xl">🚚</span>
+                </h1>
+                {/* 👇 Now a standard Link to your new page 👇 */}
+                <Link 
+                    href="/hire"
+                    className="hidden sm:block text-xs font-bold text-orange-400 bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors"
+                >
+                    Hire a Truck
+                </Link>
+            </div>
+
             <div className="flex bg-slate-800 rounded-lg p-1">
               <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
               <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
@@ -178,7 +189,6 @@ function VillageFoodieContent() {
                 <option value="today">Today</option>
                 <option value="tomorrow">Tomorrow</option>
                 <option value="weekend">This Weekend</option>
-
               </select>
 
               <select 
@@ -213,14 +223,13 @@ function VillageFoodieContent() {
           <>
             {view === 'list' && (
               <div className="p-4 space-y-3 pb-20">
-<div className="pt-5 pb-3 px-4 text-center">
+                <div className="pt-5 pb-3 px-4 text-center">
                    <h2 className="text-slate-800 font-extrabold text-2xl tracking-tight">Find your next meal 🍔</h2>
                    <p className="text-slate-600 text-sm mt-1.5 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
                 </div>
                 
-                {/* 👇 THE NUDGE: Light, clean, modern UI 👇 */}
                 {!userLocation && (
-                    <div className="mx-4 mb-6 flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500">
+                    <div className="mx-4 mb-6 flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500 mt-2">
                         <form 
                             onSubmit={(e) => {
                                 e.preventDefault();
@@ -238,7 +247,6 @@ function VillageFoodieContent() {
                                 name="inlinePostcode"
                                 type="text" 
                                 placeholder="Postcode..." 
-                                // 👇 FIX: text-base prevents iOS Safari from auto-zooming 👇
                                 className="flex-1 bg-transparent text-slate-900 text-base md:text-sm font-semibold px-1 py-1 focus:outline-none placeholder-slate-400 uppercase w-full min-w-0"
                                 autoComplete="postal-code"
                             />
@@ -263,16 +271,14 @@ function VillageFoodieContent() {
               {Object.entries(groupedEvents).map(([date, dateEvents]) => {
                   const now = new Date();
                   
-                  // Failsafe check to see if the group of events is happening today
                   const sampleEventDate = (dateEvents[0] as any)?.date || '';
                   const [d, m, y] = sampleEventDate.includes('/') ? sampleEventDate.split('/') : [0,0,0];
                   const isToday = (parseInt(d) === now.getDate() && parseInt(m) === now.getMonth() + 1 && parseInt(y) === now.getFullYear()) || new Date(date).toDateString() === now.toDateString();
 
-                  // 👇 FIXED: Simple "Minutes since midnight" calculator
                   const getMinutes = (timeVal: any) => {
-                     if (!timeVal) return 9999; // Missing time? Send it to the bottom
+                     if (!timeVal) return 9999;
                      const match = String(timeVal).match(/(\d{1,2}):(\d{2})/);
-                     if (!match) return 9999; // "TBC"? Send it to the bottom
+                     if (!match) return 9999; 
                      
                      let h = parseInt(match[1], 10);
                      let mins = parseInt(match[2], 10);
@@ -283,12 +289,11 @@ function VillageFoodieContent() {
                      return (h * 60) + mins;
                   };
 
-                  // 1. FILTER: Remove finished events ONLY if the event is happening today
                   const activeEvents = dateEvents.filter(event => {
                     if (!isToday) return true; 
 
                     const endMins = getMinutes((event as any).endTime);
-                    if (endMins === 9999) return true; // Keep TBC visible all day
+                    if (endMins === 9999) return true; 
                     
                     const nowMins = (now.getHours() * 60) + now.getMinutes();
                     return endMins > nowMins;
@@ -296,17 +301,14 @@ function VillageFoodieContent() {
 
                   if (activeEvents.length === 0) return null;
 
-                  // 2. SORT: Chronological first (by minutes), Distance second
                   const sortedEvents = activeEvents.sort((a, b) => {
                     const startA = getMinutes((a as any).startTime);
                     const startB = getMinutes((b as any).startTime);
 
-                    // Primary Sort: Sort chronologically by minutes since midnight
                     if (startA !== startB) {
                       return startA - startB;
                     }
 
-                    // Secondary Sort: If both have identical times OR both say "TBC" (9999), sort by distance
                     if (!userLocation || !a.venueLat || !a.venueLong || !b.venueLat || !b.venueLong) return 0;
                     const distA = getDistanceKm(userLocation.lat, userLocation.long, a.venueLat, a.venueLong);
                     const distB = getDistanceKm(userLocation.lat, userLocation.long, b.venueLat, b.venueLong);
@@ -358,6 +360,7 @@ function VillageFoodieContent() {
         </button>
       </div>
 
+      {/* 👇 Cleaned up the footer props since the hire button uses a Link now 👇 */}
       <Footer onOpenTally={openTallyPopup} />
     </main>
   );

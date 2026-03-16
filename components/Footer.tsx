@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 interface FooterProps {
   onOpenTally: () => void;
+  // Removed onOpenHireTally from here
 }
 
 export default function Footer({ onOpenTally }: FooterProps) {
@@ -17,21 +18,29 @@ export default function Footer({ onOpenTally }: FooterProps) {
         Get the Schedule
       </button>
 
-      {/* Changed mt-4 to mt-2 for a much tighter gap */}
       <div className="text-[10px] mt-2 flex flex-col gap-2 items-center">
         <p>No Spam (but maybe Pepperoni). Unsubscribe Anytime.</p>
         
-        <div className="mt-2 text-center">
-           <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide">Contact Us</h4>
-           <div className="flex gap-4 justify-center">
+        <div className="mt-4 text-center">
+           <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide">Contact Us & Services</h4>
+           
+           <div className="flex flex-wrap gap-3 md:gap-4 justify-center items-center">
+              {/* 👇 Now it is a standard Link to your new page 👇 */}
+              <Link 
+                href="/hire" 
+                className="text-orange-400 font-bold hover:text-orange-300 transition-colors underline decoration-orange-400/50 hover:decoration-orange-300 underline-offset-2"
+              >
+                Hire a Food Truck
+              </Link>
+              <span className="text-slate-600">|</span>
               <Link href="/contact?topic=General%20Enquiry" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 General Enquiry
               </Link>
-              <span>|</span>
+              <span className="text-slate-600">|</span>
               <Link href="/contact?topic=Add%20Business" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Add my Business
               </Link>
-              <span>|</span>
+              <span className="text-slate-600">|</span>
               <Link href="/contact?topic=Report%20Issue" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Report Issue
               </Link>

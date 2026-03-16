@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://villagefoodie.co.uk"), // 👈 Tells Next.js your root domain
   title: {
     default: "Village Foodie",
     template: "%s | Village Foodie",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "Village Foodie",
     images: [
       {
-        url: "/og-image.png", 
+        url: "https://villagefoodie.co.uk/og-image.png", // 👈 Absolute URL guarantees Facebook finds it
         width: 1200,
         height: 630,
         alt: "Village Foodie - Find your next meal",
@@ -39,9 +40,8 @@ export const metadata: Metadata = {
     card: "summary_large_image", 
     title: "Village Foodie 🍔",
     description: "Find local food trucks and pop-ups visiting villages near you.",
-    images: ["/og-image.png"], 
+    images: ["https://villagefoodie.co.uk/og-image.png"], // 👈 Absolute URL here too
   },
-  // 👇 The inline SVG truck is back! 👇
   icons: {
     icon: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚚%3C/text%3E%3C/svg%3E",
   },
