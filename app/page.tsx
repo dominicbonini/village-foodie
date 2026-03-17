@@ -35,14 +35,13 @@ function VillageFoodieContent() {
   const [userPostcode, setUserPostcode] = useState('');
   const [userLocation, setUserLocation] = useState<{lat: number, long: number} | null>(null);
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
-  const [isEditingPostcode, setIsEditingPostcode] = useState(false); 
   const postcodeRef = useRef<HTMLInputElement>(null); 
 
   // --- FILTERS ---
   const [filters, setFilters] = useState({
     date: 'all',
     cuisine: 'all',
-    distance: '11'
+    distance: '11' // ✅ The 10-mile invisible buffer
   });
 
   // --- CUSTOM HOOK (Data Logic) ---
@@ -147,69 +146,40 @@ function VillageFoodieContent() {
       <header className="bg-slate-900 text-white py-3 px-4 md:p-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
         
-        <div className="flex justify-between items-start md:items-center">
-  
-          {/* Left Side: Brand Only */}
-          <h1 className="text-lg md:text-xl font-bold flex items-center gap-2 mt-1 md:mt-0">
+        {/* ✅ The perfectly balanced brand header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
             Village Foodie <span className="text-xl md:text-2xl">🚚</span>
           </h1>
 
-          {/* Right Side: Actions & Location */}
-          <div className="flex flex-col items-end gap-1.5">
-            <div className="flex items-center gap-3 md:gap-4">
-                <Link 
-                    href="/hire"
-                    className="hidden sm:block text-xs font-bold text-orange-400 bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors shadow-sm"
-                >
-                    Hire a Food Truck
-                </Link>
-                
-                <div className="flex bg-slate-800 rounded-lg p-1">
-                  <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
-                  <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
-                </div>
-            </div>
-
-            {/* 👇 NEW: Location neatly tucked under the toggle buttons 👇 */}
-            {userLocation && !isEditingPostcode ? (
-              <button 
-                onClick={() => setIsEditingPostcode(true)}
-                className="md:hidden flex items-center gap-1 text-[13px] font-medium text-slate-200 hover:text-white transition-colors mr-1"
+          <div className="flex items-center gap-3 md:gap-4">
+              <Link 
+                  href="/hire"
+                  className="hidden sm:block text-xs font-bold text-orange-400 bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors shadow-sm"
               >
-                📍 {userPostcode} <span className="text-[10px] font-normal text-slate-400 underline decoration-slate-600 underline-offset-2 ml-0.5">Edit</span>
-              </button>
-            ) : null}
+                  Hire a Food Truck
+              </Link>
+              
+              <div className="flex bg-slate-800 rounded-lg p-1">
+                <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
+                <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
+              </div>
           </div>
         </div>
 
-          {/* 👇 RESTORED: Filter box is perfectly symmetrical again 👇 */}
+          {/* ✅ The original, bulletproof search control panel */}
           <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-2 md:p-3 rounded-lg border border-slate-700">
             
-            {/* ACTUAL INPUT: Hidden on mobile if populated */}
-            <div className={`gap-2 flex-1 w-full md:w-auto ${userLocation && !isEditingPostcode ? 'hidden md:flex' : 'flex'}`}>
+            <div className="flex gap-2 flex-1 w-full md:w-auto">
               <input 
                 ref={postcodeRef} 
                 type="text" 
                 placeholder="CB8 0AA" 
                 className="w-full bg-slate-900 text-white text-base md:text-sm px-3 py-1.5 md:py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        handlePostcodeSearch(postcodeRef.current?.value || '');
-                        setIsEditingPostcode(false); 
-                    }
-                }} 
+                onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(postcodeRef.current?.value || '')} 
                 autoComplete="postal-code" 
               />
-              <button 
-                onClick={() => {
-                    handlePostcodeSearch(postcodeRef.current?.value || '');
-                    setIsEditingPostcode(false); 
-                }} 
-                disabled={isPostcodeLoading} 
-                className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 md:py-2 rounded text-base md:text-sm font-bold transition-colors disabled:opacity-50 shrink-0"
-              >
-                {isPostcodeLoading ? '...' : 'Save'}
-              </button>
+              <button onClick={() => handlePostcodeSearch(postcodeRef.current?.value || '')} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 md:py-2 rounded text-base md:text-sm font-bold transition-colors disabled:opacity-50 shrink-0">{isPostcodeLoading ? '...' : 'Save'}</button>
             </div>
             
             <div className="grid grid-cols-3 md:flex gap-1.5 md:gap-2 w-full md:w-auto">
@@ -349,9 +319,9 @@ function VillageFoodieContent() {
                   });
 
                   return (
-                    // 👇 UPDATED: Sticky dates adjusted to 116px/156px for perfect snapping 👇
+                    // ✅ The original, flawlessly calculated sticky math
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        <div className={`sticky ${userLocation && !isEditingPostcode ? 'top-[116px]' : 'top-[156px]'} md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1`}>
+                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>
