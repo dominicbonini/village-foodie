@@ -41,7 +41,7 @@ function VillageFoodieContent() {
   const [filters, setFilters] = useState({
     date: 'all',
     cuisine: 'all',
-    distance: '10'
+    distance: '11'
   });
 
   // --- CUSTOM HOOK (Data Logic) ---
