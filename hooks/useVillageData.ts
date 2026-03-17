@@ -18,7 +18,7 @@ const cleanKey = (str: string) => {
         .trim();
 };
 
-// 🤝 AGGRESSIVE FUZZY MATCHER (Kept for fallback purposes)
+// 🤝 AGGRESSIVE FUZZY MATCHER
 const isMatch = (key1: string, key2: string) => {
     if (!key1 || !key2) return false;
     if (key1 === key2) return true;
@@ -71,13 +71,32 @@ export function useVillageData(
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // 👇 ADDED: The React mount-guard and Abort Controller 👇
+    let isMounted = true;
+    const controller = new AbortController();
+    
+    // Kill the request if it takes longer than 10 seconds (crucial for bad mobile signal)
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
     const fetchData = async () => {
       try {
+        const fetchOpts = { 
+            signal: controller.signal, 
+            cache: 'no-store' as RequestCache 
+        };
+
         const [eventsRes, trucksRes, venuesRes] = await Promise.all([
-            fetch(`${EVENTS_CSV_URL}&t=${Date.now()}`),
-            fetch(`${TRUCKS_CSV_URL}&t=${Date.now()}`),
-            fetch(`${VENUES_CSV_URL}&t=${Date.now()}`)
+            fetch(`${EVENTS_CSV_URL}&t=${Date.now()}`, fetchOpts),
+            fetch(`${TRUCKS_CSV_URL}&t=${Date.now()}`, fetchOpts),
+            fetch(`${VENUES_CSV_URL}&t=${Date.now()}`, fetchOpts)
         ]);
+
+        clearTimeout(timeoutId);
+
+        // Fail fast if Google Sheets throws an error
+        if (!eventsRes.ok || !trucksRes.ok || !venuesRes.ok) {
+            throw new Error("Failed to fetch data from source.");
+        }
 
         const [eventsCsvText, trucksCsvText, venuesCsvText] = await Promise.all([
             eventsRes.text(), trucksRes.text(), venuesRes.text()
@@ -101,7 +120,6 @@ export function useVillageData(
                     truckNotes: cols[5],      
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
-                    // 👇 ADDED: Extract Column J (index 9) for Logo URL 👇
                     logoUrl: cols[9] || ''          
                 });
             }
@@ -179,7 +197,6 @@ export function useVillageData(
               notes: truck.truckNotes || '',
               eventNotes: cols[5] || '',    
               
-              // 👇 ADDED: Pass the logo down to the UI 👇
               logoUrl: truck.logoUrl || '',         
             };
 
@@ -197,15 +214,33 @@ export function useVillageData(
               return dateA.getTime() - dateB.getTime();
           });
 
-        setEvents(parsedEvents);
-        setLoading(false);
+        // 👇 ADDED: Only update state if the component is still alive 👇
+        if (isMounted) {
+            setEvents(parsedEvents);
+            setLoading(false);
+        }
 
-      } catch (error) {
-        console.error('VillageData Sync Error:', error);
-        setLoading(false);
+      } catch (error: any) {
+        // We safely ignore the error if it was just our 10-second timeout kicking in
+        if (error.name !== 'AbortError') {
+            console.error('VillageData Sync Error:', error);
+        }
+        
+        // Guarantee the loading spinner stops no matter what goes wrong
+        if (isMounted) {
+            setLoading(false);
+        }
       }
     };
+    
     fetchData();
+
+    // Cleanup function when component unmounts
+    return () => {
+        isMounted = false;
+        controller.abort();
+        clearTimeout(timeoutId);
+    };
   }, []);
 
   // --- FILTERING ---

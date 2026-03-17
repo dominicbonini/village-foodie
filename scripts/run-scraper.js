@@ -392,7 +392,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           CRITICAL RULES:
           1. **STRICT DATE ADHERENCE:** Extract dates exactly as they appear. Do NOT shift past dates into the future. 
           2. **IGNORE PAST EVENTS:** If the text is advertising an event that occurred BEFORE the Current Date, IGNORE IT.
-          3. **TODAY/TOMORROW:** If text says "Tonight" or "Tomorrow", convert to dates based on the Current Date.
+          3. **SOCIAL MEDIA RELATIVE DATES (THE "TODAY" RULE):** If the text says "Today", "Tonight", or "Tomorrow", DO NOT blindly assume it means the Current Date. You MUST scan the surrounding text to find the **Post Publish Date** (e.g., "March 14", "Yesterday", "2 hrs ago"). Anchor "today" or "tomorrow" to that Publish Date. If calculating from the Publish Date means the event already happened, IGNORE IT ENTIRELY.
           4. **DAYS OF THE WEEK (CLICK & COLLECT FIX):** If the website lists locations by Day of the Week (e.g., "Wednesdays", "Thu 12-2") instead of strict calendar dates, mathematically calculate the next immediate date for that day based on the Current Date. NEVER apply a single generic header date to every venue on the page.
           5. **DateStart Format:** MUST be "DD/MM/YYYY". 
           6. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
