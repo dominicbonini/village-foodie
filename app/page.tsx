@@ -350,7 +350,9 @@ function VillageFoodieContent() {
 
                   return (
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1">
+                        {/* ✅ NEW LINE WITH BREATHING ROOM */}
+{/* ✅ NEW LINE WITH BREATHING ROOM */}
+<div className={`sticky ${userLocation && !isEditingPostcode ? 'top-[126px]' : 'top-[166px]'} md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1`}>
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>
