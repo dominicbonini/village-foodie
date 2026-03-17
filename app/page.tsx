@@ -35,6 +35,7 @@ function VillageFoodieContent() {
   const [userPostcode, setUserPostcode] = useState('');
   const [userLocation, setUserLocation] = useState<{lat: number, long: number} | null>(null);
   const [isPostcodeLoading, setIsPostcodeLoading] = useState(false);
+  const [isEditingPostcode, setIsEditingPostcode] = useState(false); 
   const postcodeRef = useRef<HTMLInputElement>(null); 
 
   // --- FILTERS ---
@@ -145,40 +146,70 @@ function VillageFoodieContent() {
       {/* --- HEADER --- */}
       <header className="bg-slate-900 text-white py-3 px-4 md:p-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
-        <div className="flex justify-between items-center">
+        
+        {/* 👇 UPDATED: items-start keeps List/Map aligned with logo on mobile 👇 */}
+        <div className="flex justify-between items-start md:items-center">
   
-  {/* Left Side: Brand Only */}
-  <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
-    Village Foodie <span className="text-xl md:text-2xl">🚚</span>
-  </h1>
+          {/* Left Side: Brand + Mobile Postcode */}
+          <div className="flex flex-col">
+            <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
+              Village Foodie <span className="text-xl md:text-2xl">🚚</span>
+            </h1>
+            
+            {/* 👇 NEW: The ultra-compact location display (Mobile Only) 👇 */}
+            {userLocation && !isEditingPostcode && (
+              <button 
+  onClick={() => setIsEditingPostcode(true)}
+  className="md:hidden flex items-center gap-1.5 text-sm font-medium text-slate-200 mt-1 text-left hover:text-white transition-colors"
+>
+  📍 {userPostcode} <span className="text-xs text-slate-400 font-normal underline decoration-slate-600 underline-offset-2">Tap to edit</span>
+</button>
+            )}
+          </div>
 
-  {/* Right Side: Actions (Hire + View Toggle) */}
-  <div className="flex items-center gap-3 md:gap-4">
-      <Link 
-          href="/hire"
-          className="hidden sm:block text-xs font-bold text-orange-400 bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors shadow-sm"
-      >
-          Hire a Food Truck
-      </Link>
-      
-      <div className="flex bg-slate-800 rounded-lg p-1">
-        <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
-        <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
-      </div>
-  </div>
-</div>
+          {/* Right Side: Actions */}
+          <div className="flex items-center gap-3 md:gap-4 pt-0.5 md:pt-0">
+              <Link 
+                  href="/hire"
+                  className="hidden sm:block text-xs font-bold text-orange-400 bg-slate-800 hover:bg-slate-700 px-3 py-1 rounded-full border border-slate-700 transition-colors shadow-sm"
+              >
+                  Hire a Food Truck
+              </Link>
+              
+              <div className="flex bg-slate-800 rounded-lg p-1">
+                <button onClick={() => { setView('list'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>List</button>
+                <button onClick={() => { setView('map'); window.scrollTo(0, 0); }} className={`px-3 py-1 md:px-4 md:py-1.5 rounded-md text-sm font-medium transition-all ${view === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}>Map</button>
+              </div>
+          </div>
+        </div>
 
           <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-2 md:p-3 rounded-lg border border-slate-700">
-            <div className="flex gap-2 flex-1 w-full md:w-auto">
+            
+            {/* 👇 UPDATED: Input Box is completely hidden on mobile if populated 👇 */}
+            <div className={`gap-2 flex-1 w-full md:w-auto ${userLocation && !isEditingPostcode ? 'hidden md:flex' : 'flex'}`}>
               <input 
                 ref={postcodeRef} 
                 type="text" 
                 placeholder="CB8 0AA" 
                 className="w-full bg-slate-900 text-white text-base md:text-sm px-3 py-1.5 md:py-2 rounded border border-slate-600 focus:border-orange-500 focus:outline-none placeholder-slate-500 uppercase" 
-                onKeyDown={(e) => e.key === 'Enter' && handlePostcodeSearch(postcodeRef.current?.value || '')} 
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        handlePostcodeSearch(postcodeRef.current?.value || '');
+                        setIsEditingPostcode(false); 
+                    }
+                }} 
                 autoComplete="postal-code" 
               />
-              <button onClick={() => handlePostcodeSearch(postcodeRef.current?.value || '')} disabled={isPostcodeLoading} className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 md:py-2 rounded text-base md:text-sm font-bold transition-colors disabled:opacity-50">{isPostcodeLoading ? '...' : 'Save'}</button>
+              <button 
+                onClick={() => {
+                    handlePostcodeSearch(postcodeRef.current?.value || '');
+                    setIsEditingPostcode(false); 
+                }} 
+                disabled={isPostcodeLoading} 
+                className="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 md:py-2 rounded text-base md:text-sm font-bold transition-colors disabled:opacity-50 shrink-0"
+              >
+                {isPostcodeLoading ? '...' : 'Save'}
+              </button>
             </div>
             
             <div className="grid grid-cols-3 md:flex gap-1.5 md:gap-2 w-full md:w-auto">
@@ -208,7 +239,6 @@ function VillageFoodieContent() {
                 onChange={(e) => setFilters({...filters, distance: e.target.value})} 
                 disabled={!userLocation}
                 >
-                {/* 👇 Values have a +1 mile invisible buffer 👇 */}
                 <option value="11">10 Miles</option>
                 <option value="16">15 Miles</option>
                 <option value="21">20 Miles</option>
@@ -267,7 +297,7 @@ function VillageFoodieContent() {
                 {Object.keys(groupedEvents).length === 0 && (
                    <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
                       <p className="text-slate-600">No events found matching your filters.</p>
-                      <button onClick={() => setFilters({date: 'all', cuisine: 'all', distance: '10'})} className="text-orange-600 text-sm font-bold mt-2 hover:underline">Clear Filters</button>
+                      <button onClick={() => setFilters({date: 'all', cuisine: 'all', distance: '11'})} className="text-orange-600 text-sm font-bold mt-2 hover:underline">Clear Filters</button>
                    </div>
                 )}
 
@@ -363,7 +393,6 @@ function VillageFoodieContent() {
         </button>
       </div>
 
-      {/* 👇 Cleaned up the footer props since the hire button uses a Link now 👇 */}
       <Footer onOpenTally={openTallyPopup} />
     </main>
   );
