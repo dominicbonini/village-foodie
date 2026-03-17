@@ -330,7 +330,7 @@ const browser = await puppeteer.launch({
 });
 
 const newRowsToAdd = [];
-const newVenuesDetected = new Set(); // Tracks missing venues for Auto-Geocoder
+const newVenuesDetected = new Map(); // 👇 CHANGED: Now a Map to track both Name AND Address
 
 for (const [index, site] of sitesToScrape.entries()) {
   try {
@@ -397,7 +397,8 @@ for (const [index, site] of sitesToScrape.entries()) {
           5. **DateStart Format:** MUST be "DD/MM/YYYY". 
           6. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
           7. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          8. **VENUE STANDARDIZATION:** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If it is, output the official name. **CRITICAL:** If the venue is NOT in the list, output the FULL name exactly as written on the website. Do NOT guess or pick a random venue. Do NOT put the venue name in the Notes field.
+          8. **VENUE NAME:** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If yes, output the official name. If NO, extract the CLEAN BUSINESS OR LOCATION NAME ONLY (e.g., 'Franks Farm, Elsworth' or 'The Red Lion'). Do NOT include street addresses, postcodes, or promotional text in the Venue Name.
+          9. **ADDRESS IN NOTES:** If you find a street address or postcode in the text (e.g., 'Brockley Rd, CB23 4EY'), put that EXACT address into the "Notes" field. This is critical for our GPS system.
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
@@ -531,7 +532,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                   }
               } else {
                   isNewVenue = true; 
-                  newVenuesDetected.add(finalVenue); // Track for AI geocoding
+                  newVenuesDetected.set(finalVenue, eventNotes); // 👇 CHANGED: Store name AND address notes
               }
           }
 
@@ -596,14 +597,19 @@ if (newRowsToAdd.length > 0) {
 
 // --- 👇 AUTO-VENUE GEOCODER 👇 ---
 if (newVenuesDetected.size > 0) {
-  console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues...`);
-  const venueList = Array.from(newVenuesDetected).join(", ");
+  console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues using Address context...`);
+  
+  // Combines the Name and Address Notes so the Geocoder has perfect context
+  const venueListForPrompt = Array.from(newVenuesDetected.entries())
+    .map(([name, addressInfo]) => `Venue: "${name}", Address Found on Site: "${addressInfo}"`)
+    .join(" | ");
   
   const geoPrompt = `
-    You are a UK Geography Expert. I need the Village, Postcode, Latitude, and Longitude for these venues. They are mostly located in Suffolk, Norfolk, Cambridgeshire, and Essex.
+    You are a UK Geography Expert. I need the Village, Postcode, Latitude, and Longitude for these venues. 
+    Use the provided "Address Found on Site" to ensure 100% accuracy for the coordinates and postcode.
     Return EXACTLY a JSON array. Do not invent coordinates if you are completely unsure, but provide your best accurate estimate.
     Format: [{"name": "Exact Venue Name", "village": "Village Name", "postcode": "Postcode", "lat": "52.1234", "lng": "0.1234"}]
-    Venues to lookup: ${venueList}
+    Venues to lookup: ${venueListForPrompt}
   `;
 
   try {
