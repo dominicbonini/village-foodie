@@ -41,7 +41,7 @@ function VillageFoodieContent() {
   const [filters, setFilters] = useState({
     date: 'all',
     cuisine: 'all',
-    distance: '11' // ✅ The 10-mile invisible buffer
+    distance: '11' 
   });
 
   // --- CUSTOM HOOK (Data Logic) ---
@@ -146,7 +146,6 @@ function VillageFoodieContent() {
       <header className="bg-slate-900 text-white py-3 px-4 md:p-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
         
-        {/* ✅ The perfectly balanced brand header */}
         <div className="flex justify-between items-center">
           <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
             Village Foodie <span className="text-xl md:text-2xl">🚚</span>
@@ -167,7 +166,6 @@ function VillageFoodieContent() {
           </div>
         </div>
 
-          {/* ✅ The original, bulletproof search control panel */}
           <div className="flex flex-col md:flex-row gap-2 md:items-center bg-slate-800 p-2 md:p-3 rounded-lg border border-slate-700">
             
             <div className="flex gap-2 flex-1 w-full md:w-auto">
@@ -219,7 +217,8 @@ function VillageFoodieContent() {
       </header>
 
       {/* --- CONTENT AREA --- */}
-      <div className={`flex-1 w-full mx-auto relative ${view === 'list' ? 'max-w-md' : 'max-w-full md:max-w-6xl'}`}>
+      {/* 👇 UPDATED: Uses max-w-2xl to create a premium, balanced, centered feed on desktop 👇 */}
+      <div className={`flex-1 w-full mx-auto relative ${view === 'list' ? 'max-w-md md:max-w-xl' : 'max-w-full md:max-w-6xl'}`}>
         {loading ? (
           <div className="p-12 text-center text-slate-500">Loading delicious events...</div>
         ) : (
@@ -265,7 +264,7 @@ function VillageFoodieContent() {
                 )}
 
                 {Object.keys(groupedEvents).length === 0 && (
-                   <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4">
+                   <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4 max-w-md mx-auto">
                       <p className="text-slate-600">No events found matching your filters.</p>
                       <button onClick={() => setFilters({date: 'all', cuisine: 'all', distance: '11'})} className="text-orange-600 text-sm font-bold mt-2 hover:underline">Clear Filters</button>
                    </div>
@@ -319,14 +318,14 @@ function VillageFoodieContent() {
                   });
 
                   return (
-                    // ✅ The original, flawlessly calculated sticky math
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-1">
+                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-2">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>
                         </div>
-                        <div className="space-y-3">
+                        {/* 👇 UPDATED: Restored vertical stack with slightly more breathing room on desktop 👇 */}
+                        <div className="space-y-3 md:space-y-4">
                         {sortedEvents.map((event) => {
                             let distanceMiles: number | null = null;
                             if (userLocation && event.venueLat && event.venueLong) {
