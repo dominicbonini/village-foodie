@@ -254,7 +254,7 @@ const [truckData, venueData, eventData] = await Promise.all([
 ]);
 
 const validTrucks = truckData.map(r => r[0]).filter(Boolean);
-const validVenues = venueData.map(r => r[0]).filter(Boolean); // 👈 RESTORED
+const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
 const existingEvents = new Set();
 
@@ -353,12 +353,13 @@ for (const [index, site] of sitesToScrape.entries()) {
       cleanText = ""; 
     }
 
-    if (cleanText.length < 50 && site.instructions.length > 10) {
-        console.log("   ✨ Empty/Manual: Parsing Rules for Calculation...");
+    // 👇 FIXED: Strictly check that strategy is 'manual' before attempting rule extraction
+    if (site.strategy === 'manual' && site.instructions.length > 10) {
+        console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
         isManualWithRules = true;
         cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
     } else if (cleanText.length < 50) {
-        console.log("   ❌ Empty site and no instructions. Skipping.");
+        console.log(`   ❌ Empty page content (${cleanText.length} chars). The website might be loading too slowly or blocking us.`);
         await page.close();
         continue;
     }
@@ -373,14 +374,13 @@ for (const [index, site] of sitesToScrape.entries()) {
           1. Extract EACH venue separately.
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
-          4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
-          5. MONTHLY EVENTS: If a rule says "First Saturday", set freq: "monthly", day: "saturday", pos: "1st". If it says "3rd Sunday", set freq: "monthly", day: "sunday", pos: "3rd".
-          6. VENUE NAME: Extract the exact name from the user rules. Do not attempt to map it to an existing venue.
+          4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY.
+          5. MONTHLY EVENTS: If a rule says "First Saturday", set freq: "monthly", day: "saturday", pos: "1st".
+          6. VENUE NAME: Extract the exact name from the user rules.
           CORRECT FORMAT EXAMPLES:
           [
             { "venue": "The Railway Tavern", "proof": "Every Monday", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "" },
-            { "venue": "Burwell Social Club", "proof": "First Saturday", "rawTimeStart": "10am", "rawTimeEnd": "3pm", "freq": "monthly", "day": "saturday", "pos": "1st" },
-            { "venue": "Waterbeach Market", "proof": "3rd Sunday", "rawTimeStart": "10am", "rawTimeEnd": "3pm", "freq": "monthly", "day": "sunday", "pos": "3rd" }
+            { "venue": "Burwell Social Club", "proof": "First Saturday", "rawTimeStart": "10am", "rawTimeEnd": "3pm", "freq": "monthly", "day": "saturday", "pos": "1st" }
           ]
         `;
       } else {
@@ -389,19 +389,17 @@ for (const [index, site] of sitesToScrape.entries()) {
           Current Date: ${new Date().toDateString()}.
           Current Year: ${new Date().getFullYear()}.
           
-          ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}" (Follow this hint carefully when reading the text below!)` : ""}
+          ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}"` : ""}
           
-          TASK: Extract EVERY SINGLE upcoming food truck event from the provided text. You must be exhaustive. DO NOT skip, group, or omit any locations, even if there are multiple locations listed on the same day.
+          TASK: Extract EVERY SINGLE upcoming food truck event from the provided text.
           CRITICAL RULES:
-          1. **STRICT DATE ADHERENCE:** Extract dates exactly as they appear. Do NOT shift past dates into the future. 
-          2. **IGNORE PAST EVENTS:** If the text is advertising an event that occurred BEFORE the Current Date, IGNORE IT.
-          3. **THE "TODAY" RULE:** If the text says "Today" or "Tomorrow": On social media, anchor it to the Post Publish Date. On booking/checkout pages, anchor it to the explicit date headers above it (e.g., "MAR 18") or the Current Date. NEVER skip an event just because it says "Today".
-          4. **DAYS OF THE WEEK (CLICK & COLLECT FIX):** If the website lists locations by Day of the Week (e.g., "Wednesdays", "Thu 12-2") instead of strict calendar dates, mathematically calculate the next immediate date for that day based on the Current Date.
-          5. **DateStart Format:** MUST be "DD/MM/YYYY". 
-          6. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
-          7. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          8. **VENUE NAME (COMPOSITE KEY):** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If yes, output the official name. If NO, extract the CLEAN BUSINESS NAME AND TOWN (e.g., 'Franks Farm - Elsworth' or 'The Bull - Saffron Walden'). You MUST include the town name to ensure the venue has a unique identifier in our database.
-          9. **ADDRESS IN NOTES:** If you find a street address or postcode in the text (e.g., 'Brockley Rd, CB23 4EY'), put that EXACT address into the "Notes" field.
+          1. **STRICT DATE ADHERENCE:** Do NOT shift past dates into the future. 
+          2. **IGNORE PAST EVENTS.**
+          3. **THE "TODAY" RULE:** Anchor "Today" to the Post Publish Date or current clock if on a checkout page.
+          4. **DAYS OF THE WEEK:** Calculate next immediate date based on Current Date.
+          5. **DateStart Format:** "DD/MM/YYYY". 
+          6. **VENUE NAME (COMPOSITE KEY):** Check if in ${JSON.stringify(validVenues)}. If NO, extract BUSINESS NAME AND TOWN (e.g., 'The Bull - Saffron Walden').
+          7. **ADDRESS IN NOTES:** Postcodes/addresses go into "Notes".
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
@@ -425,6 +423,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                    const tStart = parseTime(rule.rawTimeStart) || "Contact Venue";
                    let tEnd = parseTime(rule.rawTimeEnd) || "Contact Venue";
                    if (tStart === "Contact Venue") tEnd = "";
+
                    for (const date of dates) {
                        finalEvents.push({
                            "DateStart": date,
@@ -450,17 +449,20 @@ for (const [index, site] of sitesToScrape.entries()) {
           const truckName = (event["Truck Name"] || "").trim();
           const venueName = (event["Venue Name"] || "").trim();
           const eventNotes = (event["Notes"] || "").trim();
+          
           if (!truckName || !event.DateStart) continue;
 
           const normTruck = normalizeName(truckName);
           const normVenue = normalizeName(venueName);
 
+          // 1. TRUCK MATCHER
           let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck) || 
                              validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
 
           let finalTruck = matchedTruck || (truckName.toLowerCase().includes(normalizeName(site.name)) ? site.name : truckName);
           let isNewTruck = !matchedTruck;
 
+          // 2. VENUE MATCHER (Postcode First)
           let finalVenue = venueName || "Unknown";
           const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
           let isNewVenue = false;
@@ -494,7 +496,13 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (confirmedVenue) finalVenue = confirmedVenue;
           else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
 
-          let notes = [isNewTruck ? "[⚠️ NEW TRUCK]" : "", isNewVenue ? "[⚠️ NEW VENUE]" : "", eventNotes].filter(Boolean).join(" ");
+          // 3. CONSOLIDATE
+          let aiNotesArr = [];
+          if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
+          if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
+          if (eventNotes) aiNotesArr.push(eventNotes);
+          let notes = aiNotesArr.join(" ");
+
           const cleanDate = standardizeDate(event.DateStart);
           const key = `${cleanDate}|${finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '')}|${finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
           
@@ -523,15 +531,15 @@ if (newRowsToAdd.length > 0) {
 } else { console.log("\n💤 No new events found."); }
 
 if (newVenuesDetected.size > 0) {
-  console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues using Address context...`);
-  const venueListForPrompt = Array.from(newVenuesDetected.entries()).map(([name, addressInfo]) => `Venue: "${name}", Address Found on Site: "${addressInfo}"`).join(" | ");
-  const geoPrompt = `You are a UK Geography Expert. I need the Village, Postcode, Latitude, and Longitude for these venues. Return EXACTLY a JSON array. Format: [{"name": "Exact Venue Name", "village": "Village Name", "postcode": "Postcode", "lat": "52.1234", "lng": "0.1234"}] Venues: ${venueListForPrompt}`;
+  console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues...`);
+  const venueListForPrompt = Array.from(newVenuesDetected.entries()).map(([name, addressInfo]) => `Venue: "${name}", Address: "${addressInfo}"`).join(" | ");
+  const geoPrompt = `Return JSON array. Village, Postcode, Lat, Lng for: ${venueListForPrompt}`;
   try {
     const geoResult = await generateContentWithRetry(model, geoPrompt);
     const newVenueRows = geoResult.map(v => [v.name || "", v.village || "", v.postcode || "", v.lat || "", v.lng || "", "", "", "", "", "", "[⚠️ VERIFY GPS]"]);
     await sheets.spreadsheets.values.append({ spreadsheetId: SPREADSHEET_ID, range: `${TABS.VENUES}!A:K`, valueInputOption: 'USER_ENTERED', resource: { values: newVenueRows }, });
-    console.log(`📍 Successfully added ${newVenueRows.length} new locations!`);
-  } catch (error) { console.error("❌ Failed to auto-generate venue coordinates:", error.message); }
+    console.log(`📍 Successfully added ${newVenueRows.length} locations!`);
+  } catch (error) { console.error("❌ Geocoder Failed:", error.message); }
 }
 }
 main();
