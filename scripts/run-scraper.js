@@ -462,39 +462,75 @@ for (const [index, site] of sitesToScrape.entries()) {
           let finalTruck = matchedTruck || (truckName.toLowerCase().includes(normalizeName(site.name)) ? site.name : truckName);
           let isNewTruck = !matchedTruck;
 
-          // 2. VENUE MATCHER (Postcode First)
-          let finalVenue = venueName || "Unknown";
-          const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
-          let isNewVenue = false;
+// 2. HYBRID VENUE MATCHER (Postcode + Name Duo)
+let finalVenue = venueName || "Unknown";
+const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
+let isNewVenue = false;
+let confirmedVenue = null;
 
-          const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
-          const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
-          let confirmedVenue = null;
+// STEP A: Extract Postcode from scraped text
+const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
+const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
 
-          if (eventPostcode) {
-              const pcMatch = venueData.find(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
-              if (pcMatch) confirmedVenue = pcMatch[0];
-          }
+if (eventPostcode) {
+    // Get ALL venues in your database with this exact postcode
+    const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
+    
+    if (venuesAtPostcode.length > 0) {
+        let bestMatch = null;
+        let highestScore = -1;
+        
+        // Score them based on Name similarity
+        for (const v of venuesAtPostcode) {
+            const dbNameNorm = normalizeName(v[0]);
+            let score = 0;
+            
+            if (dbNameNorm === normVenue) score += 10;
+            else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
+            
+            if (score > highestScore) {
+                highestScore = score;
+                bestMatch = v[0];
+            }
+        }
+        // Only confirm if we found a name match at this postcode
+        if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
+    }
+}
 
-          if (!confirmedVenue) {
-              let fuzzyMatches = venueData.filter(v => v[0] && (normVenue === normalizeName(v[0]) || normVenue.includes(normalizeName(v[0])) || normalizeName(v[0]).includes(normVenue)));
-              if (fuzzyMatches.length > 0) {
-                  let verifiedMatches = [];
-                  for (const match of fuzzyMatches) {
-                      const dbVillage = (match[1] || "").toLowerCase().trim();
-                      if (dbVillage && dbVillage.length > 2) {
-                          if (eventTextToSearch.includes(dbVillage)) verifiedMatches.push({ venue: match, score: 3 });
-                          else if (eventNotes.length > 10) continue; 
-                          else verifiedMatches.push({ venue: match, score: 1 });
-                      } else { verifiedMatches.push({ venue: match, score: 1 }); }
-                  }
-                  verifiedMatches.sort((a, b) => (b.score - a.score) || (b.venue[0].length - a.venue[0].length));
-                  if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
-              }
-          }
+// STEP B: Fallback (No postcode found, or postcode match failed)
+// Require BOTH Name and Village to match, or accept if it's the ONLY fuzzy match
+if (!confirmedVenue) {
+    let fuzzyMatches = venueData.filter(v => {
+        if (!v[0]) return false;
+        const normDbName = normalizeName(v[0]);
+        return normVenue === normDbName || normVenue.includes(normDbName) || normDbName.includes(normVenue);
+    });
 
-          if (confirmedVenue) finalVenue = confirmedVenue;
-          else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
+    if (fuzzyMatches.length > 0) {
+        let verifiedMatches = [];
+        for (const match of fuzzyMatches) {
+            const dbVillage = (match[1] || "").toLowerCase().trim();
+            let score = 0;
+            
+            // If the scraped text mentions the village name, huge confidence boost!
+            if (dbVillage && dbVillage.length > 2 && eventTextToSearch.includes(dbVillage)) {
+                score += 10; 
+            }
+            
+            // Accept if it has a high score OR if it's the only possible match
+            if (score > 0 || fuzzyMatches.length === 1) {
+                verifiedMatches.push({ venue: match, score: score });
+            }
+        }
+        
+        verifiedMatches.sort((a, b) => b.score - a.score);
+        if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
+    }
+}
+
+if (confirmedVenue) finalVenue = confirmedVenue;
+else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
 
           // 3. CONSOLIDATE
           let aiNotesArr = [];
