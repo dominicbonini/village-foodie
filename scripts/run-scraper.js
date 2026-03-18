@@ -60,7 +60,7 @@ function parseTime(timeStr) {
     return `${String(hours).padStart(2, '0')}:${minutes}`;
 }
 
-// --- DETERMINISTIC DATE CALCULATOR ---
+// --- DETERMINISTIC DATE CALCULATOR (60 DAY LOOKAHEAD) ---
 function generateDatesFromRule(ruleJSON) {
     const dates = [];
     const today = new Date();
@@ -89,7 +89,7 @@ function generateDatesFromRule(ruleJSON) {
     
     const freq = (ruleJSON.freq || "").toLowerCase();
 
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 60; i++) {
         const d = new Date();
         d.setDate(today.getDate() + i);
         
@@ -228,7 +228,6 @@ async function getTabData(sheets, rangeName) {
 }
 
 async function main() {
-// --- 👇 TARGET MODE SWITCH 👇 ---
 const TARGET_NAME = process.argv[2] ? process.argv[2].toLowerCase().trim() : null;
 
 if (TARGET_NAME) {
@@ -255,6 +254,7 @@ const [truckData, venueData, eventData] = await Promise.all([
 ]);
 
 const validTrucks = truckData.map(r => r[0]).filter(Boolean);
+const validVenues = venueData.map(r => r[0]).filter(Boolean); // 👈 RESTORED
 
 const existingEvents = new Set();
 
@@ -272,7 +272,6 @@ console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
 
 const sitesToScrape = [];
 
-// --- COMBO-STRATEGY SPLITTER ---
 truckData.forEach(row => {
   if (TARGET_NAME && (!row[0] || row[0].toLowerCase().trim() !== TARGET_NAME)) return; 
 
@@ -375,9 +374,14 @@ for (const [index, site] of sitesToScrape.entries()) {
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
-          5. VENUE NAME: Extract the exact name from the user rules. Do not attempt to map it to an existing venue.
-          CORRECT FORMAT:
-          [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
+          5. MONTHLY EVENTS: If a rule says "First Saturday", set freq: "monthly", day: "saturday", pos: "1st". If it says "3rd Sunday", set freq: "monthly", day: "sunday", pos: "3rd".
+          6. VENUE NAME: Extract the exact name from the user rules. Do not attempt to map it to an existing venue.
+          CORRECT FORMAT EXAMPLES:
+          [
+            { "venue": "The Railway Tavern", "proof": "Every Monday", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "" },
+            { "venue": "Burwell Social Club", "proof": "First Saturday", "rawTimeStart": "10am", "rawTimeEnd": "3pm", "freq": "monthly", "day": "saturday", "pos": "1st" },
+            { "venue": "Waterbeach Market", "proof": "3rd Sunday", "rawTimeStart": "10am", "rawTimeEnd": "3pm", "freq": "monthly", "day": "sunday", "pos": "3rd" }
+          ]
         `;
       } else {
         prompt = `
@@ -396,8 +400,8 @@ for (const [index, site] of sitesToScrape.entries()) {
           5. **DateStart Format:** MUST be "DD/MM/YYYY". 
           6. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
           7. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          8. **VENUE NAME:** Extract the CLEAN BUSINESS OR LOCATION NAME ONLY (e.g., 'Franks Farm, Elsworth' or 'The Bell Inn'). Do NOT include street addresses, postcodes, or promotional text in the Venue Name. Do NOT attempt to map the venue to an existing database list. We will handle mapping internally.
-          9. **ADDRESS IN NOTES:** If you find a street address or postcode in the text (e.g., 'Brockley Rd, CB23 4EY'), put that EXACT address into the "Notes" field. This is critical for our GPS system.
+          8. **VENUE NAME (COMPOSITE KEY):** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If yes, output the official name. If NO, extract the CLEAN BUSINESS NAME AND TOWN (e.g., 'Franks Farm - Elsworth' or 'The Bull - Saffron Walden'). You MUST include the town name to ensure the venue has a unique identifier in our database.
+          9. **ADDRESS IN NOTES:** If you find a street address or postcode in the text (e.g., 'Brockley Rd, CB23 4EY'), put that EXACT address into the "Notes" field.
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
@@ -415,17 +419,12 @@ for (const [index, site] of sitesToScrape.entries()) {
       
       if (isManualWithRules && Array.isArray(result)) {
            for (const rule of result) {
-               
-               if (!rule.freq && rule.day) {
-                   rule.freq = "weekly";
-               }
-               
+               if (!rule.freq && rule.day) rule.freq = "weekly";
                if (rule.freq) {
                    const dates = generateDatesFromRule(rule);
                    const tStart = parseTime(rule.rawTimeStart) || "Contact Venue";
                    let tEnd = parseTime(rule.rawTimeEnd) || "Contact Venue";
                    if (tStart === "Contact Venue") tEnd = "";
-
                    for (const date of dates) {
                        finalEvents.push({
                            "DateStart": date,
@@ -451,36 +450,21 @@ for (const [index, site] of sitesToScrape.entries()) {
           const truckName = (event["Truck Name"] || "").trim();
           const venueName = (event["Venue Name"] || "").trim();
           const eventNotes = (event["Notes"] || "").trim();
-          
           if (!truckName || !event.DateStart) continue;
 
           const normTruck = normalizeName(truckName);
           const normVenue = normalizeName(venueName);
 
-          // --- 1. TRUCK MATCHER ---
-          let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck);
-          if (!matchedTruck) {
-              matchedTruck = validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
-          }
+          let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck) || 
+                             validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
 
-          let finalTruck = matchedTruck;
-          let isNewTruck = false;
+          let finalTruck = matchedTruck || (truckName.toLowerCase().includes(normalizeName(site.name)) ? site.name : truckName);
+          let isNewTruck = !matchedTruck;
 
-          if (!matchedTruck) {
-              if (truckName.toLowerCase().includes(normalizeName(site.name))) {
-                  finalTruck = site.name;
-              } else {
-                  finalTruck = truckName; 
-                  isNewTruck = true;
-              }
-          }
-
-          // --- 2. MULTI-TIER VENUE MATCHER (THE "STRICT CONTRADICTION" UPGRADE) ---
           let finalVenue = venueName || "Unknown";
           const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
           let isNewVenue = false;
 
-          // A. POSTCODE MATCH (The Ultimate Source of Truth)
           const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
           const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
           let confirmedVenue = null;
@@ -490,96 +474,42 @@ for (const [index, site] of sitesToScrape.entries()) {
               if (pcMatch) confirmedVenue = pcMatch[0];
           }
 
-          // B. If no Postcode match, fall back to Smart Name + Town checking
           if (!confirmedVenue) {
-              let fuzzyMatches = venueData.filter(v => {
-                  if (!v[0]) return false;
-                  const normV = normalizeName(v[0]);
-                  return normVenue === normV || normVenue.includes(normV) || normV.includes(normVenue);
-              });
-
+              let fuzzyMatches = venueData.filter(v => v[0] && (normVenue === normalizeName(v[0]) || normVenue.includes(normalizeName(v[0])) || normalizeName(v[0]).includes(normVenue)));
               if (fuzzyMatches.length > 0) {
                   let verifiedMatches = [];
-                  
                   for (const match of fuzzyMatches) {
                       const dbVillage = (match[1] || "").toLowerCase().trim();
-
                       if (dbVillage && dbVillage.length > 2) {
-                          if (eventTextToSearch.includes(dbVillage)) {
-                              verifiedMatches.push({ venue: match, score: 3 }); // Perfect: Name + Village match
-                          } else if (eventNotes.length > 10) {
-                              // 🚨 THE FIX: Strict Contradiction Rule
-                              // If the DB has a specific village, and the scraped notes contain an address, 
-                              // but the village name is NOT in those notes, REJECT IT completely.
-                              continue; 
-                          } else {
-                              verifiedMatches.push({ venue: match, score: 1 }); // Weak fallback
-                          }
-                      } else {
-                          verifiedMatches.push({ venue: match, score: 1 });
-                      }
+                          if (eventTextToSearch.includes(dbVillage)) verifiedMatches.push({ venue: match, score: 3 });
+                          else if (eventNotes.length > 10) continue; 
+                          else verifiedMatches.push({ venue: match, score: 1 });
+                      } else { verifiedMatches.push({ venue: match, score: 1 }); }
                   }
-
-                  verifiedMatches.sort((a, b) => {
-                      if (b.score !== a.score) return b.score - a.score;
-                      return b.venue[0].length - a.venue[0].length;
-                  });
-
-                  if (verifiedMatches.length > 0) {
-                      confirmedVenue = verifiedMatches[0].venue[0];
-                  }
+                  verifiedMatches.sort((a, b) => (b.score - a.score) || (b.venue[0].length - a.venue[0].length));
+                  if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
               }
           }
 
-          if (confirmedVenue) {
-              finalVenue = confirmedVenue;
-          } else {
-              isNewVenue = true;
-              newVenuesDetected.set(finalVenue, eventNotes);
-          }
+          if (confirmedVenue) finalVenue = confirmedVenue;
+          else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
 
-          // --- 3. CONSOLIDATE AI NOTES ---
-          let aiNotesArr = [];
-          if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
-          if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
-          if (eventNotes) aiNotesArr.push(eventNotes);
-          let notes = aiNotesArr.join(" ");
-
+          let notes = [isNewTruck ? "[⚠️ NEW TRUCK]" : "", isNewVenue ? "[⚠️ NEW VENUE]" : "", eventNotes].filter(Boolean).join(" ");
           const cleanDate = standardizeDate(event.DateStart);
-          const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-          const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
+          const key = `${cleanDate}|${finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '')}|${finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
           
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
-              
-              newRowsToAdd.push([
-                  event.DateStart, 
-                  event.TimeStart, 
-                  event.TimeEnd,   
-                  finalTruck,      
-                  finalVenue,      
-                  "",              
-                  `URL: ${site.url} | Strategy: ${site.strategy}`, 
-                  notes            
-              ]);
-              
+              newRowsToAdd.push([event.DateStart, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, "", `URL: ${site.url} | Strategy: ${site.strategy}`, notes]);
               existingEvents.add(key); 
               newCount++;
-          } else {
-              dupCount++;
-          }
+          } else { dupCount++; }
         }
         console.log(`   📊 Summary: ${newCount} new, ${dupCount} duplicates skipped.`);
       }
     } catch (e) { console.error("   ❌ AI Failed:", e.message); }
-
     await page.close();
-
-  } catch (error) {
-    console.error(`❌ Error on ${site.name}:`, error.message);
-  }
+  } catch (error) { console.error(`❌ Error on ${site.name}:`, error.message); }
 }
 
 await browser.close();
@@ -587,57 +517,21 @@ await browser.close();
 if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
-    spreadsheetId: SPREADSHEET_ID,
-    range: `${TABS.EVENTS}!A:H`,
-    valueInputOption: 'USER_ENTERED',
-    resource: { values: newRowsToAdd },
+    spreadsheetId: SPREADSHEET_ID, range: `${TABS.EVENTS}!A:H`, valueInputOption: 'USER_ENTERED', resource: { values: newRowsToAdd },
   });
   console.log("🎉 Database Sync Complete!");
-} else {
-  console.log("\n💤 No new events found.");
-}
+} else { console.log("\n💤 No new events found."); }
 
-// --- 👇 AUTO-VENUE GEOCODER 👇 ---
 if (newVenuesDetected.size > 0) {
   console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues using Address context...`);
-  
-  const venueListForPrompt = Array.from(newVenuesDetected.entries())
-    .map(([name, addressInfo]) => `Venue: "${name}", Address Found on Site: "${addressInfo}"`)
-    .join(" | ");
-  
-  const geoPrompt = `
-    You are a UK Geography Expert. I need the Village, Postcode, Latitude, and Longitude for these venues. 
-    Use the provided "Address Found on Site" to ensure 100% accuracy for the coordinates and postcode.
-    Return EXACTLY a JSON array. Do not invent coordinates if you are completely unsure, but provide your best accurate estimate.
-    Format: [{"name": "Exact Venue Name", "village": "Village Name", "postcode": "Postcode", "lat": "52.1234", "lng": "0.1234"}]
-    Venues to lookup: ${venueListForPrompt}
-  `;
-
+  const venueListForPrompt = Array.from(newVenuesDetected.entries()).map(([name, addressInfo]) => `Venue: "${name}", Address Found on Site: "${addressInfo}"`).join(" | ");
+  const geoPrompt = `You are a UK Geography Expert. I need the Village, Postcode, Latitude, and Longitude for these venues. Return EXACTLY a JSON array. Format: [{"name": "Exact Venue Name", "village": "Village Name", "postcode": "Postcode", "lat": "52.1234", "lng": "0.1234"}] Venues: ${venueListForPrompt}`;
   try {
     const geoResult = await generateContentWithRetry(model, geoPrompt);
-    
-    const newVenueRows = geoResult.map(v => [
-      v.name || "", 
-      v.village || "", 
-      v.postcode || "", 
-      v.lat || "", 
-      v.lng || "", 
-      "", "", "", "", "", 
-      "[⚠️ VERIFY GPS]" 
-    ]);
-
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${TABS.VENUES}!A:K`, 
-      valueInputOption: 'USER_ENTERED',
-      resource: { values: newVenueRows },
-    });
-    console.log(`📍 Successfully added ${newVenueRows.length} new locations to the Venues tab!`);
-  } catch (error) {
-    console.error("❌ Failed to auto-generate venue coordinates:", error.message);
-  }
+    const newVenueRows = geoResult.map(v => [v.name || "", v.village || "", v.postcode || "", v.lat || "", v.lng || "", "", "", "", "", "", "[⚠️ VERIFY GPS]"]);
+    await sheets.spreadsheets.values.append({ spreadsheetId: SPREADSHEET_ID, range: `${TABS.VENUES}!A:K`, valueInputOption: 'USER_ENTERED', resource: { values: newVenueRows }, });
+    console.log(`📍 Successfully added ${newVenueRows.length} new locations!`);
+  } catch (error) { console.error("❌ Failed to auto-generate venue coordinates:", error.message); }
 }
-
 }
-
 main();
