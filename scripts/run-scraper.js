@@ -255,7 +255,6 @@ const [truckData, venueData, eventData] = await Promise.all([
 ]);
 
 const validTrucks = truckData.map(r => r[0]).filter(Boolean);
-const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
 const existingEvents = new Set();
 
@@ -330,7 +329,7 @@ const browser = await puppeteer.launch({
 });
 
 const newRowsToAdd = [];
-const newVenuesDetected = new Map(); // 👇 CHANGED: Now a Map to track both Name AND Address
+const newVenuesDetected = new Map();
 
 for (const [index, site] of sitesToScrape.entries()) {
   try {
@@ -376,7 +375,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY. Do not capitalize "weekly" or "saturday".
-          5. VENUE STANDARDIZATION: Check if the venue is in this list: ${JSON.stringify(validVenues)}. If it is, output the exact official name. **CRITICAL:** If the venue is NOT in the list, just output the exact name from the user rules. Do not pick a random venue.
+          5. VENUE NAME: Extract the exact name from the user rules. Do not attempt to map it to an existing venue.
           CORRECT FORMAT:
           [{ "venue": "The Railway Tavern", "proof": "Mon 2nd - The Railway Tavern", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "2nd" }]
         `;
@@ -388,16 +387,16 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}" (Follow this hint carefully when reading the text below!)` : ""}
           
-          TASK: Extract upcoming food truck events from the provided text.
+          TASK: Extract EVERY SINGLE upcoming food truck event from the provided text. You must be exhaustive. DO NOT skip, group, or omit any locations, even if there are multiple locations listed on the same day.
           CRITICAL RULES:
           1. **STRICT DATE ADHERENCE:** Extract dates exactly as they appear. Do NOT shift past dates into the future. 
           2. **IGNORE PAST EVENTS:** If the text is advertising an event that occurred BEFORE the Current Date, IGNORE IT.
-          3. **SOCIAL MEDIA RELATIVE DATES (THE "TODAY" RULE):** If the text says "Today", "Tonight", or "Tomorrow", DO NOT blindly assume it means the Current Date. You MUST scan the surrounding text to find the **Post Publish Date** (e.g., "March 14", "Yesterday", "2 hrs ago"). Anchor "today" or "tomorrow" to that Publish Date. If calculating from the Publish Date means the event already happened, IGNORE IT ENTIRELY.
-          4. **DAYS OF THE WEEK (CLICK & COLLECT FIX):** If the website lists locations by Day of the Week (e.g., "Wednesdays", "Thu 12-2") instead of strict calendar dates, mathematically calculate the next immediate date for that day based on the Current Date. NEVER apply a single generic header date to every venue on the page.
+          3. **THE "TODAY" RULE:** If the text says "Today" or "Tomorrow": On social media, anchor it to the Post Publish Date. On booking/checkout pages, anchor it to the explicit date headers above it (e.g., "MAR 18") or the Current Date. NEVER skip an event just because it says "Today".
+          4. **DAYS OF THE WEEK (CLICK & COLLECT FIX):** If the website lists locations by Day of the Week (e.g., "Wednesdays", "Thu 12-2") instead of strict calendar dates, mathematically calculate the next immediate date for that day based on the Current Date.
           5. **DateStart Format:** MUST be "DD/MM/YYYY". 
           6. **Missing Info:** If "TRUCK NAME" is missing from the text, default to "${site.name}".
           7. Truck Name Fuzzy Match: ${JSON.stringify(validTrucks)}.
-          8. **VENUE NAME:** Check if the venue is in this list: ${JSON.stringify(validVenues)}. If yes, output the official name. If NO, extract the CLEAN BUSINESS OR LOCATION NAME ONLY (e.g., 'Franks Farm, Elsworth' or 'The Red Lion'). Do NOT include street addresses, postcodes, or promotional text in the Venue Name.
+          8. **VENUE NAME:** Extract the CLEAN BUSINESS OR LOCATION NAME ONLY (e.g., 'Franks Farm, Elsworth' or 'The Bell Inn'). Do NOT include street addresses, postcodes, or promotional text in the Venue Name. Do NOT attempt to map the venue to an existing database list. We will handle mapping internally.
           9. **ADDRESS IN NOTES:** If you find a street address or postcode in the text (e.g., 'Brockley Rd, CB23 4EY'), put that EXACT address into the "Notes" field. This is critical for our GPS system.
           
           RETURN JSON:
@@ -476,64 +475,67 @@ for (const [index, site] of sitesToScrape.entries()) {
               }
           }
 
-          // --- 2. MULTI-TIER VENUE MATCHER ---
+          // --- 2. MULTI-TIER VENUE MATCHER (THE "STRICT CONTRADICTION" UPGRADE) ---
           let finalVenue = venueName || "Unknown";
           const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
           let isNewVenue = false;
-          
-          let exactVenueMatches = venueData.filter(v => v[0] && normalizeName(v[0]) === normVenue);
-          
-          if (exactVenueMatches.length === 1) {
-              finalVenue = exactVenueMatches[0][0]; 
-          } else if (exactVenueMatches.length > 1) {
-              let foundSpecific = false;
-              for (const match of exactVenueMatches) {
-                  const locationData = match.slice(1, 8).filter(Boolean).join(" ").toLowerCase();
-                  const locationWords = locationData.split(/[\s,]+/).filter(w => w.length > 3);
-                  
-                  if (locationWords.some(w => eventTextToSearch.includes(w))) {
-                      finalVenue = match[0];
-                      foundSpecific = true;
-                      break;
-                  }
-              }
-              if (!foundSpecific) finalVenue = exactVenueMatches[0][0]; 
-          } else {
-              let fuzzyVenueMatches = venueData.filter(v => {
+
+          // A. POSTCODE MATCH (The Ultimate Source of Truth)
+          const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
+          const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
+          let confirmedVenue = null;
+
+          if (eventPostcode) {
+              const pcMatch = venueData.find(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
+              if (pcMatch) confirmedVenue = pcMatch[0];
+          }
+
+          // B. If no Postcode match, fall back to Smart Name + Town checking
+          if (!confirmedVenue) {
+              let fuzzyMatches = venueData.filter(v => {
                   if (!v[0]) return false;
                   const normV = normalizeName(v[0]);
-                  const isContained = normVenue.includes(normV) || normV.includes(normVenue);
-                  
-                  if (isContained && normV.length <= 5) {
-                      const rawV = v[0].toLowerCase().replace(/^the\s+/, '').trim();
-                      const regex = new RegExp(`\\b${rawV}\\b`, 'i'); 
-                      return regex.test(eventTextToSearch);
-                  }
-                  return isContained;
+                  return normVenue === normV || normVenue.includes(normV) || normV.includes(normVenue);
               });
 
-              if (fuzzyVenueMatches.length === 1) {
-                  finalVenue = fuzzyVenueMatches[0][0];
-              } else if (fuzzyVenueMatches.length > 1) {
-                  let foundSpecific = false;
-                  for (const match of fuzzyVenueMatches) {
-                      const locationData = match.slice(1, 8).filter(Boolean).join(" ").toLowerCase();
-                      const locationWords = locationData.split(/[\s,]+/).filter(w => w.length > 3);
-                      
-                      if (locationWords.some(w => eventTextToSearch.includes(w))) {
-                          finalVenue = match[0];
-                          foundSpecific = true;
-                          break;
+              if (fuzzyMatches.length > 0) {
+                  let verifiedMatches = [];
+                  
+                  for (const match of fuzzyMatches) {
+                      const dbVillage = (match[1] || "").toLowerCase().trim();
+
+                      if (dbVillage && dbVillage.length > 2) {
+                          if (eventTextToSearch.includes(dbVillage)) {
+                              verifiedMatches.push({ venue: match, score: 3 }); // Perfect: Name + Village match
+                          } else if (eventNotes.length > 10) {
+                              // 🚨 THE FIX: Strict Contradiction Rule
+                              // If the DB has a specific village, and the scraped notes contain an address, 
+                              // but the village name is NOT in those notes, REJECT IT completely.
+                              continue; 
+                          } else {
+                              verifiedMatches.push({ venue: match, score: 1 }); // Weak fallback
+                          }
+                      } else {
+                          verifiedMatches.push({ venue: match, score: 1 });
                       }
                   }
-                  if (!foundSpecific) {
-                      fuzzyVenueMatches.sort((a, b) => b[0].length - a[0].length);
-                      finalVenue = fuzzyVenueMatches[0][0];
+
+                  verifiedMatches.sort((a, b) => {
+                      if (b.score !== a.score) return b.score - a.score;
+                      return b.venue[0].length - a.venue[0].length;
+                  });
+
+                  if (verifiedMatches.length > 0) {
+                      confirmedVenue = verifiedMatches[0].venue[0];
                   }
-              } else {
-                  isNewVenue = true; 
-                  newVenuesDetected.set(finalVenue, eventNotes); // 👇 CHANGED: Store name AND address notes
               }
+          }
+
+          if (confirmedVenue) {
+              finalVenue = confirmedVenue;
+          } else {
+              isNewVenue = true;
+              newVenuesDetected.set(finalVenue, eventNotes);
           }
 
           // --- 3. CONSOLIDATE AI NOTES ---
@@ -599,7 +601,6 @@ if (newRowsToAdd.length > 0) {
 if (newVenuesDetected.size > 0) {
   console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues using Address context...`);
   
-  // Combines the Name and Address Notes so the Geocoder has perfect context
   const venueListForPrompt = Array.from(newVenuesDetected.entries())
     .map(([name, addressInfo]) => `Venue: "${name}", Address Found on Site: "${addressInfo}"`)
     .join(" | ");
@@ -621,7 +622,7 @@ if (newVenuesDetected.size > 0) {
       v.postcode || "", 
       v.lat || "", 
       v.lng || "", 
-      "", "", "", "", "", // Skip columns F-J to push the warning into Column K (Notes)
+      "", "", "", "", "", 
       "[⚠️ VERIFY GPS]" 
     ]);
 
