@@ -258,12 +258,13 @@ const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
 const existingEvents = new Set();
 
+// 👇 MULTI-VAN SAFE: Checking Date + Truck + Resolved Venue
 eventData.forEach(row => {
     const date = standardizeDate(row[0]); 
     const truck = (row[3] || "").toLowerCase().replace(/[^a-z0-9]/g, ''); 
     const venue = (row[4] || "").toLowerCase().replace(/[^a-z0-9]/g, '');
     
-    if (date && truck) {
+    if (date && truck && venue) {
         existingEvents.add(`${date}|${truck}|${venue}`);
     }
 });
@@ -353,7 +354,6 @@ for (const [index, site] of sitesToScrape.entries()) {
       cleanText = ""; 
     }
 
-    // 👇 FIXED: Strictly check that strategy is 'manual' before attempting rule extraction
     if (site.strategy === 'manual' && site.instructions.length > 10) {
         console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
         isManualWithRules = true;
@@ -462,75 +462,54 @@ for (const [index, site] of sitesToScrape.entries()) {
           let finalTruck = matchedTruck || (truckName.toLowerCase().includes(normalizeName(site.name)) ? site.name : truckName);
           let isNewTruck = !matchedTruck;
 
-// 2. HYBRID VENUE MATCHER (Postcode + Name Duo)
-let finalVenue = venueName || "Unknown";
-const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
-let isNewVenue = false;
-let confirmedVenue = null;
+          // 👇 FIXED 2. HYBRID VENUE MATCHER (Postcode + Name Duo)
+          let finalVenue = venueName || "Unknown";
+          const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
+          let isNewVenue = false;
+          let confirmedVenue = null;
 
-// STEP A: Extract Postcode from scraped text
-const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
-const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
+          const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
+          const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
 
-if (eventPostcode) {
-    // Get ALL venues in your database with this exact postcode
-    const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
-    
-    if (venuesAtPostcode.length > 0) {
-        let bestMatch = null;
-        let highestScore = -1;
-        
-        // Score them based on Name similarity
-        for (const v of venuesAtPostcode) {
-            const dbNameNorm = normalizeName(v[0]);
-            let score = 0;
-            
-            if (dbNameNorm === normVenue) score += 10;
-            else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
-            
-            if (score > highestScore) {
-                highestScore = score;
-                bestMatch = v[0];
-            }
-        }
-        // Only confirm if we found a name match at this postcode
-        if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
-    }
-}
+          if (eventPostcode) {
+              const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
+              if (venuesAtPostcode.length > 0) {
+                  let bestMatch = null;
+                  let highestScore = -1;
+                  for (const v of venuesAtPostcode) {
+                      const dbNameNorm = normalizeName(v[0]);
+                      let score = 0;
+                      if (dbNameNorm === normVenue) score += 10;
+                      else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
+                      
+                      if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
+                  }
+                  if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
+              }
+          }
 
-// STEP B: Fallback (No postcode found, or postcode match failed)
-// Require BOTH Name and Village to match, or accept if it's the ONLY fuzzy match
-if (!confirmedVenue) {
-    let fuzzyMatches = venueData.filter(v => {
-        if (!v[0]) return false;
-        const normDbName = normalizeName(v[0]);
-        return normVenue === normDbName || normVenue.includes(normDbName) || normDbName.includes(normVenue);
-    });
+          if (!confirmedVenue) {
+              let fuzzyMatches = venueData.filter(v => {
+                  if (!v[0]) return false;
+                  const normDbName = normalizeName(v[0]);
+                  return normVenue === normDbName || normVenue.includes(normDbName) || normDbName.includes(normVenue);
+              });
 
-    if (fuzzyMatches.length > 0) {
-        let verifiedMatches = [];
-        for (const match of fuzzyMatches) {
-            const dbVillage = (match[1] || "").toLowerCase().trim();
-            let score = 0;
-            
-            // If the scraped text mentions the village name, huge confidence boost!
-            if (dbVillage && dbVillage.length > 2 && eventTextToSearch.includes(dbVillage)) {
-                score += 10; 
-            }
-            
-            // Accept if it has a high score OR if it's the only possible match
-            if (score > 0 || fuzzyMatches.length === 1) {
-                verifiedMatches.push({ venue: match, score: score });
-            }
-        }
-        
-        verifiedMatches.sort((a, b) => b.score - a.score);
-        if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
-    }
-}
+              if (fuzzyMatches.length > 0) {
+                  let verifiedMatches = [];
+                  for (const match of fuzzyMatches) {
+                      const dbVillage = (match[1] || "").toLowerCase().trim();
+                      let score = 0;
+                      if (dbVillage && dbVillage.length > 2 && eventTextToSearch.includes(dbVillage)) score += 10; 
+                      if (score > 0 || fuzzyMatches.length === 1) verifiedMatches.push({ venue: match, score: score });
+                  }
+                  verifiedMatches.sort((a, b) => b.score - a.score);
+                  if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
+              }
+          }
 
-if (confirmedVenue) finalVenue = confirmedVenue;
-else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
+          if (confirmedVenue) finalVenue = confirmedVenue;
+          else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
 
           // 3. CONSOLIDATE
           let aiNotesArr = [];
@@ -540,7 +519,11 @@ else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
           let notes = aiNotesArr.join(" ");
 
           const cleanDate = standardizeDate(event.DateStart);
-          const key = `${cleanDate}|${finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '')}|${finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+          const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
+          
+          // 👇 RESTORED: Multi-Van Safe Deduplication Key
+          const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
           
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
