@@ -60,7 +60,7 @@ function parseTime(timeStr) {
     return `${String(hours).padStart(2, '0')}:${minutes}`;
 }
 
-// --- DETERMINISTIC DATE CALCULATOR (60 DAY LOOKAHEAD) ---
+// --- DETERMINISTIC DATE CALCULATOR (WITH BOUNDARIES) ---
 function generateDatesFromRule(ruleJSON) {
     const dates = [];
     const today = new Date();
@@ -89,10 +89,35 @@ function generateDatesFromRule(ruleJSON) {
     
     const freq = (ruleJSON.freq || "").toLowerCase();
 
+    // 👇 FIXED: Strictly enforced Start and End Limits with Null Handlers
+    let startLimit = new Date();
+    startLimit.setHours(0,0,0,0);
+    if (ruleJSON.startDate && ruleJSON.startDate !== "null") {
+        const parsedStart = new Date(ruleJSON.startDate);
+        if (!isNaN(parsedStart.getTime())) {
+            startLimit = parsedStart;
+            startLimit.setHours(0,0,0,0);
+        }
+    }
+
+    let endLimit = new Date();
+    endLimit.setDate(endLimit.getDate() + 365); 
+    endLimit.setHours(23,59,59,999);
+    if (ruleJSON.endDate && ruleJSON.endDate !== "null") {
+        const parsedEnd = new Date(ruleJSON.endDate);
+        if (!isNaN(parsedEnd.getTime())) {
+            endLimit = parsedEnd;
+            endLimit.setHours(23,59,59,999);
+        }
+    }
+
     for (let i = 0; i < 60; i++) {
         const d = new Date();
         d.setDate(today.getDate() + i);
+        d.setHours(12,0,0,0); 
         
+        if (d < startLimit || d > endLimit) continue;
+
         if (d.getDay() === targetDay) {
             let isMatch = false;
 
@@ -258,7 +283,6 @@ const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
 const existingEvents = new Set();
 
-// 👇 MULTI-VAN SAFE: Checking Date + Truck + Resolved Venue
 eventData.forEach(row => {
     const date = standardizeDate(row[0]); 
     const truck = (row[3] || "").toLowerCase().replace(/[^a-z0-9]/g, ''); 
@@ -285,13 +309,10 @@ truckData.forEach(row => {
   
   if (hasUrl || hasInstructions) {
     const strategies = runStrategy.split(',').map(s => s.trim());
-    
     strategies.forEach(strat => {
         sitesToScrape.push({ 
-            name: row[0], 
-            url: targetUrl, 
-            instructions: aiInstructions,
-            strategy: strat
+            name: row[0], url: targetUrl, instructions: aiInstructions,
+            strategy: strat, sourceType: 'truck' 
         });
     });
   }
@@ -303,24 +324,19 @@ venueData.forEach(row => {
   if (row[9] && row[9].startsWith('http')) {
     const runStrategy = (row[11] || 'scroll_lazy').toLowerCase().trim();
     const strategies = runStrategy.split(',').map(s => s.trim());
-    
     strategies.forEach(strat => {
         sitesToScrape.push({ 
             name: row[0], url: row[9], instructions: row[10] || "",
-            strategy: strat
+            strategy: strat, sourceType: 'venue'
         });
     });
   }
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 const model = genAI.getGenerativeModel({ 
     model: "gemini-2.5-flash-lite", 
-    generationConfig: { 
-        responseMimeType: "application/json",
-        temperature: 0 
-    } 
+    generationConfig: { responseMimeType: "application/json", temperature: 0 } 
 });
 
 const browser = await puppeteer.launch({
@@ -333,7 +349,7 @@ const newVenuesDetected = new Map();
 
 for (const [index, site] of sitesToScrape.entries()) {
   try {
-    console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.strategy})...`);
+    console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
     
     let cleanText = "";
     let isManualWithRules = false;
@@ -359,17 +375,19 @@ for (const [index, site] of sitesToScrape.entries()) {
         isManualWithRules = true;
         cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
     } else if (cleanText.length < 50) {
-        console.log(`   ❌ Empty page content (${cleanText.length} chars). The website might be loading too slowly or blocking us.`);
+        console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
         await page.close();
         continue;
     }
 
     let prompt = "";
     if (isManualWithRules) {
+        // 👇 FIXED: Strictly forcing startDate and endDate fields in the JSON Examples
         prompt = `
           You are a Logic Extractor. Parse the user's scheduling rules.
           USER RULES: "${site.instructions}"
           TRUCK NAME: "${site.name}"
+          CURRENT YEAR: ${new Date().getFullYear()}
           CRITICAL INSTRUCTIONS:
           1. Extract EACH venue separately.
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
@@ -377,10 +395,11 @@ for (const [index, site] of sitesToScrape.entries()) {
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY.
           5. MONTHLY EVENTS: If a rule says "First Saturday", set freq: "monthly", day: "saturday", pos: "1st".
           6. VENUE NAME: Extract the exact name from the user rules.
+          7. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
           CORRECT FORMAT EXAMPLES:
           [
-            { "venue": "The Railway Tavern", "proof": "Every Monday", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "" },
-            { "venue": "Burwell Social Club", "proof": "First Saturday", "rawTimeStart": "10am", "rawTimeEnd": "3pm", "freq": "monthly", "day": "saturday", "pos": "1st" }
+            { "venue": "The Railway Tavern", "proof": "Every Monday", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null },
+            { "venue": "City Park", "proof": "Every Sunday from 28th March to October", "rawTimeStart": "12pm", "rawTimeEnd": "4pm", "freq": "weekly", "day": "sunday", "pos": "", "startDate": "2026-03-28", "endDate": "2026-10-31" }
           ]
         `;
       } else {
@@ -426,24 +445,17 @@ for (const [index, site] of sitesToScrape.entries()) {
 
                    for (const date of dates) {
                        finalEvents.push({
-                           "DateStart": date,
-                           "TimeStart": tStart,
-                           "TimeEnd": tEnd,
-                           "Truck Name": site.name,
-                           "Venue Name": rule.venue || "Unknown Venue",
-                           "Notes": "" 
+                           "DateStart": date, "TimeStart": tStart, "TimeEnd": tEnd,
+                           "Truck Name": site.name, "Venue Name": rule.venue || "Unknown Venue", "Notes": "" 
                        });
                    }
                }
            }
-      } else {
-          finalEvents = result;
-      }
+      } else { finalEvents = result; }
 
       if (Array.isArray(finalEvents)) {
         console.log(`   📋 Processing ${finalEvents.length} events...`);
-        let newCount = 0;
-        let dupCount = 0;
+        let newCount = 0; let dupCount = 0;
         
         for (const event of finalEvents) {
           const truckName = (event["Truck Name"] || "").trim();
@@ -452,66 +464,76 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           if (!truckName || !event.DateStart) continue;
 
-          const normTruck = normalizeName(truckName);
-          const normVenue = normalizeName(venueName);
+          let finalTruck = truckName;
+          let isNewTruck = false;
 
-          // 1. TRUCK MATCHER
-          let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck) || 
-                             validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
+          if (site.sourceType === 'truck') {
+              finalTruck = site.name; 
+          } else {
+              const normTruck = normalizeName(truckName);
+              let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck) || 
+                                 validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
+              finalTruck = matchedTruck || truckName;
+              isNewTruck = !matchedTruck;
+          }
 
-          let finalTruck = matchedTruck || (truckName.toLowerCase().includes(normalizeName(site.name)) ? site.name : truckName);
-          let isNewTruck = !matchedTruck;
-
-          // 👇 FIXED 2. HYBRID VENUE MATCHER (Postcode + Name Duo)
+          // 👇 FIXED: Exact Text Match scoring bonus (+100) added to Fallback Logic
           let finalVenue = venueName || "Unknown";
-          const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
           let isNewVenue = false;
           let confirmedVenue = null;
 
-          const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
-          const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
+          if (site.sourceType === 'venue') {
+              finalVenue = site.name;
+              confirmedVenue = site.name;
+          } else {
+              const normVenue = normalizeName(venueName);
+              const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
+              const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
+              const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
 
-          if (eventPostcode) {
-              const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
-              if (venuesAtPostcode.length > 0) {
-                  let bestMatch = null;
-                  let highestScore = -1;
-                  for (const v of venuesAtPostcode) {
-                      const dbNameNorm = normalizeName(v[0]);
-                      let score = 0;
-                      if (dbNameNorm === normVenue) score += 10;
-                      else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
-                      
-                      if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
+              if (eventPostcode) {
+                  const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
+                  if (venuesAtPostcode.length > 0) {
+                      let bestMatch = null; let highestScore = -1;
+                      for (const v of venuesAtPostcode) {
+                          const dbNameNorm = normalizeName(v[0]); let score = 0;
+                          if (dbNameNorm === normVenue) score += 100; // Exact match heavily preferred
+                          else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
+                          if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
+                      }
+                      if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
                   }
-                  if (bestMatch && highestScore > 0) confirmedVenue = bestMatch;
               }
+
+              if (!confirmedVenue) {
+                  let fuzzyMatches = venueData.filter(v => {
+                      if (!v[0]) return false; const normDbName = normalizeName(v[0]);
+                      return normVenue === normDbName || normVenue.includes(normDbName) || normDbName.includes(normVenue);
+                  });
+
+                  if (fuzzyMatches.length > 0) {
+                      let verifiedMatches = [];
+                      for (const match of fuzzyMatches) {
+                          const normDbName = normalizeName(match[0]);
+                          const dbVillage = (match[1] || "").toLowerCase().trim(); 
+                          let score = 0;
+                          
+                          // +100 Override for exact text match
+                          if (normVenue === normDbName) score += 100;
+                          else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) score += 10;
+                          
+                          if (dbVillage && dbVillage.length > 2 && eventTextToSearch.includes(dbVillage)) score += 5; 
+                          
+                          if (score > 0 || fuzzyMatches.length === 1) verifiedMatches.push({ venue: match, score: score });
+                      }
+                      verifiedMatches.sort((a, b) => b.score - a.score);
+                      if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
+                  }
+              }
+              if (confirmedVenue) finalVenue = confirmedVenue;
+              else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
           }
 
-          if (!confirmedVenue) {
-              let fuzzyMatches = venueData.filter(v => {
-                  if (!v[0]) return false;
-                  const normDbName = normalizeName(v[0]);
-                  return normVenue === normDbName || normVenue.includes(normDbName) || normDbName.includes(normVenue);
-              });
-
-              if (fuzzyMatches.length > 0) {
-                  let verifiedMatches = [];
-                  for (const match of fuzzyMatches) {
-                      const dbVillage = (match[1] || "").toLowerCase().trim();
-                      let score = 0;
-                      if (dbVillage && dbVillage.length > 2 && eventTextToSearch.includes(dbVillage)) score += 10; 
-                      if (score > 0 || fuzzyMatches.length === 1) verifiedMatches.push({ venue: match, score: score });
-                  }
-                  verifiedMatches.sort((a, b) => b.score - a.score);
-                  if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
-              }
-          }
-
-          if (confirmedVenue) finalVenue = confirmedVenue;
-          else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
-
-          // 3. CONSOLIDATE
           let aiNotesArr = [];
           if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
           if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
@@ -522,7 +544,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
           const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
           
-          // 👇 RESTORED: Multi-Van Safe Deduplication Key
           const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
           
           if (!existingEvents.has(key)) {
