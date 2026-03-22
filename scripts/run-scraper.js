@@ -13,7 +13,8 @@ const STRATEGIES = {
   'scroll_lazy':   performModernScroll,  
   'click_next':    performButtonHunt,    
   'frames':        performFrameDump,     
-  'manual':        performManualMode,    
+  'manual':        performManualMode,
+  'scrape_rules':  performModernScroll, // 👇 NEW: Scrapes the page, but uses the Rule logic
   'default':       performModernScroll   
 };
 
@@ -67,7 +68,6 @@ function generateDatesFromRule(ruleJSON) {
 
     if (!ruleJSON || !ruleJSON.day) return [];
     
-    // 👇 FIXED: Robust string matching to catch "every thursday" or "Thursdays"
     const targetDayName = String(ruleJSON.day).toLowerCase();
     let targetDay;
     if (targetDayName.includes('sunday')) targetDay = 0;
@@ -86,7 +86,6 @@ function generateDatesFromRule(ruleJSON) {
     
     const freq = (ruleJSON.freq || "").toLowerCase();
     
-    // 👇 FIXED: Ensure monthly events aren't accidentally flagged as single-day events
     if (freq !== 'monthly' && posNum > 0) {
         if (posNum > 5) {
             isSingleEvent = true; 
@@ -356,7 +355,7 @@ for (const [index, site] of sitesToScrape.entries()) {
     console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
     
     let cleanText = "";
-    let isManualWithRules = false;
+    let isRuleExtraction = false; // 👇 NEW: Using a general flag instead of just "manual"
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
@@ -374,10 +373,19 @@ for (const [index, site] of sitesToScrape.entries()) {
       cleanText = ""; 
     }
 
+    // 👇 FIXED: Branching logic to handle the new hybrid strategy
     if (site.strategy === 'manual' && site.instructions.length > 10) {
         console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
-        isManualWithRules = true;
+        isRuleExtraction = true;
         cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
+    } else if (site.strategy === 'scrape_rules') {
+        console.log("   🕸️ Scrape Rules Mode: Extracting recurring schedule from website text...");
+        isRuleExtraction = true;
+        if (cleanText.length < 50) {
+            console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
+            await page.close();
+            continue;
+        }
     } else if (cleanText.length < 50) {
         console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
         await page.close();
@@ -385,25 +393,29 @@ for (const [index, site] of sitesToScrape.entries()) {
     }
 
     let prompt = "";
-    if (isManualWithRules) {
+    if (isRuleExtraction) {
+        // 👇 FIXED: AI Prompt tweaked to read scraped website text instead of just user rules
         prompt = `
-          You are a Logic Extractor. Parse the user's scheduling rules.
-          USER RULES: "${site.instructions}"
+          You are a Logic Extractor. Parse the provided text to extract recurring scheduling rules.
           TRUCK NAME: "${site.name}"
           CURRENT YEAR: ${new Date().getFullYear()}
+          ${site.instructions ? `CRITICAL HINT: ${site.instructions}\n` : ""}
           CRITICAL INSTRUCTIONS:
           1. Extract EACH venue separately.
           2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
           3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
           4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY.
           5. MONTHLY EVENTS: If a rule says "First Saturday", set freq: "monthly", day: "saturday", pos: "1st".
-          6. VENUE NAME: Extract the exact name from the user rules.
+          6. VENUE NAME: Extract the exact name from the text.
           7. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
           CORRECT FORMAT EXAMPLES:
           [
             { "venue": "The Railway Tavern", "proof": "Every Monday", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null },
             { "venue": "City Park", "proof": "Every Sunday from 28th March to October", "rawTimeStart": "12pm", "rawTimeEnd": "4pm", "freq": "weekly", "day": "sunday", "pos": "", "startDate": "2026-03-28", "endDate": "2026-10-31" }
           ]
+          
+          TEXT TO PARSE:
+          ${cleanText.slice(0, 150000)}
         `;
       } else {
         prompt = `
@@ -437,7 +449,7 @@ for (const [index, site] of sitesToScrape.entries()) {
       
       let finalEvents = [];
       
-      if (isManualWithRules && Array.isArray(result)) {
+      if (isRuleExtraction && Array.isArray(result)) {
            for (const rule of result) {
                if (!rule.freq && rule.day) rule.freq = "weekly";
                if (rule.freq) {
