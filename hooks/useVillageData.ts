@@ -71,11 +71,8 @@ export function useVillageData(
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 👇 ADDED: The React mount-guard and Abort Controller 👇
     let isMounted = true;
     const controller = new AbortController();
-    
-    // Kill the request if it takes longer than 10 seconds (crucial for bad mobile signal)
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const fetchData = async () => {
@@ -93,7 +90,6 @@ export function useVillageData(
 
         clearTimeout(timeoutId);
 
-        // Fail fast if Google Sheets throws an error
         if (!eventsRes.ok || !trucksRes.ok || !venuesRes.ok) {
             throw new Error("Failed to fetch data from source.");
         }
@@ -214,19 +210,15 @@ export function useVillageData(
               return dateA.getTime() - dateB.getTime();
           });
 
-        // 👇 ADDED: Only update state if the component is still alive 👇
         if (isMounted) {
             setEvents(parsedEvents);
             setLoading(false);
         }
 
       } catch (error: any) {
-        // We safely ignore the error if it was just our 10-second timeout kicking in
         if (error.name !== 'AbortError') {
             console.error('VillageData Sync Error:', error);
         }
-        
-        // Guarantee the loading spinner stops no matter what goes wrong
         if (isMounted) {
             setLoading(false);
         }
@@ -235,7 +227,6 @@ export function useVillageData(
     
     fetchData();
 
-    // Cleanup function when component unmounts
     return () => {
         isMounted = false;
         controller.abort();
@@ -243,17 +234,13 @@ export function useVillageData(
     };
   }, []);
 
-  // --- FILTERING ---
-  const { groupedEvents, mapEvents } = useMemo(() => {
+  // --- FILTER CASCADE & DYNAMIC CUISINES ---
+  const { groupedEvents, mapEvents, dynamicCuisineOptions } = useMemo(() => {
     const today = new Date();
     today.setHours(0,0,0,0);
     
-    const baseFiltered = events.filter(event => {
-      if (filters.cuisine !== 'all') {
-        const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
-        if (!eventTypes.includes(filters.cuisine.toLowerCase())) return false;
-      }
-      
+    // STEP 1: Filter by Date First (Applies to both Map and List)
+    const dateFiltered = events.filter(event => {
       if (filters.date !== 'all') {
         const eventDate = parseDateString(event.date);
         if (!eventDate) return false;
@@ -286,7 +273,8 @@ export function useVillageData(
       return true;
     });
 
-    const listFiltered = baseFiltered.filter(event => {
+    // STEP 2: Filter by Distance (Applies only to List and Cuisine generation)
+    const distanceAndDateFiltered = dateFiltered.filter(event => {
       if (filters.distance !== 'all' && userLocation) {
         if (!event.venueLat || !event.venueLong) return false; 
         const distKm = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
@@ -296,20 +284,9 @@ export function useVillageData(
       return true;
     });
 
-    const grouped = listFiltered.reduce((groups, event) => {
-      const date = event.date;
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(event);
-      return groups;
-    }, {} as Record<string, VillageEvent[]>);
-
-    return { groupedEvents: grouped, mapEvents: baseFiltered };
-  }, [events, filters, userLocation]);
-
-  const cuisineOptions = useMemo(() => {
+    // STEP 3: Generate Dynamic Cuisines from the Date + Distance list (Before applying the cuisine filter itself!)
     const types = new Set<string>();
-    
-    events.forEach(e => {
+    distanceAndDateFiltered.forEach(e => {
         if (e.type && e.type !== 'Mobile' && !e.type.toLowerCase().includes('static')) {
             const splitTypes = e.type.split(',').map(t => t.trim());
             splitTypes.forEach(t => {
@@ -317,9 +294,41 @@ export function useVillageData(
             });
         }
     });
-    
-    return Array.from(types).sort();
-  }, [events]);
+    const dynamicCuisines = Array.from(types).sort();
 
-  return { loading, groupedEvents, mapEvents, cuisineOptions };
+    // STEP 4: Apply the Cuisine Filter to generate the final list for the cards
+    const finalFilteredList = distanceAndDateFiltered.filter(event => {
+      if (filters.cuisine !== 'all') {
+        const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
+        if (!eventTypes.includes(filters.cuisine.toLowerCase())) return false;
+      }
+      return true;
+    });
+
+    // STEP 5: Apply Cuisine Filter for the Map (Map ignores distance so users can explore!)
+    const finalMapEvents = dateFiltered.filter(event => {
+        if (filters.cuisine !== 'all') {
+          const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
+          if (!eventTypes.includes(filters.cuisine.toLowerCase())) return false;
+        }
+        return true;
+    });
+
+    // STEP 6: Group the final list for the UI
+    const grouped = finalFilteredList.reduce((groups, event) => {
+      const date = event.date;
+      if (!groups[date]) groups[date] = [];
+      groups[date].push(event);
+      return groups;
+    }, {} as Record<string, VillageEvent[]>);
+
+    return { 
+        groupedEvents: grouped, 
+        mapEvents: finalMapEvents, 
+        dynamicCuisineOptions: dynamicCuisines 
+    };
+
+  }, [events, filters, userLocation]);
+
+  return { loading, groupedEvents, mapEvents, dynamicCuisineOptions };
 }

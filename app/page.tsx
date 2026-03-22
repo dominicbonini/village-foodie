@@ -45,7 +45,8 @@ function VillageFoodieContent() {
   });
 
   // --- CUSTOM HOOK (Data Logic) ---
-  const { loading, groupedEvents, mapEvents, cuisineOptions } = useVillageData(userLocation, filters);
+  // 👇 UPDATED: Destructuring dynamicCuisineOptions instead of cuisineOptions
+  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions } = useVillageData(userLocation, filters);
 
   // --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
   useEffect(() => {
@@ -198,7 +199,8 @@ function VillageFoodieContent() {
                 onChange={(e) => setFilters({...filters, cuisine: e.target.value})}
               >
                 <option value="all">All Food</option>
-                {cuisineOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                {/* 👇 UPDATED: Now maps through the dynamic options 👇 */}
+                {dynamicCuisineOptions.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               
               <select 
@@ -217,7 +219,6 @@ function VillageFoodieContent() {
       </header>
 
       {/* --- CONTENT AREA --- */}
-      {/* 👇 UPDATED: Uses max-w-2xl to create a premium, balanced, centered feed on desktop 👇 */}
       <div className={`flex-1 w-full mx-auto relative ${view === 'list' ? 'max-w-md md:max-w-xl' : 'max-w-full md:max-w-6xl'}`}>
         {loading ? (
           <div className="p-12 text-center text-slate-500">Loading delicious events...</div>
@@ -324,7 +325,6 @@ function VillageFoodieContent() {
                                {formatFriendlyDate(date)}
                             </h2>
                         </div>
-                        {/* 👇 UPDATED: Restored vertical stack with slightly more breathing room on desktop 👇 */}
                         <div className="space-y-3 md:space-y-4">
                         {sortedEvents.map((event) => {
                             let distanceMiles: number | null = null;
