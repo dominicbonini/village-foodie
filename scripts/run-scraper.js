@@ -60,36 +60,45 @@ function parseTime(timeStr) {
     return `${String(hours).padStart(2, '0')}:${minutes}`;
 }
 
-// --- DETERMINISTIC DATE CALCULATOR (WITH BOUNDARIES) ---
+// --- DETERMINISTIC DATE CALCULATOR (ROBUST DAY MATCHER) ---
 function generateDatesFromRule(ruleJSON) {
     const dates = [];
     const today = new Date();
-    const dayMap = { 'sunday':0, 'monday':1, 'tuesday':2, 'wednesday':3, 'thursday':4, 'friday':5, 'saturday':6 };
 
     if (!ruleJSON || !ruleJSON.day) return [];
     
-    const targetDayName = ruleJSON.day.toLowerCase().trim();
-    const targetDay = dayMap[targetDayName];
-    let posRaw = (ruleJSON.pos || "").toLowerCase().replace(/\D/g, ''); 
-    
-    const posNum = parseInt(posRaw, 10);
-    let isSingleEvent = false;
-    
-    if (posNum > 5) {
-        isSingleEvent = true; 
-    } else if (posNum > 0) {
-        const testDate = new Date();
-        testDate.setDate(posNum); 
-        if (testDate.getDay() === targetDay) {
-            isSingleEvent = true; 
-        }
-    }
+    // 👇 FIXED: Robust string matching to catch "every thursday" or "Thursdays"
+    const targetDayName = String(ruleJSON.day).toLowerCase();
+    let targetDay;
+    if (targetDayName.includes('sunday')) targetDay = 0;
+    else if (targetDayName.includes('monday')) targetDay = 1;
+    else if (targetDayName.includes('tuesday')) targetDay = 2;
+    else if (targetDayName.includes('wednesday')) targetDay = 3;
+    else if (targetDayName.includes('thursday')) targetDay = 4;
+    else if (targetDayName.includes('friday')) targetDay = 5;
+    else if (targetDayName.includes('saturday')) targetDay = 6;
 
     if (targetDay === undefined) return [];
     
+    let posRaw = (ruleJSON.pos || "").toLowerCase().replace(/\D/g, ''); 
+    const posNum = parseInt(posRaw, 10);
+    let isSingleEvent = false;
+    
     const freq = (ruleJSON.freq || "").toLowerCase();
+    
+    // 👇 FIXED: Ensure monthly events aren't accidentally flagged as single-day events
+    if (freq !== 'monthly' && posNum > 0) {
+        if (posNum > 5) {
+            isSingleEvent = true; 
+        } else {
+            const testDate = new Date();
+            testDate.setDate(posNum); 
+            if (testDate.getDay() === targetDay) {
+                isSingleEvent = true; 
+            }
+        }
+    }
 
-    // 👇 FIXED: Strictly enforced Start and End Limits with Null Handlers
     let startLimit = new Date();
     startLimit.setHours(0,0,0,0);
     if (ruleJSON.startDate && ruleJSON.startDate !== "null") {
@@ -121,7 +130,7 @@ function generateDatesFromRule(ruleJSON) {
         if (d.getDay() === targetDay) {
             let isMatch = false;
 
-            if (freq === 'weekly') {
+            if (freq === 'weekly' || freq === '') {
                 if (isSingleEvent) {
                      if (d.getDate() === posNum) isMatch = true;
                 } else {
@@ -130,21 +139,16 @@ function generateDatesFromRule(ruleJSON) {
             } 
             else if (freq === 'monthly') {
                 const dayOfMonth = d.getDate();
-                
-                if (isSingleEvent) {
-                     if (dayOfMonth === posNum) isMatch = true;
-                } else {
-                    const weekNum = Math.ceil(dayOfMonth / 7);
-                    const nextWeek = new Date(d);
-                    nextWeek.setDate(d.getDate() + 7);
-                    const isLast = nextWeek.getMonth() !== d.getMonth();
+                const weekNum = Math.ceil(dayOfMonth / 7);
+                const nextWeek = new Date(d);
+                nextWeek.setDate(d.getDate() + 7);
+                const isLast = nextWeek.getMonth() !== d.getMonth();
 
-                    if ((ruleJSON.pos || '').includes('last') && isLast) isMatch = true;
-                    else if ((ruleJSON.pos || '').includes('1st') && weekNum === 1) isMatch = true;
-                    else if ((ruleJSON.pos || '').includes('2nd') && weekNum === 2) isMatch = true;
-                    else if ((ruleJSON.pos || '').includes('3rd') && weekNum === 3) isMatch = true;
-                    else if ((ruleJSON.pos || '').includes('4th') && weekNum === 4) isMatch = true;
-                }
+                if ((ruleJSON.pos || '').includes('last') && isLast) isMatch = true;
+                else if ((ruleJSON.pos || '').includes('1st') || posNum === 1) { if (weekNum === 1) isMatch = true; }
+                else if ((ruleJSON.pos || '').includes('2nd') || posNum === 2) { if (weekNum === 2) isMatch = true; }
+                else if ((ruleJSON.pos || '').includes('3rd') || posNum === 3) { if (weekNum === 3) isMatch = true; }
+                else if ((ruleJSON.pos || '').includes('4th') || posNum === 4) { if (weekNum === 4) isMatch = true; }
             }
 
             if (isMatch) {
@@ -382,7 +386,6 @@ for (const [index, site] of sitesToScrape.entries()) {
 
     let prompt = "";
     if (isManualWithRules) {
-        // 👇 FIXED: Strictly forcing startDate and endDate fields in the JSON Examples
         prompt = `
           You are a Logic Extractor. Parse the user's scheduling rules.
           USER RULES: "${site.instructions}"
@@ -477,7 +480,6 @@ for (const [index, site] of sitesToScrape.entries()) {
               isNewTruck = !matchedTruck;
           }
 
-          // 👇 FIXED: Exact Text Match scoring bonus (+100) added to Fallback Logic
           let finalVenue = venueName || "Unknown";
           let isNewVenue = false;
           let confirmedVenue = null;
@@ -497,7 +499,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                       let bestMatch = null; let highestScore = -1;
                       for (const v of venuesAtPostcode) {
                           const dbNameNorm = normalizeName(v[0]); let score = 0;
-                          if (dbNameNorm === normVenue) score += 100; // Exact match heavily preferred
+                          if (dbNameNorm === normVenue) score += 100;
                           else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
                           if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
                       }
@@ -518,7 +520,6 @@ for (const [index, site] of sitesToScrape.entries()) {
                           const dbVillage = (match[1] || "").toLowerCase().trim(); 
                           let score = 0;
                           
-                          // +100 Override for exact text match
                           if (normVenue === normDbName) score += 100;
                           else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) score += 10;
                           
