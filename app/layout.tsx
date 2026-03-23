@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://villagefoodie.co.uk"), // 👈 Tells Next.js your root domain
+  metadataBase: new URL("https://villagefoodie.co.uk"),
   title: {
-    default: "Village Foodie",
+    default: "Village Foodie 🍔",
     template: "%s | Village Foodie",
   },
   description: "Find local food trucks and pop-ups visiting villages near you.",
@@ -27,7 +27,8 @@ export const metadata: Metadata = {
     siteName: "Village Foodie",
     images: [
       {
-        url: "https://villagefoodie.co.uk/og-image.png", // 👈 Absolute URL guarantees Facebook finds it
+        // 👇 Using the instant-fix high-quality Unsplash image
+        url: "https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=630&q=80", 
         width: 1200,
         height: 630,
         alt: "Village Foodie - Find your next meal",
@@ -40,7 +41,8 @@ export const metadata: Metadata = {
     card: "summary_large_image", 
     title: "Village Foodie 🍔",
     description: "Find local food trucks and pop-ups visiting villages near you.",
-    images: ["https://villagefoodie.co.uk/og-image.png"], // 👈 Absolute URL here too
+    // 👇 Matching the Twitter image to the Open Graph image
+    images: ["https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=630&q=80"], 
   },
   icons: {
     icon: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚚%3C/text%3E%3C/svg%3E",
