@@ -14,7 +14,7 @@ const STRATEGIES = {
   'click_next':    performButtonHunt,    
   'frames':        performFrameDump,     
   'manual':        performManualMode,
-  'scrape_rules':  performModernScroll, // 👇 NEW: Scrapes the page, but uses the Rule logic
+  'scrape_rules':  performExpandAndScrape, 
   'default':       performModernScroll   
 };
 
@@ -61,7 +61,7 @@ function parseTime(timeStr) {
     return `${String(hours).padStart(2, '0')}:${minutes}`;
 }
 
-// --- DETERMINISTIC DATE CALCULATOR (ROBUST DAY MATCHER) ---
+// --- DETERMINISTIC DATE CALCULATOR ---
 function generateDatesFromRule(ruleJSON) {
     const dates = [];
     const today = new Date();
@@ -197,6 +197,43 @@ async function performModernScroll(page) {
   });
   await sleep(3000); 
   return await page.evaluate(() => document.body.innerText);
+}
+
+async function performExpandAndScrape(page) {
+  console.log("   🔽 Strategy: Expand & Scrape (Deep Extracting)...");
+
+  await page.evaluate(async () => { window.scrollBy(0, 800); });
+  await sleep(1500);
+
+  await page.evaluate(() => {
+    const selectors = ['button', '[aria-expanded="false"]', '.elementor-tab-title', '.accordion-toggle', 'h2', 'h3', 'h4', 'div'];
+    selectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(el => {
+            const text = (el.innerText || "").toLowerCase();
+            if (el.hasAttribute('aria-expanded') || el.tagName === 'BUTTON' || 
+                text.includes('monday') || text.includes('tuesday') || 
+                text.includes('wednesday') || text.includes('thursday') || 
+                text.includes('friday') || text.includes('saturday') || text.includes('sunday')) {
+                try { el.click(); } catch(e) {}
+            }
+        });
+    });
+  });
+  
+  await sleep(3000); 
+
+  let combinedText = await page.evaluate(() => document.body.innerText);
+  
+  const frames = page.frames();
+  if (frames.length > 0) {
+      for (const frame of frames) {
+          try {
+              const frameContent = await frame.evaluate(() => document.body.innerText);
+              if (frameContent.length > 50) combinedText += `\n --- FRAME DATA --- \n${frameContent}\n`;
+          } catch (e) {}
+      }
+  }
+  return combinedText;
 }
 
 async function performButtonHunt(page) {
@@ -355,7 +392,7 @@ for (const [index, site] of sitesToScrape.entries()) {
     console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
     
     let cleanText = "";
-    let isRuleExtraction = false; // 👇 NEW: Using a general flag instead of just "manual"
+    let isRuleExtraction = false; 
     const page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
@@ -363,17 +400,16 @@ for (const [index, site] of sitesToScrape.entries()) {
 
     if (site.strategy !== 'manual') {
       try {
-          const navPromise = page.goto(site.url, { timeout: 25000, waitUntil: 'domcontentloaded' });
-          if (site.url.startsWith('http:')) await Promise.race([navPromise, sleep(12000)]);
+          const navPromise = page.goto(site.url, { timeout: 30000, waitUntil: 'networkidle2' });
+          if (site.url.startsWith('http:')) await Promise.race([navPromise, sleep(15000)]);
           else await navPromise;
-          await sleep(2000);
+          await sleep(5000);
       } catch (e) { console.log("   ⚠️ Navigation warning."); }
       cleanText = await strategyFunc(page);
     } else {
       cleanText = ""; 
     }
 
-    // 👇 FIXED: Branching logic to handle the new hybrid strategy
     if (site.strategy === 'manual' && site.instructions.length > 10) {
         console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
         isRuleExtraction = true;
@@ -393,29 +429,63 @@ for (const [index, site] of sitesToScrape.entries()) {
     }
 
     let prompt = "";
-    if (isRuleExtraction) {
-        // 👇 FIXED: AI Prompt tweaked to read scraped website text instead of just user rules
+    
+    // 👇 THE CUSTOM SITE ADAPTER FOR HOWE & CO 👇
+    if (site.url && site.url.includes('howeandcofishandchips.co.uk')) {
+        console.log("   🐟 Engaging Custom Site Adapter for Howe & Co...");
+        isRuleExtraction = true; 
         prompt = `
-          You are a Logic Extractor. Parse the provided text to extract recurring scheduling rules.
+          You are a Custom Data Extractor for Howe & Co Fish and Chips.
           TRUCK NAME: "${site.name}"
           CURRENT YEAR: ${new Date().getFullYear()}
-          ${site.instructions ? `CRITICAL HINT: ${site.instructions}\n` : ""}
-          CRITICAL INSTRUCTIONS:
-          1. Extract EACH venue separately.
-          2. Copy the EXACT time text you see into "rawTimeStart"/"rawTimeEnd".
-          3. Handle Specific Dates: If text says "Mon 2nd", extract "2nd" into "pos".
-          4. STRICT FORMATTING: "freq" and "day" MUST BE LOWERCASE ONLY.
-          5. MONTHLY EVENTS: If a rule says "First Saturday", set freq: "monthly", day: "saturday", pos: "1st".
-          6. VENUE NAME: Extract the exact name from the text.
-          7. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
-          CORRECT FORMAT EXAMPLES:
-          [
-            { "venue": "The Railway Tavern", "proof": "Every Monday", "rawTimeStart": "5pm", "rawTimeEnd": "7ish", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "City Park", "proof": "Every Sunday from 28th March to October", "rawTimeStart": "12pm", "rawTimeEnd": "4pm", "freq": "weekly", "day": "sunday", "pos": "", "startDate": "2026-03-28", "endDate": "2026-10-31" }
-          ]
           
-          TEXT TO PARSE:
-          ${cleanText.slice(0, 150000)}
+          TASK: Read the messy website text below and extract EVERY single stop on their weekly route.
+          
+          CRITICAL RULES FOR THIS SPECIFIC SITE:
+          1. The text lists routes by day (e.g., "Monday Route", "Tuesday Route"). You must extract EVERY village listed under EVERY day.
+          2. Treat every single stop as freq: "weekly".
+          3. Convert the day to lowercase in the JSON (e.g., "monday").
+          4. "rawTimeStart" and "rawTimeEnd" must be extracted exactly as written (e.g., "4.00", "8.20pm").
+          5. FIX TYPOS: If the text says "Stock by Clare", output "Stoke by Clare".
+          6. ADD MISSING ROUTE: You MUST also add one extra JSON object for: Venue: "Wickhambrook MSC", Day: "saturday", Start: "11:45", End: "13:45".
+          
+          WEBSITE TEXT TO PARSE:
+          ${cleanText.slice(0, 100000)}
+
+          OUTPUT FORMAT EXAMPLES:
+          [
+            { "venue": "Wickhambrook MSC", "proof": "Manual Override", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
+            { "venue": "Great yeldham", "proof": "Monday Route", "rawTimeStart": "4.00", "rawTimeEnd": "6.00pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null },
+            { "venue": "Ridgewell", "proof": "Monday Route", "rawTimeStart": "6.20", "rawTimeEnd": "7.20pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null }
+          ]
+        `;
+    } 
+    // 👇 STANDARD RULE EXTRACTION 👇
+    else if (isRuleExtraction) {
+        prompt = `
+          You are a Data Extraction Bot. 
+          TRUCK NAME: "${site.name}"
+          CURRENT YEAR: ${new Date().getFullYear()}
+          
+          TASK 1: Extract any manual rules provided in the user's hint below.
+          CRITICAL HINT FROM USER: ${site.instructions || "None provided."}
+          
+          TASK 2: Extract EVERY recurring schedule stop found in the WEBSITE TEXT below (e.g., Monday Route, Tuesday Route). Treat "Route" as freq: "weekly".
+          
+          WEBSITE TEXT TO PARSE:
+          ${cleanText.slice(0, 100000)}
+
+          RULES TO FOLLOW:
+          1. Extract EACH venue as a separate JSON object. Do not combine stops.
+          2. "rawTimeStart" and "rawTimeEnd" MUST be the exact times from the text (e.g., "4.00", "6.00pm").
+          3. "freq" and "day" MUST BE LOWERCASE ONLY.
+          4. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
+
+          OUTPUT FORMAT EXAMPLES:
+          [
+            { "venue": "Wickhambrook MSC", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
+            { "venue": "Great yeldham", "proof": "Monday Route", "rawTimeStart": "4.00", "rawTimeEnd": "6.00pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null }
+          ]
         `;
       } else {
         prompt = `
@@ -532,12 +602,22 @@ for (const [index, site] of sitesToScrape.entries()) {
                           const dbVillage = (match[1] || "").toLowerCase().trim(); 
                           let score = 0;
                           
-                          if (normVenue === normDbName) score += 100;
-                          else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) score += 10;
+                          if (normVenue === normDbName) {
+                              score += 100; 
+                          } else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) {
+                              score += 10; 
+                              if (dbVillage && dbVillage.length > 2) {
+                                  if (eventTextToSearch.includes(dbVillage)) {
+                                      score += 50; 
+                                  } else {
+                                      score -= 20; 
+                                  }
+                              } else if (Math.abs(normDbName.length - normVenue.length) > 5) {
+                                  score -= 5; 
+                              }
+                          }
                           
-                          if (dbVillage && dbVillage.length > 2 && eventTextToSearch.includes(dbVillage)) score += 5; 
-                          
-                          if (score > 0 || fuzzyMatches.length === 1) verifiedMatches.push({ venue: match, score: score });
+                          if (score > 0) verifiedMatches.push({ venue: match, score: score });
                       }
                       verifiedMatches.sort((a, b) => b.score - a.score);
                       if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
