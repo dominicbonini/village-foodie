@@ -7,7 +7,6 @@ import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { formatFriendlyDate } from '@/lib/utils'; 
 
-// Standardizes the URL slug (e.g., "The Plough - Birdbrook" -> "ploughbirdbrook")
 const createSlug = (str: string) => {
     if (!str) return '';
     return str.toLowerCase()
@@ -22,24 +21,21 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
 
-  // 1. Fetch ALL events
+  // 👇 THE OVERRIDE: Bypasses filters to pull all future dates for this venue
   const { loading, mapEvents } = useVillageData(null, {
     date: 'all',
     cuisine: 'all',
-    distance: '100' 
+    distance: '1000' 
   });
 
-  // 2. CRITICAL FIX: Filter by venueName instead of truckName
   const { venueEvents, venueInfo } = useMemo(() => {
     const filtered = mapEvents.filter(event => createSlug(event.venueName) === slug);
     
-    // Grab the venue info to display at the top
     const info = filtered.length > 0 ? {
         name: filtered[0].venueName,
         village: filtered[0].village 
     } : null;
 
-    // Group by date
     const grouped = filtered.reduce((groups, event) => {
       const date = event.date;
       if (!groups[date]) groups[date] = [];
@@ -52,7 +48,6 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
-      {/* --- HEADER --- */}
       <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-2xl mx-auto flex justify-between items-center">
           <Link href="/" className="text-sm font-bold flex items-center gap-2 hover:text-orange-400 transition-colors">
@@ -61,7 +56,6 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         </div>
       </header>
 
-      {/* --- VENUE PROFILE CONTENT --- */}
       <div className="flex-1 w-full max-w-2xl mx-auto p-4 pb-24">
         {loading ? (
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
@@ -74,7 +68,6 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-            {/* VENUE HERO CARD */}
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8 mt-4 text-center">
                 <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm">🍻</div>
                 <h1 className="text-3xl font-black text-slate-900">{venueInfo.name}</h1>
@@ -84,7 +77,6 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
                 </p>
             </div>
 
-            {/* THE SCHEDULE (Updated without the grey box!) */}
             <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1">Upcoming Food Trucks</h2>
             
             {Object.entries(venueEvents).map(([date, events]) => (
