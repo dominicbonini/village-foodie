@@ -1,22 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
-import { parseDateString, getDistanceKm } from '@/lib/utils';
+// Make sure createSlug is imported from utils!
+import { parseDateString, getDistanceKm, createSlug } from '@/lib/utils';
 
 const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub';
 const EVENTS_CSV_URL = `${BASE_CSV_URL}?gid=0&single=true&output=csv`;
 const TRUCKS_CSV_URL = `${BASE_CSV_URL}?gid=28504033&single=true&output=csv`;
 const VENUES_CSV_URL = `${BASE_CSV_URL}?gid=1190852063&single=true&output=csv`;
-
-// 🧠 ULTIMATE CLEANER
-const cleanKey = (str: string) => {
-    if (!str) return '';
-    return str.toLowerCase()
-        .replace(/^the\s+/, '')       
-        .replace(/&/g, 'and')         
-        .replace(/['’]/g, '')         
-        .replace(/[^a-z0-9]/g, '')    
-        .trim();
-};
 
 // 🤝 AGGRESSIVE FUZZY MATCHER
 const isMatch = (key1: string, key2: string) => {
@@ -104,7 +94,7 @@ export function useVillageData(
         truckRows.forEach(cols => {
             if (!cols[0]) return;
             const rawName = cols[0] || '';
-            const key = cleanKey(rawName);
+            const key = createSlug(rawName); // Using the new imported utility
             if (key) {
                 trucksList.push({
                     rawName: rawName,
@@ -127,7 +117,7 @@ export function useVillageData(
         venueRows.forEach(cols => {
             if (!cols[0]) return;
             const rawName = cols[0] || '';
-            const key = cleanKey(rawName);
+            const key = createSlug(rawName); // Using the new imported utility
             if (key) {
                 venuesList.push({
                     rawName: rawName,
@@ -153,11 +143,11 @@ export function useVillageData(
             const rawTruck = cols[3] || '';
             const rawVenue = cols[4] || '';
 
-            const eventTruckKey = cleanKey(rawTruck);
+            const eventTruckKey = createSlug(rawTruck);
             let truck = trucksList.find(t => t.cleanKey === eventTruckKey) || 
                         trucksList.find(t => isMatch(t.cleanKey, eventTruckKey)) || {};
 
-            const eventVenueKey = cleanKey(rawVenue);
+            const eventVenueKey = createSlug(rawVenue);
             
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
             if (!venue) {
@@ -239,7 +229,7 @@ export function useVillageData(
     const today = new Date();
     today.setHours(0,0,0,0);
     
-    // STEP 1: Filter by Date First (Applies to both Map and List)
+    // STEP 1: Filter by Date First
     const dateFiltered = events.filter(event => {
       if (filters.date !== 'all') {
         const eventDate = parseDateString(event.date);
@@ -273,7 +263,7 @@ export function useVillageData(
       return true;
     });
 
-    // STEP 2: Filter by Distance (Applies only to List and Cuisine generation)
+    // STEP 2: Filter by Distance
     const distanceAndDateFiltered = dateFiltered.filter(event => {
       if (filters.distance !== 'all' && userLocation) {
         if (!event.venueLat || !event.venueLong) return false; 
@@ -284,7 +274,7 @@ export function useVillageData(
       return true;
     });
 
-    // STEP 3: Generate Dynamic Cuisines from the Date + Distance list (Before applying the cuisine filter itself!)
+    // STEP 3: Generate Dynamic Cuisines
     const types = new Set<string>();
     distanceAndDateFiltered.forEach(e => {
         if (e.type && e.type !== 'Mobile' && !e.type.toLowerCase().includes('static')) {
@@ -296,7 +286,7 @@ export function useVillageData(
     });
     const dynamicCuisines = Array.from(types).sort();
 
-    // STEP 4: Apply the Cuisine Filter to generate the final list for the cards
+    // STEP 4: Apply the Cuisine Filter
     const finalFilteredList = distanceAndDateFiltered.filter(event => {
       if (filters.cuisine !== 'all') {
         const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
@@ -305,7 +295,7 @@ export function useVillageData(
       return true;
     });
 
-    // STEP 5: Apply Cuisine Filter for the Map (Map ignores distance so users can explore!)
+    // STEP 5: Apply Cuisine Filter for Map
     const finalMapEvents = dateFiltered.filter(event => {
         if (filters.cuisine !== 'all') {
           const eventTypes = event.type ? event.type.toLowerCase().split(',').map(t => t.trim()) : ['mobile'];
@@ -330,5 +320,22 @@ export function useVillageData(
 
   }, [events, filters, userLocation]);
 
-  return { loading, groupedEvents, mapEvents, dynamicCuisineOptions };
+  // --- STEP 7: Count total events per venue (ignoring distance filters) ---
+  const venueCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    events.forEach(e => {
+        const slug = createSlug(e.venueName); 
+        counts[slug] = (counts[slug] || 0) + 1;
+    });
+    return counts;
+  }, [events]);
+
+  // FINAL RETURN STATEMENT
+  return { 
+      loading, 
+      groupedEvents, 
+      mapEvents, 
+      dynamicCuisineOptions, 
+      venueCounts 
+  };
 }

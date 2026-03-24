@@ -1,20 +1,23 @@
 import { usePostHog } from 'posthog-js/react';
 import { VillageEvent } from '@/types';
+import Link from 'next/link';
 import { 
     getCuisineEmoji, 
     getGoogleLink, 
     getOutlookLink, 
     downloadICS,
-    formatFriendlyDate
+    formatFriendlyDate,
+    createSlug 
   } from '@/lib/utils';
 
 interface EventListCardProps {
   event: VillageEvent;
   distanceMiles?: number | null;
   isMapPopup?: boolean;
+  venueEventCount?: number; 
+  isVenuePage?: boolean; // 👇 ADDED THIS
 }
 
-// 🌐 ADVANCED LINK RENDERER
 const renderTextWithLinks = (text: string) => {
     if (!text) return null;
     const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
@@ -32,7 +35,7 @@ const renderTextWithLinks = (text: string) => {
     });
 };
 
-export default function EventListCard({ event, distanceMiles, isMapPopup = false }: EventListCardProps) {
+export default function EventListCard({ event, distanceMiles, isMapPopup = false, venueEventCount, isVenuePage = false }: EventListCardProps) {
   const posthog = usePostHog();
   
   const isStatic = event.type?.toLowerCase().includes('static');
@@ -112,7 +115,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
   const methodsStr = event.acceptedMethods ? event.acceptedMethods.toLowerCase() : '';
   
-  // Clean phone number for links
   const cleanPhone = event.phoneNumber ? event.phoneNumber.replace(/[^\d+]/g, '') : '';
   
   let waPhone = cleanPhone.replace('+', '');
@@ -252,9 +254,28 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                             </a>
                         ) : event.truckName}
                     </h3>
-                    <div className="text-slate-600 text-xs font-medium leading-tight !m-0 !p-0 truncate">
-                        {venueDisplay}
-                    </div>
+                    
+                    {/* 👇 HIDES THE VENUE NAME IF WE ARE ON THE VENUE PAGE 👇 */}
+                    {!isVenuePage && (
+                        <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
+                            {!isMapPopup && venueEventCount && venueEventCount > 1 ? (
+                                <Link 
+                                    href={`/venues/${createSlug(event.venueName)}`}
+                                    className="text-slate-600 text-xs font-medium leading-tight truncate hover:text-orange-600 hover:underline transition-colors flex items-center gap-1.5"
+                                    title={`View all ${venueEventCount} events at ${event.venueName}`}
+                                >
+                                    <span className="truncate">{venueDisplay}</span>
+                                    <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 rounded-full">
+                                        {venueEventCount} events
+                                    </span>
+                                </Link>
+                            ) : (
+                                <span className="text-slate-600 text-xs font-medium leading-tight truncate">
+                                    {venueDisplay}
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
@@ -285,9 +306,13 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                 <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
                     {event.startTime} - {event.endTime}
                 </span>
-                <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
-                    📍 Directions
-                </a>
+                
+                {/* 👇 HIDES THE DIRECTIONS LINK IF WE ARE ON THE VENUE PAGE 👇 */}
+                {!isVenuePage && (
+                    <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
+                        📍 Directions
+                    </a>
+                )}
             </div>
 
             <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">

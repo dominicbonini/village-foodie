@@ -167,4 +167,15 @@ export function downloadICS(event: VillageEvent) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}// ==========================================
+// --- URL GENERATION HELPERS ---
+// ==========================================
+export function createSlug(str: string): string {
+  if (!str) return '';
+  return str.toLowerCase()
+      .replace(/^the\s+/, '')       
+      .replace(/&/g, 'and')         
+      .replace(/['’]/g, '')         
+      .replace(/[^a-z0-9]/g, '')    
+      .trim();
 }

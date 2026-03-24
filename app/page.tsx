@@ -12,7 +12,8 @@ import Link from 'next/link';
 import { 
   getDistanceKm, 
   getCoordsFromPostcode, 
-  formatFriendlyDate 
+  formatFriendlyDate,
+  createSlug // 👇 ADDED THIS IMPORT
 } from '@/lib/utils';
 
 // --- DYNAMIC MAP IMPORT ---
@@ -45,8 +46,8 @@ function VillageFoodieContent() {
   });
 
   // --- CUSTOM HOOK (Data Logic) ---
-  // 👇 UPDATED: Destructuring dynamicCuisineOptions instead of cuisineOptions
-  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions } = useVillageData(userLocation, filters);
+  // 👇 UPDATED: Added venueCounts to the destructuring
+  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueCounts } = useVillageData(userLocation, filters);
 
   // --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
   useEffect(() => {
@@ -199,7 +200,6 @@ function VillageFoodieContent() {
                 onChange={(e) => setFilters({...filters, cuisine: e.target.value})}
               >
                 <option value="all">All Food</option>
-                {/* 👇 UPDATED: Now maps through the dynamic options 👇 */}
                 {dynamicCuisineOptions.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               
@@ -337,6 +337,8 @@ function VillageFoodieContent() {
                                     key={event.id} 
                                     event={event} 
                                     distanceMiles={distanceMiles} 
+                                    // 👇 UPDATED: Passing the count into the card!
+                                    venueEventCount={venueCounts[createSlug(event.venueName)] || 0}
                                 />
                             );
                         })}
