@@ -320,22 +320,40 @@ export function useVillageData(
 
   }, [events, filters, userLocation]);
 
-  // --- STEP 7: Count total events per venue (ignoring distance filters) ---
-  const venueCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    events.forEach(e => {
-        const slug = createSlug(e.venueName); 
-        counts[slug] = (counts[slug] || 0) + 1;
-    });
-    return counts;
-  }, [events]);
+// --- STEP 7: Calculate Venue Stats (Events & Unique Trucks) ---
+const venueStats = useMemo(() => {
+  const stats: Record<string, { eventCount: number, trucks: Set<string> }> = {};
+  
+  events.forEach(e => {
+      const venueSlug = createSlug(e.venueName); 
+      const truckSlug = createSlug(e.truckName);
 
-  // FINAL RETURN STATEMENT
-  return { 
-      loading, 
-      groupedEvents, 
-      mapEvents, 
-      dynamicCuisineOptions, 
-      venueCounts 
-  };
+      if (!stats[venueSlug]) {
+          stats[venueSlug] = { eventCount: 0, trucks: new Set() };
+      }
+      
+      stats[venueSlug].eventCount += 1;
+      stats[venueSlug].trucks.add(truckSlug);
+  });
+
+  // Convert Sets to numbers for easy consumption in the UI
+  const processed: Record<string, { eventCount: number, uniqueTrucks: number }> = {};
+  for (const [slug, data] of Object.entries(stats)) {
+      processed[slug] = {
+          eventCount: data.eventCount,
+          uniqueTrucks: data.trucks.size
+      };
+  }
+  
+  return processed;
+}, [events]);
+
+// FINAL RETURN STATEMENT
+return { 
+    loading, 
+    groupedEvents, 
+    mapEvents, 
+    dynamicCuisineOptions, 
+    venueStats // <--- Export the new stats object!
+};
 }

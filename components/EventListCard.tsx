@@ -14,8 +14,8 @@ interface EventListCardProps {
   event: VillageEvent;
   distanceMiles?: number | null;
   isMapPopup?: boolean;
-  venueEventCount?: number; 
-  isVenuePage?: boolean; // 👇 ADDED THIS
+  venueStats?: { eventCount: number; uniqueTrucks: number }; // 👇 UNIQUE TRUCKS STAT
+  isVenuePage?: boolean; 
 }
 
 const renderTextWithLinks = (text: string) => {
@@ -35,23 +35,34 @@ const renderTextWithLinks = (text: string) => {
     });
 };
 
-export default function EventListCard({ event, distanceMiles, isMapPopup = false, venueEventCount, isVenuePage = false }: EventListCardProps) {
+export default function EventListCard({ event, distanceMiles, isMapPopup = false, venueStats, isVenuePage = false }: EventListCardProps) {
   const posthog = usePostHog();
   
   const isStatic = event.type?.toLowerCase().includes('static');
   
   const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
-    ? `${event.venueName} - ${event.village}`
-    : event.venueName;
+  ? `${event.venueName} - ${event.village}`
+  : event.venueName;
 
-  const venuePostcode = event.postcode || ''; 
-  const addressQuery = [venueDisplay, venuePostcode].filter(Boolean).join(', ');
-  const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
+// 👇 1. CREATE A SEPARATE, CLEAN QUERY JUST FOR MAPS 👇
+// Maps hates hyphens. We use strict commas instead.
+const mapQueryParts = [event.venueName];
+if (event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())) {
+    mapQueryParts.push(event.village);
+}
+if (event.postcode) {
+    mapQueryParts.push(event.postcode);
+}
 
-  const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
-  const mapLink = isApple
-    ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` 
-    : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
+const addressQuery = mapQueryParts.join(', ');
+const safeQuery = encodeURIComponent(addressQuery || 'Event Location');
+
+const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
+
+// 👇 2. FIXED OFFICIAL GOOGLE MAPS URL 👇
+const mapLink = isApple
+  ? `https://maps.apple.com/?daddr=${safeQuery}&dirflg=d` 
+  : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
 
   async function handleShare() {
       if (posthog) {
@@ -255,19 +266,24 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                         ) : event.truckName}
                     </h3>
                     
-                    {/* 👇 HIDES THE VENUE NAME IF WE ARE ON THE VENUE PAGE 👇 */}
-                    {!isVenuePage && (
-                        <div className="mt-0.5 flex items-center gap-1.5 min-w-0">
-                            {!isMapPopup && venueEventCount && venueEventCount > 1 ? (
+{/* 👇 THE NEW ALWAYS-CLICKABLE VENUE LINK 👇 */}
+{!isVenuePage && (
+                        <div className="mt-0.5 flex items-center min-w-0">
+                            {!isMapPopup ? (
                                 <Link 
                                     href={`/venues/${createSlug(event.venueName)}`}
-                                    className="text-slate-600 text-xs font-medium leading-tight truncate hover:text-orange-600 hover:underline transition-colors flex items-center gap-1.5"
-                                    title={`View all ${venueEventCount} events at ${event.venueName}`}
+                                    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
+                                    title={`View venue details for ${event.venueName}`}
                                 >
-                                    <span className="truncate">{venueDisplay}</span>
-                                    <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 rounded-full">
-                                        {venueEventCount} events
+                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
+                                        {venueDisplay}
                                     </span>
+                                    {/* Only show the pill if there are multiple unique trucks */}
+                                    {venueStats && venueStats.uniqueTrucks > 1 && (
+                                        <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
+                                            {venueStats.uniqueTrucks} trucks
+                                        </span>
+                                    )}
                                 </Link>
                             ) : (
                                 <span className="text-slate-600 text-xs font-medium leading-tight truncate">
@@ -276,6 +292,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                             )}
                         </div>
                     )}
+
                 </div>
 
                 <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">

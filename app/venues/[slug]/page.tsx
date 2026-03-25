@@ -2,6 +2,7 @@
 
 import { use, useMemo } from 'react';
 import Link from 'next/link';
+import Script from 'next/script'; // 👇 Added Script import
 import { usePostHog } from 'posthog-js/react';
 import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
@@ -22,7 +23,6 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
   const { venueEvents, venueInfo } = useMemo(() => {
     const filtered = mapEvents.filter(event => createSlug(event.venueName) === slug);
     
-    // 👇 UPDATED: Added venuePhone extraction
     const info = filtered.length > 0 ? {
         name: filtered[0].venueName,
         village: filtered[0].village,
@@ -42,21 +42,14 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
 
   const handleShareVenue = async () => {
     if (!venueInfo) return;
-    
-    if (posthog) {
-      posthog.capture('clicked_share_venue_profile', { venue: venueInfo.name });
-    }
+    if (posthog) posthog.capture('clicked_share_venue_profile', { venue: venueInfo.name });
 
     const shareUrl = window.location.href;
     const shareText = `Check out the upcoming food truck schedule for ${venueInfo.name} in ${venueInfo.village}! 🍔🍻`;
     
     try {
       if (navigator.share) {
-        await navigator.share({
-          title: `${venueInfo.name} Food Trucks`,
-          text: shareText,
-          url: shareUrl
-        });
+        await navigator.share({ title: `${venueInfo.name} Food Trucks`, text: shareText, url: shareUrl });
       } else {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
         alert('Venue link copied to clipboard! 📋');
@@ -66,17 +59,31 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
     }
   };
 
-  const addressQuery = venueInfo ? encodeURIComponent(`${venueInfo.name}, ${venueInfo.village}, ${venueInfo.postcode}`) : '';
+  // 👇 Tally Popup Handler 👇
+  const openTallyPopup = () => {
+    if (posthog) {
+      posthog.capture('clicked_newsletter_subscribe', { source: 'venue_page', venue: venueInfo?.name });
+    }
+    if (typeof window !== 'undefined' && (window as any).Tally) {
+      (window as any).Tally.openPopup('81xAKx', { layout: 'modal', width: 400 });
+    } else {
+      window.open('https://tally.so/r/81xAKx', '_blank');
+    }
+  };
+
+  const queryParts = venueInfo ? [venueInfo.name, venueInfo.village, venueInfo.postcode].filter(Boolean) : [];
+  const addressQuery = encodeURIComponent(queryParts.join(', '));
   const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
   const mapLink = isApple
-    ? `http://maps.apple.com/?daddr=${addressQuery}&dirflg=d` 
+    ? `https://maps.apple.com/?daddr=${addressQuery}&dirflg=d` 
     : `https://www.google.com/maps/dir/?api=1&destination=${addressQuery}`;
-
-  // Clean phone number for the tel: link
   const cleanPhone = venueInfo?.phone ? venueInfo.phone.replace(/[^\d+]/g, '') : '';
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
+      {/* 👇 Tally Script 👇 */}
+      <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
+
       <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-2xl mx-auto flex justify-between items-center">
           <Link href="/" className="text-sm font-bold flex items-center gap-2 hover:text-orange-400 transition-colors">
@@ -97,20 +104,12 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-{/* 👇 POLISHED VENUE HERO CARD 👇 */}
-<div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8 mt-4 text-center relative overflow-hidden">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8 mt-4 text-center relative overflow-hidden">
                 <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">🍻</div>
                 <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight">{venueInfo.name}</h1>
                 
-                {/* 👇 ADDRESS & BUTTONS CLUSTER 👇 */}
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-4">
-                    {/* Address is the clickable map link */}
-                    <a 
-                        href={mapLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-1.5 text-slate-500 hover:text-orange-600 font-medium text-sm transition-colors group cursor-pointer"
-                    >
+                    <a href={mapLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-slate-500 hover:text-orange-600 font-medium text-sm transition-colors group cursor-pointer">
                         <span className="group-hover:scale-110 transition-transform">📍</span>
                         <span className="group-hover:underline underline-offset-2">
                             {venueInfo.village}
@@ -118,22 +117,13 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
                         </span>
                     </a>
 
-                    {/* Action Buttons */}
                     <div className="flex items-center gap-2">
                         {cleanPhone && (
-                            <a 
-                                href={`tel:${cleanPhone}`}
-                                onClick={() => {if(posthog){posthog.capture('clicked_call_venue', {venue: venueInfo.name})}}}
-                                className="flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm"
-                            >
+                            <a href={`tel:${cleanPhone}`} onClick={() => {if(posthog)posthog.capture('clicked_call_venue', {venue: venueInfo.name})}} className="flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
                                 📞 Call Venue
                             </a>
                         )}
-
-                        <button 
-                            onClick={handleShareVenue}
-                            className="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[11px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm"
-                        >
+                        <button onClick={handleShareVenue} className="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[11px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                             Share
                         </button>
@@ -146,19 +136,10 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
             {Object.entries(venueEvents).map(([date, events]) => (
                 <div key={date} className="mb-6">
                     <div className="pt-2 pb-3 ml-1">
-                        <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
-                           {formatFriendlyDate(date)}
-                        </h2>
+                        <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">{formatFriendlyDate(date)}</h2>
                     </div>
                     <div className="space-y-3">
-                        {events.map(event => (
-                            <EventListCard 
-                                key={event.id} 
-                                event={event} 
-                                distanceMiles={null} 
-                                isVenuePage={true} 
-                            />
-                        ))}
+                        {events.map(event => <EventListCard key={event.id} event={event} distanceMiles={null} isVenuePage={true} />)}
                     </div>
                 </div>
             ))}
@@ -166,7 +147,17 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         )}
       </div>
 
-      <Footer onOpenTally={() => window.open('https://tally.so/r/81xAKx', '_blank')} />
+      {/* 👇 FLOATING SUBSCRIBE BUTTON 👇 */}
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
+        <button 
+          onClick={openTallyPopup}
+          className="pointer-events-auto bg-slate-900 text-white font-bold py-3 px-6 rounded-full shadow-lg border border-slate-700 flex items-center gap-2 hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
+        >
+          <span>Get Weekly Schedule 🍕</span>
+        </button>
+      </div>
+
+      <Footer onOpenTally={openTallyPopup} />
     </main>
   );
 }

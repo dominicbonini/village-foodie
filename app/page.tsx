@@ -13,7 +13,7 @@ import {
   getDistanceKm, 
   getCoordsFromPostcode, 
   formatFriendlyDate,
-  createSlug // 👇 ADDED THIS IMPORT
+  createSlug 
 } from '@/lib/utils';
 
 // --- DYNAMIC MAP IMPORT ---
@@ -46,8 +46,7 @@ function VillageFoodieContent() {
   });
 
   // --- CUSTOM HOOK (Data Logic) ---
-  // 👇 UPDATED: Added venueCounts to the destructuring
-  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueCounts } = useVillageData(userLocation, filters);
+  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueStats } = useVillageData(userLocation, filters);
 
   // --- EFFECT: HANDLE URL PARAMS & RESTORE STATE ---
   useEffect(() => {
@@ -337,8 +336,8 @@ function VillageFoodieContent() {
                                     key={event.id} 
                                     event={event} 
                                     distanceMiles={distanceMiles} 
-                                    // 👇 UPDATED: Passing the count into the card!
-                                    venueEventCount={venueCounts[createSlug(event.venueName)] || 0}
+                                    // 👇 THIS LINE IS NOW CORRECT 👇
+                                    venueStats={venueStats[createSlug(event.venueName)]}
                                 />
                             );
                         })}

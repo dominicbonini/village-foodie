@@ -2,26 +2,18 @@
 
 import { use, useMemo } from 'react';
 import Link from 'next/link';
+import Script from 'next/script'; // 👇 Added Script import
+import { usePostHog } from 'posthog-js/react'; // 👇 Added Posthog import
 import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
-import { formatFriendlyDate } from '@/lib/utils'; 
-
-const createSlug = (str: string) => {
-    if (!str) return '';
-    return str.toLowerCase()
-        .replace(/^the\s+/, '')       
-        .replace(/&/g, 'and')         
-        .replace(/['’]/g, '')         
-        .replace(/[^a-z0-9]/g, '')    
-        .trim();
-};
+import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
 
 export default function TruckProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+  const posthog = usePostHog();
   const resolvedParams = use(params);
   const slug = resolvedParams.slug;
 
-  // 👇 THE OVERRIDE: This explicitly forces the engine to show ALL upcoming dates
   const { loading, mapEvents } = useVillageData(null, {
     date: 'all', 
     cuisine: 'all',
@@ -47,8 +39,23 @@ export default function TruckProfilePage({ params }: { params: Promise<{ slug: s
     return { truckEvents: grouped, truckInfo: info };
   }, [mapEvents, slug]);
 
+  // 👇 Tally Popup Handler 👇
+  const openTallyPopup = () => {
+    if (posthog) {
+      posthog.capture('clicked_newsletter_subscribe', { source: 'truck_page', truck: truckInfo?.name });
+    }
+    if (typeof window !== 'undefined' && (window as any).Tally) {
+      (window as any).Tally.openPopup('81xAKx', { layout: 'modal', width: 400 });
+    } else {
+      window.open('https://tally.so/r/81xAKx', '_blank');
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
+      {/* 👇 Tally Script 👇 */}
+      <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
+
       <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
         <div className="max-w-2xl mx-auto flex justify-between items-center">
           <Link href="/" className="text-sm font-bold flex items-center gap-2 hover:text-orange-400 transition-colors">
@@ -102,7 +109,17 @@ export default function TruckProfilePage({ params }: { params: Promise<{ slug: s
         )}
       </div>
 
-      <Footer onOpenTally={() => window.open('https://tally.so/r/81xAKx', '_blank')} />
+      {/* 👇 FLOATING SUBSCRIBE BUTTON 👇 */}
+      <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
+        <button 
+          onClick={openTallyPopup}
+          className="pointer-events-auto bg-slate-900 text-white font-bold py-3 px-6 rounded-full shadow-lg border border-slate-700 flex items-center gap-2 hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
+        >
+          <span>Get Weekly Schedule 🍕</span>
+        </button>
+      </div>
+
+      <Footer onOpenTally={openTallyPopup} />
     </main>
   );
 }
