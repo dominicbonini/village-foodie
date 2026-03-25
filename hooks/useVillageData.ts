@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
-// Make sure createSlug is imported from utils!
 import { parseDateString, getDistanceKm, createSlug } from '@/lib/utils';
 
 const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub';
@@ -94,7 +93,7 @@ export function useVillageData(
         truckRows.forEach(cols => {
             if (!cols[0]) return;
             const rawName = cols[0] || '';
-            const key = createSlug(rawName); // Using the new imported utility
+            const key = createSlug(rawName); 
             if (key) {
                 trucksList.push({
                     rawName: rawName,
@@ -117,7 +116,7 @@ export function useVillageData(
         venueRows.forEach(cols => {
             if (!cols[0]) return;
             const rawName = cols[0] || '';
-            const key = createSlug(rawName); // Using the new imported utility
+            const key = createSlug(rawName); 
             if (key) {
                 venuesList.push({
                     rawName: rawName,
@@ -126,7 +125,10 @@ export function useVillageData(
                     postcode: cols[2] || '',
                     lat: parseFloat(cols[3] || '0'),
                     long: parseFloat(cols[4] || '0'),
-                    venuePhone: cols[6] || ''
+                    venuePhone: cols[6] || '',
+                    // 👇 NEW: Extract Photo (M/12) and Website (I/8) from the CSV 👇
+                    venueWebsite: cols[8] || '', 
+                    venuePhoto: cols[12] || ''   
                 });
             }
         });
@@ -172,17 +174,18 @@ export function useVillageData(
               venueLat: venue.lat, 
               venueLong: venue.long, 
               venuePhone: venue.venuePhone || '',
+              // 👇 NEW: Inject the venue's Photo and Website into the final event object 👇
+              venueWebsite: venue.venueWebsite || '',
+              venuePhoto: venue.venuePhoto || '',
+
               type: truck.type || 'Mobile',           
-              
               phoneNumber: truck.phoneNumber || '',
               orderUrl: truck.orderUrl || '',
               acceptedMethods: truck.acceptedMethods || '',
-              
               websiteUrl: truck.websiteUrl || '',            
               menuUrl: truck.menuUrl || '',               
               notes: truck.truckNotes || '',
               eventNotes: cols[5] || '',    
-              
               logoUrl: truck.logoUrl || '',         
             };
 
@@ -336,7 +339,6 @@ const venueStats = useMemo(() => {
       stats[venueSlug].trucks.add(truckSlug);
   });
 
-  // Convert Sets to numbers for easy consumption in the UI
   const processed: Record<string, { eventCount: number, uniqueTrucks: number }> = {};
   for (const [slug, data] of Object.entries(stats)) {
       processed[slug] = {
@@ -348,12 +350,11 @@ const venueStats = useMemo(() => {
   return processed;
 }, [events]);
 
-// FINAL RETURN STATEMENT
 return { 
     loading, 
     groupedEvents, 
     mapEvents, 
     dynamicCuisineOptions, 
-    venueStats // <--- Export the new stats object!
+    venueStats 
 };
 }

@@ -2,7 +2,7 @@
 
 import { use, useMemo } from 'react';
 import Link from 'next/link';
-import Script from 'next/script'; // 👇 Added Script import
+import Script from 'next/script'; 
 import { usePostHog } from 'posthog-js/react';
 import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
@@ -27,7 +27,9 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         name: filtered[0].venueName,
         village: filtered[0].village,
         postcode: (filtered[0] as any).postcode || '',
-        phone: (filtered[0] as any).venuePhone || ''
+        phone: (filtered[0] as any).venuePhone || '',
+        photo: (filtered[0] as any).venuePhoto || '',     
+        website: (filtered[0] as any).venueWebsite || ''  
     } : null;
 
     const grouped = filtered.reduce((groups, event) => {
@@ -59,11 +61,8 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
     }
   };
 
-  // 👇 Tally Popup Handler 👇
   const openTallyPopup = () => {
-    if (posthog) {
-      posthog.capture('clicked_newsletter_subscribe', { source: 'venue_page', venue: venueInfo?.name });
-    }
+    if (posthog) posthog.capture('clicked_newsletter_subscribe', { source: 'venue_page', venue: venueInfo?.name });
     if (typeof window !== 'undefined' && (window as any).Tally) {
       (window as any).Tally.openPopup('81xAKx', { layout: 'modal', width: 400 });
     } else {
@@ -77,11 +76,12 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
   const mapLink = isApple
     ? `https://maps.apple.com/?daddr=${addressQuery}&dirflg=d` 
     : `https://www.google.com/maps/dir/?api=1&destination=${addressQuery}`;
+  
   const cleanPhone = venueInfo?.phone ? venueInfo.phone.replace(/[^\d+]/g, '') : '';
+  const cleanWebsite = venueInfo?.website ? (venueInfo.website.startsWith('http') ? venueInfo.website : `https://${venueInfo.website}`) : '';
 
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
-      {/* 👇 Tally Script 👇 */}
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
       <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
@@ -104,31 +104,60 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8 mt-4 text-center relative overflow-hidden">
-                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow-sm">🍻</div>
-                <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight">{venueInfo.name}</h1>
+            {/* 👇 THE NEW CENTERED HERO BANNER 👇 */}
+            <div className="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-5 shadow-sm border border-slate-200 mt-2 bg-slate-900">
+                {venueInfo.photo ? (
+                    <img 
+                        src={venueInfo.photo} 
+                        alt={venueInfo.name} 
+                        className="w-full h-full object-cover opacity-80"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-slate-800 flex items-center justify-center opacity-50">
+                        <span className="text-6xl">🍻</span>
+                    </div>
+                )}
                 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mt-4">
-                    <a href={mapLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-1.5 text-slate-500 hover:text-orange-600 font-medium text-sm transition-colors group cursor-pointer">
+                {/* Cinematic Dark Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+                
+                {/* Text locked to the center-bottom */}
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-8 w-full text-center px-4">
+                    <h1 className="text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-lg">
+                        {venueInfo.name}
+                    </h1>
+                    <a 
+                        href={mapLink} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="inline-flex items-center justify-center gap-1.5 text-slate-200 hover:text-orange-400 font-medium text-sm transition-colors mt-1 group drop-shadow-md"
+                    >
                         <span className="group-hover:scale-110 transition-transform">📍</span>
                         <span className="group-hover:underline underline-offset-2">
-                            {venueInfo.village}
-                            {venueInfo.postcode && ` • ${venueInfo.postcode.toUpperCase()}`}
+                            {venueInfo.village} {venueInfo.postcode && `• ${venueInfo.postcode.toUpperCase()}`}
                         </span>
                     </a>
-
-                    <div className="flex items-center gap-2">
-                        {cleanPhone && (
-                            <a href={`tel:${cleanPhone}`} onClick={() => {if(posthog)posthog.capture('clicked_call_venue', {venue: venueInfo.name})}} className="flex items-center justify-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
-                                📞 Call Venue
-                            </a>
-                        )}
-                        <button onClick={handleShareVenue} className="flex items-center justify-center gap-1.5 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[11px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                            Share
-                        </button>
-                    </div>
                 </div>
+            </div>
+
+{/* 👇 THE UNIFORM TOOLBAR ROW (WITH BRAND HOVER) 👇 */}
+<div className="flex w-full gap-2 md:gap-3 mb-8">
+                {cleanPhone && (
+                    <a href={`tel:${cleanPhone}`} onClick={() => {if(posthog)posthog.capture('clicked_call_venue', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
+                        📞 Call
+                    </a>
+                )}
+                
+                {cleanWebsite && (
+                    <a href={cleanWebsite} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog)posthog.capture('clicked_venue_website', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
+                        🌐 Website
+                    </a>
+                )}
+
+                <button onClick={handleShareVenue} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                    Share
+                </button>
             </div>
 
             <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1">Upcoming Food Trucks</h2>
@@ -147,7 +176,6 @@ export default function VenueProfilePage({ params }: { params: Promise<{ slug: s
         )}
       </div>
 
-      {/* 👇 FLOATING SUBSCRIBE BUTTON 👇 */}
       <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
         <button 
           onClick={openTallyPopup}
