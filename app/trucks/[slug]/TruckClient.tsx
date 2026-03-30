@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import Script from 'next/script'; 
 import { usePostHog } from 'posthog-js/react'; 
 import { useVillageData } from '@/hooks/useVillageData';
@@ -9,7 +10,6 @@ import Footer from '@/components/Footer';
 import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
 import TruckListCard from '@/components/TruckListCard';
 
-// 👇 Note the change here! We just pass the slug directly in as a string now.
 export default function TruckClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,7 +18,8 @@ export default function TruckClient({ slug }: { slug: string }) {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 120);
     };
-    window.addEventListener('scroll', handleScroll);
+    // Added { passive: true } to optimize scroll performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -81,6 +82,9 @@ export default function TruckClient({ slug }: { slug: string }) {
     }
   };
 
+  // Safely clean the phone number to prevent blank hrefs later
+  const cleanPhone = truckInfo?.phoneNumber?.replace(/[^\d+]/g, '');
+
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col">
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
@@ -99,7 +103,7 @@ export default function TruckClient({ slug }: { slug: string }) {
             >
               <div className="flex items-center gap-2 px-10">
                 {truckInfo.logo ? (
-                    <img src={truckInfo.logo} alt={truckInfo.name} className="w-7 h-7 object-contain rounded-full bg-white shadow-sm shrink-0" />
+                    <Image src={truckInfo.logo} alt={truckInfo.name} width={28} height={28} className="w-7 h-7 object-contain rounded-full bg-white shadow-sm shrink-0" />
                 ) : (
                     <div className="w-7 h-7 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-[10px] shrink-0">🚚</div>
                 )}
@@ -120,7 +124,7 @@ export default function TruckClient({ slug }: { slug: string }) {
       {truckInfo && (
         <div className="bg-white px-4 pt-8 pb-6 border-b border-slate-200 flex flex-col items-center text-center shadow-sm relative z-0">
             {truckInfo.logo ? (
-                <img src={truckInfo.logo} alt={truckInfo.name} className="w-24 h-24 object-contain rounded-full border border-slate-200 shadow-md bg-white mb-4" />
+                <Image src={truckInfo.logo} alt={truckInfo.name} width={96} height={96} className="w-24 h-24 object-contain rounded-full border border-slate-200 shadow-md bg-white mb-4" />
             ) : (
                 <div className="w-24 h-24 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-4xl shadow-md mb-4">🚚</div>
             )}
@@ -134,7 +138,7 @@ export default function TruckClient({ slug }: { slug: string }) {
       )}
 
       {/* 3. ACTION BUTTONS */}
-      {truckInfo && (truckInfo.menuUrl || truckInfo.phoneNumber) && (
+      {truckInfo && (truckInfo.menuUrl || cleanPhone) && (
         <div className="w-full max-w-2xl mx-auto px-4 mt-5 mb-2">
             <div className="flex justify-center gap-2 w-full">
               {truckInfo.menuUrl && (
@@ -142,12 +146,12 @@ export default function TruckClient({ slug }: { slug: string }) {
                   📋 <span>Menu</span>
                 </a>
               )}
-              {truckInfo.phoneNumber && (
+              {cleanPhone && (
                 <>
-                  <a href={`tel:${truckInfo.phoneNumber.replace(/[^\d+]/g, '')}`} className="flex-1 min-w-0 bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+                  <a href={`tel:${cleanPhone}`} className="flex-1 min-w-0 bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                     📞 <span>Call</span>
                   </a>
-                  <a href={`sms:${truckInfo.phoneNumber.replace(/[^\d+]/g, '')}`} className="flex-1 min-w-0 bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+                  <a href={`sms:${cleanPhone}`} className="flex-1 min-w-0 bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                     💬 <span>Message</span>
                   </a>
                 </>
@@ -161,7 +165,14 @@ export default function TruckClient({ slug }: { slug: string }) {
         {loading ? (
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
         ) : !truckInfo ? (
-           null 
+          <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">🤷‍♂️</div>
+            <h2 className="text-xl font-bold text-slate-800">Truck not found</h2>
+            <p className="text-slate-500 mt-2">We couldn't find any details for this food truck. They might have moved or updated their profile.</p>
+            <Link href="/" className="mt-6 bg-orange-600 text-white font-bold py-2 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105">
+              View all trucks
+            </Link>
+          </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             

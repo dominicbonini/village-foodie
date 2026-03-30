@@ -126,7 +126,6 @@ export function useVillageData(
                     lat: parseFloat(cols[3] || '0'),
                     long: parseFloat(cols[4] || '0'),
                     venuePhone: cols[6] || '',
-                    // 👇 NEW: Extract Photo (M/12) and Website (I/8) from the CSV 👇
                     venueWebsite: cols[8] || '', 
                     venuePhoto: cols[12] || ''   
                 });
@@ -141,9 +140,13 @@ export function useVillageData(
           .slice(1)
           .filter(cols => cols.length > 0 && !!cols[0])
           .map((cols, index) => {
+            
             const rawDate = cols[0] || '';
             const rawTruck = cols[3] || '';
             const rawVenue = cols[4] || '';
+            
+            // 👇 NEW COLUMN MAPPING 👇 
+            const rawEventVillage = cols[5] || ''; 
 
             const eventTruckKey = createSlug(rawTruck);
             let truck = trucksList.find(t => t.cleanKey === eventTruckKey) || 
@@ -169,12 +172,13 @@ export function useVillageData(
               endTime: cols[2] || '',
               truckName: rawTruck,
               venueName: rawVenue,
-              village: venue.village || '',               
+              
+              village: rawEventVillage || venue.village || '',               
+              
               postcode: venue.postcode || '',              
               venueLat: venue.lat, 
               venueLong: venue.long, 
               venuePhone: venue.venuePhone || '',
-              // 👇 NEW: Inject the venue's Photo and Website into the final event object 👇
               venueWebsite: venue.venueWebsite || '',
               venuePhoto: venue.venuePhoto || '',
 
@@ -185,7 +189,10 @@ export function useVillageData(
               websiteUrl: truck.websiteUrl || '',            
               menuUrl: truck.menuUrl || '',               
               notes: truck.truckNotes || '',
-              eventNotes: cols[5] || '',    
+              
+              // Event notes shifted to column 6
+              eventNotes: cols[6] || '',    
+              
               logoUrl: truck.logoUrl || '',         
             };
 

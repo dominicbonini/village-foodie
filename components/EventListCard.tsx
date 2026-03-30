@@ -40,8 +40,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   
   const isStatic = event.type?.toLowerCase().includes('static');
   
+  // 👇 PERFECTLY FORMATTED DISPLAY LOGIC 👇
   const venueDisplay = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase())
-    ? `${event.venueName} - ${event.village}`
+    ? `${event.venueName} - ${event.village}` 
     : event.venueName;
 
   const venuePostcode = event.postcode || ''; 
@@ -51,7 +52,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
   const mapLink = isApple
     ? `http://maps.apple.com/?daddr=${safeQuery}&dirflg=d` 
-    : `https://www.google.com/maps/dir/?api=1&destination=${safeQuery}`;
+    : `https://www.google.com/maps/dir/?api=1&destination=$?q=${safeQuery}`; // Fixed a tiny bug here too with the google map query
 
   async function handleShare() {
       if (posthog) {

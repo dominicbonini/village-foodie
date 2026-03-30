@@ -379,8 +379,9 @@ const model = genAI.getGenerativeModel({
     generationConfig: { responseMimeType: "application/json", temperature: 0 } 
 });
 
+// 👇 FIX 1: Deprecated "new" flag changed to true
 const browser = await puppeteer.launch({
-  headless: "new",
+  headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
 });
 
@@ -388,12 +389,16 @@ const newRowsToAdd = [];
 const newVenuesDetected = new Map();
 
 for (const [index, site] of sitesToScrape.entries()) {
+  let page; // Declare page outside to ensure it can be closed in the finally block
+  
   try {
     console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
     
     let cleanText = "";
     let isRuleExtraction = false; 
-    const page = await browser.newPage();
+    
+    // 👇 FIX 2: Page initialized inside the try block
+    page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
     const strategyFunc = STRATEGIES[site.strategy] || STRATEGIES['default'];
@@ -419,13 +424,11 @@ for (const [index, site] of sitesToScrape.entries()) {
         isRuleExtraction = true;
         if (cleanText.length < 50) {
             console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-            await page.close();
-            continue;
+            continue; // The finally block will handle page.close()
         }
     } else if (cleanText.length < 50) {
         console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-        await page.close();
-        continue;
+        continue; // The finally block will handle page.close()
     }
 
     let prompt = "";
@@ -640,8 +643,9 @@ for (const [index, site] of sitesToScrape.entries()) {
           const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
           
           if (!existingEvents.has(key)) {
-              console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${event.DateStart})`);
-              newRowsToAdd.push([event.DateStart, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, "", `URL: ${site.url} | Strategy: ${site.strategy}`, notes]);
+              console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
+              // 👇 FIX 3: Push cleanDate instead of event.DateStart
+              newRowsToAdd.push([cleanDate, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, "", `URL: ${site.url} | Strategy: ${site.strategy}`, notes]);
               existingEvents.add(key); 
               newCount++;
           } else { dupCount++; }
@@ -649,8 +653,14 @@ for (const [index, site] of sitesToScrape.entries()) {
         console.log(`   📊 Summary: ${newCount} new, ${dupCount} duplicates skipped.`);
       }
     } catch (e) { console.error("   ❌ AI Failed:", e.message); }
-    await page.close();
-  } catch (error) { console.error(`❌ Error on ${site.name}:`, error.message); }
+  } catch (error) { 
+    console.error(`❌ Error on ${site.name}:`, error.message); 
+  } finally {
+    // 👇 FIX 2 (continued): Guarantee page closes even on failure
+    if (page) {
+      await page.close().catch(e => console.error("Failed to close page:", e.message));
+    }
+  }
 }
 
 await browser.close();

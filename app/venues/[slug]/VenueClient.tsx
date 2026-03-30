@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Script from 'next/script'; 
 import { usePostHog } from 'posthog-js/react';
@@ -40,6 +40,19 @@ export default function VenueClient({ slug }: { slug: string }) {
     return { venueEvents: grouped, venueInfo: info };
   }, [mapEvents, slug]);
 
+  const queryParts = venueInfo ? [venueInfo.name, venueInfo.village, venueInfo.postcode].filter(Boolean) : [];
+  const addressQuery = encodeURIComponent(queryParts.join(', '));
+  
+  // Start with a standard Google Maps link to prevent hydration mismatch
+  const [mapLink, setMapLink] = useState(`https://maps.google.com/?q=${addressQuery}`);
+
+  useEffect(() => {
+    // Switch to Apple Maps only on the client if it's an iOS/Mac device
+    if (typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent)) {
+      setMapLink(`https://maps.apple.com/?daddr=${addressQuery}&dirflg=d`);
+    }
+  }, [addressQuery]);
+
   const handleShareVenue = async () => {
     if (!venueInfo) return;
     if (posthog) posthog.capture('clicked_share_venue_profile', { venue: venueInfo.name });
@@ -48,7 +61,7 @@ export default function VenueClient({ slug }: { slug: string }) {
     const shareText = `Check out the upcoming food truck schedule for ${venueInfo.name} in ${venueInfo.village}! 🍔🍻`;
     
     try {
-      if (navigator.share) {
+      if (navigator.share && navigator.canShare && navigator.canShare({ title: `${venueInfo.name} Food Trucks`, text: shareText, url: shareUrl })) {
         await navigator.share({ title: `${venueInfo.name} Food Trucks`, text: shareText, url: shareUrl });
       } else {
         await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
@@ -67,13 +80,6 @@ export default function VenueClient({ slug }: { slug: string }) {
       window.open('https://tally.so/r/81xAKx', '_blank');
     }
   };
-
-  const queryParts = venueInfo ? [venueInfo.name, venueInfo.village, venueInfo.postcode].filter(Boolean) : [];
-  const addressQuery = encodeURIComponent(queryParts.join(', '));
-  const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
-  const mapLink = isApple
-    ? `https://maps.apple.com/?daddr=${addressQuery}&dirflg=d` 
-    : `https://www.google.com/maps/dir/?api=1&destination=${addressQuery}`;
   
   const cleanPhone = venueInfo?.phone ? venueInfo.phone.replace(/[^\d+]/g, '') : '';
   const cleanWebsite = venueInfo?.website ? (venueInfo.website.startsWith('http') ? venueInfo.website : `https://${venueInfo.website}`) : '';
@@ -94,15 +100,19 @@ export default function VenueClient({ slug }: { slug: string }) {
         {loading ? (
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
         ) : !venueInfo ? (
-          <div className="text-center p-12 bg-white rounded-xl border border-slate-200 shadow-sm mt-8">
-             <h2 className="text-xl font-bold text-slate-800">Venue not found 📍</h2>
+          <div className="text-center p-12 bg-white rounded-xl border border-slate-200 shadow-sm mt-8 animate-in fade-in duration-500">
+             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">📍</div>
+             <h2 className="text-xl font-bold text-slate-800">Venue not found</h2>
              <p className="text-slate-500 mt-2">We couldn't find any upcoming food trucks for this location.</p>
-             <Link href="/" className="inline-block mt-4 bg-orange-600 text-white px-6 py-2 rounded-lg font-bold">See all venues</Link>
+             <Link href="/" className="inline-block mt-6 bg-orange-600 hover:bg-orange-700 transition-transform hover:scale-105 text-white px-6 py-2 rounded-xl font-bold shadow-sm">
+                See all venues
+             </Link>
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
             <div className="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-5 shadow-sm border border-slate-200 mt-2 bg-slate-900">
+                {/* REVERTED BACK TO STANDARD IMG TAG HERE 👇 */}
                 {venueInfo.photo ? (
                     <img 
                         src={venueInfo.photo} 
@@ -110,7 +120,7 @@ export default function VenueClient({ slug }: { slug: string }) {
                         className="w-full h-full object-cover opacity-80"
                     />
                 ) : (
-                    <div className="w-full h-full bg-slate-800 flex items-center justify-center opacity-50">
+                    <div className="w-full h-full bg-slate-800 flex items-center justify-center opacity-50 absolute inset-0">
                         <span className="text-6xl">🍻</span>
                     </div>
                 )}
@@ -137,18 +147,18 @@ export default function VenueClient({ slug }: { slug: string }) {
 
             <div className="flex w-full gap-2 md:gap-3 mb-8">
                 {cleanPhone && (
-                    <a href={`tel:${cleanPhone}`} onClick={() => {if(posthog)posthog.capture('clicked_call_venue', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
+                    <a href={`tel:${cleanPhone}`} onClick={() => {if(posthog)posthog.capture('clicked_call_venue', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm active:scale-95">
                         📞 Call
                     </a>
                 )}
                 
                 {cleanWebsite && (
-                    <a href={cleanWebsite} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog)posthog.capture('clicked_venue_website', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
+                    <a href={cleanWebsite} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog)posthog.capture('clicked_venue_website', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm active:scale-95">
                         🌐 Website
                     </a>
                 )}
 
-                <button onClick={handleShareVenue} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
+                <button onClick={handleShareVenue} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm active:scale-95">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                     Share
                 </button>
