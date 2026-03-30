@@ -3,11 +3,31 @@ import VenueClient from './VenueClient';
 import { createSlug } from '@/lib/utils';
 
 // 👇 PASTE YOUR VENUES CSV URL HERE 👇
-const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/.../pub?output=csv';
+const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/1yMVpKmnFRE-U3xHtJdA9OXJMC_cpIVMTQqE_D5nQdXw/edit?pli=1&gid=1190852063#gid=1190852063';
 
-// We mapped these directly to your A-M columns
-const VENUE_NAME_COLUMN_INDEX = 0;  // Column A: Venue Name
-const VENUE_PHOTO_COLUMN_INDEX = 12; // Column M: Photo URL
+const VENUE_NAME_COLUMN_INDEX = 0;  // Column A
+const VENUE_PHOTO_COLUMN_INDEX = 12; // Column M
+
+// 👇 THE FIX: A smart parser that ignores commas inside quotation marks
+function parseCSVRow(row: string) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < row.length; i++) {
+    const char = row[i];
+    if (char === '"') {
+      inQuotes = !inQuotes; // Toggle quote state
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim()); // Split only if we are NOT inside quotes
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
 
 async function getVenueMeta(slug: string) {
   try {
@@ -17,17 +37,17 @@ async function getVenueMeta(slug: string) {
     const text = await res.text();
     const rows = text.split('\n');
     
-    // Skip the header row (i = 1)
     for (let i = 1; i < rows.length; i++) {
-      // Split the CSV row by commas. 
-      // (Note: If your sheet has commas inside the venue names, let me know, we might need a slightly smarter CSV parser here).
-      const cols = rows[i].split(',');
-      const rawName = cols[VENUE_NAME_COLUMN_INDEX]?.replace(/^"|"$/g, '').trim(); 
+      if (!rows[i].trim()) continue; // Skip empty rows at the bottom of the sheet
       
-      if (createSlug(rawName) === slug) {
+      // Using our new smart parser instead of the naive .split(',')
+      const cols = parseCSVRow(rows[i]);
+      const rawName = cols[VENUE_NAME_COLUMN_INDEX]; 
+      
+      if (rawName && createSlug(rawName) === slug) {
         return {
           name: rawName,
-          photo: cols[VENUE_PHOTO_COLUMN_INDEX]?.replace(/^"|"$/g, '').trim() || '' 
+          photo: cols[VENUE_PHOTO_COLUMN_INDEX] || '' 
         };
       }
     }
