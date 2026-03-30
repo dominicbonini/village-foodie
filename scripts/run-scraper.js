@@ -505,12 +505,13 @@ for (const [index, site] of sitesToScrape.entries()) {
           3. **THE "TODAY" RULE:** Anchor "Today" to the Post Publish Date or current clock if on a checkout page.
           4. **DAYS OF THE WEEK:** Calculate next immediate date based on Current Date.
           5. **DateStart Format:** "DD/MM/YYYY". 
-          6. **VENUE NAME (COMPOSITE KEY):** Check if in ${JSON.stringify(validVenues)}. If NO, extract BUSINESS NAME AND TOWN (e.g., 'The Bull - Saffron Walden').
-          7. **ADDRESS IN NOTES:** Postcodes/addresses go into "Notes".
+          6. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
+          7. **VILLAGE:** If a town or village is mentioned, extract it explicitly into the "Village" field.
+          8. **NOTES:** Postcodes/addresses or extra event details go into the "Notes" field.
           
           RETURN JSON:
-          [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Notes": "..." }]
-          
+          [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
+         
           WEBSITE TEXT:
           ${cleanText.slice(0, 150000)} 
         `;
@@ -645,7 +646,8 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
               // 👇 FIX 3: Push cleanDate instead of event.DateStart
-              newRowsToAdd.push([cleanDate, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, "", `URL: ${site.url} | Strategy: ${site.strategy}`, notes]);
+              const finalVillage = (event.Village || "").trim();
+newRowsToAdd.push([cleanDate, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, finalVillage, `URL: ${site.url} | Strategy: ${site.strategy}`, notes]);
               existingEvents.add(key); 
               newCount++;
           } else { dupCount++; }
