@@ -2,13 +2,13 @@ import { Metadata } from 'next';
 import VenueClient from './VenueClient';
 import { createSlug } from '@/lib/utils';
 
-// 👇 FIX 1: Converted your link to the raw CSV export format
-const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/1yMVpKmnFRE-U3xHtJdA9OXJMC_cpIVMTQqE_D5nQdXw/pub?gid=1190852063&single=true&output=csv';
+// 👇 THE FIX: Your actual, working "Published to Web" CSV URL
+const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=1190852063&single=true&output=csv';
 
 const VENUE_NAME_COLUMN_INDEX = 0;  // Column A
 const VENUE_PHOTO_COLUMN_INDEX = 12; // Column M
 
-// A smart parser that ignores commas inside quotation marks
+// A smart parser that ignores commas inside quotation marks AND strips the quotes
 function parseCSVRow(row: string) {
   const result = [];
   let current = '';
@@ -16,29 +16,32 @@ function parseCSVRow(row: string) {
   
   for (let i = 0; i < row.length; i++) {
     const char = row[i];
-    if (char === '"') {
+    if (char === '"' && row[i+1] === '"') {
+        current += '"'; i++; // Handle escaped quotes
+    } else if (char === '"') {
       inQuotes = !inQuotes; // Toggle quote state
     } else if (char === ',' && !inQuotes) {
-      result.push(current.trim()); // Split only if we are NOT inside quotes
+      result.push(current.trim()); 
       current = '';
     } else {
       current += char;
     }
   }
   result.push(current.trim());
-  return result;
+  return result.map(c => c.replace(/^"|"$/g, '').trim()); // Strip wrapping quotes
 }
 
 async function getVenueMeta(slug: string) {
   try {
-    const res = await fetch(VENUES_CSV_URL, { next: { revalidate: 3600 } });
+    // Adding a timestamp to bust Next.js's aggressive cache
+    const res = await fetch(`${VENUES_CSV_URL}&t=${Date.now()}`, { cache: 'no-store' });
     if (!res.ok) return null;
     
     const text = await res.text();
-    const rows = text.split('\n');
+    const rows = text.split(/\r?\n/);
     
     for (let i = 1; i < rows.length; i++) {
-      if (!rows[i].trim()) continue; // Skip empty rows at the bottom of the sheet
+      if (!rows[i].trim()) continue;
       
       const cols = parseCSVRow(rows[i]);
       const rawName = cols[VENUE_NAME_COLUMN_INDEX]; 
@@ -73,11 +76,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       let photoUrl = venue.photo;
 
       if (photoUrl.includes('maps.googleapis.com')) {
-        // 👇 FIX 2: Shrink to 600px for WhatsApp speed, and route through proxy
+        // Shrink to 600px for WhatsApp speed, and route through our proxy
         photoUrl = photoUrl.replace('maxwidth=1200', 'maxwidth=600');
         finalImageUrl = `${baseUrl}/api/venue-image?url=${encodeURIComponent(photoUrl)}`;
         
-        // 👇 FIX 3: Force Vercel to cache it immediately
+        // Force Vercel to cache it immediately
         fetch(finalImageUrl).catch(() => {}); 
       } else if (photoUrl.startsWith('/')) {
         finalImageUrl = `${baseUrl}${photoUrl}`;
