@@ -68,17 +68,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   
     const baseUrl = 'https://villagefoodie.co.uk';
-    let imageUrl = venue.photo?.startsWith('/') ? `${baseUrl}${venue.photo}` : venue.photo;
-  
-    // 👇 THE FIX: Unmask the Google API Redirect for WhatsApp 👇
-    if (imageUrl && imageUrl.includes('maps.googleapis.com/maps/api/place/photo')) {
-      try {
-        // We ping the URL using 'HEAD' (which is faster than downloading the whole image)
-        const res = await fetch(imageUrl, { method: 'HEAD' });
-        // res.url contains the final, unmasked Google User Content URL!
-        imageUrl = res.url; 
-      } catch (error) {
-        console.error("Failed to unmask Google photo redirect:", error);
+    
+    // 👇 THE UPDATE: Route Google API links through our new caching proxy 👇
+    let finalImageUrl = '';
+    
+    if (venue.photo) {
+      if (venue.photo.includes('maps.googleapis.com')) {
+        // It's a Google API link -> encode it and send it to our proxy
+        finalImageUrl = `${baseUrl}/api/venue-image?url=${encodeURIComponent(venue.photo)}`;
+      } else if (venue.photo.startsWith('/')) {
+        // It's a local hosted image (like the trucks)
+        finalImageUrl = `${baseUrl}${venue.photo}`;
+      } else {
+        // It's a standard web URL
+        finalImageUrl = venue.photo;
       }
     }
   
@@ -90,7 +93,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
         url: `${baseUrl}/venues/${resolvedParams.slug}`,
         siteName: 'Village Foodie',
-        images: imageUrl ? [{ url: imageUrl, alt: `${venue.name} Photo` }] : [],
+        images: finalImageUrl ? [{ url: finalImageUrl, alt: `${venue.name} Photo` }] : [],
         locale: 'en_GB',
         type: 'website',
       },
@@ -98,7 +101,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         card: 'summary_large_image',
         title: `Street Food at ${venue.name}`,
         description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
-        images: imageUrl ? [imageUrl] : [],
+        images: finalImageUrl ? [finalImageUrl] : [],
       },
     };
   }
