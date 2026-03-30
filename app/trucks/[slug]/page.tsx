@@ -1,125 +1,76 @@
-'use client';
+import { Metadata } from 'next';
+import TruckClient from './TruckClient';
+import { createSlug } from '@/lib/utils';
 
-import { use, useMemo } from 'react';
-import Link from 'next/link';
-import Script from 'next/script'; // 👇 Added Script import
-import { usePostHog } from 'posthog-js/react'; // 👇 Added Posthog import
-import { useVillageData } from '@/hooks/useVillageData';
-import EventListCard from '@/components/EventListCard';
-import Footer from '@/components/Footer';
-import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
+// This is the URL of your Trucks tab from Google Sheets
+const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv';
 
-export default function TruckProfilePage({ params }: { params: Promise<{ slug: string }> }) {
-  const posthog = usePostHog();
-  const resolvedParams = use(params);
-  const slug = resolvedParams.slug;
-
-  const { loading, mapEvents } = useVillageData(null, {
-    date: 'all', 
-    cuisine: 'all',
-    distance: '1000' 
-  });
-
-  const { truckEvents, truckInfo } = useMemo(() => {
-    const filtered = mapEvents.filter(event => createSlug(event.truckName) === slug);
+// A tiny server-side function to grab the truck info before the page loads
+async function getTruckMeta(slug: string) {
+  try {
+    const res = await fetch(TRUCKS_CSV_URL, { next: { revalidate: 3600 } }); // Caches for 1 hour to keep it fast
+    if (!res.ok) return null;
     
-    const info = filtered.length > 0 ? {
-        name: filtered[0].truckName,
-        type: filtered[0].type,
-        logo: filtered[0].logoUrl
-    } : null;
-
-    const grouped = filtered.reduce((groups, event) => {
-      const date = event.date;
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(event);
-      return groups;
-    }, {} as Record<string, typeof mapEvents>);
-
-    return { truckEvents: grouped, truckInfo: info };
-  }, [mapEvents, slug]);
-
-  // 👇 Tally Popup Handler 👇
-  const openTallyPopup = () => {
-    if (posthog) {
-      posthog.capture('clicked_newsletter_subscribe', { source: 'truck_page', truck: truckInfo?.name });
+    const text = await res.text();
+    const rows = text.split('\n');
+    
+    // Loop through the CSV to find the matching truck slug
+    for (let i = 1; i < rows.length; i++) {
+      const cols = rows[i].split(',');
+      const rawName = cols[0]?.replace(/^"|"$/g, '').trim();
+      
+      if (createSlug(rawName) === slug) {
+        return {
+          name: rawName,
+          // Column J is Index 9
+          logo: cols[9]?.replace(/^"|"$/g, '').trim() || '' 
+        };
+      }
     }
-    if (typeof window !== 'undefined' && (window as any).Tally) {
-      (window as any).Tally.openPopup('81xAKx', { layout: 'modal', width: 400 });
-    } else {
-      window.open('https://tally.so/r/81xAKx', '_blank');
-    }
+  } catch (error) {
+    console.error("Failed to fetch truck metadata", error);
+    return null;
+  }
+  return null;
+}
+
+// 👇 This is the magic Next.js function that builds the WhatsApp/Social Media cards 👇
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const truck = await getTruckMeta(resolvedParams.slug);
+
+  if (!truck) {
+    return { title: 'Food Truck | Village Foodie' };
+  }
+
+  // Next.js needs an absolute URL for the image (e.g., https://villagefoodie...) 
+  // If your CSV logo paths start with '/', we add your domain. If they are already full URLs, we leave them alone.
+  const baseUrl = 'https://villagefoodie.co.uk';
+  const imageUrl = truck.logo.startsWith('/') ? `${baseUrl}${truck.logo}` : truck.logo;
+
+  return {
+    title: `${truck.name} | Village Foodie`,
+    description: `Check out where ${truck.name} is pitching up next! 🚚`,
+    openGraph: {
+      title: `${truck.name} Schedule`,
+      description: `Check out where ${truck.name} is pitching up next! 🚚`,
+      url: `${baseUrl}/trucks/${resolvedParams.slug}`,
+      siteName: 'Village Foodie',
+      images: imageUrl ? [{ url: imageUrl, alt: `${truck.name} Logo` }] : [],
+      locale: 'en_GB',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${truck.name} Schedule`,
+      description: `Check out where ${truck.name} is pitching up next! 🚚`,
+      images: imageUrl ? [imageUrl] : [],
+    },
   };
+}
 
-  return (
-    <main className="min-h-screen bg-slate-50 flex flex-col">
-      {/* 👇 Tally Script 👇 */}
-      <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
-
-      <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
-        <div className="max-w-2xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-sm font-bold flex items-center gap-2 hover:text-orange-400 transition-colors">
-            ← Back to Village Foodie
-          </Link>
-        </div>
-      </header>
-
-      <div className="flex-1 w-full max-w-2xl mx-auto p-4 pb-24">
-        {loading ? (
-          <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
-        ) : !truckInfo ? (
-          <div className="text-center p-12 bg-white rounded-xl border border-slate-200 shadow-sm mt-8">
-             <h2 className="text-xl font-bold text-slate-800">Truck not found 🚚</h2>
-             <p className="text-slate-500 mt-2">We couldn't find any upcoming events for this food truck.</p>
-             <Link href="/" className="inline-block mt-4 bg-orange-600 text-white px-6 py-2 rounded-lg font-bold">See all trucks</Link>
-          </div>
-        ) : (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8 mt-4 text-center">
-                {truckInfo.logo ? (
-                    <img src={truckInfo.logo} alt={truckInfo.name} className="w-24 h-24 object-contain mx-auto mb-4 rounded-full border border-slate-100 shadow-sm bg-white" />
-                ) : (
-                    <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-sm">🚚</div>
-                )}
-                <h1 className="text-3xl font-black text-slate-900">{truckInfo.name}</h1>
-                <p className="text-slate-500 font-medium uppercase tracking-widest text-sm mt-1">{truckInfo.type}</p>
-                <p className="text-slate-600 text-sm mt-4 max-w-md mx-auto">
-                   Check out the upcoming schedule below to see where {truckInfo.name} is pitching up next!
-                </p>
-            </div>
-
-            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1">Upcoming Tour Dates</h2>
-            
-            {Object.entries(truckEvents).map(([date, events]) => (
-                <div key={date} className="mb-6">
-                    <div className="pt-2 pb-3 ml-1">
-                        <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
-                           {formatFriendlyDate(date)}
-                        </h2>
-                    </div>
-                    <div className="space-y-3">
-                        {events.map(event => (
-                            <EventListCard key={event.id} event={event} distanceMiles={null} />
-                        ))}
-                    </div>
-                </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 👇 FLOATING SUBSCRIBE BUTTON 👇 */}
-      <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
-        <button 
-          onClick={openTallyPopup}
-          className="pointer-events-auto bg-slate-900 text-white font-bold py-3 px-6 rounded-full shadow-lg border border-slate-700 flex items-center gap-2 hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
-        >
-          <span>Get Weekly Schedule 🍕</span>
-        </button>
-      </div>
-
-      <Footer onOpenTally={openTallyPopup} />
-    </main>
-  );
+// Finally, we load the interactive Client page we just built
+export default async function TruckProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  return <TruckClient slug={resolvedParams.slug} />;
 }
