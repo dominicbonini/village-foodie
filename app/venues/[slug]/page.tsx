@@ -2,13 +2,13 @@ import { Metadata } from 'next';
 import VenueClient from './VenueClient';
 import { createSlug } from '@/lib/utils';
 
-// 👇 PASTE YOUR VENUES CSV URL HERE 👇
-const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/1yMVpKmnFRE-U3xHtJdA9OXJMC_cpIVMTQqE_D5nQdXw/edit?pli=1&gid=1190852063#gid=1190852063';
+// 👇 FIX 1: Converted your link to the raw CSV export format
+const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/1yMVpKmnFRE-U3xHtJdA9OXJMC_cpIVMTQqE_D5nQdXw/pub?gid=1190852063&single=true&output=csv';
 
 const VENUE_NAME_COLUMN_INDEX = 0;  // Column A
 const VENUE_PHOTO_COLUMN_INDEX = 12; // Column M
 
-// 👇 THE FIX: A smart parser that ignores commas inside quotation marks
+// A smart parser that ignores commas inside quotation marks
 function parseCSVRow(row: string) {
   const result = [];
   let current = '';
@@ -40,7 +40,6 @@ async function getVenueMeta(slug: string) {
     for (let i = 1; i < rows.length; i++) {
       if (!rows[i].trim()) continue; // Skip empty rows at the bottom of the sheet
       
-      // Using our new smart parser instead of the naive .split(',')
       const cols = parseCSVRow(rows[i]);
       const rawName = cols[VENUE_NAME_COLUMN_INDEX]; 
       
@@ -68,20 +67,22 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   
     const baseUrl = 'https://villagefoodie.co.uk';
-    
-    // 👇 THE UPDATE: Route Google API links through our new caching proxy 👇
     let finalImageUrl = '';
     
     if (venue.photo) {
-      if (venue.photo.includes('maps.googleapis.com')) {
-        // It's a Google API link -> encode it and send it to our proxy
-        finalImageUrl = `${baseUrl}/api/venue-image?url=${encodeURIComponent(venue.photo)}`;
-      } else if (venue.photo.startsWith('/')) {
-        // It's a local hosted image (like the trucks)
-        finalImageUrl = `${baseUrl}${venue.photo}`;
+      let photoUrl = venue.photo;
+
+      if (photoUrl.includes('maps.googleapis.com')) {
+        // 👇 FIX 2: Shrink to 600px for WhatsApp speed, and route through proxy
+        photoUrl = photoUrl.replace('maxwidth=1200', 'maxwidth=600');
+        finalImageUrl = `${baseUrl}/api/venue-image?url=${encodeURIComponent(photoUrl)}`;
+        
+        // 👇 FIX 3: Force Vercel to cache it immediately
+        fetch(finalImageUrl).catch(() => {}); 
+      } else if (photoUrl.startsWith('/')) {
+        finalImageUrl = `${baseUrl}${photoUrl}`;
       } else {
-        // It's a standard web URL
-        finalImageUrl = venue.photo;
+        finalImageUrl = photoUrl;
       }
     }
   
@@ -93,7 +94,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
         url: `${baseUrl}/venues/${resolvedParams.slug}`,
         siteName: 'Village Foodie',
-        images: finalImageUrl ? [{ url: finalImageUrl, alt: `${venue.name} Photo` }] : [],
+        images: finalImageUrl ? [{ url: finalImageUrl, width: 600, height: 400, alt: `${venue.name} Photo` }] : [],
         locale: 'en_GB',
         type: 'website',
       },
