@@ -379,9 +379,8 @@ const model = genAI.getGenerativeModel({
     generationConfig: { responseMimeType: "application/json", temperature: 0 } 
 });
 
-// 👇 FIX 1: Deprecated "new" flag changed to true
 const browser = await puppeteer.launch({
-  headless: true,
+  headless: true, // Fixed headless setting
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
 });
 
@@ -389,7 +388,7 @@ const newRowsToAdd = [];
 const newVenuesDetected = new Map();
 
 for (const [index, site] of sitesToScrape.entries()) {
-  let page; // Declare page outside to ensure it can be closed in the finally block
+  let page; // Initialized here to ensure it can be closed in the finally block
   
   try {
     console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
@@ -397,7 +396,6 @@ for (const [index, site] of sitesToScrape.entries()) {
     let cleanText = "";
     let isRuleExtraction = false; 
     
-    // 👇 FIX 2: Page initialized inside the try block
     page = await browser.newPage();
     await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
@@ -424,11 +422,11 @@ for (const [index, site] of sitesToScrape.entries()) {
         isRuleExtraction = true;
         if (cleanText.length < 50) {
             console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-            continue; // The finally block will handle page.close()
+            continue; 
         }
     } else if (cleanText.length < 50) {
         console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-        continue; // The finally block will handle page.close()
+        continue; 
     }
 
     let prompt = "";
@@ -458,8 +456,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           OUTPUT FORMAT EXAMPLES:
           [
             { "venue": "Wickhambrook MSC", "proof": "Manual Override", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "Great yeldham", "proof": "Monday Route", "rawTimeStart": "4.00", "rawTimeEnd": "6.00pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "Ridgewell", "proof": "Monday Route", "rawTimeStart": "6.20", "rawTimeEnd": "7.20pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null }
+            { "venue": "Great yeldham", "proof": "Monday Route", "rawTimeStart": "4.00", "rawTimeEnd": "6.00pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null }
           ]
         `;
     } 
@@ -491,6 +488,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           ]
         `;
       } else {
+        // 👇 UPDATED: Strict Village separation in the prompt 👇
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
@@ -511,7 +509,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
-         
+          
           WEBSITE TEXT:
           ${cleanText.slice(0, 150000)} 
         `;
@@ -535,7 +533,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                    for (const date of dates) {
                        finalEvents.push({
                            "DateStart": date, "TimeStart": tStart, "TimeEnd": tEnd,
-                           "Truck Name": site.name, "Venue Name": rule.venue || "Unknown Venue", "Notes": "" 
+                           "Truck Name": site.name, "Venue Name": rule.venue || "Unknown Venue", "Village": "", "Notes": "" 
                        });
                    }
                }
@@ -549,6 +547,7 @@ for (const [index, site] of sitesToScrape.entries()) {
         for (const event of finalEvents) {
           const truckName = (event["Truck Name"] || "").trim();
           const venueName = (event["Venue Name"] || "").trim();
+          const extractedVillage = (event["Village"] || "").trim();
           const eventNotes = (event["Notes"] || "").trim();
           
           if (!truckName || !event.DateStart) continue;
@@ -575,10 +574,11 @@ for (const [index, site] of sitesToScrape.entries()) {
               confirmedVenue = site.name;
           } else {
               const normVenue = normalizeName(venueName);
-              const eventTextToSearch = (venueName + " " + eventNotes).toLowerCase();
+              const eventTextToSearch = (venueName + " " + extractedVillage + " " + eventNotes).toLowerCase();
               const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
               const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
 
+              // 1. Postcode matching
               if (eventPostcode) {
                   const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
                   if (venuesAtPostcode.length > 0) {
@@ -593,6 +593,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                   }
               }
 
+              // 2. Fuzzy Matching
               if (!confirmedVenue) {
                   let fuzzyMatches = venueData.filter(v => {
                       if (!v[0]) return false; const normDbName = normalizeName(v[0]);
@@ -627,8 +628,25 @@ for (const [index, site] of sitesToScrape.entries()) {
                       if (verifiedMatches.length > 0) confirmedVenue = verifiedMatches[0].venue[0];
                   }
               }
-              if (confirmedVenue) finalVenue = confirmedVenue;
-              else { isNewVenue = true; newVenuesDetected.set(finalVenue, eventNotes); }
+              
+              if (confirmedVenue) {
+                  finalVenue = confirmedVenue;
+              } else { 
+                  // 👇 UPDATED: Strict New Venue handling
+                  isNewVenue = true; 
+                  
+                  if (finalVenue && extractedVillage) {
+                      const compositeKey = `${finalVenue}|${extractedVillage}`;
+                      
+                      if (!newVenuesDetected.has(compositeKey)) {
+                          newVenuesDetected.set(compositeKey, {
+                              name: finalVenue,
+                              village: extractedVillage,
+                              notes: eventNotes || ""
+                          });
+                      }
+                  }
+              }
           }
 
           let aiNotesArr = [];
@@ -645,9 +663,19 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
-              // 👇 FIX 3: Push cleanDate instead of event.DateStart
-              const finalVillage = (event.Village || "").trim();
-newRowsToAdd.push([cleanDate, event.TimeStart, event.TimeEnd, finalTruck, finalVenue, finalVillage, `URL: ${site.url} | Strategy: ${site.strategy}`, notes]);
+              
+              // 👇 UPDATED: Pushing the explicitly extracted village to Column F (Index 5)
+              newRowsToAdd.push([
+                  cleanDate, 
+                  event.TimeStart, 
+                  event.TimeEnd, 
+                  finalTruck, 
+                  finalVenue, 
+                  extractedVillage, 
+                  `URL: ${site.url} | Strategy: ${site.strategy}`, 
+                  notes
+              ]);
+              
               existingEvents.add(key); 
               newCount++;
           } else { dupCount++; }
@@ -658,7 +686,7 @@ newRowsToAdd.push([cleanDate, event.TimeStart, event.TimeEnd, finalTruck, finalV
   } catch (error) { 
     console.error(`❌ Error on ${site.name}:`, error.message); 
   } finally {
-    // 👇 FIX 2 (continued): Guarantee page closes even on failure
+    // Memory leak fix: Always close the page
     if (page) {
       await page.close().catch(e => console.error("Failed to close page:", e.message));
     }
@@ -675,16 +703,51 @@ if (newRowsToAdd.length > 0) {
   console.log("🎉 Database Sync Complete!");
 } else { console.log("\n💤 No new events found."); }
 
+// 👇 UPDATED: Intelligent Auto-Geocoder
 if (newVenuesDetected.size > 0) {
-  console.log(`\n🌍 Asking AI to locate ${newVenuesDetected.size} new venues...`);
-  const venueListForPrompt = Array.from(newVenuesDetected.entries()).map(([name, addressInfo]) => `Venue: "${name}", Address: "${addressInfo}"`).join(" | ");
-  const geoPrompt = `Return JSON array. Village, Postcode, Lat, Lng for: ${venueListForPrompt}`;
+  console.log(`\n🌍 Asking AI to locate and add ${newVenuesDetected.size} new venues...`);
+  
+  const venuesToProcess = Array.from(newVenuesDetected.values());
+  const venueListForPrompt = venuesToProcess.map(v => `Name: "${v.name}", Village: "${v.village}", Hints: "${v.notes}"`).join(" | ");
+  
+  const geoPrompt = `
+    You are a UK Geography data assistant. Find the Postcode, Latitude, and Longitude for these locations.
+    Only return a valid JSON array.
+    Locations: ${venueListForPrompt}
+    Format: [{ "name": "Exact Name Provided", "village": "Exact Village Provided", "postcode": "XX1 1XX", "lat": 52.123, "lng": 0.123 }]
+  `;
+  
   try {
     const geoResult = await generateContentWithRetry(model, geoPrompt);
-    const newVenueRows = geoResult.map(v => [v.name || "", v.village || "", v.postcode || "", v.lat || "", v.lng || "", "", "", "", "", "", "[⚠️ VERIFY GPS]"]);
-    await sheets.spreadsheets.values.append({ spreadsheetId: SPREADSHEET_ID, range: `${TABS.VENUES}!A:K`, valueInputOption: 'USER_ENTERED', resource: { values: newVenueRows }, });
-    console.log(`📍 Successfully added ${newVenueRows.length} locations!`);
-  } catch (error) { console.error("❌ Geocoder Failed:", error.message); }
+    
+    // Map the AI JSON to match your exact Google Sheet Columns (A to L)
+    const newVenueRows = geoResult.map(v => [
+      v.name || "",            // Col A: Venue Name
+      v.village || "",         // Col B: Village
+      v.postcode || "",        // Col C: Postcode
+      v.lat || "",             // Col D: Latitude
+      v.lng || "",             // Col E: Longitude
+      "",                      // Col F: Empty (Address)
+      "",                      // Col G: Empty (Phone)
+      "",                      // Col H: Empty (Email)
+      "",                      // Col I: Empty (Website)
+      "",                      // Col J: Empty (Facebook)
+      "",                      // Col K: Empty (Instagram)
+      "[⚠️ NEW FROM SCRAPER]"  // Col L: Photo/Notes Flag
+    ]);
+
+    if (newVenueRows.length > 0) {
+      await sheets.spreadsheets.values.append({ 
+          spreadsheetId: SPREADSHEET_ID, 
+          range: `${TABS.VENUES}!A:L`, 
+          valueInputOption: 'USER_ENTERED', 
+          resource: { values: newVenueRows }, 
+      });
+      console.log(`📍 Successfully added ${newVenueRows.length} new locations to the Venues tab!`);
+    }
+  } catch (error) { 
+      console.error("❌ Geocoder Failed:", error.message); 
+  }
 }
 }
 main();
