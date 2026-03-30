@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  // 1. Grab the requested URL from the search parameters
   const { searchParams } = new URL(request.url);
   const targetUrl = searchParams.get('url');
 
@@ -10,23 +9,22 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 2. Fetch the image directly from Google Maps API
-    // (This server-side fetch automatically follows the hidden 302 redirects)
-    const response = await fetch(targetUrl);
+    // 👇 THE FIX: We tell Google this request is coming from your authorized domain
+    const response = await fetch(targetUrl, {
+      headers: {
+        'Referer': 'https://villagefoodie.co.uk', 
+      }
+    });
 
     if (!response.ok) {
-      console.error('Failed to fetch from Google API:', response.statusText);
+      console.error('Google API blocked the request:', response.status);
       return new NextResponse('Failed to fetch image', { status: response.status });
     }
 
-    // 3. Convert the response into a raw image buffer
     const arrayBuffer = await response.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const contentType = response.headers.get('content-type') || 'image/jpeg';
 
-    // 4. THE MAGIC TRICK: Return the image with massive Cache-Control headers.
-    // This tells Vercel's Edge Network to save this image for a full year (31536000 seconds).
-    // Subsequent requests won't hit the route (or Google); Vercel just serves the saved file for free.
     return new NextResponse(buffer, {
       headers: {
         'Content-Type': contentType,
