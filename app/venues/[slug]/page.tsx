@@ -60,36 +60,48 @@ async function getVenueMeta(slug: string) {
 
 // Builds the WhatsApp / Social Media Preview Card
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const resolvedParams = await params;
-  const venue = await getVenueMeta(resolvedParams.slug);
-
-  if (!venue) {
-    return { title: 'Venue | Village Foodie' };
+    const resolvedParams = await params;
+    const venue = await getVenueMeta(resolvedParams.slug);
+  
+    if (!venue) {
+      return { title: 'Venue | Village Foodie' };
+    }
+  
+    const baseUrl = 'https://villagefoodie.co.uk';
+    let imageUrl = venue.photo?.startsWith('/') ? `${baseUrl}${venue.photo}` : venue.photo;
+  
+    // 👇 THE FIX: Unmask the Google API Redirect for WhatsApp 👇
+    if (imageUrl && imageUrl.includes('maps.googleapis.com/maps/api/place/photo')) {
+      try {
+        // We ping the URL using 'HEAD' (which is faster than downloading the whole image)
+        const res = await fetch(imageUrl, { method: 'HEAD' });
+        // res.url contains the final, unmasked Google User Content URL!
+        imageUrl = res.url; 
+      } catch (error) {
+        console.error("Failed to unmask Google photo redirect:", error);
+      }
+    }
+  
+    return {
+      title: `${venue.name} | Village Foodie`,
+      description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
+      openGraph: {
+        title: `Street Food at ${venue.name}`,
+        description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
+        url: `${baseUrl}/venues/${resolvedParams.slug}`,
+        siteName: 'Village Foodie',
+        images: imageUrl ? [{ url: imageUrl, alt: `${venue.name} Photo` }] : [],
+        locale: 'en_GB',
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `Street Food at ${venue.name}`,
+        description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
+        images: imageUrl ? [imageUrl] : [],
+      },
+    };
   }
-
-  const baseUrl = 'https://villagefoodie.co.uk';
-  const imageUrl = venue.photo.startsWith('/') ? `${baseUrl}${venue.photo}` : venue.photo;
-
-  return {
-    title: `${venue.name} | Village Foodie`,
-    description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
-    openGraph: {
-      title: `Street Food at ${venue.name}`,
-      description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
-      url: `${baseUrl}/venues/${resolvedParams.slug}`,
-      siteName: 'Village Foodie',
-      images: imageUrl ? [{ url: imageUrl, alt: `${venue.name} Photo` }] : [],
-      locale: 'en_GB',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `Street Food at ${venue.name}`,
-      description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
-      images: imageUrl ? [imageUrl] : [],
-    },
-  };
-}
 
 // Renders the interactive client page
 export default async function VenueProfilePage({ params }: { params: Promise<{ slug: string }> }) {
