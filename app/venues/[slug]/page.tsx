@@ -1,191 +1,78 @@
-'use client';
+import { Metadata } from 'next';
+import VenueClient from './VenueClient';
+import { createSlug } from '@/lib/utils';
 
-import { use, useMemo } from 'react';
-import Link from 'next/link';
-import Script from 'next/script'; 
-import { usePostHog } from 'posthog-js/react';
-import { useVillageData } from '@/hooks/useVillageData';
-import EventListCard from '@/components/EventListCard';
-import Footer from '@/components/Footer';
-import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
+// 👇 PASTE YOUR VENUES CSV URL HERE 👇
+const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/.../pub?output=csv';
 
-export default function VenueProfilePage({ params }: { params: Promise<{ slug: string }> }) {
-  const posthog = usePostHog();
-  const resolvedParams = use(params);
-  const slug = resolvedParams.slug;
+// We mapped these directly to your A-M columns
+const VENUE_NAME_COLUMN_INDEX = 0;  // Column A: Venue Name
+const VENUE_PHOTO_COLUMN_INDEX = 12; // Column M: Photo URL
 
-  const { loading, mapEvents } = useVillageData(null, {
-    date: 'all',
-    cuisine: 'all',
-    distance: '1000' 
-  });
-
-  const { venueEvents, venueInfo } = useMemo(() => {
-    const filtered = mapEvents.filter(event => createSlug(event.venueName) === slug);
+async function getVenueMeta(slug: string) {
+  try {
+    const res = await fetch(VENUES_CSV_URL, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
     
-    const info = filtered.length > 0 ? {
-        name: filtered[0].venueName,
-        village: filtered[0].village,
-        postcode: (filtered[0] as any).postcode || '',
-        phone: (filtered[0] as any).venuePhone || '',
-        photo: (filtered[0] as any).venuePhoto || '',     
-        website: (filtered[0] as any).venueWebsite || ''  
-    } : null;
-
-    const grouped = filtered.reduce((groups, event) => {
-      const date = event.date;
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(event);
-      return groups;
-    }, {} as Record<string, typeof mapEvents>);
-
-    return { venueEvents: grouped, venueInfo: info };
-  }, [mapEvents, slug]);
-
-  const handleShareVenue = async () => {
-    if (!venueInfo) return;
-    if (posthog) posthog.capture('clicked_share_venue_profile', { venue: venueInfo.name });
-
-    const shareUrl = window.location.href;
-    const shareText = `Check out the upcoming food truck schedule for ${venueInfo.name} in ${venueInfo.village}! 🍔🍻`;
+    const text = await res.text();
+    const rows = text.split('\n');
     
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: `${venueInfo.name} Food Trucks`, text: shareText, url: shareUrl });
-      } else {
-        await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-        alert('Venue link copied to clipboard! 📋');
+    // Skip the header row (i = 1)
+    for (let i = 1; i < rows.length; i++) {
+      // Split the CSV row by commas. 
+      // (Note: If your sheet has commas inside the venue names, let me know, we might need a slightly smarter CSV parser here).
+      const cols = rows[i].split(',');
+      const rawName = cols[VENUE_NAME_COLUMN_INDEX]?.replace(/^"|"$/g, '').trim(); 
+      
+      if (createSlug(rawName) === slug) {
+        return {
+          name: rawName,
+          photo: cols[VENUE_PHOTO_COLUMN_INDEX]?.replace(/^"|"$/g, '').trim() || '' 
+        };
       }
-    } catch (err: any) {
-      if (err.name !== 'AbortError') console.error('Share failed:', err);
     }
+  } catch (error) {
+    console.error("Failed to fetch venue metadata", error);
+    return null;
+  }
+  return null;
+}
+
+// Builds the WhatsApp / Social Media Preview Card
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const venue = await getVenueMeta(resolvedParams.slug);
+
+  if (!venue) {
+    return { title: 'Venue | Village Foodie' };
+  }
+
+  const baseUrl = 'https://villagefoodie.co.uk';
+  const imageUrl = venue.photo.startsWith('/') ? `${baseUrl}${venue.photo}` : venue.photo;
+
+  return {
+    title: `${venue.name} | Village Foodie`,
+    description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
+    openGraph: {
+      title: `Street Food at ${venue.name}`,
+      description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
+      url: `${baseUrl}/venues/${resolvedParams.slug}`,
+      siteName: 'Village Foodie',
+      images: imageUrl ? [{ url: imageUrl, alt: `${venue.name} Photo` }] : [],
+      locale: 'en_GB',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Street Food at ${venue.name}`,
+      description: `Check out the upcoming street food schedule at ${venue.name}! 🍻`,
+      images: imageUrl ? [imageUrl] : [],
+    },
   };
+}
 
-  const openTallyPopup = () => {
-    if (posthog) posthog.capture('clicked_newsletter_subscribe', { source: 'venue_page', venue: venueInfo?.name });
-    if (typeof window !== 'undefined' && (window as any).Tally) {
-      (window as any).Tally.openPopup('81xAKx', { layout: 'modal', width: 400 });
-    } else {
-      window.open('https://tally.so/r/81xAKx', '_blank');
-    }
-  };
-
-  const queryParts = venueInfo ? [venueInfo.name, venueInfo.village, venueInfo.postcode].filter(Boolean) : [];
-  const addressQuery = encodeURIComponent(queryParts.join(', '));
-  const isApple = typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent);
-  const mapLink = isApple
-    ? `https://maps.apple.com/?daddr=${addressQuery}&dirflg=d` 
-    : `https://www.google.com/maps/dir/?api=1&destination=${addressQuery}`;
-  
-  const cleanPhone = venueInfo?.phone ? venueInfo.phone.replace(/[^\d+]/g, '') : '';
-  const cleanWebsite = venueInfo?.website ? (venueInfo.website.startsWith('http') ? venueInfo.website : `https://${venueInfo.website}`) : '';
-
-  return (
-    <main className="min-h-screen bg-slate-50 flex flex-col">
-      <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
-
-      <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
-        <div className="max-w-2xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-sm font-bold flex items-center gap-2 hover:text-orange-400 transition-colors">
-            ← Back to Village Foodie
-          </Link>
-        </div>
-      </header>
-
-      <div className="flex-1 w-full max-w-2xl mx-auto p-4 pb-24">
-        {loading ? (
-          <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
-        ) : !venueInfo ? (
-          <div className="text-center p-12 bg-white rounded-xl border border-slate-200 shadow-sm mt-8">
-             <h2 className="text-xl font-bold text-slate-800">Venue not found 📍</h2>
-             <p className="text-slate-500 mt-2">We couldn't find any upcoming food trucks for this location.</p>
-             <Link href="/" className="inline-block mt-4 bg-orange-600 text-white px-6 py-2 rounded-lg font-bold">See all venues</Link>
-          </div>
-        ) : (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
-            {/* 👇 THE NEW CENTERED HERO BANNER 👇 */}
-            <div className="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-5 shadow-sm border border-slate-200 mt-2 bg-slate-900">
-                {venueInfo.photo ? (
-                    <img 
-                        src={venueInfo.photo} 
-                        alt={venueInfo.name} 
-                        className="w-full h-full object-cover opacity-80"
-                    />
-                ) : (
-                    <div className="w-full h-full bg-slate-800 flex items-center justify-center opacity-50">
-                        <span className="text-6xl">🍻</span>
-                    </div>
-                )}
-                
-                {/* Cinematic Dark Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
-                
-                {/* Text locked to the center-bottom */}
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-8 w-full text-center px-4">
-                    <h1 className="text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-lg">
-                        {venueInfo.name}
-                    </h1>
-                    <a 
-                        href={mapLink} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="inline-flex items-center justify-center gap-1.5 text-slate-200 hover:text-orange-400 font-medium text-sm transition-colors mt-1 group drop-shadow-md"
-                    >
-                        <span className="group-hover:scale-110 transition-transform">📍</span>
-                        <span className="group-hover:underline underline-offset-2">
-                            {venueInfo.village} {venueInfo.postcode && `• ${venueInfo.postcode.toUpperCase()}`}
-                        </span>
-                    </a>
-                </div>
-            </div>
-
-{/* 👇 THE UNIFORM TOOLBAR ROW (WITH BRAND HOVER) 👇 */}
-<div className="flex w-full gap-2 md:gap-3 mb-8">
-                {cleanPhone && (
-                    <a href={`tel:${cleanPhone}`} onClick={() => {if(posthog)posthog.capture('clicked_call_venue', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
-                        📞 Call
-                    </a>
-                )}
-                
-                {cleanWebsite && (
-                    <a href={cleanWebsite} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog)posthog.capture('clicked_venue_website', {venue: venueInfo.name})}} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
-                        🌐 Website
-                    </a>
-                )}
-
-                <button onClick={handleShareVenue} className="flex-1 flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-[13px] md:text-sm font-bold py-2.5 px-2 rounded-xl transition-all shadow-sm">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                    Share
-                </button>
-            </div>
-
-            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1">Upcoming Food Trucks</h2>
-            
-            {Object.entries(venueEvents).map(([date, events]) => (
-                <div key={date} className="mb-6">
-                    <div className="pt-2 pb-3 ml-1">
-                        <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">{formatFriendlyDate(date)}</h2>
-                    </div>
-                    <div className="space-y-3">
-                        {events.map(event => <EventListCard key={event.id} event={event} distanceMiles={null} isVenuePage={true} />)}
-                    </div>
-                </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
-        <button 
-          onClick={openTallyPopup}
-          className="pointer-events-auto bg-slate-900 text-white font-bold py-3 px-6 rounded-full shadow-lg border border-slate-700 flex items-center gap-2 hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95"
-        >
-          <span>Get Weekly Schedule 🍕</span>
-        </button>
-      </div>
-
-      <Footer onOpenTally={openTallyPopup} />
-    </main>
-  );
+// Renders the interactive client page
+export default async function VenueProfilePage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  return <VenueClient slug={resolvedParams.slug} />;
 }
