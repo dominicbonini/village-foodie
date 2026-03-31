@@ -221,11 +221,16 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0 min-w-0 pr-2">
                     
-                    {/* 👇 THIS IS THE UPDATED INTERNAL LINK 👇 */}
-                    <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                    <Link href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`} className="group flex items-center gap-1.5 min-w-0 cursor-pointer" title={`View venue details for ${event.venueName}`}>                            {event.truckName}
-                        </Link>
-                    </h3>
+{/* 👇 THIS IS THE UPDATED INTERNAL LINK 👇 */}
+<h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
+    <Link 
+        href={`/trucks/${createSlug(event.truckName)}`} 
+        className="group flex items-center gap-1.5 min-w-0 cursor-pointer" 
+        title={`View details for ${event.truckName}`}
+    >                            
+        {event.truckName}
+    </Link>
+</h3>
                     
                     {!isVenuePage && (
                         <div className="mt-0.5 flex items-center min-w-0">
