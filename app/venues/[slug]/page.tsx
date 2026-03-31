@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import VenueClient from './VenueClient';
-import { createSlug } from '@/lib/utils';
+import { createSlug, getVenueSlug } from '@/lib/utils';
 
 // 👇 THE FIX: Your actual, working "Published to Web" CSV URL
 const VENUES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=1190852063&single=true&output=csv';
@@ -44,12 +44,14 @@ async function getVenueMeta(slug: string) {
       if (!rows[i].trim()) continue;
       
       const cols = parseCSVRow(rows[i]);
-      const rawName = cols[VENUE_NAME_COLUMN_INDEX]; 
+      const rawName = cols[0];  // Column A: Venue Name
+      const rawVillage = cols[1]; // Column B: Village
       
-      if (rawName && createSlug(rawName) === slug) {
+      // 👇 Update this if statement 👇
+      if (rawName && getVenueSlug(rawName, rawVillage) === slug) {
         return {
           name: rawName,
-          photo: cols[VENUE_PHOTO_COLUMN_INDEX] || '' 
+          photo: cols[12] || '' 
         };
       }
     }

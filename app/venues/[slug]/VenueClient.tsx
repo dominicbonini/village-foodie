@@ -7,7 +7,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
-import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
+import { formatFriendlyDate, createSlug, getVenueSlug } from '@/lib/utils'; 
 
 export default function VenueClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
@@ -19,7 +19,7 @@ export default function VenueClient({ slug }: { slug: string }) {
   });
 
   const { venueEvents, venueInfo } = useMemo(() => {
-    const filtered = mapEvents.filter(event => createSlug(event.venueName) === slug);
+    const filtered = mapEvents.filter(event => getVenueSlug(event.venueName, event.village || '') === slug);
     
     const info = filtered.length > 0 ? {
         name: filtered[0].venueName,

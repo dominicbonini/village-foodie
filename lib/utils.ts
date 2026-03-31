@@ -102,6 +102,7 @@ export function getCuisineEmoji(type: string): string {
   if (t.includes('crepe') || t.includes('pancake')) return '🥞';
   return '🍴'; // Default cutlery
 }
+
 // ==========================================
 // --- CALENDAR LOGIC ---
 // ==========================================
@@ -167,15 +168,35 @@ export function downloadICS(event: VillageEvent) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}// ==========================================
+} // 👇 THE FIX: THIS BRACKET WAS MISSING 👇
+
+// ==========================================
 // --- URL GENERATION HELPERS ---
 // ==========================================
+
 export function createSlug(str: string): string {
   if (!str) return '';
   return str.toLowerCase()
-      .replace(/^the\s+/, '')       
+      // "the" stripping logic removed so it stays in the URL
       .replace(/&/g, 'and')         
       .replace(/['’]/g, '')         
-      .replace(/[^a-z0-9]/g, '')    
-      .trim();
+      .replace(/[^a-z0-9\s-]/g, '') // Keep spaces and existing hyphens
+      .trim()
+      .replace(/\s+/g, '-')         // Turn spaces into hyphens
+      .replace(/-+/g, '-');         // Prevent double hyphens
+}
+
+// NEW: Smart Venue Combiner
+export function getVenueSlug(venueName: string, village: string): string {
+    if (!venueName) return '';
+    const nameSlug = createSlug(venueName);
+    const villageSlug = createSlug(village || '');
+    
+    // If village is missing, or the venue name already includes the village, just return the name
+    if (!villageSlug || nameSlug.includes(villageSlug)) {
+        return nameSlug;
+    }
+    
+    // Otherwise, combine them cleanly
+    return `${nameSlug}-${villageSlug}`;
 }

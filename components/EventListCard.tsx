@@ -7,7 +7,8 @@ import {
     getOutlookLink, 
     downloadICS,
     formatFriendlyDate,
-    createSlug 
+    createSlug,
+    getVenueSlug // 👈 Add this
   } from '@/lib/utils';
 
 interface EventListCardProps {
@@ -222,8 +223,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                     
                     {/* 👇 THIS IS THE UPDATED INTERNAL LINK 👇 */}
                     <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        <Link href={`/trucks/${createSlug(event.truckName)}`} className="hover:text-orange-700 hover:underline transition-colors" title={`View profile for ${event.truckName}`}>
-                            {event.truckName}
+                    <Link href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`} className="group flex items-center gap-1.5 min-w-0 cursor-pointer" title={`View venue details for ${event.venueName}`}>                            {event.truckName}
                         </Link>
                     </h3>
                     
