@@ -124,7 +124,7 @@ export default function TruckClient({ slug }: { slug: string }) {
           )}
 
           <button onClick={handleProfileShare} className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0 z-10" title="Share Profile">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
           </button>
         </div>
       </header>
@@ -133,31 +133,16 @@ export default function TruckClient({ slug }: { slug: string }) {
       {truckInfo && (
         <div className="bg-white px-4 pt-8 pb-6 border-b border-slate-200 flex flex-col items-center text-center shadow-sm relative z-0">
             
-            {/* 👇 NEW: "OWN THIS TRUCK?" BADGE (TOP LEFT) 👇 */}
-            <div className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+            {/* 👇 UPDATED: "OWN THIS TRUCK?" BADGE (MOVED TO TOP RIGHT) 👇 */}
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
                 <Link 
                     href={`/contact?topic=ClaimTruck&truck=${encodeURIComponent(truckInfo.name)}`}
                     className="flex items-center gap-1.5 bg-slate-50 hover:bg-orange-50 border border-slate-200 hover:border-orange-200 text-slate-500 hover:text-orange-600 text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all shadow-sm"
                     title="Own this truck? Click to update your profile"
                 >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                    <span className="hidden sm:inline">Own this truck?</span>
-                    <span className="sm:hidden">Claim</span>
+                    Own this truck?
                 </Link>
-            </div>
-
-            {/* THE SHARE BUTTON (TOP RIGHT) */}
-            <div className="absolute top-4 right-4 md:top-6 md:right-6">
-                <button 
-                    onClick={handleProfileShare} 
-                    className="flex items-center justify-center p-2.5 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 hover:text-orange-600 text-slate-700 rounded-full transition-all shadow-sm group"
-                    aria-label="Share Truck Profile"
-                    title="Share Profile"
-                >
-                    <svg className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                </button>
             </div>
 
             {truckInfo.logo ? (
