@@ -16,18 +16,17 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://villagefoodie.co.uk"),
   title: {
-    default: "Village Foodie 🍔",
+    default: "Village Foodie", 
     template: "%s | Village Foodie",
   },
   description: "Find local food trucks and pop-ups visiting villages near you.",
   openGraph: {
-    title: "Village Foodie 🍔",
+    title: "Village Foodie",
     description: "Find local food trucks and pop-ups visiting villages near you.",
     url: "https://villagefoodie.co.uk", 
     siteName: "Village Foodie",
     images: [
       {
-        // 👇 Using the instant-fix high-quality Unsplash image
         url: "https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=630&q=80", 
         width: 1200,
         height: 630,
@@ -39,9 +38,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image", 
-    title: "Village Foodie 🍔",
+    title: "Village Foodie",
     description: "Find local food trucks and pop-ups visiting villages near you.",
-    // 👇 Matching the Twitter image to the Open Graph image
     images: ["https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=630&q=80"], 
   },
   icons: {

@@ -219,12 +219,12 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0 min-w-0 pr-2">
+                    
+                    {/* 👇 THIS IS THE UPDATED INTERNAL LINK 👇 */}
                     <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        {event.websiteUrl ? (
-                            <a href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`} target="_blank" rel="noopener noreferrer" className="hover:text-orange-700 hover:underline transition-colors">
-                                {event.truckName}
-                            </a>
-                        ) : event.truckName}
+                        <Link href={`/trucks/${createSlug(event.truckName)}`} className="hover:text-orange-700 hover:underline transition-colors" title={`View profile for ${event.truckName}`}>
+                            {event.truckName}
+                        </Link>
                     </h3>
                     
                     {!isVenuePage && (

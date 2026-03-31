@@ -43,11 +43,9 @@ export default function VenueClient({ slug }: { slug: string }) {
   const queryParts = venueInfo ? [venueInfo.name, venueInfo.village, venueInfo.postcode].filter(Boolean) : [];
   const addressQuery = encodeURIComponent(queryParts.join(', '));
   
-  // Start with a standard Google Maps link to prevent hydration mismatch
   const [mapLink, setMapLink] = useState(`https://maps.google.com/?q=${addressQuery}`);
 
   useEffect(() => {
-    // Switch to Apple Maps only on the client if it's an iOS/Mac device
     if (typeof navigator !== 'undefined' && /iPhone|iPad|Macintosh|Mac OS X/i.test(navigator.userAgent)) {
       setMapLink(`https://maps.apple.com/?daddr=${addressQuery}&dirflg=d`);
     }
@@ -88,11 +86,20 @@ export default function VenueClient({ slug }: { slug: string }) {
     <main className="min-h-screen bg-slate-50 flex flex-col">
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
-      <header className="bg-slate-900 text-white py-4 px-4 sticky top-0 z-50 shadow-md">
-        <div className="max-w-2xl mx-auto flex justify-between items-center">
+      <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md min-h-[56px] flex items-center">
+        <div className="max-w-2xl mx-auto flex justify-between items-center w-full">
           <Link href="/" className="text-sm font-bold flex items-center gap-2 hover:text-orange-400 transition-colors">
             ← Back to Village Foodie
           </Link>
+          <button 
+            onClick={handleShareVenue} 
+            className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0" 
+            title="Share Venue"
+          >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+          </button>
         </div>
       </header>
 
@@ -111,8 +118,7 @@ export default function VenueClient({ slug }: { slug: string }) {
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-            <div className="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-5 shadow-sm border border-slate-200 mt-2 bg-slate-900">
-                {/* REVERTED BACK TO STANDARD IMG TAG HERE 👇 */}
+            <div className="relative w-full h-56 md:h-72 rounded-2xl overflow-hidden mb-5 shadow-sm border border-slate-200 mt-2 bg-slate-900 group">
                 {venueInfo.photo ? (
                     <img 
                         src={venueInfo.photo} 
@@ -125,17 +131,27 @@ export default function VenueClient({ slug }: { slug: string }) {
                     </div>
                 )}
                 
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent pointer-events-none" />
+
+                {/* 👇 NEW: THE "OWN THIS VENUE" GLASS BADGE 👇 */}
+                <Link 
+                    href={`/contact?topic=ClaimVenue&venue=${encodeURIComponent(venueInfo.name)}`}
+                    className="absolute top-3 right-3 bg-black/40 backdrop-blur-md text-white/80 hover:text-white hover:bg-black/60 border border-white/10 text-[10px] font-medium px-2.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 z-10 shadow-sm"
+                    title="Own this venue? Click to update your profile"
+                >
+                    <svg className="w-3 h-3 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    Own this venue?
+                </Link>
                 
-                <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-8 w-full text-center px-4">
-                    <h1 className="text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-lg">
+                <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 md:pb-8 w-full text-center px-4 pointer-events-none">
+                    <h1 className="text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-lg pointer-events-auto">
                         {venueInfo.name}
                     </h1>
                     <a 
                         href={mapLink} 
                         target="_blank" 
                         rel="noopener noreferrer" 
-                        className="inline-flex items-center justify-center gap-1.5 text-slate-200 hover:text-orange-400 font-medium text-sm transition-colors mt-1 group drop-shadow-md"
+                        className="inline-flex items-center justify-center gap-1.5 text-slate-200 hover:text-orange-400 font-medium text-sm transition-colors mt-1 group drop-shadow-md pointer-events-auto"
                     >
                         <span className="group-hover:scale-110 transition-transform">📍</span>
                         <span className="group-hover:underline underline-offset-2">

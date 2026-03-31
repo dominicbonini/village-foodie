@@ -14,6 +14,7 @@ const STRATEGIES = {
   'click_next':    performButtonHunt,    
   'frames':        performFrameDump,     
   'manual':        performManualMode,
+  'manual_single': performManualMode, // 👇 ADD THIS LINE
   'scrape_rules':  performExpandAndScrape, 
   'default':       performModernScroll   
 };
@@ -414,20 +415,24 @@ for (const [index, site] of sitesToScrape.entries()) {
     }
 
     if (site.strategy === 'manual' && site.instructions.length > 10) {
-        console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
-        isRuleExtraction = true;
-        cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
-    } else if (site.strategy === 'scrape_rules') {
-        console.log("   🕸️ Scrape Rules Mode: Extracting recurring schedule from website text...");
-        isRuleExtraction = true;
-        if (cleanText.length < 50) {
-            console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-            continue; 
-        }
-    } else if (cleanText.length < 50) {
-        console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-        continue; 
-    }
+      console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
+      isRuleExtraction = true;
+      cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
+  } else if (site.strategy === 'manual_single' && site.instructions.length > 10) {
+      console.log("   📅 Manual Single Mode: Parsing one-off exact dates...");
+      isRuleExtraction = false; 
+      cleanText = `SYSTEM OVERRIDE: Extract ONE-OFF events from this text. Do NOT treat these as recurring rules. TRUCK NAME: "${site.name}". TEXT: ${site.instructions}`;
+  } else if (site.strategy === 'scrape_rules') {
+      console.log("   🕸️ Scrape Rules Mode: Extracting recurring schedule from website text...");
+      isRuleExtraction = true;
+      if (cleanText.length < 50) {
+          console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
+          continue; 
+      }
+  } else if (cleanText.length < 50) {
+      console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
+      continue; 
+  }
 
     let prompt = "";
     
@@ -506,6 +511,8 @@ for (const [index, site] of sitesToScrape.entries()) {
           6. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
           7. **VILLAGE:** If a town or village is mentioned, extract it explicitly into the "Village" field.
           8. **NOTES:** Postcodes/addresses or extra event details go into the "Notes" field.
+          9. **DOUBLE DAYS:** If a single day lists multiple locations (e.g., "Lunch at X, then Dinner at Y"), you MUST create a completely separate JSON object for each location.
+          10. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
@@ -649,11 +656,11 @@ for (const [index, site] of sitesToScrape.entries()) {
               }
           }
 
+          // 👇 FIX: Separate internal AI flags from public Event Notes
           let aiNotesArr = [];
           if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
           if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
-          if (eventNotes) aiNotesArr.push(eventNotes);
-          let notes = aiNotesArr.join(" ");
+          let aiNotes = aiNotesArr.join(" ");
 
           const cleanDate = standardizeDate(event.DateStart);
           const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -664,16 +671,17 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
               
-              // 👇 UPDATED: Pushing the explicitly extracted village to Column F (Index 5)
+              // 👇 FIX: 9 columns pushed exactly in order to match A to I layout
               newRowsToAdd.push([
-                  cleanDate, 
-                  event.TimeStart, 
-                  event.TimeEnd, 
-                  finalTruck, 
-                  finalVenue, 
-                  extractedVillage, 
-                  `URL: ${site.url} | Strategy: ${site.strategy}`, 
-                  notes
+                  cleanDate,                                        // Col A: Date
+                  event.TimeStart,                                  // Col B: StartTime
+                  event.TimeEnd,                                    // Col C: TimeEnd
+                  finalTruck,                                       // Col D: Truck Name
+                  finalVenue,                                       // Col E: Venue Name
+                  extractedVillage,                                 // Col F: Village
+                  eventNotes,                                       // Col G: Event Notes
+                  `URL: ${site.url} | Strategy: ${site.strategy}`,  // Col H: Event Source
+                  aiNotes                                           // Col I: AI Notes
               ]);
               
               existingEvents.add(key); 
@@ -698,7 +706,8 @@ await browser.close();
 if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
-    spreadsheetId: SPREADSHEET_ID, range: `${TABS.EVENTS}!A:H`, valueInputOption: 'USER_ENTERED', resource: { values: newRowsToAdd },
+    // 👇 FIX: Appending to range A:I so it correctly captures all 9 columns
+    spreadsheetId: SPREADSHEET_ID, range: `${TABS.EVENTS}!A:I`, valueInputOption: 'USER_ENTERED', resource: { values: newRowsToAdd },
   });
   console.log("🎉 Database Sync Complete!");
 } else { console.log("\n💤 No new events found."); }

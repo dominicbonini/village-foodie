@@ -5,9 +5,26 @@ import { createSlug, getGoogleLink, getOutlookLink, downloadICS } from '@/lib/ut
 import { VillageEvent } from '@/types';
 import { usePostHog } from 'posthog-js/react';
 
+// 👇 SMART ICON HELPER FUNCTION 👇
+// Analyzes the venue name to return a contextual emoji
+function getVenueFallbackIcon(venueName: string) {
+    if (!venueName) return '📍';
+    const lowerName = venueName.toLowerCase();
+    
+    // Pubs, Inns, Breweries, and common pub names
+    if (lowerName.match(/pub|inn|tavern|brewery|arms|bell|plough|horse|swan|lion|oak/)) return '🍻';
+    // Community buildings
+    if (lowerName.match(/hall|centre|center|school|church|club/)) return '🏛️';
+    // Outdoors
+    if (lowerName.match(/park|green|recreation|field|meadow|sports/)) return '🌳';
+    // Rural
+    if (lowerName.match(/farm|barn/)) return '🚜';
+    
+    return '📍'; // Beautiful fallback for everything else
+}
+
 export default function TruckListCard({ event }: { event: VillageEvent }) {
   const posthog = usePostHog();
-  // venueSlug is no longer needed since we aren't linking to the venue, but kept for future proofing if needed.
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
   
   // SHARE HANDLER
@@ -52,7 +69,6 @@ export default function TruckListCard({ event }: { event: VillageEvent }) {
   }
 
   return (
-    // Changed from <Link> to a static <div>. Removed cursor-pointer and hover effects that imply it's a link.
     <div className="block bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm relative">
       <div className="flex p-3 gap-3 items-start">
         
@@ -65,8 +81,11 @@ export default function TruckListCard({ event }: { event: VillageEvent }) {
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-3xl text-slate-400 absolute inset-0">
-                📍
+            // 👇 PREMIUM FALLBACK UI (ICON ONLY) 👇
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                <div className="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center text-3xl">
+                    {getVenueFallbackIcon(event.venueName)}
+                </div>
             </div>
           )}
         </div>
@@ -94,7 +113,7 @@ export default function TruckListCard({ event }: { event: VillageEvent }) {
             {/* Bottom Right: Buttons pushed perfectly to the bottom */}
             <div className="mt-auto pt-2 flex justify-end gap-1.5 w-full">
                 
-                {/* Add to Cal Pill - WITH ORANGE HOVER STATES */}
+                {/* Add to Cal Pill */}
                 <div className="relative group shrink-0">
                     <button className="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 group-hover:bg-orange-50 group-hover:border-orange-200 text-slate-700 group-hover:text-orange-600 text-[10px] font-bold py-1.5 px-2.5 rounded-md shadow-sm transition-all">
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
@@ -108,7 +127,7 @@ export default function TruckListCard({ event }: { event: VillageEvent }) {
                     </select>
                 </div>
 
-                {/* Share Pill - WITH ORANGE HOVER STATES */}
+                {/* Share Pill */}
                 <button onClick={handleShare} className="shrink-0 flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-1.5 px-2.5 rounded-md shadow-sm transition-all">
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                     Share
