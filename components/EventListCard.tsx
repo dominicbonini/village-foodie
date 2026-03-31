@@ -236,19 +236,20 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                         <div className="mt-0.5 flex items-center min-w-0">
                             {!isMapPopup ? (
                                 <Link 
-                                    href={`/venues/${createSlug(event.venueName)}`}
-                                    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
-                                    title={`View venue details for ${event.venueName}`}
-                                >
-                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
-                                        {venueDisplay}
-                                    </span>
-                                    {venueStats && venueStats.uniqueTrucks > 1 && (
-                                        <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
-                                            {venueStats.uniqueTrucks} trucks
-                                        </span>
-                                    )}
-                                </Link>
+    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
+    title={`View venue details for ${event.venueName}`}
+>
+    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
+        {venueDisplay}
+    </span>
+{/* 👇 Changed back to > 1 so "1 truck" never shows 👇 */}
+{venueStats && venueStats.uniqueTrucks > 1 && (
+    <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
+        {venueStats.uniqueTrucks} trucks
+    </span>
+)}
+</Link>
                             ) : (
                                 <span className="text-slate-600 text-xs font-medium leading-tight truncate">
                                     {venueDisplay}

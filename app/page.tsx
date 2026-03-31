@@ -13,7 +13,8 @@ import {
   getDistanceKm, 
   getCoordsFromPostcode, 
   formatFriendlyDate,
-  createSlug 
+  createSlug,
+  getVenueSlug // 👈 Just add this right here!
 } from '@/lib/utils';
 
 // --- DYNAMIC MAP IMPORT ---
@@ -63,10 +64,12 @@ function VillageFoodieContent() {
     if (urlDistance) setFilters(prev => ({ ...prev, distance: urlDistance }));
   }, [searchParams]);
 
-  // --- EFFECT: SCROLL TO TRUCK AFTER DATA LOADS ---
-  useEffect(() => {
-    if (!loading && typeof window !== 'undefined' && window.location.hash) {
-      setTimeout(() => {
+// --- EFFECT: SCROLL TO TRUCK OR RESTORE POSITION AFTER DATA LOADS ---
+useEffect(() => {
+  if (!loading && typeof window !== 'undefined') {
+    setTimeout(() => {
+      if (window.location.hash) {
+        // 1. Existing logic: If someone clicked a specific truck link, scroll to it
         const id = window.location.hash.substring(1);
         const element = document.getElementById(id);
         
@@ -81,10 +84,39 @@ function VillageFoodieContent() {
             behavior: 'auto'
           });
         }
-      }, 100);
-    }
-  }, [loading, groupedEvents]);
+      } else {
+        // 2. NEW logic: If returning via back button, restore exact scroll position
+        const savedScroll = sessionStorage.getItem('home_scroll_pos');
+        if (savedScroll) {
+          window.scrollTo({
+            top: parseInt(savedScroll, 10),
+            behavior: 'instant' // 'instant' prevents a jarring scrolling animation
+          });
+        }
+      }
+    }, 100); // 100ms timeout ensures React has fully painted the DOM
+  }
+}, [loading, groupedEvents]);
 
+// --- EFFECT: TRACK & SAVE SCROLL POSITION ---
+useEffect(() => {
+  if (typeof window === 'undefined') return;
+
+  let scrollTimeout: NodeJS.Timeout;
+  const handleScroll = () => {
+    // Throttle to every 100ms so we don't destroy browser performance while scrolling
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      sessionStorage.setItem('home_scroll_pos', window.scrollY.toString());
+    }, 100); 
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  return () => {
+    window.removeEventListener('scroll', handleScroll);
+    if (scrollTimeout) clearTimeout(scrollTimeout);
+  };
+}, []);
   // --- HANDLERS ---
   const handlePostcodeSearch = async (code: string, showAlert = true) => {
     if (!code) return;
@@ -332,13 +364,13 @@ function VillageFoodieContent() {
                                 distanceMiles = km * 0.621371;
                             }
                             return (
-                                <EventListCard 
-                                    key={event.id} 
-                                    event={event} 
-                                    distanceMiles={distanceMiles} 
-                                    // 👇 THIS LINE IS NOW CORRECT 👇
-                                    venueStats={venueStats[createSlug(event.venueName)]}
-                                />
+<EventListCard 
+    key={event.id} 
+    event={event} 
+    distanceMiles={distanceMiles} 
+    // 👇 Ask for the stats using the exact same joined Venue + Village ID
+    venueStats={venueStats[getVenueSlug(event.venueName, event.village || '')]} 
+/>
                             );
                         })}
                         </div>

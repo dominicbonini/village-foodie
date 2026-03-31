@@ -328,32 +328,34 @@ export function useVillageData(
 
   }, [events, filters, userLocation]);
 
-const venueStats = useMemo(() => {
-  const stats: Record<string, { eventCount: number, trucks: Set<string> }> = {};
-  
-  events.forEach(e => {
-      // 👇 Update Stats calculation to use the smart slug too
-      const venueSlug = getVenueSlug(e.venueName, e.village || '');
-      const truckSlug = createSlug(e.truckName);
+  const venueStats = useMemo(() => {
+    const stats: Record<string, { eventCount: number, trucks: Set<string> }> = {};
+    
+    events.forEach(e => {
+        // 👇 Join Venue + Village in the background to create a globally unique ID for this pub
+        const uniqueVenueId = getVenueSlug(e.venueName, e.village || '');
+        const truckSlug = createSlug(e.truckName);
 
-      if (!stats[venueSlug]) {
-          stats[venueSlug] = { eventCount: 0, trucks: new Set() };
-      }
-      
-      stats[venueSlug].eventCount += 1;
-      stats[venueSlug].trucks.add(truckSlug);
-  });
+        if (!uniqueVenueId) return;
 
-  const processed: Record<string, { eventCount: number, uniqueTrucks: number }> = {};
-  for (const [slug, data] of Object.entries(stats)) {
-      processed[slug] = {
-          eventCount: data.eventCount,
-          uniqueTrucks: data.trucks.size
-      };
-  }
-  
-  return processed;
-}, [events]);
+        if (!stats[uniqueVenueId]) {
+            stats[uniqueVenueId] = { eventCount: 0, trucks: new Set() };
+        }
+        
+        stats[uniqueVenueId].eventCount += 1;
+        stats[uniqueVenueId].trucks.add(truckSlug);
+    });
+
+    const processed: Record<string, { eventCount: number, uniqueTrucks: number }> = {};
+    for (const [id, data] of Object.entries(stats)) {
+        processed[id] = {
+            eventCount: data.eventCount,
+            uniqueTrucks: data.trucks.size
+        };
+    }
+    
+    return processed;
+  }, [events]);
 
 return { 
     loading, 
