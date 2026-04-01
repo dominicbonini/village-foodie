@@ -14,7 +14,7 @@ const STRATEGIES = {
   'click_next':    performButtonHunt,    
   'frames':        performFrameDump,     
   'manual':        performManualMode,
-  'manual_single': performManualMode, // 👇 ADD THIS LINE
+  'manual_single': performManualMode,
   'scrape_rules':  performExpandAndScrape, 
   'default':       performModernScroll   
 };
@@ -381,7 +381,7 @@ const model = genAI.getGenerativeModel({
 });
 
 const browser = await puppeteer.launch({
-  headless: true, // Fixed headless setting
+  headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
 });
 
@@ -389,7 +389,7 @@ const newRowsToAdd = [];
 const newVenuesDetected = new Map();
 
 for (const [index, site] of sitesToScrape.entries()) {
-  let page; // Initialized here to ensure it can be closed in the finally block
+  let page;
   
   try {
     console.log(`\n🔍 [${index + 1}/${sitesToScrape.length}] Scraping: ${site.name} (${site.sourceType} | ${site.strategy})...`);
@@ -493,7 +493,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           ]
         `;
       } else {
-        // 👇 UPDATED: Strict Village separation in the prompt 👇
         prompt = `
           You are extracting food truck events for: "${site.name}".
           Current Date: ${new Date().toDateString()}.
@@ -510,7 +509,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           5. **DateStart Format:** "DD/MM/YYYY". 
           6. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
           7. **VILLAGE:** If a town or village is mentioned, extract it explicitly into the "Village" field.
-          8. **NOTES:** Postcodes/addresses or extra event details go into the "Notes" field.
+          8. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
           9. **DOUBLE DAYS:** If a single day lists multiple locations (e.g., "Lunch at X, then Dinner at Y"), you MUST create a completely separate JSON object for each location.
           10. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
           
@@ -585,7 +584,6 @@ for (const [index, site] of sitesToScrape.entries()) {
               const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
               const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
 
-              // 1. Postcode matching
               if (eventPostcode) {
                   const venuesAtPostcode = venueData.filter(v => v[2] && v[2].toLowerCase().replace(/\s+/g, '') === eventPostcode);
                   if (venuesAtPostcode.length > 0) {
@@ -600,7 +598,6 @@ for (const [index, site] of sitesToScrape.entries()) {
                   }
               }
 
-              // 2. Fuzzy Matching
               if (!confirmedVenue) {
                   let fuzzyMatches = venueData.filter(v => {
                       if (!v[0]) return false; const normDbName = normalizeName(v[0]);
@@ -639,7 +636,6 @@ for (const [index, site] of sitesToScrape.entries()) {
               if (confirmedVenue) {
                   finalVenue = confirmedVenue;
               } else { 
-                  // 👇 UPDATED: Strict New Venue handling
                   isNewVenue = true; 
                   
                   if (finalVenue && extractedVillage) {
@@ -656,11 +652,12 @@ for (const [index, site] of sitesToScrape.entries()) {
               }
           }
 
-          // 👇 FIX: Separate internal AI flags from public Event Notes
+          // 👇 FIX: Push the AI-extracted event notes explicitly into the AI Notes column
           let aiNotesArr = [];
           if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
           if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
-          let aiNotes = aiNotesArr.join(" ");
+          if (eventNotes) aiNotesArr.push(eventNotes); // Send scraped addresses/notes here
+          let finalAiNotes = aiNotesArr.join(" | ");
 
           const cleanDate = standardizeDate(event.DateStart);
           const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -671,7 +668,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
               
-              // 👇 FIX: 9 columns pushed exactly in order to match A to I layout
+              // 👇 FIX: Column G (Index 6) is now safely "" for manual notes only.
               newRowsToAdd.push([
                   cleanDate,                                        // Col A: Date
                   event.TimeStart,                                  // Col B: StartTime
@@ -679,9 +676,9 @@ for (const [index, site] of sitesToScrape.entries()) {
                   finalTruck,                                       // Col D: Truck Name
                   finalVenue,                                       // Col E: Venue Name
                   extractedVillage,                                 // Col F: Village
-                  eventNotes,                                       // Col G: Event Notes
+                  "",                                               // Col G: Event Notes (MANUAL ONLY)
                   `URL: ${site.url} | Strategy: ${site.strategy}`,  // Col H: Event Source
-                  aiNotes                                           // Col I: AI Notes
+                  finalAiNotes                                      // Col I: AI Notes
               ]);
               
               existingEvents.add(key); 
@@ -694,7 +691,6 @@ for (const [index, site] of sitesToScrape.entries()) {
   } catch (error) { 
     console.error(`❌ Error on ${site.name}:`, error.message); 
   } finally {
-    // Memory leak fix: Always close the page
     if (page) {
       await page.close().catch(e => console.error("Failed to close page:", e.message));
     }
@@ -706,13 +702,11 @@ await browser.close();
 if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
-    // 👇 FIX: Appending to range A:I so it correctly captures all 9 columns
     spreadsheetId: SPREADSHEET_ID, range: `${TABS.EVENTS}!A:I`, valueInputOption: 'USER_ENTERED', resource: { values: newRowsToAdd },
   });
   console.log("🎉 Database Sync Complete!");
 } else { console.log("\n💤 No new events found."); }
 
-// 👇 UPDATED: Intelligent Auto-Geocoder
 if (newVenuesDetected.size > 0) {
   console.log(`\n🌍 Asking AI to locate and add ${newVenuesDetected.size} new venues...`);
   
@@ -729,7 +723,6 @@ if (newVenuesDetected.size > 0) {
   try {
     const geoResult = await generateContentWithRetry(model, geoPrompt);
     
-    // Map the AI JSON to match your exact Google Sheet Columns (A to L)
     const newVenueRows = geoResult.map(v => [
       v.name || "",            // Col A: Venue Name
       v.village || "",         // Col B: Village
