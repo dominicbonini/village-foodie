@@ -288,7 +288,7 @@ function standardizeDate(dateStr) {
 
 async function getTabData(sheets, rangeName) {
   try {
-    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:Q` });
+    const resExtended = await sheets.spreadsheets.values.get({ spreadsheetId: SPREADSHEET_ID, range: `${rangeName}!A2:T` });
     return resExtended.data.values || [];
   } catch (error) { return []; }
 }
@@ -319,7 +319,13 @@ const [truckData, venueData, eventData] = await Promise.all([
   getTabData(sheets, TABS.EVENTS)
 ]);
 
-const validTrucks = truckData.map(r => r[0]).filter(Boolean);
+const validTrucks = truckData.filter(r => r[0]).map(r => {
+    return {
+        name: r[0].toString().trim(),
+        aliases: r[17] ? r[17].toString().split(',').map(a => a.trim()).filter(Boolean) : []
+    };
+});
+
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
 const existingEvents = new Set();
@@ -418,55 +424,25 @@ for (const [index, site] of sitesToScrape.entries()) {
       console.log("   ✨ Manual Mode: Parsing Rules for Calculation...");
       isRuleExtraction = true;
       cleanText = `SYSTEM OVERRIDE: Extract Recurrence Rules. TRUCK NAME: "${site.name}". RULES: ${site.instructions}`;
-  } else if (site.strategy === 'manual_single' && site.instructions.length > 10) {
+    } else if (site.strategy === 'manual_single' && site.instructions.length > 10) {
       console.log("   📅 Manual Single Mode: Parsing one-off exact dates...");
       isRuleExtraction = false; 
       cleanText = `SYSTEM OVERRIDE: Extract ONE-OFF events from this text. Do NOT treat these as recurring rules. TRUCK NAME: "${site.name}". TEXT: ${site.instructions}`;
-  } else if (site.strategy === 'scrape_rules') {
+    } else if (site.strategy === 'scrape_rules') {
       console.log("   🕸️ Scrape Rules Mode: Extracting recurring schedule from website text...");
       isRuleExtraction = true;
       if (cleanText.length < 50) {
           console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
           continue; 
       }
-  } else if (cleanText.length < 50) {
+    } else if (cleanText.length < 50) {
       console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
       continue; 
-  }
+    }
 
     let prompt = "";
     
-    // 👇 THE CUSTOM SITE ADAPTER FOR HOWE & CO 👇
-    if (site.url && site.url.includes('howeandcofishandchips.co.uk')) {
-        console.log("   🐟 Engaging Custom Site Adapter for Howe & Co...");
-        isRuleExtraction = true; 
-        prompt = `
-          You are a Custom Data Extractor for Howe & Co Fish and Chips.
-          TRUCK NAME: "${site.name}"
-          CURRENT YEAR: ${new Date().getFullYear()}
-          
-          TASK: Read the messy website text below and extract EVERY single stop on their weekly route.
-          
-          CRITICAL RULES FOR THIS SPECIFIC SITE:
-          1. The text lists routes by day (e.g., "Monday Route", "Tuesday Route"). You must extract EVERY village listed under EVERY day.
-          2. Treat every single stop as freq: "weekly".
-          3. Convert the day to lowercase in the JSON (e.g., "monday").
-          4. "rawTimeStart" and "rawTimeEnd" must be extracted exactly as written (e.g., "4.00", "8.20pm").
-          5. FIX TYPOS: If the text says "Stock by Clare", output "Stoke by Clare".
-          6. ADD MISSING ROUTE: You MUST also add one extra JSON object for: Venue: "Wickhambrook MSC", Day: "saturday", Start: "11:45", End: "13:45".
-          
-          WEBSITE TEXT TO PARSE:
-          ${cleanText.slice(0, 100000)}
-
-          OUTPUT FORMAT EXAMPLES:
-          [
-            { "venue": "Wickhambrook MSC", "proof": "Manual Override", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "Great yeldham", "proof": "Monday Route", "rawTimeStart": "4.00", "rawTimeEnd": "6.00pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null }
-          ]
-        `;
-    } 
-    // 👇 STANDARD RULE EXTRACTION 👇
-    else if (isRuleExtraction) {
+    if (isRuleExtraction) {
         prompt = `
           You are a Data Extraction Bot. 
           TRUCK NAME: "${site.name}"
@@ -489,7 +465,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           OUTPUT FORMAT EXAMPLES:
           [
             { "venue": "Wickhambrook MSC", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "Great yeldham", "proof": "Monday Route", "rawTimeStart": "4.00", "rawTimeEnd": "6.00pm", "freq": "weekly", "day": "monday", "pos": "", "startDate": null, "endDate": null }
+            { "venue": "Hundon", "proof": "Wednesday Route", "rawTimeStart": "4.45", "rawTimeEnd": "8.30pm", "freq": "weekly", "day": "wednesday", "pos": "", "startDate": null, "endDate": null }
           ]
         `;
       } else {
@@ -565,10 +541,20 @@ for (const [index, site] of sitesToScrape.entries()) {
               finalTruck = site.name; 
           } else {
               const normTruck = normalizeName(truckName);
-              let matchedTruck = validTrucks.find(t => normalizeName(t) === normTruck) || 
-                                 validTrucks.find(t => normalizeName(t).includes(normTruck) || normTruck.includes(normalizeName(t)));
-              finalTruck = matchedTruck || truckName;
-              isNewTruck = !matchedTruck;
+              
+              let matchedTruckObj = validTrucks.find(t => {
+                  const normDbName = normalizeName(t.name);
+                  if (normDbName === normTruck || normDbName.includes(normTruck) || normTruck.includes(normDbName)) return true;
+                  
+                  for (const alias of t.aliases) {
+                      const normAlias = normalizeName(alias);
+                      if (normAlias === normTruck || normAlias.includes(normTruck) || normTruck.includes(normAlias)) return true;
+                  }
+                  return false;
+              });
+
+              finalTruck = matchedTruckObj ? matchedTruckObj.name : truckName;
+              isNewTruck = !matchedTruckObj;
           }
 
           let finalVenue = venueName || "Unknown";
@@ -652,11 +638,10 @@ for (const [index, site] of sitesToScrape.entries()) {
               }
           }
 
-          // 👇 FIX: Push the AI-extracted event notes explicitly into the AI Notes column
           let aiNotesArr = [];
           if (isNewTruck) aiNotesArr.push("[⚠️ NEW TRUCK]");
           if (isNewVenue) aiNotesArr.push("[⚠️ NEW VENUE]");
-          if (eventNotes) aiNotesArr.push(eventNotes); // Send scraped addresses/notes here
+          if (eventNotes) aiNotesArr.push(eventNotes); 
           let finalAiNotes = aiNotesArr.join(" | ");
 
           const cleanDate = standardizeDate(event.DateStart);
@@ -668,7 +653,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
               
-              // 👇 FIX: Column G (Index 6) is now safely "" for manual notes only.
               newRowsToAdd.push([
                   cleanDate,                                        // Col A: Date
                   event.TimeStart,                                  // Col B: StartTime
@@ -676,7 +660,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                   finalTruck,                                       // Col D: Truck Name
                   finalVenue,                                       // Col E: Venue Name
                   extractedVillage,                                 // Col F: Village
-                  "",                                               // Col G: Event Notes (MANUAL ONLY)
+                  "",                                               // Col G: Event Notes
                   `URL: ${site.url} | Strategy: ${site.strategy}`,  // Col H: Event Source
                   finalAiNotes                                      // Col I: AI Notes
               ]);
