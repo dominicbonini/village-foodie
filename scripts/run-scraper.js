@@ -2,6 +2,7 @@ import puppeteer from 'puppeteer';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
+import fs from 'fs'; // 👈 Added the File System module for Debugging
 
 dotenv.config({ path: '.env.local' });
 
@@ -160,16 +161,26 @@ function generateDatesFromRule(ruleJSON) {
     return dates;
 }
 
-// HELPER: AI Retry
+// 👇 UPDATED: AI Retry with Debug Printout 👇
 async function generateContentWithRetry(model, prompt, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       const result = await model.generateContent(prompt);
-      const response = await result.response;
-      return JSON.parse(response.text());
+      let rawText = await result.response.text();
+      
+      console.log(`\n   🐛 [DEBUG] AI responded with ${rawText.length} characters.`);
+      console.log(`   🐛 [DEBUG] Snippet: ${rawText.substring(0, 250).replace(/\n/g, ' ')}...\n`);
+
+      if (rawText.startsWith('```json')) {
+          rawText = rawText.replace(/^```json\n/, '').replace(/\n```$/, '');
+      } else if (rawText.startsWith('```')) {
+          rawText = rawText.replace(/^```\n/, '').replace(/\n```$/, '');
+      }
+
+      return JSON.parse(rawText);
     } catch (error) {
       if (i === maxRetries - 1) throw error;
-      console.log(`   ⚠️  AI Busy. Retrying in 5s... (Attempt ${i + 1})`);
+      console.log(`   ⚠️  AI Formatting Error. Retrying in 5s... (Attempt ${i + 1})`);
       await sleep(5000);
     }
   }
@@ -201,40 +212,61 @@ async function performModernScroll(page) {
 }
 
 async function performExpandAndScrape(page) {
-  console.log("   🔽 Strategy: Expand & Scrape (Deep Extracting)...");
+  console.log("   🔽 Strategy: Expand & Scrape (Day-by-Day Sequence)...");
 
   await page.evaluate(async () => { window.scrollBy(0, 800); });
   await sleep(1500);
 
-  await page.evaluate(() => {
-    const selectors = ['button', '[aria-expanded="false"]', '.elementor-tab-title', '.accordion-toggle', 'h2', 'h3', 'h4', 'div'];
-    selectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach(el => {
-            const text = (el.innerText || "").toLowerCase();
-            if (el.hasAttribute('aria-expanded') || el.tagName === 'BUTTON' || 
-                text.includes('monday') || text.includes('tuesday') || 
-                text.includes('wednesday') || text.includes('thursday') || 
-                text.includes('friday') || text.includes('saturday') || text.includes('sunday')) {
-                try { el.click(); } catch(e) {}
-            }
-        });
-    });
-  });
-  
-  await sleep(3000); 
+  let accumulatedText = "";
+  const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-  let combinedText = await page.evaluate(() => document.body.innerText);
-  
+  for (const day of days) {
+      const clicked = await page.evaluate((targetDay) => {
+          // Look for all headings, titles, or short text blocks
+          const elements = Array.from(document.querySelectorAll('h2, h3, h4, h5, .elementor-tab-title, .accordion-title, div, span'));
+          
+          // Loop backwards to click the innermost specific element, not the giant container
+          for (let i = elements.length - 1; i >= 0; i--) {
+              const el = elements[i];
+              const txt = (el.innerText || "").toLowerCase().trim();
+              
+              // If it says "Wednesday" or "Wednesday Route" and isn't a massive paragraph...
+              if (txt.includes(targetDay) && txt.length < 30 && el.offsetHeight > 0) {
+                  try {
+                      el.click();
+                      return true; // Click successful!
+                  } catch(e) {}
+              }
+          }
+          return false;
+      }, day);
+
+      if (clicked) {
+          console.log(`   👆 Clicked: ${day.toUpperCase()}... Waiting for text to render...`);
+          await sleep(1500); // Give the website 1.5 seconds to open the menu and load the text
+          
+          // Take a snapshot of whatever is currently on the screen
+          const pageText = await page.evaluate(() => document.body.innerText);
+          accumulatedText += `\n\n--- STATE AFTER CLICKING ${day.toUpperCase()} ---\n` + pageText;
+      }
+  }
+
+  // Fallback: If no days were clicked, just grab whatever text is normally there
+  if (accumulatedText.length < 500) {
+      accumulatedText = await page.evaluate(() => document.body.innerText);
+  }
+
   const frames = page.frames();
   if (frames.length > 0) {
       for (const frame of frames) {
           try {
               const frameContent = await frame.evaluate(() => document.body.innerText);
-              if (frameContent.length > 50) combinedText += `\n --- FRAME DATA --- \n${frameContent}\n`;
+              if (frameContent.length > 50) accumulatedText += `\n --- FRAME DATA --- \n${frameContent}\n`;
           } catch (e) {}
       }
   }
-  return combinedText;
+  
+  return accumulatedText;
 }
 
 async function performButtonHunt(page) {
@@ -381,8 +413,14 @@ venueData.forEach(row => {
 });
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ 
+
+const modelLite = genAI.getGenerativeModel({ 
     model: "gemini-2.5-flash-lite", 
+    generationConfig: { responseMimeType: "application/json", temperature: 0 } 
+});
+
+const modelHeavy = genAI.getGenerativeModel({ 
+    model: "gemini-2.5-flash", 
     generationConfig: { responseMimeType: "application/json", temperature: 0 } 
 });
 
@@ -408,7 +446,7 @@ for (const [index, site] of sitesToScrape.entries()) {
 
     const strategyFunc = STRATEGIES[site.strategy] || STRATEGIES['default'];
 
-    if (site.strategy !== 'manual') {
+    if (site.strategy !== 'manual' && site.strategy !== 'manual_single') {
       try {
           const navPromise = page.goto(site.url, { timeout: 30000, waitUntil: 'networkidle2' });
           if (site.url.startsWith('http:')) await Promise.race([navPromise, sleep(15000)]);
@@ -416,6 +454,12 @@ for (const [index, site] of sitesToScrape.entries()) {
           await sleep(5000);
       } catch (e) { console.log("   ⚠️ Navigation warning."); }
       cleanText = await strategyFunc(page);
+      
+      // 👇 DUMP THE SCRAPED TEXT TO A FILE FOR DEBUGGING 👇
+      if (cleanText.length > 0) {
+          fs.writeFileSync('DEBUG_SCRAPED_TEXT.txt', cleanText);
+          console.log(`   🐛 [DEBUG] Saved what the browser saw to DEBUG_SCRAPED_TEXT.txt`);
+      }
     } else {
       cleanText = ""; 
     }
@@ -431,11 +475,14 @@ for (const [index, site] of sitesToScrape.entries()) {
     } else if (site.strategy === 'scrape_rules') {
       console.log("   🕸️ Scrape Rules Mode: Extracting recurring schedule from website text...");
       isRuleExtraction = true;
-      if (cleanText.length < 50) {
-          console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
-          continue; 
+    } else {
+      if (site.instructions && (site.instructions.toLowerCase().includes('weekly') || site.instructions.toLowerCase().includes('recurring'))) {
+          console.log("   🔄 Auto-Detected Weekly Route via AI Instructions...");
+          isRuleExtraction = true;
       }
-    } else if (cleanText.length < 50) {
+    }
+
+    if (site.strategy !== 'manual' && site.strategy !== 'manual_single' && cleanText.length < 50) {
       console.log(`   ❌ Empty page content (${cleanText.length} chars). Skipping.`);
       continue; 
     }
@@ -498,8 +545,15 @@ for (const [index, site] of sitesToScrape.entries()) {
     }
 
     try {
-      console.log("   🤖 Sending to AI...");
-      const result = await generateContentWithRetry(model, prompt);
+      let activeModel = modelLite;
+      if (site.name.toLowerCase().includes('howe')) {
+          activeModel = modelHeavy;
+          console.log("   🧠 Upgrading to Heavyweight AI for complex parsing...");
+      } else {
+          console.log("   🤖 Sending to AI (Lite)...");
+      }
+      
+      const result = await generateContentWithRetry(activeModel, prompt);
       
       let finalEvents = [];
       
@@ -705,7 +759,7 @@ if (newVenuesDetected.size > 0) {
   `;
   
   try {
-    const geoResult = await generateContentWithRetry(model, geoPrompt);
+    const geoResult = await generateContentWithRetry(modelLite, geoPrompt);
     
     const newVenueRows = geoResult.map(v => [
       v.name || "",            // Col A: Venue Name
