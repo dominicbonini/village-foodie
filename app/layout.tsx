@@ -27,10 +27,11 @@ export const metadata: Metadata = {
     siteName: "Village Foodie",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=630&q=80", 
+        // 👇 Updated to your exact file name
+        url: "/logos/village-foodie logo-sharing.png", 
         width: 1200,
         height: 630,
-        alt: "Village Foodie - Find your next meal",
+        alt: "Village Foodie Logo",
       },
     ],
     locale: "en_GB", 
@@ -40,7 +41,8 @@ export const metadata: Metadata = {
     card: "summary_large_image", 
     title: "Village Foodie",
     description: "Find local food trucks and pop-ups visiting villages near you.",
-    images: ["https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?auto=format&fit=crop&w=1200&h=630&q=80"], 
+    // 👇 Updated here as well
+    images: ["/logos/village-foodie logo-sharing.png"], 
   },
   icons: {
     icon: "data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚚%3C/text%3E%3C/svg%3E",
