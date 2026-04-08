@@ -9,12 +9,13 @@ import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { useVillageData } from '@/hooks/useVillageData';
 import Link from 'next/link';
+import Image from 'next/image'; // 👈 Imported Image component
 import { 
   getDistanceKm, 
   getCoordsFromPostcode, 
   formatFriendlyDate,
   createSlug,
-  getVenueSlug // 👈 Just add this right here!
+  getVenueSlug 
 } from '@/lib/utils';
 
 // --- DYNAMIC MAP IMPORT ---
@@ -69,7 +70,6 @@ useEffect(() => {
   if (!loading && typeof window !== 'undefined') {
     setTimeout(() => {
       if (window.location.hash) {
-        // 1. Existing logic: If someone clicked a specific truck link, scroll to it
         const id = window.location.hash.substring(1);
         const element = document.getElementById(id);
         
@@ -85,16 +85,15 @@ useEffect(() => {
           });
         }
       } else {
-        // 2. NEW logic: If returning via back button, restore exact scroll position
         const savedScroll = sessionStorage.getItem('home_scroll_pos');
         if (savedScroll) {
           window.scrollTo({
             top: parseInt(savedScroll, 10),
-            behavior: 'instant' // 'instant' prevents a jarring scrolling animation
+            behavior: 'instant' 
           });
         }
       }
-    }, 100); // 100ms timeout ensures React has fully painted the DOM
+    }, 100); 
   }
 }, [loading, groupedEvents]);
 
@@ -104,7 +103,6 @@ useEffect(() => {
 
   let scrollTimeout: NodeJS.Timeout;
   const handleScroll = () => {
-    // Throttle to every 100ms so we don't destroy browser performance while scrolling
     if (scrollTimeout) clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
       sessionStorage.setItem('home_scroll_pos', window.scrollY.toString());
@@ -117,6 +115,7 @@ useEffect(() => {
     if (scrollTimeout) clearTimeout(scrollTimeout);
   };
 }, []);
+
   // --- HANDLERS ---
   const handlePostcodeSearch = async (code: string, showAlert = true) => {
     if (!code) return;
@@ -180,9 +179,18 @@ useEffect(() => {
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
         
         <div className="flex justify-between items-center">
-          <h1 className="text-lg md:text-xl font-bold flex items-center gap-2">
-            Village Foodie <span className="text-xl md:text-2xl">🚚</span>
-          </h1>
+          
+          {/* 👇 REPLACED TEXT WITH LOGO COMPONENT HERE 👇 */}
+          <div className="flex items-center">
+            <Image
+              src="/logos/village-foodie-logo-v2.png"
+              alt="Village Foodie Logo"
+              width={160} // Added a suitable width
+              height={40} // Added a suitable height
+              priority
+              className="object-contain"
+            />
+          </div>
 
           <div className="flex items-center gap-3 md:gap-4">
               <Link 
@@ -368,7 +376,6 @@ useEffect(() => {
     key={event.id} 
     event={event} 
     distanceMiles={distanceMiles} 
-    // 👇 Ask for the stats using the exact same joined Venue + Village ID
     venueStats={venueStats[getVenueSlug(event.venueName, event.village || '')]} 
 />
                             );
