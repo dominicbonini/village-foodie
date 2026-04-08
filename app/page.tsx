@@ -175,20 +175,21 @@ useEffect(() => {
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
       {/* --- HEADER --- */}
-      <header className="bg-slate-900 text-white py-2 px-4 md:py-3 sticky top-0 z-50 shadow-md">
+      {/* 👇 Reduced padding to py-1.5 to keep header tight 👇 */}
+      <header className="bg-slate-900 text-white py-1.5 px-4 md:py-2 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
         
         <div className="flex justify-between items-center">
           
           <div className="flex items-center">
-            {/* 👇 UPDATED FILENAME TO v2.png 👇 */}
+            {/* 👇 Increased logo width significantly 👇 */}
             <Image
               src="/logos/village-foodie-logo-v2.png"
               alt="Village Foodie Logo"
-              width={160}
-              height={40}
+              width={200}
+              height={60}
               priority
-              className="object-contain h-8 md:h-9 w-auto"
+              className="object-contain w-[140px] md:w-[170px] h-auto"
             />
           </div>
 
@@ -359,7 +360,6 @@ useEffect(() => {
 
                   return (
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        {/* 👇 CALCULATED OFFSET TO CLEAR THE MOBILE FILTER STACK 👇 */}
                         <div className="sticky top-[158px] md:top-[142px] z-30 bg-slate-50 pt-3 md:pt-4 pb-2">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
