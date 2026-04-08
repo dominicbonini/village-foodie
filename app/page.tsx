@@ -9,7 +9,7 @@ import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { useVillageData } from '@/hooks/useVillageData';
 import Link from 'next/link';
-import Image from 'next/image'; // 👈 Imported Image component
+import Image from 'next/image';
 import { 
   getDistanceKm, 
   getCoordsFromPostcode, 
@@ -175,20 +175,20 @@ useEffect(() => {
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
       {/* --- HEADER --- */}
-      <header className="bg-slate-900 text-white py-3 px-4 md:p-4 sticky top-0 z-50 shadow-md">
+      <header className="bg-slate-900 text-white py-2 px-4 md:py-3 sticky top-0 z-50 shadow-md">
         <div className="max-w-4xl mx-auto flex flex-col gap-3 md:gap-4">
         
         <div className="flex justify-between items-center">
           
-          {/* 👇 REPLACED TEXT WITH LOGO COMPONENT HERE 👇 */}
           <div className="flex items-center">
+            {/* 👇 UPDATED FILENAME TO v2.png 👇 */}
             <Image
               src="/logos/village-foodie-logo-v2.png"
               alt="Village Foodie Logo"
-              width={160} // Added a suitable width
-              height={40} // Added a suitable height
+              width={160}
+              height={40}
               priority
-              className="object-contain"
+              className="object-contain h-8 md:h-9 w-auto"
             />
           </div>
 
@@ -359,7 +359,8 @@ useEffect(() => {
 
                   return (
                     <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                        <div className="sticky top-[156px] md:top-[140px] z-30 bg-slate-50 pt-5 md:pt-6 pb-2">
+                        {/* 👇 CALCULATED OFFSET TO CLEAR THE MOBILE FILTER STACK 👇 */}
+                        <div className="sticky top-[158px] md:top-[142px] z-30 bg-slate-50 pt-3 md:pt-4 pb-2">
                             <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                {formatFriendlyDate(date)}
                             </h2>
