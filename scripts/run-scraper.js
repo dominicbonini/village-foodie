@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
-import fs from 'fs'; // 👈 Added the File System module for Debugging
+import fs from 'fs'; 
 
 dotenv.config({ path: '.env.local' });
 
@@ -161,7 +161,7 @@ function generateDatesFromRule(ruleJSON) {
     return dates;
 }
 
-// 👇 UPDATED: AI Retry with Debug Printout 👇
+// --- AI RETRY LOGIC ---
 async function generateContentWithRetry(model, prompt, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -523,18 +523,17 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}"` : ""}
           
-          TASK: Extract EVERY SINGLE upcoming food truck event from the provided text.
+          TASK: Extract EVERY food truck event from the provided text for the schedule shown.
           CRITICAL RULES:
-          1. **STRICT DATE ADHERENCE:** Do NOT shift past dates into the future. 
-          2. **IGNORE PAST EVENTS.**
-          3. **THE "TODAY" RULE:** Anchor "Today" to the Post Publish Date or current clock if on a checkout page.
-          4. **DAYS OF THE WEEK:** Calculate next immediate date based on Current Date.
-          5. **DateStart Format:** "DD/MM/YYYY". 
-          6. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
-          7. **VILLAGE:** If a town or village is mentioned, extract it explicitly into the "Village" field.
-          8. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
-          9. **DOUBLE DAYS:** If a single day lists multiple locations (e.g., "Lunch at X, then Dinner at Y"), you MUST create a completely separate JSON object for each location.
-          10. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
+          1. **EXPLICIT DATES OVERRIDE EVERYTHING:** If a specific date is written (e.g., "6th April", "10th April"), you MUST extract that exact date, even if it is in the past relative to the Current Date. Do NOT shift explicit past dates into the future.
+          2. **PRESERVE THE WHOLE WEEK:** If the text contains a schedule for a specific week, extract ALL days of that schedule, including days that have already happened. Do NOT ignore past events.
+          3. **RELATIVE DAYS:** ONLY calculate the "next immediate date" for a day of the week if NO specific date number (like "6th") is provided alongside it.
+          4. **DateStart Format:** "DD/MM/YYYY". 
+          5. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
+          6. **VILLAGE:** If a town or village is mentioned, extract it explicitly into the "Village" field.
+          7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
+          8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for each location.
+          9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
