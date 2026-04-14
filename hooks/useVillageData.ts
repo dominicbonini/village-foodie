@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { VillageEvent } from '@/types';
-import { parseDateString, getDistanceKm, createSlug, getVenueSlug } from '@/lib/utils'; // 👈 ADDED getVenueSlug
+import { parseDateString, getDistanceKm, createSlug, getVenueSlug } from '@/lib/utils'; 
 
 const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub';
 const EVENTS_CSV_URL = `${BASE_CSV_URL}?gid=0&single=true&output=csv`;
@@ -105,7 +105,9 @@ export function useVillageData(
                     truckNotes: cols[5],      
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
-                    logoUrl: cols[9] || ''          
+                    logoUrl: cols[9] || '',
+                    // 👇 THE FIX: Read the alias column (assuming it's column K / index 10)
+                    aliases: cols[17] || ''          
                 });
             }
         });
@@ -118,13 +120,12 @@ export function useVillageData(
             const rawName = cols[0] || '';
             const village = cols[1] || '';
             
-            // 👇 THE FIX: Create a highly specific unique ID using the village name
             const key = getVenueSlug(rawName, village); 
             
             if (key) {
                 venuesList.push({
                     rawName: rawName,
-                    cleanKey: key, // Now equals e.g. "the-plough-shepreth"
+                    cleanKey: key, 
                     village: village,
                     postcode: cols[2] || '',
                     lat: parseFloat(cols[3] || '0'),
@@ -151,20 +152,33 @@ export function useVillageData(
             const rawEventVillage = cols[5] || ''; 
 
             const eventTruckKey = createSlug(rawTruck);
-            let truck = trucksList.find(t => t.cleanKey === eventTruckKey) || 
-                        trucksList.find(t => isMatch(t.cleanKey, eventTruckKey)) || {};
+            
+            // 👇 THE FIX: Look for exact match, then alias match, then fuzzy match
+            let truck = trucksList.find(t => t.cleanKey === eventTruckKey);
+            
+            if (!truck) {
+                // Check if the event name matches any of the comma-separated aliases
+                truck = trucksList.find(t => {
+                    if (!t.aliases) return false;
+                    const aliasArray = t.aliases.split(',').map((a: string) => createSlug(a.trim()));
+                    return aliasArray.includes(eventTruckKey);
+                });
+            }
 
-            // 👇 THE FIX: Match using the exact same specific slug format
+            if (!truck) {
+                // Fallback to fuzzy match
+                truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey));
+            }
+            
+            truck = truck || {}; // Ensure truck is at least an empty object
+
             const eventVenueKey = getVenueSlug(rawVenue, rawEventVillage);
             
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
             
-            // Fallback: If exact specific match fails, try fuzzy matching just the venue name
             if (!venue) {
                 const genericVenueKey = createSlug(rawVenue);
                 venue = venuesList.find(v => {
-                    // Have to extract just the venue name from the cleanKey (which is now name+village)
-                    // The easiest way is to re-create the generic slug from the raw name
                     const fuzzyMatch = isMatch(createSlug(v.rawName), genericVenueKey);
                     if (fuzzyMatch && genericVenueKey.length <= 5) {
                         return false; 
@@ -332,7 +346,6 @@ export function useVillageData(
     const stats: Record<string, { eventCount: number, trucks: Set<string> }> = {};
     
     events.forEach(e => {
-        // 👇 Join Venue + Village in the background to create a globally unique ID for this pub
         const uniqueVenueId = getVenueSlug(e.venueName, e.village || '');
         const truckSlug = createSlug(e.truckName);
 
@@ -357,11 +370,11 @@ export function useVillageData(
     return processed;
   }, [events]);
 
-return { 
-    loading, 
-    groupedEvents, 
-    mapEvents, 
-    dynamicCuisineOptions, 
-    venueStats 
-};
+  return { 
+      loading, 
+      groupedEvents, 
+      mapEvents, 
+      dynamicCuisineOptions, 
+      venueStats 
+  };
 }
