@@ -455,7 +455,6 @@ for (const [index, site] of sitesToScrape.entries()) {
       } catch (e) { console.log("   ⚠️ Navigation warning."); }
       cleanText = await strategyFunc(page);
       
-      // 👇 DUMP THE SCRAPED TEXT TO A FILE FOR DEBUGGING 👇
       if (cleanText.length > 0) {
           fs.writeFileSync('DEBUG_SCRAPED_TEXT.txt', cleanText);
           console.log(`   🐛 [DEBUG] Saved what the browser saw to DEBUG_SCRAPED_TEXT.txt`);
@@ -508,6 +507,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           2. "rawTimeStart" and "rawTimeEnd" MUST be the exact times from the text (e.g., "4.00", "6.00pm").
           3. "freq" and "day" MUST BE LOWERCASE ONLY.
           4. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
+          5. IGNORE PRIVATE EVENTS: Do not extract any event labeled as "private", "private party", or "private lunch".
 
           OUTPUT FORMAT EXAMPLES:
           [
@@ -534,6 +534,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
           8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for each location.
           9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
+          10. **PRIVATE EVENTS:** If an event is explicitly marked as "private", "private party", "private event", or "private lunch", completely ignore it. Do NOT extract it.
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
@@ -586,6 +587,14 @@ for (const [index, site] of sitesToScrape.entries()) {
           const eventNotes = (event["Notes"] || "").trim();
           
           if (!truckName || !event.DateStart) continue;
+
+          // --- 🛡️ NEW DEFENSE: PRIVATE EVENT HARD FILTER ---
+          const combinedText = (venueName + " " + eventNotes).toLowerCase();
+          if (combinedText.includes('private')) {
+              console.log(`   🚫 Skipping private event: ${truckName} on ${event.DateStart}`);
+              continue;
+          }
+          // ------------------------------------------------
 
           let finalTruck = truckName;
           let isNewTruck = false;
