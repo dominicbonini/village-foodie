@@ -9,9 +9,11 @@ import { useVillageData } from '@/hooks/useVillageData';
 import Footer from '@/components/Footer';
 import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
 import TruckListCard from '@/components/TruckListCard';
+import { useRouter } from 'next/navigation';
 
 export default function TruckClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
+  const router = useRouter(); // Initialize the Next.js router
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -102,9 +104,13 @@ export default function TruckClient({ slug }: { slug: string }) {
       <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
         <div className="max-w-2xl mx-auto flex justify-between items-center w-full relative">
           
-          <Link href="/" className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0 z-10">
+          {/* 👇 UPDATED: Uses router.back() instead of Link 👇 */}
+          <button 
+            onClick={() => router.back()} 
+            className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0 z-10"
+          >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-          </Link>
+          </button>
           
           {truckInfo && (
             <div 
@@ -133,7 +139,6 @@ export default function TruckClient({ slug }: { slug: string }) {
       {truckInfo && (
         <div className="bg-white px-4 pt-8 pb-6 border-b border-slate-200 flex flex-col items-center text-center shadow-sm relative z-0">
             
-            {/* 👇 UPDATED: "OWN THIS TRUCK?" BADGE (MOVED TO TOP RIGHT) 👇 */}
             <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
                 <Link 
                     href={`/contact?topic=ClaimTruck&truck=${encodeURIComponent(truckInfo.name)}`}

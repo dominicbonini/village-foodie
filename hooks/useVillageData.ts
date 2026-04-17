@@ -57,6 +57,8 @@ export function useVillageData(
   filters: { cuisine: string; date: string; distance: string }
 ) {
   const [events, setEvents] = useState<VillageEvent[]>([]);
+  // 👇 NEW: We are now saving the raw list of all trucks 👇
+  const [allTrucks, setAllTrucks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -106,7 +108,6 @@ export function useVillageData(
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
                     logoUrl: cols[9] || '',
-                    // 👇 THE FIX: Read the alias column (assuming it's column K / index 10)
                     aliases: cols[17] || ''          
                 });
             }
@@ -153,11 +154,9 @@ export function useVillageData(
 
             const eventTruckKey = createSlug(rawTruck);
             
-            // 👇 THE FIX: Look for exact match, then alias match, then fuzzy match
             let truck = trucksList.find(t => t.cleanKey === eventTruckKey);
             
             if (!truck) {
-                // Check if the event name matches any of the comma-separated aliases
                 truck = trucksList.find(t => {
                     if (!t.aliases) return false;
                     const aliasArray = t.aliases.split(',').map((a: string) => createSlug(a.trim()));
@@ -166,11 +165,10 @@ export function useVillageData(
             }
 
             if (!truck) {
-                // Fallback to fuzzy match
                 truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey));
             }
             
-            truck = truck || {}; // Ensure truck is at least an empty object
+            truck = truck || {}; 
 
             const eventVenueKey = getVenueSlug(rawVenue, rawEventVillage);
             
@@ -231,6 +229,8 @@ export function useVillageData(
 
         if (isMounted) {
             setEvents(parsedEvents);
+            // 👇 NEW: We save the master truck list to state here 👇
+            setAllTrucks(trucksList);
             setLoading(false);
         }
 
@@ -375,6 +375,7 @@ export function useVillageData(
       groupedEvents, 
       mapEvents, 
       dynamicCuisineOptions, 
-      venueStats 
+      venueStats,
+      allTrucks // 👇 NEW: We export the master list so the directory page can use it 👇
   };
 }

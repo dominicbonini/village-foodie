@@ -25,7 +25,6 @@ export default function Footer({ onOpenTally }: FooterProps) {
            <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide">Contact Us & Services</h4>
            
            <div className="flex flex-wrap gap-3 md:gap-4 justify-center items-center">
-              {/* 👇 Now it is a standard Link to your new page 👇 */}
               <Link 
                 href="/hire" 
                 className="text-orange-400 font-bold hover:text-orange-300 transition-colors underline decoration-orange-400/50 hover:decoration-orange-300 underline-offset-2"
@@ -43,6 +42,11 @@ export default function Footer({ onOpenTally }: FooterProps) {
               <span className="text-slate-600">|</span>
               <Link href="/contact?topic=Report%20Issue" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
                 Report Issue
+              </Link>
+              {/* 👇 NEW TRUCK DIRECTORY LINK 👇 */}
+              <span className="text-slate-600">|</span>
+              <Link href="/trucks" className="hover:text-white transition-colors underline decoration-slate-400 hover:decoration-white underline-offset-2">
+                Truck Directory
               </Link>
            </div>
         </div>
