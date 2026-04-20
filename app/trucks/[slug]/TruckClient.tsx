@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 
 export default function TruckClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
-  const router = useRouter(); // Initialize the Next.js router
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -104,7 +104,6 @@ export default function TruckClient({ slug }: { slug: string }) {
       <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
         <div className="max-w-2xl mx-auto flex justify-between items-center w-full relative">
           
-          {/* 👇 UPDATED: Uses router.back() instead of Link 👇 */}
           <button 
             onClick={() => router.back()} 
             className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0 z-10"
@@ -141,7 +140,7 @@ export default function TruckClient({ slug }: { slug: string }) {
             
             <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
                 <Link 
-                    href={`/contact?topic=ClaimTruck&truck=${encodeURIComponent(truckInfo.name)}`}
+                    href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`}
                     className="flex items-center gap-1.5 bg-slate-50 hover:bg-orange-50 border border-slate-200 hover:border-orange-200 text-slate-500 hover:text-orange-600 text-[10px] font-bold px-2.5 py-1.5 rounded-full transition-all shadow-sm"
                     title="Own this truck? Click to update your profile"
                 >
@@ -204,14 +203,20 @@ export default function TruckClient({ slug }: { slug: string }) {
         {loading ? (
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
         ) : !truckInfo ? (
+          
+          /* 👇 UPDATED: THE "EMPTY STATE" PROMPT 👇 */
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
-            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">🤷‍♂️</div>
-            <h2 className="text-xl font-bold text-slate-800">Truck not found</h2>
-            <p className="text-slate-500 mt-2">We couldn't find any details for this food truck. They might have moved or updated their profile.</p>
-            <Link href="/" className="mt-6 bg-orange-600 text-white font-bold py-2 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105">
-              View all trucks
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">😔</div>
+            <h2 className="text-xl font-bold text-slate-800">No upcoming events found</h2>
+            <p className="text-slate-500 mt-2 max-w-sm">We might be missing some details for this truck. Are you the owner, or do you know their schedule?</p>
+            <Link 
+              href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(slug)}`} 
+              className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
+            >
+              Drop us a message to update!
             </Link>
           </div>
+
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
@@ -231,6 +236,21 @@ export default function TruckClient({ slug }: { slug: string }) {
                     </div>
                 </div>
             ))}
+
+            {/* 👇 UPDATED: THE "POPULATED STATE" PROMPT 👇 */}
+            <div className="mt-10 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
+              <p className="m-0 text-slate-600">
+                <strong className="text-slate-800">Are we missing an event?</strong> <br />
+                If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br />
+                <Link 
+                  href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`} 
+                  className="text-orange-600 font-bold hover:underline mt-2 inline-block"
+                >
+                  Contact us to add missing details.
+                </Link>
+              </p>
+            </div>
+
           </div>
         )}
       </div>
