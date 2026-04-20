@@ -24,32 +24,38 @@ export default function TruckClient({ slug }: { slug: string }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const { loading, mapEvents } = useVillageData(null, {
+  // 👇 ADDED allTrucks so we can get the profile even if they have no events!
+  const { loading, mapEvents, allTrucks } = useVillageData(null, {
     date: 'unlimited', 
     cuisine: 'all',
     distance: '1000' 
   });
 
-  const { truckEvents, truckInfo } = useMemo(() => {
-    const filtered = mapEvents.filter(event => createSlug(event.truckName) === slug);
-    
-    const info = filtered.length > 0 ? {
-        name: filtered[0].truckName,
-        type: filtered[0].type,
-        logo: filtered[0].logoUrl,
-        menuUrl: filtered[0].menuUrl,          
-        phoneNumber: filtered[0].phoneNumber,
-        websiteUrl: (filtered[0] as any).websiteUrl || filtered[0].websiteUrl
-    } : null;
+  // 1. Get the Truck's Profile Info (Always works as long as they are in your Trucks tab)
+  const truckInfo = useMemo(() => {
+    if (!allTrucks || allTrucks.length === 0) return null;
+    const truck = allTrucks.find(t => t.cleanKey === slug);
+    if (!truck) return null;
 
-    const grouped = filtered.reduce((groups, event) => {
+    return {
+        name: truck.rawName,
+        type: truck.type,
+        logo: truck.logoUrl,
+        menuUrl: truck.menuUrl,          
+        phoneNumber: truck.phoneNumber,
+        websiteUrl: truck.websiteUrl
+    };
+  }, [allTrucks, slug]);
+
+  // 2. Get the Truck's Schedule (Might be empty!)
+  const truckEvents = useMemo(() => {
+    const filtered = mapEvents.filter(event => createSlug(event.truckName) === slug);
+    return filtered.reduce((groups, event) => {
       const date = event.date;
       if (!groups[date]) groups[date] = [];
       groups[date].push(event);
       return groups;
     }, {} as Record<string, typeof mapEvents>);
-
-    return { truckEvents: grouped, truckInfo: info };
   }, [mapEvents, slug]);
 
   const openTallyPopup = () => {
@@ -204,13 +210,28 @@ export default function TruckClient({ slug }: { slug: string }) {
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
         ) : !truckInfo ? (
           
-          /* 👇 UPDATED: THE "EMPTY STATE" PROMPT 👇 */
+          /* 👇 SCENARIO A: Truck doesn't exist in your directory at all 👇 */
+          <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">🤷‍♂️</div>
+            <h2 className="text-xl font-bold text-slate-800">Truck not found</h2>
+            <p className="text-slate-500 mt-2 max-w-sm">We couldn't find any details for this food truck. They might have moved or updated their profile.</p>
+            <Link 
+              href="/trucks" 
+              className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
+            >
+              View all trucks
+            </Link>
+          </div>
+
+        ) : Object.keys(truckEvents).length === 0 ? (
+          
+          /* 👇 SCENARIO B: Truck exists, but has 0 events 👇 */
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">😔</div>
             <h2 className="text-xl font-bold text-slate-800">No upcoming events found</h2>
             <p className="text-slate-500 mt-2 max-w-sm">We might be missing some details for this truck. Are you the owner, or do you know their schedule?</p>
             <Link 
-              href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(slug)}`} 
+              href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`} 
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
               Drop us a message to update!
@@ -218,6 +239,7 @@ export default function TruckClient({ slug }: { slug: string }) {
           </div>
 
         ) : (
+          /* 👇 SCENARIO C: Truck exists and has events! 👇 */
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             
             <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1">Upcoming Tour Dates</h2>
@@ -237,7 +259,7 @@ export default function TruckClient({ slug }: { slug: string }) {
                 </div>
             ))}
 
-            {/* 👇 UPDATED: THE "POPULATED STATE" PROMPT 👇 */}
+            {/* Missing an event prompt at the bottom */}
             <div className="mt-10 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
               <p className="m-0 text-slate-600">
                 <strong className="text-slate-800">Are we missing an event?</strong> <br />
