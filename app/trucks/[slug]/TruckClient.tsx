@@ -25,7 +25,7 @@ export default function TruckClient({ slug }: { slug: string }) {
   }, []);
 
   const { loading, mapEvents } = useVillageData(null, {
-    date: 'all', 
+    date: 'unlimited', 
     cuisine: 'all',
     distance: '1000' 
   });

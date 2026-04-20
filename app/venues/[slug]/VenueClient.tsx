@@ -13,7 +13,7 @@ export default function VenueClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
 
   const { loading, mapEvents } = useVillageData(null, {
-    date: 'all',
+    date: 'unlimited',
     cuisine: 'all',
     distance: '1000' 
   });

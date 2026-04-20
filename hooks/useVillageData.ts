@@ -57,7 +57,6 @@ export function useVillageData(
   filters: { cuisine: string; date: string; distance: string }
 ) {
   const [events, setEvents] = useState<VillageEvent[]>([]);
-  // 👇 NEW: We are now saving the raw list of all trucks 👇
   const [allTrucks, setAllTrucks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -218,6 +217,7 @@ export function useVillageData(
           .filter(e => {
               if (!e.date) return false;
               const eventDate = parseDateString(e.date);
+              // Keeps the global future-only filter active
               return eventDate ? eventDate >= today : false; 
           })
           .sort((a, b) => {
@@ -229,7 +229,6 @@ export function useVillageData(
 
         if (isMounted) {
             setEvents(parsedEvents);
-            // 👇 NEW: We save the master truck list to state here 👇
             setAllTrucks(trucksList);
             setLoading(false);
         }
@@ -258,10 +257,20 @@ export function useVillageData(
     today.setHours(0,0,0,0);
     
     const dateFiltered = events.filter(event => {
+      // 👇 NEW: Check for the 'unlimited' bypass rule first 👇
+      if (filters.date === 'unlimited') return true;
+      
+      const eventDate = parseDateString(event.date);
+      if (!eventDate) return false;
+      
+      // 👇 NEW: Capping the default 'all' filter to 14 days 👇
+      if (filters.date === 'all') {
+        const twoWeeks = new Date(today);
+        twoWeeks.setDate(today.getDate() + 14);
+        if (eventDate > twoWeeks) return false;
+      }
+      
       if (filters.date !== 'all') {
-        const eventDate = parseDateString(event.date);
-        if (!eventDate) return false;
-        
         if (filters.date === 'today' && eventDate.getTime() !== today.getTime()) return false;
         
         if (filters.date === 'tomorrow') {
@@ -376,6 +385,6 @@ export function useVillageData(
       mapEvents, 
       dynamicCuisineOptions, 
       venueStats,
-      allTrucks // 👇 NEW: We export the master list so the directory page can use it 👇
+      allTrucks 
   };
 }
