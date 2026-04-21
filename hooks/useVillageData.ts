@@ -107,7 +107,9 @@ export function useVillageData(
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
                     logoUrl: cols[9] || '',
-                    aliases: cols[17] || ''          
+                    aliases: cols[17] || '',
+                    // 👇 NEW: We save the exclude flag from Column T (Index 19)
+                    exclude: cols[19] ? cols[19].toLowerCase().trim() : ''          
                 });
             }
         });
@@ -167,6 +169,10 @@ export function useVillageData(
                 truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey));
             }
             
+            // 🚨 NEW: CRITICAL GUARDRAIL 🚨
+            // If we found the truck, and it is marked 'yes' in the exclude column, kill the event entirely!
+            if (truck && truck.exclude === 'yes') return null as any; 
+
             truck = truck || {}; 
 
             const eventVenueKey = getVenueSlug(rawVenue, rawEventVillage);
@@ -174,17 +180,15 @@ export function useVillageData(
             // 1. The Exact Match (Safe because it combines Venue + Village)
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
             
-            // 👇 2. THE NEW, ULTRA-SAFE SCORING FALLBACK 👇
+            // 2. THE NEW, ULTRA-SAFE SCORING FALLBACK 
             if (!venue) {
                 let bestMatch = null;
                 let highestScore = -1;
 
                 const cleanEventVenue = createSlug(rawVenue);
                 const cleanEventVillage = createSlug(rawEventVillage);
-                // We strip spaces from the notes so we can easily scan for postcodes like "CB88PD"
                 const eventNotesClean = (cols[6] || '').toLowerCase().replace(/\s/g, ''); 
                 
-                // The "Danger List" of highly duplicated UK names
                 const genericNames = ['villagehall', 'townhall', 'communitycentre', 'sportsclub', 'recreationground', 'theplough', 'theredlion', 'thecrown', 'thebell', 'theswan', 'thewhitehorse'];
                 const isGeneric = genericNames.some(g => cleanEventVenue.includes(g));
 
@@ -194,33 +198,26 @@ export function useVillageData(
                     const vVillageClean = createSlug(v.village);
                     const vPostcodeClean = (v.postcode || '').toLowerCase().replace(/\s/g, '');
 
-                    // SCORE 1: Postcode Match (The Absolute Gold Standard)
                     if (vPostcodeClean && vPostcodeClean.length > 4 && eventNotesClean.includes(vPostcodeClean)) {
                         score += 1000; 
                     }
 
-                    // SCORE 2: Village Match
                     const villageExact = vVillageClean && cleanEventVillage && vVillageClean === cleanEventVillage;
                     const villageFuzzy = vVillageClean && cleanEventVillage && (vVillageClean.includes(cleanEventVillage) || cleanEventVillage.includes(vVillageClean));
                     
                     if (villageExact) score += 100;
                     else if (villageFuzzy) score += 50;
 
-                    // SCORE 3: Venue Name Match
                     const nameExact = vNameClean === cleanEventVenue;
                     const nameFuzzy = isMatch(vNameClean, cleanEventVenue);
                     
                     if (nameExact) score += 100;
                     else if (nameFuzzy) score += 50;
 
-                    // 🚨 CRITICAL GUARDRAIL 🚨
-                    // If the venue is generic (e.g. "The Plough") but the village doesn't match 
-                    // AND the postcode isn't in the notes, completely disqualify it!
                     if (isGeneric && score < 150) { 
                         score = -1; 
                     }
                     
-                    // Accept the match if it has a decent score (e.g., at least a fuzzy name + fuzzy village)
                     if (score > highestScore && score >= 50) {
                         highestScore = score;
                         bestMatch = v;
@@ -229,10 +226,9 @@ export function useVillageData(
 
                 venue = bestMatch || {};
             }
-            // 👆 END OF NEW SCORING LOGIC 👆
 
             const eventObj: VillageEvent = {
-              id: `event-${index}`, // We use this index later to check Recency!
+              id: `event-${index}`, 
               date: rawDate,
               startTime: cols[1] || '',
               endTime: cols[2] || '',
@@ -262,6 +258,7 @@ export function useVillageData(
             return eventObj;
           })
           .filter(e => {
+              if (!e) return false; // 👇 NEW: This filters out any of the 'null' excluded events
               if (!e.date) return false;
               const eventDate = parseDateString(e.date);
               return eventDate ? eventDate >= today : false; 
@@ -275,7 +272,6 @@ export function useVillageData(
 
         // --- 4. SMART DEDUPLICATION LOGIC ---
         
-        // Step A: Pre-calculate venue popularity (How many unique trucks visit each venue slug?)
         const tempVenueStats: Record<string, Set<string>> = {};
         parsedEvents.forEach(e => {
             const vKey = getVenueSlug(e.venueName, e.village || '');
@@ -286,12 +282,10 @@ export function useVillageData(
             }
         });
 
-        // Step B: Group events by Date + Truck + Postcode
         const deduplicatedEvents: VillageEvent[] = [];
         const eventGroups = new Map<string, VillageEvent[]>();
 
         parsedEvents.forEach(event => {
-            // If they don't have a postcode, fall back to the venue slug so it still groups safely
             const locationKey = event.postcode ? event.postcode.toLowerCase().replace(/\s/g, '') : getVenueSlug(event.venueName, event.village || '');
             const uniqueKey = `${event.date}|${createSlug(event.truckName)}|${locationKey}`;
 
@@ -301,7 +295,6 @@ export function useVillageData(
             eventGroups.get(uniqueKey)!.push(event);
         });
 
-        // Step C: Score and Merge
         eventGroups.forEach(group => {
             if (group.length === 1) {
                 deduplicatedEvents.push(group[0]);
@@ -315,18 +308,15 @@ export function useVillageData(
                 let score = 0;
                 const vKey = getVenueSlug(evt.venueName, evt.village || '');
 
-                // Priority 1: Master Venue (More trucks = higher score)
                 const truckCount = tempVenueStats[vKey]?.size || 0;
                 score += truckCount * 100;
 
-                // Priority 2: Data Completeness
                 if (evt.eventNotes) score += 10;
                 if (evt.village) score += 10;
                 if (evt.startTime && evt.endTime) score += 5;
 
-                // Priority 3: Recency (Higher Row Index = Newer)
                 const rowNum = parseInt(evt.id.split('-')[1] || '0');
-                score += rowNum; // 1 point per row number (newer rows win ties)
+                score += rowNum; 
 
                 if (score > highestScore) {
                     highestScore = score;
@@ -334,7 +324,6 @@ export function useVillageData(
                 }
             });
 
-            // Priority 4: Data Merging (Absorb useful missing data from the losers!)
             const finalMergedEvent = { ...bestEvent };
             group.forEach(evt => {
                 if (!finalMergedEvent.village && evt.village) finalMergedEvent.village = evt.village;
@@ -346,9 +335,9 @@ export function useVillageData(
         });
 
         if (isMounted) {
-            // Set the state using our newly cleaned and merged list!
             setEvents(deduplicatedEvents);
-            setAllTrucks(trucksList);
+            // 👇 NEW: We filter out excluded trucks before setting the master list so they don't appear in the directory page!
+            setAllTrucks(trucksList.filter(t => t.exclude !== 'yes'));
             setLoading(false);
         }
 
