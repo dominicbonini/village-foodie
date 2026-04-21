@@ -196,80 +196,90 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const cardContent = (
     <div className="flex gap-3 items-start w-full min-w-0 font-sans">
         
-        <div className="flex flex-col items-center shrink-0 w-12 md:w-16">
+        <div className="flex flex-col items-center shrink-0 w-14 md:w-18 pt-1">
             {event.logoUrl ? (
-                <img src={event.logoUrl} alt={`${event.truckName} logo`} className="bg-white h-12 w-12 md:h-16 md:w-16 rounded-full object-cover shrink-0 border border-slate-200 mt-1 shadow-sm transition-all" loading="lazy" />
+                <img src={event.logoUrl} alt={`${event.truckName} logo`} className="bg-white h-14 w-14 md:h-18 md:w-18 rounded-full object-cover shrink-0 border border-slate-200 shadow-sm transition-all" loading="lazy" />
             ) : (
-                <div className="bg-slate-50 h-12 w-12 md:h-16 md:w-16 rounded-full flex items-center justify-center text-2xl md:text-3xl shrink-0 border border-slate-100 mt-1 shadow-sm transition-all">
+                <div className="bg-slate-50 h-14 w-14 md:h-18 md:w-18 rounded-full flex items-center justify-center text-2xl md:text-3xl shrink-0 border border-slate-100 shadow-sm transition-all">
                     {isStatic ? '🍽️' : "\uD83D\uDE9A"}
-                </div>
-            )}
-            
-            {distanceMiles != null && (
-                <div className="mt-1.5 flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-md py-1 w-full shadow-sm md:hidden">
-                    <span className="text-[10px] font-bold text-slate-700 leading-none">{distanceMiles.toFixed(1)}</span>
-                    <span className="text-[8px] font-medium text-slate-600 leading-none lowercase mt-0.5">miles</span>
                 </div>
             )}
         </div>
         
         <div className="flex-1 min-w-0 flex flex-col">
             
-            <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-0 min-w-0 pr-2">
-                    
-                    <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        {event.websiteUrl ? (
-                          <a 
-                            href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
-                            title={`Visit ${event.truckName}'s website or page`}
-                          >
-                            {event.truckName}
-                          </a>
-                        ) : (
-                          <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
-                            {event.truckName}
-                          </span>
-                        )}
-                    </h3>
-                    
-                    {!isVenuePage && (
-                        <div className="mt-0.5 flex items-center min-w-0">
-                            {!isMapPopup ? (
-                                <Link 
-                                    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
-                                    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
-                                    title={`View venue details for ${event.venueName}`}
-                                >
-                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
+            <div className="flex justify-between items-start gap-2">
+                
+                {/* --- LEFT COLUMN: Name, Venue, and Time/Directions --- */}
+                <div className="flex flex-col min-w-0 flex-1">
+                    <div className="flex flex-col gap-0 min-w-0 pr-2">
+                        <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
+                            {event.websiteUrl ? (
+                            <a 
+                                href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
+                                title={`Visit ${event.truckName}'s website or page`}
+                            >
+                                {event.truckName}
+                            </a>
+                            ) : (
+                            <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
+                                {event.truckName}
+                            </span>
+                            )}
+                        </h3>
+                        
+                        {!isVenuePage && (
+                            <div className="mt-0.5 flex items-center min-w-0">
+                                {!isMapPopup ? (
+                                    <Link 
+                                        href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+                                        className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
+                                        title={`View venue details for ${event.venueName}`}
+                                    >
+                                        <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
+                                            {venueDisplay}
+                                        </span>
+                                        {venueStats && venueStats.uniqueTrucks > 1 && (
+                                            <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
+                                                {venueStats.uniqueTrucks} trucks
+                                            </span>
+                                        )}
+                                    </Link>
+                                ) : (
+                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate">
                                         {venueDisplay}
                                     </span>
-                                    {venueStats && venueStats.uniqueTrucks > 1 && (
-                                        <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
-                                            {venueStats.uniqueTrucks} trucks
-                                        </span>
-                                    )}
-                                </Link>
-                            ) : (
-                                <span className="text-slate-600 text-xs font-medium leading-tight truncate">
-                                    {venueDisplay}
-                                </span>
-                            )}
-                        </div>
-                    )}
+                                )}
+                            </div>
+                        )}
+                    </div>
 
+                    <div className="flex items-center gap-3 mt-1.5 shrink-0">
+                        <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
+                            {event.startTime} - {event.endTime}
+                        </span>
+                        
+                        {!isVenuePage && (
+                            <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 transition-colors !no-underline cursor-pointer">
+                                📍 <span className="underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600">
+                                    {distanceMiles != null ? `${distanceMiles.toFixed(1)} miles away` : 'Directions'}
+                                </span>
+                            </a>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
-                    {/* 👇 SHOW THE FOOD PHOTO OR FALLBACK TO CUISINE TAGS 👇 */}
+                {/* --- RIGHT COLUMN: Exact custom sizing for the Goldilocks zone --- */}
+                <div className="flex flex-col items-end gap-1.5 shrink-0 pl-1">
                     {(event as any).foodPhotoUrl ? (
                         <img 
                             src={(event as any).foodPhotoUrl} 
                             alt={`${event.truckName} food`} 
-                            className="w-16 h-12 md:w-20 md:h-14 object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
+                            // 👇 EXACT CUSTOM PIXEL SIZES: 76px mobile, 84px desktop 👇
+                            className="w-[76px] h-[76px] md:w-[84px] md:h-[84px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
                             loading="lazy" 
                         />
                     ) : (
@@ -288,26 +298,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                             </div>
                         )
                     )}
-                    
-                    {/* 👇 DESKTOP DISTANCE SITS RIGHT UNDER THE PHOTO 👇 */}
-                    {distanceMiles != null && (
-                        <span className="hidden md:flex text-[9px] font-bold text-slate-700 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded whitespace-nowrap mt-0.5 shadow-sm">
-                            {distanceMiles.toFixed(1)} miles away
-                        </span>
-                    )}
                 </div>
-            </div>
-
-            <div className="flex items-center gap-3 mt-1.5 shrink-0">
-                <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
-                    {event.startTime} - {event.endTime}
-                </span>
-                
-                {!isVenuePage && (
-                    <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600 transition-colors !no-underline">
-                        📍 Directions
-                    </a>
-                )}
             </div>
 
             <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
