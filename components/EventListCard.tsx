@@ -159,6 +159,11 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const acceptsWhatsApp = methodsStr.includes('whatsapp');
   const showWebsite = wantsWebsite || (!methodsStr && event.orderUrl && event.orderUrl.includes('http'));
 
+  const PrimaryBtnClass = "flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap";
+  
+  // 👇 UPDATED: Removed flex-1 so the buttons don't stretch, just shrink to fit their content 👇
+  const UtilityLinkClass = "flex items-center justify-center gap-1 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-0.5 px-1.5 transition-colors whitespace-nowrap bg-transparent cursor-pointer";
+
   const MenuBtn = event.menuUrl ? (
     <a href={event.menuUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Menu')} className={`${isMapPopup ? 'w-full' : 'flex-1'} flex items-center justify-center text-center gap-1 text-[11px] font-bold !text-white !bg-slate-900 hover:!bg-slate-800 py-2 px-1 rounded-md transition-colors shadow-sm !no-underline whitespace-nowrap`}>
         <span>📸</span> View Menu
@@ -168,25 +173,25 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const ContactBtns = (
     <>
         {showWebsite && event.orderUrl && event.orderUrl.includes('http') && (
-            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+            <a href={event.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website')} className={PrimaryBtnClass}>
                 🌐 Order
             </a>
         )}
         
         {hasPhone && (
-            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call Truck')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+            <a href={`tel:${cleanPhone}`} onClick={() => trackOrderClick('Call Truck')} className={PrimaryBtnClass}>
                 📞 Call
             </a>
         )}
 
         {hasPhone && isMobileNumber && acceptsWhatsApp && (
-            <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+            <a href={`https://wa.me/${waPhone}?text=${orderMessage}`} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('WhatsApp')} className={PrimaryBtnClass}>
                 💬 Message
             </a>
         )}
 
         {hasPhone && isMobileNumber && !acceptsWhatsApp && (
-            <a href={`sms:${cleanPhone}${smsDivider}body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className="flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap">
+            <a href={`sms:${cleanPhone}${smsDivider}body=${orderMessage}`} onClick={() => trackOrderClick('Text')} className={PrimaryBtnClass}>
                 💬 Message
             </a>
         )}
@@ -194,115 +199,110 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   );
 
   const cardContent = (
-    <div className="flex gap-3 items-start w-full min-w-0 font-sans">
+    <div className="flex flex-col w-full min-w-0 font-sans">
         
-        <div className="flex flex-col items-center shrink-0 w-14 md:w-18 pt-1">
-            {event.logoUrl ? (
-                <img src={event.logoUrl} alt={`${event.truckName} logo`} className="bg-white h-14 w-14 md:h-18 md:w-18 rounded-full object-cover shrink-0 border border-slate-200 shadow-sm transition-all" loading="lazy" />
-            ) : (
-                <div className="bg-slate-50 h-14 w-14 md:h-18 md:w-18 rounded-full flex items-center justify-center text-2xl md:text-3xl shrink-0 border border-slate-100 shadow-sm transition-all">
-                    {isStatic ? '🍽️' : "\uD83D\uDE9A"}
-                </div>
-            )}
-        </div>
-        
-        <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex gap-3 items-start w-full min-w-0">
             
-            <div className="flex justify-between items-start gap-2">
-                
-                {/* --- LEFT COLUMN: Name, Venue, and Time/Directions --- */}
-                <div className="flex flex-col min-w-0 flex-1">
-                    <div className="flex flex-col gap-0 min-w-0 pr-2">
-                        <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                            {event.websiteUrl ? (
-                            <a 
-                                href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
-                                title={`Visit ${event.truckName}'s website or page`}
-                            >
-                                {event.truckName}
-                            </a>
-                            ) : (
-                            <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
-                                {event.truckName}
-                            </span>
-                            )}
-                        </h3>
-                        
-                        {!isVenuePage && (
-                            <div className="mt-0.5 flex items-center min-w-0">
-                                {!isMapPopup ? (
-                                    <Link 
-                                        href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
-                                        className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
-                                        title={`View venue details for ${event.venueName}`}
-                                    >
-                                        <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
-                                            {venueDisplay}
-                                        </span>
-                                        {venueStats && venueStats.uniqueTrucks > 1 && (
-                                            <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
-                                                {venueStats.uniqueTrucks} trucks
-                                            </span>
-                                        )}
-                                    </Link>
-                                ) : (
-                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate">
+            <div className="flex flex-col items-center shrink-0 w-[64px] md:w-[72px]">
+                {event.logoUrl ? (
+                    <img src={event.logoUrl} alt={`${event.truckName} logo`} className="bg-white h-[64px] w-[64px] md:h-[72px] md:w-[72px] rounded-full object-cover shrink-0 border border-slate-200 shadow-sm transition-all" loading="lazy" />
+                ) : (
+                    <div className="bg-slate-50 h-[64px] w-[64px] md:h-[72px] md:w-[72px] rounded-full flex items-center justify-center text-2xl md:text-3xl shrink-0 border border-slate-100 shadow-sm transition-all">
+                        {isStatic ? '🍽️' : "\uD83D\uDE9A"}
+                    </div>
+                )}
+            </div>
+            
+            <div className="flex-1 min-w-0 flex flex-col">
+                <div className="flex flex-col gap-0 min-w-0 pr-2">
+                    <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
+                        {event.websiteUrl ? (
+                        <a 
+                            href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
+                            title={`Visit ${event.truckName}'s website or page`}
+                        >
+                            {event.truckName}
+                        </a>
+                        ) : (
+                        <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
+                            {event.truckName}
+                        </span>
+                        )}
+                    </h3>
+                    
+                    {!isVenuePage && (
+                        <div className="flex items-center min-w-0">
+                            {!isMapPopup ? (
+                                <Link 
+                                    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+                                    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
+                                    title={`View venue details for ${event.venueName}`}
+                                >
+                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
                                         {venueDisplay}
                                     </span>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex items-center gap-3 mt-1.5 shrink-0">
-                        <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
-                            {event.startTime} - {event.endTime}
-                        </span>
-                        
-                        {!isVenuePage && (
-                            <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 transition-colors !no-underline cursor-pointer">
-                                📍 <span className="underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600">
-                                    {distanceMiles != null ? `${distanceMiles.toFixed(1)} miles away` : 'Directions'}
+                                    {venueStats && venueStats.uniqueTrucks > 1 && (
+                                        <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
+                                            {venueStats.uniqueTrucks} trucks
+                                        </span>
+                                    )}
+                                </Link>
+                            ) : (
+                                <span className="text-slate-600 text-xs font-medium leading-tight truncate">
+                                    {venueDisplay}
                                 </span>
-                            </a>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
-                {/* --- RIGHT COLUMN: Reduced to the true Goldilocks size (70px) --- */}
-                <div className="flex flex-col items-end gap-1.5 shrink-0 pl-1">
-                    {(event as any).foodPhotoUrl ? (
-                        <img 
-                            src={(event as any).foodPhotoUrl} 
-                            alt={`${event.truckName} food`} 
-                            // 👇 EXACT CUSTOM PIXEL SIZES: 70px mobile, 80px desktop 👇
-                            className="w-[70px] h-[70px] md:w-[80px] md:h-[80px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
-                            loading="lazy" 
-                        />
-                    ) : (
-                        event.type && event.type !== 'Mobile' && !isStatic && (
-                            <div className="flex flex-col gap-1 items-end">
-                                {event.type.split(',').map((cuisineTag, idx) => {
-                                    const cleanCuisine = cuisineTag.trim();
-                                    if (!cleanCuisine) return null;
-                                    return (
-                                        <span key={idx} className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
-                                            <span>{getCuisineEmoji(cleanCuisine)}</span>
-                                            <span className="capitalize">{cleanCuisine}</span>
-                                        </span>
-                                    );
-                                })}
-                            </div>
-                        )
+                <div className="flex items-center gap-3 mt-1 shrink-0">
+                    <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
+                        {event.startTime} - {event.endTime}
+                    </span>
+                    
+                    {!isVenuePage && (
+                        <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 transition-colors !no-underline cursor-pointer">
+                            📍 <span className="underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600">
+                                {distanceMiles != null ? `${distanceMiles.toFixed(1)} miles away` : 'Directions'}
+                            </span>
+                        </a>
                     )}
                 </div>
             </div>
 
-            <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
-                
+            <div className="flex flex-col items-end gap-1.5 shrink-0 pl-1">
+                {(event as any).foodPhotoUrl ? (
+                    <img 
+                        src={(event as any).foodPhotoUrl} 
+                        alt={`${event.truckName} food`} 
+                        className="w-[64px] h-[64px] md:w-[72px] md:h-[72px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
+                        loading="lazy" 
+                    />
+                ) : (
+                    event.type && event.type !== 'Mobile' && !isStatic && (
+                        <div className="flex flex-col gap-1 items-end">
+                            {event.type.split(',').map((cuisineTag, idx) => {
+                                const cleanCuisine = cuisineTag.trim();
+                                if (!cleanCuisine) return null;
+                                return (
+                                    <span key={idx} className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
+                                        <span>{getCuisineEmoji(cleanCuisine)}</span>
+                                        <span className="capitalize">{cleanCuisine}</span>
+                                    </span>
+                                );
+                            })}
+                        </div>
+                    )
+                )}
+            </div>
+        </div>
+
+        {(event.notes || event.eventNotes) && (
+            <div className="mt-2 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
                 {event.notes && (
                     <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
                         <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
@@ -317,55 +317,54 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                         </div>
                     </div>
                 )}
+            </div>
+        )}
 
-                {(event.menuUrl || showWebsite || hasPhone) && (
-                    isMapPopup ? (
-                        <div className="flex flex-col gap-1.5 w-full min-w-0 shrink-0 mt-0.5">
-                            {MenuBtn}
-                            {(showWebsite || hasPhone) && (
-                                <div className="flex w-full gap-1.5">
-                                    {ContactBtns}
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex w-full gap-1.5 min-w-0 shrink-0 mt-0.5">
-                            {MenuBtn}
+        {(event.menuUrl || showWebsite || hasPhone) && (
+            isMapPopup ? (
+                <div className="flex flex-col gap-1.5 w-full min-w-0 shrink-0 mt-2">
+                    {MenuBtn}
+                    {(showWebsite || hasPhone) && (
+                        <div className="flex w-full gap-1.5">
                             {ContactBtns}
                         </div>
-                    )
-                )}
-                
-             <div className="flex flex-wrap gap-2 justify-end shrink-0 mt-0.5">
-                    
-                    {hasVenuePhone && (
-                        <a href={`tel:${cleanVenuePhone}`} onClick={() => trackOrderClick('Call Venue')} className="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
-                            📞 Call Venue
-                        </a>
                     )}
-
-                    <div className="relative group shrink-0">
-                        <button className="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 group-hover:bg-orange-50 group-hover:border-orange-200 text-slate-700 group-hover:text-orange-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                            Add to Cal
-                        </button>
-                        <select className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleCalendarSelect} value="">
-                            <option value="" disabled>Select Calendar...</option>
-                            <option value="google">Google Calendar (Web)</option>
-                            <option value="outlook_web">Outlook.com (Web)</option>
-                            <option value="ics">Apple / Mobile / Outlook</option>
-                        </select>
-                    </div>
-
-                    <button onClick={handleShare} className="flex items-center justify-center gap-1 bg-slate-50 border border-slate-200 hover:bg-orange-50 hover:border-orange-200 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-1.5 px-3 rounded-md transition-all shadow-sm">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                        Share
-                    </button>
-
                 </div>
+            ) : (
+                <div className="flex w-full gap-1.5 min-w-0 shrink-0 mt-2">
+                    {MenuBtn}
+                    {ContactBtns}
+                </div>
+            )
+        )}
+        
+        {/* 👇 UPDATED: Changed from 'w-full' to 'justify-end' and added 'gap-3' to cluster buttons neatly on the right 👇 */}
+        <div className="flex justify-end gap-3 min-w-0 shrink-0 mt-2">
+            {hasVenuePhone && (
+                <a href={`tel:${cleanVenuePhone}`} onClick={() => trackOrderClick('Call Venue')} className={UtilityLinkClass}>
+                    📞 Call Venue
+                </a>
+            )}
 
+            <div className="relative group">
+                <button className={UtilityLinkClass}>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    Add to Cal
+                </button>
+                <select className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleCalendarSelect} value="">
+                    <option value="" disabled>Select Calendar...</option>
+                    <option value="google">Google Calendar (Web)</option>
+                    <option value="outlook_web">Outlook.com (Web)</option>
+                    <option value="ics">Apple / Mobile / Outlook</option>
+                </select>
             </div>
+
+            <button onClick={handleShare} className={UtilityLinkClass}>
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                Share
+            </button>
         </div>
+
     </div>
   );
 
