@@ -272,14 +272,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                     </div>
                 </div>
 
-                {/* --- RIGHT COLUMN: Exact custom sizing for the Goldilocks zone --- */}
+                {/* --- RIGHT COLUMN: Reduced to the true Goldilocks size (70px) --- */}
                 <div className="flex flex-col items-end gap-1.5 shrink-0 pl-1">
                     {(event as any).foodPhotoUrl ? (
                         <img 
                             src={(event as any).foodPhotoUrl} 
                             alt={`${event.truckName} food`} 
-                            // 👇 EXACT CUSTOM PIXEL SIZES: 76px mobile, 84px desktop 👇
-                            className="w-[76px] h-[76px] md:w-[84px] md:h-[84px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
+                            // 👇 EXACT CUSTOM PIXEL SIZES: 70px mobile, 80px desktop 👇
+                            className="w-[70px] h-[70px] md:w-[80px] md:h-[80px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
                             loading="lazy" 
                         />
                     ) : (
