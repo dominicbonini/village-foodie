@@ -185,7 +185,7 @@ export function useVillageData(
             }
 
             const eventObj: VillageEvent = {
-              id: `event-${index}`,
+              id: `event-${index}`, // We use this index later to check Recency!
               date: rawDate,
               startTime: cols[1] || '',
               endTime: cols[2] || '',
@@ -217,7 +217,6 @@ export function useVillageData(
           .filter(e => {
               if (!e.date) return false;
               const eventDate = parseDateString(e.date);
-              // Keeps the global future-only filter active
               return eventDate ? eventDate >= today : false; 
           })
           .sort((a, b) => {
@@ -227,8 +226,81 @@ export function useVillageData(
               return dateA.getTime() - dateB.getTime();
           });
 
+        // --- 4. SMART DEDUPLICATION LOGIC ---
+        
+        // Step A: Pre-calculate venue popularity (How many unique trucks visit each venue slug?)
+        const tempVenueStats: Record<string, Set<string>> = {};
+        parsedEvents.forEach(e => {
+            const vKey = getVenueSlug(e.venueName, e.village || '');
+            const tKey = createSlug(e.truckName);
+            if (vKey) {
+                if (!tempVenueStats[vKey]) tempVenueStats[vKey] = new Set();
+                tempVenueStats[vKey].add(tKey);
+            }
+        });
+
+        // Step B: Group events by Date + Truck + Postcode
+        const deduplicatedEvents: VillageEvent[] = [];
+        const eventGroups = new Map<string, VillageEvent[]>();
+
+        parsedEvents.forEach(event => {
+            // If they don't have a postcode, fall back to the venue slug so it still groups safely
+            const locationKey = event.postcode ? event.postcode.toLowerCase().replace(/\s/g, '') : getVenueSlug(event.venueName, event.village || '');
+            const uniqueKey = `${event.date}|${createSlug(event.truckName)}|${locationKey}`;
+
+            if (!eventGroups.has(uniqueKey)) {
+                eventGroups.set(uniqueKey, []);
+            }
+            eventGroups.get(uniqueKey)!.push(event);
+        });
+
+        // Step C: Score and Merge
+        eventGroups.forEach(group => {
+            if (group.length === 1) {
+                deduplicatedEvents.push(group[0]);
+                return;
+            }
+
+            let bestEvent = group[0];
+            let highestScore = -1;
+
+            group.forEach(evt => {
+                let score = 0;
+                const vKey = getVenueSlug(evt.venueName, evt.village || '');
+
+                // Priority 1: Master Venue (More trucks = higher score)
+                const truckCount = tempVenueStats[vKey]?.size || 0;
+                score += truckCount * 100;
+
+                // Priority 2: Data Completeness
+                if (evt.eventNotes) score += 10;
+                if (evt.village) score += 10;
+                if (evt.startTime && evt.endTime) score += 5;
+
+                // Priority 3: Recency (Higher Row Index = Newer)
+                const rowNum = parseInt(evt.id.split('-')[1] || '0');
+                score += rowNum; // 1 point per row number (newer rows win ties)
+
+                if (score > highestScore) {
+                    highestScore = score;
+                    bestEvent = evt;
+                }
+            });
+
+            // Priority 4: Data Merging (Absorb useful missing data from the losers!)
+            const finalMergedEvent = { ...bestEvent };
+            group.forEach(evt => {
+                if (!finalMergedEvent.village && evt.village) finalMergedEvent.village = evt.village;
+                if (!finalMergedEvent.eventNotes && evt.eventNotes) finalMergedEvent.eventNotes = evt.eventNotes;
+                if (!finalMergedEvent.postcode && evt.postcode) finalMergedEvent.postcode = evt.postcode;
+            });
+
+            deduplicatedEvents.push(finalMergedEvent);
+        });
+
         if (isMounted) {
-            setEvents(parsedEvents);
+            // Set the state using our newly cleaned and merged list!
+            setEvents(deduplicatedEvents);
             setAllTrucks(trucksList);
             setLoading(false);
         }
@@ -257,13 +329,11 @@ export function useVillageData(
     today.setHours(0,0,0,0);
     
     const dateFiltered = events.filter(event => {
-      // 👇 NEW: Check for the 'unlimited' bypass rule first 👇
       if (filters.date === 'unlimited') return true;
       
       const eventDate = parseDateString(event.date);
       if (!eventDate) return false;
       
-      // 👇 NEW: Capping the default 'all' filter to 14 days 👇
       if (filters.date === 'all') {
         const twoWeeks = new Date(today);
         twoWeeks.setDate(today.getDate() + 14);
