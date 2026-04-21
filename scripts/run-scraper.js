@@ -508,11 +508,12 @@ for (const [index, site] of sitesToScrape.entries()) {
           3. "freq" and "day" MUST BE LOWERCASE ONLY.
           4. DATE BOUNDARIES: If rules say "from [Date]" or "until [Date]", extract "startDate" and/or "endDate" in "YYYY-MM-DD" format.
           5. IGNORE PRIVATE EVENTS: Do not extract any event labeled as "private", "private party", or "private lunch".
+          6. VILLAGE (MANDATORY): Always extract the town, village, or city into a separate "village" field.
 
           OUTPUT FORMAT EXAMPLES:
           [
-            { "venue": "Wickhambrook MSC", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "Hundon", "proof": "Wednesday Route", "rawTimeStart": "4.45", "rawTimeEnd": "8.30pm", "freq": "weekly", "day": "wednesday", "pos": "", "startDate": null, "endDate": null }
+            { "venue": "Wickhambrook MSC", "village": "Wickhambrook", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
+            { "venue": "Hundon", "village": "Hundon", "proof": "Wednesday Route", "rawTimeStart": "4.45", "rawTimeEnd": "8.30pm", "freq": "weekly", "day": "wednesday", "pos": "", "startDate": null, "endDate": null }
           ]
         `;
       } else {
@@ -530,7 +531,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           3. **RELATIVE DAYS:** ONLY calculate the "next immediate date" for a day of the week if NO specific date number (like "6th") is provided alongside it.
           4. **DateStart Format:** "DD/MM/YYYY". 
           5. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
-          6. **VILLAGE:** If a town or village is mentioned, extract it explicitly into the "Village" field.
+          6. **VILLAGE (MANDATORY):** You must extract the town, village, or city name. If the text says 'The Street, Capel St. Mary', the venue is 'The Street' and the Village is 'Capel St. Mary'. NEVER leave this blank.
           7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
           8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for each location.
           9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
@@ -569,7 +570,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                    for (const date of dates) {
                        finalEvents.push({
                            "DateStart": date, "TimeStart": tStart, "TimeEnd": tEnd,
-                           "Truck Name": site.name, "Venue Name": rule.venue || "Unknown Venue", "Village": "", "Notes": "" 
+                           "Truck Name": site.name, "Venue Name": rule.venue || "Unknown Venue", "Village": rule.village || "", "Notes": "" 
                        });
                    }
                }
@@ -711,6 +712,12 @@ for (const [index, site] of sitesToScrape.entries()) {
           const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
           
           const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
+
+          // --- 🛡️ NEW DEFENSE: EVENT SOURCE OVERRIDE ---
+          const eventSource = (site.strategy === 'manual' || site.strategy === 'manual_single') 
+            ? 'Manual Entry' 
+            : `URL: ${site.url} | Strategy: ${site.strategy}`;
+          // ------------------------------------------------
           
           if (!existingEvents.has(key)) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
@@ -723,7 +730,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                   finalVenue,                                       // Col E: Venue Name
                   extractedVillage,                                 // Col F: Village
                   "",                                               // Col G: Event Notes
-                  `URL: ${site.url} | Strategy: ${site.strategy}`,  // Col H: Event Source
+                  eventSource,                                      // Col H: Event Source
                   finalAiNotes                                      // Col I: AI Notes
               ]);
               
