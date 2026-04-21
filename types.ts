@@ -23,6 +23,7 @@ export interface VillageEvent {
   notes?: string;       // General Truck Notes
   eventNotes?: string;  // Specific Event Notes (From Events Tab)
   logoUrl?: string;
+  foodPhotoUrl?: string; // 👈 NEW: Added for the food images!
   
   // --- STRUCTURED ORDER DATA ---
   phoneNumber?: string;

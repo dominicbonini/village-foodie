@@ -218,42 +218,41 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             <div className="flex justify-between items-start">
                 <div className="flex flex-col gap-0 min-w-0 pr-2">
                     
-{/* 👇 THIS IS THE EXTERNAL LINK / PLAIN TEXT LOGIC 👇 */}
-<h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-    {event.websiteUrl ? (
-      <a 
-        href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
-        title={`Visit ${event.truckName}'s website or page`}
-      >
-        {event.truckName}
-      </a>
-    ) : (
-      <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
-        {event.truckName}
-      </span>
-    )}
-</h3>
+                    <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
+                        {event.websiteUrl ? (
+                          <a 
+                            href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
+                            title={`Visit ${event.truckName}'s website or page`}
+                          >
+                            {event.truckName}
+                          </a>
+                        ) : (
+                          <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
+                            {event.truckName}
+                          </span>
+                        )}
+                    </h3>
                     
                     {!isVenuePage && (
                         <div className="mt-0.5 flex items-center min-w-0">
                             {!isMapPopup ? (
                                 <Link 
-    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
-    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
-    title={`View venue details for ${event.venueName}`}
->
-    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
-        {venueDisplay}
-    </span>
-{venueStats && venueStats.uniqueTrucks > 1 && (
-    <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
-        {venueStats.uniqueTrucks} trucks
-    </span>
-)}
-</Link>
+                                    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+                                    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
+                                    title={`View venue details for ${event.venueName}`}
+                                >
+                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
+                                        {venueDisplay}
+                                    </span>
+                                    {venueStats && venueStats.uniqueTrucks > 1 && (
+                                        <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
+                                            {venueStats.uniqueTrucks} trucks
+                                        </span>
+                                    )}
+                                </Link>
                             ) : (
                                 <span className="text-slate-600 text-xs font-medium leading-tight truncate">
                                     {venueDisplay}
@@ -265,21 +264,32 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                 </div>
 
                 <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
-                    {event.type && event.type !== 'Mobile' && !isStatic && (
-                        <div className="flex flex-col gap-1 items-end">
-                            {event.type.split(',').map((cuisineTag, idx) => {
-                                const cleanCuisine = cuisineTag.trim();
-                                if (!cleanCuisine) return null;
-                                return (
-                                    <span key={idx} className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
-                                        <span>{getCuisineEmoji(cleanCuisine)}</span>
-                                        <span className="capitalize">{cleanCuisine}</span>
-                                    </span>
-                                );
-                            })}
-                        </div>
+                    {/* 👇 SHOW THE FOOD PHOTO OR FALLBACK TO CUISINE TAGS 👇 */}
+                    {(event as any).foodPhotoUrl ? (
+                        <img 
+                            src={(event as any).foodPhotoUrl} 
+                            alt={`${event.truckName} food`} 
+                            className="w-16 h-12 md:w-20 md:h-14 object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
+                            loading="lazy" 
+                        />
+                    ) : (
+                        event.type && event.type !== 'Mobile' && !isStatic && (
+                            <div className="flex flex-col gap-1 items-end">
+                                {event.type.split(',').map((cuisineTag, idx) => {
+                                    const cleanCuisine = cuisineTag.trim();
+                                    if (!cleanCuisine) return null;
+                                    return (
+                                        <span key={idx} className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap flex items-center gap-1">
+                                            <span>{getCuisineEmoji(cleanCuisine)}</span>
+                                            <span className="capitalize">{cleanCuisine}</span>
+                                        </span>
+                                    );
+                                })}
+                            </div>
+                        )
                     )}
                     
+                    {/* 👇 DESKTOP DISTANCE SITS RIGHT UNDER THE PHOTO 👇 */}
                     {distanceMiles != null && (
                         <span className="hidden md:flex text-[9px] font-bold text-slate-700 bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded whitespace-nowrap mt-0.5 shadow-sm">
                             {distanceMiles.toFixed(1)} miles away

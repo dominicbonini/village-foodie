@@ -16,6 +16,18 @@ const isMatch = (key1: string, key2: string) => {
     return k1.includes(k2) || k2.includes(k1);
 };
 
+// 🖼️ SMART IMAGE PATH FORMATTER
+const formatImageUrl = (rawPath: string, defaultFolder: string) => {
+    if (!rawPath) return '';
+    const cleanPath = rawPath.trim();
+    // If it's a full web link, or already has a leading slash, leave it alone
+    if (cleanPath.startsWith('http') || cleanPath.startsWith('/')) {
+        return cleanPath;
+    }
+    // Otherwise, assume it's just a filename and prepend the folder
+    return `/${defaultFolder}/${cleanPath}`;
+};
+
 // 🛡️ TRUE CSV PARSER
 function parseCSV(text: string) {
     const rows: string[][] = [];
@@ -106,10 +118,11 @@ export function useVillageData(
                     truckNotes: cols[5],      
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
-                    logoUrl: cols[9] || '',
+                    // 👇 Auto-prefixing logos and photos 👇
+                    logoUrl: formatImageUrl(cols[9], 'logos'),
+                    foodPhotoUrl: formatImageUrl(cols[16], 'photos'), // Column Q
                     aliases: cols[17] || '',
-                    // 👇 NEW: We save the exclude flag from Column T (Index 19)
-                    exclude: cols[19] ? cols[19].toLowerCase().trim() : ''          
+                    exclude: cols[19] ? cols[19].toLowerCase().trim() : '' // Column T
                 });
             }
         });
@@ -169,18 +182,17 @@ export function useVillageData(
                 truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey));
             }
             
-            // 🚨 NEW: CRITICAL GUARDRAIL 🚨
-            // If we found the truck, and it is marked 'yes' in the exclude column, kill the event entirely!
+            // Exclude banned trucks
             if (truck && truck.exclude === 'yes') return null as any; 
 
             truck = truck || {}; 
 
             const eventVenueKey = getVenueSlug(rawVenue, rawEventVillage);
             
-            // 1. The Exact Match (Safe because it combines Venue + Village)
+            // 1. The Exact Match
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
             
-            // 2. THE NEW, ULTRA-SAFE SCORING FALLBACK 
+            // 2. SCORING FALLBACK 
             if (!venue) {
                 let bestMatch = null;
                 let highestScore = -1;
@@ -252,13 +264,14 @@ export function useVillageData(
               menuUrl: truck.menuUrl || '',               
               notes: truck.truckNotes || '',
               eventNotes: cols[6] || '',    
-              logoUrl: truck.logoUrl || '',         
+              logoUrl: truck.logoUrl || '',
+              foodPhotoUrl: truck.foodPhotoUrl || '', // 👇 Passing photo to UI       
             };
 
             return eventObj;
           })
           .filter(e => {
-              if (!e) return false; // 👇 NEW: This filters out any of the 'null' excluded events
+              if (!e) return false;
               if (!e.date) return false;
               const eventDate = parseDateString(e.date);
               return eventDate ? eventDate >= today : false; 
@@ -329,6 +342,7 @@ export function useVillageData(
                 if (!finalMergedEvent.village && evt.village) finalMergedEvent.village = evt.village;
                 if (!finalMergedEvent.eventNotes && evt.eventNotes) finalMergedEvent.eventNotes = evt.eventNotes;
                 if (!finalMergedEvent.postcode && evt.postcode) finalMergedEvent.postcode = evt.postcode;
+                if (!(finalMergedEvent as any).foodPhotoUrl && (evt as any).foodPhotoUrl) (finalMergedEvent as any).foodPhotoUrl = (evt as any).foodPhotoUrl;
             });
 
             deduplicatedEvents.push(finalMergedEvent);
@@ -336,7 +350,6 @@ export function useVillageData(
 
         if (isMounted) {
             setEvents(deduplicatedEvents);
-            // 👇 NEW: We filter out excluded trucks before setting the master list so they don't appear in the directory page!
             setAllTrucks(trucksList.filter(t => t.exclude !== 'yes'));
             setLoading(false);
         }
