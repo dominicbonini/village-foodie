@@ -171,18 +171,65 @@ export function useVillageData(
 
             const eventVenueKey = getVenueSlug(rawVenue, rawEventVillage);
             
+            // 1. The Exact Match (Safe because it combines Venue + Village)
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
             
+            // 👇 2. THE NEW, ULTRA-SAFE SCORING FALLBACK 👇
             if (!venue) {
-                const genericVenueKey = createSlug(rawVenue);
-                venue = venuesList.find(v => {
-                    const fuzzyMatch = isMatch(createSlug(v.rawName), genericVenueKey);
-                    if (fuzzyMatch && genericVenueKey.length <= 5) {
-                        return false; 
+                let bestMatch = null;
+                let highestScore = -1;
+
+                const cleanEventVenue = createSlug(rawVenue);
+                const cleanEventVillage = createSlug(rawEventVillage);
+                // We strip spaces from the notes so we can easily scan for postcodes like "CB88PD"
+                const eventNotesClean = (cols[6] || '').toLowerCase().replace(/\s/g, ''); 
+                
+                // The "Danger List" of highly duplicated UK names
+                const genericNames = ['villagehall', 'townhall', 'communitycentre', 'sportsclub', 'recreationground', 'theplough', 'theredlion', 'thecrown', 'thebell', 'theswan', 'thewhitehorse'];
+                const isGeneric = genericNames.some(g => cleanEventVenue.includes(g));
+
+                venuesList.forEach(v => {
+                    let score = 0;
+                    const vNameClean = createSlug(v.rawName);
+                    const vVillageClean = createSlug(v.village);
+                    const vPostcodeClean = (v.postcode || '').toLowerCase().replace(/\s/g, '');
+
+                    // SCORE 1: Postcode Match (The Absolute Gold Standard)
+                    if (vPostcodeClean && vPostcodeClean.length > 4 && eventNotesClean.includes(vPostcodeClean)) {
+                        score += 1000; 
                     }
-                    return fuzzyMatch;
-                }) || {}; 
+
+                    // SCORE 2: Village Match
+                    const villageExact = vVillageClean && cleanEventVillage && vVillageClean === cleanEventVillage;
+                    const villageFuzzy = vVillageClean && cleanEventVillage && (vVillageClean.includes(cleanEventVillage) || cleanEventVillage.includes(vVillageClean));
+                    
+                    if (villageExact) score += 100;
+                    else if (villageFuzzy) score += 50;
+
+                    // SCORE 3: Venue Name Match
+                    const nameExact = vNameClean === cleanEventVenue;
+                    const nameFuzzy = isMatch(vNameClean, cleanEventVenue);
+                    
+                    if (nameExact) score += 100;
+                    else if (nameFuzzy) score += 50;
+
+                    // 🚨 CRITICAL GUARDRAIL 🚨
+                    // If the venue is generic (e.g. "The Plough") but the village doesn't match 
+                    // AND the postcode isn't in the notes, completely disqualify it!
+                    if (isGeneric && score < 150) { 
+                        score = -1; 
+                    }
+                    
+                    // Accept the match if it has a decent score (e.g., at least a fuzzy name + fuzzy village)
+                    if (score > highestScore && score >= 50) {
+                        highestScore = score;
+                        bestMatch = v;
+                    }
+                });
+
+                venue = bestMatch || {};
             }
+            // 👆 END OF NEW SCORING LOGIC 👆
 
             const eventObj: VillageEvent = {
               id: `event-${index}`, // We use this index later to check Recency!
