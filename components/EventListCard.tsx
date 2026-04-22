@@ -160,8 +160,6 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const showWebsite = wantsWebsite || (!methodsStr && event.orderUrl && event.orderUrl.includes('http'));
 
   const PrimaryBtnClass = "flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap";
-  
-  // 👇 UPDATED: Removed flex-1 so the buttons don't stretch, just shrink to fit their content 👇
   const UtilityLinkClass = "flex items-center justify-center gap-1 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-0.5 px-1.5 transition-colors whitespace-nowrap bg-transparent cursor-pointer";
 
   const MenuBtn = event.menuUrl ? (
@@ -201,7 +199,8 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
   const cardContent = (
     <div className="flex flex-col w-full min-w-0 font-sans">
         
-        <div className="flex gap-3 items-start w-full min-w-0">
+        {/* 👇 UPDATED: Changed from items-start to items-center to perfectly balance the row 👇 */}
+        <div className="flex gap-3 items-center w-full min-w-0">
             
             <div className="flex flex-col items-center shrink-0 w-[64px] md:w-[72px]">
                 {event.logoUrl ? (
@@ -213,73 +212,70 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                 )}
             </div>
             
-            <div className="flex-1 min-w-0 flex flex-col">
-                <div className="flex flex-col gap-0 min-w-0 pr-2">
-                    <h3 className="font-bold text-slate-900 text-base leading-tight !m-0 !p-0 truncate">
-                        {event.websiteUrl ? (
-                        <a 
-                            href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
-                            title={`Visit ${event.truckName}'s website or page`}
-                        >
-                            {event.truckName}
-                        </a>
-                        ) : (
-                        <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
-                            {event.truckName}
-                        </span>
-                        )}
-                    </h3>
-                    
-                    {!isVenuePage && (
-                        <div className="flex items-center min-w-0">
-                            {!isMapPopup ? (
-                                <Link 
-                                    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
-                                    className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
-                                    title={`View venue details for ${event.venueName}`}
-                                >
-                                    <span className="text-slate-600 text-xs font-medium leading-tight truncate group-hover:text-orange-600 transition-colors">
-                                        {venueDisplay}
-                                    </span>
-                                    {venueStats && venueStats.uniqueTrucks > 1 && (
-                                        <span className="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 border border-slate-200 px-1.5 py-[1px] rounded-full group-hover:bg-orange-50 group-hover:border-orange-200 group-hover:text-orange-700 transition-colors">
-                                            {venueStats.uniqueTrucks} trucks
-                                        </span>
-                                    )}
-                                </Link>
-                            ) : (
-                                <span className="text-slate-600 text-xs font-medium leading-tight truncate">
+            {/* 👇 UPDATED: Flattened all 4 text items into a single container with an exact gap-1 (4px) 👇 */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                
+                {/* 1. Name */}
+                <h3 className="font-bold text-slate-900 text-[15px] leading-none !m-0 !p-0 truncate pr-1">
+                    {event.websiteUrl ? (
+                    <a 
+                        href={event.websiteUrl.startsWith('http') ? event.websiteUrl : `https://${event.websiteUrl}`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="group flex items-center gap-1.5 min-w-0 cursor-pointer hover:underline hover:text-orange-600 transition-colors"
+                        title={`Visit ${event.truckName}'s website or page`}
+                    >
+                        {event.truckName}
+                    </a>
+                    ) : (
+                    <span className="group flex items-center gap-1.5 min-w-0 text-slate-900">
+                        {event.truckName}
+                    </span>
+                    )}
+                </h3>
+                
+                {/* 2. Venue */}
+                {!isVenuePage && (
+                    <div className="flex items-center min-w-0 pr-1">
+                        {!isMapPopup ? (
+                            <Link 
+                                href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+                                className="group flex items-center gap-1.5 min-w-0 cursor-pointer"
+                                title={`View venue details for ${event.venueName}`}
+                            >
+                                <span className="text-slate-600 text-xs font-medium leading-none truncate group-hover:text-orange-600 transition-colors">
                                     {venueDisplay}
                                 </span>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                <div className="flex items-center gap-3 mt-1 shrink-0">
-                    <span className="text-[10px] font-bold text-orange-900 bg-orange-100 border border-orange-200 px-2 py-1 rounded-md shadow-sm whitespace-nowrap">
-                        {event.startTime} - {event.endTime}
-                    </span>
-                    
-                    {!isVenuePage && (
-                        <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 transition-colors !no-underline cursor-pointer">
-                            📍 <span className="underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600">
-                                {distanceMiles != null ? `${distanceMiles.toFixed(1)} miles away` : 'Directions'}
+                            </Link>
+                        ) : (
+                            <span className="text-slate-600 text-xs font-medium leading-none truncate">
+                                {venueDisplay}
                             </span>
-                        </a>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
+
+                {/* 3. Time */}
+                <span className="text-[11px] font-bold text-slate-800 leading-none whitespace-nowrap">
+                    {event.startTime} - {event.endTime}
+                </span>
+                
+                {/* 4. Directions */}
+                {!isVenuePage && (
+                    <a href={mapLink} target="_blank" rel="noopener noreferrer" onClick={() => {if(posthog){posthog.capture('clicked_directions', {truck_name: event.truckName})}}} className="flex items-center gap-1 text-[10px] font-bold text-slate-700 hover:text-orange-600 transition-colors !no-underline cursor-pointer w-fit leading-none">
+                        📍 <span className="underline decoration-slate-300 underline-offset-2 hover:decoration-orange-600">
+                            {distanceMiles != null ? `${distanceMiles.toFixed(1)} miles away` : 'Directions'}
+                        </span>
+                    </a>
+                )}
             </div>
 
-            <div className="flex flex-col items-end gap-1.5 shrink-0 pl-1">
+            <div className="flex flex-col items-end shrink-0 pl-1">
                 {(event as any).foodPhotoUrl ? (
                     <img 
                         src={(event as any).foodPhotoUrl} 
                         alt={`${event.truckName} food`} 
-                        className="w-[64px] h-[64px] md:w-[72px] md:h-[72px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
+                        className="w-[96px] h-[64px] md:w-[108px] md:h-[72px] object-cover rounded-md shadow-sm border border-slate-200 shrink-0" 
                         loading="lazy" 
                     />
                 ) : (
@@ -301,8 +297,9 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
             </div>
         </div>
 
+        {/* 👇 UPDATED: Notes, Primary Actions, and Utilities all reduced to mt-1.5 to shrink vertical footprint 👇 */}
         {(event.notes || event.eventNotes) && (
-            <div className="mt-2 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
+            <div className="mt-1.5 flex flex-col gap-1.5 w-full min-w-0 shrink-0">
                 {event.notes && (
                     <div className="w-full bg-slate-50 border border-slate-200 border-l-4 border-l-orange-500 px-2.5 py-2 rounded-r-md flex items-start shrink-0 min-w-0 shadow-sm">
                         <div className="text-slate-700 text-[11px] font-semibold leading-tight w-full !m-0 !p-0">
@@ -322,7 +319,7 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
 
         {(event.menuUrl || showWebsite || hasPhone) && (
             isMapPopup ? (
-                <div className="flex flex-col gap-1.5 w-full min-w-0 shrink-0 mt-2">
+                <div className="flex flex-col gap-1.5 w-full min-w-0 shrink-0 mt-1.5">
                     {MenuBtn}
                     {(showWebsite || hasPhone) && (
                         <div className="flex w-full gap-1.5">
@@ -331,15 +328,14 @@ export default function EventListCard({ event, distanceMiles, isMapPopup = false
                     )}
                 </div>
             ) : (
-                <div className="flex w-full gap-1.5 min-w-0 shrink-0 mt-2">
+                <div className="flex w-full gap-1.5 min-w-0 shrink-0 mt-1.5">
                     {MenuBtn}
                     {ContactBtns}
                 </div>
             )
         )}
         
-        {/* 👇 UPDATED: Changed from 'w-full' to 'justify-end' and added 'gap-3' to cluster buttons neatly on the right 👇 */}
-        <div className="flex justify-end gap-3 min-w-0 shrink-0 mt-2">
+        <div className="flex justify-end gap-3 min-w-0 shrink-0 mt-1.5">
             {hasVenuePhone && (
                 <a href={`tel:${cleanVenuePhone}`} onClick={() => trackOrderClick('Call Venue')} className={UtilityLinkClass}>
                     📞 Call Venue
