@@ -118,7 +118,6 @@ export function useVillageData(
                     truckNotes: cols[5],      
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
-                    // 👇 Auto-prefixing logos and photos 👇
                     logoUrl: formatImageUrl(cols[9], 'logos'),
                     foodPhotoUrl: formatImageUrl(cols[16], 'photos'), // Column Q
                     aliases: cols[17] || '',
@@ -162,7 +161,7 @@ export function useVillageData(
           .map((cols, index) => {
             
             const rawDate = cols[0] || '';
-            const rawTruck = cols[3] || '';
+            let rawTruck = cols[3] || '';
             const rawVenue = cols[4] || '';
             const rawEventVillage = cols[5] || ''; 
 
@@ -184,6 +183,11 @@ export function useVillageData(
             
             // Exclude banned trucks
             if (truck && truck.exclude === 'yes') return null as any; 
+
+            // 👇 THE FIX: OVERWRITE THE SCRAPED ALIAS WITH THE CANONICAL NAME FROM TRUCKS LIST 👇
+            if (truck && truck.rawName) {
+                rawTruck = truck.rawName; 
+            }
 
             truck = truck || {}; 
 
@@ -244,7 +248,7 @@ export function useVillageData(
               date: rawDate,
               startTime: cols[1] || '',
               endTime: cols[2] || '',
-              truckName: rawTruck,
+              truckName: rawTruck, // This is now guaranteed to be the canonical name!
               venueName: rawVenue,
               
               village: rawEventVillage || venue.village || '',               
@@ -265,7 +269,7 @@ export function useVillageData(
               notes: truck.truckNotes || '',
               eventNotes: cols[6] || '',    
               logoUrl: truck.logoUrl || '',
-              foodPhotoUrl: truck.foodPhotoUrl || '', // 👇 Passing photo to UI       
+              foodPhotoUrl: truck.foodPhotoUrl || '', 
             };
 
             return eventObj;

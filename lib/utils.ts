@@ -168,7 +168,7 @@ export function downloadICS(event: VillageEvent) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-} // 👇 THE FIX: THIS BRACKET WAS MISSING 👇
+}
 
 // ==========================================
 // --- URL GENERATION HELPERS ---
@@ -177,26 +177,56 @@ export function downloadICS(event: VillageEvent) {
 export function createSlug(str: string): string {
   if (!str) return '';
   return str.toLowerCase()
-      // "the" stripping logic removed so it stays in the URL
       .replace(/&/g, 'and')         
       .replace(/['’]/g, '')         
-      .replace(/[^a-z0-9\s-]/g, '') // Keep spaces and existing hyphens
+      .replace(/[^a-z0-9\s-]/g, '') 
       .trim()
-      .replace(/\s+/g, '-')         // Turn spaces into hyphens
-      .replace(/-+/g, '-');         // Prevent double hyphens
+      .replace(/\s+/g, '-')         
+      .replace(/-+/g, '-');         
 }
 
-// NEW: Smart Venue Combiner
 export function getVenueSlug(venueName: string, village: string): string {
     if (!venueName) return '';
     const nameSlug = createSlug(venueName);
     const villageSlug = createSlug(village || '');
     
-    // If village is missing, or the venue name already includes the village, just return the name
     if (!villageSlug || nameSlug.includes(villageSlug)) {
         return nameSlug;
     }
     
-    // Otherwise, combine them cleanly
     return `${nameSlug}-${villageSlug}`;
+}
+
+// ==========================================
+// --- TRUCK ALIAS NORMALIZATION ---
+// ==========================================
+
+export function getCanonicalTruckName(rawName: string, trucksData: any[]): string {
+  if (!rawName || !trucksData || !Array.isArray(trucksData)) return rawName;
+
+  const cleanRaw = rawName.toLowerCase().trim();
+
+  for (const truck of trucksData) {
+      // Check common property names for the canonical Truck Name
+      const canonicalName = truck.name || truck.truckName || truck.Name || truck['Truck Name'] || '';
+      // Check common property names for Aliases
+      const aliases = truck.aliases || truck.Aliases || '';
+
+      // 1. If it already exactly matches Column A, return it
+      if (canonicalName && canonicalName.toLowerCase().trim() === cleanRaw) {
+          return canonicalName;
+      }
+
+      // 2. Check the aliases list
+      if (aliases) {
+          // Splits "Alias 1, Alias 2" into an array and cleans spaces
+          const aliasList = aliases.split(',').map((a: string) => a.toLowerCase().trim());
+          if (aliasList.includes(cleanRaw)) {
+              return canonicalName; // Returns the clean Column A name!
+          }
+      }
+  }
+
+  // Fallback: If no match is found at all, just return the raw scraped name
+  return rawName; 
 }
