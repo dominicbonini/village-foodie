@@ -536,6 +536,8 @@ for (const [index, site] of sitesToScrape.entries()) {
           8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for each location.
           9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
           10. **PRIVATE EVENTS:** If an event is explicitly marked as "private", "private party", "private event", or "private lunch", completely ignore it. Do NOT extract it.
+          11. **FACEBOOK 'TONIGHT' RULE (STRICT):** NEVER extract an event based solely on relative words like "tonight", "today", "tomorrow", or "this weekend". Social media posts are persistent; "tonight" might be months old. You must ignore these words entirely.
+          12. **PROXIMITY REQUIREMENT:** You must ONLY extract an event if an explicit Day (e.g., "Wednesday") or Date (e.g., "24th") is explicitly stated in the exact same sentence or list block as the venue name. Do not guess dates for standalone locations.
           
           RETURN JSON:
           [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
