@@ -110,24 +110,30 @@ export default function TruckClient({ slug }: { slug: string }) {
       <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
         <div className="max-w-2xl mx-auto flex justify-between items-center w-full relative">
           
-          <button 
-            onClick={() => router.back()} 
-            className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0 z-10"
-          >
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
-          </button>
+          {/* 👇 UPDATED: Swapped the generic back button for the clickable global logo 👇 */}
+          <Link href="/" className="flex items-center transition-opacity hover:opacity-90 shrink-0 z-20">
+            <Image
+              src="/logos/village-foodie-logo-v2.png"
+              alt="Village Foodie"
+              width={140}
+              height={42}
+              className="object-contain w-[120px] sm:w-[140px]"
+              priority
+            />
+          </Link>
           
           {truckInfo && (
             <div 
               className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`}
             >
-              <div className="flex items-center gap-2 px-10">
+              {/* Added responsive padding so the center text doesn't overlap the logo on tiny screens */}
+              <div className="flex items-center gap-2 px-[130px] sm:px-0">
                 {truckInfo.logo ? (
-                    <Image src={truckInfo.logo} alt={truckInfo.name} width={28} height={28} className="w-7 h-7 object-contain rounded-full bg-white shadow-sm shrink-0" />
+                    <Image src={truckInfo.logo} alt={truckInfo.name} width={28} height={28} className="w-7 h-7 object-contain rounded-full bg-white shadow-sm shrink-0 hidden sm:block" />
                 ) : (
-                    <div className="w-7 h-7 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-[10px] shrink-0">🚚</div>
+                    <div className="w-7 h-7 bg-orange-100 text-orange-600 rounded-full items-center justify-center text-[10px] shrink-0 hidden sm:flex">🚚</div>
                 )}
-                <h1 className="text-[15px] font-black tracking-tight leading-tight truncate">
+                <h1 className="text-[15px] font-black tracking-tight leading-tight truncate max-w-[140px] sm:max-w-xs">
                   {truckInfo.name}
                 </h1>
               </div>
