@@ -16,7 +16,6 @@ const userIcon = divIcon({
   popupAnchor: [0, -10]
 });
 
-// 👇 NEW: Dynamic Icon Generator. Creates a big glowing pin if hovered! 👇
 const createDynamicIcon = (isStatic: boolean, isHighlighted: boolean) => {
     const emoji = isStatic ? '🍽️' : '🚚';
     const size = isHighlighted ? '36px' : '24px';
@@ -26,7 +25,7 @@ const createDynamicIcon = (isStatic: boolean, isHighlighted: boolean) => {
     return divIcon({
       html: `<div style="font-size: ${size}; filter: ${shadow}; transform: ${transform}; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); line-height: 1;">${emoji}</div>`,
       className: 'bg-transparent',
-      iconSize: [40, 40], // Extra room so the glow doesn't clip
+      iconSize: [40, 40], 
       iconAnchor: [20, 20],
       popupAnchor: [0, -10]
     });
@@ -69,33 +68,58 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   const map = useMap();
 
   useEffect(() => {
-    if (userLocation && radius !== 'all') {
-      let zoomLevel = 10;
-      if (radius === '11') zoomLevel = 11;
-      if (radius === '16') zoomLevel = 10;
-      if (radius === '21') zoomLevel = 9;
+    // 👇 NEW: Safe updater function
+    const updateMapBounds = () => {
+      // 1. PREVENT CRASH: If map is hidden (0x0), do absolutely nothing.
+      const size = map.getSize();
+      if (size.x === 0 || size.y === 0) return;
 
-      map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
-      return;
-    }
+      // 2. Map is visible! Run the math.
+      if (userLocation && radius !== 'all') {
+        let zoomLevel = 10;
+        if (radius === '11') zoomLevel = 11;
+        if (radius === '16') zoomLevel = 10;
+        if (radius === '21') zoomLevel = 9;
 
-    if (events.length > 0) {
-      const coords = events
-        .filter(e => e.venueLat && e.venueLong)
-        .map(e => [e.venueLat!, e.venueLong!] as [number, number]);
-
-      if (coords.length > 0) {
-        const bounds = new LatLngBounds(coords);
-        if (userLocation) bounds.extend([userLocation.lat, userLocation.long]);
-        map.fitBounds(bounds, { padding: [50, 50] });
+        map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
+        return;
       }
+
+      if (events.length > 0) {
+        const coords = events
+          .filter(e => e.venueLat && e.venueLong)
+          .map(e => [e.venueLat!, e.venueLong!] as [number, number]);
+
+        if (coords.length > 0) {
+          const bounds = new LatLngBounds(coords);
+          if (userLocation) bounds.extend([userLocation.lat, userLocation.long]);
+          map.fitBounds(bounds, { padding: [50, 50] });
+        }
+      }
+    };
+
+    // 👇 NEW: Watch the map container. When user toggles "Map" on mobile, resize and frame it perfectly!
+    const container = map.getContainer();
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize(); // Fixes the grey-tile rendering bug
+      updateMapBounds();    // Frames the pins
+    });
+
+    if (container) {
+      resizeObserver.observe(container);
     }
+
+    // Run once immediately (for desktop where it's already visible)
+    updateMapBounds();
+
+    return () => {
+      if (container) resizeObserver.unobserve(container);
+    };
   }, [events, userLocation, radius, map]);
 
   return null;
 }
 
-// 👇 NEW: Added hoveredEventId and onMarkerClick props 👇
 interface MapViewProps {
   events: VillageEvent[];
   userLocation?: { lat: number; long: number } | null;
@@ -154,12 +178,9 @@ export default function MapView({ events, userLocation = null, radius = 'all', h
 
       {Object.entries(groupedEvents).map(([locKey, groupEvents]) => {
         const [lat, long] = locKey.split(',').map(Number);
-        
-        // Find the first event in this specific location stack
         const firstEvent = groupEvents[0];
-        const isStatic = firstEvent.type?.toLowerCase().includes('static') ?? false;
         
-        // 👇 NEW: Check if ANY event parked at this location matches the hovered item 👇
+        const isStatic = firstEvent.type?.toLowerCase().includes('static') ?? false;
         const isHighlighted = hoveredEventId ? groupEvents.some(e => e.id === hoveredEventId) : false;
         
         return (
@@ -167,10 +188,9 @@ export default function MapView({ events, userLocation = null, radius = 'all', h
             key={locKey} 
             position={[lat, long]}
             icon={createDynamicIcon(isStatic, isHighlighted)}
-            zIndexOffset={isHighlighted ? 1000 : 0} // Brings the hovered pin to the front!
+            zIndexOffset={isHighlighted ? 1000 : 0} 
             eventHandlers={{
                 click: () => {
-                    // Triggers the scroll function passed down from page.tsx
                     if (onMarkerClick) {
                         onMarkerClick(firstEvent.id);
                     }
