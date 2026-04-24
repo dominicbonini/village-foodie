@@ -8,23 +8,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { getDistanceKm } from '@/lib/utils';
 import EventListCard from '@/components/EventListCard';
 
-// --- ICONS (Lightweight Emojis) ---
-const truckIcon = divIcon({
-  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));">🚚</div>',
-  className: 'bg-transparent',
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -10]
-});
-
-const plateIcon = divIcon({
-  html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));">🍽️</div>',
-  className: 'bg-transparent',
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -10]
-});
-
 const userIcon = divIcon({
   html: '<div style="font-size: 24px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));">🏠</div>',
   className: 'bg-transparent',
@@ -33,43 +16,44 @@ const userIcon = divIcon({
   popupAnchor: [0, -10]
 });
 
-function formatDateForDisplay(dateStr: string): string {
-  // Safety Guard: If date is missing or not a string, return a fallback
-  if (!dateStr || typeof dateStr !== 'string') return 'Date TBC';
+// 👇 NEW: Dynamic Icon Generator. Creates a big glowing pin if hovered! 👇
+const createDynamicIcon = (isStatic: boolean, isHighlighted: boolean) => {
+    const emoji = isStatic ? '🍽️' : '🚚';
+    const size = isHighlighted ? '36px' : '24px';
+    const shadow = isHighlighted ? 'drop-shadow(0 4px 10px rgba(234,88,12,0.9))' : 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))';
+    const transform = isHighlighted ? 'scale(1.1) translateY(-4px)' : 'scale(1) translateY(0px)';
+    
+    return divIcon({
+      html: `<div style="font-size: ${size}; filter: ${shadow}; transform: ${transform}; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); line-height: 1;">${emoji}</div>`,
+      className: 'bg-transparent',
+      iconSize: [40, 40], // Extra room so the glow doesn't clip
+      iconAnchor: [20, 20],
+      popupAnchor: [0, -10]
+    });
+};
 
+function formatDateForDisplay(dateStr: string): string {
+  if (!dateStr || typeof dateStr !== 'string') return 'Date TBC';
   const parts = dateStr.split('/');
-  
-  // Safety Guard: If it's not the 00/00/0000 format, just return the string as-is
   if (parts.length !== 3) return dateStr;
   
   try {
     const day = parseInt(parts[0]);
     const month = parseInt(parts[1]) - 1;
     const year = parseInt(parts[2]);
-    
     const eventDate = new Date(year, month, day);
-    
-    // Check if the date is actually valid
     if (isNaN(eventDate.getTime())) return dateStr;
 
     const today = new Date();
     today.setHours(0,0,0,0);
-    
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const formattedDate = eventDate.toLocaleDateString('en-GB', { 
-      weekday: 'long', 
-      day: 'numeric', 
-      month: 'long' 
-    });
-    
+    const formattedDate = eventDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
     if (eventDate.getTime() === today.getTime()) return `Today - ${formattedDate}`;
     if (eventDate.getTime() === tomorrow.getTime()) return `Tomorrow - ${formattedDate}`;
-    
     return formattedDate.toUpperCase();
   } catch (e) {
-    // If anything at all goes wrong, just return the original string instead of crashing
     return dateStr;
   }
 }
@@ -87,9 +71,9 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   useEffect(() => {
     if (userLocation && radius !== 'all') {
       let zoomLevel = 10;
-      if (radius === '10') zoomLevel = 11;
-      if (radius === '20') zoomLevel = 10;
-      if (radius === '30') zoomLevel = 9;
+      if (radius === '11') zoomLevel = 11;
+      if (radius === '16') zoomLevel = 10;
+      if (radius === '21') zoomLevel = 9;
 
       map.flyTo([userLocation.lat, userLocation.long], zoomLevel, { animate: true, duration: 0.5 });
       return;
@@ -111,13 +95,16 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   return null;
 }
 
+// 👇 NEW: Added hoveredEventId and onMarkerClick props 👇
 interface MapViewProps {
   events: VillageEvent[];
   userLocation?: { lat: number; long: number } | null;
   radius?: string;
+  hoveredEventId?: string | null;
+  onMarkerClick?: (eventId: string) => void;
 }
 
-export default function MapView({ events, userLocation = null, radius = 'all' }: MapViewProps) {
+export default function MapView({ events, userLocation = null, radius = 'all', hoveredEventId, onMarkerClick }: MapViewProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -140,7 +127,7 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
 
   if (!mounted) {
     return (
-      <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400">
+      <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400 font-bold">
         Loading Map...
       </div>
     );
@@ -167,14 +154,28 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
 
       {Object.entries(groupedEvents).map(([locKey, groupEvents]) => {
         const [lat, long] = locKey.split(',').map(Number);
+        
+        // Find the first event in this specific location stack
         const firstEvent = groupEvents[0];
-        const isStatic = firstEvent.type?.toLowerCase().includes('static');
+        const isStatic = firstEvent.type?.toLowerCase().includes('static') ?? false;
+        
+        // 👇 NEW: Check if ANY event parked at this location matches the hovered item 👇
+        const isHighlighted = hoveredEventId ? groupEvents.some(e => e.id === hoveredEventId) : false;
         
         return (
           <Marker 
             key={locKey} 
             position={[lat, long]}
-            icon={isStatic ? plateIcon : truckIcon}
+            icon={createDynamicIcon(isStatic, isHighlighted)}
+            zIndexOffset={isHighlighted ? 1000 : 0} // Brings the hovered pin to the front!
+            eventHandlers={{
+                click: () => {
+                    // Triggers the scroll function passed down from page.tsx
+                    if (onMarkerClick) {
+                        onMarkerClick(firstEvent.id);
+                    }
+                }
+            }}
           >
             <Popup className="custom-popup" minWidth={280} maxWidth={320}>
                <div className="font-sans max-h-[400px] overflow-y-auto pr-1">
@@ -190,7 +191,6 @@ export default function MapView({ events, userLocation = null, radius = 'all' }:
                      return (
                       <div key={event.id} className={index > 0 ? "mt-4 pt-4 border-t border-slate-100" : ""}>
                           
-                          {/* CLEAN DATE HEADER */}
                           <div className="mb-2">
                             <span className="text-[10px] font-black text-slate-700 uppercase tracking-widest">
                               {displayDate}

@@ -7,14 +7,22 @@ import Script from 'next/script';
 import { usePostHog } from 'posthog-js/react'; 
 import { useVillageData } from '@/hooks/useVillageData';
 import Footer from '@/components/Footer';
-import { formatFriendlyDate, createSlug } from '@/lib/utils'; 
+import { createSlug } from '@/lib/utils'; 
 import TruckListCard from '@/components/TruckListCard';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/components/MapView'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400 font-bold">Loading Map...</div>
+});
 
 export default function TruckClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
+  
+  const [mobileView, setMobileView] = useState<'list' | 'map'>('list');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,14 +32,12 @@ export default function TruckClient({ slug }: { slug: string }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // 👇 ADDED allTrucks so we can get the profile even if they have no events!
   const { loading, mapEvents, allTrucks } = useVillageData(null, {
     date: 'unlimited', 
     cuisine: 'all',
     distance: '1000' 
   });
 
-  // 1. Get the Truck's Profile Info (Always works as long as they are in your Trucks tab)
   const truckInfo = useMemo(() => {
     if (!allTrucks || allTrucks.length === 0) return null;
     const truck = allTrucks.find(t => t.cleanKey === slug);
@@ -47,15 +53,8 @@ export default function TruckClient({ slug }: { slug: string }) {
     };
   }, [allTrucks, slug]);
 
-  // 2. Get the Truck's Schedule (Might be empty!)
-  const truckEvents = useMemo(() => {
-    const filtered = mapEvents.filter(event => createSlug(event.truckName) === slug);
-    return filtered.reduce((groups, event) => {
-      const date = event.date;
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(event);
-      return groups;
-    }, {} as Record<string, typeof mapEvents>);
+  const truckEventsFlat = useMemo(() => {
+    return mapEvents.filter(event => createSlug(event.truckName) === slug);
   }, [mapEvents, slug]);
 
   const openTallyPopup = () => {
@@ -106,18 +105,17 @@ export default function TruckClient({ slug }: { slug: string }) {
     <main className="min-h-screen bg-slate-50 flex flex-col">
       <Script src="https://tally.so/widgets/embed.js" strategy="afterInteractive" />
 
-      {/* 1. DYNAMIC STICKY HEADER */}
+      {/* HEADER */}
       <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
-        <div className="max-w-2xl mx-auto flex justify-between items-center w-full relative">
+        <div className="max-w-6xl mx-auto flex justify-between items-center w-full relative">
           
-          {/* 👇 UPDATED: Swapped the generic back button for the clickable global logo 👇 */}
           <Link href="/" className="flex items-center transition-opacity hover:opacity-90 shrink-0 z-20">
             <Image
               src="/logos/village-foodie-logo-v2.png"
               alt="Village Foodie"
               width={140}
               height={42}
-              className="object-contain w-[120px] sm:w-[140px]"
+              className="object-contain w-[110px] sm:w-[140px]"
               priority
             />
           </Link>
@@ -126,30 +124,41 @@ export default function TruckClient({ slug }: { slug: string }) {
             <div 
               className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`}
             >
-              {/* Added responsive padding so the center text doesn't overlap the logo on tiny screens */}
-              <div className="flex items-center gap-2 px-[130px] sm:px-0">
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[90px] sm:px-0 w-full">
                 {truckInfo.logo ? (
-                    <Image src={truckInfo.logo} alt={truckInfo.name} width={28} height={28} className="w-7 h-7 object-contain rounded-full bg-white shadow-sm shrink-0 hidden sm:block" />
+                    <Image src={truckInfo.logo} alt={truckInfo.name} width={24} height={24} className="w-6 h-6 sm:w-7 sm:h-7 object-contain rounded-full bg-white shadow-sm shrink-0" />
                 ) : (
-                    <div className="w-7 h-7 bg-orange-100 text-orange-600 rounded-full items-center justify-center text-[10px] shrink-0 hidden sm:flex">🚚</div>
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-[10px] shrink-0">🚚</div>
                 )}
-                <h1 className="text-[15px] font-black tracking-tight leading-tight truncate max-w-[140px] sm:max-w-xs">
+                <h1 className="text-[13px] sm:text-[15px] font-bold sm:font-black tracking-tight leading-tight truncate max-w-[110px] sm:max-w-xs">
                   {truckInfo.name}
                 </h1>
               </div>
             </div>
           )}
 
-          <button onClick={handleProfileShare} className="text-slate-300 hover:text-white transition-colors flex items-center justify-center w-9 h-9 rounded-full hover:bg-slate-800 shrink-0 z-10" title="Share Profile">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-          </button>
+          {/* 👇 EXACT COPY of the toggle from the main page (Hidden on Desktop) 👇 */}
+          <div className="flex bg-slate-800 rounded-lg p-1 lg:hidden shrink-0 z-20 pointer-events-auto">
+            <button 
+                onClick={() => setMobileView('list')} 
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${mobileView === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+                List
+            </button>
+            <button 
+                onClick={() => setMobileView('map')} 
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all ${mobileView === 'map' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+                Map
+            </button>
+          </div>
+          
         </div>
       </header>
 
-      {/* 2. THE MAIN PROFILE HERO */}
+      {/* HERO SECTION */}
       {truckInfo && (
         <div className="bg-white px-4 pt-8 pb-6 border-b border-slate-200 flex flex-col items-center text-center shadow-sm relative z-0">
-            
             <div className="absolute top-4 right-4 md:top-6 md:right-6 z-10">
                 <Link 
                     href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`}
@@ -187,36 +196,37 @@ export default function TruckClient({ slug }: { slug: string }) {
         </div>
       )}
 
-      {/* 3. ACTION BUTTONS */}
-      {truckInfo && (truckInfo.menuUrl || cleanPhone) && (
+      {/* ACTION BUTTONS */}
+      {truckInfo && (
         <div className="w-full max-w-2xl mx-auto px-4 mt-5 mb-2">
-            <div className="flex justify-center gap-2 w-full">
+            <div className="flex justify-center flex-wrap sm:flex-nowrap gap-2 w-full">
               {truckInfo.menuUrl && (
-                <a href={truckInfo.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-0 bg-slate-900 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+                <a href={truckInfo.menuUrl} target="_blank" rel="noopener noreferrer" className="flex-1 min-w-[80px] bg-slate-900 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-800 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                   📋 <span>Menu</span>
                 </a>
               )}
               {cleanPhone && (
                 <>
-                  <a href={`tel:${cleanPhone}`} className="flex-1 min-w-0 bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+                  <a href={`tel:${cleanPhone}`} className="flex-1 min-w-[80px] bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                     📞 <span>Call</span>
                   </a>
-                  <a href={`sms:${cleanPhone}`} className="flex-1 min-w-0 bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+                  <a href={`sms:${cleanPhone}`} className="flex-1 min-w-[80px] bg-orange-600 text-white font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-orange-700 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
                     💬 <span>Message</span>
                   </a>
                 </>
               )}
+              <button onClick={handleProfileShare} className="flex-1 min-w-[80px] bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 font-bold py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-200 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                <span>Share</span>
+              </button>
             </div>
         </div>
       )}
 
-      {/* 4. THE SCHEDULE FEED */}
-      <div className="flex-1 w-full max-w-2xl mx-auto p-4 pb-24">
+      <div className="flex-1 w-full max-w-6xl mx-auto p-4 pb-24 relative z-0">
         {loading ? (
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
         ) : !truckInfo ? (
-          
-          /* 👇 SCENARIO A: Truck doesn't exist in your directory at all 👇 */
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">🤷‍♂️</div>
             <h2 className="text-xl font-bold text-slate-800">Truck not found</h2>
@@ -228,10 +238,7 @@ export default function TruckClient({ slug }: { slug: string }) {
               View all trucks
             </Link>
           </div>
-
-        ) : Object.keys(truckEvents).length === 0 ? (
-          
-          /* 👇 SCENARIO B: Truck exists, but has 0 events 👇 */
+        ) : truckEventsFlat.length === 0 ? (
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">😔</div>
             <h2 className="text-xl font-bold text-slate-800">No upcoming events found</h2>
@@ -243,40 +250,39 @@ export default function TruckClient({ slug }: { slug: string }) {
               Drop us a message to update!
             </Link>
           </div>
-
         ) : (
-          /* 👇 SCENARIO C: Truck exists and has events! 👇 */
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
+            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1 text-center lg:text-left">Upcoming Tour Dates</h2>
             
-            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1">Upcoming Tour Dates</h2>
-            
-            {Object.entries(truckEvents).map(([date, events]) => (
-                <div key={date} className="mb-6">
-                    <div className="pt-2 pb-3 ml-1">
-                        <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
-                           {formatFriendlyDate(date)}
-                        </h2>
-                    </div>
-                    <div className="space-y-4">
-                        {events.map(event => (
-                            <TruckListCard key={event.id} event={event} />
-                        ))}
+            <div className="flex flex-col lg:flex-row gap-6 w-full">
+                
+                {/* LEFT: FLAT EVENT LIST */}
+                <div className={`flex-1 space-y-1 ${mobileView === 'map' ? 'hidden lg:block' : 'block'}`}>
+                    {truckEventsFlat.map(event => (
+                        <TruckListCard key={event.id} event={event} />
+                    ))}
+                    
+                    <div className="mt-8 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
+                      <p className="m-0 text-slate-600">
+                        <strong className="text-slate-800">Are we missing an event?</strong> <br />
+                        If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br />
+                        <Link 
+                          href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`} 
+                          className="text-orange-600 font-bold hover:underline mt-2 inline-block"
+                        >
+                          Contact us to add missing details.
+                        </Link>
+                      </p>
                     </div>
                 </div>
-            ))}
 
-            {/* Missing an event prompt at the bottom */}
-            <div className="mt-10 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
-              <p className="m-0 text-slate-600">
-                <strong className="text-slate-800">Are we missing an event?</strong> <br />
-                If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br />
-                <Link 
-                  href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`} 
-                  className="text-orange-600 font-bold hover:underline mt-2 inline-block"
-                >
-                  Contact us to add missing details.
-                </Link>
-              </p>
+                {/* RIGHT: REAL LEAFLET MAP */}
+                <div className={`w-full lg:w-[45%] shrink-0 ${mobileView === 'list' ? 'hidden lg:block' : 'block'}`}>
+                    {/* 👇 Adjusted height for map to look good on mobile and desktop 👇 */}
+                    <div className="sticky top-[80px] h-[60vh] lg:h-[600px] rounded-xl overflow-hidden shadow-sm border border-slate-200 z-0">
+                         <MapView events={truckEventsFlat} />
+                    </div>
+                </div>
             </div>
 
           </div>
