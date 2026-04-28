@@ -188,7 +188,7 @@ export default function VenueClient({ slug }: { slug: string }) {
                         <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">{formatFriendlyDate(date)}</h2>
                     </div>
                     <div className="space-y-3">
-                        {events.map(event => <EventListCard key={event.id} event={event} distanceMiles={null} isVenuePage={true} />)}
+                    {events.map(event => <EventListCard key={event.id} events={[event]} isVenuePage={true} />)}
                     </div>
                 </div>
             ))}
