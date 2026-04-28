@@ -7,7 +7,8 @@ import fs from 'fs';
 dotenv.config({ path: '.env.local' });
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
-const TABS = { EVENTS: 'Events', TRUCKS: 'Trucks', VENUES: 'Venues' };
+// Added EXCLUSIONS to tabs
+const TABS = { EVENTS: 'Events', TRUCKS: 'Trucks', VENUES: 'Venues', EXCLUSIONS: 'Exclusions' };
 
 // --- STRATEGY DICTIONARY ---
 const STRATEGIES = {
@@ -32,6 +33,12 @@ function normalizeName(name) {
         .replace(/\brd\b/g, 'road')   
         .replace(/&/g, 'and')         
         .replace(/[^a-z0-9]/g, '');   
+}
+
+// HELPER: Title Case
+function toTitleCase(str) {
+    if (!str) return "";
+    return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 }
 
 // --- FIXED TIME PARSER ---
@@ -345,11 +352,16 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets({ version: 'v4', auth });
 
 console.log("📥 Reading Master Data...");
-const [truckData, venueData, eventData] = await Promise.all([
+// Added fetching of Exclusion Data
+const [truckData, venueData, eventData, exclusionData] = await Promise.all([
   getTabData(sheets, TABS.TRUCKS),
   getTabData(sheets, TABS.VENUES),
-  getTabData(sheets, TABS.EVENTS)
+  getTabData(sheets, TABS.EVENTS),
+  getTabData(sheets, TABS.EXCLUSIONS)
 ]);
+
+// Build Exclusions Set
+const excludedTerms = new Set(exclusionData.map(r => r[0] ? r[0].toString().toLowerCase().trim() : '').filter(Boolean));
 
 const validTrucks = truckData.filter(r => r[0]).map(r => {
     return {
@@ -431,6 +443,7 @@ const browser = await puppeteer.launch({
 
 const newRowsToAdd = [];
 const newVenuesDetected = new Map();
+const newTrucksDetected = new Map(); // Added to track new trucks to append
 
 for (const [index, site] of sitesToScrape.entries()) {
   let page;
@@ -591,7 +604,14 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           if (!truckName || !event.DateStart) continue;
 
-          // --- 🛡️ NEW DEFENSE: PRIVATE EVENT HARD FILTER ---
+          // --- 🛡️ NEW EXCLUSION CHECK ---
+          if (excludedTerms.has(truckName.toLowerCase())) {
+              console.log(`   🚫 Skipping excluded truck term: ${truckName}`);
+              continue;
+          }
+          // ------------------------------------------------
+
+          // --- 🛡️ PRIVATE EVENT HARD FILTER ---
           const combinedText = (venueName + " " + eventNotes).toLowerCase();
           if (combinedText.includes('private')) {
               console.log(`   🚫 Skipping private event: ${truckName} on ${event.DateStart}`);
@@ -618,8 +638,21 @@ for (const [index, site] of sitesToScrape.entries()) {
                   return false;
               });
 
-              finalTruck = matchedTruckObj ? matchedTruckObj.name : truckName;
-              isNewTruck = !matchedTruckObj;
+              if (matchedTruckObj) {
+                  finalTruck = matchedTruckObj.name;
+              } else {
+                  // --- APPLY TITLE CASE AND TRACK NEW TRUCK ---
+                  finalTruck = toTitleCase(truckName);
+                  isNewTruck = true;
+                  
+                  if (!newTrucksDetected.has(finalTruck)) {
+                      // Create an empty row with 20 columns to set Col T (index 19) to 'Yes'
+                      const newTruckRow = new Array(20).fill('');
+                      newTruckRow[0] = finalTruck; // Col A
+                      newTruckRow[19] = 'Yes';     // Col T (Excluded until verified)
+                      newTrucksDetected.set(finalTruck, newTruckRow);
+                  }
+              }
           }
 
           let finalVenue = venueName || "Unknown";
@@ -715,7 +748,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
 
-          // --- 🛡️ NEW DEFENSE: EVENT SOURCE OVERRIDE ---
+          // --- 🛡️ EVENT SOURCE OVERRIDE ---
           const eventSource = (site.strategy === 'manual' || site.strategy === 'manual_single') 
             ? 'Manual Entry' 
             : `URL: ${site.url} | Strategy: ${site.strategy}`;
@@ -753,6 +786,23 @@ for (const [index, site] of sitesToScrape.entries()) {
 }
 
 await browser.close();
+
+// --- APPEND NEW TRUCKS ---
+if (newTrucksDetected.size > 0) {
+  console.log(`\n🚚 Adding ${newTrucksDetected.size} new trucks to the Trucks tab...`);
+  const newTruckRows = Array.from(newTrucksDetected.values());
+  try {
+      await sheets.spreadsheets.values.append({
+          spreadsheetId: SPREADSHEET_ID,
+          range: `${TABS.TRUCKS}!A:T`,
+          valueInputOption: 'USER_ENTERED',
+          resource: { values: newTruckRows },
+      });
+      console.log(`✅ Successfully added ${newTruckRows.length} new trucks!`);
+  } catch (error) {
+      console.error("❌ Failed to add new trucks:", error.message);
+  }
+}
 
 if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
