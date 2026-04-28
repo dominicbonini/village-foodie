@@ -218,10 +218,11 @@ export default function MapView({ events, userLocation = null, radius = 'all', h
                           </div>
 
                           <EventListCard 
-                            event={event} 
-                            distanceMiles={distMiles} 
-                            isMapPopup={true} 
-                          />
+  events={[event]} // 👈 Wrapped in an array 
+  userLocation={userLocation} // 👈 Added userLocation
+  isMapPopup={true} 
+/>
+                       
                           
                       </div>
                      );

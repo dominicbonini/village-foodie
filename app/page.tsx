@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, Suspense, useEffect } from 'react';
+import { useState, useRef, Suspense, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation'; 
@@ -14,10 +14,11 @@ import {
   getDistanceKm, 
   getCoordsFromPostcode, 
   formatFriendlyDate,
-  getVenueSlug 
+  getVenueSlug,
+  createSlug 
 } from '@/lib/utils';
+import { VillageEvent } from '@/types'; 
 
-// --- DYNAMIC MAP IMPORT ---
 const MapView = dynamic(() => import('@/components/MapView'), { 
   ssr: false,
   loading: () => (
@@ -27,7 +28,6 @@ const MapView = dynamic(() => import('@/components/MapView'), {
   )
 });
 
-// --- MAIN CONTENT COMPONENT ---
 function VillageFoodieContent() {
   const posthog = usePostHog(); 
   const searchParams = useSearchParams();
@@ -46,7 +46,16 @@ function VillageFoodieContent() {
     distance: '11' 
   });
 
-  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueStats } = useVillageData(userLocation, filters);
+  const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueStats, allTrucks } = useVillageData(userLocation, filters);
+
+  const verifiedTruckSlugs = useMemo(() => {
+    if (!allTrucks) return new Set<string>();
+    return new Set(allTrucks.map(t => t.cleanKey));
+  }, [allTrucks]);
+
+  const verifiedMapEvents = useMemo(() => {
+    return mapEvents.filter(event => verifiedTruckSlugs.has(createSlug(event.truckName)));
+  }, [mapEvents, verifiedTruckSlugs]);
 
   useEffect(() => {
     const urlPostcode = searchParams.get('postcode');
@@ -155,7 +164,6 @@ function VillageFoodieContent() {
       {/* HEADER */}
       <header className="bg-slate-900 text-white py-1.5 px-4 md:py-2 sticky top-0 z-50 shadow-md">
         <div className="max-w-6xl mx-auto flex flex-col gap-3 md:gap-4">
-        
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie Logo" width={200} height={60} priority className="object-contain w-[140px] md:w-[170px] h-auto" />
@@ -206,17 +214,13 @@ function VillageFoodieContent() {
         ) : (
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full">
             
-            {/* LEFT SIDE: THE LIST */}
             <div className={`flex-1 min-w-0 ${view === 'map' ? 'hidden lg:block' : 'block'}`}>
-                
-                {/* 👇 FIXED: Removed lg:text-left to keep perfectly centered 👇 */}
                 <div className="pt-2 pb-5 px-4 text-center">
                    <h2 className="text-slate-800 font-extrabold text-2xl tracking-tight">Find your next meal 🍔</h2>
                    <p className="text-slate-600 text-sm mt-1.5 font-medium">Find food trucks and pop-ups visiting villages near you.</p>
                 </div>
                 
                 {!userLocation && (
-                    // 👇 FIXED: Removed lg:justify-start to keep perfectly centered 👇
                     <div className="mb-6 flex justify-center animate-in fade-in slide-in-from-bottom-2 duration-500 mt-2">
                         <form onSubmit={(e) => { e.preventDefault(); const formData = new FormData(e.currentTarget); const code = formData.get('inlinePostcode') as string; if (code) { if (postcodeRef.current) postcodeRef.current.value = code.toUpperCase(); handlePostcodeSearch(code); } }} className="flex items-center gap-2 bg-white border border-slate-300 rounded-xl p-1.5 shadow-sm max-w-sm w-full focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-50 transition-all">
                             <div className="pl-2 text-lg">📍</div>
@@ -227,7 +231,6 @@ function VillageFoodieContent() {
                 )}
 
                 {Object.keys(groupedEvents).length === 0 && (
-                   // 👇 FIXED: Removed lg:mx-0 to keep perfectly centered 👇
                    <div className="text-center p-8 bg-white rounded-xl border border-dashed border-slate-300 mt-4 max-w-md mx-auto">
                       <p className="text-slate-600">No events found matching your filters.</p>
                       <button onClick={() => setFilters({date: 'all', cuisine: 'all', distance: '11'})} className="text-orange-600 text-sm font-bold mt-2 hover:underline">Clear Filters</button>
@@ -253,6 +256,7 @@ function VillageFoodieContent() {
                       };
 
                       const activeEvents = dateEvents.filter(event => {
+                        if (!verifiedTruckSlugs.has(createSlug(event.truckName))) return false;
                         if (!isToday) return true; 
                         const endMins = getMinutes((event as any).endTime);
                         if (endMins === 9999) return true; 
@@ -262,20 +266,34 @@ function VillageFoodieContent() {
 
                       if (activeEvents.length === 0) return null;
 
-                      const sortedEvents = activeEvents.sort((a, b) => {
-                        const startA = getMinutes((a as any).startTime);
-                        const startB = getMinutes((b as any).startTime);
-                        if (startA !== startB) return startA - startB;
-                        if (!userLocation || !a.venueLat || !a.venueLong || !b.venueLat || !b.venueLong) return 0;
-                        const distA = getDistanceKm(userLocation.lat, userLocation.long, a.venueLat, a.venueLong);
-                        const distB = getDistanceKm(userLocation.lat, userLocation.long, b.venueLat, b.venueLong);
-                        return distA - distB;
+                      const truckGroupsMap: Record<string, VillageEvent[]> = {};
+                      activeEvents.forEach(event => {
+                          const key = createSlug(event.truckName);
+                          if (!truckGroupsMap[key]) truckGroupsMap[key] = [];
+                          truckGroupsMap[key].push(event);
+                      });
+
+                      const truckGroups = Object.values(truckGroupsMap);
+
+                      truckGroups.forEach(group => {
+                          group.sort((a, b) => getMinutes(a.startTime) - getMinutes(b.startTime));
+                      });
+
+                      truckGroups.sort((groupA, groupB) => {
+                          const a = groupA[0];
+                          const b = groupB[0];
+                          const startA = getMinutes(a.startTime);
+                          const startB = getMinutes(b.startTime);
+                          if (startA !== startB) return startA - startB;
+
+                          if (!userLocation || !a.venueLat || !a.venueLong || !b.venueLat || !b.venueLong) return 0;
+                          const distA = getDistanceKm(userLocation.lat, userLocation.long, a.venueLat, a.venueLong);
+                          const distB = getDistanceKm(userLocation.lat, userLocation.long, b.venueLat, b.venueLong);
+                          return distA - distB;
                       });
 
                       return (
                         <div key={date} className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-1 md:pb-2">
-                            
-                            {/* 👇 FIXED: Restored md:top-[142px] to give the header a nice visual gap 👇 */}
                             <div className="sticky top-[158px] md:top-[142px] z-30 bg-slate-50 pt-3 md:pt-4 pb-2">
                                 <h2 className="text-slate-900 font-black text-sm uppercase tracking-widest">
                                    {formatFriendlyDate(date)}
@@ -283,24 +301,20 @@ function VillageFoodieContent() {
                             </div>
                             
                             <div className="space-y-3 md:space-y-4">
-                            {sortedEvents.map((event) => {
-                                let distanceMiles: number | null = null;
-                                if (userLocation && event.venueLat && event.venueLong) {
-                                    const km = getDistanceKm(userLocation.lat, userLocation.long, event.venueLat, event.venueLong);
-                                    distanceMiles = km * 0.621371;
-                                }
+                            {truckGroups.map((group) => {
+                                const primaryId = group[0].id;
                                 return (
                                   <div 
-                                      key={event.id}
-                                      id={`event-wrapper-${event.id}`}
-                                      onMouseEnter={() => setHoveredEventId(event.id)}
+                                      key={primaryId}
+                                      id={`event-wrapper-${primaryId}`}
+                                      onMouseEnter={() => setHoveredEventId(primaryId)}
                                       onMouseLeave={() => setHoveredEventId(null)}
                                       className="transition-transform duration-200"
                                   >
                                       <EventListCard 
-                                          event={event} 
-                                          distanceMiles={distanceMiles} 
-                                          venueStats={venueStats[getVenueSlug(event.venueName, event.village || '')]} 
+                                          events={group} 
+                                          userLocation={userLocation}
+                                          venueStatsMap={venueStats} 
                                       />
                                   </div>
                                 );
@@ -312,12 +326,10 @@ function VillageFoodieContent() {
                 </div>
             </div>
 
-            {/* RIGHT SIDE: THE MAP */}
             <div className={`w-full lg:w-[45%] xl:w-[50%] shrink-0 ${view === 'list' ? 'hidden lg:block' : 'block'}`}>
-               {/* 👇 FIXED: Also restored md:top-[142px] here so the map aligns perfectly with the sticky dates 👇 */}
                <div className="sticky top-[158px] md:top-[142px] h-[calc(100vh-180px)] md:h-[calc(100vh-160px)] z-0 md:rounded-xl md:overflow-hidden md:border md:border-slate-200 shadow-sm">
                  <MapView 
-                     events={mapEvents} 
+                     events={verifiedMapEvents} 
                      userLocation={userLocation} 
                      radius={filters.distance} 
                      hoveredEventId={hoveredEventId}
