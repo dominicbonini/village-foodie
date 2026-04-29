@@ -68,7 +68,6 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
   const map = useMap();
 
   useEffect(() => {
-    // 👇 NEW: Safe updater function
     const updateMapBounds = () => {
       // 1. PREVENT CRASH: If map is hidden (0x0), do absolutely nothing.
       const size = map.getSize();
@@ -98,7 +97,7 @@ function MapController({ events, userLocation, radius }: MapControllerProps) {
       }
     };
 
-    // 👇 NEW: Watch the map container. When user toggles "Map" on mobile, resize and frame it perfectly!
+    // Watch the map container. When user toggles "Map" on mobile, resize and frame it perfectly!
     const container = map.getContainer();
     const resizeObserver = new ResizeObserver(() => {
       map.invalidateSize(); // Fixes the grey-tile rendering bug
@@ -130,6 +129,8 @@ interface MapViewProps {
 
 export default function MapView({ events, userLocation = null, radius = 'all', hoveredEventId, onMarkerClick }: MapViewProps) {
   const [mounted, setMounted] = useState(false);
+  // 👇 NEW: Generate a unique ID every time this component mounts to stop Leaflet crashing
+  const [mapKey] = useState(() => Date.now());
 
   useEffect(() => {
     setMounted(true);
@@ -159,6 +160,7 @@ export default function MapView({ events, userLocation = null, radius = 'all', h
 
   return (
     <MapContainer 
+      key={mapKey} // 👇 NEW: Pass the unique key to the container
       center={defaultCenter} 
       zoom={10} 
       style={{ height: '100%', width: '100%' }}
@@ -218,11 +220,10 @@ export default function MapView({ events, userLocation = null, radius = 'all', h
                           </div>
 
                           <EventListCard 
-  events={[event]} // 👈 Wrapped in an array 
-  userLocation={userLocation} // 👈 Added userLocation
-  isMapPopup={true} 
-/>
-                       
+                            events={[event]} 
+                            userLocation={userLocation} 
+                            isMapPopup={true} 
+                          />
                           
                       </div>
                      );

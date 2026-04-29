@@ -50,16 +50,16 @@ function VillageFoodieContent() {
 
   const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueStats, allTrucks } = useVillageData(userLocation, filters);
 
-  // 👇 UPDATED: Extract and wash all verified trucks that DO NOT contain a 'y' in the exclusion column
+  // 👇 FIXED: Changed to `t.rawName` to match useVillageData, and added `.filter(Boolean)` 
   const activeWashedTrucks = useMemo(() => {
     if (!allTrucks) return [];
     return allTrucks
       .filter(t => {
-        // Exclude if column T contains 'y' or 'Y' anywhere
-        const ex = ((t as any).exclusion || '').trim().toLowerCase();
+        const ex = ((t as any).exclude || '').trim().toLowerCase();
         return !ex.includes('y');
       })
-      .map(t => washTruckName((t as any).truckName || (t as any).name || ''));
+      .map(t => washTruckName((t as any).rawName || ''))
+      .filter(Boolean); 
   }, [allTrucks]);
 
   const isEventVerified = useCallback((rawEventName: string) => {
