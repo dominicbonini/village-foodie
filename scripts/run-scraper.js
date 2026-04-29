@@ -99,6 +99,19 @@ function parseTime(timeStr) {
     return `${String(hours).padStart(2, '0')}:${minutes}`;
 }
 
+// HELPER: Date Parser for Historical Event Check
+function parseEventDateStr(dateStr) {
+    if (!dateStr) return new Date(0);
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+        let y = parseInt(parts[2], 10);
+        if (y < 100) y += 2000;
+        // Month is 0-indexed in JS Dates
+        return new Date(y, parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+    }
+    return new Date(0);
+}
+
 // --- DETERMINISTIC DATE CALCULATOR ---
 function generateDatesFromRule(ruleJSON) {
     const dates = [];
@@ -388,8 +401,7 @@ const validTrucks = truckData.filter(r => r[0]).map(r => {
 
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
-// --- UPDATED DEDUPLICATION ARRAY ---
-// Replaced the strict Set with an Array of objects so we can loop and apply Fuzzy Logic
+// DEDUPLICATION ARRAY
 const existingEvents = [];
 eventData.forEach(row => {
     const date = standardizeDate(row[0]); 
@@ -461,6 +473,10 @@ const browser = await puppeteer.launch({
 const newRowsToAdd = [];
 const newVenuesDetected = new Map();
 const newTrucksDetected = new Map(); 
+
+// --- DATE LIMITER ---
+const todayZeroed = new Date();
+todayZeroed.setHours(0, 0, 0, 0);
 
 for (const [index, site] of sitesToScrape.entries()) {
   let page;
@@ -569,7 +585,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           5. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
           6. **VILLAGE (MANDATORY):** You must extract the town, village, or city name.
           7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
-          8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for each location.
+          8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for location.
           9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
           10. **PRIVATE EVENTS:** If an event is explicitly marked as "private", "private party", completely ignore it. Do NOT extract it.
           11. **FACEBOOK 'TONIGHT' RULE (STRICT):** NEVER extract an event based solely on relative words like "tonight", "today", "tomorrow". Ignore these words entirely.
@@ -663,6 +679,16 @@ for (const [index, site] of sitesToScrape.entries()) {
           const eventNotes = (event["Notes"] || "").trim();
           
           if (!truckName || !event.DateStart) continue;
+          
+          // --- 🛡️ HISTORICAL DATE FILTER ---
+          const cleanDate = standardizeDate(event.DateStart);
+          const eventDateObj = parseEventDateStr(cleanDate);
+          
+          if (eventDateObj < todayZeroed) {
+              console.log(`   ⏳ Skipping historical event: ${truckName} on ${cleanDate}`);
+              continue;
+          }
+          // ------------------------------------------------
 
           // --- 🛡️ FUZZY EXCLUSION CHECK ---
           const normRawTruck = normalizeName(truckName);
@@ -795,7 +821,6 @@ for (const [index, site] of sitesToScrape.entries()) {
           if (eventNotes) aiNotesArr.push(eventNotes); 
           let finalAiNotes = aiNotesArr.join(" | ");
 
-          const cleanDate = standardizeDate(event.DateStart);
           const cleanTruckKey = normalizeName(finalTruck);
           const cleanVenueKey = normalizeName(finalVenue);
 

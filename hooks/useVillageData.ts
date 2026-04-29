@@ -20,11 +20,9 @@ const isMatch = (key1: string, key2: string) => {
 const formatImageUrl = (rawPath: string, defaultFolder: string) => {
     if (!rawPath) return '';
     const cleanPath = rawPath.trim();
-    // If it's a full web link, or already has a leading slash, leave it alone
     if (cleanPath.startsWith('http') || cleanPath.startsWith('/')) {
         return cleanPath;
     }
-    // Otherwise, assume it's just a filename and prepend the folder
     return `/${defaultFolder}/${cleanPath}`;
 };
 
@@ -119,7 +117,7 @@ export function useVillageData(
                     websiteUrl: cols[6],      
                     menuUrl: cols[7],
                     logoUrl: formatImageUrl(cols[9], 'logos'),
-                    foodPhotoUrl: formatImageUrl(cols[16], 'photos'), // Column Q
+                    foodPhotoUrl: formatImageUrl(cols[16], 'photos'), 
                     aliases: cols[17] || '',
                     exclude: cols[19] ? cols[19].toLowerCase().trim() : '' // Column T
                 });
@@ -181,10 +179,9 @@ export function useVillageData(
                 truck = trucksList.find(t => isMatch(t.cleanKey, eventTruckKey));
             }
             
-            // Exclude banned trucks
-            if (truck && truck.exclude === 'yes') return null as any; 
+            // 👇 UPDATED: Exclude any event where the truck has 'y' anywhere in Column T 👇
+            if (truck && truck.exclude && truck.exclude.includes('y')) return null as any; 
 
-            // 👇 THE FIX: OVERWRITE THE SCRAPED ALIAS WITH THE CANONICAL NAME FROM TRUCKS LIST 👇
             if (truck && truck.rawName) {
                 rawTruck = truck.rawName; 
             }
@@ -193,10 +190,8 @@ export function useVillageData(
 
             const eventVenueKey = getVenueSlug(rawVenue, rawEventVillage);
             
-            // 1. The Exact Match
             let venue = venuesList.find(v => v.cleanKey === eventVenueKey);
             
-            // 2. SCORING FALLBACK 
             if (!venue) {
                 let bestMatch = null;
                 let highestScore = -1;
@@ -248,7 +243,7 @@ export function useVillageData(
               date: rawDate,
               startTime: cols[1] || '',
               endTime: cols[2] || '',
-              truckName: rawTruck, // This is now guaranteed to be the canonical name!
+              truckName: rawTruck, 
               venueName: rawVenue,
               
               village: rawEventVillage || venue.village || '',               
@@ -354,7 +349,8 @@ export function useVillageData(
 
         if (isMounted) {
             setEvents(deduplicatedEvents);
-            setAllTrucks(trucksList.filter(t => t.exclude !== 'yes'));
+            // 👇 UPDATED: Strip any truck with 'y' in the exclude column out of the active trucks list 👇
+            setAllTrucks(trucksList.filter(t => !t.exclude || !t.exclude.includes('y')));
             setLoading(false);
         }
 

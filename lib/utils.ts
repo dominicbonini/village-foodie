@@ -230,3 +230,61 @@ export function getCanonicalTruckName(rawName: string, trucksData: any[]): strin
   // Fallback: If no match is found at all, just return the raw scraped name
   return rawName; 
 }
+// --- FUZZY MATCHING LOGIC ---
+
+export function washTruckName(name: string): string {
+  if (!name) return '';
+
+  // 1. Lowercase and replace '&' with 'and'
+  let clean = name.toLowerCase().replace(/&/g, 'and');
+
+  // 2. Remove apostrophes completely (so "anto's" becomes "antos")
+  clean = clean.replace(/['`’]/g, '');
+
+  // 3. Replace any non-alphanumeric char with a space
+  clean = clean.replace(/[^a-z0-9]/g, ' ');
+
+  // 4. Split into words
+  let words = clean.split(/\s+/).filter(w => w.length > 0);
+
+  // 5. Remove industry filler words
+  const stopWords = new Set(['the', 'street', 'st', 'food', 'ltd', 'and', 'company']);
+  words = words.filter(w => !stopWords.has(w));
+
+  // 6. Remove trailing 's' from every remaining word
+  words = words.map(w => w.endsWith('s') ? w.slice(0, -1) : w);
+
+  // 7. Combine into a single core string (e.g., "guacomexican")
+  return words.join('');
+}
+
+export function getLevenshteinDistance(a: string, b: string): number {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  const matrix: number[][] = [];
+
+  for (let i = 0; i <= b.length; i++) {
+      matrix[i] = [i];
+  }
+  for (let j = 0; j <= a.length; j++) {
+      matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+              matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+              matrix[i][j] = Math.min(
+                  matrix[i - 1][j - 1] + 1, // substitution
+                  Math.min(
+                      matrix[i][j - 1] + 1, // insertion
+                      matrix[i - 1][j] + 1  // deletion
+                  )
+              );
+          }
+      }
+  }
+  return matrix[b.length][a.length];
+}

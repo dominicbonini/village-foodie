@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, Suspense, useEffect, useMemo } from 'react';
+import { useState, useRef, Suspense, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation'; 
@@ -15,7 +15,9 @@ import {
   getCoordsFromPostcode, 
   formatFriendlyDate,
   getVenueSlug,
-  createSlug 
+  createSlug,
+  washTruckName, 
+  getLevenshteinDistance 
 } from '@/lib/utils';
 import { VillageEvent } from '@/types'; 
 
@@ -48,14 +50,32 @@ function VillageFoodieContent() {
 
   const { loading, groupedEvents, mapEvents, dynamicCuisineOptions, venueStats, allTrucks } = useVillageData(userLocation, filters);
 
-  const verifiedTruckSlugs = useMemo(() => {
-    if (!allTrucks) return new Set<string>();
-    return new Set(allTrucks.map(t => t.cleanKey));
+  // 👇 UPDATED: Extract and wash all verified trucks that DO NOT contain a 'y' in the exclusion column
+  const activeWashedTrucks = useMemo(() => {
+    if (!allTrucks) return [];
+    return allTrucks
+      .filter(t => {
+        // Exclude if column T contains 'y' or 'Y' anywhere
+        const ex = ((t as any).exclusion || '').trim().toLowerCase();
+        return !ex.includes('y');
+      })
+      .map(t => washTruckName((t as any).truckName || (t as any).name || ''));
   }, [allTrucks]);
 
+  const isEventVerified = useCallback((rawEventName: string) => {
+      const washedEvent = washTruckName(rawEventName);
+      if (!washedEvent) return false;
+
+      for (const washedTruck of activeWashedTrucks) {
+          if (washedEvent === washedTruck) return true;
+          if (getLevenshteinDistance(washedEvent, washedTruck) <= 1) return true;
+      }
+      return false; 
+  }, [activeWashedTrucks]);
+
   const verifiedMapEvents = useMemo(() => {
-    return mapEvents.filter(event => verifiedTruckSlugs.has(createSlug(event.truckName)));
-  }, [mapEvents, verifiedTruckSlugs]);
+    return mapEvents.filter(event => isEventVerified(event.truckName));
+  }, [mapEvents, isEventVerified]);
 
   useEffect(() => {
     const urlPostcode = searchParams.get('postcode');
@@ -256,7 +276,8 @@ function VillageFoodieContent() {
                       };
 
                       const activeEvents = dateEvents.filter(event => {
-                        if (!verifiedTruckSlugs.has(createSlug(event.truckName))) return false;
+                        if (!isEventVerified(event.truckName)) return false;
+                        
                         if (!isToday) return true; 
                         const endMins = getMinutes((event as any).endTime);
                         if (endMins === 9999) return true; 
