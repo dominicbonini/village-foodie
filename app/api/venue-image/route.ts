@@ -1,43 +1,41 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
-  // 👇 THE MAGIC FIX: We manually split the string to guarantee we grab the ENTIRE Google URL, 
-  // bypassing Next.js's tendency to chop off the '&' symbols.
-  const rawUrlString = request.url.split('?url=')[1];
+export async function GET(request: NextRequest) {
+  // NextRequest safely extracts the FULL url, including all & symbols and API keys
+  const targetUrl = request.nextUrl.searchParams.get('url');
 
-  if (!rawUrlString) {
+  if (!targetUrl) {
     return new NextResponse('Missing image URL', { status: 400 });
   }
-
-  // Decode the URL so it's a perfect Google Maps string again
-  const targetUrl = decodeURIComponent(rawUrlString);
 
   try {
     const response = await fetch(targetUrl, {
       headers: {
-        'Referer': 'https://villagefoodie.co.uk/', 
-        'User-Agent': 'Mozilla/5.0 (compatible; VillageFoodieBot/1.0)'
+        // Tricks Google into thinking this request is coming from your live production website
+        'Referer': 'https://villagefoodie.co.uk/',
+        // Tricks Google into thinking Vercel is a standard Google Chrome web browser
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       },
       redirect: 'follow'
     });
 
     if (!response.ok) {
-      console.error('Google API Error:', response.status);
-      return new NextResponse(`Google API Error ${response.status}`, { status: response.status });
+      const errorText = await response.text();
+      console.error(`Google API Error ${response.status}:`, errorText);
+      return new NextResponse(`Google blocked request: ${response.status}`, { status: response.status });
     }
 
     const arrayBuffer = await response.arrayBuffer();
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-
+    
     return new NextResponse(arrayBuffer, {
       headers: {
-        'Content-Type': contentType,
-        // Caches the image for a full year on Vercel so you are never charged twice
+        'Content-Type': response.headers.get('content-type') || 'image/jpeg',
+        // Cache the image on Vercel's Edge Network for 1 year to save API costs
         'Cache-Control': 'public, max-age=31536000, s-maxage=31536000, stale-while-revalidate=86400',
       },
     });
   } catch (error) {
-    console.error('Image proxy error:', error);
-    return new NextResponse(`Internal Server Error`, { status: 500 });
+    console.error('Proxy crashed:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }

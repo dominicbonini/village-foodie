@@ -7,7 +7,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
-import { formatFriendlyDate, createSlug, getVenueSlug } from '@/lib/utils'; 
+import { formatFriendlyDate, getVenueSlug } from '@/lib/utils'; 
 
 export default function VenueClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
@@ -82,7 +82,7 @@ export default function VenueClient({ slug }: { slug: string }) {
   const cleanPhone = venueInfo?.phone ? venueInfo.phone.replace(/[^\d+]/g, '') : '';
   const cleanWebsite = venueInfo?.website ? (venueInfo.website.startsWith('http') ? venueInfo.website : `https://${venueInfo.website}`) : '';
 
-  // 👇 The Proxy returns! Safely encoding the URL so the '&' symbols don't break the backend.
+  // 👇 Routes the image safely through your API proxy
   let displayPhoto = venueInfo?.photo || '';
   if (displayPhoto) {
     if (displayPhoto.includes('maps.googleapis.com')) {
