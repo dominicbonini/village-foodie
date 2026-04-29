@@ -7,7 +7,6 @@ import fs from 'fs';
 dotenv.config({ path: '.env.local' });
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
-// Added EXCLUSIONS to tabs
 const TABS = { EVENTS: 'Events', TRUCKS: 'Trucks', VENUES: 'Venues', EXCLUSIONS: 'Exclusions' };
 
 // --- STRATEGY DICTIONARY ---
@@ -24,15 +23,45 @@ const STRATEGIES = {
 // HELPER: Sleep
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// HELPER: Name Normalizer
+// --- 🧼 THE "WASHING MACHINE" (Aggressive Normalization) ---
 function normalizeName(name) {
     if (!name) return "";
     return name.toLowerCase()
-        .replace(/^the\s+/, '')       
-        .replace(/\bst\b/g, 'street') 
-        .replace(/\brd\b/g, 'road')   
-        .replace(/&/g, 'and')         
-        .replace(/[^a-z0-9]/g, '');   
+        .replace(/&/g, 'and')
+        .replace(/[^a-z0-9\s]/g, '') // Remove punctuation, keep spaces temporarily
+        .replace(/\b(the|street|st|food|ltd|co|company|and)\b/g, '') // Strip filler words
+        .split(/\s+/) // Split by spaces
+        .map(word => word.replace(/s$/, '')) // Chop off trailing 's'
+        .join(''); // Smash into a single string (e.g. "guacosmexican")
+}
+
+// --- 🧠 THE TYPO FORGIVER (1-Edit Levenshtein Distance) ---
+function isFuzzyMatch(str1, str2) {
+    if (!str1 || !str2) return false;
+    if (str1 === str2) return true;
+    if (Math.abs(str1.length - str2.length) > 1) return false;
+    
+    let diff = 0;
+    if (str1.length === str2.length) {
+        for (let i = 0; i < str1.length; i++) {
+            if (str1[i] !== str2[i]) diff++;
+        }
+        return diff <= 1;
+    }
+    
+    let longStr = str1.length > str2.length ? str1 : str2;
+    let shortStr = str1.length > str2.length ? str2 : str1;
+    let i = 0, j = 0;
+    while (i < longStr.length && j < shortStr.length) {
+        if (longStr[i] !== shortStr[j]) {
+            diff++;
+            if (diff > 1) return false;
+            i++; 
+        } else {
+            i++; j++;
+        }
+    }
+    return true;
 }
 
 // HELPER: Title Case
@@ -220,7 +249,6 @@ async function performModernScroll(page) {
 
 async function performExpandAndScrape(page) {
   console.log("   🔽 Strategy: Expand & Scrape (Day-by-Day Sequence)...");
-
   await page.evaluate(async () => { window.scrollBy(0, 800); });
   await sleep(1500);
 
@@ -229,36 +257,25 @@ async function performExpandAndScrape(page) {
 
   for (const day of days) {
       const clicked = await page.evaluate((targetDay) => {
-          // Look for all headings, titles, or short text blocks
           const elements = Array.from(document.querySelectorAll('h2, h3, h4, h5, .elementor-tab-title, .accordion-title, div, span'));
-          
-          // Loop backwards to click the innermost specific element, not the giant container
           for (let i = elements.length - 1; i >= 0; i--) {
               const el = elements[i];
               const txt = (el.innerText || "").toLowerCase().trim();
-              
-              // If it says "Wednesday" or "Wednesday Route" and isn't a massive paragraph...
               if (txt.includes(targetDay) && txt.length < 30 && el.offsetHeight > 0) {
-                  try {
-                      el.click();
-                      return true; // Click successful!
-                  } catch(e) {}
+                  try { el.click(); return true; } catch(e) {}
               }
           }
           return false;
       }, day);
 
       if (clicked) {
-          console.log(`   👆 Clicked: ${day.toUpperCase()}... Waiting for text to render...`);
-          await sleep(1500); // Give the website 1.5 seconds to open the menu and load the text
-          
-          // Take a snapshot of whatever is currently on the screen
+          console.log(`   👆 Clicked: ${day.toUpperCase()}...`);
+          await sleep(1500); 
           const pageText = await page.evaluate(() => document.body.innerText);
           accumulatedText += `\n\n--- STATE AFTER CLICKING ${day.toUpperCase()} ---\n` + pageText;
       }
   }
 
-  // Fallback: If no days were clicked, just grab whatever text is normally there
   if (accumulatedText.length < 500) {
       accumulatedText = await page.evaluate(() => document.body.innerText);
   }
@@ -272,7 +289,6 @@ async function performExpandAndScrape(page) {
           } catch (e) {}
       }
   }
-  
   return accumulatedText;
 }
 
@@ -352,7 +368,7 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets({ version: 'v4', auth });
 
 console.log("📥 Reading Master Data...");
-// Added fetching of Exclusion Data
+
 const [truckData, venueData, eventData, exclusionData] = await Promise.all([
   getTabData(sheets, TABS.TRUCKS),
   getTabData(sheets, TABS.VENUES),
@@ -360,8 +376,8 @@ const [truckData, venueData, eventData, exclusionData] = await Promise.all([
   getTabData(sheets, TABS.EXCLUSIONS)
 ]);
 
-// Build Exclusions Set
-const excludedTerms = new Set(exclusionData.map(r => r[0] ? r[0].toString().toLowerCase().trim() : '').filter(Boolean));
+// Build Exclusions Set with Normalization
+const excludedTerms = new Set(exclusionData.map(r => r[0] ? normalizeName(r[0]) : '').filter(Boolean));
 
 const validTrucks = truckData.filter(r => r[0]).map(r => {
     return {
@@ -372,19 +388,20 @@ const validTrucks = truckData.filter(r => r[0]).map(r => {
 
 const validVenues = venueData.map(r => r[0]).filter(Boolean);
 
-const existingEvents = new Set();
-
+// --- UPDATED DEDUPLICATION ARRAY ---
+// Replaced the strict Set with an Array of objects so we can loop and apply Fuzzy Logic
+const existingEvents = [];
 eventData.forEach(row => {
     const date = standardizeDate(row[0]); 
-    const truck = (row[3] || "").toLowerCase().replace(/[^a-z0-9]/g, ''); 
-    const venue = (row[4] || "").toLowerCase().replace(/[^a-z0-9]/g, '');
+    const truck = normalizeName(row[3] || ""); 
+    const venue = normalizeName(row[4] || "");
     
     if (date && truck && venue) {
-        existingEvents.add(`${date}|${truck}|${venue}`);
+        existingEvents.push({ date, truck, venue });
     }
 });
 
-console.log(`   ℹ️  Loaded ${existingEvents.size} existing unique events.`);
+console.log(`   ℹ️  Loaded ${existingEvents.length} existing unique events.`);
 
 const sitesToScrape = [];
 
@@ -443,7 +460,7 @@ const browser = await puppeteer.launch({
 
 const newRowsToAdd = [];
 const newVenuesDetected = new Map();
-const newTrucksDetected = new Map(); // Added to track new trucks to append
+const newTrucksDetected = new Map(); 
 
 for (const [index, site] of sitesToScrape.entries()) {
   let page;
@@ -470,7 +487,6 @@ for (const [index, site] of sitesToScrape.entries()) {
       
       if (cleanText.length > 0) {
           fs.writeFileSync('DEBUG_SCRAPED_TEXT.txt', cleanText);
-          console.log(`   🐛 [DEBUG] Saved what the browser saw to DEBUG_SCRAPED_TEXT.txt`);
       }
     } else {
       cleanText = ""; 
@@ -501,6 +517,7 @@ for (const [index, site] of sitesToScrape.entries()) {
 
     let prompt = "";
     
+    // --- UPDATED AI PROMPTS: Requesting exclusionsToAdd for the Web Scraper ---
     if (isRuleExtraction) {
         prompt = `
           You are a Data Extraction Bot. 
@@ -512,8 +529,7 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           TASK 2: Extract EVERY recurring schedule stop found in the WEBSITE TEXT below (e.g., Monday Route, Tuesday Route). Treat "Route" as freq: "weekly".
           
-          WEBSITE TEXT TO PARSE:
-          ${cleanText.slice(0, 100000)}
+          TASK 3: Look for explicit mentions that something is NOT a food truck (e.g., 'Live Music', 'Quiz Night'). Extract those into 'exclusionsToAdd'.
 
           RULES TO FOLLOW:
           1. Extract EACH venue as a separate JSON object. Do not combine stops.
@@ -523,11 +539,16 @@ for (const [index, site] of sitesToScrape.entries()) {
           5. IGNORE PRIVATE EVENTS: Do not extract any event labeled as "private", "private party", or "private lunch".
           6. VILLAGE (MANDATORY): Always extract the town, village, or city into a separate "village" field.
 
-          OUTPUT FORMAT EXAMPLES:
-          [
-            { "venue": "Wickhambrook MSC", "village": "Wickhambrook", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null },
-            { "venue": "Hundon", "village": "Hundon", "proof": "Wednesday Route", "rawTimeStart": "4.45", "rawTimeEnd": "8.30pm", "freq": "weekly", "day": "wednesday", "pos": "", "startDate": null, "endDate": null }
-          ]
+          JSON FORMAT ONLY:
+          {
+            "events": [
+              { "venue": "Wickhambrook MSC", "village": "Wickhambrook", "proof": "Saturday", "rawTimeStart": "11:45", "rawTimeEnd": "13:45", "freq": "weekly", "day": "saturday", "pos": "", "startDate": null, "endDate": null }
+            ],
+            "exclusionsToAdd": ["Name of non-truck"]
+          }
+          
+          WEBSITE TEXT TO PARSE:
+          ${cleanText.slice(0, 100000)}
         `;
       } else {
         prompt = `
@@ -537,23 +558,28 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           ${site.instructions ? `\n🚨 CRITICAL USER HINT FOR THIS WEBSITE: "${site.instructions}"` : ""}
           
-          TASK: Extract EVERY food truck event from the provided text for the schedule shown.
+          TASK 1: Extract EVERY food truck event from the provided text for the schedule shown.
+          TASK 2: Look for explicit mentions that something is NOT a food truck (e.g., 'Live Music', 'Quiz Night'). Extract those into 'exclusionsToAdd'.
+
           CRITICAL RULES:
-          1. **EXPLICIT DATES OVERRIDE EVERYTHING:** If a specific date is written (e.g., "6th April", "10th April"), you MUST extract that exact date, even if it is in the past relative to the Current Date. Do NOT shift explicit past dates into the future.
-          2. **PRESERVE THE WHOLE WEEK:** If the text contains a schedule for a specific week, extract ALL days of that schedule, including days that have already happened. Do NOT ignore past events.
-          3. **RELATIVE DAYS:** ONLY calculate the "next immediate date" for a day of the week if NO specific date number (like "6th") is provided alongside it.
+          1. **EXPLICIT DATES OVERRIDE EVERYTHING:** If a specific date is written (e.g., "6th April"), you MUST extract that exact date. Do NOT shift explicit past dates into the future.
+          2. **PRESERVE THE WHOLE WEEK:** Extract ALL days of that schedule, including days that have already happened. 
+          3. **RELATIVE DAYS:** ONLY calculate the "next immediate date" for a day of the week if NO specific date number is provided.
           4. **DateStart Format:** "DD/MM/YYYY". 
           5. **VENUE NAME:** Extract ONLY the Business Name (e.g., 'The Plough'). DO NOT append the village.
-          6. **VILLAGE (MANDATORY):** You must extract the town, village, or city name. If the text says 'The Street, Capel St. Mary', the venue is 'The Street' and the Village is 'Capel St. Mary'. NEVER leave this blank.
+          6. **VILLAGE (MANDATORY):** You must extract the town, village, or city name.
           7. **NOTES:** Postcodes, addresses, or extra event details go into the "Notes" field.
           8. **DOUBLE DAYS:** If a single day lists multiple locations, create a completely separate JSON object for each location.
           9. **MISSING TIMES:** If no time is explicitly stated for a venue, output "" (an empty string) for TimeStart and TimeEnd.
-          10. **PRIVATE EVENTS:** If an event is explicitly marked as "private", "private party", "private event", or "private lunch", completely ignore it. Do NOT extract it.
-          11. **FACEBOOK 'TONIGHT' RULE (STRICT):** NEVER extract an event based solely on relative words like "tonight", "today", "tomorrow", or "this weekend". Social media posts are persistent; "tonight" might be months old. You must ignore these words entirely.
-          12. **PROXIMITY REQUIREMENT:** You must ONLY extract an event if an explicit Day (e.g., "Wednesday") or Date (e.g., "24th") is explicitly stated in the exact same sentence or list block as the venue name. Do not guess dates for standalone locations.
+          10. **PRIVATE EVENTS:** If an event is explicitly marked as "private", "private party", completely ignore it. Do NOT extract it.
+          11. **FACEBOOK 'TONIGHT' RULE (STRICT):** NEVER extract an event based solely on relative words like "tonight", "today", "tomorrow". Ignore these words entirely.
+          12. **PROXIMITY REQUIREMENT:** You must ONLY extract an event if an explicit Day or Date is explicitly stated in the exact same sentence or list block as the venue name.
           
-          RETURN JSON:
-          [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }]
+          JSON FORMAT ONLY:
+          {
+            "events": [{ "DateStart": "DD/MM/YYYY", "TimeStart": "HH:MM", "TimeEnd": "HH:MM", "Truck Name": "Name", "Venue Name": "Name", "Village": "Town Name", "Notes": "..." }],
+            "exclusionsToAdd": ["Name of non-truck"]
+          }
           
           WEBSITE TEXT:
           ${cleanText.slice(0, 150000)} 
@@ -572,9 +598,42 @@ for (const [index, site] of sitesToScrape.entries()) {
       const result = await generateContentWithRetry(activeModel, prompt);
       
       let finalEvents = [];
+      let exclusionsToAdd = [];
+
+      if (result) {
+        if (Array.isArray(result)) {
+            finalEvents = result;
+        } else {
+            finalEvents = result.events || [];
+            exclusionsToAdd = result.exclusionsToAdd || [];
+        }
+      }
       
-      if (isRuleExtraction && Array.isArray(result)) {
-           for (const rule of result) {
+      // --- APPEND AUTO-EXCLUSIONS ---
+      if (exclusionsToAdd.length > 0) {
+        exclusionsToAdd.forEach(async (ex) => {
+            if (ex && typeof ex === 'string') {
+                const cleanEx = normalizeName(ex);
+                if (!Array.from(excludedTerms).some(existing => isFuzzyMatch(existing, cleanEx))) {
+                    try {
+                        await sheets.spreadsheets.values.append({
+                            spreadsheetId: SPREADSHEET_ID,
+                            range: `${TABS.EXCLUSIONS}!A:A`,
+                            valueInputOption: 'USER_ENTERED',
+                            resource: { values: [[ex]] },
+                        });
+                        excludedTerms.add(cleanEx);
+                        console.log(`   🤖 Auto-Excluded via Scraper: ${ex}`);
+                    } catch (err) { console.error("Failed to append exclusion:", err.message); }
+                }
+            }
+        });
+      }
+
+      // --- FORMAT RULE EXTRACTS ---
+      if (isRuleExtraction && finalEvents.length > 0 && !finalEvents[0].DateStart) {
+           let expandedEvents = [];
+           for (const rule of finalEvents) {
                if (!rule.freq && rule.day) rule.freq = "weekly";
                if (rule.freq) {
                    const dates = generateDatesFromRule(rule);
@@ -583,14 +642,15 @@ for (const [index, site] of sitesToScrape.entries()) {
                    if (tStart === "Contact Venue") tEnd = "";
 
                    for (const date of dates) {
-                       finalEvents.push({
+                       expandedEvents.push({
                            "DateStart": date, "TimeStart": tStart, "TimeEnd": tEnd,
                            "Truck Name": site.name, "Venue Name": rule.venue || "Unknown Venue", "Village": rule.village || "", "Notes": "" 
                        });
                    }
                }
            }
-      } else { finalEvents = result; }
+           finalEvents = expandedEvents;
+      }
 
       if (Array.isArray(finalEvents)) {
         console.log(`   📋 Processing ${finalEvents.length} events...`);
@@ -604,8 +664,10 @@ for (const [index, site] of sitesToScrape.entries()) {
           
           if (!truckName || !event.DateStart) continue;
 
-          // --- 🛡️ NEW EXCLUSION CHECK ---
-          if (excludedTerms.has(truckName.toLowerCase())) {
+          // --- 🛡️ FUZZY EXCLUSION CHECK ---
+          const normRawTruck = normalizeName(truckName);
+          const isExcluded = Array.from(excludedTerms).some(ex => isFuzzyMatch(ex, normRawTruck));
+          if (isExcluded) {
               console.log(`   🚫 Skipping excluded truck term: ${truckName}`);
               continue;
           }
@@ -621,19 +683,19 @@ for (const [index, site] of sitesToScrape.entries()) {
 
           let finalTruck = truckName;
           let isNewTruck = false;
+          const normTruck = normalizeName(truckName);
 
           if (site.sourceType === 'truck') {
               finalTruck = site.name; 
           } else {
-              const normTruck = normalizeName(truckName);
-              
+              // --- 🧠 TRUCK FUZZY IDENTIFICATION ---
               let matchedTruckObj = validTrucks.find(t => {
                   const normDbName = normalizeName(t.name);
-                  if (normDbName === normTruck || normDbName.includes(normTruck) || normTruck.includes(normDbName)) return true;
+                  if (isFuzzyMatch(normDbName, normTruck) || normDbName.includes(normTruck) || normTruck.includes(normDbName)) return true;
                   
                   for (const alias of t.aliases) {
                       const normAlias = normalizeName(alias);
-                      if (normAlias === normTruck || normAlias.includes(normTruck) || normTruck.includes(normAlias)) return true;
+                      if (isFuzzyMatch(normAlias, normTruck) || normAlias.includes(normTruck) || normTruck.includes(normAlias)) return true;
                   }
                   return false;
               });
@@ -641,15 +703,13 @@ for (const [index, site] of sitesToScrape.entries()) {
               if (matchedTruckObj) {
                   finalTruck = matchedTruckObj.name;
               } else {
-                  // --- APPLY TITLE CASE AND TRACK NEW TRUCK ---
                   finalTruck = toTitleCase(truckName);
                   isNewTruck = true;
                   
                   if (!newTrucksDetected.has(finalTruck)) {
-                      // Create an empty row with 20 columns to set Col T (index 19) to 'Yes'
                       const newTruckRow = new Array(20).fill('');
-                      newTruckRow[0] = finalTruck; // Col A
-                      newTruckRow[19] = 'Yes';     // Col T (Excluded until verified)
+                      newTruckRow[0] = finalTruck; 
+                      newTruckRow[19] = 'Yes';    // Flag as excluded/pending verification
                       newTrucksDetected.set(finalTruck, newTruckRow);
                   }
               }
@@ -658,12 +718,12 @@ for (const [index, site] of sitesToScrape.entries()) {
           let finalVenue = venueName || "Unknown";
           let isNewVenue = false;
           let confirmedVenue = null;
+          const normVenue = normalizeName(venueName);
 
           if (site.sourceType === 'venue') {
               finalVenue = site.name;
               confirmedVenue = site.name;
           } else {
-              const normVenue = normalizeName(venueName);
               const eventTextToSearch = (venueName + " " + extractedVillage + " " + eventNotes).toLowerCase();
               const postcodeMatch = eventTextToSearch.match(/[a-z]{1,2}\d[a-z\d]?\s*\d[a-z]{2}/i);
               const eventPostcode = postcodeMatch ? postcodeMatch[0].toLowerCase().replace(/\s+/g, '') : null;
@@ -674,7 +734,7 @@ for (const [index, site] of sitesToScrape.entries()) {
                       let bestMatch = null; let highestScore = -1;
                       for (const v of venuesAtPostcode) {
                           const dbNameNorm = normalizeName(v[0]); let score = 0;
-                          if (dbNameNorm === normVenue) score += 100;
+                          if (isFuzzyMatch(dbNameNorm, normVenue)) score += 100;
                           else if (dbNameNorm.includes(normVenue) || normVenue.includes(dbNameNorm)) score += 5;
                           if (score > highestScore) { highestScore = score; bestMatch = v[0]; }
                       }
@@ -683,9 +743,11 @@ for (const [index, site] of sitesToScrape.entries()) {
               }
 
               if (!confirmedVenue) {
+                  // --- 🧠 VENUE FUZZY IDENTIFICATION ---
                   let fuzzyMatches = venueData.filter(v => {
-                      if (!v[0]) return false; const normDbName = normalizeName(v[0]);
-                      return normVenue === normDbName || normVenue.includes(normDbName) || normDbName.includes(normVenue);
+                      if (!v[0]) return false; 
+                      const normDbName = normalizeName(v[0]);
+                      return isFuzzyMatch(normVenue, normDbName) || normVenue.includes(normDbName) || normDbName.includes(normVenue);
                   });
 
                   if (fuzzyMatches.length > 0) {
@@ -695,16 +757,13 @@ for (const [index, site] of sitesToScrape.entries()) {
                           const dbVillage = (match[1] || "").toLowerCase().trim(); 
                           let score = 0;
                           
-                          if (normVenue === normDbName) {
+                          if (isFuzzyMatch(normVenue, normDbName)) {
                               score += 100; 
                           } else if (normDbName.includes(normVenue) || normVenue.includes(normDbName)) {
                               score += 10; 
                               if (dbVillage && dbVillage.length > 2) {
-                                  if (eventTextToSearch.includes(dbVillage)) {
-                                      score += 50; 
-                                  } else {
-                                      score -= 20; 
-                                  }
+                                  if (eventTextToSearch.includes(dbVillage)) score += 50; 
+                                  else score -= 20; 
                               } else if (Math.abs(normDbName.length - normVenue.length) > 5) {
                                   score -= 5; 
                               }
@@ -721,16 +780,10 @@ for (const [index, site] of sitesToScrape.entries()) {
                   finalVenue = confirmedVenue;
               } else { 
                   isNewVenue = true; 
-                  
                   if (finalVenue && extractedVillage) {
                       const compositeKey = `${finalVenue}|${extractedVillage}`;
-                      
                       if (!newVenuesDetected.has(compositeKey)) {
-                          newVenuesDetected.set(compositeKey, {
-                              name: finalVenue,
-                              village: extractedVillage,
-                              notes: eventNotes || ""
-                          });
+                          newVenuesDetected.set(compositeKey, { name: finalVenue, village: extractedVillage, notes: eventNotes || "" });
                       }
                   }
               }
@@ -743,18 +796,21 @@ for (const [index, site] of sitesToScrape.entries()) {
           let finalAiNotes = aiNotesArr.join(" | ");
 
           const cleanDate = standardizeDate(event.DateStart);
-          const cleanTruckKey = finalTruck.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const cleanVenueKey = finalVenue.toLowerCase().replace(/[^a-z0-9]/g, '');
-          
-          const key = `${cleanDate}|${cleanTruckKey}|${cleanVenueKey}`;
+          const cleanTruckKey = normalizeName(finalTruck);
+          const cleanVenueKey = normalizeName(finalVenue);
 
-          // --- 🛡️ EVENT SOURCE OVERRIDE ---
           const eventSource = (site.strategy === 'manual' || site.strategy === 'manual_single') 
             ? 'Manual Entry' 
             : `URL: ${site.url} | Strategy: ${site.strategy}`;
-          // ------------------------------------------------
           
-          if (!existingEvents.has(key)) {
+          // --- 🧠 SMART FUZZY DEDUPLICATION CHECK ---
+          const isDup = existingEvents.some(ex => 
+              ex.date === cleanDate && 
+              isFuzzyMatch(ex.truck, cleanTruckKey) && 
+              isFuzzyMatch(ex.venue, cleanVenueKey)
+          );
+
+          if (!isDup) {
               console.log(`   ✅ ADDING: ${finalTruck} @ ${finalVenue} (${cleanDate})`);
               
               newRowsToAdd.push([
@@ -769,7 +825,8 @@ for (const [index, site] of sitesToScrape.entries()) {
                   finalAiNotes                                      // Col I: AI Notes
               ]);
               
-              existingEvents.add(key); 
+              // Push to array so we don't duplicate it within this run
+              existingEvents.push({ date: cleanDate, truck: cleanTruckKey, venue: cleanVenueKey });
               newCount++;
           } else { dupCount++; }
         }
@@ -804,6 +861,7 @@ if (newTrucksDetected.size > 0) {
   }
 }
 
+// --- APPEND NEW EVENTS ---
 if (newRowsToAdd.length > 0) {
   console.log(`\n💾 Appending ${newRowsToAdd.length} new events...`);
   await sheets.spreadsheets.values.append({
@@ -812,6 +870,7 @@ if (newRowsToAdd.length > 0) {
   console.log("🎉 Database Sync Complete!");
 } else { console.log("\n💤 No new events found."); }
 
+// --- ADD NEW VENUES & GEOCODE ---
 if (newVenuesDetected.size > 0) {
   console.log(`\n🌍 Asking AI to locate and add ${newVenuesDetected.size} new venues...`);
   
@@ -829,18 +888,18 @@ if (newVenuesDetected.size > 0) {
     const geoResult = await generateContentWithRetry(modelLite, geoPrompt);
     
     const newVenueRows = geoResult.map(v => [
-      v.name || "",            // Col A: Venue Name
-      v.village || "",         // Col B: Village
-      v.postcode || "",        // Col C: Postcode
-      v.lat || "",             // Col D: Latitude
-      v.lng || "",             // Col E: Longitude
-      "",                      // Col F: Empty (Address)
-      "",                      // Col G: Empty (Phone)
-      "",                      // Col H: Empty (Email)
-      "",                      // Col I: Empty (Website)
-      "",                      // Col J: Empty (Facebook)
-      "",                      // Col K: Empty (Instagram)
-      "[⚠️ NEW FROM SCRAPER]"  // Col L: Photo/Notes Flag
+      v.name || "",            
+      v.village || "",         
+      v.postcode || "",        
+      v.lat || "",             
+      v.lng || "",             
+      "",                      
+      "",                      
+      "",                      
+      "",                      
+      "",                      
+      "",                      
+      "[⚠️ NEW FROM SCRAPER]"  
     ]);
 
     if (newVenueRows.length > 0) {
