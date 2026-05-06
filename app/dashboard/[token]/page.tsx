@@ -14,7 +14,7 @@ interface Order {
   slot: string | null
   status: string
   items: { name: string; quantity: number; unit_price: number }[]
-  deals: { name: string; slots: Record<string,string> }[] | null
+  deals: { name: string; slots: Record<string, string> }[] | null
   total: number
   notes: string | null
   created_at: string
@@ -46,82 +46,88 @@ interface TruckMenu {
   items: MenuItem[]
 }
 
-// ─── ASAP slot calculator ────────────────────────────────────────────────────
-// Finds the next available slot considering current order load
-function getAsapSlot(slots: Slot[]): Slot | null {
-  if (!slots.length) return null
-  const now = new Date()
-  const nowMins = now.getHours() * 60 + now.getMinutes()
-  // Find slots that are in the future and have capacity
-  const available = slots.filter(s => {
-    const [h, m] = s.collection_time.split(':').map(Number)
-    const slotMins = h * 60 + m
-    return slotMins > nowMins && s.available
-  })
-  return available[0] || null
+interface BasketItem {
+  name: string
+  quantity: number
+  unit_price: number
 }
 
 // ─── Status config ────────────────────────────────────────────────────────────
 
-const STATUS = {
-  pending:   { label: 'New',       bg: 'bg-orange-100', text: 'text-orange-700', dot: 'bg-orange-500' },
-  confirmed: { label: 'Confirmed', bg: 'bg-green-100',  text: 'text-green-700',  dot: 'bg-green-500'  },
-  rejected:  { label: 'Rejected',  bg: 'bg-red-100',    text: 'text-red-700',    dot: 'bg-red-400'    },
-  ready:     { label: 'Ready',     bg: 'bg-blue-100',   text: 'text-blue-700',   dot: 'bg-blue-500'   },
-  collected: { label: 'Collected', bg: 'bg-slate-100',  text: 'text-slate-500',  dot: 'bg-slate-400'  },
-  modified:  { label: 'Modified',  bg: 'bg-yellow-100', text: 'text-yellow-700', dot: 'bg-yellow-500' },
-} as const
+const STATUS: Record<string, { label: string; bg: string; text: string }> = {
+  pending:   { label: 'New',       bg: 'bg-orange-100', text: 'text-orange-700' },
+  confirmed: { label: 'Confirmed', bg: 'bg-green-100',  text: 'text-green-700'  },
+  rejected:  { label: 'Rejected',  bg: 'bg-red-100',    text: 'text-red-600'    },
+  ready:     { label: 'Ready',     bg: 'bg-blue-100',   text: 'text-blue-700'   },
+  collected: { label: 'Collected', bg: 'bg-slate-100',  text: 'text-slate-500'  },
+  modified:  { label: 'Modified',  bg: 'bg-yellow-100', text: 'text-yellow-700' },
+}
+
+// ─── ASAP helper ──────────────────────────────────────────────────────────────
+
+function getAsapSlot(slots: Slot[]): Slot | null {
+  if (!slots.length) return null
+  const now = new Date()
+  const nowMins = now.getHours() * 60 + now.getMinutes()
+  return slots.find(s => {
+    const [h, m] = s.collection_time.split(':').map(Number)
+    return (h * 60 + m) > nowMins && s.available
+  }) || null
+}
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function DashboardPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params)
 
+  // Auth
   const [pin, setPin] = useState('')
   const [pinInput, setPinInput] = useState('')
   const [pinError, setPinError] = useState('')
   const [requiresPin, setRequiresPin] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
 
+  // Data
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
   const [slots, setSlots] = useState<Slot[]>([])
+  const [truckMenu, setTruckMenu] = useState<TruckMenu | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
+  const [lastRefresh, setLastRefresh] = useState(new Date())
 
+  // UI
   const [activeTab, setActiveTab] = useState<'orders' | 'manual'>('orders')
-  const [truckMenu, setTruckMenu] = useState<TruckMenu | null>(null)
-  const [slotMode, setSlotMode] = useState<'asap' | 'specific'>('asap')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
   // Manual order form
   const [manualName, setManualName] = useState('')
-  const [manualPhone, setManualPhone] = useState('')
   const [manualEmail, setManualEmail] = useState('')
-  const [manualSlot, setManualSlot] = useState('')
   const [manualNotes, setManualNotes] = useState('')
-  const [manualItems, setManualItems] = useState<{ name: string; quantity: number; unit_price: number }[]>([])
+  const [manualSlot, setManualSlot] = useState('')
+  const [manualItems, setManualItems] = useState<BasketItem[]>([])
+
+  const asapSlot = getAsapSlot(slots)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3000)
   }
 
-  // ── Fetch orders ────────────────────────────────────────────────────────────
+  // ── Fetch data ──────────────────────────────────────────────────────────────
+
   const fetchOrders = useCallback(async (currentPin = pin) => {
     try {
-      const params = new URLSearchParams({ token })
-      if (currentPin) params.set('pin', currentPin)
-      const res = await fetch(`/api/dashboard?${params}`)
+      const p = new URLSearchParams({ token })
+      if (currentPin) p.set('pin', currentPin)
+      const res = await fetch(`/api/dashboard?${p}`)
       const data = await res.json()
 
       if (res.status === 401) {
         if (data.requiresPin) { setRequiresPin(true); setLoading(false); return }
         setError('Invalid access link'); setLoading(false); return
       }
-
       if (!res.ok) { setError(data.error || 'Failed to load'); setLoading(false); return }
 
       setTruck(data.truck)
@@ -129,7 +135,8 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
       setSlots(data.slots)
       setAuthenticated(true)
       setLastRefresh(new Date())
-      // Load truck menu for manual order entry
+
+      // Load menu for manual order
       if (data.truck?.id && !truckMenu) {
         fetch(`/api/menu/${data.truck.id}`)
           .then(r => r.ok ? r.json() : null)
@@ -141,24 +148,22 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     } finally {
       setLoading(false)
     }
-  }, [token, pin])
+  }, [token, pin, truckMenu])
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
-  // Auto-refresh every 30 seconds
+  // Auto-refresh every 30s
   useEffect(() => {
     if (!authenticated) return
-    const interval = setInterval(() => fetchOrders(), 30000)
-    return () => clearInterval(interval)
+    const id = setInterval(() => fetchOrders(), 30000)
+    return () => clearInterval(id)
   }, [authenticated, fetchOrders])
 
-  // ── PIN submit ──────────────────────────────────────────────────────────────
-  // Derived ASAP slot
-  const asapSlot = getAsapSlot(slots)
+  // ── PIN ─────────────────────────────────────────────────────────────────────
 
   const submitPin = async () => {
-    const params = new URLSearchParams({ token, pin: pinInput })
-    const res = await fetch(`/api/dashboard?${params}`)
+    const p = new URLSearchParams({ token, pin: pinInput })
+    const res = await fetch(`/api/dashboard?${p}`)
     const data = await res.json()
     if (!res.ok) { setPinError('Incorrect PIN'); return }
     setPin(pinInput)
@@ -167,9 +172,16 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     setSlots(data.slots)
     setAuthenticated(true)
     setRequiresPin(false)
+    if (data.truck?.id) {
+      fetch(`/api/menu/${data.truck.id}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d?.menu) setTruckMenu(d.menu) })
+        .catch(() => null)
+    }
   }
 
-  // ── Order action ────────────────────────────────────────────────────────────
+  // ── Order actions ───────────────────────────────────────────────────────────
+
   const doAction = async (action: string, orderId: string) => {
     setActionLoading(`${action}-${orderId}`)
     try {
@@ -180,7 +192,8 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      showToast(`Order #${orderId} ${action === 'confirm' ? 'confirmed' : action === 'reject' ? 'rejected' : action}d`)
+      const labels: Record<string, string> = { confirm: 'confirmed', reject: 'rejected', ready: 'ready', collected: 'collected' }
+      showToast(`Order #${orderId} ${labels[action] || action}`)
       await fetchOrders()
     } catch (err: any) {
       showToast(err.message || 'Action failed', 'error')
@@ -189,12 +202,33 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     }
   }
 
-  // ── Manual order submit ─────────────────────────────────────────────────────
+  // ── Manual order ────────────────────────────────────────────────────────────
+
+  const addMenuItem = (item: MenuItem) => {
+    setManualItems(prev => {
+      const ex = prev.find(i => i.name === item.name)
+      return ex
+        ? prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i)
+        : [...prev, { name: item.name, quantity: 1, unit_price: item.price }]
+    })
+  }
+
+  const adjustQty = (name: string, delta: number) => {
+    setManualItems(prev => {
+      const updated = prev.map(i => i.name === name ? { ...i, quantity: i.quantity + delta } : i)
+      return updated.filter(i => i.quantity > 0)
+    })
+  }
+
+  const editPrice = (name: string, price: number) => {
+    setManualItems(prev => prev.map(i => i.name === name ? { ...i, unit_price: price } : i))
+  }
+
+  const manualTotal = manualItems.reduce((s, i) => s + i.unit_price * i.quantity, 0)
+
   const submitManual = async () => {
-    const validItems = manualItems.filter(i => i.name.trim() && i.unit_price > 0)
-    if (!manualName.trim() || !validItems.length) {
-      showToast('Name and at least one item with price required', 'error'); return
-    }
+    if (!manualName.trim() || !manualItems.length) return
+    const effectiveSlot = manualSlot || asapSlot?.collection_time || null
     setActionLoading('manual')
     try {
       const res = await fetch('/api/dashboard/action', {
@@ -204,23 +238,20 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
           token, pin, action: 'manual',
           manualOrder: {
             customerName:  manualName,
-            customerPhone: manualPhone || null,
+            customerPhone: null,
             customerEmail: manualEmail || null,
-            slot:          slotMode === 'asap' ? (asapSlot?.collection_time || null) : (manualSlot || null),
-            items:         validItems,
+            slot:          effectiveSlot,
+            items:         manualItems,
             notes:         manualNotes || null,
           },
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      const msg = data.slotFull
-        ? `Order #${data.orderId} saved as pending — slot is full`
-        : `Order #${data.orderId} saved and confirmed`
-      showToast(msg)
-      setManualName(''); setManualPhone(''); setManualEmail('')
-      setManualSlot(''); setManualNotes('')
-      setManualItems([{ name: '', quantity: 1, unit_price: 0 }])
+      showToast(data.slotFull
+        ? `Order #${data.orderId} saved — slot full, pending confirmation`
+        : `Order #${data.orderId} saved and confirmed`)
+      setManualName(''); setManualEmail(''); setManualNotes(''); setManualSlot(''); setManualItems([])
       setActiveTab('orders')
       await fetchOrders()
     } catch (err: any) {
@@ -230,20 +261,20 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     }
   }
 
-  // ── Loading / error / PIN screens ───────────────────────────────────────────
+  // ── Render guards ───────────────────────────────────────────────────────────
 
   if (loading) return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p>
     </div>
   )
 
   if (error) return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
       <div className="text-center">
-        <p className="text-white font-bold text-lg mb-2">Access denied</p>
-        <p className="text-slate-400 text-sm">{error}</p>
-        <Link href="/" className="mt-4 inline-block text-orange-400 text-sm hover:underline">← Village Foodie</Link>
+        <p className="text-slate-900 font-bold text-lg mb-2">Access denied</p>
+        <p className="text-slate-500 text-sm">{error}</p>
+        <Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← Village Foodie</Link>
       </div>
     </div>
   )
@@ -255,9 +286,7 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
         <h2 className="text-white font-black text-xl mb-2">Enter PIN</h2>
         <p className="text-slate-400 text-sm mb-6">Enter your 4-digit dashboard PIN</p>
         <input
-          type="number"
-          maxLength={4}
-          value={pinInput}
+          type="number" maxLength={4} value={pinInput}
           onChange={e => setPinInput(e.target.value.slice(0, 4))}
           onKeyDown={e => e.key === 'Enter' && submitPin()}
           placeholder="• • • •"
@@ -271,26 +300,31 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     </div>
   )
 
-  // ── Order counts for summary ────────────────────────────────────────────────
   const pendingOrders   = orders.filter(o => o.status === 'pending')
   const confirmedOrders = orders.filter(o => o.status === 'confirmed')
-  const otherOrders     = orders.filter(o => !['pending','confirmed'].includes(o.status))
+  const otherOrders     = orders.filter(o => !['pending', 'confirmed'].includes(o.status))
 
-  // ── Main dashboard ──────────────────────────────────────────────────────────
+  // Group menu by category
+  const menuGroups: Record<string, MenuItem[]> = {}
+  truckMenu?.items.forEach(item => {
+    if (!menuGroups[item.category]) menuGroups[item.category] = []
+    menuGroups[item.category].push(item)
+  })
+
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-50">
 
       {/* Header */}
-      <header className="bg-slate-800 border-b border-slate-700 px-4 py-3 sticky top-0 z-50">
+      <header className="bg-white border-b border-slate-200 px-4 py-3 sticky top-0 z-50 shadow-sm">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/">
               <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={100} height={30} className="object-contain opacity-80" />
             </Link>
-            <div className="h-5 w-px bg-slate-600" />
+            <div className="h-5 w-px bg-slate-200" />
             <div>
-              <p className="font-black text-sm leading-none">{truck?.name}</p>
-              {truck?.venue_name && <p className="text-slate-400 text-xs mt-0.5">{truck.venue_name}</p>}
+              <p className="font-black text-sm text-slate-900 leading-none">{truck?.name}</p>
+              {truck?.venue_name && <p className="text-slate-500 text-xs mt-0.5">{truck.venue_name}</p>}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -299,97 +333,72 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                 {pendingOrders.length} new
               </span>
             )}
-            <button
-              onClick={() => fetchOrders()}
-              className="text-slate-400 hover:text-white text-xs font-medium transition-colors"
-            >
-              ↻ Refresh
+            <button onClick={() => fetchOrders()} className="text-slate-400 hover:text-slate-700 text-xs font-medium">
+              ↻
             </button>
           </div>
         </div>
       </header>
 
-      {/* Tab bar */}
-      <div className="bg-slate-800 border-b border-slate-700 px-4">
+      {/* Tabs */}
+      <div className="bg-white border-b border-slate-200 px-4">
         <div className="max-w-2xl mx-auto flex">
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'orders' ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}
-          >
-            Live orders {orders.filter(o => ['pending','confirmed'].includes(o.status)).length > 0 && `(${orders.filter(o => ['pending','confirmed'].includes(o.status)).length})`}
-          </button>
-          <button
-            onClick={() => setActiveTab('manual')}
-            className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'manual' ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}
-          >
-            + Add order
-          </button>
+          {(['orders', 'manual'] as const).map((tab, i) => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === tab ? 'border-orange-500 text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-700'}`}>
+              {tab === 'orders'
+                ? `Live orders${orders.filter(o => ['pending','confirmed'].includes(o.status)).length > 0 ? ` (${orders.filter(o => ['pending','confirmed'].includes(o.status)).length})` : ''}`
+                : '+ Add order'}
+            </button>
+          ))}
         </div>
       </div>
 
       <main className="max-w-2xl mx-auto px-4 py-4 pb-20">
 
-        {/* ORDERS TAB */}
+        {/* ── ORDERS TAB ── */}
         {activeTab === 'orders' && (
           <div>
-            {/* Summary stats */}
+            {/* Stats */}
             <div className="grid grid-cols-3 gap-3 mb-4">
-              <StatCard label="New" value={pendingOrders.length} accent="orange" />
-              <StatCard label="Confirmed" value={confirmedOrders.length} accent="green" />
-              <StatCard label="Done" value={otherOrders.length} accent="slate" />
+              {[
+                { label: 'New', value: pendingOrders.length, colour: 'text-orange-500' },
+                { label: 'Confirmed', value: confirmedOrders.length, colour: 'text-green-600' },
+                { label: 'Done', value: otherOrders.length, colour: 'text-slate-400' },
+              ].map(s => (
+                <div key={s.label} className="bg-white rounded-xl p-3 text-center border border-slate-200 shadow-sm">
+                  <p className={`text-2xl font-black ${s.colour}`}>{s.value}</p>
+                  <p className="text-slate-500 text-xs font-medium mt-0.5">{s.label}</p>
+                </div>
+              ))}
             </div>
 
-            {/* New orders first */}
+            {/* New orders */}
             {pendingOrders.length > 0 && (
               <div className="mb-4">
-                <SectionLabel>New orders — action needed</SectionLabel>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
                 <div className="space-y-3">
-                  {pendingOrders.map(order => (
-                    <OrderCard
-                      key={order.id}
-                      order={order}
-                      truck={truck}
-                      actionLoading={actionLoading}
-                      onAction={doAction}
-                    />
-                  ))}
+                  {pendingOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} actionLoading={actionLoading} onAction={doAction} />)}
                 </div>
               </div>
             )}
 
-            {/* Confirmed orders */}
+            {/* Confirmed */}
             {confirmedOrders.length > 0 && (
               <div className="mb-4">
-                <SectionLabel>Confirmed</SectionLabel>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
                 <div className="space-y-3">
-                  {confirmedOrders.map(order => (
-                    <OrderCard
-                      key={order.id}
-                      order={order}
-                      truck={truck}
-                      actionLoading={actionLoading}
-                      onAction={doAction}
-                    />
-                  ))}
+                  {confirmedOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} actionLoading={actionLoading} onAction={doAction} />)}
                 </div>
               </div>
             )}
 
-            {/* All other orders */}
+            {/* Earlier */}
             {otherOrders.length > 0 && (
               <div className="mb-4">
-                <SectionLabel>Earlier today</SectionLabel>
+                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Earlier today</p>
                 <div className="space-y-2">
-                  {otherOrders.map(order => (
-                    <OrderCard
-                      key={order.id}
-                      order={order}
-                      truck={truck}
-                      actionLoading={actionLoading}
-                      onAction={doAction}
-                      compact
-                    />
-                  ))}
+                  {otherOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} actionLoading={actionLoading} onAction={doAction} compact />)}
                 </div>
               </div>
             )}
@@ -397,206 +406,156 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
             {orders.length === 0 && (
               <div className="text-center py-16">
                 <p className="text-4xl mb-3">🍕</p>
-                <p className="text-slate-400 font-medium">No orders yet today</p>
-                <p className="text-slate-500 text-sm mt-1">Orders will appear here automatically</p>
-                <p className="text-slate-600 text-xs mt-3">Last updated: {lastRefresh.toLocaleTimeString()}</p>
+                <p className="text-slate-500 font-medium">No orders yet today</p>
+                <p className="text-slate-400 text-sm mt-1">Orders appear here automatically</p>
+                <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
               </div>
             )}
           </div>
         )}
 
-        {/* MANUAL ORDER TAB */}
+        {/* ── MANUAL ORDER TAB ── */}
         {activeTab === 'manual' && (
-          <div>
-            <SectionLabel>Add walk-up or phone order</SectionLabel>
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-5">
 
-            <div className="bg-slate-800 rounded-2xl p-4 space-y-3">
-
-              <ManualField label="Customer name *">
-                <input type="text" value={manualName} onChange={e => setManualName(e.target.value)}
-                  placeholder="e.g. John" className="w-full bg-slate-700 text-white rounded-xl px-3 py-2.5 text-sm font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600" />
-              </ManualField>
-
-              <ManualField label="Email (optional)">
-                <input type="email" value={manualEmail} onChange={e => setManualEmail(e.target.value)}
-                  placeholder="For ready notification" className="w-full bg-slate-700 text-white rounded-xl px-3 py-2.5 text-sm font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600" />
-              </ManualField>
-
-              <ManualField label="Phone (optional)">
-                <input type="tel" value={manualPhone} onChange={e => setManualPhone(e.target.value)}
-                  placeholder="07700 900000" className="w-full bg-slate-700 text-white rounded-xl px-3 py-2.5 text-sm font-medium placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600" />
-              </ManualField>
-
-              {/* Collection time — ASAP default with optional override */}
-              <div>
-                <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Collection time</label>
-                <div className="flex gap-2 mb-2">
-                  <button
-                    onClick={() => { setSlotMode('asap'); setManualSlot(asapSlot?.collection_time || '') }}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-black transition-all ${slotMode === 'asap' ? 'bg-orange-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
-                  >
-                    ⚡ ASAP
-                  </button>
-                  <button
-                    onClick={() => setSlotMode('specific')}
-                    className={`flex-1 py-2.5 rounded-xl text-sm font-black transition-all ${slotMode === 'specific' ? 'bg-orange-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
-                  >
-                    🕐 Choose time
-                  </button>
-                </div>
-
-                {slotMode === 'asap' ? (
-                  <div className="bg-slate-700 rounded-xl px-3 py-2.5">
-                    {asapSlot ? (
-                      <>
-                        <p className="text-green-400 font-black text-sm">
-                          Ready at approximately {asapSlot.collection_time}
-                        </p>
-                        <p className="text-slate-400 text-xs mt-0.5">
-                          {asapSlot.max_orders - asapSlot.current_orders} slot{asapSlot.max_orders - asapSlot.current_orders !== 1 ? 's' : ''} available in this window
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-orange-400 text-sm font-bold">No slots available — walk-up only</p>
-                    )}
-                  </div>
-                ) : (
-                  <div>
-                    <select
-                      value={manualSlot}
-                      onChange={e => setManualSlot(e.target.value)}
-                      className="w-full bg-slate-700 text-white rounded-xl px-3 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600"
-                    >
-                      <option value="">Walk-up / no slot</option>
-                      {slots.map(s => {
-                        const pct = s.max_orders > 0 ? s.current_orders / s.max_orders : 0
-                        const label = pct >= 1 ? '🔴 FULL' : pct >= 0.7 ? `🟡 ${s.max_orders - s.current_orders} left` : `🟢 ${s.max_orders - s.current_orders} left`
-                        return (
-                          <option key={s.collection_time} value={s.collection_time}>
-                            {s.collection_time} — {label}
-                          </option>
-                        )
-                      })}
-                    </select>
-                    {manualSlot && (() => {
-                      const sl = slots.find(s => s.collection_time === manualSlot)
-                      if (!sl) return null
-                      return sl.available
-                        ? <p className="text-green-400 text-xs mt-1">✓ Slot available — order will auto-confirm</p>
-                        : <p className="text-orange-400 text-xs mt-1">⚠ Slot full — order saved as pending</p>
-                    })()}
-                  </div>
-                )}
-              </div>
-
-              {/* Menu items — tap to add */}
-              <div>
-                <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Items *</label>
-
-                {truckMenu ? (
-                  <div className="space-y-3">
-                    {/* Group by category */}
-                    {Object.entries(
-                      truckMenu.items.reduce((groups: Record<string, MenuItem[]>, item) => {
-                        if (!groups[item.category]) groups[item.category] = []
-                        groups[item.category].push(item)
-                        return groups
-                      }, {})
-                    ).map(([category, items]) => (
-                      <div key={category}>
-                        <p className="text-xs font-black text-orange-400 uppercase tracking-wide mb-1.5">
-                          {category.charAt(0).toUpperCase() + category.slice(1)}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {(items as MenuItem[]).map(item => {
-                            const inBasket = manualItems.find(i => i.name === item.name)
-                            return (
-                              <button
-                                key={item.name}
-                                onClick={() => {
-                                  if (inBasket) {
-                                    setManualItems(prev => prev.map(i =>
-                                      i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i
-                                    ))
-                                  } else {
-                                    setManualItems(prev => [...prev, { name: item.name, quantity: 1, unit_price: item.price }])
-                                  }
-                                }}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${
-                                  inBasket
-                                    ? 'bg-orange-600 border-orange-600 text-white'
-                                    : 'bg-slate-700 border-slate-600 text-slate-200 hover:border-orange-400'
-                                }`}
-                              >
-                                {inBasket && <span className="text-orange-200">{inBasket.quantity}×</span>}
-                                <span>{item.name}</span>
-                                <span className={inBasket ? 'text-orange-200' : 'text-slate-400'}>£{item.price.toFixed(2)}</span>
-                              </button>
-                            )
-                          })}
-                        </div>
+            {/* STEP 1 — Items */}
+            <div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">1. What would you like?</p>
+              {truckMenu ? (
+                <div className="space-y-3">
+                  {Object.entries(menuGroups).map(([cat, items]) => (
+                    <div key={cat}>
+                      <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-1.5">
+                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {items.map(item => {
+                          const inBasket = manualItems.find(i => i.name === item.name)
+                          return (
+                            <button key={item.name} onClick={() => addMenuItem(item)}
+                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${
+                                inBasket ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'
+                              }`}>
+                              {inBasket && <span className={inBasket ? 'text-orange-200' : ''}>{inBasket.quantity}×</span>}
+                              <span>{item.name}</span>
+                              <span className={inBasket ? 'text-orange-200' : 'text-slate-400'}>£{item.price.toFixed(2)}</span>
+                            </button>
+                          )
+                        })}
                       </div>
-                    ))}
+                    </div>
+                  ))}
 
-                    {/* Basket summary with quantity controls */}
-                    {manualItems.length > 0 && (
-                      <div className="bg-slate-700 rounded-xl p-3 mt-2 space-y-2">
-                        <p className="text-xs font-black text-slate-400 uppercase tracking-wide">Order</p>
-                        {manualItems.map((item, idx) => (
-                          <div key={idx} className="flex items-center justify-between">
-                            <span className="text-white text-sm font-medium flex-1">{item.name}</span>
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => setManualItems(prev => {
-                                  const updated = prev.map((i, n) => n === idx ? { ...i, quantity: i.quantity - 1 } : i)
-                                  return updated.filter(i => i.quantity > 0)
-                                })}
-                                className="w-6 h-6 rounded-full bg-slate-600 text-white flex items-center justify-center text-sm font-bold hover:bg-red-600 transition-colors"
-                              >−</button>
-                              <span className="text-white font-black w-4 text-center text-sm">{item.quantity}</span>
-                              <button
-                                onClick={() => setManualItems(prev => prev.map((i, n) => n === idx ? { ...i, quantity: i.quantity + 1 } : i))}
-                                className="w-6 h-6 rounded-full bg-slate-600 text-white flex items-center justify-center text-sm font-bold hover:bg-orange-600 transition-colors"
-                              >+</button>
-                              <span className="text-slate-400 text-xs w-14 text-right">£{(item.unit_price * item.quantity).toFixed(2)}</span>
-                            </div>
+                  {/* Basket */}
+                  {manualItems.length > 0 && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
+                      <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Order</p>
+                      {manualItems.map(item => (
+                        <div key={item.name} className="flex items-center gap-2">
+                          <span className="text-slate-900 text-sm font-bold flex-1 min-w-0 truncate">{item.name}</span>
+                          <div className="flex items-center gap-1">
+                            <button onClick={() => adjustQty(item.name, -1)}
+                              className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 transition-colors text-sm">−</button>
+                            <span className="w-4 text-center font-black text-slate-900 text-sm">{item.quantity}</span>
+                            <button onClick={() => adjustQty(item.name, 1)}
+                              className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 transition-colors text-sm">+</button>
                           </div>
-                        ))}
-                        <div className="flex justify-between pt-2 border-t border-slate-600">
-                          <span className="text-slate-300 text-sm font-bold">Total</span>
-                          <span className="text-white font-black">£{manualItems.reduce((s, i) => s + i.unit_price * i.quantity, 0).toFixed(2)}</span>
+                          <InlinePriceEditor price={item.unit_price} quantity={item.quantity} onChange={p => editPrice(item.name, p)} />
                         </div>
+                      ))}
+                      <div className="flex justify-between pt-2 border-t border-slate-200">
+                        <span className="text-slate-600 text-sm font-bold">Total</span>
+                        <span className="text-slate-900 font-black">£{manualTotal.toFixed(2)}</span>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>
+              )}
+            </div>
+
+            {/* STEP 2 — Collection time */}
+            <div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-2">2. When to collect?</p>
+
+              {/* ASAP info */}
+              <div className={`rounded-xl px-3 py-2.5 mb-2 ${asapSlot ? 'bg-green-50 border border-green-200' : 'bg-slate-100 border border-slate-200'}`}>
+                {asapSlot ? (
+                  <>
+                    <p className="text-green-700 font-black text-sm">⚡ ASAP — ready at approximately {asapSlot.collection_time}</p>
+                    <p className="text-green-600 text-xs mt-0.5">{asapSlot.max_orders - asapSlot.current_orders} slot{asapSlot.max_orders - asapSlot.current_orders !== 1 ? 's' : ''} available</p>
+                  </>
                 ) : (
-                  // Fallback if menu not loaded
-                  <p className="text-slate-400 text-sm">Loading menu...</p>
+                  <p className="text-slate-500 text-sm">No slots configured — walk-up only</p>
                 )}
               </div>
 
-              <ManualField label="Notes">
-                <textarea value={manualNotes} onChange={e => setManualNotes(e.target.value)}
-                  placeholder="Allergies, special requests…" rows={2}
-                  className="w-full bg-slate-700 text-white rounded-xl px-3 py-2.5 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600 resize-none" />
-              </ManualField>
-
-              <button
-                onClick={submitManual}
-                disabled={actionLoading === 'manual' || !manualName.trim() || manualItems.length === 0}
-                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 mt-2"
-              >
-                {actionLoading === 'manual' ? 'Saving...' : `Save order${manualItems.length ? ` · £${manualItems.reduce((s,i) => s+i.unit_price*i.quantity,0).toFixed(2)}` : ''}`}
-              </button>
+              {/* Single dropdown — always visible, ASAP = blank selection */}
+              {slots.length > 0 && (
+                <>
+                  <p className="text-xs text-slate-400 mb-1">Or choose a specific time:</p>
+                  <select value={manualSlot} onChange={e => setManualSlot(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <option value="">ASAP ({asapSlot?.collection_time || 'next available'})</option>
+                    {slots.map(s => {
+                      const pct = s.max_orders > 0 ? s.current_orders / s.max_orders : 0
+                      const ind = pct >= 1 ? '🔴' : pct >= 0.7 ? '🟡' : '🟢'
+                      const rem = s.max_orders - s.current_orders
+                      return (
+                        <option key={s.collection_time} value={s.collection_time} disabled={!s.available}>
+                          {s.collection_time} {ind} {s.available ? `${rem} left` : 'Full'}
+                        </option>
+                      )
+                    })}
+                  </select>
+                </>
+              )}
             </div>
+
+            {/* STEP 3 — Name */}
+            <div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">3. Customer name *</p>
+              <input type="text" value={manualName} onChange={e => setManualName(e.target.value)}
+                placeholder="e.g. Sarah"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+            </div>
+
+            {/* STEP 4 — Email (optional) */}
+            <div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">
+                4. Email <span className="font-normal normal-case text-slate-400">— optional, for ready notification</span>
+              </p>
+              <input type="email" value={manualEmail} onChange={e => setManualEmail(e.target.value)}
+                placeholder="customer@email.com"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+            </div>
+
+            {/* STEP 5 — Notes */}
+            <div>
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">
+                5. Notes <span className="font-normal normal-case text-slate-400">— optional</span>
+              </p>
+              <textarea value={manualNotes} onChange={e => setManualNotes(e.target.value)}
+                placeholder="Allergies, no onion…" rows={2}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none" />
+            </div>
+
+            <button onClick={submitManual}
+              disabled={actionLoading === 'manual' || !manualName.trim() || manualItems.length === 0}
+              className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40">
+              {actionLoading === 'manual'
+                ? 'Saving...'
+                : `Save order${manualItems.length ? ` · £${manualTotal.toFixed(2)}` : ''}`}
+            </button>
           </div>
         )}
 
       </main>
 
-      {/* Toast notification */}
+      {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 transition-all ${toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+        <div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 ${toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
           {toast.msg}
         </div>
       )}
@@ -604,11 +563,9 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
   )
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Order card ───────────────────────────────────────────────────────────────
 
-function OrderCard({
-  order, truck, actionLoading, onAction, compact = false
-}: {
+function OrderCard({ order, truck, actionLoading, onAction, compact = false }: {
   order: Order
   truck: TruckData | null
   actionLoading: string | null
@@ -616,103 +573,59 @@ function OrderCard({
   compact?: boolean
 }) {
   const [expanded, setExpanded] = useState(!compact)
-  const statusCfg = STATUS[order.status as keyof typeof STATUS] || STATUS.pending
+  const s = STATUS[order.status] || STATUS.pending
   const isPub = truck?.mode === 'pub'
 
   return (
-    <div className={`bg-slate-800 rounded-2xl overflow-hidden border ${order.status === 'pending' ? 'border-orange-500/50' : 'border-slate-700'}`}>
-
-      {/* Order header — always visible */}
+    <div className={`bg-white rounded-2xl overflow-hidden border shadow-sm ${order.status === 'pending' ? 'border-orange-400' : 'border-slate-200'}`}>
       <button onClick={() => setExpanded(e => !e)} className="w-full text-left p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-black text-white">#{order.id}</span>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${statusCfg.bg} ${statusCfg.text}`}>
-                {statusCfg.label}
-              </span>
-              {order.slot && (
-                <span className="text-xs font-bold text-slate-300 bg-slate-700 px-2 py-0.5 rounded-full">
-                  🕐 {order.slot}
-                </span>
-              )}
+              <span className="font-black text-slate-900">#{order.id}</span>
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
+              {order.slot && <span className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">🕐 {order.slot}</span>}
             </div>
-            <p className="text-slate-300 font-bold text-sm mt-1">{order.customer_name}</p>
-            {order.customer_phone && <p className="text-slate-500 text-xs">{order.customer_phone}</p>}
+            <p className="text-slate-700 font-bold text-sm mt-1">{order.customer_name}</p>
           </div>
           <div className="text-right shrink-0">
-            <p className="font-black text-white">£{Number(order.total).toFixed(2)}</p>
-            <p className="text-slate-500 text-xs mt-0.5">{expanded ? '▲' : '▼'}</p>
+            <p className="font-black text-slate-900">£{Number(order.total).toFixed(2)}</p>
+            <p className="text-slate-400 text-xs">{expanded ? '▲' : '▼'}</p>
           </div>
         </div>
       </button>
 
-      {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-slate-700 pt-3">
-
-          {/* Items */}
+        <div className="px-4 pb-4 border-t border-slate-100 pt-3 bg-slate-50">
           <div className="space-y-1 mb-3">
             {order.items.map((item, i) => (
               <div key={i} className="flex justify-between text-sm">
-                <span className="text-slate-300">{item.quantity}× {item.name}</span>
-                <span className="text-slate-400">£{(item.unit_price * item.quantity).toFixed(2)}</span>
+                <span className="text-slate-700">{item.quantity}× {item.name}</span>
+                <span className="text-slate-500">£{(item.unit_price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
-            {order.deals?.map((deal, i) => (
-              <div key={i} className="text-xs text-orange-400 mt-1">
-                🎁 {deal.name}: {Object.values(deal.slots).filter(Boolean).join(', ')}
-              </div>
+            {order.deals?.map((d, i) => (
+              <p key={i} className="text-xs text-orange-600">🎁 {d.name}: {Object.values(d.slots).filter(Boolean).join(', ')}</p>
             ))}
           </div>
-
           {order.notes && (
-            <div className="bg-slate-700 rounded-lg px-3 py-2 text-xs text-slate-300 mb-3">
-              📝 {order.notes}
-            </div>
+            <div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-2 text-xs text-orange-700 mb-3">📝 {order.notes}</div>
           )}
-
-          {/* Action buttons */}
           <div className="flex gap-2 flex-wrap">
             {order.status === 'pending' && (
               <>
-                <ActionBtn
-                  label="✓ Confirm"
-                  color="green"
-                  loading={actionLoading === `confirm-${order.id}`}
-                  onClick={() => onAction('confirm', order.id)}
-                />
-                <ActionBtn
-                  label="✗ Reject"
-                  color="red"
-                  loading={actionLoading === `reject-${order.id}`}
-                  onClick={() => onAction('reject', order.id)}
-                />
+                <Btn label="✓ Confirm" colour="green" loading={actionLoading === `confirm-${order.id}`} onClick={() => onAction('confirm', order.id)} />
+                <Btn label="✗ Reject"  colour="red"   loading={actionLoading === `reject-${order.id}`}  onClick={() => onAction('reject',  order.id)} />
               </>
             )}
             {order.status === 'confirmed' && isPub && (
-              <ActionBtn
-                label="🍕 Ready"
-                color="blue"
-                loading={actionLoading === `ready-${order.id}`}
-                onClick={() => onAction('ready', order.id)}
-              />
+              <Btn label="🍕 Ready" colour="blue" loading={actionLoading === `ready-${order.id}`} onClick={() => onAction('ready', order.id)} />
             )}
             {order.status === 'confirmed' && !isPub && (
-              <ActionBtn
-                label="✓ Collected"
-                color="slate"
-                loading={actionLoading === `collected-${order.id}`}
-                onClick={() => onAction('collected', order.id)}
-              />
+              <Btn label="✓ Collected" colour="slate" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />
             )}
             {order.status === 'ready' && (
-              <ActionBtn
-                label="✓ Collected"
-                color="slate"
-                loading={actionLoading === `collected-${order.id}`}
-                onClick={() => onAction('collected', order.id)}
-              />
+              <Btn label="✓ Collected" colour="slate" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />
             )}
           </div>
         </div>
@@ -721,49 +634,52 @@ function OrderCard({
   )
 }
 
-function ActionBtn({ label, color, loading, onClick }: {
-  label: string; color: string; loading: boolean; onClick: () => void
+// ─── Inline price editor ──────────────────────────────────────────────────────
+
+function InlinePriceEditor({ price, quantity, onChange }: {
+  price: number; quantity: number; onChange: (p: number) => void
 }) {
-  const colors: Record<string, string> = {
-    green: 'bg-green-600 hover:bg-green-700',
-    red:   'bg-red-600 hover:bg-red-700',
-    blue:  'bg-blue-600 hover:bg-blue-700',
-    slate: 'bg-slate-600 hover:bg-slate-500',
+  const [editing, setEditing] = useState(false)
+  const [val, setVal] = useState(price.toFixed(2))
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1 shrink-0">
+        <span className="text-slate-400 text-xs">£</span>
+        <input
+          type="number" value={val} step="0.50" min="0" autoFocus
+          onChange={e => setVal(e.target.value)}
+          onBlur={() => { onChange(parseFloat(val) || 0); setEditing(false) }}
+          onKeyDown={e => { if (e.key === 'Enter') { onChange(parseFloat(val) || 0); setEditing(false) } }}
+          className="w-14 border border-orange-400 rounded-lg px-1.5 py-0.5 text-xs font-bold text-slate-900 focus:outline-none text-center"
+        />
+      </div>
+    )
   }
   return (
-    <button
-      onClick={onClick}
-      disabled={loading}
-      className={`${colors[color] || colors.slate} text-white font-bold text-sm px-4 py-2 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[80px]`}
-    >
-      {loading ? '...' : label}
+    <button onClick={() => { setVal(price.toFixed(2)); setEditing(true) }}
+      className="text-right shrink-0 min-w-[56px]" title="Tap to edit price">
+      <span className="text-slate-700 font-bold text-sm">£{(price * quantity).toFixed(2)}</span>
+      <span className="text-slate-400 text-[10px] block leading-none">edit</span>
     </button>
   )
 }
 
-function StatCard({ label, value, accent }: { label: string; value: number; accent: string }) {
-  const colors: Record<string, string> = {
-    orange: 'text-orange-400',
-    green:  'text-green-400',
-    slate:  'text-slate-400',
+// ─── Action button ────────────────────────────────────────────────────────────
+
+function Btn({ label, colour, loading, onClick }: {
+  label: string; colour: string; loading: boolean; onClick: () => void
+}) {
+  const colours: Record<string, string> = {
+    green: 'bg-green-600 hover:bg-green-700',
+    red:   'bg-red-500 hover:bg-red-600',
+    blue:  'bg-blue-600 hover:bg-blue-700',
+    slate: 'bg-slate-500 hover:bg-slate-600',
   }
   return (
-    <div className="bg-slate-800 rounded-xl p-3 text-center border border-slate-700">
-      <p className={`text-2xl font-black ${colors[accent] || colors.slate}`}>{value}</p>
-      <p className="text-slate-500 text-xs font-medium mt-0.5">{label}</p>
-    </div>
-  )
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{children}</p>
-}
-
-function ManualField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label className="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-wide">{label}</label>
-      {children}
-    </div>
+    <button onClick={onClick} disabled={loading}
+      className={`${colours[colour] || colours.slate} text-white font-bold text-sm px-4 py-2 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[80px]`}>
+      {loading ? '...' : label}
+    </button>
   )
 }
