@@ -26,6 +26,17 @@ interface Bundle {
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
 interface TruckMenu { items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null }
+interface EventData {
+  date: string          // dd/mm/yyyy
+  date_iso: string      // yyyy-mm-dd
+  date_friendly: string
+  start_time: string
+  end_time: string
+  venue_name: string
+  village: string
+  notes: string
+}
+
 interface BasketItem { menuItem: MenuItem; quantity: number }
 interface AppliedDeal { bundle: Bundle; slots: Record<string, string> }
 
@@ -76,6 +87,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [menu, setMenu] = useState<TruckMenu | null>(null)
+  const [events, setEvents] = useState<EventData[]>([])
+  const [event, setEvent] = useState<EventData | null>(null)
+  const [eventLoading, setEventLoading] = useState(true)
+  const [noEvents, setNoEvents] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -83,7 +98,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [summaryExpanded, setSummaryExpanded] = useState(false)
-  const [footerHeight, setFooterHeight] = useState(160)
+  const [footerHeight, setFooterHeight] = useState(220)
   const footerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -116,6 +131,36 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [notes, setNotes] = useState('')
 
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
+
+  // Load upcoming events for this truck
+  useEffect(() => {
+    const loadEvent = async () => {
+      try {
+        const res = await fetch(`/api/events?truck=${slug}`)
+        if (!res.ok) { setEventLoading(false); return }
+        const data = await res.json()
+        if (data.events && data.events.length > 0) {
+          // Show events in the next 14 days
+          const cutoff = new Date()
+          cutoff.setDate(cutoff.getDate() + 14)
+          const upcoming = data.events.filter((e: EventData) => {
+            const [d, m, y] = e.date.split('/').map(Number)
+            return new Date(y, m-1, d) <= cutoff
+          })
+          const eventsToShow = upcoming.length > 0 ? upcoming : [data.events[0]]
+          setEvents(eventsToShow)
+          setEvent(eventsToShow[0])
+        } else {
+          setNoEvents(true)
+        }
+      } catch {
+        // Non-fatal
+      } finally {
+        setEventLoading(false)
+      }
+    }
+    loadEvent()
+  }, [slug])
 
   // Auto-expand summary when first item added
   useEffect(() => {
@@ -324,8 +369,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
       <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6" style={{ paddingBottom: `${footerHeight}px` }}>
 
-        {/* Truck hero — logo, name, tagline */}
-        <div className="text-center mb-6">
+        {/* Truck hero — logo, name, event details */}
+        <div className="text-center mb-5">
           {truck?.logo ? (
             <Image
               src={truck.logo}
@@ -340,10 +385,52 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <h1 className="text-2xl font-black text-slate-900">
             Order from {truck?.name}
           </h1>
-          {truck?.venue_name && (
-            <p className="text-slate-400 font-bold text-sm mt-0.5">{truck.venue_name}</p>
-          )}
-          <p className="text-slate-500 text-sm mt-1">Pay at the truck on collection.</p>
+          {/* Event details card */}
+          {eventLoading ? (
+            <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3 animate-pulse">
+              <p className="text-slate-400 text-sm">Loading events...</p>
+            </div>
+          ) : noEvents ? (
+            <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3">
+              <p className="text-slate-500 text-sm font-medium">No upcoming events in the next 2 weeks</p>
+              <p className="text-slate-400 text-xs mt-0.5">Check back soon or visit the truck page for updates</p>
+            </div>
+          ) : events.length > 0 ? (
+            <div className="mt-3 text-left">
+              <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
+              {events.length === 1 ? (
+                // Single event — just show it
+                <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+                  <p className="font-black text-slate-900 text-sm">{event?.date_friendly}</p>
+                  <p className="text-slate-600 text-sm">{event?.venue_name}{event?.village ? `, ${event?.village}` : ''}</p>
+                  {event?.start_time && event?.end_time && (
+                    <p className="text-slate-400 text-xs mt-0.5">{event.start_time} – {event.end_time}</p>
+                  )}
+                </div>
+              ) : (
+                // Multiple events — show selector
+                <div className="space-y-2">
+                  {events.map((e, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => { setEvent(e); setSlotHour(''); setSlotMinute('') }}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
+                        event?.date_iso === e.date_iso && event?.venue_name === e.venue_name
+                          ? 'bg-orange-50 border-2 border-orange-500'
+                          : 'bg-white border border-slate-200 hover:border-orange-200'
+                      }`}
+                    >
+                      <p className="font-black text-slate-900 text-sm">{e.date_friendly}</p>
+                      <p className="text-slate-600 text-xs">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
+                      {e.start_time && e.end_time && (
+                        <p className="text-slate-400 text-xs">{e.start_time} – {e.end_time}</p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
 
         {/* MENU — grouped by category */}
@@ -515,31 +602,55 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {appliedCode && <p className="text-green-600 text-xs font-bold mt-1.5">✓ {appliedCode.type === 'pct' ? `${appliedCode.value}%` : `£${appliedCode.value.toFixed(2)}`} off applied</p>}
         </Sec>
 
-        {/* COLLECTION TIME */}
+        {/* COLLECTION TIME — generated from event start/end time */}
         {truck?.mode === 'village' && (
           <Sec title="Collection time">
-            <div className="flex gap-3 mb-2">
-              <div className="flex-1">
-                <label className="block text-xs font-bold text-slate-500 mb-1">Hour</label>
-                <select value={slotHour} onChange={e => setSlotHour(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                  <option value="">--</option>
-                  {HOURS.map(h => <option key={h} value={h}>{parseInt(h)}</option>)}
-                </select>
-              </div>
-              <div className="flex-1">
-                <label className="block text-xs font-bold text-slate-500 mb-1">Minutes</label>
-                <select value={slotMinute} onChange={e => setSlotMinute(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                  <option value="">--</option>
-                  {MINUTES.map(m => <option key={m} value={m}>{m}</option>)}
-                </select>
-              </div>
-            </div>
-            {selectedSlot
-              ? <p className="text-green-600 text-xs font-bold">✓ Preferred collection: {selectedSlot}</p>
-              : <p className="text-slate-400 text-xs">Choose your preferred time — {truck?.name} will confirm when they accept your order.</p>
-            }
+            {(() => {
+              const startT = event?.start_time || '11:00'
+              const endT   = event?.end_time   || '21:00'
+              const [sh, sm] = startT.split(':').map(Number)
+              const [eh, em] = endT.split(':').map(Number)
+              const startMins = sh * 60 + (sm || 0)
+              const endMins   = eh * 60 + (em || 0)
+              const eventHours = Array.from(
+                new Set(
+                  Array.from({ length: Math.ceil((endMins - startMins) / 5) }, (_, i) => {
+                    const mins = startMins + i * 5
+                    return String(Math.floor(mins / 60)).padStart(2, '0')
+                  })
+                )
+              )
+              return (
+                <>
+                  <div className="flex gap-3 mb-2">
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Hour</label>
+                      <select value={slotHour} onChange={e => { setSlotHour(e.target.value); setSlotMinute('') }}
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">--</option>
+                        {eventHours.map(h => <option key={h} value={h}>{parseInt(h)}</option>)}
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Minutes</label>
+                      <select value={slotMinute} onChange={e => setSlotMinute(e.target.value)}
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                        <option value="">--</option>
+                        {MINUTES.filter(m => {
+                          if (!slotHour) return true
+                          const mins = parseInt(slotHour) * 60 + parseInt(m)
+                          return mins >= startMins && mins < endMins
+                        }).map(m => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  {selectedSlot
+                    ? <p className="text-green-600 text-xs font-bold">✓ Preferred collection: {selectedSlot}</p>
+                    : <p className="text-slate-400 text-xs">Choose your preferred time — {truck?.name} will confirm when they accept your order.</p>
+                  }
+                </>
+              )
+            })()}
           </Sec>
         )}
 
@@ -549,7 +660,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <Fld label="Name" required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
             <Fld label="Email" required note="confirmation sent here"><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
             <Fld label="Phone number" required><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label="Special instructions" note="optional"><textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Allergies, no onion, extra crispy…" rows={3} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none" /></Fld>
+            <Fld label="Special instructions" note="optional"><textarea
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                onFocus={e => setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300)}
+                placeholder="Allergies, no onion, extra crispy…"
+                rows={3}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
+              /></Fld>
           </div>
         </Sec>
 
