@@ -1,17 +1,11 @@
 // app/api/dashboard/action/route.ts
-// Handles order actions from the truck dashboard:
-// confirm, reject, ready, collected, manual order entry
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
-    .from('trucks')
-    .select('*')
-    .eq('dashboard_token', token)
-    .eq('active', true)
-    .single()
+    .from('trucks').select('*').eq('dashboard_token', token).eq('active', true).single()
   if (!truck) return null
   if (truck.dashboard_pin && truck.dashboard_pin !== pin) return null
   return truck
@@ -31,15 +25,13 @@ async function notifyCustomer(email: string, subject: string, html: string) {
         htmlContent: html,
       }),
     })
-  } catch (err) {
-    console.error('Notification email failed:', err)
-  }
+  } catch (err) { console.error('Email failed:', err) }
 }
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { token, pin, action, orderId, manualOrder } = body
+    const { token, pin, action, orderId, manualOrder, itemName, available, editedOrder } = body
 
     const truck = await verifyToken(token, pin)
     if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
@@ -50,17 +42,14 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId)
       if (order.customer_email) {
-        await notifyCustomer(
-          order.customer_email,
-          `Order #${orderId} confirmed — ${truck.name}`,
+        await notifyCustomer(order.customer_email, `Order #${orderId} confirmed — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order is confirmed! ✓</h2>
             <p><strong>${truck.name}</strong> has accepted your order #${orderId}.</p>
             ${order.slot ? `<p><strong>Collection time:</strong> ${order.slot}</p>` : ''}
             <p><strong>Total: £${order.total}</strong> — pay at the truck on collection.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
-          </body>`
-        )
+          </body>`)
       }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }
@@ -71,16 +60,13 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'rejected' }).eq('id', orderId)
       if (order.customer_email) {
-        await notifyCustomer(
-          order.customer_email,
-          `Order #${orderId} update — ${truck.name}`,
+        await notifyCustomer(order.customer_email, `Order #${orderId} update — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Order update</h2>
             <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${orderId}.</p>
             <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
-          </body>`
-        )
+          </body>`)
       }
       return NextResponse.json({ success: true, status: 'rejected' })
     }
@@ -91,16 +77,13 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'ready' }).eq('id', orderId)
       if (order.customer_email) {
-        await notifyCustomer(
-          order.customer_email,
-          `Your order is ready — ${truck.name}`,
+        await notifyCustomer(order.customer_email, `Your order is ready — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order is ready! 🎉</h2>
             <p>Order #${orderId} from <strong>${truck.name}</strong> is ready for collection.</p>
             <p>Come and collect now — pay at the truck.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
-          </body>`
-        )
+          </body>`)
       }
       return NextResponse.json({ success: true, status: 'ready' })
     }
@@ -111,52 +94,96 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, status: 'collected' })
     }
 
+    // ── UNDO COLLECTED ────────────────────────────────────────────────────────
+    if (action === 'undo_collected') {
+      await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId).eq('truck_id', truck.id)
+      return NextResponse.json({ success: true, status: 'confirmed' })
+    }
+
+    // ── EDIT ORDER ────────────────────────────────────────────────────────────
+    if (action === 'edit') {
+      const { items, slot, notes } = editedOrder || {}
+      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+
+      const newTotal = items
+        ? items.reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
+        : order.total
+
+      await supabase.from('orders').update({
+        items:    items    || order.items,
+        slot:     slot     !== undefined ? slot : order.slot,
+        notes:    notes    !== undefined ? notes : order.notes,
+        total:    newTotal,
+        subtotal: newTotal,
+        status:   'modified',
+      }).eq('id', orderId)
+
+      if (order.customer_email) {
+        await notifyCustomer(order.customer_email, `Order #${orderId} updated — ${truck.name}`,
+          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2>Your order has been updated</h2>
+            <p><strong>${truck.name}</strong> has made a change to your order #${orderId}.</p>
+            ${slot ? `<p><strong>New collection time:</strong> ${slot}</p>` : ''}
+            <p><strong>New total: £${newTotal.toFixed(2)}</strong> — pay at the truck on collection.</p>
+            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+          </body>`)
+      }
+      return NextResponse.json({ success: true, status: 'modified' })
+    }
+
+    // ── ITEM AVAILABILITY (sold out toggle) ───────────────────────────────────
+    if (action === 'set_item_availability') {
+      if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
+      await supabase.from('item_overrides').upsert({
+        truck_id:   truck.id,
+        item_name:  itemName,
+        available:  available !== false,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'truck_id,item_name' })
+      return NextResponse.json({ success: true, item: itemName, available })
+    }
+
+    // ── GET ITEM OVERRIDES ────────────────────────────────────────────────────
+    if (action === 'get_item_overrides') {
+      const { data } = await supabase
+        .from('item_overrides').select('item_name, available')
+        .eq('truck_id', truck.id).eq('available', false)
+      return NextResponse.json({ success: true, soldOut: (data || []).map((r: any) => r.item_name) })
+    }
+
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────
     if (action === 'manual') {
       const { customerName, customerPhone, customerEmail, slot, items, notes } = manualOrder
       if (!customerName || !items?.length) {
         return NextResponse.json({ error: 'Name and items required' }, { status: 400 })
       }
-
       const today = new Date().toISOString().split('T')[0]
       let autoConfirm = true
-
       if (slot) {
         const { data: capacity } = await supabase
           .from('slot_capacity').select('max_orders')
           .eq('truck_id', truck.id).eq('event_date', today).eq('slot', slot).single()
         if (capacity) {
-          const { count } = await supabase
-            .from('orders').select('*', { count: 'exact', head: true })
+          const { count } = await supabase.from('orders')
+            .select('*', { count: 'exact', head: true })
             .eq('truck_id', truck.id).eq('event_date', today).eq('slot', slot)
             .in('status', ['pending', 'confirmed', 'modified'])
           if ((count ?? 0) >= capacity.max_orders) autoConfirm = false
         }
       }
-
       const { data: counterData } = await supabase.rpc('increment_order_counter', { p_truck_id: truck.id })
       const newOrderId = String(counterData).padStart(4, '0')
       const total = items.reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
-
       const { error: insertErr } = await supabase.from('orders').insert({
-        id:             newOrderId,
-        truck_id:       truck.id,
-        customer_name:  customerName,
-        customer_phone: customerPhone || null,
+        id: newOrderId, truck_id: truck.id,
+        customer_name: customerName, customer_phone: customerPhone || null,
         customer_email: customerEmail || null,
-        slot:           slot || null,
-        order_type:     'collection',
-        event_date:     today,
-        items,
-        subtotal:       total,
-        discount_amt:   0,
-        total,
-        notes:          notes || null,
-        status:         autoConfirm ? 'confirmed' : 'pending',
+        slot: slot || null, order_type: 'collection', event_date: today,
+        items, subtotal: total, discount_amt: 0, total,
+        notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
       })
-
       if (insertErr) return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
-
       return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: autoConfirm, slotFull: !autoConfirm })
     }
 

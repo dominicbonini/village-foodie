@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, use } from 'react';
+import { useState, useEffect, useCallback, useRef, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -33,6 +33,7 @@ interface TruckData {
   name: string
   mode: string
   venue_name: string | null
+  logo: string | null
 }
 
 interface MenuItem {
@@ -52,7 +53,14 @@ interface BasketItem {
   unit_price: number
 }
 
-// ─── Status config ────────────────────────────────────────────────────────────
+interface ItemStock {
+  name: string
+  available: boolean
+  stock_count: number | null
+  orders_count: number
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS: Record<string, { label: string; bg: string; text: string }> = {
   pending:   { label: 'New',       bg: 'bg-orange-100', text: 'text-orange-700' },
@@ -63,10 +71,7 @@ const STATUS: Record<string, { label: string; bg: string; text: string }> = {
   modified:  { label: 'Modified',  bg: 'bg-yellow-100', text: 'text-yellow-700' },
 }
 
-// ─── ASAP helper ──────────────────────────────────────────────────────────────
-
 function getAsapSlot(slots: Slot[]): Slot | null {
-  if (!slots.length) return null
   const now = new Date()
   const nowMins = now.getHours() * 60 + now.getMinutes()
   return slots.find(s => {
@@ -75,49 +80,67 @@ function getAsapSlot(slots: Slot[]): Slot | null {
   }) || null
 }
 
+function calcReadyTime(items: BasketItem[], waitMinutes: number): string {
+  const total = items.reduce((s, i) => s + i.quantity, 0)
+  if (!total) return ''
+  const mins = Math.ceil(total * 3) + waitMinutes
+  const t = new Date()
+  t.setMinutes(t.getMinutes() + mins)
+  return `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function DashboardPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params)
 
-  // Auth
   const [pin, setPin] = useState('')
   const [pinInput, setPinInput] = useState('')
   const [pinError, setPinError] = useState('')
   const [requiresPin, setRequiresPin] = useState(false)
   const [authenticated, setAuthenticated] = useState(false)
 
-  // Data
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
   const [slots, setSlots] = useState<Slot[]>([])
   const [truckMenu, setTruckMenu] = useState<TruckMenu | null>(null)
+  const [itemStocks, setItemStocks] = useState<ItemStock[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastRefresh, setLastRefresh] = useState(new Date())
 
-  // UI
-  const [activeTab, setActiveTab] = useState<'orders' | 'manual'>('orders')
+  const [activeTab, setActiveTab] = useState<'orders' | 'add' | 'stock'>('orders')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
-  // Manual order form
+  // Live orders controls
+  const [paused, setPaused] = useState(false)
+  const [waitMinutes, setWaitMinutes] = useState(0)
+
+  // Add order form
   const [manualName, setManualName] = useState('')
   const [manualEmail, setManualEmail] = useState('')
   const [manualNotes, setManualNotes] = useState('')
   const [manualSlot, setManualSlot] = useState('')
   const [manualItems, setManualItems] = useState<BasketItem[]>([])
 
+  // Edit order modal
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null)
+  const [editItems, setEditItems] = useState<BasketItem[]>([])
+  const [editSlot, setEditSlot] = useState('')
+  const [editNotes, setEditNotes] = useState('')
+
   const asapSlot = getAsapSlot(slots)
+  const prevPendingCount = useRef(0)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
-    setTimeout(() => setToast(null), 3000)
+    setTimeout(() => setToast(null), 3500)
   }
 
-  // ── Fetch data ──────────────────────────────────────────────────────────────
+  // ── Fetch ───────────────────────────────────────────────────────────────────
 
-  const fetchOrders = useCallback(async (currentPin = pin) => {
+  const fetchAll = useCallback(async (currentPin = pin) => {
     try {
       const p = new URLSearchParams({ token })
       if (currentPin) p.set('pin', currentPin)
@@ -136,28 +159,66 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
       setAuthenticated(true)
       setLastRefresh(new Date())
 
-      // Load menu for manual order
-      if (data.truck?.id && !truckMenu) {
+      // Fetch menu + logo
+      if (data.truck?.id) {
         fetch(`/api/menu/${data.truck.id}`)
           .then(r => r.ok ? r.json() : null)
-          .then(d => { if (d?.menu) setTruckMenu(d.menu) })
-          .catch(() => null)
+          .then(d => {
+            if (d) {
+              if (d.truck?.logo) setTruck(prev => prev ? { ...prev, logo: d.truck.logo } : prev)
+              if (d.menu) setTruckMenu(d.menu)
+            }
+          }).catch(() => null)
+
+        // Fetch stock/availability data
+        fetch('/api/dashboard/action', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, pin: currentPin, action: 'get_stock' })
+        }).then(r => r.json()).then(d => {
+          if (d.stocks) setItemStocks(d.stocks)
+        }).catch(() => null)
       }
-    } catch {
-      setError('Connection error')
-    } finally {
-      setLoading(false)
-    }
-  }, [token, pin, truckMenu])
+    } catch { setError('Connection error') }
+    finally { setLoading(false) }
+  }, [token, pin])
 
-  useEffect(() => { fetchOrders() }, [fetchOrders])
+  useEffect(() => { fetchAll() }, [fetchAll])
 
-  // Auto-refresh every 30s
   useEffect(() => {
     if (!authenticated) return
-    const id = setInterval(() => fetchOrders(), 30000)
+    const id = setInterval(() => fetchAll(), 30000)
     return () => clearInterval(id)
-  }, [authenticated, fetchOrders])
+  }, [authenticated, fetchAll])
+
+  // WakeLock
+  useEffect(() => {
+    if (!authenticated) return
+    let lock: any = null
+    const acquire = async () => {
+      try { if ('wakeLock' in navigator) lock = await (navigator as any).wakeLock.request('screen') }
+      catch {}
+    }
+    acquire()
+    return () => { lock?.release().catch(() => null) }
+  }, [authenticated])
+
+  // Audio alert for new orders
+  useEffect(() => {
+    const count = orders.filter(o => o.status === 'pending').length
+    if (count > prevPendingCount.current && authenticated) {
+      try {
+        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+        const osc = ctx.createOscillator(); const gain = ctx.createGain()
+        osc.connect(gain); gain.connect(ctx.destination)
+        osc.frequency.value = 880
+        gain.gain.setValueAtTime(0.3, ctx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6)
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6)
+      } catch {}
+    }
+    prevPendingCount.current = count
+  }, [orders, authenticated])
 
   // ── PIN ─────────────────────────────────────────────────────────────────────
 
@@ -167,64 +228,89 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     const data = await res.json()
     if (!res.ok) { setPinError('Incorrect PIN'); return }
     setPin(pinInput)
-    setTruck(data.truck)
-    setOrders(data.orders)
-    setSlots(data.slots)
-    setAuthenticated(true)
-    setRequiresPin(false)
+    setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
+    setAuthenticated(true); setRequiresPin(false)
     if (data.truck?.id) {
-      fetch(`/api/menu/${data.truck.id}`)
-        .then(r => r.ok ? r.json() : null)
-        .then(d => { if (d?.menu) setTruckMenu(d.menu) })
-        .catch(() => null)
+      fetch(`/api/menu/${data.truck.id}`).then(r=>r.ok?r.json():null)
+        .then(d => {
+          if (d?.truck?.logo) setTruck(prev => prev ? {...prev, logo: d.truck.logo} : prev)
+          if (d?.menu) setTruckMenu(d.menu)
+        }).catch(()=>null)
     }
   }
 
-  // ── Order actions ───────────────────────────────────────────────────────────
+  // ── Order actions ────────────────────────────────────────────────────────────
 
   const doAction = async (action: string, orderId: string) => {
     setActionLoading(`${action}-${orderId}`)
     try {
       const res = await fetch('/api/dashboard/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, pin, action, orderId }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      const labels: Record<string, string> = { confirm: 'confirmed', reject: 'rejected', ready: 'ready', collected: 'collected' }
+      const labels: Record<string,string> = { confirm:'confirmed', reject:'rejected', ready:'ready', collected:'collected', undo_collected:'restored' }
       showToast(`Order #${orderId} ${labels[action] || action}`)
-      await fetchOrders()
-    } catch (err: any) {
-      showToast(err.message || 'Action failed', 'error')
-    } finally {
-      setActionLoading(null)
-    }
+      await fetchAll()
+    } catch (err: any) { showToast(err.message || 'Failed', 'error') }
+    finally { setActionLoading(null) }
   }
 
-  // ── Manual order ────────────────────────────────────────────────────────────
+  // ── Edit order ───────────────────────────────────────────────────────────────
 
-  const addMenuItem = (item: MenuItem) => {
-    setManualItems(prev => {
+  const startEdit = (order: Order) => {
+    setEditingOrder(order)
+    setEditItems(order.items.map(i => ({...i})))
+    setEditSlot(order.slot || '')
+    setEditNotes(order.notes || '')
+  }
+
+  const addEditItem = (item: MenuItem) => {
+    setEditItems(prev => {
       const ex = prev.find(i => i.name === item.name)
-      return ex
-        ? prev.map(i => i.name === item.name ? { ...i, quantity: i.quantity + 1 } : i)
+      return ex ? prev.map(i => i.name === item.name ? {...i, quantity: i.quantity+1} : i)
         : [...prev, { name: item.name, quantity: 1, unit_price: item.price }]
     })
   }
 
-  const adjustQty = (name: string, delta: number) => {
+  const submitEdit = async () => {
+    if (!editingOrder) return
+    setActionLoading(`edit-${editingOrder.id}`)
+    try {
+      const res = await fetch('/api/dashboard/action', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token, pin, action: 'edit', orderId: editingOrder.id,
+          editedOrder: { items: editItems.filter(i=>i.quantity>0), slot: editSlot||null, notes: editNotes||null }
+        })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      showToast(`Order #${editingOrder.id} updated`)
+      setEditingOrder(null)
+      await fetchAll()
+    } catch (err: any) { showToast(err.message||'Edit failed','error') }
+    finally { setActionLoading(null) }
+  }
+
+  // ── Manual order ─────────────────────────────────────────────────────────────
+
+  const addMenuItem = (item: MenuItem) => {
     setManualItems(prev => {
-      const updated = prev.map(i => i.name === name ? { ...i, quantity: i.quantity + delta } : i)
-      return updated.filter(i => i.quantity > 0)
+      const ex = prev.find(i => i.name === item.name)
+      return ex ? prev.map(i => i.name===item.name ? {...i, quantity:i.quantity+1} : i)
+        : [...prev, { name: item.name, quantity: 1, unit_price: item.price }]
     })
   }
 
-  const editPrice = (name: string, price: number) => {
-    setManualItems(prev => prev.map(i => i.name === name ? { ...i, unit_price: price } : i))
+  const adjustManualQty = (name: string, delta: number) => {
+    setManualItems(prev =>
+      prev.map(i => i.name===name ? {...i, quantity:i.quantity+delta} : i).filter(i=>i.quantity>0)
+    )
   }
 
-  const manualTotal = manualItems.reduce((s, i) => s + i.unit_price * i.quantity, 0)
+  const manualTotal = manualItems.reduce((s,i) => s+i.unit_price*i.quantity, 0)
 
   const submitManual = async () => {
     if (!manualName.trim() || !manualItems.length) return
@@ -232,36 +318,43 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
     setActionLoading('manual')
     try {
       const res = await fetch('/api/dashboard/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token, pin, action: 'manual',
           manualOrder: {
-            customerName:  manualName,
-            customerPhone: null,
-            customerEmail: manualEmail || null,
-            slot:          effectiveSlot,
-            items:         manualItems,
-            notes:         manualNotes || null,
+            customerName: manualName, customerPhone: null,
+            customerEmail: manualEmail||null, slot: effectiveSlot,
+            items: manualItems, notes: manualNotes||null,
           },
-        }),
+        })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       showToast(data.slotFull
         ? `Order #${data.orderId} saved — slot full, pending confirmation`
-        : `Order #${data.orderId} saved and confirmed`)
+        : `Order #${data.orderId} confirmed`)
       setManualName(''); setManualEmail(''); setManualNotes(''); setManualSlot(''); setManualItems([])
       setActiveTab('orders')
-      await fetchOrders()
-    } catch (err: any) {
-      showToast(err.message || 'Failed to save order', 'error')
-    } finally {
-      setActionLoading(null)
-    }
+      await fetchAll()
+    } catch (err: any) { showToast(err.message||'Failed','error') }
+    finally { setActionLoading(null) }
   }
 
-  // ── Render guards ───────────────────────────────────────────────────────────
+  // ── Stock management ──────────────────────────────────────────────────────────
+
+  const updateStock = async (itemName: string, available: boolean, stockCount: number | null) => {
+    await fetch('/api/dashboard/action', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, pin, action: 'set_stock', itemName, available, stockCount })
+    })
+    setItemStocks(prev => {
+      const ex = prev.find(s => s.name === itemName)
+      if (ex) return prev.map(s => s.name===itemName ? {...s, available, stock_count:stockCount} : s)
+      return [...prev, { name: itemName, available, stock_count: stockCount, orders_count: 0 }]
+    })
+  }
+
+  // ── Render guards ─────────────────────────────────────────────────────────────
 
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -285,70 +378,78 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
         <div className="text-4xl mb-4">🔒</div>
         <h2 className="text-white font-black text-xl mb-2">Enter PIN</h2>
         <p className="text-slate-400 text-sm mb-6">Enter your 4-digit dashboard PIN</p>
-        <input
-          type="number" maxLength={4} value={pinInput}
-          onChange={e => setPinInput(e.target.value.slice(0, 4))}
-          onKeyDown={e => e.key === 'Enter' && submitPin()}
+        <input type="number" maxLength={4} value={pinInput}
+          onChange={e => setPinInput(e.target.value.slice(0,4))}
+          onKeyDown={e => e.key==='Enter' && submitPin()}
           placeholder="• • • •"
           className="w-full text-center text-2xl font-black tracking-widest bg-slate-700 text-white rounded-xl px-4 py-3 mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600"
         />
         {pinError && <p className="text-red-400 text-sm mb-3">{pinError}</p>}
-        <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700 transition-colors">
-          Unlock
-        </button>
+        <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700">Unlock</button>
       </div>
     </div>
   )
 
   const pendingOrders   = orders.filter(o => o.status === 'pending')
   const confirmedOrders = orders.filter(o => o.status === 'confirmed')
-  const otherOrders     = orders.filter(o => !['pending', 'confirmed'].includes(o.status))
+  const otherOrders     = orders.filter(o => !['pending','confirmed'].includes(o.status))
 
-  // Group menu by category
   const menuGroups: Record<string, MenuItem[]> = {}
   truckMenu?.items.forEach(item => {
     if (!menuGroups[item.category]) menuGroups[item.category] = []
     menuGroups[item.category].push(item)
   })
 
+  const editTotal = editItems.reduce((s,i) => s+i.unit_price*i.quantity, 0)
+  const originalTotal = editingOrder?.total || 0
+  const priceDiff = editTotal - originalTotal
+
+  const readyTime = calcReadyTime(manualItems, waitMinutes)
+
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 px-4 py-3 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/">
-              <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={100} height={30} className="object-contain opacity-80" />
-            </Link>
-            <div className="h-5 w-px bg-slate-200" />
-            <div>
-              <p className="font-black text-sm text-slate-900 leading-none">{truck?.name}</p>
-              {truck?.venue_name && <p className="text-slate-500 text-xs mt-0.5">{truck.venue_name}</p>}
+      {/* Header — dark slate */}
+      <header className="bg-slate-900 px-4 py-3 sticky top-0 z-50 shadow-md">
+        <div className="max-w-2xl mx-auto flex items-center justify-between relative">
+          <Link href="/" className="shrink-0 z-10">
+            <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={90} height={27} className="object-contain opacity-70" />
+          </Link>
+
+          {/* Centred truck identity */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="flex items-center gap-2">
+              {truck?.logo
+                ? <img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0" />
+                : <span className="text-lg">🚚</span>
+              }
+              <div>
+                <p className="font-black text-sm text-white leading-none">{truck?.name}</p>
+                {truck?.venue_name && <p className="text-slate-400 text-[11px] mt-0.5">{truck.venue_name}</p>}
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 z-10">
             {pendingOrders.length > 0 && (
-              <span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">
-                {pendingOrders.length} new
-              </span>
+              <span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>
             )}
-            <button onClick={() => fetchOrders()} className="text-slate-400 hover:text-slate-700 text-xs font-medium">
-              ↻
-            </button>
+            <button onClick={() => fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
           </div>
         </div>
       </header>
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-slate-200 px-4">
+      {/* Tabs — dark */}
+      <div className="bg-slate-800 px-4 border-b border-slate-700">
         <div className="max-w-2xl mx-auto flex">
-          {(['orders', 'manual'] as const).map((tab, i) => (
+          {([
+            ['orders', `Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length > 0 ? ` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})` : ''}`],
+            ['add', '+ Add order'],
+            ['stock', 'Menu & Stock'],
+          ] as [typeof activeTab, string][]).map(([tab, label]) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === tab ? 'border-orange-500 text-slate-900' : 'border-transparent text-slate-400 hover:text-slate-700'}`}>
-              {tab === 'orders'
-                ? `Live orders${orders.filter(o => ['pending','confirmed'].includes(o.status)).length > 0 ? ` (${orders.filter(o => ['pending','confirmed'].includes(o.status)).length})` : ''}`
-                : '+ Add order'}
+              className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
+              {label}
             </button>
           ))}
         </div>
@@ -359,6 +460,34 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
         {/* ── ORDERS TAB ── */}
         {activeTab === 'orders' && (
           <div>
+            {/* Pause + wait controls */}
+            <div className="flex gap-2 mb-3">
+              <button onClick={() => setPaused(p=>!p)}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>
+                {paused ? '▶ Resume' : '⏸ Pause orders'}
+              </button>
+              <select value={waitMinutes} onChange={e => setWaitMinutes(parseInt(e.target.value))}
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <option value={0}>No extra wait</option>
+                <option value={10}>+10 min</option>
+                <option value={20}>+20 min</option>
+                <option value={30}>+30 min</option>
+                <option value={45}>+45 min</option>
+              </select>
+            </div>
+
+            {paused && (
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center">
+                <p className="text-red-700 font-black text-sm">⏸ Orders paused</p>
+                <p className="text-red-500 text-xs mt-0.5">Customers see "Too busy — please order at the truck"</p>
+              </div>
+            )}
+            {waitMinutes > 0 && !paused && (
+              <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center">
+                <p className="text-orange-700 font-black text-sm">⏱ +{waitMinutes} min extra wait active</p>
+              </div>
+            )}
+
             {/* Stats */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               {[
@@ -373,32 +502,29 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
               ))}
             </div>
 
-            {/* New orders */}
             {pendingOrders.length > 0 && (
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
                 <div className="space-y-3">
-                  {pendingOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} actionLoading={actionLoading} onAction={doAction} />)}
+                  {pendingOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} />)}
                 </div>
               </div>
             )}
 
-            {/* Confirmed */}
             {confirmedOrders.length > 0 && (
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
                 <div className="space-y-3">
-                  {confirmedOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} actionLoading={actionLoading} onAction={doAction} />)}
+                  {confirmedOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} />)}
                 </div>
               </div>
             )}
 
-            {/* Earlier */}
             {otherOrders.length > 0 && (
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Earlier today</p>
                 <div className="space-y-2">
-                  {otherOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} actionLoading={actionLoading} onAction={doAction} compact />)}
+                  {otherOrders.map(o => <OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} compact />)}
                 </div>
               </div>
             )}
@@ -407,15 +533,14 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
               <div className="text-center py-16">
                 <p className="text-4xl mb-3">🍕</p>
                 <p className="text-slate-500 font-medium">No orders yet today</p>
-                <p className="text-slate-400 text-sm mt-1">Orders appear here automatically</p>
                 <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
               </div>
             )}
           </div>
         )}
 
-        {/* ── MANUAL ORDER TAB ── */}
-        {activeTab === 'manual' && (
+        {/* ── ADD ORDER TAB ── */}
+        {activeTab === 'add' && (
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-5">
 
             {/* STEP 1 — Items */}
@@ -426,16 +551,21 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                   {Object.entries(menuGroups).map(([cat, items]) => (
                     <div key={cat}>
                       <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-1.5">
-                        {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                        {cat.charAt(0).toUpperCase()+cat.slice(1)}
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {items.map(item => {
-                          const inBasket = manualItems.find(i => i.name === item.name)
+                          const inBasket = manualItems.find(i => i.name===item.name)
+                          const stock = itemStocks.find(s => s.name===item.name)
+                          const soldOut = stock && !stock.available
+                          if (soldOut) return (
+                            <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-400 line-through">
+                              {item.name}
+                            </div>
+                          )
                           return (
                             <button key={item.name} onClick={() => addMenuItem(item)}
-                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${
-                                inBasket ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'
-                              }`}>
+                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${inBasket ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
                               {inBasket && <span className={inBasket ? 'text-orange-200' : ''}>{inBasket.quantity}×</span>}
                               <span>{item.name}</span>
                               <span className={inBasket ? 'text-orange-200' : 'text-slate-400'}>£{item.price.toFixed(2)}</span>
@@ -446,21 +576,18 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                     </div>
                   ))}
 
-                  {/* Basket */}
                   {manualItems.length > 0 && (
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
                       <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Order</p>
                       {manualItems.map(item => (
                         <div key={item.name} className="flex items-center gap-2">
-                          <span className="text-slate-900 text-sm font-bold flex-1 min-w-0 truncate">{item.name}</span>
+                          <span className="flex-1 text-sm font-bold text-slate-900 truncate">{item.name}</span>
                           <div className="flex items-center gap-1">
-                            <button onClick={() => adjustQty(item.name, -1)}
-                              className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 transition-colors text-sm">−</button>
-                            <span className="w-4 text-center font-black text-slate-900 text-sm">{item.quantity}</span>
-                            <button onClick={() => adjustQty(item.name, 1)}
-                              className="w-6 h-6 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 transition-colors text-sm">+</button>
+                            <button onClick={() => adjustManualQty(item.name,-1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold hover:bg-red-100 hover:text-red-600">−</button>
+                            <span className="w-4 text-center font-black text-sm">{item.quantity}</span>
+                            <button onClick={() => adjustManualQty(item.name,1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold hover:bg-orange-100 hover:text-orange-600">+</button>
                           </div>
-                          <InlinePriceEditor price={item.unit_price} quantity={item.quantity} onChange={p => editPrice(item.name, p)} />
+                          <InlinePriceEditor price={item.unit_price} quantity={item.quantity} onChange={p => setManualItems(prev=>prev.map(i=>i.name===item.name?{...i,unit_price:p}:i))} />
                         </div>
                       ))}
                       <div className="flex justify-between pt-2 border-t border-slate-200">
@@ -470,92 +597,253 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                     </div>
                   )}
                 </div>
-              ) : (
-                <p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>
-              )}
+              ) : <p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
             </div>
 
-            {/* STEP 2 — Collection time */}
+            {/* STEP 2 — Collection time: left=ready time, right=selector */}
             <div>
               <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-2">2. When to collect?</p>
-
-              {/* ASAP info */}
-              <div className={`rounded-xl px-3 py-2.5 mb-2 ${asapSlot ? 'bg-green-50 border border-green-200' : 'bg-slate-100 border border-slate-200'}`}>
-                {asapSlot ? (
-                  <>
-                    <p className="text-green-700 font-black text-sm">⚡ ASAP — ready at approximately {asapSlot.collection_time}</p>
-                    <p className="text-green-600 text-xs mt-0.5">{asapSlot.max_orders - asapSlot.current_orders} slot{asapSlot.max_orders - asapSlot.current_orders !== 1 ? 's' : ''} available</p>
-                  </>
-                ) : (
-                  <p className="text-slate-500 text-sm">No slots configured — walk-up only</p>
+              <div className="flex gap-2">
+                {/* Left — dynamic ready time */}
+                <div className={`flex-1 rounded-xl px-3 py-2.5 ${readyTime ? 'bg-green-50 border border-green-200' : 'bg-slate-100 border border-slate-100'}`}>
+                  {readyTime ? (
+                    <>
+                      <p className="text-green-700 font-black text-sm">⚡ ~{readyTime}</p>
+                      <p className="text-green-600 text-xs mt-0.5">Tell customer: "Around {readyTime}"</p>
+                    </>
+                  ) : asapSlot ? (
+                    <>
+                      <p className="text-slate-600 font-bold text-sm">Next: {asapSlot.collection_time}</p>
+                      <p className="text-slate-400 text-xs mt-0.5">Add items to see ready time</p>
+                    </>
+                  ) : (
+                    <p className="text-slate-400 text-sm">Walk-up only</p>
+                  )}
+                </div>
+                {/* Right — specific time selector */}
+                {slots.length > 0 && (
+                  <div className="flex-1">
+                    <select value={manualSlot} onChange={e => setManualSlot(e.target.value)}
+                      className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                      <option value="">ASAP</option>
+                      {slots.map(s => {
+                        const pct = s.max_orders>0 ? s.current_orders/s.max_orders : 0
+                        const ind = pct>=1?'🔴':pct>=0.7?'🟡':'🟢'
+                        const rem = s.max_orders - s.current_orders
+                        return (
+                          <option key={s.collection_time} value={s.collection_time} disabled={!s.available}>
+                            {s.collection_time} {ind} {s.available?`${rem} left`:'Full'}
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </div>
                 )}
               </div>
-
-              {/* Single dropdown — always visible, ASAP = blank selection */}
-              {slots.length > 0 && (
-                <>
-                  <p className="text-xs text-slate-400 mb-1">Or choose a specific time:</p>
-                  <select value={manualSlot} onChange={e => setManualSlot(e.target.value)}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    <option value="">ASAP ({asapSlot?.collection_time || 'next available'})</option>
-                    {slots.map(s => {
-                      const pct = s.max_orders > 0 ? s.current_orders / s.max_orders : 0
-                      const ind = pct >= 1 ? '🔴' : pct >= 0.7 ? '🟡' : '🟢'
-                      const rem = s.max_orders - s.current_orders
-                      return (
-                        <option key={s.collection_time} value={s.collection_time} disabled={!s.available}>
-                          {s.collection_time} {ind} {s.available ? `${rem} left` : 'Full'}
-                        </option>
-                      )
-                    })}
-                  </select>
-                </>
-              )}
             </div>
 
             {/* STEP 3 — Name */}
             <div>
               <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">3. Customer name *</p>
-              <input type="text" value={manualName} onChange={e => setManualName(e.target.value)}
-                placeholder="e.g. Sarah"
+              <input type="text" value={manualName} onChange={e=>setManualName(e.target.value)} placeholder="e.g. Sarah"
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
             </div>
 
-            {/* STEP 4 — Email (optional) */}
+            {/* STEP 4 — Email */}
             <div>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">
-                4. Email <span className="font-normal normal-case text-slate-400">— optional, for ready notification</span>
-              </p>
-              <input type="email" value={manualEmail} onChange={e => setManualEmail(e.target.value)}
-                placeholder="customer@email.com"
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">4. Email <span className="font-normal normal-case text-slate-400">— optional</span></p>
+              <input type="email" value={manualEmail} onChange={e=>setManualEmail(e.target.value)} placeholder="For ready notification"
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
             </div>
 
             {/* STEP 5 — Notes */}
             <div>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">
-                5. Notes <span className="font-normal normal-case text-slate-400">— optional</span>
-              </p>
-              <textarea value={manualNotes} onChange={e => setManualNotes(e.target.value)}
-                placeholder="Allergies, no onion…" rows={2}
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">5. Notes <span className="font-normal normal-case text-slate-400">— optional</span></p>
+              <textarea value={manualNotes} onChange={e=>setManualNotes(e.target.value)} placeholder="Allergies, no onion…" rows={2}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none" />
             </div>
 
-            <button onClick={submitManual}
-              disabled={actionLoading === 'manual' || !manualName.trim() || manualItems.length === 0}
+            <button onClick={submitManual} disabled={actionLoading==='manual'||!manualName.trim()||!manualItems.length}
               className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40">
-              {actionLoading === 'manual'
-                ? 'Saving...'
-                : `Save order${manualItems.length ? ` · £${manualTotal.toFixed(2)}` : ''}`}
+              {actionLoading==='manual' ? 'Saving...' : `Save order${manualItems.length?` · £${manualTotal.toFixed(2)}`:''}`}
             </button>
+          </div>
+        )}
+
+        {/* ── MENU & STOCK TAB ── */}
+        {activeTab === 'stock' && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">Stock & availability</p>
+              <p className="text-slate-400 text-xs mb-4">Set how many of each item you have tonight. Items auto-mark as sold out when stock runs out. Or mark sold out manually.</p>
+
+              {truckMenu ? (
+                <div className="space-y-4">
+                  {Object.entries(menuGroups).map(([cat, items]) => (
+                    <div key={cat}>
+                      <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-2">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                      <div className="space-y-2">
+                        {items.map(item => {
+                          const stock = itemStocks.find(s => s.name===item.name)
+                          const isSoldOut = stock ? !stock.available : false
+                          const stockCount = stock?.stock_count ?? null
+                          const ordersCount = stock?.orders_count ?? 0
+                          const remaining = stockCount !== null ? stockCount - ordersCount : null
+
+                          return (
+                            <div key={item.name} className={`flex items-center gap-3 p-3 rounded-xl border ${isSoldOut ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
+                              <div className="flex-1 min-w-0">
+                                <p className={`font-bold text-sm ${isSoldOut ? 'text-red-600 line-through' : 'text-slate-900'}`}>{item.name}</p>
+                                {remaining !== null && !isSoldOut && (
+                                  <p className={`text-xs mt-0.5 ${remaining <= 3 ? 'text-orange-500 font-bold' : 'text-slate-400'}`}>
+                                    {remaining} remaining
+                                  </p>
+                                )}
+                                {ordersCount > 0 && (
+                                  <p className="text-xs text-slate-400">{ordersCount} ordered tonight</p>
+                                )}
+                              </div>
+
+                              {/* Stock count input */}
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="number" min="0" placeholder="∞"
+                                  value={stockCount ?? ''}
+                                  onChange={e => {
+                                    const val = e.target.value === '' ? null : parseInt(e.target.value)
+                                    updateStock(item.name, !isSoldOut, val)
+                                  }}
+                                  className="w-14 border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                                />
+                                <span className="text-slate-400 text-xs">qty</span>
+                              </div>
+
+                              {/* Sold out toggle */}
+                              <button
+                                onClick={() => updateStock(item.name, isSoldOut, stockCount)}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all border ${isSoldOut ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-600 border-slate-300 hover:border-red-300'}`}>
+                                {isSoldOut ? 'Sold out' : 'Available'}
+                              </button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : <p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
+            </div>
+
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1">
+              <p className="font-bold text-slate-700">How stock works</p>
+              <p>• Leave qty blank for unlimited stock</p>
+              <p>• Set a number and it counts down as orders come in</p>
+              <p>• Item auto-marks sold out when stock hits zero</p>
+              <p>• Sold out items are hidden from customers immediately</p>
+              <p>• Tap Available/Sold out to override manually</p>
+            </div>
           </div>
         )}
 
       </main>
 
+      {/* Edit order modal */}
+      {editingOrder && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target===e.currentTarget && setEditingOrder(null)}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[85vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-black text-slate-900">Edit Order #{editingOrder.id}</h3>
+              <button onClick={() => setEditingOrder(null)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
+            </div>
+
+            {/* Full menu to add/remove items */}
+            {truckMenu && (
+              <div className="mb-4 space-y-3">
+                <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Add items</p>
+                {Object.entries(menuGroups).map(([cat, items]) => (
+                  <div key={cat}>
+                    <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-1.5">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {items.map(item => {
+                        const inEdit = editItems.find(i => i.name===item.name)
+                        return (
+                          <button key={item.name} onClick={() => addEditItem(item)}
+                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all ${inEdit ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
+                            {inEdit && <span className="text-orange-200">{inEdit.quantity}×</span>}
+                            {item.name} <span className={inEdit?'text-orange-200':'text-slate-400'}>£{item.price.toFixed(2)}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Current items with qty controls */}
+            {editItems.length > 0 && (
+              <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-2">
+                <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Order</p>
+                {editItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="flex-1 text-sm font-bold text-slate-900 truncate">{item.name}</span>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setEditItems(prev => prev.map((i,n)=>n===idx?{...i,quantity:i.quantity-1}:i).filter(i=>i.quantity>0))}
+                        className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 text-sm">−</button>
+                      <span className="w-4 text-center font-black text-sm">{item.quantity}</span>
+                      <button onClick={() => setEditItems(prev => prev.map((i,n)=>n===idx?{...i,quantity:i.quantity+1}:i))}
+                        className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 text-sm">+</button>
+                    </div>
+                    <span className="text-slate-500 text-xs w-12 text-right">£{(item.unit_price*item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between pt-2 border-t border-slate-200">
+                  <span className="text-slate-600 text-sm font-bold">New total</span>
+                  <div className="text-right">
+                    <span className="text-slate-900 font-black">£{editTotal.toFixed(2)}</span>
+                    {priceDiff !== 0 && (
+                      <span className={`text-xs ml-1.5 font-bold ${priceDiff>0?'text-orange-500':'text-green-500'}`}>
+                        {priceDiff>0?'+':''}{priceDiff.toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Edit slot */}
+            {slots.length > 0 && (
+              <div className="mb-4">
+                <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Collection time</label>
+                <select value={editSlot} onChange={e=>setEditSlot(e.target.value)}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option value="">No slot</option>
+                  {slots.map(s=><option key={s.collection_time} value={s.collection_time}>{s.collection_time}</option>)}
+                </select>
+              </div>
+            )}
+
+            {/* Edit notes */}
+            <div className="mb-4">
+              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Notes</label>
+              <textarea value={editNotes} onChange={e=>setEditNotes(e.target.value)} rows={2}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+            </div>
+
+            <div className="flex gap-2">
+              <button onClick={() => setEditingOrder(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
+              <button onClick={submitEdit} disabled={!!actionLoading?.startsWith('edit')||editItems.length===0}
+                className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">
+                {actionLoading?.startsWith('edit') ? 'Saving...' : 'Save changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 ${toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+        <div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600 text-white'}`}>
           {toast.msg}
         </div>
       )}
@@ -565,11 +853,11 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
 
 // ─── Order card ───────────────────────────────────────────────────────────────
 
-function OrderCard({ order, truck, actionLoading, onAction, compact = false }: {
-  order: Order
-  truck: TruckData | null
-  actionLoading: string | null
-  onAction: (action: string, orderId: string) => void
+function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit, compact=false }: {
+  order: Order; truck: TruckData|null; slots: Slot[]
+  actionLoading: string|null
+  onAction: (action:string, orderId:string)=>void
+  onEdit: (order:Order)=>void
   compact?: boolean
 }) {
   const [expanded, setExpanded] = useState(!compact)
@@ -577,8 +865,8 @@ function OrderCard({ order, truck, actionLoading, onAction, compact = false }: {
   const isPub = truck?.mode === 'pub'
 
   return (
-    <div className={`bg-white rounded-2xl overflow-hidden border shadow-sm ${order.status === 'pending' ? 'border-orange-400' : 'border-slate-200'}`}>
-      <button onClick={() => setExpanded(e => !e)} className="w-full text-left p-4">
+    <div className={`bg-white rounded-2xl overflow-hidden border shadow-sm ${order.status==='pending'?'border-orange-400':'border-slate-200'}`}>
+      <button onClick={() => setExpanded(e=>!e)} className="w-full text-left p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
@@ -590,7 +878,7 @@ function OrderCard({ order, truck, actionLoading, onAction, compact = false }: {
           </div>
           <div className="text-right shrink-0">
             <p className="font-black text-slate-900">£{Number(order.total).toFixed(2)}</p>
-            <p className="text-slate-400 text-xs">{expanded ? '▲' : '▼'}</p>
+            <p className="text-slate-400 text-xs">{expanded?'▲':'▼'}</p>
           </div>
         </div>
       </button>
@@ -598,35 +886,27 @@ function OrderCard({ order, truck, actionLoading, onAction, compact = false }: {
       {expanded && (
         <div className="px-4 pb-4 border-t border-slate-100 pt-3 bg-slate-50">
           <div className="space-y-1 mb-3">
-            {order.items.map((item, i) => (
+            {order.items.map((item,i) => (
               <div key={i} className="flex justify-between text-sm">
                 <span className="text-slate-700">{item.quantity}× {item.name}</span>
-                <span className="text-slate-500">£{(item.unit_price * item.quantity).toFixed(2)}</span>
+                <span className="text-slate-500">£{(item.unit_price*item.quantity).toFixed(2)}</span>
               </div>
             ))}
-            {order.deals?.map((d, i) => (
-              <p key={i} className="text-xs text-orange-600">🎁 {d.name}: {Object.values(d.slots).filter(Boolean).join(', ')}</p>
-            ))}
+            {order.deals?.map((d,i) => <p key={i} className="text-xs text-orange-600">🎁 {d.name}: {Object.values(d.slots).filter(Boolean).join(', ')}</p>)}
           </div>
-          {order.notes && (
-            <div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-2 text-xs text-orange-700 mb-3">📝 {order.notes}</div>
-          )}
+          {order.notes && <div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-2 text-xs text-orange-700 mb-3">📝 {order.notes}</div>}
           <div className="flex gap-2 flex-wrap">
-            {order.status === 'pending' && (
+            {order.status==='pending' && (
               <>
-                <Btn label="✓ Confirm" colour="green" loading={actionLoading === `confirm-${order.id}`} onClick={() => onAction('confirm', order.id)} />
-                <Btn label="✗ Reject"  colour="red"   loading={actionLoading === `reject-${order.id}`}  onClick={() => onAction('reject',  order.id)} />
+                <Btn label="✓ Confirm" colour="green" loading={actionLoading===`confirm-${order.id}`} onClick={()=>onAction('confirm',order.id)} />
+                <Btn label="✗ Reject"  colour="red"   loading={actionLoading===`reject-${order.id}`}  onClick={()=>onAction('reject',order.id)}  />
               </>
             )}
-            {order.status === 'confirmed' && isPub && (
-              <Btn label="🍕 Ready" colour="blue" loading={actionLoading === `ready-${order.id}`} onClick={() => onAction('ready', order.id)} />
-            )}
-            {order.status === 'confirmed' && !isPub && (
-              <Btn label="✓ Collected" colour="slate" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />
-            )}
-            {order.status === 'ready' && (
-              <Btn label="✓ Collected" colour="slate" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />
-            )}
+            {order.status==='confirmed' && isPub && <Btn label="🍕 Ready" colour="blue" loading={actionLoading===`ready-${order.id}`} onClick={()=>onAction('ready',order.id)} />}
+            {order.status==='confirmed' && !isPub && <Btn label="✓ Collected" colour="slate" loading={actionLoading===`collected-${order.id}`} onClick={()=>onAction('collected',order.id)} />}
+            {order.status==='ready' && <Btn label="✓ Collected" colour="slate" loading={actionLoading===`collected-${order.id}`} onClick={()=>onAction('collected',order.id)} />}
+            {order.status==='collected' && <Btn label="↩ Undo" colour="slate" loading={actionLoading===`undo_collected-${order.id}`} onClick={()=>onAction('undo_collected',order.id)} />}
+            {['pending','confirmed','modified'].includes(order.status) && <Btn label="✏ Edit" colour="orange" loading={false} onClick={()=>onEdit(order)} />}
           </div>
         </div>
       )}
@@ -636,30 +916,23 @@ function OrderCard({ order, truck, actionLoading, onAction, compact = false }: {
 
 // ─── Inline price editor ──────────────────────────────────────────────────────
 
-function InlinePriceEditor({ price, quantity, onChange }: {
-  price: number; quantity: number; onChange: (p: number) => void
-}) {
+function InlinePriceEditor({ price, quantity, onChange }: { price:number; quantity:number; onChange:(p:number)=>void }) {
   const [editing, setEditing] = useState(false)
   const [val, setVal] = useState(price.toFixed(2))
-
-  if (editing) {
-    return (
-      <div className="flex items-center gap-1 shrink-0">
-        <span className="text-slate-400 text-xs">£</span>
-        <input
-          type="number" value={val} step="0.50" min="0" autoFocus
-          onChange={e => setVal(e.target.value)}
-          onBlur={() => { onChange(parseFloat(val) || 0); setEditing(false) }}
-          onKeyDown={e => { if (e.key === 'Enter') { onChange(parseFloat(val) || 0); setEditing(false) } }}
-          className="w-14 border border-orange-400 rounded-lg px-1.5 py-0.5 text-xs font-bold text-slate-900 focus:outline-none text-center"
-        />
-      </div>
-    )
-  }
+  if (editing) return (
+    <div className="flex items-center gap-1 shrink-0">
+      <span className="text-slate-400 text-xs">£</span>
+      <input type="number" value={val} step="0.50" min="0" autoFocus
+        onChange={e=>setVal(e.target.value)}
+        onBlur={() => { onChange(parseFloat(val)||0); setEditing(false) }}
+        onKeyDown={e => { if(e.key==='Enter'){onChange(parseFloat(val)||0);setEditing(false)} }}
+        className="w-14 border border-orange-400 rounded-lg px-1.5 py-0.5 text-xs font-bold text-slate-900 focus:outline-none text-center"
+      />
+    </div>
+  )
   return (
-    <button onClick={() => { setVal(price.toFixed(2)); setEditing(true) }}
-      className="text-right shrink-0 min-w-[56px]" title="Tap to edit price">
-      <span className="text-slate-700 font-bold text-sm">£{(price * quantity).toFixed(2)}</span>
+    <button onClick={() => { setVal(price.toFixed(2)); setEditing(true) }} className="text-right shrink-0 min-w-[56px]" title="Edit price">
+      <span className="text-slate-700 font-bold text-sm">£{(price*quantity).toFixed(2)}</span>
       <span className="text-slate-400 text-[10px] block leading-none">edit</span>
     </button>
   )
@@ -667,18 +940,17 @@ function InlinePriceEditor({ price, quantity, onChange }: {
 
 // ─── Action button ────────────────────────────────────────────────────────────
 
-function Btn({ label, colour, loading, onClick }: {
-  label: string; colour: string; loading: boolean; onClick: () => void
-}) {
-  const colours: Record<string, string> = {
-    green: 'bg-green-600 hover:bg-green-700',
-    red:   'bg-red-500 hover:bg-red-600',
-    blue:  'bg-blue-600 hover:bg-blue-700',
-    slate: 'bg-slate-500 hover:bg-slate-600',
+function Btn({ label, colour, loading, onClick }: { label:string; colour:string; loading:boolean; onClick:()=>void }) {
+  const colours: Record<string,string> = {
+    green:  'bg-green-600 hover:bg-green-700',
+    red:    'bg-red-500 hover:bg-red-600',
+    blue:   'bg-blue-600 hover:bg-blue-700',
+    slate:  'bg-slate-500 hover:bg-slate-600',
+    orange: 'bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200',
   }
   return (
     <button onClick={onClick} disabled={loading}
-      className={`${colours[colour] || colours.slate} text-white font-bold text-sm px-4 py-2 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[80px]`}>
+      className={`${colours[colour]||colours.slate} ${colour==='orange'?'':'text-white'} font-bold text-sm px-4 py-2 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[72px]`}>
       {loading ? '...' : label}
     </button>
   )

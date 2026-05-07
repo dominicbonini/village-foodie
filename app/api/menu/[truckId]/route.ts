@@ -54,6 +54,22 @@ export async function GET(
     return NextResponse.json({ error: 'Menu unavailable — please try again shortly' }, { status: 503 })
   }
 
+  // Apply sold-out overrides from Supabase
+  const { data: overrides } = await supabase
+    .from('item_overrides')
+    .select('item_name, available')
+    .eq('truck_id', truck.id)
+    .eq('available', false)
+
+  const soldOutNames = new Set((overrides || []).map((o: any) => o.item_name))
+
+  if (soldOutNames.size > 0 && menu) {
+    menu.items = menu.items.map(item => ({
+      ...item,
+      available: soldOutNames.has(item.name) ? false : item.available
+    })).filter(item => item.available)
+  }
+
   return NextResponse.json({
     truck: {
       id:         truck.id,
