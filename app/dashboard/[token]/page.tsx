@@ -53,6 +53,12 @@ interface BasketItem {
   unit_price: number
 }
 
+interface CategoryStock {
+  category: string
+  stock_count: number | null
+  orders_count: number
+}
+
 interface ItemStock {
   name: string
   available: boolean
@@ -105,6 +111,7 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
   const [slots, setSlots] = useState<Slot[]>([])
   const [truckMenu, setTruckMenu] = useState<TruckMenu | null>(null)
   const [itemStocks, setItemStocks] = useState<ItemStock[]>([])
+  const [categoryStocks, setCategoryStocks] = useState<CategoryStock[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [lastRefresh, setLastRefresh] = useState(new Date())
@@ -177,6 +184,7 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
           body: JSON.stringify({ token, pin: currentPin, action: 'get_stock' })
         }).then(r => r.json()).then(d => {
           if (d.stocks) setItemStocks(d.stocks)
+          if (d.categoryStocks) setCategoryStocks(d.categoryStocks)
         }).catch(() => null)
       }
     } catch { setError('Connection error') }
@@ -342,15 +350,27 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
 
   // ── Stock management ──────────────────────────────────────────────────────────
 
-  const updateStock = async (itemName: string, available: boolean, stockCount: number | null) => {
+  const updateStock = async (itemName: string, available: boolean, stockCount: number | null, category?: string) => {
     await fetch('/api/dashboard/action', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, pin, action: 'set_stock', itemName, available, stockCount })
+      body: JSON.stringify({ token, pin, action: 'set_stock', itemName, available, stockCount, category })
     })
     setItemStocks(prev => {
       const ex = prev.find(s => s.name === itemName)
       if (ex) return prev.map(s => s.name===itemName ? {...s, available, stock_count:stockCount} : s)
-      return [...prev, { name: itemName, available, stock_count: stockCount, orders_count: 0 }]
+      return [...prev, { name: itemName, available, stock_count: stockCount, orders_count: 0, category: category||null }]
+    })
+  }
+
+  const updateCategoryStock = async (category: string, stockCount: number | null) => {
+    await fetch('/api/dashboard/action', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, pin, action: 'set_category_stock', category, stockCount })
+    })
+    setCategoryStocks(prev => {
+      const ex = prev.find(s => s.category === category)
+      if (ex) return prev.map(s => s.category===category ? {...s, stock_count:stockCount} : s)
+      return [...prev, { category, stock_count: stockCount, orders_count: 0 }]
     })
   }
 
@@ -416,13 +436,12 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
             <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={90} height={27} className="object-contain opacity-70" />
           </Link>
 
-          {/* Centred truck identity */}
+          {/* Centred truck identity — logo only shown once loaded, no emoji fallback */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="flex items-center gap-2">
-              {truck?.logo
-                ? <img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0" />
-                : <span className="text-lg">🚚</span>
-              }
+              {truck?.logo && (
+                <img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0" />
+              )}
               <div>
                 <p className="font-black text-sm text-white leading-none">{truck?.name}</p>
                 {truck?.venue_name && <p className="text-slate-400 text-[11px] mt-0.5">{truck.venue_name}</p>}
@@ -557,18 +576,34 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                         {items.map(item => {
                           const inBasket = manualItems.find(i => i.name===item.name)
                           const stock = itemStocks.find(s => s.name===item.name)
-                          const soldOut = stock && !stock.available
-                          if (soldOut) return (
-                            <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-400 line-through">
-                              {item.name}
+                          const isSoldOut = stock ? !stock.available : false
+                          // Effective remaining — min of item stock and category stock
+                          const itemRem = stock?.stock_count != null ? stock.stock_count - (stock.orders_count||0) : null
+                          const catSt = categoryStocks.find(s => s.category === cat)
+                          const catRem = catSt?.stock_count != null ? catSt.stock_count - (catSt.orders_count||0) : null
+                          const effectiveRem = itemRem !== null ? (catRem !== null ? Math.min(itemRem, catRem) : itemRem) : catRem
+                          const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
+
+                          if (isSoldOut) return (
+                            // Sold out stays visible — strikethrough, not tappable
+                            <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed">
+                              <span className="text-xs text-slate-400 line-through">{item.name}</span>
+                              <span className="text-[10px] text-red-400 font-bold">sold out</span>
                             </div>
                           )
                           return (
                             <button key={item.name} onClick={() => addMenuItem(item)}
-                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${inBasket ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
-                              {inBasket && <span className={inBasket ? 'text-orange-200' : ''}>{inBasket.quantity}×</span>}
+                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${
+                                inBasket ? 'bg-orange-600 border-orange-600 text-white'
+                                : isLow ? 'bg-orange-50 border-orange-200 text-slate-700 hover:border-orange-400'
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'
+                              }`}>
+                              {inBasket && <span className="text-orange-200">{inBasket.quantity}×</span>}
                               <span>{item.name}</span>
                               <span className={inBasket ? 'text-orange-200' : 'text-slate-400'}>£{item.price.toFixed(2)}</span>
+                              {isLow && !inBasket && (
+                                <span className="text-[10px] text-orange-500 font-black ml-0.5">({effectiveRem} left)</span>
+                              )}
                             </button>
                           )
                         })}
@@ -620,25 +655,33 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                     <p className="text-slate-400 text-sm">Walk-up only</p>
                   )}
                 </div>
-                {/* Right — specific time selector */}
-                {slots.length > 0 && (
-                  <div className="flex-1">
-                    <select value={manualSlot} onChange={e => setManualSlot(e.target.value)}
-                      className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                      <option value="">ASAP</option>
-                      {slots.map(s => {
-                        const pct = s.max_orders>0 ? s.current_orders/s.max_orders : 0
-                        const ind = pct>=1?'🔴':pct>=0.7?'🟡':'🟢'
-                        const rem = s.max_orders - s.current_orders
-                        return (
-                          <option key={s.collection_time} value={s.collection_time} disabled={!s.available}>
-                            {s.collection_time} {ind} {s.available?`${rem} left`:'Full'}
-                          </option>
-                        )
-                      })}
-                    </select>
-                  </div>
+                {/* Right — specific time selector, always visible */}
+              <div className="flex-1">
+                {slots.length > 0 ? (
+                  <select value={manualSlot} onChange={e => setManualSlot(e.target.value)}
+                    className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <option value="">ASAP</option>
+                    {slots.map(s => {
+                      const pct = s.max_orders>0 ? s.current_orders/s.max_orders : 0
+                      const ind = pct>=1?'🔴':pct>=0.7?'🟡':'🟢'
+                      const rem = s.max_orders - s.current_orders
+                      return (
+                        <option key={s.collection_time} value={s.collection_time} disabled={!s.available}>
+                          {s.collection_time} {ind} {s.available?`${rem} left`:'Full'}
+                        </option>
+                      )
+                    })}
+                  </select>
+                ) : (
+                  // Fallback: manual time entry when no slots configured
+                  <input
+                    type="time"
+                    value={manualSlot}
+                    onChange={e => setManualSlot(e.target.value)}
+                    className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
                 )}
+              </div>
               </div>
             </div>
 
@@ -675,72 +718,118 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
           <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">Stock & availability</p>
-              <p className="text-slate-400 text-xs mb-4">Set how many of each item you have tonight. Items auto-mark as sold out when stock runs out. Or mark sold out manually.</p>
+              <p className="text-slate-400 text-xs mb-4">Set category totals for quick setup, then fine-tune individual items if needed. Stock counts down as orders come in.</p>
 
               {truckMenu ? (
-                <div className="space-y-4">
-                  {Object.entries(menuGroups).map(([cat, items]) => (
-                    <div key={cat}>
-                      <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-2">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
-                      <div className="space-y-2">
-                        {items.map(item => {
-                          const stock = itemStocks.find(s => s.name===item.name)
-                          const isSoldOut = stock ? !stock.available : false
-                          const stockCount = stock?.stock_count ?? null
-                          const ordersCount = stock?.orders_count ?? 0
-                          const remaining = stockCount !== null ? stockCount - ordersCount : null
+                <div className="space-y-5">
+                  {Object.entries(menuGroups).map(([cat, items]) => {
+                    const catStock = categoryStocks.find(s => s.category === cat)
+                    const catStockCount = catStock?.stock_count ?? null
+                    const catOrdersCount = catStock?.orders_count ?? 0
+                    const catRemaining = catStockCount !== null ? catStockCount - catOrdersCount : null
 
-                          return (
-                            <div key={item.name} className={`flex items-center gap-3 p-3 rounded-xl border ${isSoldOut ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'}`}>
-                              <div className="flex-1 min-w-0">
-                                <p className={`font-bold text-sm ${isSoldOut ? 'text-red-600 line-through' : 'text-slate-900'}`}>{item.name}</p>
-                                {remaining !== null && !isSoldOut && (
-                                  <p className={`text-xs mt-0.5 ${remaining <= 3 ? 'text-orange-500 font-bold' : 'text-slate-400'}`}>
-                                    {remaining} remaining
-                                  </p>
-                                )}
-                                {ordersCount > 0 && (
-                                  <p className="text-xs text-slate-400">{ordersCount} ordered tonight</p>
-                                )}
-                              </div>
+                    return (
+                      <div key={cat}>
+                        {/* Category header with stock control */}
+                        <div className="flex items-center gap-3 mb-2 pb-2 border-b border-slate-100">
+                          <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">
+                            {cat.charAt(0).toUpperCase()+cat.slice(1)}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            {catRemaining !== null && (
+                              <span className={`text-xs font-bold ${catRemaining <= 5 ? 'text-orange-500' : 'text-slate-400'}`}>
+                                {catRemaining} left
+                              </span>
+                            )}
+                            {catOrdersCount > 0 && (
+                              <span className="text-xs text-slate-400">{catOrdersCount} ordered</span>
+                            )}
+                            <input
+                              type="number" min="0" placeholder="∞"
+                              value={catStockCount ?? ''}
+                              onChange={e => {
+                                const val = e.target.value === '' ? null : parseInt(e.target.value)
+                                updateCategoryStock(cat, val)
+                              }}
+                              className="w-16 border border-orange-200 rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-orange-50"
+                            />
+                            <span className="text-slate-400 text-xs">total</span>
+                          </div>
+                        </div>
 
-                              {/* Stock count input */}
-                              <div className="flex items-center gap-1.5">
+                        {/* Individual items */}
+                        <div className="space-y-1.5 ml-2">
+                          {items.map(item => {
+                            const stock = itemStocks.find(s => s.name===item.name)
+                            const isSoldOut = stock ? !stock.available : false
+                            const itemStockCount = stock?.stock_count ?? null
+                            const itemOrdersCount = stock?.orders_count ?? 0
+                            const itemRemaining = itemStockCount !== null ? itemStockCount - itemOrdersCount : null
+                            // Category remaining (for display)
+                            const catRemObj = categoryStocks.find(s => s.category === cat)
+                            const catRem = catRemObj && catRemObj.stock_count !== null
+                              ? catRemObj.stock_count - catRemObj.orders_count : null
+                            const effectiveRemaining = itemRemaining !== null
+                              ? (catRem !== null ? Math.min(itemRemaining, catRem) : itemRemaining)
+                              : catRem
+
+                            return (
+                              // Always visible — sold out items stay in list
+                              <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${isSoldOut ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-100'}`}>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className={`font-bold text-sm ${isSoldOut ? 'text-red-500' : 'text-slate-800'}`}>
+                                      {item.name}
+                                    </p>
+                                    {isSoldOut && (
+                                      <span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>
+                                    )}
+                                    {!isSoldOut && effectiveRemaining !== null && (
+                                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${effectiveRemaining <= 3 ? 'text-red-600 bg-red-100' : effectiveRemaining <= 10 ? 'text-orange-600 bg-orange-100' : 'text-slate-500 bg-slate-100'}`}>
+                                        {effectiveRemaining} left
+                                      </span>
+                                    )}
+                                  </div>
+                                  {itemOrdersCount > 0 && (
+                                    <p className="text-xs text-slate-400 mt-0.5">{itemOrdersCount} ordered</p>
+                                  )}
+                                </div>
+
+                                {/* Per-item stock — optional override */}
                                 <input
-                                  type="number" min="0" placeholder="∞"
-                                  value={stockCount ?? ''}
+                                  type="number" min="0" placeholder="–"
+                                  value={itemStockCount ?? ''}
                                   onChange={e => {
                                     const val = e.target.value === '' ? null : parseInt(e.target.value)
-                                    updateStock(item.name, !isSoldOut, val)
+                                    updateStock(item.name, !isSoldOut, val, cat)
                                   }}
-                                  className="w-14 border border-slate-300 rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                                  className="w-12 border border-slate-200 rounded-lg px-1.5 py-1 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                                  title="Override count for this item only"
                                 />
-                                <span className="text-slate-400 text-xs">qty</span>
-                              </div>
 
-                              {/* Sold out toggle */}
-                              <button
-                                onClick={() => updateStock(item.name, isSoldOut, stockCount)}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all border ${isSoldOut ? 'bg-red-600 text-white border-red-600' : 'bg-white text-slate-600 border-slate-300 hover:border-red-300'}`}>
-                                {isSoldOut ? 'Sold out' : 'Available'}
-                              </button>
-                            </div>
-                          )
-                        })}
+                                <button
+                                  onClick={() => updateStock(item.name, isSoldOut, itemStockCount, cat)}
+                                  className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all border shrink-0 ${isSoldOut ? 'bg-red-500 text-white border-red-500' : 'bg-white text-slate-500 border-slate-200 hover:border-red-200 hover:text-red-500'}`}>
+                                  {isSoldOut ? '✗ Out' : '✓ In'}
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               ) : <p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
             </div>
 
             <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1">
               <p className="font-bold text-slate-700">How stock works</p>
-              <p>• Leave qty blank for unlimited stock</p>
-              <p>• Set a number and it counts down as orders come in</p>
-              <p>• Item auto-marks sold out when stock hits zero</p>
-              <p>• Sold out items are hidden from customers immediately</p>
-              <p>• Tap Available/Sold out to override manually</p>
+              <p>• Set a category total (e.g. 100 pizzas) for quick setup</p>
+              <p>• Optionally add item-level overrides (e.g. only 8 Pepperoni)</p>
+              <p>• Both category and item counts go down as orders come in</p>
+              <p>• When either hits zero that item is hidden from customers</p>
+              <p>• Use ✓ In / ✗ Out to override manually at any time</p>
             </div>
           </div>
         )}
@@ -766,11 +855,26 @@ export default function DashboardPage({ params }: { params: Promise<{ token: str
                     <div className="flex flex-wrap gap-2">
                       {items.map(item => {
                         const inEdit = editItems.find(i => i.name===item.name)
+                        const stock = itemStocks.find(s => s.name===item.name)
+                        const isSoldOut = stock ? !stock.available : false
+                        const itemRem = stock?.stock_count != null ? stock.stock_count - (stock.orders_count||0) : null
+                        const catSt = categoryStocks.find(s => s.category === item.category)
+                        const catRem = catSt?.stock_count != null ? catSt.stock_count - (catSt.orders_count||0) : null
+                        const effectiveRem = itemRem !== null ? (catRem !== null ? Math.min(itemRem, catRem) : itemRem) : catRem
+                        const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
+                        if (isSoldOut) return (
+                          <div key={item.name} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-100 bg-slate-50">
+                            <span className="text-xs text-slate-400 line-through">{item.name}</span>
+                            <span className="text-[9px] text-red-400 font-bold">out</span>
+                          </div>
+                        )
                         return (
                           <button key={item.name} onClick={() => addEditItem(item)}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all ${inEdit ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
+                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all ${inEdit ? 'bg-orange-600 border-orange-600 text-white' : isLow ? 'bg-orange-50 border-orange-200 text-slate-700' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
                             {inEdit && <span className="text-orange-200">{inEdit.quantity}×</span>}
-                            {item.name} <span className={inEdit?'text-orange-200':'text-slate-400'}>£{item.price.toFixed(2)}</span>
+                            {item.name}
+                            <span className={inEdit?'text-orange-200':'text-slate-400'}>£{item.price.toFixed(2)}</span>
+                            {isLow && !inEdit && <span className="text-[9px] text-orange-500 font-black">({effectiveRem})</span>}
                           </button>
                         )
                       })}

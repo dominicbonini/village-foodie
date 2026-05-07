@@ -187,6 +187,96 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: autoConfirm, slotFull: !autoConfirm })
     }
 
+    // ── GET STOCK ─────────────────────────────────────────────────────────────
+    if (action === 'get_stock') {
+      const today = new Date().toISOString().split('T')[0]
+      const [{ data: items }, { data: cats }] = await Promise.all([
+        supabase.from('item_overrides')
+          .select('item_name, available, stock_count, orders_count, category')
+          .eq('truck_id', truck.id),
+        supabase.from('category_stock')
+          .select('category, stock_count, orders_count')
+          .eq('truck_id', truck.id).eq('date', today)
+      ])
+      return NextResponse.json({
+        success: true,
+        stocks: (items || []).map((r: any) => ({
+          name: r.item_name, available: r.available,
+          stock_count: r.stock_count, orders_count: r.orders_count || 0,
+          category: r.category
+        })),
+        categoryStocks: (cats || []).map((r: any) => ({
+          category: r.category,
+          stock_count: r.stock_count,
+          orders_count: r.orders_count || 0
+        }))
+      })
+    }
+
+    // ── SET ITEM STOCK ────────────────────────────────────────────────────────
+    if (action === 'set_stock') {
+      const { itemName, available, stockCount, category } = body
+      if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
+      await supabase.from('item_overrides').upsert({
+        truck_id:    truck.id,
+        item_name:   itemName,
+        available:   available !== false,
+        stock_count: stockCount ?? null,
+        category:    category ?? null,
+        updated_at:  new Date().toISOString(),
+      }, { onConflict: 'truck_id,item_name' })
+      return NextResponse.json({ success: true })
+    }
+
+    // ── SET CATEGORY STOCK ────────────────────────────────────────────────────
+    if (action === 'set_category_stock') {
+      const { category, stockCount } = body
+      if (!category) return NextResponse.json({ error: 'category required' }, { status: 400 })
+      const today = new Date().toISOString().split('T')[0]
+      await supabase.from('category_stock').upsert({
+        truck_id:    truck.id,
+        category,
+        stock_count: stockCount ?? null,
+        date:        today,
+      }, { onConflict: 'truck_id,category,date' })
+      return NextResponse.json({ success: true })
+    }
+
+    // ── DECREMENT STOCK ON ORDER ──────────────────────────────────────────────
+    if (action === 'decrement_stock') {
+      const { items, menuItems } = body
+      // menuItems is a map of item name -> category
+      const today = new Date().toISOString().split('T')[0]
+      for (const item of (items || [])) {
+        const qty = item.quantity || 1
+        const cat = menuItems?.[item.name] || null
+        // Decrement item stock
+        await supabase.from('item_overrides')
+          .update({ orders_count: supabase.rpc('increment_orders_count', { p_truck_id: truck.id, p_item: item.name, p_qty: qty }) })
+          .eq('truck_id', truck.id).eq('item_name', item.name)
+        // Decrement category stock
+        if (cat) {
+          const { data: catStock } = await supabase.from('category_stock')
+            .select('stock_count, orders_count')
+            .eq('truck_id', truck.id).eq('category', cat).eq('date', today).single()
+          if (catStock) {
+            const newCount = (catStock.orders_count || 0) + qty
+            const autoSoldOut = catStock.stock_count !== null && newCount >= catStock.stock_count
+            await supabase.from('category_stock')
+              .update({ orders_count: newCount })
+              .eq('truck_id', truck.id).eq('category', cat).eq('date', today)
+            if (autoSoldOut) {
+              // Mark all items in this category as unavailable
+              await supabase.from('item_overrides')
+                .update({ available: false })
+                .eq('truck_id', truck.id).eq('category', cat)
+            }
+          }
+        }
+      }
+      return NextResponse.json({ success: true })
+    }
+
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 
   } catch (err: any) {
