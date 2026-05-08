@@ -8,7 +8,7 @@ import { use } from 'react';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description: string; price: number; available: boolean; category: string
+  name: string; description: string; price: number; available: boolean; category: string; stock_remaining?: number | null
 }
 interface UpsellRule {
   trigger_category: string; suggest_category: string; max_suggestions: number
@@ -445,15 +445,30 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <div className="divide-y divide-slate-100">
                 {items.map(item => {
                   const qty = getQty(item.name)
+                  const isSoldOut = !item.available
+                  // Low stock: if item has a stock hint in description like "(8 left)"
+                  // The menu API passes stock info via available flag only for now
                   return (
-                    <div key={item.name} className="flex items-center gap-3 py-3">
+                    <div key={item.name} className={`flex items-center gap-3 py-3 ${isSoldOut ? 'opacity-60' : ''}`}>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-slate-900 text-sm leading-snug">{item.name}</p>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className={`font-bold text-sm leading-snug ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
+                          {isSoldOut && (
+                            <span className="text-[10px] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">Sold out</span>
+                          )}
+                          {!isSoldOut && item.stock_remaining != null && item.stock_remaining <= 10 && (
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${item.stock_remaining <= 3 ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
+                              {item.stock_remaining <= 3 ? `Only ${item.stock_remaining} left!` : `${item.stock_remaining} left`}
+                            </span>
+                          )}
+                        </div>
                         {item.description && <p className="text-slate-400 text-xs mt-0.5 leading-snug">{item.description}</p>}
                       </div>
-                      <span className="text-slate-700 font-bold text-sm shrink-0">£{item.price.toFixed(2)}</span>
+                      <span className={`font-bold text-sm shrink-0 ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
                       <div className="flex items-center gap-2 shrink-0">
-                        {qty > 0 ? (
+                        {isSoldOut ? (
+                          <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
+                        ) : qty > 0 ? (
                           <>
                             <QBtn onClick={() => removeItem(item.name)} label="−" />
                             <span className="w-5 text-center font-black text-slate-900 text-sm">{qty}</span>

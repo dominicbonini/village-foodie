@@ -6,7 +6,7 @@ import { loadTruckMenuSafe } from '@/lib/menu-loader'
 
 const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv'
 
-export const revalidate = 300
+export const revalidate = 0  // No cache — sold out changes must propagate immediately
 
 // Fetch truck logo from the master CSV — same source as TruckClient
 async function getTruckLogo(truckId: string): Promise<string | null> {
@@ -55,19 +55,28 @@ export async function GET(
   }
 
   // Apply sold-out overrides from Supabase
+  const isDashboard = req.nextUrl.searchParams.get('dashboard') === '1'
   const { data: overrides } = await supabase
     .from('item_overrides')
-    .select('item_name, available')
+    .select('item_name, available, stock_count, orders_count')
     .eq('truck_id', truck.id)
-    .eq('available', false)
 
-  const soldOutNames = new Set((overrides || []).map((o: any) => o.item_name))
+  // Build override map with stock info
+  const overrideMap = new Map((overrides || []).map((o: any) => [o.item_name, o]))
 
-  if (soldOutNames.size > 0 && menu) {
-    menu.items = menu.items.map(item => ({
-      ...item,
-      available: soldOutNames.has(item.name) ? false : item.available
-    })).filter(item => item.available)
+  if (menu) {
+    menu.items = menu.items.map(item => {
+      const override = overrideMap.get(item.name)
+      const isSoldOut = override ? !override.available : false
+      const stockCount = override?.stock_count ?? null
+      const ordersCount = override?.orders_count ?? 0
+      const remaining = stockCount !== null ? stockCount - ordersCount : null
+      return {
+        ...item,
+        available: !isSoldOut,
+        stock_remaining: remaining,  // null = unlimited, number = count left
+      }
+    })
   }
 
   return NextResponse.json({

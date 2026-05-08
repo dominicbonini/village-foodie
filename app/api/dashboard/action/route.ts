@@ -120,13 +120,24 @@ export async function POST(req: NextRequest) {
       }).eq('id', orderId)
 
       if (order.customer_email) {
+        const updatedItemRows = (items || order.items).map((i: any) =>
+          `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
+        ).join('')
+        const slotToShow = slot !== undefined ? slot : order.slot
         await notifyCustomer(order.customer_email, `Order #${orderId} updated — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Your order has been updated</h2>
-            <p><strong>${truck.name}</strong> has made a change to your order #${orderId}.</p>
-            ${slot ? `<p><strong>New collection time:</strong> ${slot}</p>` : ''}
-            <p><strong>New total: £${newTotal.toFixed(2)}</strong> — pay at the truck on collection.</p>
-            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+            <h2>Your order has been updated ✓</h2>
+            <p><strong>${truck.name}</strong> has updated order #${orderId}.</p>
+            ${slotToShow ? `<p><strong>Collection time:</strong> ${slotToShow}</p>` : ''}
+            <p style="font-size:12px;color:#64748b;margin-bottom:4px">Updated order:</p>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
+              ${updatedItemRows}
+              <tr style="border-top:1px solid #e2e8f0">
+                <td style="padding-top:8px;font-weight:700">New total</td>
+                <td style="text-align:right;padding-top:8px;font-weight:700">£${newTotal.toFixed(2)}</td>
+              </tr>
+            </table>
+            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
           </body>`)
       }
       return NextResponse.json({ success: true, status: 'modified' })
@@ -184,6 +195,32 @@ export async function POST(req: NextRequest) {
         notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
       })
       if (insertErr) return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+
+      // Send confirmation email if email provided
+      if (customerEmail) {
+        const itemRows = items.map((i: any) =>
+          `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
+        ).join('')
+        await notifyCustomer(
+          customerEmail,
+          `Order #${newOrderId} confirmed — ${truck.name}`,
+          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2>Order confirmed ✓</h2>
+            <p><strong>${truck.name}</strong> has your order #${newOrderId}.</p>
+            ${slot ? `<p><strong>Collection time:</strong> ${slot}</p>` : ''}
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+              ${itemRows}
+              <tr style="border-top:1px solid #e2e8f0">
+                <td style="padding-top:8px;font-weight:700">Total</td>
+                <td style="text-align:right;padding-top:8px;font-weight:700">£${total.toFixed(2)}</td>
+              </tr>
+            </table>
+            ${notes ? `<p><em>Notes: ${notes}</em></p>` : ''}
+            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
+          </body>`
+        )
+      }
+
       return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: autoConfirm, slotFull: !autoConfirm })
     }
 
@@ -244,29 +281,50 @@ export async function POST(req: NextRequest) {
 
     // ── DECREMENT STOCK ON ORDER ──────────────────────────────────────────────
     if (action === 'decrement_stock') {
-      const { items, menuItems } = body
-      // menuItems is a map of item name -> category
+      const { items, categoryMap } = body
+      // categoryMap: { itemName: categoryName }
       const today = new Date().toISOString().split('T')[0]
+
       for (const item of (items || [])) {
-        const qty = item.quantity || 1
-        const cat = menuItems?.[item.name] || null
-        // Decrement item stock
-        await supabase.from('item_overrides')
-          .update({ orders_count: supabase.rpc('increment_orders_count', { p_truck_id: truck.id, p_item: item.name, p_qty: qty }) })
-          .eq('truck_id', truck.id).eq('item_name', item.name)
-        // Decrement category stock
+        const qty = parseInt(item.quantity) || 1
+        const cat = categoryMap?.[item.name] || null
+
+        // 1. Decrement item-level stock if set
+        const { data: existingItem } = await supabase
+          .from('item_overrides')
+          .select('stock_count, orders_count, available')
+          .eq('truck_id', truck.id)
+          .eq('item_name', item.name)
+          .single()
+
+        if (existingItem && existingItem.stock_count !== null) {
+          const newItemCount = (existingItem.orders_count || 0) + qty
+          const itemSoldOut = newItemCount >= existingItem.stock_count
+          await supabase.from('item_overrides')
+            .update({
+              orders_count: newItemCount,
+              available: itemSoldOut ? false : existingItem.available
+            })
+            .eq('truck_id', truck.id).eq('item_name', item.name)
+        }
+
+        // 2. Decrement category-level stock if set
         if (cat) {
-          const { data: catStock } = await supabase.from('category_stock')
+          const { data: catStock } = await supabase
+            .from('category_stock')
             .select('stock_count, orders_count')
-            .eq('truck_id', truck.id).eq('category', cat).eq('date', today).single()
-          if (catStock) {
-            const newCount = (catStock.orders_count || 0) + qty
-            const autoSoldOut = catStock.stock_count !== null && newCount >= catStock.stock_count
+            .eq('truck_id', truck.id).eq('category', cat).eq('date', today)
+            .single()
+
+          if (catStock && catStock.stock_count !== null) {
+            const newCatCount = (catStock.orders_count || 0) + qty
+            const catSoldOut = newCatCount >= catStock.stock_count
             await supabase.from('category_stock')
-              .update({ orders_count: newCount })
+              .update({ orders_count: newCatCount })
               .eq('truck_id', truck.id).eq('category', cat).eq('date', today)
-            if (autoSoldOut) {
-              // Mark all items in this category as unavailable
+
+            // If category is now sold out, mark ALL items in that category unavailable
+            if (catSoldOut) {
               await supabase.from('item_overrides')
                 .update({ available: false })
                 .eq('truck_id', truck.id).eq('category', cat)
