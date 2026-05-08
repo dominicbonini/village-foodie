@@ -1,206 +1,21 @@
-'use client';
-import { useState, useEffect, useCallback, useRef, useMemo, use } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+'use client'
+// app/dashboard/[token]/page.tsx
 
-interface Order { id:string; customer_name:string; customer_phone:string|null; customer_email:string|null; slot:string|null; status:string; items:{name:string;quantity:number;unit_price:number}[]; deals:{name:string;slots:Record<string,string>}[]|null; total:number; notes:string|null; created_at:string }
-interface Slot { collection_time:string; production_slot:string; current_orders:number; max_orders:number; available:boolean }
-interface TruckData { id:string; name:string; mode:string; venue_name:string|null; logo:string|null }
-interface MenuItem { name:string; description:string; price:number; category:string; available:boolean }
-interface Bundle { name:string; description:string; original_price:number|null; bundle_price:number; available:boolean; start_time:string|null; end_time:string|null; slot_1_category:string|null; slot_2_category:string|null; slot_3_category:string|null; slot_4_category:string|null; slot_5_category:string|null; slot_6_category:string|null }
-interface TruckMenu { items:MenuItem[]; bundles?:Bundle[] }
-interface BasketItem { name:string; quantity:number; unit_price:number }
-interface ItemStock { name:string; available:boolean; stock_count:number|null; orders_count:number; category:string|null }
-interface CategoryStock { category:string; stock_count:number|null; orders_count:number }
-interface AppliedDeal { bundle:Bundle; slots:Record<string,string> }
+import { useState, useEffect, useCallback, useRef, useMemo, use } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
-const STATUS: Record<string,{label:string;bg:string;text:string}> = {
-  pending:{label:'New',bg:'bg-orange-100',text:'text-orange-700'},
-  confirmed:{label:'Confirmed',bg:'bg-green-100',text:'text-green-700'},
-  rejected:{label:'Rejected',bg:'bg-red-100',text:'text-red-600'},
-  ready:{label:'Ready',bg:'bg-blue-100',text:'text-blue-700'},
-  collected:{label:'Collected',bg:'bg-slate-100',text:'text-slate-500'},
-  modified:{label:'Modified',bg:'bg-yellow-100',text:'text-yellow-700'},
-}
-
-function getAsapSlot(slots:Slot[]):Slot|null {
-  const now=new Date(); const nowMins=now.getHours()*60+now.getMinutes()
-  return slots.find(s=>{const[h,m]=s.collection_time.split(':').map(Number);return(h*60+m)>nowMins&&s.available})||null
-}
-// Default prep times per category — drinks/dips = 0, food = 4 mins
-const DEFAULT_CATEGORY_TIMES:Record<string,number> = {
-  pizzas:4, pizza:4, burgers:5, burger:5, mains:5,
-  drinks:0, drink:0, dips:0, dip:0, sides:1, side:1, desserts:3, extras:0
-}
-
-function getCategoryTime(cat:string, customTimes?:Record<string,number>):number {
-  const key=cat.toLowerCase()
-  if(customTimes?.[key] !== undefined) return customTimes[key]
-  return DEFAULT_CATEGORY_TIMES[key] ?? 4
-}
-
-function calcReadyTime(items:BasketItem[],waitMins:number,menuItems?:MenuItem[],customTimes?:Record<string,number>):string {
-  if(!items.length) return ''
-  // Group items by category, take max cook time approach
-  // Total time = max(items in slowest category) + wait
-  let maxCookMins=0
-  if(menuItems) {
-    const catGroups:Record<string,number>={} // cat -> total qty
-    items.forEach(item=>{
-      const mi=menuItems.find(m=>m.name===item.name)
-      const cat=mi?.category||'mains'
-      catGroups[cat]=(catGroups[cat]||0)+item.quantity
-    })
-    Object.entries(catGroups).forEach(([cat,qty])=>{
-      const minsPerItem=getCategoryTime(cat,customTimes)
-      const catTime=qty*minsPerItem
-      if(catTime>maxCookMins) maxCookMins=catTime
-    })
-  } else {
-    maxCookMins=Math.ceil(items.reduce((s,i)=>s+i.quantity,0)*3)
-  }
-  const totalMins=Math.max(1,maxCookMins)+waitMins
-  const t=new Date(); t.setMinutes(t.getMinutes()+totalMins)
-  return `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`
-}
-
-function calcMinsFromNow(items:BasketItem[],waitMins:number,menuItems?:MenuItem[],customTimes?:Record<string,number>):number {
-  if(!items.length) return 0
-  let maxCookMins=0
-  if(menuItems) {
-    const catGroups:Record<string,number>={}
-    items.forEach(item=>{
-      const mi=menuItems.find(m=>m.name===item.name)
-      const cat=mi?.category||'mains'
-      catGroups[cat]=(catGroups[cat]||0)+item.quantity
-    })
-    Object.entries(catGroups).forEach(([cat,qty])=>{
-      const catTime=qty*getCategoryTime(cat,customTimes)
-      if(catTime>maxCookMins) maxCookMins=catTime
-    })
-  } else {
-    maxCookMins=Math.ceil(items.reduce((s,i)=>s+i.quantity,0)*3)
-  }
-  return Math.max(1,maxCookMins)+waitMins
-}
-function getBundleSlotCats(b:Bundle):string[] {
-  return [b.slot_1_category,b.slot_2_category,b.slot_3_category,b.slot_4_category,b.slot_5_category,b.slot_6_category].filter((s):s is string=>!!s)
-}
-
-function Toggle({on,onToggle}:{on:boolean;onToggle:()=>void}) {
-  return (
-    <button onClick={onToggle} title={on?'Available — tap to mark sold out':'Sold out — tap to restore'}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0 ${on?'bg-green-500':'bg-slate-300'}`}>
-      <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${on?'translate-x-6':'translate-x-1'}`}/>
-    </button>
-  )
-}
-
-function Btn({label,colour,loading,onClick}:{label:string;colour:string;loading:boolean;onClick:()=>void}) {
-  const c:Record<string,string>={green:'bg-green-600 hover:bg-green-700 text-white',red:'bg-red-500 hover:bg-red-600 text-white',blue:'bg-blue-600 hover:bg-blue-700 text-white',slate:'bg-slate-500 hover:bg-slate-600 text-white',orange:'bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200'}
-  return <button onClick={onClick} disabled={loading} className={`${c[colour]||c.slate} font-bold text-sm px-4 py-2 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[72px]`}>{loading?'...':label}</button>
-}
-
-function InlinePriceEditor({price,quantity,onChange}:{price:number;quantity:number;onChange:(p:number)=>void}) {
-  const[editing,setEditing]=useState(false)
-  const[val,setVal]=useState(price.toFixed(2))
-  if(editing) return(
-    <div className="flex items-center gap-1 shrink-0">
-      <span className="text-slate-400 text-xs">£</span>
-      <input type="number" value={val} step="0.50" min="0" autoFocus
-        onChange={e=>setVal(e.target.value)}
-        onBlur={()=>{onChange(parseFloat(val)||0);setEditing(false)}}
-        onKeyDown={e=>{if(e.key==='Enter'){onChange(parseFloat(val)||0);setEditing(false)}}}
-        className="w-16 border border-orange-400 rounded-lg px-1.5 py-1 text-sm font-bold text-slate-900 focus:outline-none text-center"/>
-    </div>
-  )
-  return(
-    <button
-      onClick={()=>{setVal(price.toFixed(2));setEditing(true)}}
-      className="flex items-center gap-1.5 shrink-0 text-right group"
-      title="Tap to override price"
-    >
-      <span className="text-slate-700 font-bold text-sm">£{(price*quantity).toFixed(2)}</span>
-      {/* Pencil icon — larger tap target, clearer affordance */}
-      <span className="text-slate-300 group-hover:text-orange-400 transition-colors text-xs leading-none" aria-hidden>✏</span>
-    </button>
-  )
-}
-
-function OrderCard({order,truck,slots,actionLoading,onAction,onEdit}:{order:Order;truck:TruckData|null;slots:Slot[];actionLoading:string|null;onAction:(a:string,id:string)=>void;onEdit:(o:Order)=>void}) {
-  const[expanded,setExpanded]=useState(true)
-  const s=STATUS[order.status]||STATUS.pending
-  const isPub=truck?.mode==='pub'
-
-  const urgency=useMemo(()=>{
-    if(!order.slot||!['pending','confirmed'].includes(order.status)) return 'normal'
-    const[h,m]=order.slot.split(':').map(Number)
-    const diff=(h*60+m)-(new Date().getHours()*60+new Date().getMinutes())
-    if(diff<=0) return 'overdue'
-    if(diff<=10) return 'urgent'
-    return 'normal'
-  },[order.slot,order.status])
-
-  const borderClass=urgency==='overdue'?'border-red-500':urgency==='urgent'?'border-yellow-400':order.status==='pending'?'border-orange-400':'border-slate-200'
-
-  // Item summary for collapsed view
-  const itemSummary=order.items.map(i=>`${i.quantity}× ${i.name}`).join(', ')
-
-  return(
-    <div className={`bg-white rounded-2xl overflow-hidden border shadow-sm ${borderClass}`}>
-      {urgency==='overdue'&&<div className="bg-red-500 text-white text-[11px] font-black text-center py-1">⚠ OVERDUE</div>}
-      {urgency==='urgent'&&<div className="bg-yellow-400 text-yellow-900 text-[11px] font-black text-center py-1">⏰ DUE SOON</div>}
-
-      <button onClick={()=>setExpanded(e=>!e)} className="w-full text-left p-4 active:bg-slate-50 transition-colors">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="font-black text-slate-900 text-sm">#{order.id}</span>
-              <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
-              {order.slot&&<span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${urgency==='overdue'?'bg-red-100 text-red-700':urgency==='urgent'?'bg-yellow-100 text-yellow-700':'bg-slate-100 text-slate-500'}`}>🕐 {order.slot}</span>}
-              <span className="text-slate-600 font-bold text-xs truncate max-w-[120px]">{order.customer_name}</span>
-            </div>
-            {/* Always show items + notes in compact collapsed view */}
-            {!expanded&&(
-              <p className="text-slate-500 text-xs mt-0.5 truncate leading-tight">{itemSummary}</p>
-            )}
-            {!expanded&&order.notes&&(
-              <p className="text-orange-600 text-xs font-medium truncate leading-tight">📝 {order.notes}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="font-black text-slate-900 text-sm">£{Number(order.total).toFixed(2)}</span>
-            <span className="text-slate-400 text-xs">{expanded?'▲':'▼'}</span>
-          </div>
-        </div>
-      </button>
-
-      {expanded&&(
-        <div className="px-4 pb-4 border-t border-slate-100 pt-3 bg-slate-50">
-          <div className="space-y-1 mb-3">
-            {order.items.map((item,i)=>(
-              <div key={i} className="flex justify-between text-sm">
-                <span className="text-slate-700 font-medium">{item.quantity}× {item.name}</span>
-                <span className="text-slate-400 text-xs self-center">£{(item.unit_price*item.quantity).toFixed(2)}</span>
-              </div>
-            ))}
-            {order.deals?.map((d,i)=><p key={i} className="text-xs text-orange-600 font-bold">🎁 {d.name}: {Object.values(d.slots).filter(Boolean).join(', ')}</p>)}
-          </div>
-          {order.notes&&<div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-2 text-xs text-orange-700 mb-3 font-medium">📝 {order.notes}</div>}
-          <div className="flex gap-2 flex-wrap">
-            {order.status==='pending'&&<><Btn label="✓ Confirm" colour="green" loading={actionLoading===`confirm-${order.id}`} onClick={()=>onAction('confirm',order.id)}/><Btn label="✗ Reject" colour="red" loading={actionLoading===`reject-${order.id}`} onClick={()=>onAction('reject',order.id)}/></>}
-            {order.status==='confirmed'&&isPub&&<Btn label="🍕 Ready" colour="blue" loading={actionLoading===`ready-${order.id}`} onClick={()=>onAction('ready',order.id)}/>}
-            {order.status==='confirmed'&&!isPub&&<Btn label="✓ Collected" colour="slate" loading={actionLoading===`collected-${order.id}`} onClick={()=>onAction('collected',order.id)}/>}
-            {order.status==='ready'&&<Btn label="✓ Collected" colour="slate" loading={actionLoading===`collected-${order.id}`} onClick={()=>onAction('collected',order.id)}/>}
-            {order.status==='collected'&&<Btn label="↩ Undo" colour="slate" loading={actionLoading===`undo_collected-${order.id}`} onClick={()=>onAction('undo_collected',order.id)}/>}
-            {['pending','confirmed','modified'].includes(order.status)&&<Btn label="✏ Edit" colour="orange" loading={false} onClick={()=>onEdit(order)}/>}
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
+import type {
+  Order, Slot, TruckData, TruckMenu, Bundle, MenuItem,
+  BasketItem, AppliedDeal, ItemStock, CategoryStock, CatConfig
+} from '@/components/dashboard/types'
+import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
+import {
+  getAsapSlot, getCatConfig, catCookSecs, calcReadyTime,
+  calcMinsFromNow, getCategoryTime, getBundleSlotCats
+} from '@/components/dashboard/helpers'
+import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
+import { DealsModal } from '@/components/dashboard/DealsModal'
 
 
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
@@ -234,7 +49,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Deal modal
   const[showDealsModal,setShowDealsModal]=useState(false)
   const[showCompleted,setShowCompleted]=useState(false)
-  const[categoryTimes,setCategoryTimes]=useState<Record<string,number>>({})
+  const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
+  const[categoryConfigs,setCategoryConfigs]=useState<Record<string,{secs:number;batch:number}>>({})
   const[showPrepList,setShowPrepList]=useState(false)
   const[activeDealBundle,setActiveDealBundle]=useState<Bundle|null>(null)
   const[dealSlotPicks,setDealSlotPicks]=useState<Record<string,string>>({})
@@ -252,7 +68,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return s+Math.max(0,orig-d.bundle.bundle_price)
   },0)
   const manualTotal=Math.max(0,manualItemsSubtotal-dealDiscount)
-  const readyTime=calcReadyTime(manualItems,waitMinutes,truckMenu?.items,categoryTimes)
+  const readyTime=calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
   const availableDeals=(truckMenu?.bundles||[]).filter(b=>b.available)
 
   const showToast=(msg:string,type:'success'|'error'='success')=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)}
@@ -332,7 +148,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const addMenuItem=(item:MenuItem)=>setManualItems(prev=>{const ex=prev.find(i=>i.name===item.name);return ex?prev.map(i=>i.name===item.name?{...i,quantity:i.quantity+1}:i):[...prev,{name:item.name,quantity:1,unit_price:item.price}]})
-  const adjustManualQty=(name:string,delta:number)=>setManualItems(prev=>prev.map(i=>i.name===name?{...i,quantity:i.quantity+delta}:i).filter(i=>i.quantity>0))
+  const adjustManualQty=(name:string,delta:number)=>{
+    setManualItems(prev=>{
+      const updated=prev.map(i=>i.name===name?{...i,quantity:i.quantity+delta}:i).filter(i=>i.quantity>0)
+      const wasRemoved=!updated.find(i=>i.name===name)
+      if(wasRemoved) setAppliedDeals(d=>d.filter(deal=>!Object.values(deal.slots).includes(name)))
+      return updated
+    })
+  }
   const resetManual=()=>{setManualName('');setManualEmail('');setManualNotes('');setManualSlot('');setManualItems([]);setAppliedDeals([]);setActiveDealBundle(null);setDealSlotPicks({})}
 
   const submitManual=async()=>{
@@ -341,7 +164,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setActionLoading('manual')
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots})),discountAmt:dealDiscount,total:manualTotal,notes:manualNotes||null}})})
+        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots})),discountAmt:dealDiscount,total:manualTotal,subtotal:manualItemsSubtotal,notes:manualNotes||null}})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       showToast(data.slotFull?`Order #${data.orderId} saved — slot full`:`Order #${data.orderId} confirmed`)
       if(manualItems.length){
@@ -371,23 +194,33 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const applyDeal=()=>{
     if(!activeDealBundle)return
     const cats=getBundleSlotCats(activeDealBundle)
-    if(!cats.every(c=>dealSlotPicks[c])){showToast('Please select all items for this deal','error');return}
+    if(!cats.every((c:string)=>dealSlotPicks[c])){showToast('Please select all items for this deal','error');return}
 
-    // Always add 1 of each selected item — increment if already in basket
+    // For each slot: if "USE_EXISTING:name" prefix, link to basket item (don't add)
+    // Otherwise add new item to basket
     const newItems=[...manualItems]
-    cats.forEach(cat=>{
-      const picked=dealSlotPicks[cat]
-      if(!picked) return
-      const existing=newItems.find(i=>i.name===picked)
-      if(existing){
-        existing.quantity+=1
+    const resolvedSlots: Record<string,string>={}
+    cats.forEach((cat:string)=>{
+      const val=dealSlotPicks[cat]
+      if(!val) return
+      if(val.startsWith('USE_EXISTING:')){
+        // Link to existing basket item — don't increment
+        const itemName=val.replace('USE_EXISTING:','')
+        resolvedSlots[cat]=itemName
       } else {
-        const menuItem=truckMenu?.items.find(i=>i.name===picked)
-        if(menuItem) newItems.push({name:menuItem.name,quantity:1,unit_price:menuItem.price})
+        // Add new item
+        resolvedSlots[cat]=val
+        const existing=newItems.find(i=>i.name===val)
+        if(existing){
+          existing.quantity+=1
+        } else {
+          const menuItem=truckMenu?.items.find(i=>i.name===val)
+          if(menuItem) newItems.push({name:menuItem.name,quantity:1,unit_price:menuItem.price})
+        }
       }
     })
     setManualItems(newItems)
-    setAppliedDeals(prev=>[...prev,{bundle:activeDealBundle,slots:{...dealSlotPicks}}])
+    setAppliedDeals(prev=>[...prev,{bundle:activeDealBundle,slots:resolvedSlots}])
     setShowDealsModal(false); setActiveDealBundle(null); setDealSlotPicks({})
     showToast(`${activeDealBundle.name} applied`)
   }
@@ -476,26 +309,137 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             {showPrepList&&(()=>{
-              const activeOrders=orders.filter(o=>['pending','confirmed'].includes(o.status))
-              const prepMap:Record<string,number>={}
-              activeOrders.forEach(o=>o.items.forEach(i=>{prepMap[i.name]=(prepMap[i.name]||0)+i.quantity}))
-              const prepItems=Object.entries(prepMap).sort((a,b)=>b[1]-a[1])
+              const now=new Date()
+              const nowMins=now.getHours()*60+now.getMinutes()
+              const BUFFER_SECS=120
+
+              // Get all active orders with slots, sorted by slot time
+              const slottedOrders=orders
+                .filter(o=>['pending','confirmed'].includes(o.status)&&o.slot)
+                .sort((a,b)=>a.slot!.localeCompare(b.slot!))
+
+              // Find the NEXT slot that needs action (start cooking time <= now+5min)
+              const currentBatch:typeof slottedOrders=[]
+              const upcomingBatches:{slot:string;startBy:string;minsUntil:number;items:Record<string,number>}[]=[]
+
+              // Process each unique slot
+              const slotGroups:Record<string,typeof slottedOrders>={}
+              slottedOrders.forEach(o=>{if(!slotGroups[o.slot!])slotGroups[o.slot!]=[];slotGroups[o.slot!].push(o)})
+
+              Object.entries(slotGroups).forEach(([slot,slotOrders])=>{
+                const itemMap:Record<string,number>={}
+                slotOrders.forEach(o=>o.items.forEach(i=>{itemMap[i.name]=(itemMap[i.name]||0)+i.quantity}))
+                // Calculate cook time for this slot's items
+                const catGroups:Record<string,number>={}
+                Object.entries(itemMap).forEach(([name,qty])=>{
+                  const cat=truckMenu?.items.find(m=>m.name===name)?.category||'mains'
+                  catGroups[cat]=(catGroups[cat]||0)+qty
+                })
+                let maxSecs=0
+                Object.entries(catGroups).forEach(([cat,qty]:[string,number])=>{
+                  const cfg=getCatConfig(cat,categoryConfigs)
+                  const secs=catCookSecs(qty,cfg)
+                  if(secs>maxSecs)maxSecs=secs
+                })
+                const totalSecs=maxSecs+BUFFER_SECS
+                const [slotH,slotM]=slot.split(':').map(Number)
+                const slotTotalMins=slotH*60+slotM
+                const startMins=slotTotalMins-Math.ceil(totalSecs/60)
+                const minsUntilStart=startMins-nowMins
+                const startH=Math.floor(Math.max(0,startMins)/60)
+                const startM=Math.max(0,startMins)%60
+                const startStr=`${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}`
+
+                if(minsUntilStart<=2){
+                  // Due now or within 2 mins — add to current batch
+                  slotOrders.forEach(o=>currentBatch.push(o))
+                } else {
+                  upcomingBatches.push({slot,startBy:startStr,minsUntil:minsUntilStart,items:itemMap})
+                }
+              })
+
+              // Also include slotless confirmed orders in current batch
+              orders.filter(o=>['pending','confirmed'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
+
+              // Build current prep map
+              const currentMap:Record<string,number>={}
+              currentBatch.forEach(o=>o.items.forEach(i=>{currentMap[i.name]=(currentMap[i.name]||0)+i.quantity}))
+              const currentItems=Object.entries(currentMap).sort((a,b)=>{
+                const aT=getCategoryTime(truckMenu?.items.find(m=>m.name===a[0])?.category||'')
+                const bT=getCategoryTime(truckMenu?.items.find(m=>m.name===b[0])?.category||'')
+                return bT-aT
+              })
+              const kitchen=currentItems.filter(([name])=>getCategoryTime(truckMenu?.items.find(m=>m.name===name)?.category||'')>0)
+              const assembly=currentItems.filter(([name])=>getCategoryTime(truckMenu?.items.find(m=>m.name===name)?.category||'')===0)
+
               return(
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-black text-amber-700 uppercase tracking-wide">📋 Prep needed now</p>
                     <button onClick={()=>setShowPrepList(false)} className="text-amber-400 hover:text-amber-700 text-sm font-bold">×</button>
                   </div>
-                  {prepItems.length===0?(<p className="text-amber-600 text-sm">No active orders</p>):(
-                    <div className="flex flex-wrap gap-2">
-                      {prepItems.map(([name,qty])=>(
-                        <span key={name} className="bg-white border border-amber-200 text-slate-900 font-black text-sm px-3 py-1.5 rounded-xl">{qty}× {name}</span>
+
+                  {currentItems.length===0?(
+                    <p className="text-amber-600 text-sm">Nothing to prep right now</p>
+                  ):(
+                    <div className="space-y-1.5 mb-2">
+                      {kitchen.length>0&&(
+                        <div>
+                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🔥 Kitchen — start now</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {kitchen.map(([name,qty])=>{
+                              const struck=struckPrep.has(name)
+                              return(
+                                <button key={name}
+                                  onClick={()=>setStruckPrep(prev=>{const n=new Set(prev);struck?n.delete(name):n.add(name);return n})}
+                                  className={`font-black text-sm px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${struck?'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50':'bg-white border-amber-200 text-slate-900 hover:border-amber-400'}`}>
+                                  {qty}× {name}{struck?' ✓':''}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {assembly.length>0&&(
+                        <div>
+                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🥤 Assembly</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {assembly.map(([name,qty])=>{
+                              const struck=struckPrep.has(name)
+                              return(
+                                <button key={name}
+                                  onClick={()=>setStruckPrep(prev=>{const n=new Set(prev);struck?n.delete(name):n.add(name);return n})}
+                                  className={`font-bold text-sm px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${struck?'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50':'bg-white border-amber-200 text-slate-900 hover:border-amber-400'}`}>
+                                  {qty}× {name}{struck?' ✓':''}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Upcoming batches — countdown timers */}
+                  {upcomingBatches.length>0&&(
+                    <div className="border-t border-amber-200 pt-2 mt-1 space-y-1">
+                      <p className="text-[10px] font-black text-amber-500 uppercase tracking-wide">Coming up</p>
+                      {upcomingBatches.map(b=>(
+                        <div key={b.slot} className="flex items-center justify-between text-xs">
+                          <span className="text-amber-700 font-bold">
+                            {Object.entries(b.items).map(([n,q])=>`${q}× ${n}`).join(', ')}
+                          </span>
+                          <span className="text-amber-600 font-black ml-2 shrink-0">
+                            Start by {b.startBy} · {b.minsUntil}min
+                          </span>
+                        </div>
                       ))}
                     </div>
                   )}
                 </div>
               )
             })()}
+
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
@@ -622,32 +566,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           {appliedDeals.map((d,i)=>{
                             const orig=Object.values(d.slots).reduce((sum,n)=>{const item=truckMenu?.items.find(m=>m.name===n);return sum+(item?.price||0)},0)
                             const saving=Math.max(0,orig-d.bundle.bundle_price)
+                            const dealItemLabels=Object.values(d.slots).filter(Boolean).join(', ')
                             return(
-                              <div key={i} className="flex justify-between text-xs">
-                                <div className="flex items-center gap-1">
+                              <div key={i} className="flex justify-between items-start text-xs gap-2">
+                                <div className="flex-1 min-w-0">
                                   <span className="text-green-600 font-bold">🎁 {d.bundle.name}</span>
-                                  <button onClick={()=>setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))} className="text-slate-300 hover:text-red-500 ml-1 text-sm leading-none">×</button>
+                                  <span className="text-green-500 font-normal ml-1">({dealItemLabels})</span>
+                                  <button
+onClick={()=>{
+  // Deal owns all its items — remove deal and decrement each slot item qty by 1
+  const toDecrement=Object.values(d.slots).filter(Boolean) as string[]
+  setManualItems(prev=>prev.map(item=>{
+    const count=toDecrement.filter(n=>n===item.name).length
+    return count?{...item,quantity:item.quantity-count}:item
+  }).filter(item=>item.quantity>0))
+  setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
+}}
+                                    className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
+                                    title="Remove deal and its items"
+                                  >×</button>
                                 </div>
-                                <span className="text-green-600 font-bold">-£{saving.toFixed(2)}</span>
+                                <span className="text-green-600 font-bold shrink-0">-£{saving.toFixed(2)}</span>
                               </div>
                             )
                           })}
                         </div>
-                      )}
-                      {/* Add deal button — always visible when deals available */}
-                      {availableDeals.length>0&&(
-                        <button onClick={()=>{
-                          if(availableDeals.length===1){
-                            openDealModal(availableDeals[0])
-                          } else {
-                            setActiveDealBundle(null);setDealSlotPicks({});setShowDealsModal(true)
-                          }
-                        }}
-                          className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99]">
-                          <span>🎁</span>
-                          <span>{appliedDeals.length>0?'+ Add another deal':'+ Apply a deal'}</span>
-                          {appliedDeals.length>0&&<span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
-                        </button>
                       )}
                       <div className="flex justify-between pt-2 border-t border-slate-200">
                         <span className="text-slate-600 text-sm font-bold">Total</span>
@@ -655,10 +598,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       </div>
                     </div>
                   )}
-
-
                 </div>
               ):<p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
+
+              {/* Deal button — always visible, outside basket */}
+              {availableDeals.length>0&&(
+                <button onClick={()=>{
+                  if(availableDeals.length===1){openDealModal(availableDeals[0])}
+                  else{setActiveDealBundle(null);setDealSlotPicks({});setShowDealsModal(true)}
+                }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mt-2">
+                  <span>🎁</span>
+                  <span>{appliedDeals.length>0?'+ Add another deal':'+ Apply a deal'}</span>
+                  {appliedDeals.length>0&&<span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
+                </button>
+              )}
             </div>
 
             {/* STEP 2 — Collection time */}
@@ -667,9 +621,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex gap-2">
                 <div className={`flex-1 rounded-xl px-3 py-2.5 ${readyTime?'bg-green-50 border border-green-200':'bg-slate-100 border border-slate-100'}`}>
                   {(()=>{
-                    const readyTime=calcReadyTime(manualItems,waitMinutes,truckMenu?.items,categoryTimes)
+                    const readyTime=calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
                     const hasItems=manualItems.length>0
-                    const minsFromNow=hasItems?calcMinsFromNow(manualItems,waitMinutes,truckMenu?.items,categoryTimes):null
+                    const minsFromNow=hasItems?calcMinsFromNow(manualItems,waitMinutes,truckMenu?.items,categoryConfigs):null
                     return(
                       <div className={`rounded-xl px-3 py-2.5 ${hasItems?'bg-green-50 border border-green-200':'bg-slate-100 border border-slate-100'}`}>
                         {hasItems?(
@@ -786,36 +740,56 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               ):<p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
             </div>
-            <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1">
-              <p className="font-bold text-slate-700">How it works</p>
-              <p>• Orange input: total for this category (e.g. 100 pizzas)</p>
-              <p>• Small input: item override (e.g. only 8 Pepperoni)</p>
-              <p>• Toggle: green = available, grey = sold out</p>
-              <p>• Sold out items show with strikethrough to customers</p>
-            </div>
             {/* Timing configuration per category */}
             {truckMenu&&Object.keys(menuGroups).length>0&&(
+            <div className="space-y-4">
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">Prep time per category</p>
                 <p className="text-slate-400 text-xs mb-3">Set how many minutes each item takes per category. Drinks and dips should be 0. Used to estimate ready times.</p>
                 <div className="space-y-2">
-                  {Object.keys(menuGroups).map(cat=>{
-                    const current=categoryTimes[cat]??DEFAULT_CATEGORY_TIMES[cat.toLowerCase()]??4
+                  {Object.keys(menuGroups).map((cat:string)=>{
+                    const cfg=categoryConfigs[cat]??getCatConfig(cat)
+                    const mins=Math.floor(cfg.secs/60)
+                    const secs30=cfg.secs%60>=30?30:0
                     return(
-                      <div key={cat} className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-slate-700 capitalize">{cat}</span>
-                        <div className="flex items-center gap-2">
-                          <input type="number" min="0" max="30" value={current}
-                            onChange={e=>setCategoryTimes(prev=>({...prev,[cat]:parseInt(e.target.value)||0}))}
-                            className="w-14 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                      <div key={cat} className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-slate-700 capitalize flex-1">{cat}</span>
+                        <div className="flex items-center gap-1.5">
+                          <select value={mins}
+                            onChange={e=>setCategoryConfigs(prev=>({...prev,[cat]:{...(prev[cat]??getCatConfig(cat)),secs:parseInt(e.target.value)*60+secs30}}))}
+                            className="w-16 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                            {[0,1,2,3,4,5,6,7,8,9,10,12,15,20].map(m=><option key={m} value={m}>{m}m</option>)}
+                          </select>
+                          <select value={secs30}
+                            onChange={e=>setCategoryConfigs(prev=>({...prev,[cat]:{...(prev[cat]??getCatConfig(cat)),secs:mins*60+parseInt(e.target.value)}}))}
+                            className="w-14 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                            <option value={0}>0s</option>
+                            <option value={30}>30s</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] text-slate-400 font-bold">Batch</span>
+                          <input type="number" min="1" max="20" value={cfg.batch}
+                            onChange={e=>setCategoryConfigs(prev=>({...prev,[cat]:{...(prev[cat]??getCatConfig(cat)),batch:parseInt(e.target.value)||1}}))}
+                            className="w-12 border border-orange-200 rounded-lg px-2 py-1.5 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-orange-50"
+                            title="How many cook simultaneously"
                           />
-                          <span className="text-xs text-slate-400">min/item</span>
                         </div>
                       </div>
                     )
                   })}
+                  <p className="text-xs text-slate-400 mt-2">Batch = how many cook at once. 3 pizzas at 4 batched = 1 cycle.</p>
                 </div>
               </div>
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1 mt-4">
+              <p className="font-bold text-slate-700">How it works</p>
+              <p>• Orange input: total for this category (e.g. 100 pizzas tonight)</p>
+              <p>• Small input: item override (e.g. only 8 Pepperoni)</p>
+              <p>• Toggle: green = available, grey = sold out</p>
+              <p>• Sold out items show with strikethrough to customers</p>
+              <p>• Batch = how many of that item cook simultaneously</p>
+            </div>
+            </div>
             )}
           </div>
         )}
@@ -872,7 +846,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {cats.map(cat=>{
+                        {cats.map((cat:string)=>{
                           const inBasket=manualItems.some(i=>{const mi=truckMenu?.items.find(m=>m.name===i.name);return mi?.category===cat})
                           return<span key={cat} className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${inBasket?'bg-green-100 text-green-700':'bg-slate-100 text-slate-500'}`}>{cat}{inBasket?' ✓':''}</span>
                         })}
@@ -910,24 +884,49 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   )
                 })()}
                 <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">Select items for each slot</p>
-                {getBundleSlotCats(activeDealBundle!).map(cat=>{
+                {getBundleSlotCats(activeDealBundle!).map((cat:string)=>{
                   const allOpts=(truckMenu?.items||[]).filter(i=>i.category===cat)
+                  // Count how many of each item are in basket vs assigned to deals
+                  const inBasketOpts=manualItems.filter(b=>allOpts.some(m=>m.name===b.name))
+                  const dealAssignments:Record<string,number>={}
+                  appliedDeals.forEach(d=>Object.values(d.slots).filter(Boolean).forEach(n=>{
+                    dealAssignments[n]=(dealAssignments[n]||0)+1
+                  }))
+                  const fullyUsed=new Set(inBasketOpts.filter(b=>(dealAssignments[b.name]||0)>=b.quantity).map(b=>b.name))
                   const isFilled=!!dealSlotPicks[cat]
+                  const displayVal=dealSlotPicks[cat]?.startsWith('USE_EXISTING:')?dealSlotPicks[cat].replace('USE_EXISTING:',''):dealSlotPicks[cat]
                   return(
                     <div key={cat} className="mb-3">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${isFilled?'bg-green-500 text-white':'bg-slate-200 text-slate-500'}`}>{isFilled?'✓':''}</span>
                         <label className="text-xs font-black text-slate-700 uppercase">{cat}</label>
+                        {inBasketOpts.length>0&&<span className="text-[10px] text-green-600 font-bold">({inBasketOpts.length} in basket)</span>}
                       </div>
-                      <select value={dealSlotPicks[cat]||''} onChange={e=>setDealSlotPicks(prev=>({...prev,[cat]:e.target.value}))}
+                      <select
+                        value={dealSlotPicks[cat]||''}
+                        onChange={e=>setDealSlotPicks(prev=>({...prev,[cat]:e.target.value}))}
                         className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${isFilled?'border-green-300':'border-slate-200'}`}>
                         <option value="">Choose {cat}…</option>
-                        {allOpts.map(item=><option key={item.name} value={item.name}>{item.name} £{item.price.toFixed(2)}</option>)}
+                        {/* In-basket items first — linking, no extra added */}
+                        {inBasketOpts.length>0&&<option disabled>── In your basket (no extra added) ──</option>}
+                        {inBasketOpts.map(b=>(
+                          <option key={`USE_EXISTING:${b.name}`} value={`USE_EXISTING:${b.name}`}
+                            disabled={fullyUsed.has(b.name)}>
+                            {b.name} (in basket){fullyUsed.has(b.name)?' — fully assigned to deals':''}
+                          </option>
+                        ))}
+                        {/* All menu items — adds new one. Always available even if in another deal */}
+                        {inBasketOpts.length>0&&<option disabled>── Add new item ──</option>}
+                        {allOpts.map(item=>(
+                          <option key={item.name} value={item.name}>
+                            {item.name} £{item.price.toFixed(2)} — add new
+                          </option>
+                        ))}
                       </select>
                     </div>
                   )
                 })}
-                {getBundleSlotCats(activeDealBundle!).every(c=>dealSlotPicks[c])&&(()=>{
+                {getBundleSlotCats(activeDealBundle!).every((c:string)=>dealSlotPicks[c])&&(()=>{
                   const orig=Object.values(dealSlotPicks).reduce((sum,n)=>{const item=truckMenu?.items.find(i=>i.name===n);return sum+(item?.price||0)},0)
                   const saving=Math.max(0,orig-activeDealBundle!.bundle_price)
                   return saving>0?(
@@ -939,7 +938,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 })()}
                 <div className="flex gap-2">
                   <button onClick={()=>setActiveDealBundle(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
-                  <button onClick={applyDeal} disabled={!activeDealBundle||!getBundleSlotCats(activeDealBundle).every(c=>dealSlotPicks[c])}
+                  <button onClick={applyDeal} disabled={!activeDealBundle||!getBundleSlotCats(activeDealBundle).every((c:string)=>dealSlotPicks[c])}
                     className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-40">
                     Apply deal
                   </button>
@@ -1034,181 +1033,3 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 }
 
 // ─── Deals modal ──────────────────────────────────────────────────────────────
-
-function DealsModal({ bundles, menuItems, basketItems, onApply, onClose }: {
-  bundles: any[]
-  menuItems: MenuItem[]
-  basketItems: BasketItem[]
-  onApply: (deal: any, slots: Record<string,string>, dealPrice: number, discountAmt: number) => void
-  onClose: () => void
-}) {
-  const [selectedDeal, setSelectedDeal] = useState<any>(bundles.length === 1 ? bundles[0] : null)
-  const [slotSelections, setSlotSelections] = useState<Record<string,string>>({})
-
-  // Auto-prefill slots when single deal is auto-selected
-  useEffect(() => {
-    if (bundles.length === 1) {
-      const bundle = bundles[0]
-      const prefill: Record<string,string> = {}
-      const slotKeys = ['slot_1_category','slot_2_category','slot_3_category','slot_4_category','slot_5_category','slot_6_category']
-      slotKeys.forEach((k, idx) => {
-        const cat = bundle[k]; if (!cat) return
-        const match = basketItems.find(b => { const m = menuItems.find(mi => mi.name === b.name); return m?.category === cat })
-        if (match) prefill[`slot_${idx+1}`] = match.name
-      })
-      setSlotSelections(prefill)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const selectDeal = (bundle: any) => {
-    setSelectedDeal(bundle)
-    // Pre-fill slots from basket where possible
-    const prefill: Record<string,string> = {}
-    const slots = ['slot_1_category','slot_2_category','slot_3_category','slot_4_category','slot_5_category','slot_6_category']
-    slots.forEach((slotKey, idx) => {
-      const cat = bundle[slotKey]
-      if (!cat) return
-      const matchInBasket = basketItems.find(b => {
-        const menuItem = menuItems.find(m => m.name === b.name)
-        return menuItem?.category === cat
-      })
-      if (matchInBasket) prefill[`slot_${idx+1}`] = matchInBasket.name
-    })
-    setSlotSelections(prefill)
-  }
-
-  if (!selectedDeal) {
-    return (
-      <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
-        onClick={e => e.target===e.currentTarget && onClose()}>
-        <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[80vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="font-black text-slate-900">Choose a deal</h3>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
-          </div>
-          <p className="text-xs text-slate-400 mb-4">All deals available regardless of time — time windows shown for info only.</p>
-          <div className="space-y-3">
-            {bundles.map((bundle: any) => {
-              // Calculate original price from slots if not set
-              const slots = ['slot_1_category','slot_2_category','slot_3_category','slot_4_category','slot_5_category','slot_6_category']
-              const slotCats = slots.map(k => bundle[k]).filter(Boolean)
-              const calcOriginal = slotCats.reduce((total: number, cat: string) => {
-                const cheapest = menuItems.filter(m => m.category === cat).sort((a,b) => a.price-b.price)[0]
-                return total + (cheapest?.price || 0)
-              }, 0)
-              const originalPrice = bundle.original_price || calcOriginal
-              const saving = originalPrice > bundle.bundle_price ? originalPrice - bundle.bundle_price : 0
-
-              return (
-                <button key={bundle.name} onClick={() => selectDeal(bundle)}
-                  className="w-full text-left border border-slate-200 rounded-xl p-3 bg-slate-50 hover:border-orange-300 hover:bg-orange-50 transition-all">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <p className="font-black text-slate-900 text-sm">{bundle.name}</p>
-                      <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
-                      <p className="text-xs text-slate-400 mt-1">{slotCats.map((c:string) => c.charAt(0).toUpperCase()+c.slice(1)).join(' + ')}</p>
-                      {(bundle.start_time || bundle.end_time) && (
-                        <p className="text-[11px] text-slate-400 mt-0.5">
-                          {[bundle.start_time&&`from ${bundle.start_time}`, bundle.end_time&&`until ${bundle.end_time}`].filter(Boolean).join(' · ')}
-                        </p>
-                      )}
-                    </div>
-                    <div className="text-right shrink-0 ml-3">
-                      <p className="font-black text-orange-600">£{bundle.bundle_price.toFixed(2)}</p>
-                      {saving > 0 && (
-                        <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // Selected deal — choose items for each slot
-  const slots = ['slot_1_category','slot_2_category','slot_3_category','slot_4_category','slot_5_category','slot_6_category']
-  const activeSlots = slots.map((k,i) => ({ key:`slot_${i+1}`, cat: selectedDeal[k] })).filter(s => s.cat)
-  const allFilled = activeSlots.every(s => slotSelections[s.key])
-
-  // Calc saving
-  const originalFromSlots = activeSlots.reduce((t, s) => {
-    const sel = slotSelections[s.key]
-    const item = menuItems.find(m => m.name === sel)
-    return t + (item?.price || 0)
-  }, 0)
-  const saving = originalFromSlots > selectedDeal.bundle_price ? originalFromSlots - selectedDeal.bundle_price : 0
-
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
-      onClick={e => e.target===e.currentTarget && onClose()}>
-      <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center gap-2 mb-4">
-          <button onClick={() => setSelectedDeal(null)} className="text-slate-400 hover:text-slate-700 font-bold text-lg">←</button>
-          <h3 className="font-black text-slate-900 flex-1">{selectedDeal.name}</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
-        </div>
-
-        <div className="space-y-3 mb-4">
-          {activeSlots.map(({ key, cat }) => {
-            const itemsForCat = menuItems.filter(m => m.category === cat)
-            const selected = slotSelections[key]
-            return (
-              <div key={key}>
-                <label className="block text-xs font-black text-orange-600 uppercase tracking-wide mb-1">
-                  {cat.charAt(0).toUpperCase()+cat.slice(1)}
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {itemsForCat.map(item => (
-                    <button key={item.name}
-                      onClick={() => setSlotSelections(prev => ({...prev, [key]: item.name}))}
-                      className={`px-3 py-1.5 rounded-xl border text-sm font-bold transition-all ${selected===item.name ? 'bg-orange-600 text-white border-orange-600' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
-                      {item.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        {/* Price summary */}
-        <div className="bg-slate-50 rounded-xl p-3 mb-4 space-y-1">
-          {activeSlots.map(({ key, cat }) => {
-            const item = menuItems.find(m => m.name === slotSelections[key])
-            return slotSelections[key] ? (
-              <div key={key} className="flex justify-between text-sm">
-                <span className="text-slate-600">{slotSelections[key]}</span>
-                <span className="text-slate-400 line-through text-xs self-center">£{item?.price.toFixed(2)}</span>
-              </div>
-            ) : null
-          })}
-          {saving > 0 && (
-            <div className="flex justify-between text-sm text-green-600 font-bold pt-1 border-t border-slate-200">
-              <span>Saving</span><span>-£{saving.toFixed(2)}</span>
-            </div>
-          )}
-          <div className="flex justify-between font-black pt-1 border-t border-slate-200">
-            <span className="text-slate-900">Deal price</span>
-            <span className="text-orange-600">£{selectedDeal.bundle_price.toFixed(2)}</span>
-          </div>
-        </div>
-
-        <button
-          onClick={() => {
-            if (!allFilled) return
-            onApply(selectedDeal, slotSelections, selectedDeal.bundle_price, saving)
-          }}
-          disabled={!allFilled}
-          className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-40"
-        >
-          {allFilled ? `Apply deal · £${selectedDeal.bundle_price.toFixed(2)}` : 'Select all items to continue'}
-        </button>
-      </div>
-    </div>
-  )
-}

@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
 
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────
     if (action === 'manual') {
-      const { customerName, customerPhone, customerEmail, slot, items, notes } = manualOrder
+      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal } = manualOrder
       if (!customerName || !items?.length) {
         return NextResponse.json({ error: 'Name and items required' }, { status: 400 })
       }
@@ -191,16 +191,26 @@ export async function POST(req: NextRequest) {
         customer_name: customerName, customer_phone: customerPhone || null,
         customer_email: customerEmail || null,
         slot: slot || null, order_type: 'collection', event_date: today,
-        items, subtotal: total, discount_amt: 0, total,
+        items, subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
         notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
       })
       if (insertErr) return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
 
       // Send confirmation email if email provided
       if (customerEmail) {
+        const subtotalAmt = items.reduce((s: number, i: any) => s + parseFloat(i.unit_price)*parseInt(i.quantity), 0)
         const itemRows = items.map((i: any) =>
           `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
         ).join('')
+        const dealRows = (manualOrder.deals||[]).map((d: any) => {
+          const orig = Object.values(d.slots||{}).reduce((s: number, n: any) => {
+            const item = items.find((i: any) => i.name === n)
+            return s + (item ? parseFloat(item.unit_price) : 0)
+          }, 0)
+          const saving = Math.max(0, orig - (manualOrder.total || 0))
+          return `<tr><td style="padding:4px 0;color:#d97706">🎁 ${d.name}</td><td style="text-align:right;padding:4px 0;color:#16a34a">-£${saving.toFixed(2)}</td></tr>`
+        }).join('')
+        const discountAmt = manualOrder.discountAmt || 0
         await notifyCustomer(
           customerEmail,
           `Order #${newOrderId} confirmed — ${truck.name}`,
