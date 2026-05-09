@@ -339,6 +339,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
     }
 
+    // ── Auto-accept if truck has it enabled ───────────────────────────────────
+    if (truck.auto_accept) {
+      await supabase
+        .from('orders')
+        .update({ status: 'confirmed' })
+        .eq('id', orderId)
+    }
+
     // ── WhatsApp to truck ─────────────────────────────────────────────────────
     const waMessage = formatWhatsAppOrder({
       orderId,

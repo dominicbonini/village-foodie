@@ -340,6 +340,40 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // ── adjust_slot ───────────────────────────────────────────────────────────
+    if (action?.startsWith('adjust_slot_+')) {
+      const mins = parseInt(action.replace('adjust_slot_+', ''))
+      if (!orderId || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
+      const { data: ord } = await supabase.from('orders').select('slot,customer_email,customer_name').eq('id', orderId).single()
+      if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
+      const [h, m] = ord.slot.split(':').map(Number)
+      const newTotal = h * 60 + m + mins
+      const newSlot = `${String(Math.floor(newTotal / 60) % 24).padStart(2, '0')}:${String(newTotal % 60).padStart(2, '0')}`
+      await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('id', orderId)
+      // Notify customer of time change
+      if (ord.customer_email) {
+        await notifyCustomer(ord.customer_email,
+          `Your collection time has changed — ${truck.name}`,
+          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2>Collection time updated</h2>
+            <p>Hi ${ord.customer_name}, your order #${orderId} from <strong>${truck.name}</strong> has been confirmed with an adjusted collection time.</p>
+            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;margin:12px 0">
+              <p style="margin:0;color:#92400e;font-weight:700;font-size:16px">New collection time: ${newSlot}</p>
+              <p style="margin:4px 0 0;color:#92400e;font-size:13px">Original time was ${ord.slot} — adjusted by ${mins} minutes</p>
+            </div>
+            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
+          </body>`, truck.name)
+      }
+      return NextResponse.json({ success: true, newSlot })
+    }
+
+    // ── set_auto_accept ──────────────────────────────────────────────────────
+    if (action === 'set_auto_accept') {
+      const { value } = body
+      await supabase.from('trucks').update({ auto_accept: !!value }).eq('id', truck.id)
+      return NextResponse.json({ success: true })
+    }
+
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 
   } catch (err: any) {

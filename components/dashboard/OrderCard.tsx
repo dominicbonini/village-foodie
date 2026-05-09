@@ -20,12 +20,12 @@ export function Btn({ label, colour, loading, onClick }: {
   label: string; colour: string; loading: boolean; onClick: () => void
 }) {
   const colours: Record<string, string> = {
-    green:    'bg-green-600 hover:bg-green-700 text-white',
-    red:      'bg-red-500 hover:bg-red-600 text-white',
-    blue:     'bg-blue-600 hover:bg-blue-700 text-white',
-    slate:    'bg-slate-600 hover:bg-slate-700 text-white',
-    teal:     'bg-teal-600 hover:bg-teal-700 text-white',
-    orange:   'bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200',
+    green:  'bg-green-600 hover:bg-green-700 text-white',
+    red:    'bg-red-500 hover:bg-red-600 text-white',
+    blue:   'bg-blue-600 hover:bg-blue-700 text-white',
+    teal:   'bg-teal-600 hover:bg-teal-700 text-white',
+    slate:  'bg-slate-500 hover:bg-slate-600 text-white',
+    orange: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200',
   }
   return (
     <button onClick={onClick} disabled={loading}
@@ -61,6 +61,15 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
   )
 }
 
+// Add minutes to a HH:MM time string
+function addMinsToSlot(slot: string, mins: number): string {
+  const [h, m] = slot.split(':').map(Number)
+  const total = h * 60 + m + mins
+  const newH = Math.floor(total / 60) % 24
+  const newM = total % 60
+  return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`
+}
+
 export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit }: {
   order: Order
   truck: TruckData | null
@@ -71,6 +80,7 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
 }) {
   const [expanded, setExpanded] = useState(true)
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
+  const [adjustingTime, setAdjustingTime] = useState(false)
   const s = STATUS[order.status] || STATUS.pending
   const isPub = truck?.mode === 'pub'
 
@@ -151,9 +161,7 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
                   }`}>
                   <span className={`font-medium transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                     {item.quantity}× {item.name}
-                    {partDone && (
-                      <span className="text-orange-500 text-xs font-black ml-1.5 not-italic">({struck}/{item.quantity})</span>
-                    )}
+                    {partDone && <span className="text-orange-500 text-xs font-black ml-1.5">({struck}/{item.quantity})</span>}
                   </span>
                   <span className={`text-xs shrink-0 ml-2 ${allDone ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
                     {allDone ? '✓' : `£${(item.unit_price * item.quantity).toFixed(2)}`}
@@ -172,8 +180,7 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
                 </div>
               ))}
               <div className="flex justify-between text-xs font-bold text-slate-600">
-                <span>Total</span>
-                <span>£{Number(order.total).toFixed(2)}</span>
+                <span>Total</span><span>£{Number(order.total).toFixed(2)}</span>
               </div>
             </div>
           )}
@@ -181,6 +188,21 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
           {order.notes && (
             <div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-1.5 text-xs text-orange-700 mb-2 font-medium">
               📝 {order.notes}
+            </div>
+          )}
+
+          {/* Quick time adjust — for pending orders with a slot */}
+          {order.status === 'pending' && order.slot && (
+            <div className="flex items-center gap-1.5 mb-2">
+              <span className="text-xs text-slate-400 font-medium shrink-0">Adjust time:</span>
+              {[5, 10, 20].map(mins => (
+                <button key={mins}
+                  onClick={() => onAction(`adjust_slot_+${mins}`, order.id)}
+                  className="text-xs bg-slate-100 hover:bg-orange-100 hover:text-orange-700 text-slate-600 font-bold px-2 py-1 rounded-lg transition-colors active:scale-95">
+                  +{mins}m
+                </button>
+              ))}
+              <span className="text-xs text-slate-300 ml-1">→ new time sent to customer</span>
             </div>
           )}
 

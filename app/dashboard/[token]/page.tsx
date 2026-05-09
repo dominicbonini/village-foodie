@@ -39,6 +39,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[toast,setToast]=useState<{msg:string;type:'success'|'error'}|null>(null)
   const[paused,setPaused]=useState(false)
   const[waitMinutes,setWaitMinutes]=useState(0)
+  const[autoAccept,setAutoAccept]=useState(false)
+  const[savingAutoAccept,setSavingAutoAccept]=useState(false)
   // Add order
   const[manualName,setManualName]=useState('')
   const[manualEmail,setManualEmail]=useState('')
@@ -137,7 +139,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
       if(!res.ok){setError(data.error||'Failed to load');setLoading(false);return}
-      setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
+      setTruck(data.truck)
+      setAutoAccept(data.truck?.auto_accept || false); setOrders(data.orders); setSlots(data.slots)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderIds=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed'].includes(o.status)).map((o:Order)=>o.id))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
@@ -167,6 +170,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
     setAuthenticated(true); setRequiresPin(false)
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput)}
+  }
+
+  const saveAutoAccept=async(val:boolean)=>{
+    setSavingAutoAccept(true)
+    try{
+      await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_auto_accept',value:val})
+      })
+      setAutoAccept(val)
+      showToast(val?'Auto-accept enabled':'Auto-accept disabled')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingAutoAccept(false)}
   }
 
   const doAction=async(action:string,orderId:string)=>{
@@ -916,6 +932,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <p className="text-xs text-slate-400 mt-2">Batch = how many cook at once. 3 pizzas at 4 batched = 1 cycle.</p>
                 </div>
               </div>
+            {/* Auto-accept toggle */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-black text-slate-900 text-sm">Auto-accept orders</p>
+                  <p className="text-slate-400 text-xs mt-0.5">Incoming web orders are confirmed automatically without manual review</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)}/>
+                </div>
+              </div>
+              {autoAccept&&(
+                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+                  ⚠ Orders will be confirmed immediately — review regularly to avoid over-commitment
+                </div>
+              )}
+            </div>
+
             <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1 mt-4">
               <p className="font-bold text-slate-700">How it works</p>
               <p>• Orange input: total for this category (e.g. 100 pizzas tonight)</p>
