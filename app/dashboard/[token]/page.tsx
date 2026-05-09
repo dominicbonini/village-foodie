@@ -50,6 +50,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showDealsModal,setShowDealsModal]=useState(false)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
+  const[undoPrep,setUndoPrep]=useState<{name:string;qty:number}|null>(null)
   const[categoryConfigs,setCategoryConfigs]=useState<Record<string,{secs:number;batch:number}>>({})
   const[showPrepList,setShowPrepList]=useState(false)
   const[activeDealBundle,setActiveDealBundle]=useState<Bundle|null>(null)
@@ -68,7 +69,46 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return s+Math.max(0,orig-d.bundle.bundle_price)
   },0)
   const manualTotal=Math.max(0,manualItemsSubtotal-dealDiscount)
-  const readyTime=calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
+  // Calculate queue-aware ready time accounting for existing pending/confirmed orders
+  // For each category: queue qty + new qty, calculate batches needed, find ready time
+  const calcQueueAwareReadyTime=()=>{
+    if(!manualItems.length) return {readyTime:'',minsFromNow:0}
+    // Aggregate items by category from active orders + new order
+    const queueByCategory:Record<string,number>={}
+    const newByCategory:Record<string,number>={}
+    orders.filter(o=>['pending','confirmed'].includes(o.status)).forEach(o=>{
+      o.items.forEach(item=>{
+        const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||'mains'
+        queueByCategory[cat]=(queueByCategory[cat]||0)+item.quantity
+      })
+    })
+    manualItems.forEach(item=>{
+      const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||'mains'
+      newByCategory[cat]=(newByCategory[cat]||0)+item.quantity
+    })
+    // For each category with new items, calc total batches (queue + new) vs queue alone
+    // The new order's items finish in the LAST batch they're in
+    let maxNewItemSecs=0
+    Object.entries(newByCategory).forEach(([cat,newQty])=>{
+      const cfg=getCatConfig(cat,categoryConfigs)
+      if(cfg.secs===0) return // drinks/dips don't queue
+      const queueQty=queueByCategory[cat]||0
+      const totalQty=queueQty+newQty
+      // Total batches needed = ceil(totalQty / batch)
+      // The new items finish in batch ceil(totalQty / batch)
+      const finalBatch=Math.ceil(totalQty/cfg.batch)
+      const totalSecs=finalBatch*cfg.secs
+      if(totalSecs>maxNewItemSecs) maxNewItemSecs=totalSecs
+    })
+    // Add 2-min buffer + manual wait
+    const totalSecs=Math.max(30,maxNewItemSecs)+(waitMinutes*60)+120
+    const t=new Date(); t.setSeconds(t.getSeconds()+totalSecs)
+    const readyTime=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`
+    const minsFromNow=Math.ceil(totalSecs/60)
+    return {readyTime,minsFromNow}
+  }
+  const queueAware=calcQueueAwareReadyTime()
+  const readyTime=queueAware.readyTime||calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
   const availableDeals=(truckMenu?.bundles||[]).filter(b=>b.available)
 
   const showToast=(msg:string,type:'success'|'error'='success')=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)}
@@ -98,6 +138,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
       if(!res.ok){setError(data.error||'Failed to load');setLoading(false);return}
       setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
+      // Clear prep pills for orders no longer active (collected/cancelled)
+      const activeOrderIds=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed'].includes(o.status)).map((o:Order)=>o.id))
+      setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
       setAuthenticated(true); setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
     } catch{setError('Connection error')} finally{setLoading(false)}
@@ -132,7 +175,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,orderId})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored'}
-      showToast(`Order #${orderId} ${labels[action]||action}`); await fetchAll()
+      showToast(`Order #${orderId} ${labels[action]||action}`)
+      // Auto-clear prep board on collected (solo operator workflow)
+      if(action==='collected'||action==='ready'){
+        const done=orders.find(o=>o.id===orderId)
+        if(done){
+          // Auto-clear unit pills for this specific order
+          setStruckPrep(prev=>{
+            const n=new Set(prev)
+            done.items.forEach(item=>{
+              for(let u=0;u<item.quantity;u++) n.add(`${orderId}:${item.name}:${u}`)
+            })
+            return n
+          })
+        }
+      }
+      await fetchAll()
     }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
   }
 
@@ -240,8 +298,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     </div>
   )
 
-  const pendingOrders=orders.filter(o=>o.status==='pending')
-  const confirmedOrders=orders.filter(o=>o.status==='confirmed')
+  // Sort by collection time (soonest first), then by order ID (oldest first)
+  // Orders without slot get high sort value so they appear after timed orders
+  const sortByTimeThenId=(a:Order,b:Order)=>{
+    const aSlot=a.slot?parseInt(a.slot.split(':')[0])*60+parseInt(a.slot.split(':')[1]):99999
+    const bSlot=b.slot?parseInt(b.slot.split(':')[0])*60+parseInt(b.slot.split(':')[1]):99999
+    if(aSlot!==bSlot) return aSlot-bSlot
+    return a.id.localeCompare(b.id)
+  }
+  const pendingOrders=orders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
+  const confirmedOrders=orders.filter(o=>o.status==='confirmed').sort(sortByTimeThenId)
   const otherOrders=orders.filter(o=>!['pending','confirmed'].includes(o.status))
   const menuGroups:Record<string,MenuItem[]>={}
   truckMenu?.items.forEach(item=>{if(!menuGroups[item.category])menuGroups[item.category]=[];menuGroups[item.category].push(item)})
@@ -251,7 +317,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-slate-900 px-4 py-3 sticky top-0 z-50 shadow-md">
-        <div className="max-w-2xl mx-auto flex items-center justify-between relative">
+        <div className="max-w-5xl mx-auto flex items-center justify-between relative">
           <Link href="/" className="shrink-0 z-10">
             <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={90} height={27} className="object-contain opacity-70"/>
           </Link>
@@ -273,14 +339,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {/* Tabs */}
       <div className="bg-slate-800 px-4 border-b border-slate-700">
-        <div className="max-w-2xl mx-auto flex">
+        <div className="max-w-5xl mx-auto flex">
           {([['orders',`Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length>0?` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})`:''}`],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
             <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
           ))}
         </div>
       </div>
 
-      <main className="max-w-2xl mx-auto px-4 py-4 pb-20">
+      <main className="max-w-5xl mx-auto px-4 py-4 pb-20">
 
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
@@ -362,15 +428,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               orders.filter(o=>['pending','confirmed'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
 
               // Build current prep map
-              const currentMap:Record<string,number>={}
-              currentBatch.forEach(o=>o.items.forEach(i=>{currentMap[i.name]=(currentMap[i.name]||0)+i.quantity}))
-              const currentItems=Object.entries(currentMap).sort((a,b)=>{
-                const aT=getCategoryTime(truckMenu?.items.find(m=>m.name===a[0])?.category||'')
-                const bT=getCategoryTime(truckMenu?.items.find(m=>m.name===b[0])?.category||'')
-                return bT-aT
+              // Build ordered list of units in insertion order across orders, then by item position
+              // Sort orders by slot then ID, items keep their original order, expand each into units
+              const sortedBatch=[...currentBatch].sort((a,b)=>{
+                const aSlot=a.slot?parseInt(a.slot.replace(':','')):99999
+                const bSlot=b.slot?parseInt(b.slot.replace(':','')):99999
+                if(aSlot!==bSlot) return aSlot-bSlot
+                return a.id.localeCompare(b.id)
               })
-              const kitchen=currentItems.filter(([name])=>getCategoryTime(truckMenu?.items.find(m=>m.name===name)?.category||'')>0)
-              const assembly=currentItems.filter(([name])=>getCategoryTime(truckMenu?.items.find(m=>m.name===name)?.category||'')===0)
+              type PrepUnit={name:string;orderId:string;unitIdx:number;cat:string}
+              const allUnits:PrepUnit[]=[]
+              sortedBatch.forEach(o=>o.items.forEach(item=>{
+                const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||''
+                for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.id,unitIdx:u,cat})
+              }))
+              // Split into kitchen vs assembly preserving order
+              const kitchenUnits=allUnits.filter(u=>getCategoryTime(u.cat)>0)
+              const assemblyUnits=allUnits.filter(u=>getCategoryTime(u.cat)===0)
 
               return(
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3">
@@ -379,38 +453,60 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <button onClick={()=>setShowPrepList(false)} className="text-amber-400 hover:text-amber-700 text-sm font-bold">×</button>
                   </div>
 
-                  {currentItems.length===0?(
+                  {allUnits.length===0?(
                     <p className="text-amber-600 text-sm">Nothing to prep right now</p>
                   ):(
                     <div className="space-y-1.5 mb-2">
-                      {kitchen.length>0&&(
+                      {kitchenUnits.length>0&&(
                         <div>
-                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🔥 Kitchen — start now</p>
+                          <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🔥 Kitchen — start now (in order)</p>
                           <div className="flex flex-wrap gap-1.5">
-                            {kitchen.map(([name,qty])=>{
-                              const struck=struckPrep.has(name)
+                            {kitchenUnits.map((u,idx)=>{
+                              const pillKey=`${u.orderId}:${u.name}:${u.unitIdx}`
+                              const struck=struckPrep.has(pillKey)
+                              const ding=()=>{try{const ctx=new((window as any).AudioContext||(window as any).webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=660;g.gain.setValueAtTime(0.2,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.3)}catch{}}
                               return(
-                                <button key={name}
-                                  onClick={()=>setStruckPrep(prev=>{const n=new Set(prev);struck?n.delete(name):n.add(name);return n})}
+                                <button key={pillKey}
+                                  onClick={()=>{
+                                    if(struck){
+                                      setStruckPrep(prev=>{const n=new Set(prev);n.delete(pillKey);return n})
+                                      setUndoPrep(null)
+                                    } else {
+                                      setStruckPrep(prev=>{const n=new Set(prev);n.add(pillKey);return n})
+                                      setUndoPrep({name:u.name,qty:1})
+                                      setTimeout(()=>setUndoPrep(null),5000)
+                                      ding()
+                                    }
+                                  }}
                                   className={`font-black text-sm px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${struck?'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50':'bg-white border-amber-200 text-slate-900 hover:border-amber-400'}`}>
-                                  {qty}× {name}{struck?' ✓':''}
+                                  {u.name}{struck?' ✓':''}
                                 </button>
                               )
                             })}
                           </div>
                         </div>
                       )}
-                      {assembly.length>0&&(
+                      {assemblyUnits.length>0&&(
                         <div>
                           <p className="text-[10px] font-black text-amber-600 uppercase tracking-wide mb-1">🥤 Assembly</p>
                           <div className="flex flex-wrap gap-1.5">
-                            {assembly.map(([name,qty])=>{
-                              const struck=struckPrep.has(name)
+                            {assemblyUnits.map((u,idx)=>{
+                              const pillKey=`${u.orderId}:${u.name}:${u.unitIdx}`
+                              const struck=struckPrep.has(pillKey)
                               return(
-                                <button key={name}
-                                  onClick={()=>setStruckPrep(prev=>{const n=new Set(prev);struck?n.delete(name):n.add(name);return n})}
+                                <button key={pillKey}
+                                  onClick={()=>{
+                                    if(struck){
+                                      setStruckPrep(prev=>{const n=new Set(prev);n.delete(pillKey);return n})
+                                      setUndoPrep(null)
+                                    } else {
+                                      setStruckPrep(prev=>{const n=new Set(prev);n.add(pillKey);return n})
+                                      setUndoPrep({name:u.name,qty:1})
+                                      setTimeout(()=>setUndoPrep(null),5000)
+                                    }
+                                  }}
                                   className={`font-bold text-sm px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${struck?'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50':'bg-white border-amber-200 text-slate-900 hover:border-amber-400'}`}>
-                                  {qty}× {name}{struck?' ✓':''}
+                                  {u.name}{struck?' ✓':''}
                                 </button>
                               )
                             })}
@@ -443,13 +539,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="space-y-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="space-y-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit}/>)}</div>
               </div>
             )}
             {showCompleted&&otherOrders.length>0&&(
@@ -573,15 +669,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   <span className="text-green-600 font-bold">🎁 {d.bundle.name}</span>
                                   <span className="text-green-500 font-normal ml-1">({dealItemLabels})</span>
                                   <button
-onClick={()=>{
-  // Deal owns all its items — remove deal and decrement each slot item qty by 1
-  const toDecrement=Object.values(d.slots).filter(Boolean) as string[]
-  setManualItems(prev=>prev.map(item=>{
-    const count=toDecrement.filter(n=>n===item.name).length
-    return count?{...item,quantity:item.quantity-count}:item
-  }).filter(item=>item.quantity>0))
-  setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
-}}
+                                    onClick={()=>{
+                                      // Deal owns all its items — remove deal and decrement each slot item by 1
+                                      const toDecrement=Object.values(d.slots).filter(Boolean) as string[]
+                                      setManualItems(prev=>prev.map(item=>{
+                                        const count=toDecrement.filter(n=>n===item.name).length
+                                        return count?{...item,quantity:item.quantity-count}:item
+                                      }).filter(item=>item.quantity>0))
+                                      setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
+                                    }}
                                     className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
                                     title="Remove deal and its items"
                                   >×</button>
@@ -621,9 +717,48 @@ onClick={()=>{
               <div className="flex gap-2">
                 <div className={`flex-1 rounded-xl px-3 py-2.5 ${readyTime?'bg-green-50 border border-green-200':'bg-slate-100 border border-slate-100'}`}>
                   {(()=>{
-                    const readyTime=calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
+                    // Calculate queue-aware ready time accounting for existing pending/confirmed orders
+  // For each category: queue qty + new qty, calculate batches needed, find ready time
+  const calcQueueAwareReadyTime=()=>{
+    if(!manualItems.length) return {readyTime:'',minsFromNow:0}
+    // Aggregate items by category from active orders + new order
+    const queueByCategory:Record<string,number>={}
+    const newByCategory:Record<string,number>={}
+    orders.filter(o=>['pending','confirmed'].includes(o.status)).forEach(o=>{
+      o.items.forEach(item=>{
+        const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||'mains'
+        queueByCategory[cat]=(queueByCategory[cat]||0)+item.quantity
+      })
+    })
+    manualItems.forEach(item=>{
+      const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||'mains'
+      newByCategory[cat]=(newByCategory[cat]||0)+item.quantity
+    })
+    // For each category with new items, calc total batches (queue + new) vs queue alone
+    // The new order's items finish in the LAST batch they're in
+    let maxNewItemSecs=0
+    Object.entries(newByCategory).forEach(([cat,newQty])=>{
+      const cfg=getCatConfig(cat,categoryConfigs)
+      if(cfg.secs===0) return // drinks/dips don't queue
+      const queueQty=queueByCategory[cat]||0
+      const totalQty=queueQty+newQty
+      // Total batches needed = ceil(totalQty / batch)
+      // The new items finish in batch ceil(totalQty / batch)
+      const finalBatch=Math.ceil(totalQty/cfg.batch)
+      const totalSecs=finalBatch*cfg.secs
+      if(totalSecs>maxNewItemSecs) maxNewItemSecs=totalSecs
+    })
+    // Add 2-min buffer + manual wait
+    const totalSecs=Math.max(30,maxNewItemSecs)+(waitMinutes*60)+120
+    const t=new Date(); t.setSeconds(t.getSeconds()+totalSecs)
+    const readyTime=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`
+    const minsFromNow=Math.ceil(totalSecs/60)
+    return {readyTime,minsFromNow}
+  }
+  const queueAware=calcQueueAwareReadyTime()
+  const readyTime=queueAware.readyTime||calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
                     const hasItems=manualItems.length>0
-                    const minsFromNow=hasItems?calcMinsFromNow(manualItems,waitMinutes,truckMenu?.items,categoryConfigs):null
+                    const minsFromNow=hasItems?queueAware.minsFromNow:null
                     return(
                       <div className={`rounded-xl px-3 py-2.5 ${hasItems?'bg-green-50 border border-green-200':'bg-slate-100 border border-slate-100'}`}>
                         {hasItems?(

@@ -219,7 +219,7 @@ async function sendConfirmationEmail(params: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender:    { name: 'Village Foodie', email: 'orders@villagefoodie.co.uk' },
+        sender:    { name: 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
         to:        [{ email: params.to }],
         subject:   params.subject,
         htmlContent: params.html,

@@ -11,7 +11,7 @@ async function verifyToken(token: string, pin?: string) {
   return truck
 }
 
-async function notifyCustomer(email: string, subject: string, html: string) {
+async function notifyCustomer(email: string, subject: string, html: string, truckName?: string) {
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey || !email) return
   try {
@@ -19,7 +19,7 @@ async function notifyCustomer(email: string, subject: string, html: string) {
       method: 'POST',
       headers: { 'api-key': apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sender:      { name: 'Village Foodie', email: 'orders@villagefoodie.co.uk' },
+        sender:      { name: truckName || 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
         to:          [{ email }],
         subject,
         htmlContent: html,
@@ -42,14 +42,13 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId)
       if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Order #${orderId} confirmed — ${truck.name}`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+        await notifyCustomer(order.customer_email, `Order #${orderId} confirmed — ${truck.name}`, `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order is confirmed! ✓</h2>
             <p><strong>${truck.name}</strong> has accepted your order #${orderId}.</p>
             ${order.slot ? `<p><strong>Collection time:</strong> ${order.slot}</p>` : ''}
             <p><strong>Total: £${order.total}</strong> — pay at the truck on collection.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
-          </body>`)
+          </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }
@@ -198,19 +197,14 @@ export async function POST(req: NextRequest) {
 
       // Send confirmation email if email provided
       if (customerEmail) {
-        const subtotalAmt = items.reduce((s: number, i: any) => s + parseFloat(i.unit_price)*parseInt(i.quantity), 0)
+        const subtotalAmt = items.reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseInt(i.quantity), 0)
+        const discountAmt = (manualOrder.discountAmt || 0) as number
         const itemRows = items.map((i: any) =>
           `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
         ).join('')
-        const dealRows = (manualOrder.deals||[]).map((d: any) => {
-          const orig = Object.values(d.slots||{}).reduce((s: number, n: any) => {
-            const item = items.find((i: any) => i.name === n)
-            return s + (item ? parseFloat(item.unit_price) : 0)
-          }, 0)
-          const saving = Math.max(0, orig - (manualOrder.total || 0))
-          return `<tr><td style="padding:4px 0;color:#d97706">🎁 ${d.name}</td><td style="text-align:right;padding:4px 0;color:#16a34a">-£${saving.toFixed(2)}</td></tr>`
-        }).join('')
-        const discountAmt = manualOrder.discountAmt || 0
+        const dealRows = (manualOrder.deals || []).map((d: any) =>
+          `<tr><td style="padding:4px 0;color:#d97706">🎁 ${d.name}</td><td style="text-align:right;padding:4px 0;color:#16a34a;font-weight:700">-£${discountAmt.toFixed(2)}</td></tr>`
+        ).join('')
         await notifyCustomer(
           customerEmail,
           `Order #${newOrderId} confirmed — ${truck.name}`,
@@ -220,9 +214,10 @@ export async function POST(req: NextRequest) {
             ${slot ? `<p><strong>Collection time:</strong> ${slot}</p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
               ${itemRows}
+              ${discountAmt > 0 ? `<tr><td style="padding:4px 0;color:#64748b;border-top:1px solid #e2e8f0">Subtotal</td><td style="text-align:right;padding:4px 0;color:#64748b">£${subtotalAmt.toFixed(2)}</td></tr>${dealRows}` : ''}
               <tr style="border-top:1px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:700">Total</td>
-                <td style="text-align:right;padding-top:8px;font-weight:700">£${total.toFixed(2)}</td>
+                <td style="text-align:right;padding-top:8px;font-weight:700">£${(passedTotal || total).toFixed(2)}</td>
               </tr>
             </table>
             ${notes ? `<p><em>Notes: ${notes}</em></p>` : ''}
