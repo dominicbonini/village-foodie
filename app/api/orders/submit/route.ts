@@ -109,8 +109,11 @@ function formatConfirmationEmail(params: {
   discountAmt: number
   total: number
   notes: string | null
+  autoAccepted?: boolean
 }): { subject: string; html: string; text: string } {
-  const subject = `Order #${params.orderId} received — ${params.truckName}`
+  const subject = params.autoAccepted
+    ? `Order #${params.orderId} confirmed — ${params.truckName}`
+    : `Order #${params.orderId} received — ${params.truckName}`
 
   const itemRows = params.items.map(item =>
     `<tr>
@@ -128,10 +131,12 @@ function formatConfirmationEmail(params: {
     : ''
 
   const slotSection = params.slot ? `
-    <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;margin-top:12px">
-      <p style="margin:0;font-size:14px;color:#92400e">
-        <strong>Preferred collection time: ${params.slot}</strong><br>
-        <span style="font-size:12px">${params.truckName} will confirm your collection time when they accept your order.</span>
+    <div style="background:${params.autoAccepted ? '#f0fdf4' : '#fff7ed'};border:1px solid ${params.autoAccepted ? '#bbf7d0' : '#fed7aa'};border-radius:10px;padding:12px;margin-top:12px">
+      <p style="margin:0;font-size:14px;color:${params.autoAccepted ? '#166534' : '#92400e'}">
+        ${params.autoAccepted
+          ? `<strong>✓ Confirmed collection time: ${params.slot}</strong><br><span style="font-size:12px">Your order has been confirmed. See you at the hatch!</span>`
+          : `<strong>Preferred collection time: ${params.slot}</strong><br><span style="font-size:12px">${params.truckName} will confirm your collection time when they accept your order.</span>`
+        }
       </p>
     </div>` : ''
 
@@ -382,14 +387,15 @@ export async function POST(req: NextRequest) {
     // ── Email to customer ─────────────────────────────────────────────────────
     const { subject, html, text } = formatConfirmationEmail({
       orderId,
-      truckName:   truck.name,
+      truckName:    truck.name,
       customerName,
-      slot:        slot ?? null,
+      slot:         slot ?? null,
       items,
-      deals:       deals ?? [],
-      discountAmt: discountAmt ?? 0,
+      deals:        deals ?? [],
+      discountAmt:  discountAmt ?? 0,
       total,
-      notes:       notes ?? null,
+      notes:        notes ?? null,
+      autoAccepted: !!truck.auto_accept,
     })
 
     await sendConfirmationEmail({ to: customerEmail, subject, html, text })
