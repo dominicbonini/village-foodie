@@ -62,12 +62,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     const available = currentOrders < softMax
     const remaining = Math.max(0, softMax - currentOrders)
 
-    // Don't show slots in the past
+    // Only filter past times for TODAY — future dates show all slots
     const [h, m] = s.collection_time.split(':').map(Number)
     const slotMins = h * 60 + m
-    const now = new Date()
-    const nowMins = now.getHours() * 60 + now.getMinutes()
-    const isPast = date === new Date().toISOString().split('T')[0] && slotMins <= nowMins + 5
+    const today = new Date().toISOString().split('T')[0]
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const isPast = date === today && slotMins <= nowMins + 5
 
     return {
       collection_time: s.collection_time,

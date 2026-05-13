@@ -427,13 +427,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="mt-3 text-left">
               <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
               {events.length === 1 ? (
-                // Single event — just show it
+                // Single event — just show it, date+location on 2 lines
                 <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
-                  <p className="font-black text-slate-900 text-sm">{event?.date_friendly}</p>
+                  <p className="font-black text-slate-900 text-sm">
+                    {event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${event.start_time}–${event.end_time}` : ''}
+                  </p>
                   <p className="text-slate-600 text-sm">{event?.venue_name}{event?.village ? `, ${event?.village}` : ''}</p>
-                  {event?.start_time && event?.end_time && (
-                    <p className="text-slate-400 text-xs mt-0.5">{event.start_time} – {event.end_time}</p>
-                  )}
                 </div>
               ) : (
                 // Multiple events — show selector
@@ -448,11 +447,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           : 'bg-white border border-slate-200 hover:border-orange-200'
                       }`}
                     >
-                      <p className="font-black text-slate-900 text-sm">{e.date_friendly}</p>
+                      <p className="font-black text-slate-900 text-sm">
+                        {e.date_friendly}{e.start_time && e.end_time ? ` · ${e.start_time}–${e.end_time}` : ''}
+                      </p>
                       <p className="text-slate-600 text-xs">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
-                      {e.start_time && e.end_time && (
-                        <p className="text-slate-400 text-xs">{e.start_time} – {e.end_time}</p>
-                      )}
                     </button>
                   ))}
                 </div>
@@ -460,6 +458,88 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             </div>
           ) : null}
         </div>
+
+        {/* MEAL DEALS — flat cards, before menu, hidden if none available */}
+        {menu && menu.bundles.filter(b => b.available).length > 0 && (
+          <div className="mb-4">
+            <h2 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-2 px-1">🎁 Meal deals</h2>
+            <div className="space-y-2">
+              {menu.bundles.filter(b => b.available).map(bundle => {
+                const isLocked = false
+                const maxApplicable = maxDealsApplicable(bundle)
+                const applied = dealsApplied(bundle)
+                const canAddMore = applied < maxApplicable
+                const slots = getBundleSlots(bundle)
+                const saving = bundle.original_price !== null && bundle.original_price > 0
+                  ? bundle.original_price - bundle.bundle_price : null
+
+                return (
+                  <div key={bundle.name} className="bg-white rounded-2xl border border-orange-200 shadow-sm overflow-hidden">
+                    <div className="px-4 py-3.5">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-black text-slate-900 text-sm">{bundle.name}</p>
+                            {saving !== null && saving > 0 && (
+                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>
+                            )}
+                          </div>
+                          <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {slots.map(cat => <span key={cat} className="text-[10px] bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
+                          </div>
+                        </div>
+                        <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>
+                      </div>
+                      {canAddMore ? (
+                        <button onClick={() => addDeal(bundle)}
+                          className="w-full bg-orange-600 text-white font-bold text-sm py-2 rounded-xl hover:bg-orange-700 transition-colors active:scale-95">
+                          {applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
+                        </button>
+                      ) : maxApplicable === 0 ? (
+                        <p className="text-xs text-slate-400 text-center py-1">Add {slots.join(' + ')} items to unlock</p>
+                      ) : (
+                        <p className="text-xs text-green-600 font-bold text-center py-1">✓ {applied} applied — max reached</p>
+                      )}
+                    </div>
+                    {/* Applied deal instances */}
+                    {appliedDeals
+                      .map((deal, idx) => ({ deal, idx }))
+                      .filter(({ deal }) => deal.bundle.name === bundle.name)
+                      .map(({ deal, idx }) => {
+                        const dynOrig = calcDealOriginalPrice(deal, menu.items)
+                        const dynSaving = dynOrig > 0 ? Math.max(0, dynOrig - deal.bundle.bundle_price) : null
+                        const dealNum = appliedDeals.filter((d, i) => d.bundle.name === bundle.name && i <= idx).length
+                        return (
+                          <div key={idx} className="border-t border-orange-100 px-4 py-3 bg-orange-50">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <p className="text-xs font-black text-orange-700">{applied > 1 ? `Deal ${dealNum}` : 'Your deal'}</p>
+                                {dynSaving !== null && dynSaving > 0 && (
+                                  <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{dynSaving.toFixed(2)}</span>
+                                )}
+                              </div>
+                              <button onClick={() => removeDeal(idx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold">Remove</button>
+                            </div>
+                            {slots.map(cat => (
+                              <div key={cat} className="mb-2 last:mb-0">
+                                <label className="block text-[10px] font-bold text-orange-600 uppercase tracking-wide mb-1">Choose {cat}</label>
+                                <select value={deal.slots[cat] || ''} onChange={e => updateSlot(idx, cat, e.target.value)}
+                                  className="w-full border border-orange-200 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                  <option value="">Select {cat}...</option>
+                                  {getSlotOptions(cat).map(opt => <option key={opt.name} value={opt.name}>{opt.name} — £{opt.price.toFixed(2)}</option>)}
+                                </select>
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      })}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* MENU — grouped by category */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-4 mb-4">
@@ -514,6 +594,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           ))}
         </div>
 
+
+
         {/* UPSELL SUGGESTIONS */}
         {upsellSuggestions.length > 0 && (
           <Sec title="You might also want">
@@ -533,106 +615,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           </Sec>
         )}
 
-        {/* MEAL DEALS — only available deals, same-day only */}
-        {menu && menu.bundles.filter(b => b.available).length > 0 && (
-          <Sec title="Meal deals">
-            <div className="space-y-3">
-              {/* Same-day-only rule: strip deals if future date selected */}
-              {menu.bundles.filter(b => b.available && !getBundleAvailabilityMessage(b)).map(bundle => {
-                const availMsg = getBundleAvailabilityMessage(bundle)
-                const isLocked = !!availMsg
-                const maxApplicable = isLocked ? 0 : maxDealsApplicable(bundle)
-                const applied = dealsApplied(bundle)
-                const canAddMore = !isLocked && applied < maxApplicable
-                const slots = getBundleSlots(bundle)
-                const saving = bundle.original_price !== null && bundle.original_price > 0
-                  ? bundle.original_price - bundle.bundle_price
-                  : null  // dynamic — show after slot selection
-
-                return (
-                  <div key={bundle.name} className={`border rounded-xl overflow-hidden ${isLocked ? 'opacity-60 border-slate-200' : 'border-slate-200'}`}>
-                    <div className="p-3.5 bg-white">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <p className="font-bold text-slate-900 text-sm">{bundle.name}</p>
-                          <p className="text-slate-400 text-xs mt-0.5">{bundle.description}</p>
-                          {availMsg && <p className="text-orange-500 text-xs mt-1 font-medium">🕐 {availMsg}</p>}
-                          {!availMsg && (bundle.start_time || bundle.end_time) && (
-                            <p className="text-slate-400 text-xs mt-1">
-                              {bundle.start_time && `From ${bundle.start_time}`}
-                              {bundle.start_time && bundle.end_time && ' · '}
-                              {bundle.end_time && `Until ${bundle.end_time}`}
-                            </p>
-                          )}
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {slots.map(cat => <span key={cat} className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
-                          </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className="font-black text-orange-600 text-sm">£{bundle.bundle_price.toFixed(2)}</p>
-                          {saving !== null ? (
-                            <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>
-                          ) : (
-                            <span className="text-[10px] text-slate-400">savings vary</span>
-                          )}
-                        </div>
-                      </div>
-
-                      {!isLocked && (
-                        <div className="mt-3">
-                          {canAddMore ? (
-                            <button onClick={() => addDeal(bundle)}
-                              className="w-full bg-orange-600 text-white font-bold text-xs py-2 rounded-lg hover:bg-orange-700 transition-colors active:scale-95">
-                              {applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : `+ Add another deal`}
-                            </button>
-                          ) : maxApplicable === 0 ? (
-                            <p className="text-xs text-slate-400 text-center">Add {slots.join(' + ')} to unlock this deal</p>
-                          ) : (
-                            <p className="text-xs text-green-600 font-bold text-center">✓ {applied} deal{applied > 1 ? 's' : ''} applied — maximum reached</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Applied deal instances */}
-                    {appliedDeals
-                      .map((deal, idx) => ({ deal, idx }))
-                      .filter(({ deal }) => deal.bundle.name === bundle.name)
-                      .map(({ deal, idx }) => {
-                        const dynOrig = calcDealOriginalPrice(deal, menu.items)
-                        const dynSaving = dynOrig > 0 ? Math.max(0, dynOrig - deal.bundle.bundle_price) : null
-                        const dealNum = appliedDeals.filter((d, i) => d.bundle.name === bundle.name && i <= idx).length
-
-                        return (
-                          <div key={idx} className="bg-orange-50 border-t border-orange-100 p-3">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <p className="text-xs font-black text-orange-700">{applied > 1 ? `Deal ${dealNum}` : 'Your deal'}</p>
-                                {dynSaving !== null && dynSaving > 0 && (
-                                  <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">You save £{dynSaving.toFixed(2)}</span>
-                                )}
-                              </div>
-                              <button onClick={() => removeDeal(idx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold">Remove</button>
-                            </div>
-                            {slots.map(cat => (
-                              <div key={cat} className="mb-2 last:mb-0">
-                                <label className="block text-[10px] font-bold text-orange-600 uppercase tracking-wide mb-1">Choose {cat}</label>
-                                <select value={deal.slots[cat] || ''} onChange={e => updateSlot(idx, cat, e.target.value)}
-                                  className="w-full border border-orange-200 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                                  <option value="">Select {cat}...</option>
-                                  {getSlotOptions(cat).map(opt => <option key={opt.name} value={opt.name}>{opt.name} — £{opt.price.toFixed(2)}</option>)}
-                                </select>
-                              </div>
-                            ))}
-                          </div>
-                        )
-                      })}
-                  </div>
-                )
-              })}
-            </div>
-          </Sec>
-        )}
 
         {/* DISCOUNT CODE */}
         <Sec title="Discount code">

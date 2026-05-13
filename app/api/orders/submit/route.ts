@@ -384,6 +384,38 @@ export async function POST(req: NextRequest) {
       // Do not fail the order — log and continue
     }
 
+    // ── Email to truck (backup for missed WhatsApp notifications) ───────────
+    try {
+      const truckEmail = truck.contact_email
+      if (truckEmail) {
+        const truckItemRows = items.map((i: any) =>
+          `<tr><td style="padding:3px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
+        ).join('')
+        await sendConfirmationEmail({
+          to: truckEmail,
+          subject: `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`,
+          html: `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2 style="color:#ea580c;margin:0 0 12px">🔔 New order received</h2>
+            <p><strong>Order #${orderId}</strong> from <strong>${customerName}</strong></p>
+            ${slot ? `<p style="font-size:16px"><strong>⏰ Collection: ${slot}</strong></p>` : '<p>No specific time — ASAP</p>'}
+            ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+              ${truckItemRows}
+              <tr style="border-top:2px solid #e2e8f0">
+                <td style="padding-top:8px;font-weight:800">Total</td>
+                <td style="text-align:right;padding-top:8px;font-weight:800">£${total.toFixed(2)}</td>
+              </tr>
+            </table>
+            ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
+            <p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>
+          </body>`,
+          text: `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`,
+        })
+      }
+    } catch (err) {
+      console.error('Truck email failed:', err)
+    }
+
     // ── Email to customer ─────────────────────────────────────────────────────
     const { subject, html, text } = formatConfirmationEmail({
       orderId,

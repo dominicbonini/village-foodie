@@ -42,13 +42,24 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId)
       if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Order #${orderId} confirmed — ${truck.name}`, `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Your order is confirmed! ✓</h2>
-            <p><strong>${truck.name}</strong> has accepted your order #${orderId}.</p>
-            ${order.slot ? `<p><strong>Collection time:</strong> ${order.slot}</p>` : ''}
-            <p><strong>Total: £${order.total}</strong> — pay at the truck on collection.</p>
-            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+      {
+          const confirmedItemRows = order.items.map((i: any) =>
+            `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
+          ).join('')
+          await notifyCustomer(order.customer_email, `Order #${orderId} confirmed — ${truck.name}`, `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2 style="color:#16a34a">Your order is confirmed ✓</h2>
+            <p><strong>${truck.name}</strong> has confirmed your order #${orderId}.</p>
+            ${order.slot ? `<p style="font-size:16px"><strong>⏰ Collection time: ${order.slot}</strong></p>` : ''}
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+              ${confirmedItemRows}
+              <tr style="border-top:2px solid #e2e8f0">
+                <td style="padding-top:8px;font-weight:800">Total</td>
+                <td style="text-align:right;padding-top:8px;font-weight:800">£${Number(order.total).toFixed(2)}</td>
+              </tr>
+            </table>
+            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
           </body>`, truck.name)
+        }
       }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }

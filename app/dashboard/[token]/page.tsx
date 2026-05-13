@@ -347,6 +347,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
           </div>
           <div className="flex items-center gap-2 z-10">
+            <Link href={`/manage/${token}`} className="text-slate-400 hover:text-white text-xs font-bold hidden sm:block transition-colors">⚙ Manage</Link>
             {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
             <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
           </div>
@@ -937,7 +938,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-black text-slate-900 text-sm">Auto-accept orders</p>
-                  <p className="text-slate-400 text-xs mt-0.5">Incoming web orders are confirmed automatically without manual review</p>
+                  <p className="text-slate-400 text-xs mt-0.5">Orders confirm automatically when a slot has capacity. Full slots are still rejected.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
                   {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
