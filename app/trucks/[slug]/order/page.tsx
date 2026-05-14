@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '../../../../lib/deal-utils'
+import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';

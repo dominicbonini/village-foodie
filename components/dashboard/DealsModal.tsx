@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import type { Bundle, MenuItem, BasketItem } from './types'
 import { getBundleSlotCats } from './helpers'
-import { prefillSlotsFromBasket, calculateDealOriginalPrice } from '../../lib/deal-utils'
+import { prefillSlotsFromBasket, calculateDealOriginalPrice } from '@/lib/deal-utils'
 
 
 export function DealsModal({ bundles, menuItems, basketItems, onApply, onClose }: {
