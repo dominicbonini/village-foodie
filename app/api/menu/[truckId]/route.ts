@@ -58,7 +58,7 @@ export async function GET(
   const isDashboard = req.nextUrl.searchParams.get('dashboard') === '1'
   const { data: overrides } = await supabase
     .from('item_overrides')
-    .select('item_name, available, stock_count, orders_count')
+    .select('item_name, available, stock_count')
     .eq('truck_id', truck.id)
 
   // Build override map with stock info
@@ -69,12 +69,11 @@ export async function GET(
       const override = overrideMap.get(item.name)
       const isSoldOut = override ? !override.available : false
       const stockCount = override?.stock_count ?? null
-      const ordersCount = override?.orders_count ?? 0
-      const remaining = stockCount !== null ? stockCount - ordersCount : null
+      // stock_count is the actual remaining stock — no need to subtract orders
       return {
         ...item,
         available: !isSoldOut,
-        stock_remaining: remaining,  // null = unlimited, number = count left
+        stock_remaining: stockCount,  // null = unlimited, number = count left
       }
     })
   }

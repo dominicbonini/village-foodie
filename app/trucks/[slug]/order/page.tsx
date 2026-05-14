@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '../../../lib/deal-utils'
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';
@@ -42,12 +43,6 @@ interface AppliedDeal { bundle: Bundle; slots: Record<string, string> }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getBundleSlots(b: Bundle): string[] {
-  return [b.slot_1_category, b.slot_2_category, b.slot_3_category,
-          b.slot_4_category, b.slot_5_category, b.slot_6_category]
-    .filter((s): s is string => !!s)
-}
-
 function getBundleAvailabilityMessage(b: Bundle): string | null {
   if (!b.start_time && !b.end_time) return null
   const now = new Date()
@@ -69,11 +64,8 @@ function calcDealOriginalPrice(deal: AppliedDeal, menuItems: MenuItem[]): number
   if (deal.bundle.original_price !== null && deal.bundle.original_price > 0) {
     return deal.bundle.original_price
   }
-  // Otherwise sum the prices of the chosen slot items
-  return Object.values(deal.slots).reduce((sum, itemName) => {
-    const item = menuItems.find(i => i.name === itemName)
-    return sum + (item?.price || 0)
-  }, 0)
+  // Otherwise use shared utility to calculate from slots
+  return calcOrigPrice(deal.slots, menuItems)
 }
 
 const HOURS = Array.from({ length: 13 }, (_, i) => String(i + 9).padStart(2, '0'))
@@ -198,7 +190,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   useEffect(() => {
     fetch(`/api/menu/${slug}`)
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(data => { setTruck(data.truck); setMenu(data.menu) })
+      .then(data => {
+        setTruck(data.truck)
+        setMenu(data.menu)
+        // If event already loaded, fetch slots now
+        if (event && data.truck.id) {
+          const date = event.date || new Date().toISOString().split('T')[0]
+          fetchSlots(data.truck.id, date)
+        }
+      })
       .catch(() => setError('This truck is not currently taking orders.'))
       .finally(() => setLoading(false))
   }, [slug])
@@ -207,6 +207,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const addItem = (item: MenuItem) => setBasket(prev => {
     const ex = prev.find(b => b.menuItem.name === item.name)
+    // Stock check: don't allow adding if at limit
+    if (item.stock_remaining != null && ex && ex.quantity >= item.stock_remaining) {
+      return prev
+    }
     return ex ? prev.map(b => b.menuItem.name === item.name ? { ...b, quantity: b.quantity + 1 } : b)
       : [...prev, { menuItem: item, quantity: 1 }]
   })
@@ -255,7 +259,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // ── Deals ───────────────────────────────────────────────────────────────────
   const maxDealsApplicable = (bundle: Bundle) => {
     if (!menu) return 0
-    const slots = getBundleSlots(bundle)
+    const slots = getSlotCats(bundle)
     if (!slots.length) return 0
     return Math.min(...slots.map(cat =>
       basket.filter(b => b.menuItem.category === cat).reduce((s, b) => s + b.quantity, 0)
@@ -265,10 +269,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const dealsApplied = (bundle: Bundle) => appliedDeals.filter(d => d.bundle.name === bundle.name).length
 
   const addDeal = (bundle: Bundle) => {
-    const slots = getBundleSlots(bundle)
+    const slots = getSlotCats(bundle)
     setAppliedDeals(prev => [...prev, {
       bundle,
-      slots: Object.fromEntries(slots.map(cat => {
+      slots: Object.fromEntries(slots.map((cat: string) => {
         const first = basket.find(b => b.menuItem.category === cat)
         return [cat, first?.menuItem.name || '']
       }))
@@ -469,7 +473,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 const maxApplicable = maxDealsApplicable(bundle)
                 const applied = dealsApplied(bundle)
                 const canAddMore = applied < maxApplicable
-                const slots = getBundleSlots(bundle)
+                const slots = getSlotCats(bundle)
                 const saving = bundle.original_price !== null && bundle.original_price > 0
                   ? bundle.original_price - bundle.bundle_price : null
 
@@ -521,7 +525,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               </div>
                               <button onClick={() => removeDeal(idx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold">Remove</button>
                             </div>
-                            {slots.map(cat => (
+                            {slots.map((cat: string) => (
                               <div key={cat} className="mb-2 last:mb-0">
                                 <label className="block text-[10px] font-bold text-orange-600 uppercase tracking-wide mb-1">Choose {cat}</label>
                                 <select value={deal.slots[cat] || ''} onChange={e => updateSlot(idx, cat, e.target.value)}
@@ -580,7 +584,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           <>
                             <QBtn onClick={() => removeItem(item.name)} label="−" />
                             <span className="w-5 text-center font-black text-slate-900 text-sm">{qty}</span>
-                            <QBtn onClick={() => addItem(item)} label="+" accent />
+                            {item.stock_remaining != null && qty >= item.stock_remaining ? (
+                              <button disabled className="w-7 h-7 rounded-lg bg-slate-100 text-slate-300 font-black text-sm cursor-not-allowed">+</button>
+                            ) : (
+                              <QBtn onClick={() => addItem(item)} label="+" accent />
+                            )}
                           </>
                         ) : (
                           <button onClick={() => addItem(item)} className="bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-orange-700 transition-colors active:scale-95">Add</button>

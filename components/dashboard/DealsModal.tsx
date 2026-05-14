@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import type { Bundle, MenuItem, BasketItem } from './types'
 import { getBundleSlotCats } from './helpers'
+import { prefillSlotsFromBasket, calculateDealOriginalPrice } from '../../lib/deal-utils'
 
 
 export function DealsModal({ bundles, menuItems, basketItems, onApply, onClose }: {
@@ -20,13 +21,7 @@ export function DealsModal({ bundles, menuItems, basketItems, onApply, onClose }
   useEffect(() => {
     if (bundles.length === 1) {
       const bundle = bundles[0]
-      const prefill: Record<string,string> = {}
-      const slotKeys = ['slot_1_category','slot_2_category','slot_3_category','slot_4_category','slot_5_category','slot_6_category']
-      slotKeys.forEach((k, idx) => {
-        const cat = bundle[k]; if (!cat) return
-        const match = basketItems.find(b => { const m = menuItems.find(mi => mi.name === b.name); return m?.category === cat })
-        if (match) prefill[`slot_${idx+1}`] = match.name
-      })
+      const prefill = prefillSlotsFromBasket(bundle, basketItems, menuItems)
       setSlotSelections(prefill)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -34,18 +29,8 @@ export function DealsModal({ bundles, menuItems, basketItems, onApply, onClose }
 
   const selectDeal = (bundle: any) => {
     setSelectedDeal(bundle)
-    // Pre-fill slots from basket where possible
-    const prefill: Record<string,string> = {}
-    const slots = ['slot_1_category','slot_2_category','slot_3_category','slot_4_category','slot_5_category','slot_6_category']
-    slots.forEach((slotKey, idx) => {
-      const cat = bundle[slotKey]
-      if (!cat) return
-      const matchInBasket = basketItems.find(b => {
-        const menuItem = menuItems.find(m => m.name === b.name)
-        return menuItem?.category === cat
-      })
-      if (matchInBasket) prefill[`slot_${idx+1}`] = matchInBasket.name
-    })
+    // Pre-fill slots from basket using shared utility
+    const prefill = prefillSlotsFromBasket(bundle, basketItems, menuItems)
     setSlotSelections(prefill)
   }
 
