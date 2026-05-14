@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '../../../lib/deal-utils'
+import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '../../../../lib/deal-utils'
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';
@@ -261,7 +261,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (!menu) return 0
     const slots = getSlotCats(bundle)
     if (!slots.length) return 0
-    return Math.min(...slots.map(cat =>
+    return Math.min(...slots.map((cat: string) =>
       basket.filter(b => b.menuItem.category === cat).reduce((s, b) => s + b.quantity, 0)
     ))
   }
@@ -490,7 +490,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           </div>
                           <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {slots.map(cat => <span key={cat} className="text-[10px] bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
+                            {slots.map((cat: string) => <span key={cat} className="text-[10px] bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
                           </div>
                         </div>
                         <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>
