@@ -40,7 +40,7 @@ export async function GET(
     
     supabase
       .from('menu_items_db')
-      .select('*')
+      .select('*, categories!category_id(name)')
       .eq('truck_id', truckId)
       .eq('is_available', true)
       .order('name'),
@@ -95,7 +95,7 @@ export async function GET(
       name: i.name,
       description: i.description || '',
       price: i.price,
-      category: i.category,
+      category: i.category || (i.categories as any)?.name || 'Uncategorized',
       available: i.is_available,
       stock_remaining: i.stock_count,
     })),
