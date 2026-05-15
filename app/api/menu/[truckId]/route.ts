@@ -1,32 +1,10 @@
 // app/api/menu/[truckId]/route.ts
+// Supabase-only menu API — no Google Sheets fallback
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { loadTruckMenuSafe } from '@/lib/menu-loader'
-
-const TRUCKS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv'
 
 export const revalidate = 0  // No cache — sold out changes must propagate immediately
-
-// Fetch truck logo from the master CSV — same source as TruckClient
-async function getTruckLogo(truckId: string): Promise<string | null> {
-  try {
-    const res = await fetch(TRUCKS_CSV_URL, { next: { revalidate: 3600 } })
-    if (!res.ok) return null
-    const text = await res.text()
-    const rows = text.split('\n').slice(1)
-    for (const row of rows) {
-      const cols = row.split(',')
-      const name = cols[0]?.replace(/^"|"$/g, '').trim()
-      const slug = name.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-')
-      if (slug === truckId) {
-        const logo = cols[9]?.replace(/^"|"$/g, '').trim()
-        return logo || null
-      }
-    }
-  } catch { return null }
-  return null
-}
 
 export async function GET(
   req: NextRequest,
@@ -34,56 +12,129 @@ export async function GET(
 ) {
   const { truckId } = await params
 
-  const { data: truck, error } = await supabase
+  // Fetch truck data
+  const { data: truck, error: truckError } = await supabase
     .from('trucks')
     .select('*')
     .eq('id', truckId)
     .eq('active', true)
     .single()
 
-  if (error || !truck) {
+  if (truckError || !truck) {
     return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
   }
 
-  const [menu, logo] = await Promise.all([
-    loadTruckMenuSafe(truck.sheet_id),
-    getTruckLogo(truckId),
+  // Fetch all menu data from Supabase
+  const [
+    { data: categories },
+    { data: items },
+    { data: bundles },
+    { data: upsellRules },
+    { data: codes },
+  ] = await Promise.all([
+    supabase
+      .from('categories')
+      .select('name, prep_secs, batch_size')
+      .eq('truck_id', truckId)
+      .order('name'),
+    
+    supabase
+      .from('menu_items_db')
+      .select('*')
+      .eq('truck_id', truckId)
+      .eq('is_available', true)
+      .order('name'),
+    
+    supabase
+      .from('bundles')
+      .select('*')
+      .eq('truck_id', truckId),
+    
+    supabase
+      .from('upsell_rules')
+      .select('*')
+      .eq('truck_id', truckId),
+    
+    supabase
+      .from('discount_codes')
+      .select('*')
+      .eq('truck_id', truckId)
+      .eq('is_active', true),
   ])
 
-  if (!menu) {
-    return NextResponse.json({ error: 'Menu unavailable — please try again shortly' }, { status: 503 })
+  // If no menu items exist, return empty menu with friendly message
+  if (!items || items.length === 0) {
+    return NextResponse.json({
+      truck: {
+        id: truck.id,
+        name: truck.name,
+        logo: truck.logo_storage_path,
+        mode: truck.mode,
+        venue_name: truck.venue_name,
+      },
+      menu: {
+        categories: [],
+        items: [],
+        bundles: [],
+        upsell_rules: [],
+        codes: [],
+      },
+      message: 'No menu items added yet. Visit the manage page to add your menu.'
+    }, { status: 200 })
   }
 
-  // Apply sold-out overrides from Supabase
-  const isDashboard = req.nextUrl.searchParams.get('dashboard') === '1'
-  const { data: overrides } = await supabase
-    .from('item_overrides')
-    .select('item_name, available, stock_count')
-    .eq('truck_id', truck.id)
-
-  // Build override map with stock info
-  const overrideMap = new Map((overrides || []).map((o: any) => [o.item_name, o]))
-
-  if (menu) {
-    menu.items = menu.items.map(item => {
-      const override = overrideMap.get(item.name)
-      const isSoldOut = override ? !override.available : false
-      const stockCount = override?.stock_count ?? null
-      // stock_count is the actual remaining stock — no need to subtract orders
-      return {
-        ...item,
-        available: !isSoldOut,
-        stock_remaining: stockCount,  // null = unlimited, number = count left
-      }
-    })
+  // Build menu response
+  const menu = {
+    categories: (categories || []).map(c => ({
+      name: c.name,
+      prep_secs: c.prep_secs || 0,
+      batch_size: c.batch_size || 1,
+    })),
+    
+    items: items.map(i => ({
+      name: i.name,
+      description: i.description || '',
+      price: i.price,
+      category: i.category,
+      available: i.is_available,
+      stock_remaining: i.stock_count,
+    })),
+    
+    bundles: (bundles || []).map(b => ({
+      name: b.name,
+      description: b.description || '',
+      bundle_price: b.bundle_price,
+      original_price: b.original_price,
+      slot_1_category: b.slot_1_category,
+      slot_2_category: b.slot_2_category,
+      slot_3_category: b.slot_3_category,
+      slot_4_category: b.slot_4_category,
+      slot_5_category: b.slot_5_category,
+      slot_6_category: b.slot_6_category,
+      start_time: b.start_time,
+      end_time: b.end_time,
+      available: true,
+    })),
+    
+    upsell_rules: (upsellRules || []).map(r => ({
+      trigger_category: r.trigger_category,
+      suggest_category: r.suggest_category,
+      max_suggestions: r.max_suggestions,
+    })),
+    
+    codes: (codes || []).map(c => ({
+      code: c.code,
+      type: c.type,
+      value: c.value,
+    })),
   }
 
   return NextResponse.json({
     truck: {
-      id:         truck.id,
-      name:       truck.name,
-      logo:       logo,
-      mode:       truck.mode,
+      id: truck.id,
+      name: truck.name,
+      logo: truck.logo_storage_path,
+      mode: truck.mode,
       venue_name: truck.venue_name,
     },
     menu,
