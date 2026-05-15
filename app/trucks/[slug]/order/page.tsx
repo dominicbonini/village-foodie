@@ -293,14 +293,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const dealsApplied = (bundle: Bundle) => appliedDeals.filter(d => d.bundle.name === bundle.name).length
 
   const addDeal = (bundle: Bundle) => {
-    const slots = getSlotCats(bundle)
-    setAppliedDeals(prev => [...prev, {
-      bundle,
-      slots: Object.fromEntries(slots.map((cat: string) => {
-        const first = basket.find(b => b.menuItem.category === cat)
-        return [cat, first?.menuItem.name || '']
-      }))
-    }])
+    setSelectedBundleForModal(bundle)
+    setDealModalOpen(true)
+  }
+
+  const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number) => {
+    // Add items from deal to basket if not already there
+    Object.values(slots).forEach(itemName => {
+      if (!itemName) return
+      const menuItem = menu?.items.find(i => i.name === itemName)
+      if (!menuItem) return
+      const inBasket = basket.find(b => b.menuItem.name === itemName)
+      if (!inBasket) {
+        setBasket(prev => [...prev, { menuItem, quantity: 1 }])
+      }
+    })
+    // Add deal to applied deals
+    setAppliedDeals(prev => [...prev, { bundle: deal, slots }])
+    setDealModalOpen(false)
   }
 
   const removeDeal = (i: number) => setAppliedDeals(prev => prev.filter((_, idx) => idx !== i))
@@ -493,10 +503,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <h2 className="text-xs font-black text-orange-600 uppercase tracking-widest mb-2 px-1">🎁 Meal deals</h2>
             <div className="space-y-2">
               {menu.bundles.filter(b => b.available).map(bundle => {
-                const isLocked = false
-                const maxApplicable = maxDealsApplicable(bundle)
                 const applied = dealsApplied(bundle)
-                const canAddMore = applied < maxApplicable
                 const slots = getSlotCats(bundle)
                 const saving = bundle.original_price !== null && bundle.original_price > 0
                   ? bundle.original_price - bundle.bundle_price : null
@@ -511,6 +518,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             {saving !== null && saving > 0 && (
                               <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>
                             )}
+                            {applied > 0 && (
+                              <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">✓ {applied} applied</span>
+                            )}
                           </div>
                           <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
                           <div className="flex flex-wrap gap-1 mt-1">
@@ -519,16 +529,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         </div>
                         <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>
                       </div>
-                      {canAddMore ? (
-                        <button onClick={() => addDeal(bundle)}
-                          className="w-full bg-orange-600 text-white font-bold text-sm py-2 rounded-xl hover:bg-orange-700 transition-colors active:scale-95">
-                          {applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
-                        </button>
-                      ) : maxApplicable === 0 ? (
-                        <p className="text-xs text-slate-400 text-center py-1">Add {slots.join(' + ')} items to unlock</p>
-                      ) : (
-                        <p className="text-xs text-green-600 font-bold text-center py-1">✓ {applied} applied — max reached</p>
-                      )}
+                      <button onClick={() => addDeal(bundle)}
+                        className="w-full bg-orange-600 text-white font-bold text-sm py-2 rounded-xl hover:bg-orange-700 transition-colors active:scale-95">
+                        {applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
+                      </button>
                     </div>
                     {/* Applied deal instances */}
                     {appliedDeals
@@ -851,6 +855,32 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <p className="text-center text-slate-400 text-xs mt-2">Pay at the truck on collection · No card details needed</p>
         </div>
       </div>
+
+      {/* Deals Modal */}
+      {dealModalOpen && selectedBundleForModal && menu && (
+        <DealsModal
+          bundles={[selectedBundleForModal]}
+          menuItems={menu.items}
+          basketItems={basket
+            .filter((b) => !b.modifiers || b.modifiers.length === 0)
+            .map((b) => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price }))}
+          onApply={handleApplyDeal}
+          onClose={() => setDealModalOpen(false)}
+        />
+      )}
+
+      {/* Deals Modal */}
+      {dealModalOpen && selectedBundleForModal && menu && (
+        <DealsModal
+          bundles={[selectedBundleForModal]}
+          menuItems={menu.items}
+          basketItems={basket
+            .filter((b) => !b.modifiers || b.modifiers.length === 0)
+            .map((b) => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price }))}
+          onApply={handleApplyDeal}
+          onClose={() => setDealModalOpen(false)}
+        />
+      )}
     </Shell>
   )
 }
