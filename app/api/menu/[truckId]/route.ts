@@ -1,5 +1,5 @@
 // app/api/menu/[truckId]/route.ts
-// Supabase-only menu API — no Google Sheets fallback
+// Supabase-only menu API — looks up by slug (not ID)
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
@@ -10,21 +10,41 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ truckId: string }> }
 ) {
-  const { truckId } = await params
-
-  // Fetch truck data
-  const { data: truck, error: truckError } = await supabase
+  const { truckId: slugOrId } = await params
+  
+  // The parameter is called truckId but it's actually a slug (like "pizzeria-gusto")
+  // Look up truck by ID first, then fall back to slug
+  let truck = null
+  
+  // Try by ID first
+  const { data: byId } = await supabase
     .from('trucks')
     .select('*')
-    .eq('id', truckId)
+    .eq('id', slugOrId)
     .eq('active', true)
     .single()
+  
+  if (byId) {
+    truck = byId
+  } else {
+    // Fall back to slug lookup
+    const { data: bySlug } = await supabase
+      .from('trucks')
+      .select('*')
+      .eq('slug', slugOrId)
+      .eq('active', true)
+      .single()
+    
+    truck = bySlug
+  }
 
-  if (truckError || !truck) {
+  if (!truck) {
     return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
   }
 
-  // Fetch all menu data from Supabase
+  // Fetch all menu data from Supabase using the actual truck ID
+  const truckId = truck.id
+  
   const [
     { data: categories },
     { data: items },
@@ -60,9 +80,6 @@ export async function GET(
       .eq('truck_id', truckId)
       .eq('is_active', true),
   ])
-
-  // If no items, just return empty arrays - let the UI handle it gracefully
-  // (removed special error message - empty menu displays normally)
 
   // Build menu response
   const menu = {
