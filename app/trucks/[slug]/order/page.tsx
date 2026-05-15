@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
+import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
 import Image from 'next/image';
 import { use } from 'react';
@@ -38,7 +39,11 @@ interface EventData {
   notes: string
 }
 
-interface BasketItem { menuItem: MenuItem; quantity: number }
+interface BasketItem { 
+  menuItem: MenuItem
+  quantity: number
+  modifiers?: string[] // e.g. ["Extra Cheese +£1", "No Onion"]
+}
 interface AppliedDeal { bundle: Bundle; slots: Record<string, string> }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -112,6 +117,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const [basket, setBasket] = useState<BasketItem[]>([])
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
+  const [dealModalOpen, setDealModalOpen] = useState(false)
+  const [selectedBundleForModal, setSelectedBundleForModal] = useState<Bundle | null>(null)
+  const [expandedItem, setExpandedItem] = useState<string | null>(null)
   const [discountInput, setDiscountInput] = useState('')
   const [appliedCode, setAppliedCode] = useState<DiscountCode | null>(null)
   const [discountError, setDiscountError] = useState('')
@@ -240,6 +248,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [menu])
 
   // ── Upsells ─────────────────────────────────────────────────────────────────
+  // Get upsell options for a specific item
+  const getItemUpsells = (item: MenuItem): MenuItem[] => {
+    if (!menu) return []
+    const rules = menu.upsell_rules.filter(r => r.trigger_category === item.category)
+    const suggestions: MenuItem[] = []
+    for (const rule of rules) {
+      const matchedItems = menu.items.filter(i => 
+        i.category === rule.suggest_category && 
+        i.available &&
+        !basket.find(b => b.menuItem.name === i.name)
+      ).slice(0, rule.max_suggestions)
+      suggestions.push(...matchedItems)
+    }
+    return suggestions
+  }
+
   const upsellSuggestions = useMemo(() => {
     if (!menu) return []
     const basketCats = new Set(basket.map(b => b.menuItem.category))
@@ -558,10 +582,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 {items.map(item => {
                   const qty = getQty(item.name)
                   const isSoldOut = !item.available
-                  // Low stock: if item has a stock hint in description like "(8 left)"
-                  // The menu API passes stock info via available flag only for now
+                  const itemUpsells = qty > 0 ? getItemUpsells(item) : []
+                  const isExpanded = expandedItem === item.name
                   return (
-                    <div key={item.name} className={`flex items-center gap-3 py-3 ${isSoldOut ? 'opacity-60' : ''}`}>
+                    <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
+                    <div className={`flex items-center gap-3 py-3`}>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className={`font-bold text-sm leading-snug ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
@@ -595,6 +620,43 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         )}
                       </div>
                     </div>
+                    
+                    {/* Modifiers/Upsells inline */}
+                    {qty > 0 && itemUpsells.length > 0 && (
+                      <div className="pl-3 pb-3">
+                        {!isExpanded ? (
+                          <button onClick={() => setExpandedItem(item.name)}
+                            className="text-xs text-orange-600 font-bold hover:text-orange-700 flex items-center gap-1">
+                            <span>+ Add extras</span>
+                            <span>▼</span>
+                          </button>
+                        ) : (
+                          <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-xs font-black text-orange-700">Available extras</p>
+                              <button onClick={() => setExpandedItem(null)} className="text-xs text-orange-400 hover:text-orange-600">▲</button>
+                            </div>
+                            <div className="space-y-1.5">
+                              {itemUpsells.map(upsell => {
+                                const upsellQty = getQty(upsell.name)
+                                return (
+                                  <button key={upsell.name} onClick={() => addItem(upsell)}
+                                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                                      upsellQty > 0 
+                                        ? 'bg-orange-600 text-white' 
+                                        : 'bg-white text-slate-700 border border-orange-200 hover:border-orange-400'
+                                    }`}>
+                                    <span>{upsellQty > 0 ? `✓ ${upsellQty}× ` : ''}{upsell.name}</span>
+                                    <span className={upsellQty > 0 ? 'text-orange-200' : 'text-orange-600'}>+£{upsell.price.toFixed(2)}</span>
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    </div>
                   )
                 })}
               </div>
@@ -602,26 +664,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           ))}
         </div>
 
-
-
-        {/* UPSELL SUGGESTIONS */}
-        {upsellSuggestions.length > 0 && (
-          <Sec title="You might also want">
-            <div className="flex flex-wrap gap-2">
-              {upsellSuggestions.map(item => {
-                const qty = getQty(item.name)
-                return (
-                  <button key={item.name} onClick={() => addItem(item)}
-                    className={`flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border transition-all active:scale-95 ${qty > 0 ? 'bg-orange-600 text-white border-orange-600' : 'bg-white text-slate-700 border-orange-200 hover:border-orange-400'}`}>
-                    {qty > 0 && <span>✓ {qty}×</span>}
-                    <span>{item.name}</span>
-                    <span className={qty > 0 ? 'text-orange-200' : 'text-orange-500'}>£{item.price.toFixed(2)}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </Sec>
-        )}
 
 
         {/* DISCOUNT CODE */}
