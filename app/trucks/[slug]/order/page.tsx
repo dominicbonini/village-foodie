@@ -298,17 +298,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number) => {
-    // Add items from deal to basket if not already there
-    Object.values(slots).forEach(itemName => {
-      if (!itemName) return
-      const menuItem = menu?.items.find(i => i.name === itemName)
-      if (!menuItem) return
-      const inBasket = basket.find(b => b.menuItem.name === itemName)
-      if (!inBasket) {
-        setBasket(prev => [...prev, { menuItem, quantity: 1 }])
-      }
-    })
-    // Add deal to applied deals
+    // Just add the deal — do NOT add individual items to basket
+    // The deal IS the purchase, not a discount on basket items
     setAppliedDeals(prev => [...prev, { bundle: deal, slots }])
     setDealModalOpen(false)
   }
@@ -319,17 +310,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const getSlotOptions = (cat: string) => basket.filter(b => b.menuItem.category === cat).map(b => b.menuItem)
 
   // ── Totals ──────────────────────────────────────────────────────────────────
-  const { itemsTotal, dealDiscount, discountAmt, total } = useMemo(() => {
+  const { itemsTotal, dealsTotal, dealSaving, discountAmt, total } = useMemo(() => {
     const itemsTotal = basket.reduce((s, b) => s + b.menuItem.price * b.quantity, 0)
-    const dealDiscount = appliedDeals.reduce((s, d) => {
+    const dealsTotal = appliedDeals.reduce((s, d) => s + d.bundle.bundle_price, 0)
+    const dealSaving = appliedDeals.reduce((s, d) => {
       const orig = calcDealOriginalPrice(d, menu?.items || [])
       return s + Math.max(0, orig - d.bundle.bundle_price)
     }, 0)
-    const sub = itemsTotal - dealDiscount
+    const sub = itemsTotal + dealsTotal
     const discountAmt = appliedCode
       ? appliedCode.type === 'pct' ? sub * appliedCode.value / 100 : appliedCode.value
       : 0
-    return { itemsTotal, dealDiscount, discountAmt, total: Math.max(0, sub - discountAmt) }
+    return { itemsTotal, dealsTotal, dealSaving, discountAmt, total: Math.max(0, sub - discountAmt) }
   }, [basket, appliedDeals, appliedCode, menu])
 
   const hasItems = basket.length > 0
@@ -356,7 +348,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           items: basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })),
           deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots })),
           discountCode: appliedCode?.code || null,
-          subtotal: itemsTotal, discountAmt: dealDiscount + discountAmt, total, notes: notes || null,
+          subtotal: itemsTotal + dealsTotal, discountAmt: dealSaving + discountAmt, total, notes: notes || null,
         }),
       })
       const data = await res.json()
@@ -399,7 +391,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
               </div>
             ))}
-            {dealDiscount > 0 && <div className="flex justify-between text-sm border-t border-slate-200 pt-2"><span className="text-green-600">Deals</span><span className="text-green-600 font-medium">-£{dealDiscount.toFixed(2)}</span></div>}
+            {dealsTotal > 0 && <div className="flex justify-between text-sm"><span>Deals ({appliedDeals.length})</span><span className="font-medium">£{dealsTotal.toFixed(2)}</span></div>}
+            {dealSaving > 0 && <div className="flex justify-between text-sm text-green-600"><span>Deal savings</span><span className="font-medium">-£{dealSaving.toFixed(2)}</span></div>}
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
               <span className="font-black text-slate-900">Total</span>
               <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
@@ -824,10 +817,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
                     </div>
                   ))}
-                  {dealDiscount > 0 && (
+                  {dealSaving > 0 && (
                     <div className="flex justify-between text-xs border-t border-slate-200 pt-1.5">
                       <span className="text-green-600">{appliedDeals.length} deal{appliedDeals.length > 1 ? 's' : ''}</span>
-                      <span className="text-green-600 font-medium">-£{dealDiscount.toFixed(2)}</span>
+                      <span className="text-green-600 font-medium">-£{dealSaving.toFixed(2)}</span>
                     </div>
                   )}
                   {discountAmt > 0 && (
