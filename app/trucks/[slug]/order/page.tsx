@@ -315,8 +315,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const removeDeal = (i: number) => setAppliedDeals(prev => prev.filter((_, idx) => idx !== i))
 
-  const updateSlot = (dealIdx: number, cat: string, val: string) =>
-    setAppliedDeals(prev => prev.map((d, i) => i === dealIdx ? { ...d, slots: { ...d.slots, [cat]: val } } : d))
 
   const getSlotOptions = (cat: string) => basket.filter(b => b.menuItem.category === cat).map(b => b.menuItem)
 
@@ -534,35 +532,36 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         {applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
                       </button>
                     </div>
-                    {/* Applied deal instances */}
+                    {/* Applied deal instances - compact summary */}
                     {appliedDeals
-                      .map((deal, idx) => ({ deal, idx }))
-                      .filter(({ deal }) => deal.bundle.name === bundle.name)
-                      .map(({ deal, idx }) => {
+                      .filter(deal => deal.bundle.name === bundle.name)
+                      .map((deal, localIdx) => {
                         const dynOrig = calcDealOriginalPrice(deal, menu.items)
                         const dynSaving = dynOrig > 0 ? Math.max(0, dynOrig - deal.bundle.bundle_price) : null
-                        const dealNum = appliedDeals.filter((d, i) => d.bundle.name === bundle.name && i <= idx).length
+                        const globalIdx = appliedDeals.indexOf(deal)
+                        const itemsSummary = Object.entries(deal.slots)
+                          .filter(([_, itemName]) => itemName)
+                          .map(([_, itemName]) => itemName)
+                          .join(' + ')
+                        
                         return (
-                          <div key={idx} className="border-t border-orange-100 px-4 py-3 bg-orange-50">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-2">
-                                <p className="text-xs font-black text-orange-700">{applied > 1 ? `Deal ${dealNum}` : 'Your deal'}</p>
-                                {dynSaving !== null && dynSaving > 0 && (
-                                  <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{dynSaving.toFixed(2)}</span>
-                                )}
+                          <div key={globalIdx} className="border-t border-orange-100 px-4 py-3 bg-orange-50">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="text-xs font-black text-orange-700">
+                                    {appliedDeals.filter(d => d.bundle.name === bundle.name).length > 1 
+                                      ? `Deal ${localIdx + 1}` 
+                                      : 'Your deal'}
+                                  </p>
+                                  {dynSaving !== null && dynSaving > 0 && (
+                                    <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{dynSaving.toFixed(2)}</span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-slate-600 mt-0.5 truncate">{itemsSummary}</p>
                               </div>
-                              <button onClick={() => removeDeal(idx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold">Remove</button>
+                              <button onClick={() => removeDeal(globalIdx)} className="text-[10px] text-orange-400 hover:text-orange-600 font-bold shrink-0">Remove</button>
                             </div>
-                            {slots.map((cat: string) => (
-                              <div key={cat} className="mb-2 last:mb-0">
-                                <label className="block text-[10px] font-bold text-orange-600 uppercase tracking-wide mb-1">Choose {cat}</label>
-                                <select value={deal.slots[cat] || ''} onChange={e => updateSlot(idx, cat, e.target.value)}
-                                  className="w-full border border-orange-200 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                                  <option value="">Select {cat}...</option>
-                                  {getSlotOptions(cat).map(opt => <option key={opt.name} value={opt.name}>{opt.name} — £{opt.price.toFixed(2)}</option>)}
-                                </select>
-                              </div>
-                            ))}
                           </div>
                         )
                       })}
