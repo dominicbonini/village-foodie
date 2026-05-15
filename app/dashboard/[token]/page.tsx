@@ -50,12 +50,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[appliedDeals,setAppliedDeals]=useState<AppliedDeal[]>([])
   // Deal modal
   const[showDealsModal,setShowDealsModal]=useState(false)
+  const[activeDealBundle,setActiveDealBundle]=useState<any>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
   const[undoPrep,setUndoPrep]=useState<{name:string;qty:number}|null>(null)
   const[categoryConfigs,setCategoryConfigs]=useState<Record<string,{secs:number;batch:number}>>({})
   const[showPrepList,setShowPrepList]=useState(false)
-  const[activeDealBundle,setActiveDealBundle]=useState<Bundle|null>(null)
   const[dealSlotPicks,setDealSlotPicks]=useState<Record<string,string>>({})
   // Edit modal
   const[editingOrder,setEditingOrder]=useState<Order|null>(null)
@@ -718,7 +718,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {availableDeals.length>0&&(
                 <button onClick={()=>{
                   if(availableDeals.length===1){openDealModal(availableDeals[0])}
-                  else{setActiveDealBundle(null);setDealSlotPicks({});setShowDealsModal(true)}
+                  else{setActiveDealBundle(null);setShowDealsModal(true)}
                 }}
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mt-2">
                   <span>🎁</span>
@@ -967,158 +967,45 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       </main>
 
       {/* Deals modal */}
-      {showDealsModal&&(
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&(setShowDealsModal(false),setActiveDealBundle(null))}>
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                {activeDealBundle&&<button onClick={()=>setActiveDealBundle(null)} className="text-orange-600 text-sm font-bold flex items-center gap-1 mb-1">← Back</button>}
-                <h3 className="font-black text-slate-900">{activeDealBundle?activeDealBundle.name:'Apply a deal'}</h3>
-              </div>
-              <button onClick={()=>{setShowDealsModal(false);setActiveDealBundle(null)}} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center shrink-0">×</button>
-            </div>
-
-            {!activeDealBundle?(
-              // Deal list view
-              <div className="space-y-3">
-                <p className="text-xs text-slate-400 mb-3">Time windows are for reference only — deals can always be applied.</p>
-                {availableDeals.map(bundle=>{
-                  const cats=getBundleSlotCats(bundle)
-                  const saving=bundle.original_price?bundle.original_price-bundle.bundle_price:null
-                  const now=new Date(); const nowMins=now.getHours()*60+now.getMinutes()
-                  const isActive=(()=>{
-                    if(!bundle.start_time&&!bundle.end_time) return true
-                    const startMins=bundle.start_time?parseInt(bundle.start_time.split(':')[0])*60+parseInt(bundle.start_time.split(':')[1]):0
-                    const endMins=bundle.end_time?parseInt(bundle.end_time.split(':')[0])*60+parseInt(bundle.end_time.split(':')[1]):1440
-                    return nowMins>=startMins&&nowMins<endMins
-                  })()
-                  return(
-                    <button key={bundle.name} onClick={()=>openDealModal(bundle)}
-                      className="w-full text-left border border-slate-200 rounded-xl p-3 hover:border-orange-300 hover:bg-orange-50 transition-all active:scale-[0.99]">
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <p className="font-black text-slate-900 text-sm">{bundle.name}</p>
-                            {isActive
-                              ? <span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Active now</span>
-                              : <span className="text-[10px] bg-amber-100 text-amber-700 font-bold px-1.5 py-0.5 rounded-full">Outside hours</span>
-                            }
-                          </div>
-                          <p className="text-slate-500 text-xs">{bundle.description}</p>
-                          {(bundle.start_time||bundle.end_time)&&(
-                            <p className="text-slate-400 text-xs mt-0.5">
-                              {[bundle.start_time&&`${bundle.start_time}`,bundle.end_time&&`${bundle.end_time}`].filter(Boolean).join(' – ')}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right shrink-0">
-                          <p className="font-black text-orange-600">£{bundle.bundle_price.toFixed(2)}</p>
-                          {saving&&saving>0&&<span className="text-[10px] bg-green-100 text-green-700 font-bold px-1.5 py-0.5 rounded-full">Save £{saving.toFixed(2)}</span>}
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        {cats.map((cat:string)=>{
-                          const inBasket=manualItems.some(i=>{const mi=truckMenu?.items.find(m=>m.name===i.name);return mi?.category===cat})
-                          return<span key={cat} className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${inBasket?'bg-green-100 text-green-700':'bg-slate-100 text-slate-500'}`}>{cat}{inBasket?' ✓':''}</span>
-                        })}
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
-            ):(
-              // Slot picker view — activeDealBundle is set
-              <div>
-                {(()=>{
-                  const b=activeDealBundle!
-                  const now=new Date(); const nowMins=now.getHours()*60+now.getMinutes()
-                  const startMins=b.start_time?parseInt(b.start_time.split(':')[0])*60+parseInt(b.start_time.split(':')[1]):0
-                  const endMins=b.end_time?parseInt(b.end_time.split(':')[0])*60+parseInt(b.end_time.split(':')[1]):1440
-                  const isActive=(!b.start_time&&!b.end_time)||(nowMins>=startMins&&nowMins<endMins)
-                  return(
-                    <div className={`border rounded-xl p-3 mb-4 ${isActive?'bg-green-50 border-green-200':'bg-amber-50 border-amber-200'}`}>
-                      <div className="flex items-center justify-between">
-                        <p className="text-slate-700 text-xs font-bold">{b.description}</p>
-                        <p className="font-black text-orange-600 text-sm">£{b.bundle_price.toFixed(2)}</p>
-                      </div>
-                      {(b.start_time||b.end_time)&&(
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${isActive?'bg-green-200 text-green-800':'bg-amber-200 text-amber-800'}`}>
-                            {isActive?'Active now':'Outside hours'}
-                          </span>
-                          <span className="text-slate-400 text-xs">
-                            {[b.start_time&&`${b.start_time}`,b.end_time&&`${b.end_time}`].filter(Boolean).join(' – ')}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })()}
-                <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">Select items for each slot</p>
-                {getBundleSlotCats(activeDealBundle!).map((cat:string)=>{
-                  const allOpts=(truckMenu?.items||[]).filter(i=>i.category===cat)
-                  // Count how many of each item are in basket vs assigned to deals
-                  const inBasketOpts=manualItems.filter(b=>allOpts.some(m=>m.name===b.name))
-                  const dealAssignments:Record<string,number>={}
-                  appliedDeals.forEach(d=>Object.values(d.slots).filter(Boolean).forEach(n=>{
-                    dealAssignments[n]=(dealAssignments[n]||0)+1
-                  }))
-                  const fullyUsed=new Set(inBasketOpts.filter(b=>(dealAssignments[b.name]||0)>=b.quantity).map(b=>b.name))
-                  const isFilled=!!dealSlotPicks[cat]
-                  const displayVal=dealSlotPicks[cat]?.startsWith('USE_EXISTING:')?dealSlotPicks[cat].replace('USE_EXISTING:',''):dealSlotPicks[cat]
-                  return(
-                    <div key={cat} className="mb-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${isFilled?'bg-green-500 text-white':'bg-slate-200 text-slate-500'}`}>{isFilled?'✓':''}</span>
-                        <label className="text-xs font-black text-slate-700 uppercase">{cat}</label>
-                        {inBasketOpts.length>0&&<span className="text-[10px] text-green-600 font-bold">({inBasketOpts.length} in basket)</span>}
-                      </div>
-                      <select
-                        value={dealSlotPicks[cat]||''}
-                        onChange={e=>setDealSlotPicks(prev=>({...prev,[cat]:e.target.value}))}
-                        className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${isFilled?'border-green-300':'border-slate-200'}`}>
-                        <option value="">Choose {cat}…</option>
-                        {/* In-basket items first — linking, no extra added */}
-                        {inBasketOpts.length>0&&<option disabled>── In your basket (no extra added) ──</option>}
-                        {inBasketOpts.map(b=>(
-                          <option key={`USE_EXISTING:${b.name}`} value={`USE_EXISTING:${b.name}`}
-                            disabled={fullyUsed.has(b.name)}>
-                            {b.name} (in basket){fullyUsed.has(b.name)?' — fully assigned to deals':''}
-                          </option>
-                        ))}
-                        {/* All menu items — adds new one. Always available even if in another deal */}
-                        {inBasketOpts.length>0&&<option disabled>── Add new item ──</option>}
-                        {allOpts.map(item=>(
-                          <option key={item.name} value={item.name}>
-                            {item.name} £{item.price.toFixed(2)} — add new
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )
-                })}
-                {getBundleSlotCats(activeDealBundle!).every((c:string)=>dealSlotPicks[c])&&(()=>{
-                  const orig=Object.values(dealSlotPicks).reduce((sum,n)=>{const item=truckMenu?.items.find(i=>i.name===n);return sum+(item?.price||0)},0)
-                  const saving=Math.max(0,orig-activeDealBundle!.bundle_price)
-                  return saving>0?(
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 text-center">
-                      <p className="text-green-700 font-black text-sm">Save £{saving.toFixed(2)}</p>
-                      <p className="text-green-600 text-xs">£{orig.toFixed(2)} → £{activeDealBundle!.bundle_price.toFixed(2)}</p>
-                    </div>
-                  ):null
-                })()}
-                <div className="flex gap-2">
-                  <button onClick={()=>setActiveDealBundle(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
-                  <button onClick={applyDeal} disabled={!activeDealBundle||!getBundleSlotCats(activeDealBundle).every((c:string)=>dealSlotPicks[c])}
-                    className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-40">
-                    Apply deal
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+      {showDealsModal && (
+        <DealsModal
+          bundles={activeDealBundle ? [activeDealBundle] : availableDeals}
+          menuItems={truckMenu?.items || []}
+          basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: 0 }))}
+          existingDeals={appliedDeals}
+          onApply={(deal, slots, price, discount) => {
+            // Add items from deal if they're marked as new (not USE_EXISTING)
+            const slotsArray = Object.entries(slots)
+            slotsArray.forEach(([cat, itemName]) => {
+              if (!itemName) return
+              // Check if this item is already in the basket
+              const existingInBasket = manualItems.find(i => i.name === itemName)
+              if (!existingInBasket) {
+                // Add new item
+                const menuItem = (truckMenu?.items || []).find(m => m.name === itemName)
+                setManualItems(prev => [...prev, { name: itemName, quantity: 1, unit_price: menuItem?.price || 0 }])
+              }
+            })
+            // Add the deal
+            setAppliedDeals(prev => [...prev, { 
+              bundle: { 
+                ...deal, 
+                available: true,
+                start_time: deal.start_time ?? null,
+                end_time: deal.end_time ?? null
+              }, 
+              slots 
+            }])
+            setShowDealsModal(false)
+            setActiveDealBundle(null)
+          }}
+          onClose={() => {
+            setShowDealsModal(false)
+            setActiveDealBundle(null)
+          }}
+        />
       )}
+
 
 
       {/* Edit order modal */}

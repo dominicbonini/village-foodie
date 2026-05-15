@@ -856,23 +856,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           basketItems={basket
             .filter((b) => !b.modifiers || b.modifiers.length === 0)
             .map((b) => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price }))}
+          existingDeals={appliedDeals}
           onApply={handleApplyDeal}
           onClose={() => setDealModalOpen(false)}
         />
       )}
 
-      {/* Deals Modal */}
-      {dealModalOpen && selectedBundleForModal && menu && (
-        <DealsModal
-          bundles={[selectedBundleForModal]}
-          menuItems={menu.items}
-          basketItems={basket
-            .filter((b) => !b.modifiers || b.modifiers.length === 0)
-            .map((b) => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price }))}
-          onApply={handleApplyDeal}
-          onClose={() => setDealModalOpen(false)}
-        />
-      )}
+      
     </Shell>
   )
 }
