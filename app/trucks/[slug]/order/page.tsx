@@ -201,12 +201,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       .then(data => {
         setTruck(data.truck)
         setMenu(data.menu)
-        // Check if menu is empty
-        if (data.message) {
-          setError(data.message)
-          setLoading(false)
-          return
-        }
         // If event already loaded, fetch slots now
         if (event && data.truck.id) {
           const date = event.date || new Date().toISOString().split('T')[0]

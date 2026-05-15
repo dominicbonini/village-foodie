@@ -42,7 +42,6 @@ export async function GET(
       .from('menu_items_db')
       .select('*, categories!category_id(name)')
       .eq('truck_id', truckId)
-      .eq('is_available', true)
       .order('name'),
     
     supabase
@@ -62,26 +61,8 @@ export async function GET(
       .eq('is_active', true),
   ])
 
-  // If no menu items exist, return empty menu with friendly message
-  if (!items || items.length === 0) {
-    return NextResponse.json({
-      truck: {
-        id: truck.id,
-        name: truck.name,
-        logo: truck.logo_storage_path,
-        mode: truck.mode,
-        venue_name: truck.venue_name,
-      },
-      menu: {
-        categories: [],
-        items: [],
-        bundles: [],
-        upsell_rules: [],
-        codes: [],
-      },
-      message: 'No menu items added yet. Visit the manage page to add your menu.'
-    }, { status: 200 })
-  }
+  // If no items, just return empty arrays - let the UI handle it gracefully
+  // (removed special error message - empty menu displays normally)
 
   // Build menu response
   const menu = {
@@ -91,7 +72,7 @@ export async function GET(
       batch_size: c.batch_size || 1,
     })),
     
-    items: items.map(i => ({
+    items: (items || []).map(i => ({
       name: i.name,
       description: i.description || '',
       price: i.price,
