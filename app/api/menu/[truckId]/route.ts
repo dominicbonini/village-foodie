@@ -1,53 +1,37 @@
 // app/api/menu/[truckId]/route.ts
-// Supabase-only menu API — looks up by slug (not ID)
+// Supabase-only menu API
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-export const revalidate = 0  // No cache — sold out changes must propagate immediately
+export const revalidate = 0  // No cache
 
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ truckId: string }> }
 ) {
-  const { truckId: slugOrId } = await params
+  const { truckId } = await params
   
-  // The parameter is called truckId but it's actually a slug (like "pizzeria-gusto")
-  // Look up truck by ID first, then fall back to slug
-  let truck = null
+  console.log('[MENU API] Looking up truck:', truckId)
   
-  // Try by ID first
-  const { data: byId } = await supabase
+  // Fetch truck by ID (the truckId param IS the truck ID)
+  const { data: truck, error: truckError } = await supabase
     .from('trucks')
     .select('*')
-    .eq('id', slugOrId)
+    .eq('id', truckId)
     .eq('active', true)
     .single()
-  
-  if (byId) {
-    truck = byId
-  } else {
-    // Fall back to slug lookup
-    const { data: bySlug } = await supabase
-      .from('trucks')
-      .select('*')
-      .eq('slug', slugOrId)
-      .eq('active', true)
-      .single()
-    
-    truck = bySlug
-  }
 
-  if (!truck) {
+  console.log('[MENU API] Truck found:', truck?.name, 'Error:', truckError)
+
+  if (truckError || !truck) {
     return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
   }
 
-  // Fetch all menu data from Supabase using the actual truck ID
-  const truckId = truck.id
-  
+  // Fetch all menu data from Supabase
   const [
-    { data: categories },
-    { data: items },
+    { data: categories, error: catError },
+    { data: items, error: itemsError },
     { data: bundles },
     { data: upsellRules },
     { data: codes },
@@ -80,6 +64,12 @@ export async function GET(
       .eq('truck_id', truckId)
       .eq('is_active', true),
   ])
+
+  console.log('[MENU API] Query results:')
+  console.log('  categories:', categories?.length || 0, catError)
+  console.log('  items:', items?.length || 0, itemsError)
+  console.log('  items data:', items)
+  console.log('  bundles:', bundles?.length || 0)
 
   // Build menu response
   const menu = {
@@ -126,6 +116,8 @@ export async function GET(
       value: c.value,
     })),
   }
+
+  console.log('[MENU API] Returning menu with', menu.items.length, 'items')
 
   return NextResponse.json({
     truck: {
