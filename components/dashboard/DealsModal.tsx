@@ -2,7 +2,7 @@
 // components/dashboard/DealsModal.tsx
 // Unified deal selection modal for both truck dashboard and customer ordering
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 interface Bundle {
   name: string
@@ -60,21 +60,6 @@ export function DealsModal({
 }) {
   const [selectedDeal, setSelectedDeal] = useState<Bundle | null>(bundles.length === 1 ? bundles[0] : null)
   const [slotSelections, setSlotSelections] = useState<Record<string, string>>({})
-
-  // Auto-prefill from basket when single deal is auto-selected
-  useEffect(() => {
-    if (bundles.length === 1 && selectedDeal) {
-      const prefill: Record<string, string> = {}
-      getBundleSlotCats(bundles[0]).forEach(cat => {
-        const match = basketItems.find(b => {
-          const item = menuItems.find(m => m.name === b.name)
-          return item?.category.toLowerCase() === cat.toLowerCase()
-        })
-        if (match) prefill[cat] = `USE_EXISTING:${match.name}`
-      })
-      setSlotSelections(prefill)
-    }
-  }, [bundles, selectedDeal, basketItems, menuItems])
 
   const selectDeal = (bundle: Bundle) => {
     setSelectedDeal(bundle)
