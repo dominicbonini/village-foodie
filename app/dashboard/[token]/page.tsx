@@ -17,6 +17,7 @@ import {
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
+import { addToBasket, adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
 
 
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
@@ -229,14 +230,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
   }
 
-  const addMenuItem=(item:MenuItem)=>setManualItems(prev=>{const ex=prev.find(i=>i.name===item.name);return ex?prev.map(i=>i.name===item.name?{...i,quantity:i.quantity+1}:i):[...prev,{name:item.name,quantity:1,unit_price:item.price}]})
-  const adjustManualQty=(name:string,delta:number)=>{
-    setManualItems(prev=>{
-      const updated=prev.map(i=>i.name===name?{...i,quantity:i.quantity+delta}:i).filter(i=>i.quantity>0)
-      const wasRemoved=!updated.find(i=>i.name===name)
-      if(wasRemoved) setAppliedDeals(d=>d.filter(deal=>!Object.values(deal.slots).includes(name)))
-      return updated
-    })
+  const addMenuItem = (item: MenuItem) => {
+    setManualItems(prev => addToBasket(prev, item))
+  }
+  const adjustManualQty = (name: string, delta: number) => {
+    const wasInBasket = manualItems.find(i => i.name === name)
+    setManualItems(prev => adjustQuantity(prev, name, delta))
+    // If item was removed (quantity hit 0), clean up deals
+    const stillInBasket = adjustQuantity(manualItems, name, delta).find(i => i.name === name)
+    if (wasInBasket && !stillInBasket) {
+      setAppliedDeals(prev => cleanupDealsForItem(prev, name))
+    }
   }
   const resetManual=()=>{setManualName('');setManualEmail('');setManualNotes('');setManualSlot('');setManualItems([]);setAppliedDeals([]);setActiveDealBundle(null);setDealSlotPicks({})}
 
@@ -333,8 +337,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const pendingOrders=orders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   const confirmedOrders=orders.filter(o=>o.status==='confirmed').sort(sortByTimeThenId)
   const otherOrders=orders.filter(o=>!['pending','confirmed'].includes(o.status))
-  const menuGroups:Record<string,MenuItem[]>={}
-  truckMenu?.items.forEach(item=>{if(!menuGroups[item.category])menuGroups[item.category]=[];menuGroups[item.category].push(item)})
+  const menuGroups = truckMenu ? Object.fromEntries(groupByCategory(truckMenu.items)) : {}
   const editTotal=editItems.reduce((s,i)=>s+i.unit_price*i.quantity,0)
 
   return(
@@ -623,7 +626,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       <div className="flex flex-wrap gap-2">
                         {items.map(item=>{
                           const inBasket=manualItems.find(i=>i.name===item.name)
-                          const isSoldOut=!item.available
+                          const isSoldOut=!(item.available ?? true)
                           const stock=itemStocks.find(s=>s.name===item.name)
                           const itemRem=stock?.stock_count!=null?stock.stock_count-(stock.orders_count||0):null
                           const catSt=categoryStocks.find(s=>s.category===cat)
@@ -872,7 +875,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           {items.map(item=>{
                             const stock=itemStocks.find(s=>s.name===item.name)
                             // isAvailable: check itemStocks first (override), then fall back to menu
-                            const isAvailable=stock?stock.available:item.available
+                            const isAvailable = stock ? (stock.available ?? true) : (item.available ?? true)
                             const itemCount=stock?.stock_count??null; const itemOrdered=stock?.orders_count??0
                             const itemRem=itemCount!==null?itemCount-itemOrdered:null
                             const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
@@ -1032,7 +1035,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-1.5">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
                     <div className="flex flex-wrap gap-2">
                       {items.map(item=>{
-                        const inEdit=editItems.find(i=>i.name===item.name); const isSoldOut=!item.available
+                        const inEdit=editItems.find(i=>i.name===item.name); const isSoldOut=!(item.available ?? true)
                         if(isSoldOut)return<div key={item.name} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-100 bg-slate-50 opacity-50"><span className="text-xs text-slate-400 line-through">{item.name}</span></div>
                         return(
                           <button key={item.name} onClick={()=>addEditItem(item)}

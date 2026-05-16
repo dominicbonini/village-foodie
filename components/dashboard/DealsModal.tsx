@@ -68,7 +68,7 @@ export function DealsModal({
       getBundleSlotCats(bundles[0]).forEach(cat => {
         const match = basketItems.find(b => {
           const item = menuItems.find(m => m.name === b.name)
-          return item?.category === cat
+          return item?.category.toLowerCase() === cat.toLowerCase()
         })
         if (match) prefill[cat] = `USE_EXISTING:${match.name}`
       })
@@ -170,7 +170,7 @@ export function DealsModal({
                     {cats.map(cat => {
                       const inBasket = basketItems.some(b => {
                         const item = menuItems.find(m => m.name === b.name)
-                        return item?.category === cat
+                        return item?.category.toLowerCase() === cat.toLowerCase()
                       })
                       return (
                         <span key={cat} className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${inBasket ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
@@ -196,7 +196,7 @@ export function DealsModal({
             <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">Select items for each slot</p>
 
             {getBundleSlotCats(selectedDeal).map(cat => {
-              const allOpts = menuItems.filter(i => i.category === cat)
+              const allOpts = menuItems.filter(i => i.category.toLowerCase() === cat.toLowerCase())
               const inBasketOpts = basketItems.filter(b => 
                 allOpts.some(m => m.name === b.name)
               )

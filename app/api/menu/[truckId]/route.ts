@@ -84,7 +84,7 @@ export async function GET(
       name: i.name,
       description: i.description || '',
       price: i.price,
-      category: i.category || (i.menu_categories as any)?.name || 'Uncategorized',
+      category: (i.menu_categories as any)?.name || 'Uncategorized',
       available: i.is_available,
       stock_remaining: i.stock_count,
     })),

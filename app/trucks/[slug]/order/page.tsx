@@ -6,11 +6,12 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-calculations';
+import { addToBasket, removeFromBasket, cleanupDealsForItem, groupByCategory, getItemQuantity } from '@/lib/basket-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description: string; price: number; available: boolean; category: string; stock_remaining?: number | null
+  name: string; description?: string; price: number; available?: boolean; category: string; stock_remaining?: number | null; image?: string | null
 }
 interface UpsellRule {
   trigger_category: string; suggest_category: string; max_suggestions: number
@@ -220,38 +221,37 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 
-  const addItem = (item: MenuItem) => setBasket(prev => {
-    const ex = prev.find(b => b.menuItem.name === item.name)
-    // Stock check: don't allow adding if at limit
-    if (item.stock_remaining != null && ex && ex.quantity >= item.stock_remaining) {
-      return prev
-    }
-    return ex ? prev.map(b => b.menuItem.name === item.name ? { ...b, quantity: b.quantity + 1 } : b)
-      : [...prev, { menuItem: item, quantity: 1 }]
-  })
+  const addItem = (item: MenuItem) => {
+    setBasket(prev => addToBasket(prev.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })), item)
+      .map(b => {
+        const menuItem = prev.find(p => p.menuItem.name === b.name)?.menuItem || item
+        return { menuItem, quantity: b.quantity }
+      })
+    )
+  }
 
   const removeItem = (itemName: string) => {
-    setAppliedDeals(d => d.filter(deal => !Object.values(deal.slots).includes(itemName)))
+    // Clean up deals that reference this item
+    setAppliedDeals(prev => cleanupDealsForItem(prev, itemName))
+    // Remove from basket
     setBasket(prev => {
-      const ex = prev.find(b => b.menuItem.name === itemName)
-      if (!ex) return prev
-      return ex.quantity === 1
-        ? prev.filter(b => b.menuItem.name !== itemName)
-        : prev.map(b => b.menuItem.name === itemName ? { ...b, quantity: b.quantity - 1 } : b)
+      const updated = removeFromBasket(
+        prev.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })),
+        itemName
+      )
+      return updated.map(b => {
+        const menuItem = prev.find(p => p.menuItem.name === b.name)!.menuItem
+        return { menuItem, quantity: b.quantity }
+      })
     })
   }
 
-  const getQty = (n: string) => basket.find(b => b.menuItem.name === n)?.quantity || 0
+  const getQty = (n: string) => getItemQuantity(basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })), n)
 
   // ── Grouped menu ────────────────────────────────────────────────────────────
   const groupedMenu = useMemo(() => {
     if (!menu) return []
-    const groups: Record<string, MenuItem[]> = {}
-    menu.items.forEach(item => {
-      if (!groups[item.category]) groups[item.category] = []
-      groups[item.category].push(item)
-    })
-    return Object.entries(groups)
+    return groupByCategory(menu.items)
   }, [menu])
 
   // ── Upsells ─────────────────────────────────────────────────────────────────
@@ -580,7 +580,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <div className="divide-y divide-slate-100">
                 {items.map(item => {
                   const qty = getQty(item.name)
-                  const isSoldOut = !item.available
+                  const isSoldOut = !(item.available ?? true)
                   const itemUpsells = qty > 0 ? getItemUpsells(item) : []
                   const isExpanded = expandedItem === item.name
                   return (
