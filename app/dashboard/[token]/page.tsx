@@ -16,6 +16,7 @@ import {
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
+import { calculateOrderTotal } from '@/lib/order-calculations'
 
 
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
@@ -65,12 +66,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const prevPendingCount=useRef(0)
   const asapSlot=getAsapSlot(slots)
 
-  const manualItemsSubtotal=manualItems.reduce((s,i)=>s+i.unit_price*i.quantity,0)
-  const dealDiscount=appliedDeals.reduce((s,d)=>{
-    const orig=Object.values(d.slots).reduce((sum,n)=>{const item=truckMenu?.items.find(i=>i.name===n);return sum+(item?.price||0)},0)
-    return s+Math.max(0,orig-d.bundle.bundle_price)
-  },0)
-  const manualTotal=Math.max(0,manualItemsSubtotal-dealDiscount)
+  // Use shared calculation function for consistency
+  const calculation = useMemo(() => {
+    return calculateOrderTotal(
+      manualItems.map(item => ({ name: item.name, price: item.unit_price, quantity: item.quantity })),
+      appliedDeals,
+      truckMenu?.items || [],
+      null // No discount codes in manual orders
+    )
+  }, [manualItems, appliedDeals, truckMenu])
+  
+  const manualItemsSubtotal = calculation.itemsTotal
+  const dealSavings = calculation.dealSavings
+  const manualTotal = calculation.total
   // Calculate queue-aware ready time accounting for existing pending/confirmed orders
   // For each category: queue qty + new qty, calculate batches needed, find ready time
   const calcQueueAwareReadyTime=()=>{
@@ -238,7 +246,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setActionLoading('manual')
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots})),discountAmt:dealDiscount,total:manualTotal,subtotal:manualItemsSubtotal,notes:manualNotes||null}})})
+        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots})),discountAmt:dealSavings,total:manualTotal,subtotal:manualItemsSubtotal,notes:manualNotes||null}})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       showToast(data.slotFull?`Order #${data.orderId} saved — slot full`:`Order #${data.orderId} confirmed`)
       if(manualItems.length){

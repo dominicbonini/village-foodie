@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, use } from 'react';
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
 import Image from 'next/image';
-import { use } from 'react';
+import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-calculations';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -196,9 +196,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [basket.length])
 
   useEffect(() => {
+    console.log('[ORDER FORM] Fetching menu for slug:', slug)
     fetch(`/api/menu/${slug}`)
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(data => {
+        console.log('[ORDER FORM] Menu API response:', data)
+        console.log('[ORDER FORM] Menu items:', data.menu?.items)
+        console.log('[ORDER FORM] Items count:', data.menu?.items?.length || 0)
         setTruck(data.truck)
         setMenu(data.menu)
         // If event already loaded, fetch slots now
@@ -207,7 +211,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           fetchSlots(data.truck.id, date)
         }
       })
-      .catch(() => setError('This truck is not currently taking orders.'))
+      .catch((err) => {
+        console.error('[ORDER FORM] Menu fetch error:', err)
+        setError('This truck is not currently taking orders.')
+      })
       .finally(() => setLoading(false))
   }, [slug])
 
@@ -310,18 +317,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const getSlotOptions = (cat: string) => basket.filter(b => b.menuItem.category === cat).map(b => b.menuItem)
 
   // ── Totals ──────────────────────────────────────────────────────────────────
-  const { itemsTotal, dealsTotal, dealSaving, discountAmt, total } = useMemo(() => {
-    const itemsTotal = basket.reduce((s, b) => s + b.menuItem.price * b.quantity, 0)
-    const dealsTotal = appliedDeals.reduce((s, d) => s + d.bundle.bundle_price, 0)
-    const dealSaving = appliedDeals.reduce((s, d) => {
-      const orig = calcDealOriginalPrice(d, menu?.items || [])
-      return s + Math.max(0, orig - d.bundle.bundle_price)
-    }, 0)
-    const sub = itemsTotal + dealsTotal
-    const discountAmt = appliedCode
-      ? appliedCode.type === 'pct' ? sub * appliedCode.value / 100 : appliedCode.value
-      : 0
-    return { itemsTotal, dealsTotal, dealSaving, discountAmt, total: Math.max(0, sub - discountAmt) }
+  const { itemsTotal, dealsTotal, dealSavings, subtotal, discountAmt, total } = useMemo(() => {
+    // Use shared calculation function
+    return calculateOrderTotal(
+      basket.map(b => ({ name: b.menuItem.name, price: b.menuItem.price, quantity: b.quantity })),
+      appliedDeals.map(d => ({ bundle: d.bundle, slots: d.slots })),
+      menu?.items || [],
+      appliedCode
+    )
   }, [basket, appliedDeals, appliedCode, menu])
 
   const hasItems = basket.length > 0
@@ -348,7 +351,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           items: basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })),
           deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots })),
           discountCode: appliedCode?.code || null,
-          subtotal: itemsTotal + dealsTotal, discountAmt: dealSaving + discountAmt, total, notes: notes || null,
+          subtotal: subtotal, discountAmt: discountAmt, total, notes: notes || null,
         }),
       })
       const data = await res.json()
@@ -392,7 +395,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
             ))}
             {dealsTotal > 0 && <div className="flex justify-between text-sm"><span>Deals ({appliedDeals.length})</span><span className="font-medium">£{dealsTotal.toFixed(2)}</span></div>}
-            {dealSaving > 0 && <div className="flex justify-between text-sm text-green-600"><span>Deal savings</span><span className="font-medium">-£{dealSaving.toFixed(2)}</span></div>}
+            {dealSavings > 0 && <div className="flex justify-between text-sm text-green-600"><span>Deal savings</span><span className="font-medium">-£{dealSavings.toFixed(2)}</span></div>}
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
               <span className="font-black text-slate-900">Total</span>
               <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
@@ -817,10 +820,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
                     </div>
                   ))}
-                  {dealSaving > 0 && (
+                  {dealSavings > 0 && (
                     <div className="flex justify-between text-xs border-t border-slate-200 pt-1.5">
                       <span className="text-green-600">{appliedDeals.length} deal{appliedDeals.length > 1 ? 's' : ''}</span>
-                      <span className="text-green-600 font-medium">-£{dealSaving.toFixed(2)}</span>
+                      <span className="text-green-600 font-medium">-£{dealSavings.toFixed(2)}</span>
                     </div>
                   )}
                   {discountAmt > 0 && (

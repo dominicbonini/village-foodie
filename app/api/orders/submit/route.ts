@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { sendWhatsApp, logMessage } from '@/lib/twilio'
+import { calculateOrderTotal, validateOrderTotals } from '@/lib/order-calculations'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -310,6 +311,58 @@ export async function POST(req: NextRequest) {
           )
         }
       }
+    }
+
+    // ── Server-side total validation ──────────────────────────────────────────
+    const { data: menuItems } = await supabase
+      .from('menu_items_db')
+      .select('name, price')
+      .eq('truck_id', truckId)
+
+    const { data: bundles } = await supabase
+      .from('bundles_db')
+      .select('*')
+      .eq('truck_id', truckId)
+
+    // Reconstruct deals
+    const dealsForCalc = (deals || []).map((d: AppliedDeal) => ({
+      bundle: bundles?.find(b => b.name === d.name) || { name: d.name, bundle_price: 0, original_price: null },
+      slots: d.slots || {}
+    }))
+
+    // Find discount code
+    let discountCodeData = null
+    if (discountCode) {
+      const { data } = await supabase
+        .from('discount_codes_db')
+        .select('*')
+        .eq('truck_id', truckId)
+        .eq('code', discountCode.toUpperCase())
+        .eq('is_active', true)
+        .single()
+      discountCodeData = data
+    }
+
+    // Calculate totals server-side
+    const serverCalculation = calculateOrderTotal(
+      items,
+      dealsForCalc,
+      menuItems || [],
+      discountCodeData
+    )
+
+    // Validate submitted totals
+    const validation = validateOrderTotals(
+      { subtotal, discountAmt: discountAmt ?? 0, total },
+      serverCalculation,
+      0.01
+    )
+
+    if (!validation.valid) {
+      console.error('[ORDER VALIDATION]', validation.error)
+      return NextResponse.json({ 
+        error: 'Order total validation failed. Please refresh and try again.' 
+      }, { status: 400 })
     }
 
     // ── Generate order ID ─────────────────────────────────────────────────────
