@@ -37,19 +37,19 @@ export async function GET(
     { data: codes },
   ] = await Promise.all([
     supabase
-      .from('categories')
+      .from('menu_categories')
       .select('name, prep_secs, batch_size')
       .eq('truck_id', truckId)
       .order('name'),
     
     supabase
       .from('menu_items_db')
-      .select('*, categories!category_id(name)')
+      .select('*, menu_categories!category_id(name)')
       .eq('truck_id', truckId)
       .order('name'),
     
     supabase
-      .from('bundles')
+      .from('bundles_db')
       .select('*')
       .eq('truck_id', truckId),
     
@@ -59,7 +59,7 @@ export async function GET(
       .eq('truck_id', truckId),
     
     supabase
-      .from('discount_codes')
+      .from('discount_codes_db')
       .select('*')
       .eq('truck_id', truckId)
       .eq('is_active', true),
@@ -83,7 +83,7 @@ export async function GET(
       name: i.name,
       description: i.description || '',
       price: i.price,
-      category: i.category || (i.categories as any)?.name || 'Uncategorized',
+      category: i.category || (i.menu_categories as any)?.name || 'Uncategorized',
       available: i.is_available,
       stock_remaining: i.stock_count,
     })),
