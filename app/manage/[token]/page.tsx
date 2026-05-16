@@ -260,13 +260,79 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
         <EmptyState icon="🍕" title="No categories yet" body="Add a category (e.g. Pizza, Burgers, Drinks) to start building your menu" />
       )}
 
-      {categories.map(cat => {
+      {categories.map((cat, index) => {
         const catItems = items.filter(i => i.category_id === cat.id)
         const isOpen = expandedCat === cat.id
         return (
-          <Card key={cat.id}>
+          <div
+            key={cat.id}
+            draggable
+            onDragStart={(e: React.DragEvent<HTMLDivElement>) => {
+              e.dataTransfer.effectAllowed = 'move'
+              e.dataTransfer.setData('text/html', cat.id)
+              const target = e.currentTarget as HTMLElement
+              target.style.opacity = '0.5'
+              target.style.border = '2px dashed #fb923c'
+            }}
+            onDragEnd={(e: React.DragEvent<HTMLDivElement>) => {
+              const target = e.currentTarget as HTMLElement
+              target.style.opacity = '1'
+              target.style.border = ''
+            }}
+            onDragOver={(e: React.DragEvent<HTMLDivElement>) => {
+              e.preventDefault()
+              e.dataTransfer.dropEffect = 'move'
+              const target = e.currentTarget as HTMLElement
+              target.style.borderTop = '3px solid #fb923c'
+            }}
+            onDragLeave={(e: React.DragEvent<HTMLDivElement>) => {
+              const target = e.currentTarget as HTMLElement
+              target.style.borderTop = ''
+            }}
+            onDrop={async (e: React.DragEvent<HTMLDivElement>) => {
+              e.preventDefault()
+              const target = e.currentTarget as HTMLElement
+              target.style.borderTop = ''
+              
+              const draggedId = e.dataTransfer.getData('text/html')
+              if (draggedId === cat.id) return
+              
+              const draggedIndex = categories.findIndex(c => c.id === draggedId)
+              const targetIndex = index
+              
+              // Reorder categories array
+              const newCategories = [...categories]
+              const [removed] = newCategories.splice(draggedIndex, 1)
+              newCategories.splice(targetIndex, 0, removed)
+              
+              // Update sort_order in database
+              try {
+                await Promise.all(
+                  newCategories.map((c, i) => 
+                    api('update_category_order', { id: c.id, sort_order: i + 1 })
+                  )
+                )
+                reload()
+                showToast('Category order updated')
+              } catch (e: any) {
+                showToast(e.message, 'error')
+              }
+            }}
+            className="transition-all duration-200"
+          >
+            <Card>
             {/* Category header */}
-            <div className="flex items-center gap-3 p-4 cursor-pointer" onClick={() => setExpandedCat(isOpen ? null : cat.id)}>
+            <div 
+              className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors" 
+              onClick={(e) => {
+                // Only toggle if not clicking drag handle or edit button
+                if (!(e.target as HTMLElement).closest('button')) {
+                  setExpandedCat(isOpen ? null : cat.id)
+                }
+              }}>
+              <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title="Drag to reorder" draggable={false}>
+                ⋮⋮
+              </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <span className="font-black text-slate-900">{cat.name}</span>
@@ -324,6 +390,7 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
               </div>
             )}
           </Card>
+          </div>
         )
       })}
 

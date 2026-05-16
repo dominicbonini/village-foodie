@@ -40,6 +40,7 @@ export async function GET(
       .from('menu_categories')
       .select('name, prep_secs, batch_size')
       .eq('truck_id', truckId)
+      .order('sort_order', { ascending: true })
       .order('name'),
     
     supabase

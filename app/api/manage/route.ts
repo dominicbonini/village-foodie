@@ -180,6 +180,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  if (action === 'update_category_order') {
+    const { id, sort_order } = body
+    await supabase.from('menu_categories').update({ sort_order }).eq('id', id).eq('truck_id', truck.id)
+    return NextResponse.json({ success: true })
+  }
+
   // ── BUNDLE CRUD ───────────────────────────────────────────
   if (action === 'upsert_bundle') {
     const { id, ...fields } = body
