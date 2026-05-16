@@ -27,7 +27,7 @@ interface Bundle {
   slot_5_category: string | null; slot_6_category: string | null
 }
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
-interface TruckMenu { items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
+interface TruckMenu { categories?: Array<{ name: string }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null }
 interface EventData {
   date: string          // dd/mm/yyyy
@@ -251,7 +251,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // ── Grouped menu ────────────────────────────────────────────────────────────
   const groupedMenu = useMemo(() => {
     if (!menu) return []
-    return groupByCategory(menu.items)
+    return groupByCategory(menu.items, menu.categories?.map(c => c.name))
   }, [menu])
 
   // ── Upsells ─────────────────────────────────────────────────────────────────
@@ -305,13 +305,44 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number) => {
-    // Just add the deal — do NOT add individual items to basket
-    // The deal IS the purchase, not a discount on basket items
+    // Remove items from basket that are being used in this deal
+    // (prevents double-counting: deal price + individual item prices)
+    const itemsInDeal = Object.values(slots)
+    setBasket(prev => prev.filter(b => !itemsInDeal.includes(b.menuItem.name)))
+    
+    // Add the deal
     setAppliedDeals(prev => [...prev, { bundle: deal, slots }])
     setDealModalOpen(false)
   }
 
-  const removeDeal = (i: number) => setAppliedDeals(prev => prev.filter((_, idx) => idx !== i))
+  const removeDeal = (i: number) => {
+    const deal = appliedDeals[i]
+    
+    // Add items from the deal back to the basket
+    const itemsInDeal = Object.values(deal.slots).filter(Boolean)
+    itemsInDeal.forEach(itemName => {
+      const menuItem = menu?.items.find(m => m.name === itemName)
+      if (menuItem) {
+        setBasket(prev => {
+          const existing = prev.find(b => b.menuItem.name === itemName)
+          if (existing) {
+            // Increment if already exists
+            return prev.map(b => 
+              b.menuItem.name === itemName 
+                ? { ...b, quantity: b.quantity + 1 } 
+                : b
+            )
+          } else {
+            // Add new item
+            return [...prev, { menuItem, quantity: 1 }]
+          }
+        })
+      }
+    })
+    
+    // Remove the deal
+    setAppliedDeals(prev => prev.filter((_, idx) => idx !== i))
+  }
 
 
   const getSlotOptions = (cat: string) => basket.filter(b => b.menuItem.category === cat).map(b => b.menuItem)

@@ -42,6 +42,7 @@ export interface MenuItem {
 }
 
 export interface TruckMenu {
+  categories?: Array<{ name: string; prep_secs?: number; batch_size?: number }>
   items: MenuItem[]
   bundles?: Bundle[]
   upsell_rules?: any[]

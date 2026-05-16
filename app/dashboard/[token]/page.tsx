@@ -337,7 +337,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const pendingOrders=orders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   const confirmedOrders=orders.filter(o=>o.status==='confirmed').sort(sortByTimeThenId)
   const otherOrders=orders.filter(o=>!['pending','confirmed'].includes(o.status))
-  const menuGroups = truckMenu ? Object.fromEntries(groupByCategory(truckMenu.items)) : {}
+  const menuGroups = truckMenu ? Object.fromEntries(groupByCategory(truckMenu.items, truckMenu.categories?.map(c => c.name))) : {}
   const editTotal=editItems.reduce((s,i)=>s+i.unit_price*i.quantity,0)
 
   return(
@@ -698,16 +698,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   <span className="text-green-500 font-normal ml-1">({dealItemLabels})</span>
                                   <button
                                     onClick={()=>{
-                                      // Deal owns all its items — remove deal and decrement each slot item by 1
-                                      const toDecrement=Object.values(d.slots).filter(Boolean) as string[]
-                                      setManualItems(prev=>prev.map(item=>{
-                                        const count=toDecrement.filter(n=>n===item.name).length
-                                        return count?{...item,quantity:item.quantity-count}:item
-                                      }).filter(item=>item.quantity>0))
+                                      // Add items from the deal back to manual items
+                                      const itemsInDeal = Object.values(d.slots).filter(Boolean) as string[]
+                                      itemsInDeal.forEach(itemName => {
+                                        const menuItem = truckMenu?.items.find(m => m.name === itemName)
+                                        if (menuItem) {
+                                          setManualItems(prev => {
+                                            const existing = prev.find(i => i.name === itemName)
+                                            if (existing) {
+                                              return prev.map(i => 
+                                                i.name === itemName 
+                                                  ? { ...i, quantity: i.quantity + 1 } 
+                                                  : i
+                                              )
+                                            } else {
+                                              return [...prev, { name: itemName, quantity: 1, unit_price: menuItem.price }]
+                                            }
+                                          })
+                                        }
+                                      })
                                       setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
                                     }}
                                     className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
-                                    title="Remove deal and its items"
+                                    title="Remove deal and restore items"
                                   >×</button>
                                 </div>
                                 <span className="text-green-600 font-bold shrink-0">-£{saving.toFixed(2)}</span>
@@ -985,18 +998,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: 0 }))}
           existingDeals={appliedDeals}
           onApply={(deal, slots, price, discount) => {
-            // Add items from deal if they're marked as new (not USE_EXISTING)
-            const slotsArray = Object.entries(slots)
-            slotsArray.forEach(([cat, itemName]) => {
-              if (!itemName) return
-              // Check if this item is already in the basket
-              const existingInBasket = manualItems.find(i => i.name === itemName)
-              if (!existingInBasket) {
-                // Add new item
-                const menuItem = (truckMenu?.items || []).find(m => m.name === itemName)
-                setManualItems(prev => [...prev, { name: itemName, quantity: 1, unit_price: menuItem?.price || 0 }])
-              }
-            })
+            // Remove items from basket that are being used in this deal
+            // (prevents double-counting: deal price + individual item prices)
+            const itemsInDeal = Object.values(slots).filter(Boolean)
+            setManualItems(prev => prev.filter(item => !itemsInDeal.includes(item.name)))
+            
             // Add the deal
             setAppliedDeals(prev => [...prev, { 
               bundle: { 

@@ -129,10 +129,12 @@ export interface BasketItem {
    * Group menu items by category
    * 
    * @param items - Menu items to group
+   * @param orderedCategories - Optional ordered list of category names to preserve sort order
    * @returns Array of [categoryName, items[]] tuples
    */
   export function groupByCategory(
-    items: MenuItem[]
+    items: MenuItem[],
+    orderedCategories?: string[]
   ): Array<[string, MenuItem[]]> {
     const groups: Record<string, MenuItem[]> = {}
     
@@ -144,6 +146,28 @@ export interface BasketItem {
       groups[category].push(item)
     })
     
+    // If ordered categories provided, use that order
+    if (orderedCategories && orderedCategories.length > 0) {
+      const result: Array<[string, MenuItem[]]> = []
+      
+      // First add categories in the specified order
+      orderedCategories.forEach(cat => {
+        if (groups[cat]) {
+          result.push([cat, groups[cat]])
+        }
+      })
+      
+      // Then add any remaining categories not in the ordered list
+      Object.entries(groups).forEach(([cat, items]) => {
+        if (!orderedCategories.includes(cat)) {
+          result.push([cat, items])
+        }
+      })
+      
+      return result
+    }
+    
+    // Otherwise return in arbitrary order (Object.entries order)
     return Object.entries(groups)
   }
   
