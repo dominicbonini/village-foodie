@@ -136,6 +136,49 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
 
+  // Calculate available hours from event times (customer-facing only)
+  const availableHours = useMemo(() => {
+    if (!event?.start_time || !event?.end_time) {
+      // Fallback if no event hours: 10:00-23:00
+      return Array.from({length:14}, (_,i) => String(i+10).padStart(2,'0'))
+    }
+    
+    const [startH] = event.start_time.split(':').map(Number)
+    const [endH] = event.end_time.split(':').map(Number)
+    
+    const hours = []
+    for (let h = startH; h <= endH; h++) {
+      hours.push(String(h).padStart(2, '0'))
+    }
+    return hours
+  }, [event])
+
+  // Filter minutes based on first/last hour of event
+  const availableMinutes = useMemo(() => {
+    const allMinutes = ['00','05','10','15','20','25','30','35','40','45','50','55']
+    
+    if (!event?.start_time || !event?.end_time || !slotHour) {
+      return allMinutes
+    }
+    
+    const [startH, startM] = event.start_time.split(':').map(Number)
+    const [endH, endM] = event.end_time.split(':').map(Number)
+    const selectedH = parseInt(slotHour)
+    
+    // First hour: filter out minutes before start
+    if (selectedH === startH) {
+      return allMinutes.filter(m => parseInt(m) >= startM)
+    }
+    
+    // Last hour: filter out minutes after end
+    if (selectedH === endH) {
+      return allMinutes.filter(m => parseInt(m) <= endM)
+    }
+    
+    // Middle hours: all minutes available
+    return allMinutes
+  }, [event, slotHour])
+
   // Fetch available slots for capacity-aware time selection
   const fetchSlots = async (truckId: string, date: string) => {
     setLoadingSlots(true)
@@ -358,7 +401,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     )
   }, [basket, appliedDeals, appliedCode, menu])
 
-  const hasItems = basket.length > 0
+  const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
 
   const applyCode = () => {
@@ -425,7 +468,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
               </div>
             ))}
-            {dealsTotal > 0 && <div className="flex justify-between text-sm"><span>Deals ({appliedDeals.length})</span><span className="font-medium">£{dealsTotal.toFixed(2)}</span></div>}
+            {appliedDeals.map((deal, i) => (
+              <div key={i} className="flex justify-between text-sm">
+                <span>{deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(', ')})</span>
+                <span className="font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
+              </div>
+            ))}
             {dealSavings > 0 && <div className="flex justify-between text-sm text-green-600"><span>Deal savings</span><span className="font-medium">-£{dealSavings.toFixed(2)}</span></div>}
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
               <span className="font-black text-slate-900">Total</span>
@@ -776,7 +824,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     <select value={slotHour} onChange={e => { setSlotHour(e.target.value); setSlotMinute('') }}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
                       <option value="">--</option>
-                      {Array.from({length:14},(_,i)=>String(i+10).padStart(2,'0')).map(h => (
+                      {availableHours.map(h => (
                         <option key={h} value={h}>{parseInt(h)}</option>
                       ))}
                     </select>
@@ -786,7 +834,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     <select value={slotMinute} onChange={e => setSlotMinute(e.target.value)}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
                       <option value="">--</option>
-                      {['00','05','10','15','20','25','30','35','40','45','50','55'].map(m => (
+                      {availableMinutes.map(m => (
                         <option key={m} value={m}>{m}</option>
                       ))}
                     </select>
@@ -851,12 +899,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
                     </div>
                   ))}
-                  {dealSavings > 0 && (
-                    <div className="flex justify-between text-xs border-t border-slate-200 pt-1.5">
-                      <span className="text-green-600">{appliedDeals.length} deal{appliedDeals.length > 1 ? 's' : ''}</span>
-                      <span className="text-green-600 font-medium">-£{dealSavings.toFixed(2)}</span>
+                  {appliedDeals.length > 0 && appliedDeals.map((deal, i) => (
+                    <div key={i} className="flex justify-between text-xs border-t border-slate-200 pt-1.5">
+                      <span className="text-green-600">{deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(' + ')})</span>
+                      <span className="text-green-600 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
                     </div>
-                  )}
+                  ))}
                   {discountAmt > 0 && (
                     <div className="flex justify-between text-xs">
                       <span className="text-green-600">Code: {appliedCode?.code}</span>

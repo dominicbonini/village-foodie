@@ -83,7 +83,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Calculate queue-aware ready time accounting for existing pending/confirmed orders
   // For each category: queue qty + new qty, calculate batches needed, find ready time
   const calcQueueAwareReadyTime=()=>{
-    if(!manualItems.length) return {readyTime:'',minsFromNow:0}
+    if(!manualItems.length && !appliedDeals.length) return {readyTime:'',minsFromNow:0}
     // Aggregate items by category from active orders + new order
     const queueByCategory:Record<string,number>={}
     const newByCategory:Record<string,number>={}
@@ -234,18 +234,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setManualItems(prev => addToBasket(prev, item))
   }
   const adjustManualQty = (name: string, delta: number) => {
-    const wasInBasket = manualItems.find(i => i.name === name)
     setManualItems(prev => adjustQuantity(prev, name, delta))
-    // If item was removed (quantity hit 0), clean up deals
-    const stillInBasket = adjustQuantity(manualItems, name, delta).find(i => i.name === name)
-    if (wasInBasket && !stillInBasket) {
-      setAppliedDeals(prev => cleanupDealsForItem(prev, name))
-    }
+    // Note: On truck dashboard, deals are independent of items
+    // Removing an item should NOT remove deals (unlike customer page)
   }
   const resetManual=()=>{setManualName('');setManualEmail('');setManualNotes('');setManualSlot('');setManualItems([]);setAppliedDeals([]);setActiveDealBundle(null);setDealSlotPicks({})}
 
   const submitManual=async()=>{
-    if(!manualName.trim()||!manualItems.length)return
+    if(!manualName.trim()||(!manualItems.length && !appliedDeals.length))return
     const effectiveSlot=manualSlot||asapSlot?.collection_time||null
     setActionLoading('manual')
     try{
@@ -653,7 +649,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     </div>
                   ))}
 
-                  {manualItems.length>0&&(
+                  {(manualItems.length > 0 || appliedDeals.length > 0) && (
                     <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
                       <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Order</p>
                       {(()=>{
@@ -761,7 +757,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     // Calculate queue-aware ready time accounting for existing pending/confirmed orders
   // For each category: queue qty + new qty, calculate batches needed, find ready time
   const calcQueueAwareReadyTime=()=>{
-    if(!manualItems.length) return {readyTime:'',minsFromNow:0}
+    if(!manualItems.length && !appliedDeals.length) return {readyTime:'',minsFromNow:0}
     // Aggregate items by category from active orders + new order
     const queueByCategory:Record<string,number>={}
     const newByCategory:Record<string,number>={}
@@ -852,9 +848,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div><p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">4. Email <span className="font-normal normal-case text-slate-400">— optional</span></p><input type="email" value={manualEmail} onChange={e=>setManualEmail(e.target.value)} placeholder="For confirmation" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"/></div>
             <div><p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">5. Notes <span className="font-normal normal-case text-slate-400">— optional</span></p><textarea value={manualNotes} onChange={e=>setManualNotes(e.target.value)} placeholder="Allergies, no onion…" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"/></div>
 
-            <button onClick={submitManual} disabled={actionLoading==='manual'||!manualName.trim()||!manualItems.length}
+            <button onClick={submitManual} disabled={actionLoading==='manual'||!manualName.trim()||(!manualItems.length && !appliedDeals.length)}
               className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40">
-              {actionLoading==='manual'?'Saving...':`Save order${manualItems.length ? ` · £${manualTotal.toFixed(2)}` : ''}`}
+              {actionLoading==='manual'?'Saving...':`Save order${manualItems.length || appliedDeals.length ? ` · £${manualTotal.toFixed(2)}` : ''}`}
             </button>
           </div>
         )}
