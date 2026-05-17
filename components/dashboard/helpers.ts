@@ -3,15 +3,7 @@
 
 import type { Slot, BasketItem, MenuItem, CatConfig } from './types'
 import { DEFAULT_CAT_CONFIG } from './types'
-
-export function getAsapSlot(slots: Slot[]): Slot | null {
-  const now = new Date()
-  const nowMins = now.getHours() * 60 + now.getMinutes()
-  return slots.find(s => {
-    const [h, m] = s.collection_time.split(':').map(Number)
-    return (h * 60 + m) > nowMins && s.available
-  }) || null
-}
+export { getAsapSlot } from '@/lib/slot-utils'
 
 export function getCatConfig(cat: string, customConfigs?: Record<string, CatConfig>): CatConfig {
   const key = cat.toLowerCase()

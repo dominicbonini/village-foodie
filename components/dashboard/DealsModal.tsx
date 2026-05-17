@@ -54,7 +54,7 @@ export function DealsModal({
   bundles: Bundle[]
   menuItems: MenuItem[]
   basketItems: BasketItem[]
-  onApply: (deal: Bundle, slots: Record<string, string>, dealPrice: number, discountAmt: number) => void
+  onApply: (deal: Bundle, slots: Record<string, string>, dealPrice: number, discountAmt: number, rawSlots: Record<string, string>) => void
   onClose: () => void
   existingDeals?: Array<{ bundle: Bundle; slots: Record<string, string> }>
 }) {
@@ -94,7 +94,12 @@ export function DealsModal({
 
     const discount = Math.max(0, originalPrice - selectedDeal.bundle_price)
 
-    onApply(selectedDeal, cleanSlots, selectedDeal.bundle_price, discount)
+    // Pass rawSlots so the caller knows which items came from basket (USE_EXISTING:)
+    // vs which are new items that need adding
+    const rawSlots: Record<string, string> = {}
+    cats.forEach(cat => { rawSlots[cat] = slotSelections[cat] })
+
+    onApply(selectedDeal, cleanSlots, selectedDeal.bundle_price, discount, rawSlots)
   }
 
   // Calculate deal assignments to track which basket items are fully used

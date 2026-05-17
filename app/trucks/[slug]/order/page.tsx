@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-calculations';
 import { addToBasket, removeFromBasket, cleanupDealsForItem, groupByCategory, getItemQuantity } from '@/lib/basket-utils';
+import { getAsapSlot } from '@/lib/slot-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -96,14 +97,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [summaryExpanded, setSummaryExpanded] = useState(false)
-  const [footerHeight, setFooterHeight] = useState(220)
+  const [footerHeight, setFooterHeight] = useState(100)
   const footerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!footerRef.current) return
+    // Set immediately on mount
+    setFooterHeight(footerRef.current.offsetHeight)
+    // Then track any size changes (e.g. summary expanding)
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
-        setFooterHeight(entry.contentRect.height + 16)
+        setFooterHeight(entry.contentRect.height)
       }
     })
     observer.observe(footerRef.current)
@@ -187,8 +191,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       const data = await res.json()
       const slots = data.slots || []
       setAvailableSlots(slots)
-      // Set ASAP to earliest available slot
-      const first = slots.find((s: any) => s.available)
+      // Use shared getAsapSlot — checks available AND in future
+      const first = getAsapSlot(slots)
       setAsapSlot(first?.collection_time || null)
       // Auto-select ASAP
       if (first && !slotHour) {
@@ -347,12 +351,31 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setDealModalOpen(true)
   }
 
-  const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number) => {
-    // Remove items from basket that are being used in this deal
-    // (prevents double-counting: deal price + individual item prices)
-    const itemsInDeal = Object.values(slots)
-    setBasket(prev => prev.filter(b => !itemsInDeal.includes(b.menuItem.name)))
+  const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number, rawSlots: Record<string, string>) => {
+    // slots = { Pizza: 'Margherita', Drinks: 'Coca-cola', Dips: 'Ketchup' } (clean names)
+    // rawSlots = { Pizza: 'USE_EXISTING:Margherita', Drinks: 'Coca-cola', Dips: 'USE_EXISTING:Ketchup' }
     
+    const existingItems: string[] = []  // items already in basket — remove to avoid double-count
+    const newItems: string[] = []        // new items — add to basket then remove (deal covers them)
+
+    Object.entries(rawSlots).forEach(([cat, raw]) => {
+      const itemName = slots[cat]
+      if (!itemName) return
+      if (raw.startsWith('USE_EXISTING:')) {
+        existingItems.push(itemName)
+      } else {
+        newItems.push(itemName)
+      }
+    })
+
+    // Remove existing basket items (they're now part of the deal)
+    if (existingItems.length > 0) {
+      setBasket(prev => prev.filter(b => !existingItems.includes(b.menuItem.name)))
+    }
+
+    // New items don't need to be added to basket since deal covers them
+    // (deal is the product, not a discount on basket items)
+
     // Add the deal
     setAppliedDeals(prev => [...prev, { bundle: deal, slots }])
     setDealModalOpen(false)
@@ -361,27 +384,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const removeDeal = (i: number) => {
     const deal = appliedDeals[i]
     
-    // Add items from the deal back to the basket
+    // Remove any basket items that are part of this deal
+    // (covers the case where USE_EXISTING items were pulled from basket)
     const itemsInDeal = Object.values(deal.slots).filter(Boolean)
-    itemsInDeal.forEach(itemName => {
-      const menuItem = menu?.items.find(m => m.name === itemName)
-      if (menuItem) {
-        setBasket(prev => {
-          const existing = prev.find(b => b.menuItem.name === itemName)
-          if (existing) {
-            // Increment if already exists
-            return prev.map(b => 
-              b.menuItem.name === itemName 
-                ? { ...b, quantity: b.quantity + 1 } 
-                : b
-            )
-          } else {
-            // Add new item
-            return [...prev, { menuItem, quantity: 1 }]
-          }
-        })
-      }
-    })
+    setBasket(prev => prev.filter(b => !itemsInDeal.includes(b.menuItem.name)))
     
     // Remove the deal
     setAppliedDeals(prev => prev.filter((_, idx) => idx !== i))
@@ -506,7 +512,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   return (
     <Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
-      <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6" style={{ paddingBottom: `${footerHeight}px` }}>
+      <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6" style={{ paddingBottom: `${footerHeight + 8}px` }}>
 
         {/* Truck hero — logo, name, event details */}
         <div className="text-center mb-5">
@@ -744,94 +750,82 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
 
 
-        {/* COLLECTION TIME — capacity-aware slot buttons */}
+        {/* COLLECTION TIME */}
         {truck?.mode === 'village' && (
           <Sec title="Collection time">
             {loadingSlots ? (
               <p className="text-slate-400 text-sm animate-pulse">Loading available times...</p>
             ) : availableSlots.length > 0 ? (
-              <>
-                {/* ASAP button */}
-                <button
-                  onClick={() => {
-                    if (asapSlot) {
-                      const [h, m] = asapSlot.split(':')
-                      setSlotHour(h); setSlotMinute(m)
-                    }
-                  }}
-                  className={`w-full mb-3 flex items-center justify-between px-4 py-3 rounded-xl border font-bold text-sm transition-all active:scale-[0.99] ${
-                    selectedSlot === asapSlot
-                      ? 'bg-orange-600 border-orange-600 text-white'
-                      : 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100'
-                  }`}>
-                  <span>⚡ ASAP — collect at {asapSlot}</span>
-                  <span className="text-xs opacity-70">Earliest available</span>
-                </button>
-
-                {/* All slots grid */}
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Or choose a time</p>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {availableSlots.map(slot => {
-                    const isSelected = selectedSlot === slot.collection_time
-                    const isFull = !slot.available
-                    const isPast = slot.is_past
-                    return (
-                      <button key={slot.collection_time}
-                        disabled={isFull || isPast}
-                        onClick={() => {
-                          const [h, m] = slot.collection_time.split(':')
-                          setSlotHour(h); setSlotMinute(m)
-                        }}
-                        className={`py-2 rounded-lg text-sm font-bold transition-all border ${
-                          isSelected
-                            ? 'bg-orange-600 text-white border-orange-600'
-                            : isFull || isPast
-                              ? 'bg-slate-100 text-slate-300 border-slate-100 cursor-not-allowed line-through'
-                              : 'bg-white text-slate-700 border-slate-200 hover:border-orange-400 hover:text-orange-600 active:scale-95'
-                        }`}>
-                        {slot.collection_time}
-                        {isFull && <span className="block text-[9px] font-normal">Full</span>}
-                        {!isFull && !isPast && slot.remaining < 4 && (
-                          <span className="block text-[9px] font-normal text-orange-500">{slot.remaining} left</span>
-                        )}
-                      </button>
-                    )
-                  })}
-                </div>
-                {selectedSlot && (
-                  <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {selectedSlot}</p>
-                )}
-              </>
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x" style={{scrollbarWidth:'none' as any}}>
+                {/* ASAP pill — always first */}
+                {asapSlot && (() => {
+                  const isSelected = selectedSlot === asapSlot
+                  return (
+                    <button
+                      key="asap"
+                      onClick={() => { const [h,m] = asapSlot.split(':'); setSlotHour(h); setSlotMinute(m) }}
+                      className={`snap-start flex-shrink-0 flex flex-col items-center justify-center px-4 py-2.5 rounded-2xl border-2 font-bold text-sm transition-all active:scale-95 ${
+                        isSelected
+                          ? 'bg-orange-600 border-orange-600 text-white'
+                          : 'bg-orange-50 border-orange-300 text-orange-700'
+                      }`}>
+                      <span className="text-xs font-black">⚡ ASAP</span>
+                      <span className={`text-xs font-medium ${isSelected ? 'text-orange-100' : 'text-orange-500'}`}>{asapSlot}</span>
+                    </button>
+                  )
+                })()}
+                {/* Later time pills */}
+                {availableSlots.filter(s => s.collection_time !== asapSlot).map(slot => {
+                  const isSelected = selectedSlot === slot.collection_time
+                  const isFull = !slot.available
+                  const isPast = slot.is_past
+                  return (
+                    <button key={slot.collection_time}
+                      disabled={isFull || isPast}
+                      onClick={() => { const [h,m] = slot.collection_time.split(':'); setSlotHour(h); setSlotMinute(m) }}
+                      className={`snap-start flex-shrink-0 flex flex-col items-center justify-center px-4 py-2.5 rounded-2xl border-2 font-bold text-sm transition-all active:scale-95 ${
+                        isSelected
+                          ? 'bg-orange-600 border-orange-600 text-white'
+                          : isFull || isPast
+                            ? 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
+                      }`}>
+                      <span>{slot.collection_time}</span>
+                      {isFull && <span className="text-[9px] font-normal mt-0.5">Full</span>}
+                      {!isFull && !isPast && slot.remaining < 4 && (
+                        <span className={`text-[9px] font-normal mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-500'}`}>{slot.remaining} left</span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
             ) : (
-              // Fallback: no slots configured — free time entry
+              // Fallback: no slots configured — pill slider from event hours
               <>
                 <p className="text-slate-400 text-xs mb-2">Choose your preferred collection time</p>
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <label className="block text-xs font-bold text-slate-500 mb-1">Hour</label>
-                    <select value={slotHour} onChange={e => { setSlotHour(e.target.value); setSlotMinute('') }}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                      <option value="">--</option>
-                      {availableHours.map(h => (
-                        <option key={h} value={h}>{parseInt(h)}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-xs font-bold text-slate-500 mb-1">Minutes</label>
-                    <select value={slotMinute} onChange={e => setSlotMinute(e.target.value)}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                      <option value="">--</option>
-                      {availableMinutes.map(m => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </select>
-                  </div>
+                <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x" style={{scrollbarWidth:'none' as any}}>
+                  {availableHours.flatMap(h =>
+                    availableMinutes.map(m => {
+                      const time = `${h}:${m}`
+                      const isSelected = selectedSlot === time
+                      return (
+                        <button key={time}
+                          onClick={() => { setSlotHour(h); setSlotMinute(m) }}
+                          className={`snap-start flex-shrink-0 px-4 py-2.5 rounded-2xl border-2 font-bold text-sm transition-all active:scale-95 ${
+                            isSelected
+                              ? 'bg-orange-600 border-orange-600 text-white'
+                              : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
+                          }`}>
+                          {time}
+                        </button>
+                      )
+                    })
+                  )}
                 </div>
-                {selectedSlot && (
-                  <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {selectedSlot}</p>
-                )}
               </>
+            )}
+            {selectedSlot && (
+              <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {selectedSlot}</p>
             )}
           </Sec>
         )}
@@ -856,7 +850,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       </main>
 
       {/* STICKY FOOTER with expandable summary */}
-      <div ref={footerRef} className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-xl px-4 pt-3 pb-3 z-50">
+      <div ref={footerRef} className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-xl px-4 pt-3 pb-2 z-50" style={{paddingBottom: 'max(8px, env(safe-area-inset-bottom))'}}>
         <div className="max-w-lg mx-auto">
 
           {hasItems && (

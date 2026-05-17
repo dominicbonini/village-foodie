@@ -694,29 +694,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   <span className="text-green-500 font-normal ml-1">({dealItemLabels})</span>
                                   <button
                                     onClick={()=>{
-                                      // Add items from the deal back to manual items
+                                      // Remove deal and any of its items from manual basket
                                       const itemsInDeal = Object.values(d.slots).filter(Boolean) as string[]
-                                      itemsInDeal.forEach(itemName => {
-                                        const menuItem = truckMenu?.items.find(m => m.name === itemName)
-                                        if (menuItem) {
-                                          setManualItems(prev => {
-                                            const existing = prev.find(i => i.name === itemName)
-                                            if (existing) {
-                                              return prev.map(i => 
-                                                i.name === itemName 
-                                                  ? { ...i, quantity: i.quantity + 1 } 
-                                                  : i
-                                              )
-                                            } else {
-                                              return [...prev, { name: itemName, quantity: 1, unit_price: menuItem.price }]
-                                            }
-                                          })
-                                        }
-                                      })
+                                      setManualItems(prev => prev.filter(item => !itemsInDeal.includes(item.name)))
                                       setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
                                     }}
                                     className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
-                                    title="Remove deal and restore items"
+                                    title="Remove deal and its items"
                                   >×</button>
                                 </div>
                                 <span className="text-green-600 font-bold shrink-0">-£{saving.toFixed(2)}</span>
@@ -993,11 +977,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           menuItems={truckMenu?.items || []}
           basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: 0 }))}
           existingDeals={appliedDeals}
-          onApply={(deal, slots, price, discount) => {
-            // Remove items from basket that are being used in this deal
-            // (prevents double-counting: deal price + individual item prices)
-            const itemsInDeal = Object.values(slots).filter(Boolean)
-            setManualItems(prev => prev.filter(item => !itemsInDeal.includes(item.name)))
+          onApply={(deal, slots, price, discount, rawSlots) => {
+            // Only remove items that were USE_EXISTING (already in basket)
+            // New items are covered by the deal — no need to add or remove them
+            const existingItems = Object.entries(rawSlots)
+              .filter(([, raw]) => raw.startsWith('USE_EXISTING:'))
+              .map(([cat]) => slots[cat])
+              .filter(Boolean)
+
+            if (existingItems.length > 0) {
+              setManualItems(prev => prev.filter(item => !existingItems.includes(item.name)))
+            }
             
             // Add the deal
             setAppliedDeals(prev => [...prev, { 
