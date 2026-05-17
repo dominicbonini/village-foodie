@@ -744,18 +744,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
 
 
-        {/* DISCOUNT CODE */}
-        <Sec title="Discount code">
-          <div className="flex gap-2">
-            <input type="text" value={discountInput} onChange={e => { setDiscountInput(e.target.value); setDiscountError('') }}
-              placeholder="Enter code"
-              className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-            <button onClick={applyCode} className="bg-slate-900 text-white font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-slate-800 transition-colors active:scale-95">Apply</button>
-          </div>
-          {discountError && <p className="text-red-500 text-xs font-medium mt-1.5">{discountError}</p>}
-          {appliedCode && <p className="text-green-600 text-xs font-bold mt-1.5">✓ {appliedCode.type === 'pct' ? `${appliedCode.value}%` : `£${appliedCode.value.toFixed(2)}`} off applied</p>}
-        </Sec>
-
         {/* COLLECTION TIME — capacity-aware slot buttons */}
         {truck?.mode === 'village' && (
           <Sec title="Collection time">
@@ -868,7 +856,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       </main>
 
       {/* STICKY FOOTER with expandable summary */}
-      <div ref={footerRef} className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-xl px-4 pt-3 pb-6 z-50">
+      <div ref={footerRef} className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-xl px-4 pt-3 pb-3 z-50">
         <div className="max-w-lg mx-auto">
 
           {hasItems && (
@@ -926,7 +914,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {submitting ? 'Sending order...' : `Send order to ${truck?.name || 'truck'}`}
           </button>
-          <p className="text-center text-slate-400 text-xs mt-2">Pay at the truck on collection · No card details needed</p>
+          <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
       </div>
 
