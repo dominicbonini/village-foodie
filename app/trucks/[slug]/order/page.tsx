@@ -438,14 +438,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       })
     })
 
-    // Use shared function — same logic as truck dashboard
-    const readySecs = calcQueueAwareReadySecs(newByCat, queueByCat, catConfigs)
+    // Use shared function — no buffer for pre-orders (buffer is for live dashboard)
+    const readySecs = calcQueueAwareReadySecs(newByCat, queueByCat, catConfigs, 0)
     if (readySecs === 0) return event.start_time
 
-    // ASAP = event start + prep time, rounded UP to nearest 5 mins
+    // ASAP = event start + prep time, rounded to NEAREST 5 mins
     const prepMins = Math.ceil(readySecs / 60)
     const rawMins = eventStartMins + prepMins
-    const roundedMins = Math.ceil(rawMins / 5) * 5
+    const roundedMins = Math.round(rawMins / 5) * 5
     const h = Math.floor(roundedMins / 60)
     const m = roundedMins % 60
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`

@@ -55,16 +55,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       .eq('truck_id', truckId),
   ])
 
-  if (!times || times.length === 0) {
-    return NextResponse.json({ slots: [] })
-  }
-
-  // ── Build category config map ─────────────────────────────────────────────
+  // ── Build category config map (always needed for ASAP calculation) ────────
   const catConfigs: Record<string, CatConfig> = {}
   ;(categories || []).forEach(c => {
     catConfigs[c.name.toLowerCase()] = {
-      secs: c.prep_secs || 240,
-      batch: c.batch_size || 2,
+      secs: c.prep_secs || 0,
+      batch: c.batch_size || 1,
     }
   })
 
@@ -72,7 +68,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const itemCatMap: Record<string, string> = {}
   ;(menuItems || []).forEach(item => {
     const cat = categories?.find(c => c.id === item.category_id)
-    if (cat) itemCatMap[item.name] = cat.name
+    if (cat) itemCatMap[item.name] = cat.name.toLowerCase()
   })
 
   // ── Count queue items by category from existing orders ───────────────────
@@ -84,6 +80,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       queueByCat[cat] = (queueByCat[cat] || 0) + (item.quantity || 1)
     })
   })
+
+  if (!times || times.length === 0) {
+    // No collection_times configured — return catConfigs and queue for ASAP calc
+    return NextResponse.json({ slots: [], catConfigs, queueByCat })
+  }
 
   // ── Calculate minimum ready time ─────────────────────────────────────────
   const today = new Date().toISOString().split('T')[0]
