@@ -73,6 +73,7 @@ export interface BasketItem {
 export interface AppliedDeal {
   bundle: Bundle
   slots: Record<string, string>
+  itemsTakenFromBasket: string[]
 }
 
 export interface ItemStock {

@@ -127,6 +127,7 @@ export async function GET(
       logo: truck.logo_storage_path,
       mode: truck.mode,
       venue_name: truck.venue_name,
+      time_selection_enabled: truck.time_selection_enabled ?? false,
     },
     menu,
   })

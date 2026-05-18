@@ -302,7 +302,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }
     })
     setManualItems(newItems)
-    setAppliedDeals(prev=>[...prev,{bundle:activeDealBundle,slots:resolvedSlots}])
+    setAppliedDeals(prev=>[...prev,{bundle:activeDealBundle,slots:resolvedSlots,itemsTakenFromBasket:[]}])
     setShowDealsModal(false); setActiveDealBundle(null); setDealSlotPicks({})
     showToast(`${activeDealBundle.name} applied`)
   }
@@ -694,13 +694,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   <span className="text-green-500 font-normal ml-1">({dealItemLabels})</span>
                                   <button
                                     onClick={()=>{
-                                      // Remove deal and any of its items from manual basket
-                                      const itemsInDeal = Object.values(d.slots).filter(Boolean) as string[]
-                                      setManualItems(prev => prev.filter(item => !itemsInDeal.includes(item.name)))
+                                      // Only remove items that were taken from basket when deal was applied
+                                      // New items in deal were never in basket — don't touch them
+                                      if (d.itemsTakenFromBasket?.length > 0) {
+                                        setManualItems(prev => prev.filter(item => !d.itemsTakenFromBasket.includes(item.name)))
+                                      }
                                       setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
                                     }}
                                     className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
-                                    title="Remove deal and its items"
+                                    title="Remove deal"
                                   >×</button>
                                 </div>
                                 <span className="text-green-600 font-bold shrink-0">-£{saving.toFixed(2)}</span>
@@ -978,18 +980,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: 0 }))}
           existingDeals={appliedDeals}
           onApply={(deal, slots, price, discount, rawSlots) => {
-            // Only remove items that were USE_EXISTING (already in basket)
-            // New items are covered by the deal — no need to add or remove them
-            const existingItems = Object.entries(rawSlots)
+            const itemsTakenFromBasket = Object.entries(rawSlots)
               .filter(([, raw]) => raw.startsWith('USE_EXISTING:'))
               .map(([cat]) => slots[cat])
               .filter(Boolean)
 
-            if (existingItems.length > 0) {
-              setManualItems(prev => prev.filter(item => !existingItems.includes(item.name)))
+            if (itemsTakenFromBasket.length > 0) {
+              setManualItems(prev => prev.filter(item => !itemsTakenFromBasket.includes(item.name)))
             }
             
-            // Add the deal
             setAppliedDeals(prev => [...prev, { 
               bundle: { 
                 ...deal, 
@@ -997,7 +996,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 start_time: deal.start_time ?? null,
                 end_time: deal.end_time ?? null
               }, 
-              slots 
+              slots,
+              itemsTakenFromBasket
             }])
             setShowDealsModal(false)
             setActiveDealBundle(null)
