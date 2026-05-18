@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-calculations';
 import { addToBasket, removeFromBasket, cleanupDealsForItem, groupByCategory, getItemQuantity } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
+import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,7 +29,7 @@ interface Bundle {
   slot_5_category: string | null; slot_6_category: string | null
 }
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
-interface TruckMenu { categories?: Array<{ name: string }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
+interface TruckMenu { categories?: Array<{ name: string; prep_secs?: number | null; batch_size?: number | null }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean }
 interface EventData {
   date: string          // dd/mm/yyyy
@@ -136,6 +137,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean}[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [asapSlot, setAsapSlot] = useState<string|null>(null)
+  const [queueByCat, setQueueByCat] = useState<Record<string,number>>({})
+  const [serverCatConfigs, setServerCatConfigs] = useState<Record<string,{secs:number;batch:number}>>({})
   const [notes, setNotes] = useState('')
 
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
@@ -191,15 +194,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       const data = await res.json()
       const slots = data.slots || []
       setAvailableSlots(slots)
-      // Use shared getAsapSlot — checks available AND in future
+      setQueueByCat(data.queueByCat || {})
+      setServerCatConfigs(data.catConfigs || {})
       const first = getAsapSlot(slots)
       setAsapSlot(first?.collection_time || null)
-      // Auto-select ASAP
-      if (first && !slotHour) {
-        const [h, m] = first.collection_time.split(':')
-        setSlotHour(h)
-        setSlotMinute(m)
-      }
     } catch { setAvailableSlots([]) }
     finally { setLoadingSlots(false) }
   }
@@ -396,6 +394,77 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
+
+  // ── Queue-aware ASAP time (pre-order, queue-aware) ───────────────────────────
+  // Uses same batch logic as truck dashboard calcQueueAwareReadyTime.
+  // New items placed after existing queue:
+  //   totalQty = queueByCat[cat] + newItems[cat]
+  //   finalBatch = ceil(totalQty / batchSize)
+  //   prepTime = finalBatch × prepSecs
+  // If batch 2 has space, new items slot in — finish with batch 2.
+  // If full, spill into batch 3.
+  const customerAsapTime = useMemo(() => {
+    if (!event?.start_time) return asapSlot
+
+    const [startH, startM] = event.start_time.split(':').map(Number)
+    const eventStartMins = startH * 60 + startM
+
+    // No items → ASAP is event start
+    if (!hasItems || !menu) return event.start_time
+
+    // Use server-provided catConfigs (from slots API) if available,
+    // fall back to menu categories
+    const catConfigs: Record<string, { secs: number; batch: number }> =
+      Object.keys(serverCatConfigs).length > 0
+        ? serverCatConfigs
+        : Object.fromEntries(
+            (menu.categories || []).map(c => [
+              c.name.toLowerCase(),
+              { secs: c.prep_secs ?? 0, batch: c.batch_size ?? 1 }
+            ])
+          )
+
+    // Count NEW basket items by category
+    const newByCat: Record<string, number> = {}
+    basket.forEach(b => {
+      const cat = b.menuItem.category?.toLowerCase() || 'mains'
+      newByCat[cat] = (newByCat[cat] || 0) + b.quantity
+    })
+    appliedDeals.forEach(d => {
+      Object.values(d.slots).filter(Boolean).forEach(name => {
+        const item = menu.items.find(m => m.name === name)
+        const cat = item?.category?.toLowerCase() || 'mains'
+        newByCat[cat] = (newByCat[cat] || 0) + 1
+      })
+    })
+
+    // Use shared function — same logic as truck dashboard
+    const readySecs = calcQueueAwareReadySecs(newByCat, queueByCat, catConfigs)
+    if (readySecs === 0) return event.start_time
+
+    // ASAP = event start + prep time, rounded UP to nearest 5 mins
+    const prepMins = Math.ceil(readySecs / 60)
+    const rawMins = eventStartMins + prepMins
+    const roundedMins = Math.ceil(rawMins / 5) * 5
+    const h = Math.floor(roundedMins / 60)
+    const m = roundedMins % 60
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
+
+  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs])
+
+  // Convert HH:MM to total minutes for comparison
+  const toMins = (time: string) => {
+    const [h, m] = time.split(':').map(Number)
+    return h * 60 + m
+  }
+
+  // Clear chosen time if basket changes make it too early
+  useEffect(() => {
+    if (!selectedSlot || !customerAsapTime) return
+    if (toMins(selectedSlot) < toMins(customerAsapTime)) {
+      setSlotHour(''); setSlotMinute('')
+    }
+  }, [customerAsapTime]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const applyCode = () => {
     if (!menu) return
@@ -743,93 +812,113 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             {loadingSlots ? (
               <p className="text-slate-400 text-sm animate-pulse">Loading available times...</p>
             ) : (
-              <div className="flex gap-3 items-stretch">
+              <>
+                <div className="flex gap-3 items-stretch">
 
-                {/* LEFT: ASAP button — always shown, default selected */}
-                <button
-                  onClick={() => {
-                    if (asapSlot) {
-                      const [h, m] = asapSlot.split(':')
-                      setSlotHour(h); setSlotMinute(m)
-                    }
-                  }}
-                  disabled={!asapSlot}
-                  className={`flex-1 flex flex-col items-center justify-center px-3 py-3 rounded-2xl border-2 font-bold transition-all active:scale-95 ${
-                    selectedSlot === asapSlot && asapSlot
-                      ? 'bg-orange-600 border-orange-600 text-white'
-                      : asapSlot
-                        ? 'bg-orange-50 border-orange-300 text-orange-700 hover:bg-orange-100'
-                        : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'
-                  }`}>
-                  <span className="text-sm font-black">⚡ ASAP</span>
-                  <span className={`text-xs mt-0.5 ${selectedSlot === asapSlot && asapSlot ? 'text-orange-100' : 'text-orange-500'}`}>
-                    {asapSlot ? `~${asapSlot}` : 'Unavailable'}
-                  </span>
-                </button>
+                  {/* LEFT: ASAP button */}
+                  {(() => {
+                    const asapTime = customerAsapTime || (availableHours.length > 0
+                      ? `${availableHours[0]}:${availableMinutes[0] || '00'}`
+                      : null)
+                    const isSelected = selectedSlot === asapTime && selectedSlot !== ''
 
-                {/* RIGHT: Choose a time — premium feature */}
-                <div className="flex-1 relative">
-                  {truck?.time_selection_enabled ? (
-                    // Premium: dropdown of available slots
-                    <div className="relative h-full">
-                      <select
-                        value={selectedSlot !== asapSlot ? selectedSlot : ''}
-                        onChange={e => {
-                          const val = e.target.value
-                          if (val) {
-                            const [h, m] = val.split(':')
+                    return (
+                      <button
+                        onClick={() => {
+                          if (asapTime) {
+                            const [h, m] = asapTime.split(':')
                             setSlotHour(h); setSlotMinute(m)
-                          } else {
-                            // Reset to ASAP
-                            if (asapSlot) {
-                              const [h, m] = asapSlot.split(':')
-                              setSlotHour(h); setSlotMinute(m)
-                            }
                           }
                         }}
-                        className={`w-full h-full min-h-[68px] rounded-2xl border-2 px-3 py-3 text-sm font-bold appearance-none text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${
-                          selectedSlot !== asapSlot && selectedSlot
+                        disabled={!asapTime}
+                        className={`flex-1 flex flex-col items-center justify-center px-3 py-3 rounded-2xl border-2 font-bold transition-all active:scale-95 ${
+                          isSelected
                             ? 'bg-orange-600 border-orange-600 text-white'
-                            : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
+                            : asapTime
+                              ? 'bg-white border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-orange-50'
+                              : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'
                         }`}>
-                        <option value="">Choose time</option>
-                        {availableSlots
-                          .filter(s => s.collection_time !== asapSlot && s.available && !s.is_past)
-                          .map(slot => (
-                            <option key={slot.collection_time} value={slot.collection_time}>
-                              {slot.collection_time}{slot.remaining < 4 ? ` (${slot.remaining} left)` : ''}
-                            </option>
-                          ))
-                        }
-                        {/* Fallback if no capacity slots: generate from event hours */}
-                        {availableSlots.length === 0 && availableHours.flatMap(h =>
-                          availableMinutes.map(m => {
-                            const time = `${h}:${m}`
-                            return time !== asapSlot
-                              ? <option key={time} value={time}>{time}</option>
-                              : null
-                          })
-                        )}
-                      </select>
-                      {/* Dropdown arrow */}
-                      <div className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 ${selectedSlot !== asapSlot && selectedSlot ? 'text-white' : 'text-slate-400'}`}>
-                        ▾
+                        <span className="text-sm font-black">⚡ ASAP</span>
+                        <span className={`text-xs mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-400'}`}>
+                          {asapTime ? `Around ${asapTime}` : 'Unavailable'}
+                        </span>
+                      </button>
+                    )
+                  })()}
+
+                  {/* RIGHT: Choose time button / dropdown */}
+                  <div className="flex-1">
+                    {truck?.time_selection_enabled ? (() => {
+                      const asapTime = customerAsapTime || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
+                      const hasChosenTime = selectedSlot && selectedSlot !== asapTime
+
+                      return (
+                        <div className="relative h-full">
+                          <select
+                            value={hasChosenTime ? selectedSlot : ''}
+                            onChange={e => {
+                              const val = e.target.value
+                              if (val) {
+                                const [h, m] = val.split(':')
+                                setSlotHour(h); setSlotMinute(m)
+                              } else {
+                                // Deselect — clear selection
+                                setSlotHour(''); setSlotMinute('')
+                              }
+                            }}
+                            className={`w-full h-full min-h-[68px] rounded-2xl border-2 px-3 py-3 text-sm font-bold appearance-none text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${
+                              hasChosenTime
+                                ? 'bg-orange-600 border-orange-600 text-white'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
+                            }`}>
+                            <option value="">Choose time</option>
+                            {availableSlots.length > 0
+                              ? availableSlots
+                                  .filter(s => {
+                                    if (!s.available || s.is_past) return false
+                                    // Only show slots at or after the ASAP time
+                                    if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
+                                    return true
+                                  })
+                                  .map(slot => (
+                                    <option key={slot.collection_time} value={slot.collection_time}>
+                                      {slot.collection_time}{slot.remaining < 4 ? ` (${slot.remaining} left)` : ''}
+                                    </option>
+                                  ))
+                              : availableHours.flatMap(h =>
+                                  availableMinutes
+                                    .filter(m => {
+                                      const time = `${h}:${m}`
+                                      if (!asapTime) return true
+                                      return toMins(time) >= toMins(asapTime)
+                                    })
+                                    .map(m => {
+                                      const time = `${h}:${m}`
+                                      return <option key={time} value={time}>{time}</option>
+                                    })
+                                )
+                            }
+                          </select>
+                          <div className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs ${hasChosenTime ? 'text-white' : 'text-slate-400'}`}>▾</div>
+                        </div>
+                      )
+                    })() : (
+                      // Free tier: greyed out, no badge
+                      <div className="w-full h-full min-h-[68px] rounded-2xl border-2 border-slate-100 bg-slate-50 flex flex-col items-center justify-center px-3 py-3">
+                        <span className="text-xs font-black text-slate-300">Choose time</span>
+                        <span className="text-[10px] text-slate-300 mt-0.5">ASAP only</span>
                       </div>
-                    </div>
-                  ) : (
-                    // Free tier: locked, shows upgrade tag
-                    <div className="w-full h-full min-h-[68px] rounded-2xl border-2 border-slate-100 bg-slate-50 flex flex-col items-center justify-center px-3 py-3 relative">
-                      <span className="text-xs font-black text-slate-300">Choose time</span>
-                      <span className="text-[10px] text-slate-300 mt-0.5">ASAP only</span>
-                      <span className="absolute -top-2 -right-1 bg-slate-700 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide">Premium</span>
-                    </div>
-                  )}
+                    )}
+                  </div>
+
                 </div>
 
-              </div>
-            )}
-            {selectedSlot && (
-              <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {selectedSlot}</p>
+                {/* Confirmation */}
+                {selectedSlot
+                  ? <p className="text-green-600 text-xs font-bold mt-2">✓ Collection time: {selectedSlot}</p>
+                  : <p className="text-slate-400 text-xs mt-2">Select ASAP or choose a specific time</p>
+                }
+              </>
             )}
           </Sec>
         )}

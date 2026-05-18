@@ -90,11 +90,6 @@ export interface CategoryStock {
   orders_count: number
 }
 
-export interface CatConfig {
-  secs: number
-  batch: number
-}
-
 export const STATUS: Record<string, { label: string; bg: string; text: string }> = {
   pending:   { label: 'New',       bg: 'bg-orange-100', text: 'text-orange-700' },
   confirmed: { label: 'Confirmed', bg: 'bg-green-100',  text: 'text-green-700'  },
@@ -104,11 +99,6 @@ export const STATUS: Record<string, { label: string; bg: string; text: string }>
   modified:  { label: 'Modified',  bg: 'bg-yellow-100', text: 'text-yellow-700' },
 }
 
-export const DEFAULT_CAT_CONFIG: Record<string, CatConfig> = {
-  pizzas: { secs: 480, batch: 3 }, pizza: { secs: 480, batch: 3 },
-  burgers: { secs: 360, batch: 2 }, burger: { secs: 360, batch: 2 }, mains: { secs: 360, batch: 2 },
-  drinks: { secs: 0, batch: 99 }, drink: { secs: 0, batch: 99 },
-  dips: { secs: 0, batch: 99 }, dip: { secs: 0, batch: 99 },
-  sides: { secs: 60, batch: 5 }, side: { secs: 60, batch: 5 },
-  desserts: { secs: 180, batch: 3 }, extras: { secs: 0, batch: 99 },
-}
+// Moved to lib/prep-utils.ts — single source of truth
+export type { CatConfig } from '@/lib/prep-utils'
+export { DEFAULT_CAT_CONFIG } from '@/lib/prep-utils'

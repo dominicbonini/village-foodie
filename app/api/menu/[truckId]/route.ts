@@ -76,8 +76,8 @@ export async function GET(
   const menu = {
     categories: (categories || []).map(c => ({
       name: c.name,
-      prep_secs: c.prep_secs || 0,
-      batch_size: c.batch_size || 1,
+      prep_secs: c.prep_secs ?? null,
+      batch_size: c.batch_size ?? null,
     })),
     
     items: (items || []).map(i => ({
