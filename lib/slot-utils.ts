@@ -5,6 +5,7 @@
 export interface SlotBase {
   collection_time: string
   available: boolean
+  is_grace?: boolean
 }
 
 export function getAsapSlot<T extends SlotBase>(slots: T[]): T | null {
@@ -12,6 +13,6 @@ export function getAsapSlot<T extends SlotBase>(slots: T[]): T | null {
   const nowMins = now.getHours() * 60 + now.getMinutes()
   return slots.find(s => {
     const [h, m] = s.collection_time.split(':').map(Number)
-    return (h * 60 + m) > nowMins && s.available
+    return (h * 60 + m) > nowMins && s.available && !s.is_grace
   }) || null
 }

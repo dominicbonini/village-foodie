@@ -1,6 +1,14 @@
 // components/dashboard/types.ts
 // Shared types for the truck dashboard
 
+export interface OrderItem {
+  name: string
+  quantity: number
+  unit_price: number
+  modifiers?: { name: string; price: number }[]
+  specialInstructions?: string
+}
+
 export interface Order {
   id: string
   customer_name: string
@@ -8,8 +16,8 @@ export interface Order {
   customer_email: string | null
   slot: string | null
   status: string
-  items: { name: string; quantity: number; unit_price: number }[]
-  deals: { name: string; slots: Record<string, string> }[] | null
+  items: OrderItem[]
+  deals: { name: string; slots: Record<string, string>; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }[] | null
   total: number
   notes: string | null
   created_at: string
@@ -21,6 +29,8 @@ export interface Slot {
   current_orders: number
   max_orders: number
   available: boolean
+  is_past?: boolean
+  is_grace?: boolean
 }
 
 export interface TruckData {
@@ -29,6 +39,8 @@ export interface TruckData {
   mode: string
   venue_name: string | null
   logo: string | null
+  paused?: boolean
+  auto_accept?: boolean
 }
 
 export interface MenuItem {
@@ -41,8 +53,20 @@ export interface MenuItem {
   image?: string | null
 }
 
+export interface ModifierOption {
+  id: string
+  name: string
+  price_adjustment: number
+}
+
+export interface ModifierGroup {
+  id: string
+  name: string
+  options: ModifierOption[]
+}
+
 export interface TruckMenu {
-  categories?: Array<{ name: string; prep_secs?: number; batch_size?: number }>
+  categories?: Array<{ id?: string; name: string; prep_secs?: number; batch_size?: number; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>
   items: MenuItem[]
   bundles?: Bundle[]
   upsell_rules?: any[]
@@ -68,12 +92,18 @@ export interface BasketItem {
   name: string
   quantity: number
   unit_price: number
+  modifiers?: { name: string; price: number }[]
+  specialInstructions?: string
+  cartKey?: string
 }
 
 export interface AppliedDeal {
   bundle: Bundle
   slots: Record<string, string>
   itemsTakenFromBasket: string[]
+  modifierExtra?: number
+  slotModifiers?: Record<string, { name: string; price: number }[]>
+  slotNotes?: Record<string, string>
 }
 
 export interface ItemStock {
@@ -97,6 +127,7 @@ export const STATUS: Record<string, { label: string; bg: string; text: string }>
   ready:     { label: 'Ready',     bg: 'bg-blue-100',   text: 'text-blue-700'   },
   collected: { label: 'Collected', bg: 'bg-slate-100',  text: 'text-slate-500'  },
   modified:  { label: 'Modified',  bg: 'bg-yellow-100', text: 'text-yellow-700' },
+  cancelled: { label: 'Cancelled', bg: 'bg-red-100',    text: 'text-red-600'    },
 }
 
 // Moved to lib/prep-utils.ts — single source of truth

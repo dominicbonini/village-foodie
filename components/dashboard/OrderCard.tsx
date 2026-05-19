@@ -113,9 +113,7 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
     })
   }
 
-  const itemsSubtotal = order.items.reduce((s, i) => s + i.unit_price * i.quantity, 0)
-  const dealDiscount = itemsSubtotal - Number(order.total)
-  const hasDeal = order.deals && order.deals.length > 0 && dealDiscount > 0.005
+  const hasDeal = !!(order.deals && order.deals.length > 0)
 
   return (
     <div className={`bg-white rounded-2xl overflow-hidden border shadow-sm transition-opacity ${borderClass} ${allStruck ? 'opacity-50' : ''}`}>
@@ -154,34 +152,54 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
               const allDone = struck >= item.quantity
               const partDone = struck > 0 && !allDone
               return (
-                <button key={i}
-                  onClick={() => tapItem(i, item.quantity)}
-                  className={`w-full flex justify-between items-center text-sm rounded px-2 py-1 -mx-2 transition-all active:scale-[0.99] select-none text-left ${
-                    allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
-                  }`}>
-                  <span className={`font-medium transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-800'}`}>
-                    {item.quantity}× {item.name}
-                    {partDone && <span className="text-orange-500 text-xs font-black ml-1.5">({struck}/{item.quantity})</span>}
-                  </span>
-                  <span className={`text-xs shrink-0 ml-2 ${allDone ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
-                    {allDone ? '✓' : `£${(item.unit_price * item.quantity).toFixed(2)}`}
-                  </span>
-                </button>
+                <div key={i}>
+                  <button
+                    onClick={() => tapItem(i, item.quantity)}
+                    className={`w-full flex justify-between items-center text-sm rounded px-2 py-1 -mx-2 transition-all active:scale-[0.99] select-none text-left ${
+                      allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
+                    }`}>
+                    <span className={`font-medium transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+                      {item.quantity}× {item.name}
+                      {partDone && <span className="text-orange-500 text-xs font-black ml-1.5">({struck}/{item.quantity})</span>}
+                    </span>
+                    <span className={`text-xs shrink-0 ml-2 ${allDone ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
+                      {allDone ? '✓' : `£${(item.unit_price * item.quantity).toFixed(2)}`}
+                    </span>
+                  </button>
+                  {(item.modifiers?.length || item.specialInstructions) && (
+                    <div className="pl-4 -mt-0.5 mb-0.5 flex flex-wrap gap-x-2">
+                      {item.modifiers?.map(m => (
+                        <span key={m.name} className="text-[10px] text-orange-500 font-medium">+ {m.name}</span>
+                      ))}
+                      {item.specialInstructions && (
+                        <span className="text-[10px] text-slate-400 italic">📝 {item.specialInstructions}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
               )
             })}
           </div>
 
           {hasDeal && (
-            <div className="border-t border-slate-200 pt-1 mb-1 space-y-0.5">
+            <div className="border-t border-slate-200 pt-1 mb-1 space-y-1">
               {order.deals!.map((d, i) => (
-                <div key={i} className="flex justify-between text-xs">
-                  <span className="text-green-600 font-bold">🎁 {d.name} <span className="font-normal text-green-500">({Object.values(d.slots).filter(Boolean).join(', ')})</span></span>
-                  <span className="text-green-600 font-bold shrink-0 ml-2">-£{dealDiscount.toFixed(2)}</span>
+                <div key={i}>
+                  <p className="text-xs font-bold text-amber-600">🎁 {d.name}: <span className="font-normal">{Object.values(d.slots).filter(Boolean).join(', ')}</span></p>
+                  {Object.entries(d.slots).map(([cat, itemName]) => {
+                    if (!itemName) return null
+                    const mods = (d.slotModifiers || {})[cat] || []
+                    const note = (d.slotNotes || {})[cat]
+                    if (!mods.length && !note) return null
+                    return (
+                      <div key={cat} className="pl-3">
+                        {mods.map(m => <p key={m.name} className="text-[10px] text-orange-500 leading-tight">+ {m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>)}
+                        {note && <p className="text-[10px] text-slate-400 italic leading-tight">📝 {note}</p>}
+                      </div>
+                    )
+                  })}
                 </div>
               ))}
-              <div className="flex justify-between text-xs font-bold text-slate-600">
-                <span>Total</span><span>£{Number(order.total).toFixed(2)}</span>
-              </div>
             </div>
           )}
 
@@ -213,11 +231,12 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
                 <Btn label="✗ Reject" colour="red" loading={actionLoading === `reject-${order.id}`} onClick={() => onAction('reject', order.id)} />
               </>
             )}
-            {order.status === 'confirmed' && isPub && <Btn label="🍕 Ready" colour="blue" loading={actionLoading === `ready-${order.id}`} onClick={() => onAction('ready', order.id)} />}
-            {order.status === 'confirmed' && !isPub && <Btn label="✓ Collected" colour="teal" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />}
+            {['confirmed', 'modified'].includes(order.status) && isPub && <Btn label="🍕 Ready" colour="blue" loading={actionLoading === `ready-${order.id}`} onClick={() => onAction('ready', order.id)} />}
+            {['confirmed', 'modified'].includes(order.status) && !isPub && <Btn label="✓ Collected" colour="teal" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />}
             {order.status === 'ready' && <Btn label="✓ Collected" colour="teal" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />}
             {order.status === 'collected' && <Btn label="↩ Undo" colour="slate" loading={actionLoading === `undo_collected-${order.id}`} onClick={() => onAction('undo_collected', order.id)} />}
             {['pending', 'confirmed', 'modified'].includes(order.status) && <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />}
+            {['confirmed', 'modified', 'ready'].includes(order.status) && <Btn label="✕ Cancel" colour="red" loading={actionLoading === `cancel-${order.id}`} onClick={() => onAction('cancel', order.id)} />}
           </div>
         </div>
       )}

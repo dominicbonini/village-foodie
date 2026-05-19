@@ -76,11 +76,11 @@ export async function POST(req: NextRequest) {
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
   if (action === 'upsert_category') {
-    const { id, name, prep_secs, batch_size, sort_order } = body
+    const { id, name, prep_secs, batch_size, allow_notes, sort_order } = body
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     if (id) {
       const { data, error } = await supabase.from('menu_categories')
-        .update({ name, slug, prep_secs, batch_size, sort_order })
+        .update({ name, slug, prep_secs, batch_size, allow_notes: !!allow_notes, sort_order })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_categories').select('sort_order').eq('truck_id', truck.id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_categories')
-        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs || 240, batch_size: batch_size || 2, sort_order: sort_order ?? nextOrder })
+        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs || 240, batch_size: batch_size || 2, allow_notes: !!allow_notes, sort_order: sort_order ?? nextOrder })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })

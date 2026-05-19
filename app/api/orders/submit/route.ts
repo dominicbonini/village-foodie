@@ -6,6 +6,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { calculateOrderTotal, validateOrderTotals } from '@/lib/order-calculations'
+import {
+  addOrderToProductionSlot,
+  getProductionSlotUnits,
+  buildItemCatMap,
+} from '@/lib/slot-bookings'
+import { canFitInProductionSlot, orderItemsToQtyByCat } from '@/lib/slot-capacity'
+import { generateCollectionTimes } from '@/lib/slot-generation'
+import type { CatConfig } from '@/lib/prep-utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,11 +21,15 @@ interface OrderItem {
   name: string
   quantity: number
   unit_price: number
+  modifiers?: { name: string; price: number }[]
+  specialInstructions?: string
 }
 
 interface AppliedDeal {
   name: string
   slots: Record<string, string>
+  slotModifiers?: Record<string, { name: string; price: number }[]>
+  slotNotes?: Record<string, string>
 }
 
 // ─── Order ID generator ───────────────────────────────────────────────────────
@@ -100,11 +112,121 @@ function formatWhatsAppOrder(params: {
 
 // ─── Email confirmation formatter ─────────────────────────────────────────────
 
+function timeToMins(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + m
+}
+
+function allOrderLines(
+  items: OrderItem[],
+  deals: AppliedDeal[] | null | undefined
+): { name: string; quantity: number }[] {
+  const lines = items.map(i => ({ name: i.name, quantity: i.quantity }))
+  ;(deals || []).forEach(d => {
+    Object.values(d.slots || {}).filter(Boolean).forEach(name => {
+      lines.push({ name, quantity: 1 })
+    })
+  })
+  return lines
+}
+
+
+async function buildCatConfigs(truckId: string): Promise<Record<string, CatConfig>> {
+  const { data: categories } = await supabase
+    .from('menu_categories')
+    .select('name, prep_secs, batch_size')
+    .eq('truck_id', truckId)
+  const catConfigs: Record<string, CatConfig> = {}
+  ;(categories || []).forEach(c => {
+    catConfigs[c.name.toLowerCase()] = {
+      secs: c.prep_secs || 0,
+      batch: c.batch_size || 1,
+    }
+  })
+  return catConfigs
+}
+
+/** Resolve collection slot after auto-accept; bump if production window is batch-full. */
+async function resolveAutoAcceptSlot(
+  truckId: string,
+  eventDate: string,
+  requestedSlot: string,
+  orderLines: { name: string; quantity: number }[],
+  itemCatMap: Record<string, string>,
+  catConfigs: Record<string, CatConfig>,
+  eventStartTime?: string | null,
+  eventEndTime?: string | null,
+  intervalMins?: number,
+  slotDurationMins?: number,
+): Promise<{ confirmedSlot: string; slotChanged: boolean; canConfirm: boolean }> {
+  const [{ data: staticTimes }, { data: capacities }, slotUnits] = await Promise.all([
+    supabase
+      .from('collection_times')
+      .select('collection_time, production_slot')
+      .eq('truck_id', truckId)
+      .order('collection_time', { ascending: true }),
+    supabase
+      .from('slot_capacity')
+      .select('slot, max_orders')
+      .eq('truck_id', truckId)
+      .eq('event_date', eventDate),
+    getProductionSlotUnits(supabase, truckId, eventDate),
+  ])
+
+  // Prefer dynamic slot generation from event times when static table is empty
+  const iv = intervalMins ?? 0
+  const dur = slotDurationMins ?? iv
+  const times =
+    staticTimes?.length
+      ? staticTimes
+      : eventStartTime && eventEndTime && iv > 0
+        ? generateCollectionTimes(eventStartTime, eventEndTime, iv, dur)
+        : []
+
+  const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
+  const timeEntry = times.find(t => t.collection_time === requestedSlot)
+  if (!timeEntry) {
+    return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: true }
+  }
+
+  const trySlot = (collectionTime: string, productionSlot: string) =>
+    canFitInProductionSlot(
+      slotUnits[productionSlot] || {},
+      orderLines,
+      itemCatMap,
+      capacityMap[productionSlot] || 999,
+      catConfigs
+    )
+
+  if (trySlot(requestedSlot, timeEntry.production_slot)) {
+    return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: true }
+  }
+
+  const requestedMins = timeToMins(requestedSlot)
+  const sorted = (times || [])
+    .filter(t => timeToMins(t.collection_time) > requestedMins)
+    .sort((a, b) => timeToMins(a.collection_time) - timeToMins(b.collection_time))
+
+  for (const s of sorted) {
+    if (trySlot(s.collection_time, s.production_slot)) {
+      return {
+        confirmedSlot: s.collection_time,
+        slotChanged: s.collection_time !== requestedSlot,
+        canConfirm: true,
+      }
+    }
+  }
+
+  return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: false }
+}
+
 function formatConfirmationEmail(params: {
   orderId: string
   truckName: string
   customerName: string
   slot: string | null
+  requestedSlot?: string | null
+  slotChanged?: boolean
   items: OrderItem[]
   deals: AppliedDeal[]
   discountAmt: number
@@ -113,19 +235,42 @@ function formatConfirmationEmail(params: {
   autoAccepted?: boolean
 }): { subject: string; html: string; text: string } {
   const subject = params.autoAccepted
-    ? `Order #${params.orderId} confirmed — ${params.truckName}`
-    : `Order #${params.orderId} received — ${params.truckName}`
+    ? `Order #${params.orderId} confirmed`
+    : `Order #${params.orderId} received`
 
-  const itemRows = params.items.map(item =>
-    `<tr>
-      <td style="padding:4px 0;color:#475569">${item.quantity}× ${item.name}</td>
-      <td style="text-align:right;padding:4px 0;color:#1e293b;font-weight:500">£${(item.unit_price * item.quantity).toFixed(2)}</td>
-    </tr>`
-  ).join('')
+  const itemRows = params.items.map(item => {
+    const modRows = (item.modifiers || []).map(m =>
+      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` <span style="color:#ea580c">+£${m.price.toFixed(2)}</span>` : ''}</td></tr>`
+    ).join('')
+    const noteRow = item.specialInstructions
+      ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
+      : ''
+    return `<tr>
+      <td style="padding:4px 0 2px;color:#475569">${item.quantity}× ${item.name}</td>
+      <td style="text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500">£${(item.unit_price * item.quantity).toFixed(2)}</td>
+    </tr>${modRows}${noteRow}`
+  }).join('')
 
-  const dealRows = params.deals.map(deal =>
-    `<tr><td colspan="2" style="padding:4px 0;color:#d97706;font-size:13px">🎁 ${deal.name}: ${Object.values(deal.slots).filter(Boolean).join(', ')}</td></tr>`
-  ).join('')
+  const dealRows = params.deals.map(deal => {
+    const slotNames = Object.values(deal.slots).filter(Boolean)
+    const slotMods = deal.slotModifiers || {}
+    const slotNotes = deal.slotNotes || {}
+    const subRows = Object.entries(deal.slots).flatMap(([cat, itemName]) => {
+      if (!itemName) return []
+      const rows: string[] = []
+      const mods = slotMods[cat] || []
+      if (mods.length > 0) {
+        const modStr = mods.map(m => `+ ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`).join(', ')
+        rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ ${itemName}: ${modStr}</td></tr>`)
+      }
+      const note = slotNotes[cat]
+      if (note) {
+        rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
+      }
+      return rows
+    }).join('')
+    return `<tr><td colspan="2" style="padding:4px 0 2px;color:#d97706;font-size:13px">🎁 ${deal.name}: ${slotNames.join(', ')}</td></tr>${subRows}`
+  }).join('')
 
   const discountRow = params.discountAmt > 0
     ? `<tr><td style="color:#16a34a;padding:4px 0">Discount</td><td style="text-align:right;color:#16a34a">-£${params.discountAmt.toFixed(2)}</td></tr>`
@@ -135,7 +280,9 @@ function formatConfirmationEmail(params: {
     <div style="background:${params.autoAccepted ? '#f0fdf4' : '#fff7ed'};border:1px solid ${params.autoAccepted ? '#bbf7d0' : '#fed7aa'};border-radius:10px;padding:12px;margin-top:12px">
       <p style="margin:0;font-size:14px;color:${params.autoAccepted ? '#166534' : '#92400e'}">
         ${params.autoAccepted
-          ? `<strong>✓ Confirmed collection time: ${params.slot}</strong><br><span style="font-size:12px">Your order has been confirmed. See you at the hatch!</span>`
+          ? params.slotChanged && (params.requestedSlot ?? params.slot)
+            ? `<strong>Sorry, your ${params.requestedSlot ?? params.slot} slot was taken.</strong><br><span style="font-size:12px">Your order will be ready at <strong>${params.slot}</strong>.</span>`
+            : `<strong>Order confirmed — collection time ${params.slot}</strong><br><span style="font-size:12px">Your order has been confirmed. See you at the hatch!</span>`
           : `<strong>Preferred collection time: ${params.slot}</strong><br><span style="font-size:12px">${params.truckName} will confirm your collection time when they accept your order.</span>`
         }
       </p>
@@ -189,11 +336,30 @@ function formatConfirmationEmail(params: {
   const text = [
     `Order #${params.orderId} received — ${params.truckName}`,
     '',
-    params.items.map(i => `${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`).join('\n'),
-    params.deals.length ? params.deals.map(d => `🎁 ${d.name}: ${Object.values(d.slots).filter(Boolean).join(', ')}`).join('\n') : '',
+    params.items.map(i => {
+      const lines = [`${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`]
+      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '')).join(', ')}`)
+      if (i.specialInstructions) lines.push(`  📝 ${i.specialInstructions}`)
+      return lines.join('\n')
+    }).join('\n'),
+    params.deals.length ? params.deals.map(d => {
+      const lines = [`🎁 ${d.name}: ${Object.values(d.slots).filter(Boolean).join(', ')}`]
+      Object.entries(d.slots || {}).forEach(([cat, itemName]) => {
+        if (!itemName) return
+        const mods = (d.slotModifiers || {})[cat] || []
+        if (mods.length) lines.push(`  ↳ ${itemName}: ${mods.map(m => `+ ${m.name}`).join(', ')}`)
+        const note = (d.slotNotes || {})[cat]
+        if (note) lines.push(`  ↳ ${itemName}: 📝 ${note}`)
+      })
+      return lines.join('\n')
+    }).join('\n') : '',
     params.discountAmt > 0 ? `Discount: -£${params.discountAmt.toFixed(2)}` : '',
     `Total: £${params.total.toFixed(2)}`,
-    params.slot ? `Preferred collection: ${params.slot} — ${params.truckName} will confirm.` : '',
+    params.autoAccepted && params.slot
+      ? params.slotChanged && params.requestedSlot
+        ? `Sorry, your ${params.requestedSlot} slot was taken. Your order will be ready at ${params.slot}.`
+        : `Order confirmed — collection time ${params.slot}.`
+      : params.slot ? `Preferred collection: ${params.slot} — ${params.truckName} will confirm.` : '',
     params.notes ? `Notes: ${params.notes}` : '',
     '',
     'Pay at the truck on collection. No card details needed.',
@@ -211,6 +377,7 @@ async function sendConfirmationEmail(params: {
   subject: string
   html: string
   text: string
+  truckName?: string
 }): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey) {
@@ -225,7 +392,7 @@ async function sendConfirmationEmail(params: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender:    { name: 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
+        sender:    { name: params.truckName || 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
         to:        [{ email: params.to }],
         subject:   params.subject,
         htmlContent: params.html,
@@ -273,43 +440,78 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // ── Fetch truck ───────────────────────────────────────────────────────────
-    const { data: truck, error: truckErr } = await supabase
+    // ── Fetch truck (by slug or id) ───────────────────────────────────────────
+    let truckQuery = await supabase
       .from('trucks')
       .select('*')
-      .eq('id', truckId)
+      .eq('slug', truckId)
       .eq('active', true)
       .single()
 
-    if (truckErr || !truck) {
+    if (truckQuery.error || !truckQuery.data) {
+      truckQuery = await supabase
+        .from('trucks')
+        .select('*')
+        .eq('id', truckId)
+        .eq('active', true)
+        .single()
+    }
+
+    const truck = truckQuery.data
+    if (!truck) {
       return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
     }
 
-    // ── Slot capacity check ───────────────────────────────────────────────────
+    // Use the actual truck UUID for all subsequent queries
+    const resolvedTruckId = truck.id
+
+    const orderLines = allOrderLines(items, deals)
+    const [itemCatMap, catConfigs] = await Promise.all([
+      buildItemCatMap(supabase, resolvedTruckId),
+      buildCatConfigs(resolvedTruckId),
+    ])
+
+    // ── Slot capacity check (batch-based per production window) ───────────────
     if (truck.mode === 'village' && slot && eventDate) {
-      const { data: capacity } = await supabase
-        .from('slot_capacity')
-        .select('max_orders')
-        .eq('truck_id', truckId)
-        .eq('event_date', eventDate)
-        .eq('slot', slot)
-        .single()
-
-      if (capacity) {
-        const { count } = await supabase
-          .from('orders')
-          .select('*', { count: 'exact', head: true })
-          .eq('truck_id', truckId)
-          .eq('event_date', eventDate)
-          .eq('slot', slot)
-          .in('status', ['pending', 'confirmed', 'modified'])
-
-        if ((count ?? 0) >= capacity.max_orders) {
-          return NextResponse.json(
-            { error: 'This time slot is full — please choose another' },
-            { status: 409 }
-          )
+      const [{ data: timeRow }, slotUnits, { data: capacities }] = await Promise.all([
+        supabase
+          .from('collection_times')
+          .select('production_slot')
+          .eq('truck_id', resolvedTruckId)
+          .eq('collection_time', slot)
+          .maybeSingle(),
+        getProductionSlotUnits(supabase, resolvedTruckId, eventDate),
+        supabase
+          .from('slot_capacity')
+          .select('slot, max_orders')
+          .eq('truck_id', resolvedTruckId)
+          .eq('event_date', eventDate),
+      ])
+      const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
+      // For dynamic-slot trucks (no collection_times), derive production_slot from the slot time
+      const productionSlot = timeRow?.production_slot ?? (() => {
+        const dur = truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
+        if (dur > 0) {
+          const [h, m] = slot.split(':').map(Number)
+          const slotMins = h * 60 + m
+          const prodMins = Math.floor(slotMins / dur) * dur
+          return `${String(Math.floor(prodMins / 60)).padStart(2, '0')}:${String(prodMins % 60).padStart(2, '0')}`
         }
+        return slot
+      })()
+      const maxBatches = capacityMap[productionSlot] ?? 999
+
+      if (!canFitInProductionSlot(
+        slotUnits[productionSlot] || {},
+        orderLines,
+        itemCatMap,
+        maxBatches,
+        catConfigs
+      )) {
+        return NextResponse.json(
+          { error: 'This time slot is full — please choose another' },
+          { status: 409 }
+        )
       }
     }
 
@@ -317,12 +519,12 @@ export async function POST(req: NextRequest) {
     const { data: menuItems } = await supabase
       .from('menu_items_db')
       .select('name, price')
-      .eq('truck_id', truckId)
+      .eq('truck_id', resolvedTruckId)
 
     const { data: bundles } = await supabase
       .from('bundles_db')
       .select('*')
-      .eq('truck_id', truckId)
+      .eq('truck_id', resolvedTruckId)
 
     // Reconstruct deals
     const dealsForCalc = (deals || []).map((d: AppliedDeal) => ({
@@ -336,7 +538,7 @@ export async function POST(req: NextRequest) {
       const { data } = await supabase
         .from('discount_codes_db')
         .select('*')
-        .eq('truck_id', truckId)
+        .eq('truck_id', resolvedTruckId)
         .eq('code', discountCode.toUpperCase())
         .eq('is_active', true)
         .single()
@@ -366,20 +568,30 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Generate order ID ─────────────────────────────────────────────────────
-    const orderId = await nextOrderId(truckId)
+    const orderId = await nextOrderId(resolvedTruckId)
+
+    // ── Resolve event_id for this order ──────────────────────────────────────
+    const orderEventDate = eventDate ?? new Date().toISOString().split('T')[0]
+    const { data: eventRow } = await supabase
+      .from('truck_events')
+      .select('id, start_time, end_time')
+      .eq('truck_id', resolvedTruckId)
+      .eq('event_date', orderEventDate)
+      .neq('is_cancelled', true)
+      .maybeSingle()
 
     // ── Save to Supabase ──────────────────────────────────────────────────────
     const { data: order, error: insertErr } = await supabase
       .from('orders')
       .insert({
         id:             orderId,
-        truck_id:       truckId,
+        truck_id:       resolvedTruckId,
         customer_name:  customerName,
         customer_email: customerEmail,
         customer_phone: customerPhone,
         slot:           slot ?? null,
         order_type:     'collection',
-        event_date:     eventDate ?? new Date().toISOString().split('T')[0],
+        event_date:     orderEventDate,
         items,
         deals:          deals ?? null,
         discount_code:  discountCode ?? null,
@@ -388,6 +600,7 @@ export async function POST(req: NextRequest) {
         total,
         notes:          notes ?? null,
         status:         'pending',
+        payment_status: 'unpaid',
       })
       .select()
       .single()
@@ -398,11 +611,48 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Auto-accept if truck has it enabled ───────────────────────────────────
+    const requestedSlot = slot ?? null
+    let confirmedSlot = requestedSlot
+    let autoAccepted = false
+    let slotChanged = false
+
     if (truck.auto_accept) {
-      await supabase
-        .from('orders')
-        .update({ status: 'confirmed' })
-        .eq('id', orderId)
+      if (requestedSlot && eventDate) {
+        const resolved = await resolveAutoAcceptSlot(
+          resolvedTruckId, eventDate, requestedSlot, orderLines, itemCatMap, catConfigs,
+          eventRow?.start_time ?? null,
+          eventRow?.end_time ?? null,
+          truck.collection_interval_mins ?? 0,
+          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
+        )
+        if (resolved.canConfirm) {
+          autoAccepted = true
+          confirmedSlot = resolved.confirmedSlot
+          slotChanged = resolved.slotChanged
+          await supabase
+            .from('orders')
+            .update({
+              status: 'confirmed',
+              ...(slotChanged ? { slot: confirmedSlot } : {}),
+            })
+            .eq('id', orderId)
+        }
+      } else {
+        autoAccepted = true
+        await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId)
+      }
+    }
+
+    // Track batch usage — never block the order if this fails
+    const slotToBook = confirmedSlot || requestedSlot
+    if (slotToBook && eventDate) {
+      try {
+        await addOrderToProductionSlot(
+          supabase, resolvedTruckId, eventDate, slotToBook, orderLines, itemCatMap
+        )
+      } catch (slotErr) {
+        console.error('[submit] production slot tracking failed:', slotErr)
+      }
     }
 
     // ── WhatsApp to truck ─────────────────────────────────────────────────────
@@ -412,7 +662,7 @@ export async function POST(req: NextRequest) {
       customerName,
       customerPhone,
       customerEmail,
-      slot:         slot ?? null,
+      slot:         confirmedSlot ?? slot ?? null,
       eventDate:    eventDate ?? new Date().toISOString().split('T')[0],
       items,
       deals:        deals ?? [],
@@ -441,9 +691,28 @@ export async function POST(req: NextRequest) {
     try {
       const truckEmail = truck.contact_email
       if (truckEmail) {
-        const truckItemRows = items.map((i: any) =>
-          `<tr><td style="padding:3px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
-        ).join('')
+        const truckItemRows = items.map((i: any) => {
+          const modRows = (i.modifiers || []).map((m: any) =>
+            `<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</td></tr>`
+          ).join('')
+          const noteRow = i.specialInstructions
+            ? `<tr><td colspan="2" style="padding:1px 0 3px 14px;font-size:12px;color:#64748b;font-style:italic">📝 ${i.specialInstructions}</td></tr>`
+            : ''
+          return `<tr><td style="padding:3px 0 1px;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0 1px">£${(parseFloat(i.unit_price)*i.quantity).toFixed(2)}</td></tr>${modRows}${noteRow}`
+        }).join('')
+        const truckDealRows = (deals || []).map((d: any) => {
+          const slotNames = Object.values(d.slots || {}).filter(Boolean).join(', ')
+          const subRows = Object.entries(d.slots || {}).flatMap(([cat, itemName]: [string, any]) => {
+            if (!itemName) return []
+            const rows: string[] = []
+            const mods = (d.slotModifiers || {})[cat] || []
+            if (mods.length) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">↳ ${itemName}: ${mods.map((m: any) => `+ ${m.name}`).join(', ')}</td></tr>`)
+            const note = (d.slotNotes || {})[cat]
+            if (note) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
+            return rows
+          }).join('')
+          return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
+        }).join('')
         await sendConfirmationEmail({
           to: truckEmail,
           subject: `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`,
@@ -454,6 +723,7 @@ export async function POST(req: NextRequest) {
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
               ${truckItemRows}
+              ${truckDealRows}
               <tr style="border-top:2px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:800">Total</td>
                 <td style="text-align:right;padding-top:8px;font-weight:800">£${total.toFixed(2)}</td>
@@ -474,23 +744,32 @@ export async function POST(req: NextRequest) {
       orderId,
       truckName:    truck.name,
       customerName,
-      slot:         slot ?? null,
+      slot:         confirmedSlot,
+      requestedSlot,
+      slotChanged,
       items,
       deals:        deals ?? [],
       discountAmt:  discountAmt ?? 0,
       total,
       notes:        notes ?? null,
-      autoAccepted: !!truck.auto_accept,
+      autoAccepted,
     })
 
-    await sendConfirmationEmail({ to: customerEmail, subject, html, text })
+    try {
+      await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
+    } catch (emailErr) {
+      console.error('Customer email failed:', emailErr)
+    }
 
     // ── Done ──────────────────────────────────────────────────────────────────
     return NextResponse.json({
-      success:   true,
+      success:       true,
       orderId,
-      truckName: truck.name,
-      slot:      slot ?? null,
+      truckName:     truck.name,
+      slot:          confirmedSlot,
+      requestedSlot,
+      autoAccepted,
+      slotChanged,
       total,
     })
 

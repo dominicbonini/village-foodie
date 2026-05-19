@@ -7,7 +7,7 @@ import Image from 'next/image'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string }
-interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; sort_order: number; is_active: boolean }
+interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
@@ -210,13 +210,14 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
   const [saving, setSaving] = useState(false)
   const [expandedCat, setExpandedCat] = useState<string | null>(categories[0]?.id || null)
 
-  const saveCat = async () => {
-    if (!editingCat?.name) return
+  const saveCat = async (overrides?: Partial<Category>) => {
+    const data = { ...(editingCat || {}), ...overrides } as Partial<Category>
+    if (!data?.name) return
     setSaving(true)
     try {
-      await api('upsert_category', { id: editingCat.id, name: editingCat.name, prep_secs: editingCat.prep_secs || 0, batch_size: editingCat.batch_size || 0 })
-      showToast(editingCat.id ? 'Category updated' : 'Category added')
-      setEditingCat(null); reload()
+      await api('upsert_category', { id: data.id, name: data.name, prep_secs: data.prep_secs || 0, batch_size: data.batch_size || 0, allow_notes: !!(data as any).allow_notes })
+      if (!data.id) { setEditingCat(null) } // only close for new category modal
+      reload()
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
   }
@@ -252,7 +253,7 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
           <h2 className="font-black text-slate-900 text-lg">Menu</h2>
           <p className="text-slate-400 text-sm">{categories.length} categories · {items.length} items</p>
         </div>
-        <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0 })} />
+        <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
       </div>
 
       {/* Category list */}
@@ -333,18 +334,70 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
               <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title="Drag to reorder" draggable={false}>
                 ⋮⋮
               </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-black text-slate-900">{cat.name}</span>
                   <span className="text-slate-400 text-xs">{catItems.length} item{catItems.length !== 1 ? 's' : ''}</span>
-                  <span className="text-slate-300 text-xs">· {Math.round(cat.prep_secs / 60)}m prep · batch {cat.batch_size}</span>
+                  <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{Math.round(cat.prep_secs / 60)}m prep</span>
+                  <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">batch {cat.batch_size}</span>
+                  {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={e => { e.stopPropagation(); setEditingCat(cat) }} className="text-slate-400 hover:text-orange-600 text-xs font-bold px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors">Edit</button>
+              <div className="flex items-center gap-2 shrink-0">
+                <button onClick={e => { e.stopPropagation(); setEditingCat(editingCat?.id === cat.id ? null : cat) }}
+                  className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${editingCat?.id === cat.id ? 'bg-orange-100 text-orange-600' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}>
+                  {editingCat?.id === cat.id ? '✕ Close' : 'Edit'}
+                </button>
                 <span className="text-slate-400 text-xs">{isOpen ? '▲' : '▼'}</span>
               </div>
             </div>
+
+            {/* Inline category edit accordion — auto-saves on blur / toggle */}
+            {editingCat?.id === cat.id && (
+              <div className="border-t border-orange-100 bg-orange-50/40 px-4 py-3 space-y-2">
+                {/* Row 1: Name + Allow notes toggle */}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={editingCat.name || ''}
+                    onChange={e => setEditingCat(p => ({...p!, name: e.target.value}))}
+                    onBlur={() => saveCat()}
+                    placeholder="Category name"
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                  />
+                  <label className="flex items-center gap-2 shrink-0 cursor-pointer select-none">
+                    <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Allow notes</span>
+                    <Toggle
+                      on={!!(editingCat as any).allow_notes}
+                      onToggle={() => {
+                        const newVal = !(editingCat as any).allow_notes
+                        setEditingCat(p => ({...p!, allow_notes: newVal} as any))
+                        saveCat({ allow_notes: newVal } as any)
+                      }}
+                    />
+                  </label>
+                </div>
+                {/* Row 2: Prep time + Batch size */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Prep time (mins)</label>
+                    <input type="number" min="0" max="60" placeholder="0 = instant"
+                      value={editingCat.prep_secs ? Math.round(editingCat.prep_secs / 60) : ''}
+                      onChange={e => setEditingCat(p => ({...p!, prep_secs: parseInt(e.target.value) * 60 || 0}))}
+                      onBlur={() => saveCat()}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
+                    <input type="number" min="1" max="20" placeholder="e.g. 3"
+                      value={editingCat.batch_size || ''}
+                      onChange={e => setEditingCat(p => ({...p!, batch_size: parseInt(e.target.value) || 0}))}
+                      onBlur={() => saveCat()}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Items */}
             {isOpen && (
@@ -394,11 +447,11 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
         )
       })}
 
-      {/* Edit Category Modal */}
-      {editingCat && (
+      {/* Add Category Modal — new categories only, existing use inline accordion above */}
+      {editingCat && !editingCat.id && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-4">{editingCat.id ? 'Edit category' : 'New category'}</h3>
+            <h3 className="font-black text-slate-900 mb-4">New category</h3>
             <div className="space-y-3">
               <Input label="Category name" required value={editingCat.name || ''} onChange={v => setEditingCat(p => ({...p!, name: v}))} placeholder="e.g. Pizza" />
               <div className="grid grid-cols-2 gap-3">
@@ -414,6 +467,13 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
                     onChange={e => setEditingCat(p => ({...p!, batch_size: parseInt(e.target.value) || 0}))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 </div>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                <div>
+                  <p className="text-sm font-bold text-slate-700">Allow custom notes</p>
+                  <p className="text-xs text-slate-400">Customers can add special instructions</p>
+                </div>
+                <Toggle on={!!(editingCat as any).allow_notes} onToggle={() => setEditingCat(p => ({...p!, allow_notes: !(p as any).allow_notes} as any))} />
               </div>
             </div>
             <div className="flex gap-2 mt-4">

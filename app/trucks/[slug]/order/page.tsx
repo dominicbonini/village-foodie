@@ -6,7 +6,7 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-calculations';
-import { addToBasket, removeFromBasket, cleanupDealsForItem, groupByCategory, getItemQuantity } from '@/lib/basket-utils';
+import { cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 
@@ -29,8 +29,10 @@ interface Bundle {
   slot_5_category: string | null; slot_6_category: string | null
 }
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
-interface TruckMenu { categories?: Array<{ name: string; prep_secs?: number | null; batch_size?: number | null }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean }
+interface ModifierOption { id: string; name: string; price_adjustment: number }
+interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
+interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; extra_wait_mins?: number }
 interface EventData {
   date: string          // dd/mm/yyyy
   date_iso: string      // yyyy-mm-dd
@@ -42,12 +44,14 @@ interface EventData {
   notes: string
 }
 
-interface BasketItem { 
+interface BasketItem {
   menuItem: MenuItem
   quantity: number
-  modifiers?: string[] // e.g. ["Extra Cheese +£1", "No Onion"]
+  modifiers: { name: string; price: number }[]
+  specialInstructions: string
+  cartKey: string
 }
-interface AppliedDeal { bundle: Bundle; slots: Record<string, string>; itemsTakenFromBasket: string[] }
+interface AppliedDeal { bundle: Bundle; slots: Record<string, string>; itemsTakenFromBasket: string[]; modifierExtra?: number; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -80,6 +84,15 @@ const HOURS = Array.from({ length: 13 }, (_, i) => String(i + 9).padStart(2, '0'
 const MINUTES = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 
+function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
+  const parts: string[] = []
+  const modStr = [...mods].map(m => m.name).sort().join('|')
+  if (modStr) parts.push(modStr)
+  const noteStr = (notes || '').trim()
+  if (noteStr) parts.push(`note:${noteStr}`)
+  return parts.length > 0 ? `${itemName}::${parts.join('::')}` : itemName
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function OrderPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -96,6 +109,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
+  const [submittedAutoAccepted, setSubmittedAutoAccepted] = useState(false)
+  const [submittedConfirmedSlot, setSubmittedConfirmedSlot] = useState<string | null>(null)
+  const [submittedRequestedSlot, setSubmittedRequestedSlot] = useState<string | null>(null)
+  const [submittedSlotChanged, setSubmittedSlotChanged] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [summaryExpanded, setSummaryExpanded] = useState(false)
   const [footerHeight, setFooterHeight] = useState(100)
@@ -126,6 +143,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [dealModalOpen, setDealModalOpen] = useState(false)
   const [selectedBundleForModal, setSelectedBundleForModal] = useState<Bundle | null>(null)
   const [expandedItem, setExpandedItem] = useState<string | null>(null)
+  const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[] } | null>(null)
+  const [modalMods, setModalMods] = useState<{ name: string; price: number }[]>([])
+  const [modalNotes, setModalNotes] = useState('')
   const [discountInput, setDiscountInput] = useState('')
   const [appliedCode, setAppliedCode] = useState<DiscountCode | null>(null)
   const [discountError, setDiscountError] = useState('')
@@ -134,7 +154,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [phone, setPhone] = useState('')
   const [slotHour, setSlotHour] = useState('')
   const [slotMinute, setSlotMinute] = useState('')
-  const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean}[]>([])
+  const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean;is_grace:boolean}[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [asapSlot, setAsapSlot] = useState<string|null>(null)
   const [queueByCat, setQueueByCat] = useState<Record<string,number>>({})
@@ -186,11 +206,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return allMinutes
   }, [event, slotHour])
 
-  // Fetch available slots for capacity-aware time selection
-  const fetchSlots = async (truckId: string, date: string) => {
+  // Fetch available slots (must use date_iso yyyy-mm-dd to match orders.event_date in Supabase)
+  const fetchSlots = async (truckId: string, dateIso: string, startTime?: string, endTime?: string) => {
     setLoadingSlots(true)
     try {
-      const res = await fetch(`/api/slots/${truckId}?date=${date}`)
+      const p = new URLSearchParams({ date: dateIso })
+      if (startTime) p.set('start', startTime)
+      if (endTime) p.set('end', endTime)
+      const res = await fetch(`/api/slots/${truckId}?${p}`, { cache: 'no-store' })
       const data = await res.json()
       const slots = data.slots || []
       setAvailableSlots(slots)
@@ -201,6 +224,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     } catch { setAvailableSlots([]) }
     finally { setLoadingSlots(false) }
   }
+
+  const eventDateIso = event?.date_iso ?? new Date().toISOString().split('T')[0]
+
+  // Reload slot availability whenever truck/event is known or customer returns to the tab
+  useEffect(() => {
+    if (!truck?.id) return
+    fetchSlots(truck.id, eventDateIso, event?.start_time, event?.end_time)
+  }, [truck?.id, eventDateIso, event?.start_time, event?.end_time])
+
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && truck?.id) {
+        fetchSlots(truck.id, eventDateIso, event?.start_time, event?.end_time)
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [truck?.id, eventDateIso, event?.start_time, event?.end_time])
 
   // Load upcoming events for this truck
   useEffect(() => {
@@ -220,10 +261,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           const eventsToShow = upcoming.length > 0 ? upcoming : [data.events[0]]
           setEvents(eventsToShow)
           setEvent(eventsToShow[0])
-        if (eventsToShow[0] && truck) {
-          const date = eventsToShow[0].date || new Date().toISOString().split('T')[0]
-          fetchSlots(truck.id || slug, date)
-        }
         } else {
           setNoEvents(true)
         }
@@ -244,21 +281,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   useEffect(() => {
     console.log('[ORDER FORM] Fetching menu for slug:', slug)
     fetch(`/api/menu/${slug}`)
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(async r => {
+        if (!r.ok) {
+          const body = await r.json().catch(() => ({}))
+          console.error('[ORDER FORM] Menu API error:', r.status, body)
+          throw new Error(body.error || `HTTP ${r.status}`)
+        }
+        return r.json()
+      })
       .then(data => {
         console.log('[ORDER FORM] Menu API response:', data)
-        console.log('[ORDER FORM] Menu items:', data.menu?.items)
         console.log('[ORDER FORM] Items count:', data.menu?.items?.length || 0)
         setTruck(data.truck)
         setMenu(data.menu)
-        // If event already loaded, fetch slots now
-        if (event && data.truck.id) {
-          const date = event.date || new Date().toISOString().split('T')[0]
-          fetchSlots(data.truck.id, date)
-        }
       })
       .catch((err) => {
-        console.error('[ORDER FORM] Menu fetch error:', err)
+        console.error('[ORDER FORM] Menu fetch error:', err?.message || err)
         setError('This truck is not currently taking orders.')
       })
       .finally(() => setLoading(false))
@@ -266,32 +304,56 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 
-  const addItem = (item: MenuItem) => {
-    setBasket(prev => addToBasket(prev.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })), item)
-      .map(b => {
-        const menuItem = prev.find(p => p.menuItem.name === b.name)?.menuItem || item
-        return { menuItem, quantity: b.quantity }
-      })
-    )
-  }
-
-  const removeItem = (itemName: string) => {
-    // Clean up deals that reference this item
-    setAppliedDeals(prev => cleanupDealsForItem(prev, itemName))
-    // Remove from basket
+  const addItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '') => {
+    const key = makeCartKey(item.name, mods, notes)
     setBasket(prev => {
-      const updated = removeFromBasket(
-        prev.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })),
-        itemName
-      )
-      return updated.map(b => {
-        const menuItem = prev.find(p => p.menuItem.name === b.name)!.menuItem
-        return { menuItem, quantity: b.quantity }
-      })
+      const ex = prev.find(b => b.cartKey === key)
+      if (item.stock_remaining != null) {
+        const totalQty = prev.filter(b => b.menuItem.name === item.name).reduce((s, b) => s + b.quantity, 0)
+        if (totalQty >= item.stock_remaining) return prev
+      }
+      if (ex) return prev.map(b => b.cartKey === key ? { ...b, quantity: b.quantity + 1 } : b)
+      return [...prev, { menuItem: item, quantity: 1, modifiers: mods, specialInstructions: notes, cartKey: key }]
     })
   }
 
-  const getQty = (n: string) => getItemQuantity(basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })), n)
+  const removeItem = (cartKey: string) => {
+    const entry = basket.find(b => b.cartKey === cartKey)
+    if (!entry) return
+    const isLastVariant = basket.filter(b => b.menuItem.name === entry.menuItem.name).length === 1 && entry.quantity === 1
+    if (isLastVariant) setAppliedDeals(prev => cleanupDealsForItem(prev, entry.menuItem.name))
+    setBasket(prev => {
+      const ex = prev.find(b => b.cartKey === cartKey)
+      if (!ex) return prev
+      if (ex.quantity === 1) return prev.filter(b => b.cartKey !== cartKey)
+      return prev.map(b => b.cartKey === cartKey ? { ...b, quantity: b.quantity - 1 } : b)
+    })
+  }
+
+  // Total qty across all variants of an item (for UI badge and stock checks)
+  const getQty = (itemName: string) => basket.filter(b => b.menuItem.name === itemName).reduce((s, b) => s + b.quantity, 0)
+
+  // Item modal helpers
+  const openItemModal = (item: MenuItem, modGroups: ModifierGroup[]) => {
+    setItemModal({ item, modGroups })
+    setModalMods([])
+    setModalNotes('')
+  }
+
+  const toggleModalMod = (opt: ModifierOption) => {
+    setModalMods(prev => {
+      const has = prev.some(m => m.name === opt.name)
+      return has ? prev.filter(m => m.name !== opt.name) : [...prev, { name: opt.name, price: opt.price_adjustment }]
+    })
+  }
+
+  const confirmAddFromModal = () => {
+    if (!itemModal) return
+    addItem(itemModal.item, modalMods, modalNotes)
+    setItemModal(null)
+    setModalMods([])
+    setModalNotes('')
+  }
 
   // ── Grouped menu ────────────────────────────────────────────────────────────
   const groupedMenu = useMemo(() => {
@@ -349,32 +411,25 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setDealModalOpen(true)
   }
 
-  const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number, rawSlots: Record<string, string>) => {
-    // Work out which items were already in the basket vs newly chosen
+  const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number, rawSlots: Record<string, string>, modifierExtra: number, slotModifiers: Record<string, { name: string; price: number }[]>, slotNotes: Record<string, string>) => {
     const itemsTakenFromBasket: string[] = Object.entries(rawSlots)
       .filter(([, raw]) => raw.startsWith('USE_EXISTING:'))
-      .map(([cat]) => slots[cat])
+      .map(([, raw]) => raw.replace('USE_EXISTING:', ''))
       .filter(Boolean)
 
-    // Remove existing basket items (they're now covered by the deal)
     if (itemsTakenFromBasket.length > 0) {
-      setBasket(prev => prev.filter(b => !itemsTakenFromBasket.includes(b.menuItem.name)))
+      setBasket(prev => prev.filter(b => !itemsTakenFromBasket.includes(b.cartKey)))
     }
 
-    // Store which items came from basket so removeDeal knows exactly what to clean up
-    setAppliedDeals(prev => [...prev, { bundle: deal, slots, itemsTakenFromBasket }])
+    setAppliedDeals(prev => [...prev, { bundle: deal, slots, itemsTakenFromBasket, modifierExtra, slotModifiers, slotNotes }])
     setDealModalOpen(false)
   }
 
   const removeDeal = (i: number) => {
     const deal = appliedDeals[i]
-
-    // Only remove items that were explicitly taken from the basket when the deal was applied.
-    // Items that were "new" in the deal were never in the basket, so don't touch them.
     if (deal.itemsTakenFromBasket.length > 0) {
-      setBasket(prev => prev.filter(b => !deal.itemsTakenFromBasket.includes(b.menuItem.name)))
+      setBasket(prev => prev.filter(b => !deal.itemsTakenFromBasket.includes(b.cartKey)))
     }
-
     setAppliedDeals(prev => prev.filter((_, idx) => idx !== i))
   }
 
@@ -383,10 +438,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // ── Totals ──────────────────────────────────────────────────────────────────
   const { itemsTotal, dealsTotal, dealSavings, subtotal, discountAmt, total } = useMemo(() => {
-    // Use shared calculation function
     return calculateOrderTotal(
-      basket.map(b => ({ name: b.menuItem.name, price: b.menuItem.price, quantity: b.quantity })),
-      appliedDeals.map(d => ({ bundle: d.bundle, slots: d.slots })),
+      basket.map(b => ({
+        name: b.menuItem.name,
+        price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0),
+        quantity: b.quantity,
+      })),
+      appliedDeals.map(d => ({ bundle: d.bundle, slots: d.slots, modifierExtra: d.modifierExtra })),
       menu?.items || [],
       appliedCode
     )
@@ -408,23 +466,30 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
     const [startH, startM] = event.start_time.split(':').map(Number)
     const eventStartMins = startH * 60 + startM
+    const extraWait = truck?.extra_wait_mins ?? 0
 
-    // No items → ASAP is event start
-    if (!hasItems || !menu) return event.start_time
-
-    // Use server-provided catConfigs (from slots API) if available,
-    // fall back to menu categories
     const catConfigs: Record<string, { secs: number; batch: number }> =
       Object.keys(serverCatConfigs).length > 0
         ? serverCatConfigs
         : Object.fromEntries(
-            (menu.categories || []).map(c => [
+            (menu?.categories || []).map(c => [
               c.name.toLowerCase(),
               { secs: c.prep_secs ?? 0, batch: c.batch_size ?? 1 }
             ])
           )
 
-    // Count NEW basket items by category
+    const todayIso = new Date().toISOString().split('T')[0]
+    const isToday = eventDateIso === todayIso
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const beforeEvent = !isToday || nowMins < eventStartMins
+
+    if (!hasItems || !menu) {
+      if (!extraWait) return event.start_time
+      const rounded = Math.round((eventStartMins + extraWait) / 5) * 5
+      return `${String(Math.floor(rounded/60)).padStart(2,'0')}:${String(rounded%60).padStart(2,'0')}`
+    }
+
+    // Count basket items by category
     const newByCat: Record<string, number> = {}
     basket.forEach(b => {
       const cat = b.menuItem.category?.toLowerCase() || 'mains'
@@ -438,19 +503,37 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       })
     })
 
-    // Use shared function — no buffer for pre-orders (buffer is for live dashboard)
-    const readySecs = calcQueueAwareReadySecs(newByCat, queueByCat, catConfigs, 0)
-    if (readySecs === 0) return event.start_time
+    let asapMins: number
 
-    // ASAP = event start + prep time, rounded to NEAREST 5 mins
-    const prepMins = Math.ceil(readySecs / 60)
-    const rawMins = eventStartMins + prepMins
-    const roundedMins = Math.round(rawMins / 5) * 5
+    if (beforeEvent) {
+      // Pre-event model: batch 1 is pre-cooked and ready at event start.
+      // Each batch beyond the first adds one prep cycle on top of event start.
+      // batch_size=3, prep=4min: 1-3 items→17:00, 4-6→17:04, 7-9→17:08
+      // Curry trucks with large batches/low prep naturally fit most orders in batch 1 → 17:00.
+      let extraBatchMins = 0
+      for (const [cat, newQty] of Object.entries(newByCat)) {
+        const cfg = catConfigs[cat] || { secs: 0, batch: 1 }
+        if (!cfg.secs) continue
+        const totalQty = (queueByCat[cat] || 0) + newQty
+        const totalBatches = Math.ceil(totalQty / cfg.batch)
+        const mins = Math.ceil(Math.max(0, totalBatches - 1) * cfg.secs / 60)
+        extraBatchMins = Math.max(extraBatchMins, mins)
+      }
+      asapMins = eventStartMins + extraBatchMins + extraWait
+    } else {
+      // During / after event: now + full prep time for all batches in queue
+      const prepMins = Math.ceil(calcQueueAwareReadySecs(newByCat, queueByCat, catConfigs, 0) / 60)
+      asapMins = Math.max(eventStartMins, nowMins + prepMins + extraWait)
+    }
+
+    if (asapMins === eventStartMins && extraWait === 0) return event.start_time
+
+    const roundedMins = Math.round(asapMins / 5) * 5
     const h = Math.floor(roundedMins / 60)
     const m = roundedMins % 60
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
 
-  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs])
+  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs, truck, eventDateIso])
 
   // Convert HH:MM to total minutes for comparison
   const toMins = (time: string) => {
@@ -483,16 +566,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           truckId: slug, customerName: name, customerEmail: email, customerPhone: phone,
-          slot: selectedSlot || null, eventDate: new Date().toISOString().split('T')[0],
-          items: basket.map(b => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price })),
-          deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots })),
+          slot: selectedSlot || null, eventDate: eventDateIso,
+          items: basket.map(b => ({
+            name: b.menuItem.name,
+            quantity: b.quantity,
+            unit_price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0),
+            modifiers: b.modifiers.length > 0 ? b.modifiers : undefined,
+            specialInstructions: b.specialInstructions || undefined,
+          })),
+          deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots, slotModifiers: d.slotModifiers, slotNotes: d.slotNotes })),
           discountCode: appliedCode?.code || null,
           subtotal: subtotal, discountAmt: discountAmt, total, notes: notes || null,
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Order failed')
-      setSubmittedOrderId(data.orderId); setSubmitted(true)
+      setSubmittedOrderId(data.orderId)
+      setSubmittedAutoAccepted(!!data.autoAccepted)
+      setSubmittedConfirmedSlot(data.slot ?? null)
+      setSubmittedRequestedSlot(data.requestedSlot ?? (selectedSlot || null))
+      setSubmittedSlotChanged(!!data.slotChanged)
+      setSubmitted(true)
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally { setSubmitting(false) }
@@ -518,36 +612,89 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">Order received!</h2>
-          <p className="text-slate-500 mb-4"><span className="font-bold text-slate-700">{truck?.name}</span> will confirm your order shortly.</p>
+          <h2 className="text-2xl font-black text-slate-900 mb-2">{submittedAutoAccepted ? 'Order confirmed!' : 'Order received!'}</h2>
+          <p className="text-slate-500 mb-4">
+            {submittedAutoAccepted
+              ? <><span className="font-bold text-slate-700">{truck?.name}</span> has confirmed your order.</>
+              : <><span className="font-bold text-slate-700">{truck?.name}</span> will confirm your order shortly.</>
+            }
+          </p>
           {submittedOrderId && <p className="text-slate-400 text-sm mb-4">Order #{submittedOrderId}</p>}
 
           <div className="bg-slate-50 rounded-xl p-4 text-left space-y-2 mb-4 border border-slate-100">
             {/* Order items summary on confirmation */}
-            {basket.map(b => (
-              <div key={b.menuItem.name} className="flex justify-between text-sm">
-                <span className="text-slate-600">{b.quantity}× {b.menuItem.name}</span>
-                <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
-              </div>
-            ))}
-            {appliedDeals.map((deal, i) => (
-              <div key={i} className="flex justify-between text-sm">
-                <span>{deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(', ')})</span>
-                <span className="font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
-              </div>
-            ))}
-            {dealSavings > 0 && <div className="flex justify-between text-sm text-green-600"><span>Deal savings</span><span className="font-medium">-£{dealSavings.toFixed(2)}</span></div>}
+            {basket.map(b => {
+              const modSum = b.modifiers.reduce((s, m) => s + m.price, 0)
+              return (
+                <div key={b.cartKey}>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">{b.quantity}× {b.menuItem.name}</span>
+                    <span className="font-medium text-slate-700">£{((b.menuItem.price + modSum) * b.quantity).toFixed(2)}</span>
+                  </div>
+                  {b.modifiers.map(m => (
+                    <div key={m.name} className="flex justify-between text-xs pl-3 text-slate-400">
+                      <span>+ {m.name}</span>
+                      <span>+£{(m.price * b.quantity).toFixed(2)}</span>
+                    </div>
+                  ))}
+                  {b.specialInstructions && (
+                    <div className="text-xs pl-3 text-slate-400 italic">📝 {b.specialInstructions}</div>
+                  )}
+                </div>
+              )
+            })}
+            {appliedDeals.map((deal, i) => {
+              const origPrice = calcDealOriginalPrice(deal, menu?.items || [])
+              const saving = origPrice > deal.bundle.bundle_price ? origPrice - deal.bundle.bundle_price : 0
+              const dealSlotMods2 = Object.entries(deal.slotModifiers || {})
+                .filter(([, mods]) => mods.length > 0)
+                .map(([cat, mods]) => ({ itemName: deal.slots[cat], mods }))
+                .filter(({ itemName }) => itemName)
+              return (
+                <div key={i} className="space-y-0.5">
+                  <div className="flex justify-between text-sm">
+                    <span>
+                      {deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(', ')})
+                      {saving > 0 && <span className="ml-1.5 text-xs text-green-600 font-medium">save £{saving.toFixed(2)}</span>}
+                    </span>
+                    <span className="font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
+                  </div>
+                  {dealSlotMods2.map(({ itemName, mods }) => (
+                    <div key={itemName} className="flex justify-between text-xs pl-3">
+                      <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
+                      <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            })}
             <div className="flex justify-between text-sm border-t border-slate-200 pt-2">
               <span className="font-black text-slate-900">Total</span>
               <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
             </div>
           </div>
 
-          {selectedSlot && (
-            <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
-              <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot}</p>
-              <p className="text-orange-600 text-xs">{truck?.name} will confirm your collection time when they accept your order.</p>
-            </div>
+          {(submittedConfirmedSlot || selectedSlot) && (
+            submittedAutoAccepted && submittedConfirmedSlot ? (
+              <div className={`rounded-xl p-3 mb-4 text-sm text-left border ${submittedSlotChanged ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
+                {submittedSlotChanged && submittedRequestedSlot ? (
+                  <>
+                    <p className="font-bold text-amber-800 mb-0.5">Sorry, your {submittedRequestedSlot} slot was taken.</p>
+                    <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span>.</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-bold text-green-800 mb-0.5">Order confirmed — collection time {submittedConfirmedSlot}</p>
+                    <p className="text-green-700 text-xs">See you at the hatch!</p>
+                  </>
+                )}
+              </div>
+            ) : (selectedSlot || submittedConfirmedSlot) ? (
+              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
+                <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot || submittedConfirmedSlot}</p>
+                <p className="text-orange-600 text-xs">{truck?.name} will confirm your collection time when they accept your order.</p>
+              </div>
+            ) : null
           )}
 
           <div className="flex justify-between text-sm mb-4">
@@ -565,9 +712,49 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   )
 
   // ── Main form ───────────────────────────────────────────────────────────────
+  const isPaused = !!truck?.paused
+
+  // Block ordering after event end time (only applies to today's event)
+  const isEventClosed = (() => {
+    if (!event?.end_time || !event?.date_iso) return false
+    const todayIso = new Date().toISOString().split('T')[0]
+    if (event.date_iso !== todayIso) return false
+    const [endH, endM] = event.end_time.split(':').map(Number)
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    return nowMins > endH * 60 + endM
+  })()
+
+  const isOrderingBlocked = isPaused || isEventClosed
+
   return (
     <Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
+
+      {/* Event closed banner */}
+      {isEventClosed && (
+        <div className="sticky top-[60px] z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
+          <div className="max-w-lg mx-auto">
+            <p className="font-black text-sm">Ordering has closed</p>
+            <p className="text-xs text-slate-300 mt-0.5">Online ordering for this event ended at {event?.end_time}. We hope to see you next time!</p>
+          </div>
+        </div>
+      )}
+
+      {/* Paused banner — stays visible while scrolling */}
+      {isPaused && !isEventClosed && (
+        <div className="sticky top-[60px] z-40 bg-amber-500 text-white px-4 py-3 shadow-md">
+          <div className="max-w-lg mx-auto flex items-start justify-between gap-3">
+            <div>
+              <p className="font-black text-sm">Woah, we're slammed! 🍔</p>
+              <p className="text-xs text-amber-100 mt-0.5">Online ordering is paused right now. Order at the window or check back shortly.</p>
+            </div>
+            <button onClick={() => window.location.reload()} className="text-xs font-bold text-amber-100 hover:text-white shrink-0 mt-0.5 underline underline-offset-2">
+              Check again
+            </button>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6" style={{ paddingBottom: `${footerHeight + 8}px` }}>
 
         {/* Truck hero — logo, name, event details */}
@@ -664,9 +851,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         </div>
                         <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>
                       </div>
-                      <button onClick={() => addDeal(bundle)}
-                        className="w-full bg-orange-600 text-white font-bold text-sm py-2 rounded-xl hover:bg-orange-700 transition-colors active:scale-95">
-                        {applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
+                      <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
+                        className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
+                        {isOrderingBlocked ? (isEventClosed ? 'Ordering closed' : 'Ordering paused') : applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
                       </button>
                     </div>
                     {/* Applied deal instances - compact summary */}
@@ -677,8 +864,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         const dynSaving = dynOrig > 0 ? Math.max(0, dynOrig - deal.bundle.bundle_price) : null
                         const globalIdx = appliedDeals.indexOf(deal)
                         const itemsSummary = Object.entries(deal.slots)
-                          .filter(([_, itemName]) => itemName)
-                          .map(([_, itemName]) => itemName)
+                          .filter(([, itemName]) => itemName)
+                          .map(([cat, itemName]) => {
+                            const mods = deal.slotModifiers?.[cat]
+                            return mods?.length ? `${itemName} (+ ${mods.map(m => m.name).join(', ')})` : itemName
+                          })
                           .join(' + ')
                         
                         return (
@@ -724,6 +914,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   const isSoldOut = !(item.available ?? true)
                   const itemUpsells = qty > 0 ? getItemUpsells(item) : []
                   const isExpanded = expandedItem === item.name
+                  const catModGroups = menu?.categories?.find(c => c.name === item.category)?.modifierGroups || []
+                  const hasModifiers = catModGroups.length > 0
+                  const itemVariants = basket.filter(b => b.menuItem.name === item.name)
+                  const atStockLimit = item.stock_remaining != null && qty >= item.stock_remaining
                   return (
                     <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
                     <div className={`flex items-center gap-3 py-3`}>
@@ -745,23 +939,65 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
                           <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
+                        ) : hasModifiers ? (
+                          // Items with modifiers: always show a "Customise" button that opens the modal
+                          <button
+                            onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups)}
+                            disabled={isOrderingBlocked || atStockLimit}
+                            className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${
+                              isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                              : atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                              : qty > 0 ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                              : 'bg-orange-600 text-white hover:bg-orange-700'
+                            }`}>
+                            {isOrderingBlocked ? (isEventClosed ? 'Closed' : 'Paused') : qty > 0 ? `${qty} · Add` : 'Add'}
+                          </button>
                         ) : qty > 0 ? (
                           <>
-                            <QBtn onClick={() => removeItem(item.name)} label="−" />
+                            <QBtn onClick={() => removeItem(makeCartKey(item.name, []))} label="−" />
                             <span className="w-5 text-center font-black text-slate-900 text-sm">{qty}</span>
-                            {item.stock_remaining != null && qty >= item.stock_remaining ? (
+                            {isOrderingBlocked || atStockLimit ? (
                               <button disabled className="w-7 h-7 rounded-lg bg-slate-100 text-slate-300 font-black text-sm cursor-not-allowed">+</button>
                             ) : (
                               <QBtn onClick={() => addItem(item)} label="+" accent />
                             )}
                           </>
                         ) : (
-                          <button onClick={() => addItem(item)} className="bg-orange-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-orange-700 transition-colors active:scale-95">Add</button>
+                          <button onClick={() => !isOrderingBlocked && addItem(item)} disabled={isOrderingBlocked}
+                            className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
+                            {isOrderingBlocked ? (isEventClosed ? 'Closed' : 'Paused') : 'Add'}
+                          </button>
                         )}
                       </div>
                     </div>
-                    
-                    {/* Modifiers/Upsells inline */}
+
+                    {/* Per-variant basket rows (only for modifier items) */}
+                    {hasModifiers && itemVariants.length > 0 && (
+                      <div className="pl-2 pb-2 space-y-1.5">
+                        {itemVariants.map(v => {
+                          const modSum = v.modifiers.reduce((s, m) => s + m.price, 0)
+                          const modLabel = v.modifiers.map(m => m.name).join(', ')
+                          const subLabel = [modLabel, v.specialInstructions].filter(Boolean).join(' · ')
+                          const catAllowNotes = menu?.categories?.find(c => c.name.toLowerCase() === item.category.toLowerCase())?.allowNotes ?? false
+                          return (
+                            <div key={v.cartKey} className="flex items-center gap-2 bg-orange-50 rounded-xl px-3 py-2 border border-orange-100">
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button onClick={() => removeItem(v.cartKey)} className="w-6 h-6 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-100 text-sm leading-none">−</button>
+                                <span className="w-5 text-center font-black text-slate-900 text-sm">{v.quantity}</span>
+                                <button onClick={() => !atStockLimit && addItem(v.menuItem, v.modifiers, v.specialInstructions)} disabled={atStockLimit}
+                                  className="w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center font-bold text-white hover:bg-orange-700 text-sm leading-none disabled:opacity-40">+</button>
+                              </div>
+                              <span className={`flex-1 text-xs truncate ${subLabel ? 'text-slate-600' : catAllowNotes ? 'text-slate-400 italic' : ''}`}>
+                                {subLabel || (catAllowNotes ? 'Standard' : '')}
+                              </span>
+                              <span className="text-xs font-bold text-slate-700 shrink-0">£{((item.price + modSum) * v.quantity).toFixed(2)}</span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+
+                    {/* Upsells inline */}
                     {qty > 0 && itemUpsells.length > 0 && (
                       <div className="pl-3 pb-3">
                         {!isExpanded ? (
@@ -782,8 +1018,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 return (
                                   <button key={upsell.name} onClick={() => addItem(upsell)}
                                     className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-bold transition-all ${
-                                      upsellQty > 0 
-                                        ? 'bg-orange-600 text-white' 
+                                      upsellQty > 0
+                                        ? 'bg-orange-600 text-white'
                                         : 'bg-white text-slate-700 border border-orange-200 hover:border-orange-400'
                                     }`}>
                                     <span>{upsellQty > 0 ? `✓ ${upsellQty}× ` : ''}{upsell.name}</span>
@@ -875,7 +1111,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             {availableSlots.length > 0
                               ? availableSlots
                                   .filter(s => {
-                                    if (!s.available || s.is_past) return false
+                                    if (!s.available || s.is_past || s.is_grace) return false
                                     // Only show slots at or after the ASAP time
                                     if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
                                     return true
@@ -968,18 +1204,56 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {/* Expanded breakdown */}
               {summaryExpanded && (
                 <div className="bg-slate-50 rounded-xl p-3 mb-2 space-y-1.5 border border-slate-100">
-                  {basket.map(b => (
-                    <div key={b.menuItem.name} className="flex justify-between text-xs">
-                      <span className="text-slate-600">{b.quantity}× {b.menuItem.name}</span>
-                      <span className="font-medium text-slate-700">£{(b.menuItem.price * b.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                  {appliedDeals.length > 0 && appliedDeals.map((deal, i) => (
-                    <div key={i} className="flex justify-between text-xs border-t border-slate-200 pt-1.5">
-                      <span className="text-green-600">{deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(' + ')})</span>
-                      <span className="text-green-600 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
-                    </div>
-                  ))}
+                  {basket.map(b => {
+                    const modSum = b.modifiers.reduce((s, m) => s + m.price, 0)
+                    const linePrice = (b.menuItem.price + modSum) * b.quantity
+                    return (
+                      <div key={b.cartKey}>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-slate-600">{b.quantity}× {b.menuItem.name}</span>
+                          <span className="font-medium text-slate-700">£{linePrice.toFixed(2)}</span>
+                        </div>
+                        {b.modifiers.map(m => (
+                          <div key={m.name} className="flex justify-between text-[10px] pl-3 text-slate-400">
+                            <span>+ {m.name}</span>
+                            <span>+£{(m.price * b.quantity).toFixed(2)}</span>
+                          </div>
+                        ))}
+                        {b.specialInstructions && (
+                          <div className="text-[10px] pl-3 text-slate-400 italic">📝 {b.specialInstructions}</div>
+                        )}
+                      </div>
+                    )
+                  })}
+                  {appliedDeals.length > 0 && appliedDeals.map((deal, i) => {
+                    const dealSlotMods = Object.entries(deal.slotModifiers || {})
+                      .filter(([, mods]) => mods.length > 0)
+                      .map(([cat, mods]) => ({ cat, itemName: deal.slots[cat], mods }))
+                      .filter(({ itemName }) => itemName)
+                    const dealSlotNotes = Object.entries(deal.slotNotes || {})
+                      .filter(([, note]) => note.trim())
+                      .map(([cat, note]) => ({ cat, itemName: deal.slots[cat], note }))
+                      .filter(({ itemName }) => itemName)
+                    return (
+                      <div key={i} className="border-t border-slate-200 pt-1.5 space-y-0.5">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-green-600">{deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(' + ')})</span>
+                          <span className="text-green-600 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
+                        </div>
+                        {dealSlotMods.map(({ itemName, mods }) => (
+                          <div key={itemName} className="flex justify-between text-xs pl-2">
+                            <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
+                            <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
+                          </div>
+                        ))}
+                        {dealSlotNotes.map(({ itemName, note }) => (
+                          <div key={`note-${itemName}`} className="text-xs pl-2 text-slate-400 italic">
+                            ↳ {itemName}: 📝 {note}
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  })}
                   {discountAmt > 0 && (
                     <div className="flex justify-between text-xs">
                       <span className="text-green-600">Code: {appliedCode?.code}</span>
@@ -997,22 +1271,88 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
           <button onClick={submitOrder}
-            disabled={submitting || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot)}
+            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {submitting ? 'Sending order...' : `Send order to ${truck?.name || 'truck'}`}
+            {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : `Send order to ${truck?.name || 'truck'}`}
           </button>
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
       </div>
+
+      {/* Item Modal — modifier selection before adding to basket */}
+      {itemModal && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setItemModal(null)} />
+          <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl pb-safe">
+            <div className="px-5 pt-5 pb-4">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-black text-slate-900 text-lg leading-snug">{itemModal.item.name}</h3>
+                  {itemModal.item.description && <p className="text-slate-400 text-sm mt-0.5">{itemModal.item.description}</p>}
+                </div>
+                <button onClick={() => setItemModal(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none ml-4 mt-0.5">✕</button>
+              </div>
+
+              <div className="space-y-4">
+                {itemModal.modGroups.map(group => (
+                  <div key={group.id}>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{group.name}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {group.options.map(opt => {
+                        const selected = modalMods.some(m => m.name === opt.name)
+                        return (
+                          <button key={opt.id} onClick={() => toggleModalMod(opt)}
+                            className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 ${
+                              selected ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
+                            }`}>
+                            <span>{opt.name}</span>
+                            {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                {(menu?.categories?.find(c => c.name === itemModal.item.category)?.allowNotes ?? false) && (
+                  <div>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Special instructions <span className="font-normal normal-case text-slate-400">— optional</span></p>
+                    <textarea
+                      value={modalNotes}
+                      onChange={e => setModalNotes(e.target.value.slice(0, 60))}
+                      placeholder="e.g. No onions, extra crispy…"
+                      rows={2}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
+                    />
+                    <p className="text-right text-[10px] text-slate-400 mt-0.5">{modalNotes.length}/60</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="px-5 pb-5 pt-2 border-t border-slate-100">
+              <button onClick={confirmAddFromModal}
+                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98]">
+                Add to basket · £{(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)).toFixed(2)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Deals Modal */}
       {dealModalOpen && selectedBundleForModal && menu && (
         <DealsModal
           bundles={[selectedBundleForModal]}
           menuItems={menu.items}
-          basketItems={basket
-            .filter((b) => !b.modifiers || b.modifiers.length === 0)
-            .map((b) => ({ name: b.menuItem.name, quantity: b.quantity, unit_price: b.menuItem.price }))}
+          menuCategories={menu.categories}
+          basketItems={basket.map(b => ({
+            name: b.menuItem.name,
+            quantity: b.quantity,
+            unit_price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0),
+            cartKey: b.cartKey,
+            modifiers: b.modifiers,
+          }))}
           existingDeals={appliedDeals}
           onApply={handleApplyDeal}
           onClose={() => setDealModalOpen(false)}

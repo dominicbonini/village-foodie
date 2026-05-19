@@ -2,6 +2,43 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import {
+  addOrderToProductionSlot,
+  removeOrderFromProductionSlot,
+  moveSlotBooking,
+  buildItemCatMap,
+  getProductionSlotUnits,
+} from '@/lib/slot-bookings'
+import { canFitInProductionSlot } from '@/lib/slot-capacity'
+import type { CatConfig } from '@/lib/prep-utils'
+
+async function buildCatConfigs(truckId: string): Promise<Record<string, CatConfig>> {
+  const { data: categories } = await supabase
+    .from('menu_categories')
+    .select('name, prep_secs, batch_size')
+    .eq('truck_id', truckId)
+  const catConfigs: Record<string, CatConfig> = {}
+  ;(categories || []).forEach(c => {
+    catConfigs[c.name.toLowerCase()] = {
+      secs: c.prep_secs || 0,
+      batch: c.batch_size || 1,
+    }
+  })
+  return catConfigs
+}
+
+function orderLinesFromOrder(order: { items?: any[]; deals?: any[] | null }) {
+  const lines = (order.items || []).map((i: any) => ({
+    name: i.name,
+    quantity: parseInt(i.quantity) || 1,
+  }))
+  ;(order.deals || []).forEach((d: any) => {
+    Object.values(d.slots || {}).filter(Boolean).forEach((name: any) => {
+      lines.push({ name: String(name), quantity: 1 })
+    })
+  })
+  return lines
+}
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -46,7 +83,7 @@ export async function POST(req: NextRequest) {
           const confirmedItemRows = order.items.map((i: any) =>
             `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
           ).join('')
-          await notifyCustomer(order.customer_email, `Order #${orderId} confirmed — ${truck.name}`, `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+          await notifyCustomer(order.customer_email, `Order #${orderId} confirmed`, `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2 style="color:#16a34a">Your order is confirmed ✓</h2>
             <p><strong>${truck.name}</strong> has confirmed your order #${orderId}.</p>
             ${order.slot ? `<p style="font-size:16px"><strong>⏰ Collection time: ${order.slot}</strong></p>` : ''}
@@ -69,16 +106,47 @@ export async function POST(req: NextRequest) {
       const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'rejected' }).eq('id', orderId)
+      if (order.slot && order.event_date) {
+        const itemCatMap = await buildItemCatMap(supabase, truck.id)
+        await removeOrderFromProductionSlot(
+          supabase, truck.id, order.event_date, order.slot,
+          orderLinesFromOrder(order), itemCatMap
+        )
+      }
       if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Order #${orderId} update — ${truck.name}`,
+        await notifyCustomer(order.customer_email, `Order #${orderId} update`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Order update</h2>
             <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${orderId}.</p>
             <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
-          </body>`)
+          </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'rejected' })
+    }
+
+    // ── CANCEL ────────────────────────────────────────────────────────────────
+    if (action === 'cancel') {
+      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      await supabase.from('orders').update({ status: 'cancelled' }).eq('id', orderId)
+      if (order.slot && order.event_date) {
+        const itemCatMap = await buildItemCatMap(supabase, truck.id)
+        await removeOrderFromProductionSlot(
+          supabase, truck.id, order.event_date, order.slot,
+          orderLinesFromOrder(order), itemCatMap
+        )
+      }
+      if (order.customer_email) {
+        await notifyCustomer(order.customer_email, `Order #${orderId} cancelled`,
+          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2>Order cancelled</h2>
+            <p>Your order #${orderId} with <strong>${truck.name}</strong> has been cancelled.</p>
+            <p>Please speak to the team at the truck if you have any questions.</p>
+            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+          </body>`, truck.name)
+      }
+      return NextResponse.json({ success: true, status: 'cancelled' })
     }
 
     // ── READY ─────────────────────────────────────────────────────────────────
@@ -87,54 +155,118 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'ready' }).eq('id', orderId)
       if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Your order is ready — ${truck.name}`,
+        await notifyCustomer(order.customer_email, `Your order is ready`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order is ready! 🎉</h2>
             <p>Order #${orderId} from <strong>${truck.name}</strong> is ready for collection.</p>
             <p>Come and collect now — pay at the truck.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
-          </body>`)
+          </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'ready' })
     }
 
     // ── COLLECTED ─────────────────────────────────────────────────────────────
     if (action === 'collected') {
+      const { data: order } = await supabase.from('orders').select('slot, event_date, status').eq('id', orderId).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'collected' }).eq('id', orderId).eq('truck_id', truck.id)
+      if (order?.slot && order.event_date && ['pending', 'confirmed', 'modified'].includes(order.status)) {
+        const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
+        if (full.data) {
+          const itemCatMap = await buildItemCatMap(supabase, truck.id)
+          await removeOrderFromProductionSlot(
+            supabase, truck.id, order.event_date, order.slot,
+            orderLinesFromOrder(full.data), itemCatMap
+          )
+        }
+      }
       return NextResponse.json({ success: true, status: 'collected' })
     }
 
     // ── UNDO COLLECTED ────────────────────────────────────────────────────────
     if (action === 'undo_collected') {
+      const { data: order } = await supabase.from('orders').select('slot, event_date').eq('id', orderId).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId).eq('truck_id', truck.id)
+      if (order?.slot && order.event_date) {
+        const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
+        if (full.data) {
+          const itemCatMap = await buildItemCatMap(supabase, truck.id)
+          await addOrderToProductionSlot(
+            supabase, truck.id, order.event_date, order.slot,
+            orderLinesFromOrder(full.data), itemCatMap
+          )
+        }
+      }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }
 
     // ── EDIT ORDER ────────────────────────────────────────────────────────────
     if (action === 'edit') {
-      const { items, slot, notes } = editedOrder || {}
+      const { items, slot, notes, deals: editedDeals } = editedOrder || {}
       const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
 
-      const newTotal = items
-        ? items.reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
-        : order.total
+      const originalItemsSubtotal = (order.items || []).reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
+      const dealContribution = Number(order.total) - originalItemsSubtotal
 
+      const newItemsSubtotal = items
+        ? items.reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
+        : originalItemsSubtotal
+      const newSubtotal = newItemsSubtotal
+      const newTotal = Math.max(0, newItemsSubtotal + dealContribution)
+
+      const newSlot = slot !== undefined ? slot : order.slot
       await supabase.from('orders').update({
         items:    items    || order.items,
-        slot:     slot     !== undefined ? slot : order.slot,
+        deals:    editedDeals !== undefined ? editedDeals : order.deals,
+        slot:     newSlot,
         notes:    notes    !== undefined ? notes : order.notes,
         total:    newTotal,
-        subtotal: newTotal,
+        subtotal: newSubtotal,
         status:   'modified',
       }).eq('id', orderId)
 
+      if (order.event_date && (items || slot !== undefined)) {
+        const itemCatMap = await buildItemCatMap(supabase, truck.id)
+        const oldLines = orderLinesFromOrder(order)
+        const newLines = orderLinesFromOrder({ items: items || order.items, deals: order.deals })
+        if (order.slot) {
+          await removeOrderFromProductionSlot(
+            supabase, truck.id, order.event_date, order.slot, oldLines, itemCatMap
+          )
+        }
+        if (newSlot) {
+          await addOrderToProductionSlot(
+            supabase, truck.id, order.event_date, newSlot, newLines, itemCatMap
+          )
+        }
+      }
+
       if (order.customer_email) {
-        const updatedItemRows = (items || order.items).map((i: any) =>
-          `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
-        ).join('')
+        const finalItems = items || order.items
+        const finalDeals = editedDeals !== undefined ? editedDeals : (order.deals || [])
+        const updatedItemRows = finalItems.map((i: any) => {
+          const modRows = (i.modifiers||[]).map((m: any) =>
+            `<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">+ ${m.name}${m.price>0?` +£${m.price.toFixed(2)}`:''}</td></tr>`
+          ).join('')
+          const noteRow = i.specialInstructions ? `<tr><td colspan="2" style="padding:1px 0 3px 14px;font-size:12px;color:#64748b;font-style:italic">📝 ${i.specialInstructions}</td></tr>` : ''
+          return `<tr><td style="padding:3px 0 1px;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0 1px">£${(parseFloat(i.unit_price)*parseFloat(i.quantity)).toFixed(2)}</td></tr>${modRows}${noteRow}`
+        }).join('')
+        const updatedDealRows = finalDeals.map((d: any) => {
+          const slotNames = Object.values(d.slots||{}).filter(Boolean).join(', ')
+          const subRows = Object.entries(d.slots||{}).flatMap(([cat, itemName]: [string, any]) => {
+            if (!itemName) return []
+            const rows: string[] = []
+            const mods = (d.slotModifiers||{})[cat]||[]
+            if (mods.length) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">↳ ${itemName}: ${mods.map((m: any) => `+ ${m.name}`).join(', ')}</td></tr>`)
+            const note = (d.slotNotes||{})[cat]
+            if (note) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
+            return rows
+          }).join('')
+          return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
+        }).join('')
         const slotToShow = slot !== undefined ? slot : order.slot
-        await notifyCustomer(order.customer_email, `Order #${orderId} updated — ${truck.name}`,
+        await notifyCustomer(order.customer_email, `Order #${orderId} updated`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order has been updated ✓</h2>
             <p><strong>${truck.name}</strong> has updated order #${orderId}.</p>
@@ -142,13 +274,14 @@ export async function POST(req: NextRequest) {
             <p style="font-size:12px;color:#64748b;margin-bottom:4px">Updated order:</p>
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
               ${updatedItemRows}
+              ${updatedDealRows}
               <tr style="border-top:1px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:700">New total</td>
                 <td style="text-align:right;padding-top:8px;font-weight:700">£${newTotal.toFixed(2)}</td>
               </tr>
             </table>
             <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
-          </body>`)
+          </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'modified' })
     }
@@ -173,38 +306,70 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, soldOut: (data || []).map((r: any) => r.item_name) })
     }
 
+    // ── UPDATE EVENT TIMES ────────────────────────────────────────────────────
+    if (action === 'update_event') {
+      const { event_id, start_time, end_time, event_date } = body
+      const date = event_date || new Date().toISOString().split('T')[0]
+      if (event_id) {
+        await supabase.from('truck_events')
+          .update({ start_time, end_time, updated_at: new Date().toISOString() })
+          .eq('id', event_id)
+          .eq('truck_id', truck.id)
+      } else {
+        await supabase.from('truck_events')
+          .insert({ truck_id: truck.id, event_date: date, start_time, end_time, source: 'manual' })
+      }
+      return NextResponse.json({ success: true })
+    }
+
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────
     if (action === 'manual') {
-      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal } = manualOrder
+      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal, event_date: passedEventDate } = manualOrder
       if (!customerName || !items?.length) {
         return NextResponse.json({ error: 'Name and items required' }, { status: 400 })
       }
-      const today = new Date().toISOString().split('T')[0]
+      const eventDate = passedEventDate || new Date().toISOString().split('T')[0]
       let autoConfirm = true
+      const manualLines = (items || []).map((i: any) => ({ name: i.name, quantity: parseInt(i.quantity) || 1 }))
+      const itemCatMap = await buildItemCatMap(supabase, truck.id)
+      const catConfigs = await buildCatConfigs(truck.id)
       if (slot) {
-        const { data: capacity } = await supabase
-          .from('slot_capacity').select('max_orders')
-          .eq('truck_id', truck.id).eq('event_date', today).eq('slot', slot).single()
-        if (capacity) {
-          const { count } = await supabase.from('orders')
-            .select('*', { count: 'exact', head: true })
-            .eq('truck_id', truck.id).eq('event_date', today).eq('slot', slot)
-            .in('status', ['pending', 'confirmed', 'modified'])
-          if ((count ?? 0) >= capacity.max_orders) autoConfirm = false
-        }
+        const [{ data: timeRow }, slotUnits, { data: capacities }] = await Promise.all([
+          supabase.from('collection_times').select('production_slot').eq('truck_id', truck.id).eq('collection_time', slot).maybeSingle(),
+          getProductionSlotUnits(supabase, truck.id, eventDate),
+          supabase.from('slot_capacity').select('slot, max_orders').eq('truck_id', truck.id).eq('event_date', eventDate),
+        ])
+        const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
+        const productionSlot = timeRow?.production_slot ?? slot
+        const maxBatches = capacityMap[productionSlot] ?? 999
+        if (!canFitInProductionSlot(
+          slotUnits[productionSlot] || {}, manualLines, itemCatMap, maxBatches, catConfigs
+        )) autoConfirm = false
       }
-      const { data: counterData } = await supabase.rpc('increment_order_counter', { p_truck_id: truck.id })
+      const { data: counterData, error: counterErr } = await supabase.rpc('increment_order_counter', { p_truck_id: truck.id })
+      if (counterErr || counterData == null) {
+        console.error('[manual] order counter failed:', counterErr)
+        return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+      }
       const newOrderId = String(counterData).padStart(4, '0')
       const total = items.reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
+      const deals = manualOrder.deals ?? null
       const { error: insertErr } = await supabase.from('orders').insert({
         id: newOrderId, truck_id: truck.id,
         customer_name: customerName, customer_phone: customerPhone || null,
         customer_email: customerEmail || null,
-        slot: slot || null, order_type: 'collection', event_date: today,
-        items, subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
+        slot: slot || null, order_type: 'collection', event_date: eventDate,
+        items, deals, discount_code: null,
+        subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
         notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
+        payment_status: 'unpaid',
       })
-      if (insertErr) return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+      if (insertErr) {
+        console.error('[manual] order insert failed:', insertErr.message, insertErr.details, insertErr.hint)
+        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+      }
+
+      if (slot) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
 
       // Send confirmation email if email provided
       if (customerEmail) {
@@ -218,7 +383,7 @@ export async function POST(req: NextRequest) {
         ).join('')
         await notifyCustomer(
           customerEmail,
-          `Order #${newOrderId} confirmed — ${truck.name}`,
+          `Order #${newOrderId} confirmed`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Order confirmed ✓</h2>
             <p><strong>${truck.name}</strong> has your order #${newOrderId}.</p>
@@ -233,7 +398,8 @@ export async function POST(req: NextRequest) {
             </table>
             ${notes ? `<p><em>Notes: ${notes}</em></p>` : ''}
             <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
-          </body>`
+          </body>`,
+          truck.name
         )
       }
 
@@ -355,16 +521,26 @@ export async function POST(req: NextRequest) {
     if (action?.startsWith('adjust_slot_+')) {
       const mins = parseInt(action.replace('adjust_slot_+', ''))
       if (!orderId || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
-      const { data: ord } = await supabase.from('orders').select('slot,customer_email,customer_name').eq('id', orderId).single()
+      const { data: ord } = await supabase.from('orders').select('slot,event_date,customer_email,customer_name').eq('id', orderId).single()
       if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
       const newSlot = `${String(Math.floor(newTotal / 60) % 24).padStart(2, '0')}:${String(newTotal % 60).padStart(2, '0')}`
+      if (ord.event_date) {
+        const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
+        if (full.data) {
+          const itemCatMap = await buildItemCatMap(supabase, truck.id)
+          await moveSlotBooking(
+            supabase, truck.id, ord.event_date, ord.slot, newSlot,
+            orderLinesFromOrder(full.data), itemCatMap
+          )
+        }
+      }
       await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('id', orderId)
       // Notify customer of time change
       if (ord.customer_email) {
         await notifyCustomer(ord.customer_email,
-          `Your collection time has changed — ${truck.name}`,
+          `Your collection time has changed`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Collection time updated</h2>
             <p>Hi ${ord.customer_name}, your order #${orderId} from <strong>${truck.name}</strong> has been confirmed with an adjusted collection time.</p>
@@ -383,6 +559,67 @@ export async function POST(req: NextRequest) {
       const { value } = body
       await supabase.from('trucks').update({ auto_accept: !!value }).eq('id', truck.id)
       return NextResponse.json({ success: true })
+    }
+
+    // ── set_paused ───────────────────────────────────────────────────────────
+    if (action === 'set_paused') {
+      const { paused_until } = body // ISO timestamp or null (null = resume)
+      await supabase.from('trucks').update({ paused_until: paused_until ?? null }).eq('id', truck.id)
+      return NextResponse.json({ success: true })
+    }
+
+    // ── set_extra_wait ────────────────────────────────────────────────────────
+    if (action === 'set_extra_wait') {
+      const mins = parseInt(body.minutes) || 0
+      await supabase.from('trucks').update({
+        extra_wait_mins: mins,
+        extra_wait_started_at: mins > 0 ? new Date().toISOString() : null,
+      }).eq('id', truck.id)
+      return NextResponse.json({ success: true })
+    }
+
+    // ── SAVE PREP CONFIGS ─────────────────────────────────────────────────────
+    if (action === 'save_prep_configs') {
+      const configs: Record<string, { secs: number; batch: number }> = body.configs || {}
+      const { data: cats } = await supabase
+        .from('menu_categories')
+        .select('id, name')
+        .eq('truck_id', truck.id)
+      for (const cat of (cats || [])) {
+        const cfg = configs[cat.name.toLowerCase()]
+        if (!cfg) continue
+        await supabase.from('menu_categories').update({
+          prep_secs: cfg.secs,
+          batch_size: cfg.batch,
+        }).eq('id', cat.id)
+      }
+      return NextResponse.json({ success: true })
+    }
+
+    // ── UPDATE CATEGORY ───────────────────────────────────────────────────────
+    if (action === 'update_category') {
+      const { categoryId, name, prep_secs, batch_size, allow_notes } = body
+      if (!categoryId) return NextResponse.json({ error: 'categoryId required' }, { status: 400 })
+      await supabase.from('menu_categories')
+        .update({ name, prep_secs, batch_size, allow_notes })
+        .eq('id', categoryId)
+        .eq('truck_id', truck.id)
+      return NextResponse.json({ success: true })
+    }
+
+    // ── GET EVENTS ────────────────────────────────────────────────────────────
+    if (action === 'get_events') {
+      const today = new Date().toISOString().split('T')[0]
+      const { data: events } = await supabase
+        .from('truck_events')
+        .select('id, event_date, start_time, end_time, venue_name')
+        .eq('truck_id', truck.id)
+        .neq('is_cancelled', true)
+        .gte('event_date', today)
+        .order('event_date', { ascending: true })
+        .order('start_time', { ascending: true })
+        .limit(20)
+      return NextResponse.json({ success: true, events: events || [] })
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

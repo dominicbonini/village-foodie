@@ -14,13 +14,25 @@ export async function GET(
   
   console.log('[MENU API] Looking up truck:', truckId)
   
-  // Fetch truck by ID (the truckId param IS the truck ID)
-  const { data: truck, error: truckError } = await supabase
+  // Try slug first (customer-facing URLs use slug), then fall back to ID
+  // Note: we don't filter by active here — if truck exists, show menu
+  // The truck can control ordering via the paused state in the dashboard
+  let truckQuery = await supabase
     .from('trucks')
     .select('*')
-    .eq('id', truckId)
-    .eq('active', true)
+    .eq('slug', truckId)
     .single()
+
+  if (truckQuery.error || !truckQuery.data) {
+    truckQuery = await supabase
+      .from('trucks')
+      .select('*')
+      .eq('id', truckId)
+      .single()
+  }
+
+  const truck = truckQuery.data
+  const truckError = truckQuery.error
 
   console.log('[MENU API] Truck found:', truck?.name, 'Error:', truckError)
 
@@ -35,35 +47,55 @@ export async function GET(
     { data: bundles },
     { data: upsellRules },
     { data: codes },
+    { data: modifierGroups },
+    { data: modifierOptions },
+    { data: categoryModGroups },
   ] = await Promise.all([
     supabase
       .from('menu_categories')
-      .select('name, prep_secs, batch_size')
-      .eq('truck_id', truckId)
+      .select('id, name, prep_secs, batch_size, allow_notes')
+      .eq('truck_id', truck.id)
       .order('sort_order', { ascending: true })
       .order('name'),
-    
+
     supabase
       .from('menu_items_db')
       .select('*, menu_categories!category_id(name)')
-      .eq('truck_id', truckId)
+      .eq('truck_id', truck.id)
       .order('name'),
-    
+
     supabase
       .from('bundles_db')
       .select('*')
-      .eq('truck_id', truckId),
-    
+      .eq('truck_id', truck.id),
+
     supabase
       .from('upsell_rules')
       .select('*')
-      .eq('truck_id', truckId),
-    
+      .eq('truck_id', truck.id),
+
     supabase
       .from('discount_codes_db')
       .select('*')
-      .eq('truck_id', truckId)
+      .eq('truck_id', truck.id)
       .eq('is_active', true),
+
+    supabase
+      .from('modifier_groups')
+      .select('id, name')
+      .eq('truck_id', truck.id),
+
+    supabase
+      .from('modifier_options')
+      .select('id, group_id, name, price_adjustment')
+      .in('group_id',
+        (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map((g: { id: string }) => g.id) || []
+      )
+      .order('sort_order', { ascending: true }),
+
+    supabase
+      .from('category_modifier_groups')
+      .select('category_id, group_id'),
   ])
 
   console.log('[MENU API] Query results:')
@@ -72,12 +104,27 @@ export async function GET(
   console.log('  items data:', items)
   console.log('  bundles:', bundles?.length || 0)
 
+  // Build category → modifier groups map
+  const groupMap: Record<string, { id: string; name: string; options: { id: string; name: string; price_adjustment: number }[] }[]> = {}
+  ;(categories || []).forEach(c => { groupMap[c.id] = [] })
+  ;(categoryModGroups || []).forEach(cmg => {
+    const group = (modifierGroups || []).find(g => g.id === cmg.group_id)
+    if (!group || !groupMap[cmg.category_id]) return
+    const options = (modifierOptions || [])
+      .filter(o => o.group_id === group.id)
+      .map(o => ({ id: o.id, name: o.name, price_adjustment: o.price_adjustment ?? 0 }))
+    groupMap[cmg.category_id].push({ id: group.id, name: group.name, options })
+  })
+
   // Build menu response
   const menu = {
     categories: (categories || []).map(c => ({
+      id: c.id,
       name: c.name,
       prep_secs: c.prep_secs ?? null,
       batch_size: c.batch_size ?? null,
+      allowNotes: c.allow_notes ?? false,
+      modifierGroups: groupMap[c.id] || [],
     })),
     
     items: (items || []).map(i => ({
@@ -128,6 +175,14 @@ export async function GET(
       mode: truck.mode,
       venue_name: truck.venue_name,
       time_selection_enabled: truck.time_selection_enabled ?? false,
+      paused: truck.paused_until ? new Date(truck.paused_until) > new Date() : false,
+      extra_wait_mins: (() => {
+        const mins = truck.extra_wait_mins ?? 0
+        const startedAt = truck.extra_wait_started_at ?? null
+        if (!mins || !startedAt) return 0
+        const elapsed = (Date.now() - new Date(startedAt).getTime()) / 60000
+        return Math.max(0, Math.ceil(mins - elapsed))
+      })(),
     },
     menu,
   })

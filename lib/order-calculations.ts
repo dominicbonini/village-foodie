@@ -20,6 +20,7 @@ export interface OrderItem {
       original_price?: number | null
     }
     slots: Record<string, string>
+    modifierExtra?: number
   }
   
   export interface DiscountCode {
@@ -77,22 +78,23 @@ export interface OrderItem {
       return sum + (item.price * item.quantity)
     }, 0)
     
-    // 2. Calculate deals total (what customer pays for deals)
+    // 2. Calculate deals total (what customer pays for deals, including modifier pass-through)
     const dealsTotal = deals.reduce((sum, deal) => {
-      return sum + deal.bundle.bundle_price
+      return sum + deal.bundle.bundle_price + (deal.modifierExtra || 0)
     }, 0)
-    
-    // 3. Calculate deal savings (original price - deal price)
+
+    // 3. Calculate deal savings (original price - effective deal price)
     const dealSavings = deals.reduce((sum, deal) => {
+      const effectivePrice = deal.bundle.bundle_price + (deal.modifierExtra || 0)
       // If bundle has fixed original_price, use it
       if (deal.bundle.original_price && deal.bundle.original_price > 0) {
-        const saving = deal.bundle.original_price - deal.bundle.bundle_price
+        const saving = deal.bundle.original_price - effectivePrice
         return sum + Math.max(0, saving)
       }
-      
+
       // Otherwise calculate from selected items
       const originalPrice = calculateDealOriginalPrice(deal.slots, menuItems)
-      const saving = originalPrice - deal.bundle.bundle_price
+      const saving = originalPrice - effectivePrice
       return sum + Math.max(0, saving)
     }, 0)
     
