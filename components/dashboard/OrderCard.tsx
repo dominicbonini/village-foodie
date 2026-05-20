@@ -1,10 +1,14 @@
 'use client'
 // components/dashboard/OrderCard.tsx
 
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import type { Order, TruckData, Slot } from './types'
 import { STATUS } from './types'
-import { getCategoryTime } from './helpers'
+import { getCategoryTime, getTicketAge, getSlotOffset, getAgeState, getHeaderStyle, hasDealItems } from './helpers'
+
+export type ViewMode = 'solo' | 'window' | 'cook'
+
+// ── Shared UI primitives ──────────────────────────────────────────────────────
 
 export function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
@@ -25,11 +29,12 @@ export function Btn({ label, colour, loading, onClick }: {
     blue:   'bg-blue-600 hover:bg-blue-700 text-white',
     teal:   'bg-teal-600 hover:bg-teal-700 text-white',
     slate:  'bg-slate-500 hover:bg-slate-600 text-white',
+    amber:  'bg-amber-500 hover:bg-amber-600 text-white',
     orange: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200',
   }
   return (
     <button onClick={onClick} disabled={loading}
-      className={`${colours[colour] || colours.slate} font-bold text-sm px-4 py-2.5 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[72px]`}>
+      className={`${colours[colour] || colours.slate} font-bold text-sm px-4 py-3 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[72px]`}>
       {loading ? '...' : label}
     </button>
   )
@@ -61,49 +66,65 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
   )
 }
 
-// Add minutes to a HH:MM time string
 function addMinsToSlot(slot: string, mins: number): string {
   const [h, m] = slot.split(':').map(Number)
   const total = h * 60 + m + mins
-  const newH = Math.floor(total / 60) % 24
-  const newM = total % 60
-  return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`
+  return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
 }
 
-export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit }: {
+// ── OrderCard ─────────────────────────────────────────────────────────────────
+
+export function OrderCard({
+  order,
+  truck,
+  slots,
+  actionLoading,
+  onAction,
+  onEdit,
+  categoryOrder,
+  viewMode = 'solo',
+  kdsMode = false,
+}: {
   order: Order
   truck: TruckData | null
   slots: Slot[]
   actionLoading: string | null
   onAction: (action: string, orderId: string) => void
   onEdit: (order: Order) => void
+  categoryOrder?: string[]
+  viewMode?: ViewMode
+  kdsMode?: boolean
 }) {
   const [expanded, setExpanded] = useState(true)
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
-  const [adjustingTime, setAdjustingTime] = useState(false)
-  const s = STATUS[order.status] || STATUS.pending
-  const isPub = truck?.mode === 'pub'
 
-  const urgency = useMemo(() => {
-    if (!order.slot || !['pending', 'confirmed'].includes(order.status)) return 'normal'
-    const [h, m] = order.slot.split(':').map(Number)
-    const diff = (h * 60 + m) - (new Date().getHours() * 60 + new Date().getMinutes())
-    if (diff <= 0) return 'overdue'
-    if (diff <= 10) return 'urgent'
-    return 'normal'
-  }, [order.slot, order.status])
+  // Build slot datetime once — null for slotless (walk-up) orders
+  const slotDt = order.slot && order.event_date
+    ? new Date(`${order.event_date}T${order.slot}:00`)
+    : null
 
-  const borderClass = urgency === 'overdue' ? 'border-red-500'
-    : urgency === 'urgent' ? 'border-yellow-400'
-    : order.status === 'pending' ? 'border-orange-400'
-    : 'border-slate-200'
+  const computeOffset = () => slotDt ? getSlotOffset(slotDt) : -999
+
+  const [slotOffset, setSlotOffset] = useState(computeOffset)
+
+  // Tick every minute so the header and badge stay live
+  useEffect(() => {
+    const id = setInterval(() => setSlotOffset(computeOffset()), 60000)
+    return () => clearInterval(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order.slot, order.event_date])
+
+  const ageState  = getAgeState(slotOffset)
+  const headerCls = getHeaderStyle(ageState)
+  const s         = STATUS[order.status] || STATUS.pending
+  const isPub     = truck?.mode === 'pub'
 
   const sortedItems = [...order.items].sort((a, b) =>
     getCategoryTime(b.name) - getCategoryTime(a.name)
   )
 
-  const totalUnits = sortedItems.reduce((s, item) => s + item.quantity, 0)
-  const struckTotal = sortedItems.reduce((s, item, i) => s + Math.min(struckUnits[i] || 0, item.quantity), 0)
+  const totalUnits = sortedItems.reduce((sum, item) => sum + item.quantity, 0)
+  const struckTotal = sortedItems.reduce((sum, item, i) => sum + Math.min(struckUnits[i] || 0, item.quantity), 0)
   const allStruck = struckTotal >= totalUnits && totalUnits > 0
 
   const tapItem = (i: number, qty: number) => {
@@ -113,39 +134,130 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
     })
   }
 
-  const hasDeal = !!(order.deals && order.deals.length > 0)
+  const hasDeal = hasDealItems(order)
+  const isLoading = (action: string) => actionLoading === `${action}-${order.id}`
+
+  // ── Button sets per viewMode ────────────────────────────────────────────────
+
+  const renderButtons = () => {
+    if (order.status === 'pending') {
+      return (
+        <>
+          <Btn label="✓ Confirm" colour="green" loading={isLoading('confirm')} onClick={() => onAction('confirm', order.id)} />
+          <Btn label="✗ Reject"  colour="red"   loading={isLoading('reject')}  onClick={() => onAction('reject', order.id)} />
+        </>
+      )
+    }
+
+    if (viewMode === 'cook') {
+      if (['confirmed', 'modified'].includes(order.status)) {
+        return kdsMode ? (
+          <>
+            <Btn label="Start cooking" colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.id)} />
+            <Btn label="Ready"         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.id)} />
+          </>
+        ) : (
+          <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
+        )
+      }
+      if (order.status === 'cooking') {
+        return (
+          <>
+            <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 Cooking…</span>
+            <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
+          </>
+        )
+      }
+      return null
+    }
+
+    if (viewMode === 'window') {
+      if (!kdsMode) {
+        // No cooking gate — immediate collect
+        if (['confirmed', 'modified', 'ready'].includes(order.status)) {
+          return <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+        }
+      } else {
+        // Cooking gate active
+        if (['confirmed', 'modified'].includes(order.status)) {
+          return (
+            <>
+              <span className="text-xs font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500">⏳ Waiting</span>
+              <button disabled className="flex-1 bg-teal-200 text-teal-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
+            </>
+          )
+        }
+        if (order.status === 'cooking') {
+          return (
+            <>
+              <span className="text-xs font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">🔥 Cooking…</span>
+              <button disabled className="flex-1 bg-teal-200 text-teal-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
+            </>
+          )
+        }
+        if (order.status === 'ready') {
+          return (
+            <>
+              <span className="text-xs font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">✓ Ready</span>
+              <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+            </>
+          )
+        }
+      }
+    }
+
+    // solo mode (default) — preserve isPub behaviour for backwards compat
+    if (['confirmed', 'modified'].includes(order.status)) {
+      return isPub
+        ? <Btn label="🍕 Ready" colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
+        : <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+    }
+    if (order.status === 'ready') {
+      return <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+    }
+    if (order.status === 'collected') {
+      return <Btn label="↩ Undo" colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.id)} />
+    }
+    return null
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className={`bg-white rounded-2xl overflow-hidden border shadow-sm transition-opacity ${borderClass} ${allStruck ? 'opacity-50' : ''}`}>
-      {urgency === 'overdue' && <div className="bg-red-500 text-white text-[11px] font-black text-center py-1">⚠ OVERDUE</div>}
-      {urgency === 'urgent' && <div className="bg-yellow-400 text-yellow-900 text-[11px] font-black text-center py-1">⏰ DUE SOON</div>}
+    <div className={`bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 transition-opacity ${allStruck ? 'opacity-50' : ''}`}>
 
-      <button onClick={() => setExpanded(e => !e)} className="w-full text-left px-4 py-3 active:bg-slate-50 transition-colors">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-            <span className="font-black text-slate-900">#{order.id}</span>
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
-            {order.slot && (
-              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                urgency === 'overdue' ? 'bg-red-100 text-red-700'
-                : urgency === 'urgent' ? 'bg-yellow-100 text-yellow-700'
-                : 'bg-slate-100 text-slate-500'}`}>
-                🕐 {order.slot}
-              </span>
-            )}
-            <span className="text-slate-600 font-bold text-sm truncate max-w-[130px]">{order.customer_name}</span>
+      {/* Full-width coloured header — age-driven */}
+      <button onClick={() => setExpanded(e => !e)} className={`w-full text-left px-4 py-3 ${headerCls} transition-colors active:opacity-80`}>
+        <div className="flex items-center justify-between">
+          <span className="text-2xl font-bold">#{order.id}</span>
+          <div className="flex items-center gap-2 font-medium text-sm">
+            {order.slot && <span>{order.slot}</span>}
+            <span className="opacity-70">·{' '}
+              {!slotDt
+                ? `${getTicketAge(order.created_at)} min`
+                : slotOffset < 0
+                  ? `in ${Math.abs(slotOffset)} min`
+                  : slotOffset === 0
+                    ? 'due now'
+                    : `${slotOffset} min late`}
+            </span>
+            {allStruck && <span className="text-green-700 font-black text-xs">✓</span>}
+            <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {allStruck && <span className="text-green-600 text-xs font-black">Ready ✓</span>}
-            <span className="font-black text-slate-900">£{Number(order.total).toFixed(2)}</span>
-            <span className="text-slate-400 text-xs">{expanded ? '▲' : '▼'}</span>
-          </div>
+        </div>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
+          <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
+          {viewMode !== 'cook' && (
+            <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
+          )}
         </div>
       </button>
 
       {expanded && (
-        <div className="px-4 pb-3 border-t border-slate-100 pt-2 bg-slate-50">
+        <div className="px-4 pb-3 pt-2 bg-slate-50">
 
+          {/* Standalone items */}
           <div className="space-y-px mb-2">
             {sortedItems.map((item, i) => {
               const struck = Math.min(struckUnits[i] || 0, item.quantity)
@@ -181,36 +293,50 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
             })}
           </div>
 
+          {/* Deals — bracketed group with amber left-border */}
           {hasDeal && (
-            <div className="border-t border-slate-200 pt-1 mb-1 space-y-1">
-              {order.deals!.map((d, i) => (
-                <div key={i}>
-                  <p className="text-xs font-bold text-amber-600">🎁 {d.name}: <span className="font-normal">{Object.values(d.slots).filter(Boolean).join(', ')}</span></p>
-                  {Object.entries(d.slots).map(([cat, itemName]) => {
-                    if (!itemName) return null
-                    const mods = (d.slotModifiers || {})[cat] || []
-                    const note = (d.slotNotes || {})[cat]
-                    if (!mods.length && !note) return null
-                    return (
-                      <div key={cat} className="pl-3">
-                        {mods.map(m => <p key={m.name} className="text-[10px] text-orange-500 leading-tight">+ {m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>)}
-                        {note && <p className="text-[10px] text-slate-400 italic leading-tight">📝 {note}</p>}
-                      </div>
-                    )
-                  })}
-                </div>
-              ))}
+            <div className="border-l-2 border-amber-300 pl-3 ml-1 mb-2 space-y-2">
+              {order.deals!.map((d, i) => {
+                const sortedSlotEntries = Object.entries(d.slots).sort(([a], [b]) => {
+                  if (!categoryOrder) return 0
+                  const ai = categoryOrder.findIndex(c => c.toLowerCase() === a.toLowerCase())
+                  const bi = categoryOrder.findIndex(c => c.toLowerCase() === b.toLowerCase())
+                  return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
+                })
+                return (
+                  <div key={i}>
+                    <p className="text-[10px] uppercase tracking-wide text-amber-700 font-bold mb-0.5">🎁 {d.name}</p>
+                    <p className="text-xs text-slate-700 font-medium">
+                      {sortedSlotEntries.filter(([, v]) => v).map(([, v]) => v).join(', ')}
+                    </p>
+                    {sortedSlotEntries.map(([cat, itemName]) => {
+                      if (!itemName) return null
+                      const mods = (d.slotModifiers || {})[cat] || []
+                      const note = (d.slotNotes || {})[cat]
+                      if (!mods.length && !note) return null
+                      return (
+                        <div key={cat} className="pl-2 mt-0.5">
+                          {mods.map(m => <p key={m.name} className="text-[10px] text-orange-500 leading-tight">+ {m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>)}
+                          {note && <p className="text-[10px] text-slate-400 italic leading-tight">📝 {note}</p>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })}
             </div>
           )}
 
+          {/* Allergy / order notes — RED treatment */}
           {order.notes && (
-            <div className="bg-orange-50 border border-orange-100 rounded-lg px-3 py-1.5 text-xs text-orange-700 mb-2 font-medium">
-              📝 {order.notes}
+            <div className="bg-red-50 border border-red-300 text-red-800 font-medium px-3 py-2 mb-2 rounded-md flex items-center gap-2">
+              <span className="shrink-0">⚠</span>
+              <span className="text-sm">{order.notes}</span>
             </div>
           )}
 
-          {/* Quick time adjust — for pending orders with a slot */}
-          {order.status === 'pending' && order.slot && (
+          {/* Quick time adjust — pending, non-cook only */}
+          {order.status === 'pending' && order.slot && viewMode !== 'cook' && (
             <div className="flex items-center gap-1.5 mb-2">
               <span className="text-xs text-slate-400 font-medium shrink-0">Adjust time:</span>
               {[5, 10, 20].map(mins => (
@@ -224,20 +350,17 @@ export function OrderCard({ order, truck, slots, actionLoading, onAction, onEdit
             </div>
           )}
 
+          {/* Action buttons */}
           <div className="flex gap-2 flex-wrap">
-            {order.status === 'pending' && (
-              <>
-                <Btn label="✓ Confirm" colour="green" loading={actionLoading === `confirm-${order.id}`} onClick={() => onAction('confirm', order.id)} />
-                <Btn label="✗ Reject" colour="red" loading={actionLoading === `reject-${order.id}`} onClick={() => onAction('reject', order.id)} />
-              </>
+            {renderButtons()}
+            {viewMode !== 'cook' && ['pending', 'confirmed', 'modified'].includes(order.status) && (
+              <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />
             )}
-            {['confirmed', 'modified'].includes(order.status) && isPub && <Btn label="🍕 Ready" colour="blue" loading={actionLoading === `ready-${order.id}`} onClick={() => onAction('ready', order.id)} />}
-            {['confirmed', 'modified'].includes(order.status) && !isPub && <Btn label="✓ Collected" colour="teal" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />}
-            {order.status === 'ready' && <Btn label="✓ Collected" colour="teal" loading={actionLoading === `collected-${order.id}`} onClick={() => onAction('collected', order.id)} />}
-            {order.status === 'collected' && <Btn label="↩ Undo" colour="slate" loading={actionLoading === `undo_collected-${order.id}`} onClick={() => onAction('undo_collected', order.id)} />}
-            {['pending', 'confirmed', 'modified'].includes(order.status) && <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />}
-            {['confirmed', 'modified', 'ready'].includes(order.status) && <Btn label="✕ Cancel" colour="red" loading={actionLoading === `cancel-${order.id}`} onClick={() => onAction('cancel', order.id)} />}
+            {viewMode !== 'cook' && ['confirmed', 'modified', 'ready'].includes(order.status) && (
+              <Btn label="✕ Cancel" colour="red" loading={isLoading('cancel')} onClick={() => onAction('cancel', order.id)} />
+            )}
           </div>
+
         </div>
       )}
     </div>

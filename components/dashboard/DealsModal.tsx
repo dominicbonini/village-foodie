@@ -32,6 +32,7 @@ interface BasketItem {
   unit_price?: number
   cartKey?: string
   modifiers?: { name: string; price: number }[]
+  specialInstructions?: string
 }
 
 interface SlotModifierOption { id: string; name: string; price_adjustment: number }
@@ -98,14 +99,20 @@ export function DealsModal({
 
   const selectDeal = (bundle: Bundle) => {
     setSelectedDeal(bundle)
-    setSlotMods({})
-    setSlotNotes({})
     const prefill: Record<string, string> = {}
+    const prefillMods: Record<string, { name: string; price: number }[]> = {}
+    const prefillNotes: Record<string, string> = {}
     getBundleSlotCats(bundle).forEach(cat => {
       const match = basketItems.find(b => menuItems.find(m => m.name === b.name)?.category === cat)
-      if (match) prefill[cat] = `USE_EXISTING:${itemKey(match)}`
+      if (match) {
+        prefill[cat] = `USE_EXISTING:${itemKey(match)}`
+        if (match.modifiers?.length) prefillMods[cat] = match.modifiers
+        if (match.specialInstructions) prefillNotes[cat] = match.specialInstructions
+      }
     })
     setSlotSelections(prefill)
+    setSlotMods(prefillMods)
+    setSlotNotes(prefillNotes)
   }
 
   const toggleSlotMod = (cat: string, opt: SlotModifierOption) => {
@@ -145,11 +152,10 @@ export function DealsModal({
         const displayName = basketItem?.name || identifier
         cleanSlots[cat] = displayName
         const basePrice = menuItems.find(m => m.name === displayName)?.price ?? 0
-        const totalPrice = basketItem?.unit_price ?? basePrice
-        originalPrice += totalPrice + dealModalCost
-        modifierExtra += Math.max(0, totalPrice - basePrice) + dealModalCost
-        const combined = [...(basketItem?.modifiers || []), ...dealModalMods]
-        if (combined.length) slotModifiers[cat] = combined
+        const dealModalCost = dealModalMods.reduce((s, m) => s + m.price, 0)
+        originalPrice += basePrice + dealModalCost
+        modifierExtra += dealModalCost
+        if (dealModalMods.length) slotModifiers[cat] = dealModalMods
       } else {
         cleanSlots[cat] = identifier
         originalPrice += (menuItems.find(m => m.name === identifier)?.price ?? 0) + dealModalCost
@@ -178,10 +184,10 @@ export function DealsModal({
       const identifier = raw.replace('USE_EXISTING:', '')
       if (isExisting) {
         const basketItem = basketItems.find(b => itemKey(b) === identifier)
-        const basePrice = menuItems.find(m => m.name === basketItem?.name)?.price ?? 0
-        buttonPrice += Math.max(0, (basketItem?.unit_price ?? basePrice) - basePrice)
+        buttonPrice += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
+      } else {
+        buttonPrice += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
       }
-      buttonPrice += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
     })
   }
 
@@ -285,9 +291,16 @@ export function DealsModal({
                   <select
                     value={slotSelections[cat] || ''}
                     onChange={e => {
-                      setSlotSelections(prev => ({ ...prev, [cat]: e.target.value }))
-                      setSlotMods(prev => ({ ...prev, [cat]: [] }))
-                      setSlotNotes(prev => ({ ...prev, [cat]: '' }))
+                      const val = e.target.value
+                      setSlotSelections(prev => ({ ...prev, [cat]: val }))
+                      if (val.startsWith('USE_EXISTING:')) {
+                        const bi = basketItems.find(b => itemKey(b) === val.replace('USE_EXISTING:', ''))
+                        setSlotMods(prev => ({ ...prev, [cat]: bi?.modifiers || [] }))
+                        setSlotNotes(prev => ({ ...prev, [cat]: bi?.specialInstructions || '' }))
+                      } else {
+                        setSlotMods(prev => ({ ...prev, [cat]: [] }))
+                        setSlotNotes(prev => ({ ...prev, [cat]: '' }))
+                      }
                     }}
                     className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${isFilled ? 'border-green-300' : 'border-slate-200'}`}>
                     <option value="">Choose {cat}…</option>
@@ -370,11 +383,12 @@ export function DealsModal({
                 const id = raw?.replace('USE_EXISTING:', '') || ''
                 if (isEx) {
                   const b = basketItems.find(bi => itemKey(bi) === id)
-                  orig += b?.unit_price ?? (menuItems.find(m => m.name === b?.name)?.price ?? 0)
+                  const baseP = menuItems.find(m => m.name === b?.name)?.price ?? 0
+                  orig += baseP + (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
                 } else {
                   orig += menuItems.find(m => m.name === id)?.price ?? 0
+                  orig += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
                 }
-                orig += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
               })
               const saving = Math.max(0, orig - buttonPrice)
               return saving > 0 ? (

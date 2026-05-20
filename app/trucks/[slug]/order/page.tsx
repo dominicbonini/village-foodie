@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, use } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, use } from 'react';
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
@@ -114,21 +114,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [submittedRequestedSlot, setSubmittedRequestedSlot] = useState<string | null>(null)
   const [submittedSlotChanged, setSubmittedSlotChanged] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [summaryExpanded, setSummaryExpanded] = useState(false)
-  const [footerHeight, setFooterHeight] = useState(100)
+  const [summaryExpanded, setSummaryExpanded] = useState(true)
+  const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
 
+  // Sync padding synchronously after every render — fires before paint so the
+  // expanded footer and the updated paddingBottom are always drawn together.
+  useLayoutEffect(() => {
+    if (!footerRef.current) return
+    const h = Math.ceil(footerRef.current.offsetHeight)
+    if (h !== footerHeight) setFooterHeight(h)
+  })
+
+  // ResizeObserver as backup for orientation changes / window resize events
+  // that happen outside a React render cycle.
   useEffect(() => {
     if (!footerRef.current) return
-    // Set immediately on mount
-    setFooterHeight(footerRef.current.offsetHeight)
-    // Then track any size changes (e.g. summary expanding)
-    const observer = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        setFooterHeight(entry.contentRect.height)
-      }
+    const el = footerRef.current
+    const observer = new ResizeObserver(() => {
+      setFooterHeight(Math.ceil(el.offsetHeight))
     })
-    observer.observe(footerRef.current)
+    observer.observe(el)
     return () => observer.disconnect()
   }, [])
 
@@ -273,10 +279,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     loadEvent()
   }, [slug])
 
-  // Auto-expand summary when first item added
-  useEffect(() => {
-    if (basket.length === 1 && !summaryExpanded) setSummaryExpanded(true)
-  }, [basket.length])
 
   useEffect(() => {
     console.log('[ORDER FORM] Fetching menu for slug:', slug)
@@ -483,8 +485,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     const beforeEvent = !isToday || nowMins < eventStartMins
 
-    if (!hasItems || !menu) {
-      if (!extraWait) return event.start_time
+    if (!menu) {
+      if (!extraWait) return asapSlot || event.start_time
       const rounded = Math.round((eventStartMins + extraWait) / 5) * 5
       return `${String(Math.floor(rounded/60)).padStart(2,'0')}:${String(rounded%60).padStart(2,'0')}`
     }
@@ -508,10 +510,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (beforeEvent) {
       // Pre-event model: batch 1 is pre-cooked and ready at event start.
       // Each batch beyond the first adds one prep cycle on top of event start.
-      // batch_size=3, prep=4min: 1-3 items→17:00, 4-6→17:04, 7-9→17:08
-      // Curry trucks with large batches/low prep naturally fit most orders in batch 1 → 17:00.
+      // When basket is empty, simulate +1 per queued category so we show the
+      // realistic "next order ready at" time rather than the raw event start.
       let extraBatchMins = 0
-      for (const [cat, newQty] of Object.entries(newByCat)) {
+      const catsToCheck = hasItems
+        ? Object.keys(newByCat)
+        : Object.keys(queueByCat)
+      for (const cat of catsToCheck) {
+        const newQty = hasItems ? (newByCat[cat] || 0) : 1
         const cfg = catConfigs[cat] || { secs: 0, batch: 1 }
         if (!cfg.secs) continue
         const totalQty = (queueByCat[cat] || 0) + newQty
@@ -541,13 +547,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return h * 60 + m
   }
 
-  // Clear chosen time if basket changes make it too early
+  // Snap chosen time forward if basket changes push ASAP later
   useEffect(() => {
     if (!selectedSlot || !customerAsapTime) return
     if (toMins(selectedSlot) < toMins(customerAsapTime)) {
-      setSlotHour(''); setSlotMinute('')
+      const [h, m] = customerAsapTime.split(':')
+      setSlotHour(h); setSlotMinute(m)
     }
   }, [customerAsapTime]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-select ASAP on first load (only once, and only once real slot data is available)
+  const hasAutoSelected = useRef(false)
+  useEffect(() => {
+    if (hasAutoSelected.current) return
+    const t = customerAsapTime || asapSlot
+    if (!t) return
+    const [h, m] = t.split(':')
+    setSlotHour(h)
+    setSlotMinute(m)
+    hasAutoSelected.current = true
+  }, [customerAsapTime, asapSlot]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const applyCode = () => {
     if (!menu) return
@@ -612,17 +631,41 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
-          <h2 className="text-2xl font-black text-slate-900 mb-2">{submittedAutoAccepted ? 'Order confirmed!' : 'Order received!'}</h2>
-          <p className="text-slate-500 mb-4">
+          <h2 className="text-2xl font-black text-slate-900 mb-1">{submittedAutoAccepted ? 'Order confirmed!' : 'Order received!'}</h2>
+          <p className="text-slate-500 mb-3 text-sm">
             {submittedAutoAccepted
-              ? <><span className="font-bold text-slate-700">{truck?.name}</span> has confirmed your order.</>
-              : <><span className="font-bold text-slate-700">{truck?.name}</span> will confirm your order shortly.</>
+              ? <>Thanks! We've received your order and it'll be ready soon.</>
+              : <><span className="font-semibold text-slate-700">{truck?.name}</span> will confirm your order shortly.</>
             }
           </p>
-          {submittedOrderId && <p className="text-slate-400 text-sm mb-4">Order #{submittedOrderId}</p>}
+
+          {submittedOrderId && <p className="text-slate-400 text-sm mb-3">Order #{submittedOrderId}</p>}
+
+          {/* Collection time — promoted above the receipt */}
+          {(submittedConfirmedSlot || selectedSlot) && (
+            submittedAutoAccepted && submittedConfirmedSlot ? (
+              <div className={`rounded-xl p-3 mb-4 text-sm text-center border ${submittedSlotChanged ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
+                {submittedSlotChanged && submittedRequestedSlot ? (
+                  <>
+                    <p className="font-bold text-amber-800 mb-0.5">Sorry, your {submittedRequestedSlot} slot was taken.</p>
+                    <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span>.</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-bold text-green-800 mb-0.5">Collection time: {submittedConfirmedSlot}</p>
+                    <p className="text-green-700 text-xs">See you at the hatch!</p>
+                  </>
+                )}
+              </div>
+            ) : (selectedSlot || submittedConfirmedSlot) ? (
+              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
+                <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot || submittedConfirmedSlot}</p>
+                <p className="text-orange-600 text-xs">{truck?.name} will confirm your collection time when they accept your order.</p>
+              </div>
+            ) : null
+          )}
 
           <div className="bg-slate-50 rounded-xl p-4 text-left space-y-2 mb-4 border border-slate-100">
-            {/* Order items summary on confirmation */}
             {basket.map(b => {
               const modSum = b.modifiers.reduce((s, m) => s + m.price, 0)
               return (
@@ -646,10 +689,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             {appliedDeals.map((deal, i) => {
               const origPrice = calcDealOriginalPrice(deal, menu?.items || [])
               const saving = origPrice > deal.bundle.bundle_price ? origPrice - deal.bundle.bundle_price : 0
-              const dealSlotMods2 = Object.entries(deal.slotModifiers || {})
-                .filter(([, mods]) => mods.length > 0)
-                .map(([cat, mods]) => ({ itemName: deal.slots[cat], mods }))
-                .filter(({ itemName }) => itemName)
               return (
                 <div key={i} className="space-y-0.5">
                   <div className="flex justify-between text-sm">
@@ -659,12 +698,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     </span>
                     <span className="font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
                   </div>
-                  {dealSlotMods2.map(({ itemName, mods }) => (
-                    <div key={itemName} className="flex justify-between text-xs pl-3">
-                      <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
-                      <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
-                    </div>
-                  ))}
+                  {Object.entries(deal.slots).filter(([, name]) => name).flatMap(([cat, itemName]) => {
+                    const mods = deal.slotModifiers?.[cat] || []
+                    const note = deal.slotNotes?.[cat]
+                    const rows = []
+                    if (mods.length > 0) rows.push(
+                      <div key={`${cat}-mods`} className="flex justify-between text-xs pl-3">
+                        <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
+                        <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
+                      </div>
+                    )
+                    if (note) rows.push(
+                      <div key={`${cat}-note`} className="text-xs pl-3 text-slate-400 italic">↳ {itemName}: 📝 {note}</div>
+                    )
+                    return rows
+                  })}
                 </div>
               )
             })}
@@ -673,29 +721,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <span className="font-black text-slate-900">£{total.toFixed(2)}</span>
             </div>
           </div>
-
-          {(submittedConfirmedSlot || selectedSlot) && (
-            submittedAutoAccepted && submittedConfirmedSlot ? (
-              <div className={`rounded-xl p-3 mb-4 text-sm text-left border ${submittedSlotChanged ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
-                {submittedSlotChanged && submittedRequestedSlot ? (
-                  <>
-                    <p className="font-bold text-amber-800 mb-0.5">Sorry, your {submittedRequestedSlot} slot was taken.</p>
-                    <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span>.</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-bold text-green-800 mb-0.5">Order confirmed — collection time {submittedConfirmedSlot}</p>
-                    <p className="text-green-700 text-xs">See you at the hatch!</p>
-                  </>
-                )}
-              </div>
-            ) : (selectedSlot || submittedConfirmedSlot) ? (
-              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
-                <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot || submittedConfirmedSlot}</p>
-                <p className="text-orange-600 text-xs">{truck?.name} will confirm your collection time when they accept your order.</p>
-              </div>
-            ) : null
-          )}
 
           <div className="flex justify-between text-sm mb-4">
             <span className="text-slate-500">Payment</span>
@@ -1053,7 +1078,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
                   {/* LEFT: ASAP button */}
                   {(() => {
-                    const asapTime = customerAsapTime || (availableHours.length > 0
+                    const asapTime = customerAsapTime || asapSlot || (availableHours.length > 0
                       ? `${availableHours[0]}:${availableMinutes[0] || '00'}`
                       : null)
                     const isSelected = selectedSlot === asapTime && selectedSlot !== ''
@@ -1085,7 +1110,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {/* RIGHT: Choose time button / dropdown */}
                   <div className="flex-1">
                     {truck?.time_selection_enabled ? (() => {
-                      const asapTime = customerAsapTime || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
+                      const asapTime = customerAsapTime || asapSlot || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
                       const hasChosenTime = selectedSlot && selectedSlot !== asapTime
 
                       return (
@@ -1111,14 +1136,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             {availableSlots.length > 0
                               ? availableSlots
                                   .filter(s => {
-                                    if (!s.available || s.is_past || s.is_grace) return false
+                                    if (s.is_past || s.is_grace) return false
                                     // Only show slots at or after the ASAP time
                                     if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
                                     return true
                                   })
                                   .map(slot => (
-                                    <option key={slot.collection_time} value={slot.collection_time}>
-                                      {slot.collection_time}{slot.remaining < 4 ? ` (${slot.remaining} left)` : ''}
+                                    <option key={slot.collection_time} value={slot.collection_time} disabled={!slot.available}>
+                                      {slot.collection_time}{!slot.available ? ' · Full' : slot.remaining < 4 ? ` (${slot.remaining} left)` : ''}
                                     </option>
                                   ))
                               : availableHours.flatMap(h =>
@@ -1190,12 +1215,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 className="w-full flex items-center justify-between mb-2 group"
               >
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-                  {totalItems} item{totalItems > 1 ? 's' : ''}
-                  {appliedDeals.length > 0 && ` · ${appliedDeals.length} deal${appliedDeals.length > 1 ? 's' : ''}`}
+                  {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
                 </span>
                 <div className="flex items-center gap-1.5">
                   <span className="font-black text-slate-900 text-sm">£{total.toFixed(2)}</span>
-                  <svg className={`w-4 h-4 text-slate-400 transition-transform ${summaryExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className={`w-4 h-4 text-slate-400 transition-transform ${summaryExpanded ? '' : 'rotate-180'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -1352,6 +1376,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             unit_price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0),
             cartKey: b.cartKey,
             modifiers: b.modifiers,
+            specialInstructions: b.specialInstructions || undefined,
           }))}
           existingDeals={appliedDeals}
           onApply={handleApplyDeal}

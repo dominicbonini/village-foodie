@@ -14,6 +14,7 @@ import {
 import { canFitInProductionSlot, orderItemsToQtyByCat } from '@/lib/slot-capacity'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
+import { formatConfirmationEmail, sendConfirmationEmail } from '@/lib/email'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -218,195 +219,6 @@ async function resolveAutoAcceptSlot(
   }
 
   return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: false }
-}
-
-function formatConfirmationEmail(params: {
-  orderId: string
-  truckName: string
-  customerName: string
-  slot: string | null
-  requestedSlot?: string | null
-  slotChanged?: boolean
-  items: OrderItem[]
-  deals: AppliedDeal[]
-  discountAmt: number
-  total: number
-  notes: string | null
-  autoAccepted?: boolean
-}): { subject: string; html: string; text: string } {
-  const subject = params.autoAccepted
-    ? `Order #${params.orderId} confirmed`
-    : `Order #${params.orderId} received`
-
-  const itemRows = params.items.map(item => {
-    const modRows = (item.modifiers || []).map(m =>
-      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` <span style="color:#ea580c">+£${m.price.toFixed(2)}</span>` : ''}</td></tr>`
-    ).join('')
-    const noteRow = item.specialInstructions
-      ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
-      : ''
-    return `<tr>
-      <td style="padding:4px 0 2px;color:#475569">${item.quantity}× ${item.name}</td>
-      <td style="text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500">£${(item.unit_price * item.quantity).toFixed(2)}</td>
-    </tr>${modRows}${noteRow}`
-  }).join('')
-
-  const dealRows = params.deals.map(deal => {
-    const slotNames = Object.values(deal.slots).filter(Boolean)
-    const slotMods = deal.slotModifiers || {}
-    const slotNotes = deal.slotNotes || {}
-    const subRows = Object.entries(deal.slots).flatMap(([cat, itemName]) => {
-      if (!itemName) return []
-      const rows: string[] = []
-      const mods = slotMods[cat] || []
-      if (mods.length > 0) {
-        const modStr = mods.map(m => `+ ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`).join(', ')
-        rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ ${itemName}: ${modStr}</td></tr>`)
-      }
-      const note = slotNotes[cat]
-      if (note) {
-        rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
-      }
-      return rows
-    }).join('')
-    return `<tr><td colspan="2" style="padding:4px 0 2px;color:#d97706;font-size:13px">🎁 ${deal.name}: ${slotNames.join(', ')}</td></tr>${subRows}`
-  }).join('')
-
-  const discountRow = params.discountAmt > 0
-    ? `<tr><td style="color:#16a34a;padding:4px 0">Discount</td><td style="text-align:right;color:#16a34a">-£${params.discountAmt.toFixed(2)}</td></tr>`
-    : ''
-
-  const slotSection = params.slot ? `
-    <div style="background:${params.autoAccepted ? '#f0fdf4' : '#fff7ed'};border:1px solid ${params.autoAccepted ? '#bbf7d0' : '#fed7aa'};border-radius:10px;padding:12px;margin-top:12px">
-      <p style="margin:0;font-size:14px;color:${params.autoAccepted ? '#166534' : '#92400e'}">
-        ${params.autoAccepted
-          ? params.slotChanged && (params.requestedSlot ?? params.slot)
-            ? `<strong>Sorry, your ${params.requestedSlot ?? params.slot} slot was taken.</strong><br><span style="font-size:12px">Your order will be ready at <strong>${params.slot}</strong>.</span>`
-            : `<strong>Order confirmed — collection time ${params.slot}</strong><br><span style="font-size:12px">Your order has been confirmed. See you at the hatch!</span>`
-          : `<strong>Preferred collection time: ${params.slot}</strong><br><span style="font-size:12px">${params.truckName} will confirm your collection time when they accept your order.</span>`
-        }
-      </p>
-    </div>` : ''
-
-  const notesSection = params.notes ? `
-    <div style="margin-top:12px;padding:10px;background:#f8fafc;border-radius:8px;font-size:13px;color:#64748b">
-      <strong>Special instructions:</strong> ${params.notes}
-    </div>` : ''
-
-  const html = `<!DOCTYPE html>
-<html>
-<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b;background:#ffffff">
-
-  <div style="text-align:center;padding:20px 0 16px">
-    <div style="width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px">✓</div>
-    <h1 style="font-size:22px;font-weight:800;margin:0 0 4px">Order received!</h1>
-    <p style="color:#64748b;margin:0;font-size:14px">from <strong>${params.truckName}</strong></p>
-  </div>
-
-  <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px">
-    <p style="margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Order #${params.orderId}</p>
-    <table style="width:100%;border-collapse:collapse;font-size:14px">
-      ${itemRows}
-      ${dealRows}
-      ${discountRow}
-      <tr style="border-top:1px solid #e2e8f0">
-        <td style="padding-top:10px;font-weight:800;font-size:15px">Total</td>
-        <td style="text-align:right;padding-top:10px;font-weight:800;font-size:15px">£${params.total.toFixed(2)}</td>
-      </tr>
-    </table>
-  </div>
-
-  ${slotSection}
-  ${notesSection}
-
-  <div style="background:#f1f5f9;border-radius:10px;padding:12px;margin-top:12px;text-align:center">
-    <p style="margin:0;font-size:13px;color:#64748b">
-      <strong style="color:#1e293b">Pay at the truck on collection</strong><br>
-      No card details needed.
-    </p>
-  </div>
-
-  <p style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8">
-    Powered by <a href="https://villagefoodie.co.uk" style="color:#ea580c;text-decoration:none;font-weight:700">Village Foodie</a>
-  </p>
-
-</body>
-</html>`
-
-  const text = [
-    `Order #${params.orderId} received — ${params.truckName}`,
-    '',
-    params.items.map(i => {
-      const lines = [`${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`]
-      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '')).join(', ')}`)
-      if (i.specialInstructions) lines.push(`  📝 ${i.specialInstructions}`)
-      return lines.join('\n')
-    }).join('\n'),
-    params.deals.length ? params.deals.map(d => {
-      const lines = [`🎁 ${d.name}: ${Object.values(d.slots).filter(Boolean).join(', ')}`]
-      Object.entries(d.slots || {}).forEach(([cat, itemName]) => {
-        if (!itemName) return
-        const mods = (d.slotModifiers || {})[cat] || []
-        if (mods.length) lines.push(`  ↳ ${itemName}: ${mods.map(m => `+ ${m.name}`).join(', ')}`)
-        const note = (d.slotNotes || {})[cat]
-        if (note) lines.push(`  ↳ ${itemName}: 📝 ${note}`)
-      })
-      return lines.join('\n')
-    }).join('\n') : '',
-    params.discountAmt > 0 ? `Discount: -£${params.discountAmt.toFixed(2)}` : '',
-    `Total: £${params.total.toFixed(2)}`,
-    params.autoAccepted && params.slot
-      ? params.slotChanged && params.requestedSlot
-        ? `Sorry, your ${params.requestedSlot} slot was taken. Your order will be ready at ${params.slot}.`
-        : `Order confirmed — collection time ${params.slot}.`
-      : params.slot ? `Preferred collection: ${params.slot} — ${params.truckName} will confirm.` : '',
-    params.notes ? `Notes: ${params.notes}` : '',
-    '',
-    'Pay at the truck on collection. No card details needed.',
-    '',
-    'Powered by Village Foodie — villagefoodie.co.uk',
-  ].filter(Boolean).join('\n')
-
-  return { subject, html, text }
-}
-
-// ─── Send email via Brevo ────────────────────────────────────────────────────
-
-async function sendConfirmationEmail(params: {
-  to: string
-  subject: string
-  html: string
-  text: string
-  truckName?: string
-}): Promise<void> {
-  const apiKey = process.env.BREVO_API_KEY
-  if (!apiKey) {
-    console.warn('BREVO_API_KEY not set — skipping email')
-    return
-  }
-  try {
-    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        'api-key':      apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        sender:    { name: params.truckName || 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
-        to:        [{ email: params.to }],
-        subject:   params.subject,
-        htmlContent: params.html,
-        textContent: params.text,
-      }),
-    })
-    if (!res.ok) {
-      const err = await res.text()
-      console.error('Brevo email send failed:', err)
-    }
-  } catch (err) {
-    console.error('Email error:', err)
-    // Never throw — email failure must not fail the order
-  }
 }
 
 function cap(s: string) {
@@ -740,6 +552,10 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Email to customer ─────────────────────────────────────────────────────
+    const dealsWithPrice = (deals ?? []).map((d: AppliedDeal) => {
+      const bundle = bundles?.find(b => b.name === d.name)
+      return { ...d, price: bundle?.bundle_price }
+    })
     const { subject, html, text } = formatConfirmationEmail({
       orderId,
       truckName:    truck.name,
@@ -748,7 +564,7 @@ export async function POST(req: NextRequest) {
       requestedSlot,
       slotChanged,
       items,
-      deals:        deals ?? [],
+      deals:        dealsWithPrice,
       discountAmt:  discountAmt ?? 0,
       total,
       notes:        notes ?? null,

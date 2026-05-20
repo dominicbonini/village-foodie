@@ -9,17 +9,33 @@ export interface OrderItem {
   specialInstructions?: string
 }
 
+export const ORDER_STATUS = {
+  PENDING:   'pending',
+  CONFIRMED: 'confirmed',
+  REJECTED:  'rejected',
+  MODIFIED:  'modified',
+  CANCELLED: 'cancelled',
+  COOKING:   'cooking',
+  READY:     'ready',
+  COLLECTED: 'collected',
+} as const
+
+export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS]
+
 export interface Order {
   id: string
   customer_name: string
   customer_phone: string | null
   customer_email: string | null
   slot: string | null
-  status: string
+  event_date: string | null
+  status: OrderStatus
   items: OrderItem[]
   deals: { name: string; slots: Record<string, string>; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }[] | null
   total: number
   notes: string | null
+  paid_at: string | null
+  collected_at: string | null
   created_at: string
 }
 
@@ -33,6 +49,8 @@ export interface Slot {
   is_grace?: boolean
 }
 
+export type CrewMode = 'solo' | 'full'
+
 export interface TruckData {
   id: string
   name: string
@@ -41,6 +59,8 @@ export interface TruckData {
   logo: string | null
   paused?: boolean
   auto_accept?: boolean
+  kds_mode: boolean
+  crew_mode: CrewMode
 }
 
 export interface MenuItem {
@@ -120,14 +140,15 @@ export interface CategoryStock {
   orders_count: number
 }
 
-export const STATUS: Record<string, { label: string; bg: string; text: string }> = {
+export const STATUS: Record<OrderStatus, { label: string; bg: string; text: string }> = {
   pending:   { label: 'New',       bg: 'bg-orange-100', text: 'text-orange-700' },
   confirmed: { label: 'Confirmed', bg: 'bg-green-100',  text: 'text-green-700'  },
   rejected:  { label: 'Rejected',  bg: 'bg-red-100',    text: 'text-red-600'    },
-  ready:     { label: 'Ready',     bg: 'bg-blue-100',   text: 'text-blue-700'   },
-  collected: { label: 'Collected', bg: 'bg-slate-100',  text: 'text-slate-500'  },
   modified:  { label: 'Modified',  bg: 'bg-yellow-100', text: 'text-yellow-700' },
   cancelled: { label: 'Cancelled', bg: 'bg-red-100',    text: 'text-red-600'    },
+  cooking:   { label: 'Cooking',   bg: 'bg-amber-100',  text: 'text-amber-700'  },
+  ready:     { label: 'Ready',     bg: 'bg-blue-100',   text: 'text-blue-700'   },
+  collected: { label: 'Collected', bg: 'bg-slate-100',  text: 'text-slate-500'  },
 }
 
 // Moved to lib/prep-utils.ts — single source of truth

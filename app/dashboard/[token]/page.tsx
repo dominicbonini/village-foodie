@@ -13,13 +13,14 @@ import type {
 import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
 import {
   getAsapSlot, getCatConfig, catCookSecs, calcReadyTime,
-  calcMinsFromNow, getCategoryTime, getBundleSlotCats
+  calcMinsFromNow, getCategoryTime, getBundleSlotCats, getAllDayCounts
 } from '@/components/dashboard/helpers'
 import { calcQueueAwareReadySecs } from '@/lib/prep-utils'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
+import { supabaseBrowser } from '@/lib/supabase-browser'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -104,6 +105,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editModalNotes,setEditModalNotes]=useState('')
   const prevPendingCount=useRef(0)
   const hasAutoSelected=useRef(false)
+  const fetchAllRef=useRef<()=>void>(()=>{})
   const asapSlot=getAsapSlot(slots)
   const manualAsapSlot=getAsapSlot(manualSlots)
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
@@ -267,7 +269,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[token,pin,fetchMenu,fetchStock])
 
   useEffect(()=>{fetchAll()},[fetchAll])
-  useEffect(()=>{if(!authenticated)return;const id=setInterval(()=>fetchAll(),30000);return()=>clearInterval(id)},[authenticated,fetchAll])
+  useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
+  useEffect(()=>{
+    if(!truck?.id)return
+    const ordersChannel=supabaseBrowser
+      .channel(`orders:${truck.id}`)
+      .on('postgres_changes',{event:'*',schema:'public',table:'orders',filter:`truck_id=eq.${truck.id}`},
+        ()=>fetchAllRef.current())
+      .subscribe()
+    const truckChannel=supabaseBrowser
+      .channel(`truck:${truck.id}`)
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'trucks',filter:`id=eq.${truck.id}`},
+        ()=>fetchAllRef.current())
+      .subscribe()
+    const fallbackInterval=setInterval(()=>fetchAllRef.current(),60000)
+    return()=>{
+      supabaseBrowser.removeChannel(ordersChannel)
+      supabaseBrowser.removeChannel(truckChannel)
+      clearInterval(fallbackInterval)
+    }
+  },[truck?.id])
   useEffect(()=>{
     if(!authenticated||hasAutoSelected.current)return
     hasAutoSelected.current=true
@@ -463,7 +484,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setActionLoading('manual')
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots})),discountAmt:dealSavings,total:manualTotal,subtotal:manualItemsSubtotal,notes:manualNotes||null,event_id:null,event_date:manualEvent?.event_date||null}})})
+        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots,slotModifiers:d.slotModifiers,slotNotes:d.slotNotes,price:d.bundle.bundle_price})),discountAmt:dealSavings,total:manualTotal,subtotal:manualItemsSubtotal,notes:manualNotes||null,event_id:null,event_date:manualEvent?.event_date||null}})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       showToast(data.slotFull?`Order #${data.orderId} saved — slot full`:`Order #${data.orderId} confirmed`)
       if(manualItems.length){
@@ -639,6 +660,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 )}
               </div>
             </div>
+            {(pendingOrders.length>0||confirmedOrders.length>0)&&(()=>{
+              const allActive=orders.filter(o=>['pending','confirmed','modified'].includes(o.status))
+              const counts=getAllDayCounts(allActive)
+              const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1])
+              if(!entries.length)return null
+              return(
+                <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 mb-3 flex items-center gap-2 overflow-x-auto">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide shrink-0">To make</span>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {entries.map(([name,qty])=>(
+                      <span key={name} className="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full whitespace-nowrap">{qty}× {name}</span>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
             {showPrepList&&(()=>{
               const now=new Date()
               const nowMins=now.getHours()*60+now.getMinutes()
@@ -646,20 +683,36 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
               // Get all active orders with slots, sorted by slot time
               const slottedOrders=orders
-                .filter(o=>['pending','confirmed'].includes(o.status)&&o.slot)
+                .filter(o=>['pending','confirmed','modified'].includes(o.status)&&o.slot)
                 .sort((a,b)=>a.slot!.localeCompare(b.slot!))
 
               // Find the NEXT slot that needs action (start cooking time <= now+5min)
               const currentBatch:typeof slottedOrders=[]
-              const upcomingBatches:{slot:string;startBy:string;minsUntil:number;items:Record<string,number>}[]=[]
+              const upcomingBatches:{id:string;slot:string;startBy:string;minsUntil:number;items:{label:string;qty:number}[];orderNotes:string[]}[]=[]
 
-              // Process each unique slot
+              // Process each order individually so same-slot orders appear as separate lines
               const slotGroups:Record<string,typeof slottedOrders>={}
-              slottedOrders.forEach(o=>{if(!slotGroups[o.slot!])slotGroups[o.slot!]=[];slotGroups[o.slot!].push(o)})
+              slottedOrders.forEach(o=>{slotGroups[o.id]=[o]})
 
-              Object.entries(slotGroups).forEach(([slot,slotOrders])=>{
+              Object.entries(slotGroups).forEach(([orderId,slotOrders])=>{
+                const slot=slotOrders[0].slot!
                 const itemMap:Record<string,number>={}
-                slotOrders.forEach(o=>o.items.forEach(i=>{itemMap[i.name]=(itemMap[i.name]||0)+i.quantity}))
+                const displayItems:Record<string,{label:string;qty:number}>={}
+                const addDisplayItem=(name:string,qty:number,mods:string[],note?:string)=>{
+                  itemMap[name]=(itemMap[name]||0)+qty
+                  const parts=[...mods];if(note)parts.push(`📝 ${note}`)
+                  const label=`${name}${parts.length?` (${parts.join(', ')})`:''}`;if(!displayItems[label])displayItems[label]={label,qty:0};displayItems[label].qty+=qty
+                }
+                slotOrders.forEach(o=>{
+                  o.items.forEach((i:any)=>addDisplayItem(i.name,i.quantity,(i.modifiers||[]).map((m:any)=>m.name),i.specialInstructions));
+                  (o.deals||[]).forEach((d:any)=>Object.entries(d.slots||{}).forEach(([cat,itemName]:any)=>{
+                    if(!itemName)return
+                    const mods=((d.slotModifiers||{})[cat]||[]).map((m:any)=>m.name)
+                    const note=(d.slotNotes||{})[cat]
+                    addDisplayItem(itemName,1,mods,note)
+                  }))
+                })
+                const orderNotes=slotOrders.flatMap(o=>(o.notes?[o.notes]:[]))
                 // Calculate cook time for this slot's items
                 const catGroups:Record<string,number>={}
                 Object.entries(itemMap).forEach(([name,qty])=>{
@@ -685,12 +738,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   // Due now or within 2 mins — add to current batch
                   slotOrders.forEach(o=>currentBatch.push(o))
                 } else {
-                  upcomingBatches.push({slot,startBy:startStr,minsUntil:minsUntilStart,items:itemMap})
+                  upcomingBatches.push({id:orderId,slot,startBy:startStr,minsUntil:minsUntilStart,items:Object.values(displayItems),orderNotes})
                 }
               })
 
               // Also include slotless confirmed orders in current batch
-              orders.filter(o=>['pending','confirmed'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
+              orders.filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
 
               // Build current prep map
               // Build ordered list of units in insertion order across orders, then by item position
@@ -701,11 +754,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 if(aSlot!==bSlot) return aSlot-bSlot
                 return a.id.localeCompare(b.id)
               })
-              type PrepUnit={name:string;orderId:string;unitIdx:number;cat:string}
+              type PrepUnit={name:string;orderId:string;unitIdx:number;cat:string;modLabel:string}
               const allUnits:PrepUnit[]=[]
               sortedBatch.forEach(o=>o.items.forEach(item=>{
                 const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||''
-                for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.id,unitIdx:u,cat})
+                const parts=(item.modifiers||[]).map((m:any)=>m.name)
+                if(item.specialInstructions)parts.push(`📝 ${item.specialInstructions}`)
+                const modLabel=parts.length?` (${parts.join(', ')})`:''
+                for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.id,unitIdx:u,cat,modLabel})
               }))
               // Split into kitchen vs assembly preserving order
               const kitchenUnits=allUnits.filter(u=>getCategoryTime(u.cat)>0)
@@ -744,7 +800,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     }
                                   }}
                                   className={`font-black text-sm px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${struck?'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50':'bg-white border-amber-200 text-slate-900 hover:border-amber-400'}`}>
-                                  {u.name}{struck?' ✓':''}
+                                  {u.name}{u.modLabel}{struck?' ✓':''}
                                 </button>
                               )
                             })}
@@ -771,7 +827,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     }
                                   }}
                                   className={`font-bold text-sm px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${struck?'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50':'bg-white border-amber-200 text-slate-900 hover:border-amber-400'}`}>
-                                  {u.name}{struck?' ✓':''}
+                                  {u.name}{u.modLabel}{struck?' ✓':''}
                                 </button>
                               )
                             })}
@@ -786,9 +842,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <div className="border-t border-amber-200 pt-2 mt-1 space-y-1">
                       <p className="text-[10px] font-black text-amber-500 uppercase tracking-wide">Coming up</p>
                       {upcomingBatches.map(b=>(
-                        <div key={b.slot} className="flex items-center justify-between text-xs">
+                        <div key={b.id} className="flex items-center justify-between text-xs">
                           <span className="text-amber-700 font-bold">
-                            {Object.entries(b.items).map(([n,q])=>`${q}× ${n}`).join(', ')}
+                            {b.items.map(item=>`${item.qty}× ${item.label}`).join(', ')}{b.orderNotes.length>0&&` · 📝 ${b.orderNotes.join(' · ')}`}
                           </span>
                           <span className="text-amber-600 font-black ml-2 shrink-0">
                             Start by {b.startBy} · {b.minsUntil}min
@@ -804,20 +860,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={truckMenu?.categories?.map(c=>c.name)} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={truckMenu?.categories?.map(c=>c.name)} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {showCompleted&&otherOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Completed today</p>
                 <div className="space-y-2">
-                  {otherOrders.map(o=>(
+                  {otherOrders.slice(0,5).map(o=>(
                     <div key={o.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
@@ -836,6 +892,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       </div>
                     </div>
                   ))}
+                  {otherOrders.length>5&&<p className="text-xs text-slate-400 text-center pt-1">+{otherOrders.length-5} more</p>}
                 </div>
               </div>
             )}
@@ -1054,7 +1111,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       setManualSlot(chosen)
                     }} className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                       <option value="">ASAP</option>
-                      {manualSlots.filter(s=>!s.is_past||s.is_grace).map(s=>{if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>🔴 {s.collection_time} · Closed</option>;const unlimited=s.max_orders>=999;const remaining=Math.max(0,s.max_orders-s.current_orders);const pct=unlimited?0:s.current_orders/s.max_orders;const ind=pct>=1?'🔴':pct>=0.7?'🟡':'🟢';const label=(!unlimited&&pct>=1)?' · Full':(!unlimited&&pct>=0.7)?` · ${remaining} left`:'';return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind}{label}</option>})}
+                      {manualSlots.filter(s=>!s.is_past||s.is_grace).map(s=>{if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>;const unlimited=s.max_orders>=999;const remaining=Math.max(0,s.max_orders-s.current_orders);const pct=unlimited?0:s.current_orders/s.max_orders;const ind=pct>=1?'🔴':pct>=0.7?'🟡':'🟢';const label=(!unlimited&&pct>=1)?' · Full':(!unlimited&&pct>=0.7)?` · ${remaining} left`:'';return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind}{label}</option>})}
                     </select>
                   ):(
                     <select value={manualSlot} onChange={e=>setManualSlot(e.target.value)}
@@ -1314,7 +1371,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           bundles={activeDealBundle ? [activeDealBundle] : availableDeals}
           menuItems={truckMenu?.items || []}
           menuCategories={truckMenu?.categories || []}
-          basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: i.unit_price, cartKey: i.cartKey, modifiers: i.modifiers }))}
+          basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: i.unit_price, cartKey: i.cartKey, modifiers: i.modifiers, specialInstructions: i.specialInstructions }))}
           existingDeals={appliedDeals}
           onApply={(deal, slots, price, discount, rawSlots, modifierExtra, slotModifiers, slotNotes) => {
             const itemsTakenFromBasket = Object.entries(rawSlots)
@@ -1465,7 +1522,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <div key={di} className="pt-1">
                       <div className="flex items-start gap-1">
                         <div className="flex-1">
-                          <p className="text-xs font-black text-amber-600">🎁 {deal.name}: {Object.values(deal.slots).filter(Boolean).join(', ')}</p>
+                          <p className="text-xs font-black text-amber-600">🎁 {deal.name}: {Object.entries(deal.slots).filter(([,v])=>v).map(([cat,itemName])=>{const mods=(deal.slotModifiers||{})[cat]||[];return mods.length?`${itemName} (+ ${mods.map(m=>m.name).join(', ')})`:itemName}).join(', ')}</p>
                           {Object.entries(deal.slots).map(([cat,itemName])=>{
                             if(!itemName)return null
                             const mods=(deal.slotModifiers||{})[cat]||[]
@@ -1526,7 +1583,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     {editModalSlots.map(s=>{
                       const isCurrent=s.collection_time===editingOrder?.slot
                       if(s.is_past&&!s.is_grace&&!isCurrent)return null
-                      if(s.is_grace)return<option key={s.collection_time} value={s.collection_time} disabled={!isCurrent}>🔴 {s.collection_time} · Closed{isCurrent?' · (current)':''}</option>
+                      if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing{isCurrent?' · (current)':''}</option>
                       const unlimited=s.max_orders>=999
                       const remaining=Math.max(0,s.max_orders-s.current_orders)
                       const pct=unlimited?0:s.current_orders/s.max_orders
@@ -1555,7 +1612,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           bundles={availableDeals}
           menuItems={truckMenu?.items||[]}
           menuCategories={truckMenu?.categories||[]}
-          basketItems={editItems.map(i=>({name:i.name,quantity:i.quantity,unit_price:i.unit_price,cartKey:i.cartKey,modifiers:i.modifiers}))}
+          basketItems={editItems.map(i=>({name:i.name,quantity:i.quantity,unit_price:i.unit_price,cartKey:i.cartKey,modifiers:i.modifiers,specialInstructions:i.specialInstructions}))}
           existingDeals={editDeals.map(d=>({bundle:{name:d.name,description:'',bundle_price:0,original_price:null,available:true,start_time:null,end_time:null,slot_1_category:null,slot_2_category:null,slot_3_category:null,slot_4_category:null,slot_5_category:null,slot_6_category:null},slots:d.slots,itemsTakenFromBasket:[]}))}
           onApply={(deal,slots,price,discount,rawSlots,modifierExtra,slotModifiers,slotNotes)=>{
             setEditDeals(prev=>[...prev,{name:deal.name,slots,slotModifiers,slotNotes,isNew:true}])

@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { formatConfirmationEmail, sendConfirmationEmail } from '@/lib/email'
 import {
   addOrderToProductionSlot,
   removeOrderFromProductionSlot,
@@ -167,9 +168,15 @@ export async function POST(req: NextRequest) {
     }
 
     // ── COLLECTED ─────────────────────────────────────────────────────────────
+    if (action === 'cooking') {
+      await supabase.from('orders').update({ status: 'cooking' }).eq('id', orderId).eq('truck_id', truck.id)
+      return NextResponse.json({ success: true, status: 'cooking' })
+    }
+
     if (action === 'collected') {
+      const now = new Date().toISOString()
       const { data: order } = await supabase.from('orders').select('slot, event_date, status').eq('id', orderId).eq('truck_id', truck.id).single()
-      await supabase.from('orders').update({ status: 'collected' }).eq('id', orderId).eq('truck_id', truck.id)
+      await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now }).eq('id', orderId).eq('truck_id', truck.id)
       if (order?.slot && order.event_date && ['pending', 'confirmed', 'modified'].includes(order.status)) {
         const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
         if (full.data) {
@@ -325,7 +332,8 @@ export async function POST(req: NextRequest) {
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────
     if (action === 'manual') {
       const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal, event_date: passedEventDate } = manualOrder
-      if (!customerName || !items?.length) {
+      const deals = manualOrder.deals ?? null
+      if (!customerName || (!items?.length && !deals?.length)) {
         return NextResponse.json({ error: 'Name and items required' }, { status: 400 })
       }
       const eventDate = passedEventDate || new Date().toISOString().split('T')[0]
@@ -352,8 +360,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
       }
       const newOrderId = String(counterData).padStart(4, '0')
-      const total = items.reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
-      const deals = manualOrder.deals ?? null
+      const total = (items || []).reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
       const { error: insertErr } = await supabase.from('orders').insert({
         id: newOrderId, truck_id: truck.id,
         customer_name: customerName, customer_phone: customerPhone || null,
@@ -371,36 +378,26 @@ export async function POST(req: NextRequest) {
 
       if (slot) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
 
-      // Send confirmation email if email provided
       if (customerEmail) {
-        const subtotalAmt = items.reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseInt(i.quantity), 0)
-        const discountAmt = (manualOrder.discountAmt || 0) as number
-        const itemRows = items.map((i: any) =>
-          `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
-        ).join('')
-        const dealRows = (manualOrder.deals || []).map((d: any) =>
-          `<tr><td style="padding:4px 0;color:#d97706">🎁 ${d.name}</td><td style="text-align:right;padding:4px 0;color:#16a34a;font-weight:700">-£${discountAmt.toFixed(2)}</td></tr>`
-        ).join('')
-        await notifyCustomer(
-          customerEmail,
-          `Order #${newOrderId} confirmed`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Order confirmed ✓</h2>
-            <p><strong>${truck.name}</strong> has your order #${newOrderId}.</p>
-            ${slot ? `<p><strong>Collection time:</strong> ${slot}</p>` : ''}
-            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
-              ${itemRows}
-              ${discountAmt > 0 ? `<tr><td style="padding:4px 0;color:#64748b;border-top:1px solid #e2e8f0">Subtotal</td><td style="text-align:right;padding:4px 0;color:#64748b">£${subtotalAmt.toFixed(2)}</td></tr>${dealRows}` : ''}
-              <tr style="border-top:1px solid #e2e8f0">
-                <td style="padding-top:8px;font-weight:700">Total</td>
-                <td style="text-align:right;padding-top:8px;font-weight:700">£${(passedTotal || total).toFixed(2)}</td>
-              </tr>
-            </table>
-            ${notes ? `<p><em>Notes: ${notes}</em></p>` : ''}
-            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
-          </body>`,
-          truck.name
-        )
+        const { subject, html, text } = formatConfirmationEmail({
+          orderId: newOrderId,
+          truckName: truck.name,
+          customerName,
+          slot: slot || null,
+          items: (items || []).map((i: any) => ({
+            name: i.name,
+            quantity: parseInt(i.quantity) || 1,
+            unit_price: parseFloat(i.unit_price) || 0,
+            modifiers: i.modifiers,
+            specialInstructions: i.specialInstructions,
+          })),
+          deals: deals || [],
+          discountAmt: manualOrder.discountAmt || 0,
+          total: passedTotal || total,
+          notes: notes || null,
+          autoAccepted: true,
+        })
+        await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
       }
 
       return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: autoConfirm, slotFull: !autoConfirm })
