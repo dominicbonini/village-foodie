@@ -246,5 +246,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ upload_url: data.signedUrl, path })
   }
 
+  // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
+  if (action === 'update_truck') {
+    const allowed = ['crew_mode', 'kds_mode', 'extra_wait_mins', 'paused_until']
+    const safeData = Object.fromEntries(
+      Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
+    )
+    const { error } = await supabase.from('trucks').update(safeData).eq('id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ ok: true })
+  }
+
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 }

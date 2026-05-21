@@ -107,12 +107,13 @@ export function OrderCard({
 
   const [slotOffset, setSlotOffset] = useState(computeOffset)
 
-  // Tick every minute so the header and badge stay live
+  // KDS: tick every 30s so the countdown stays live; mobile solo doesn't need it
   useEffect(() => {
-    const id = setInterval(() => setSlotOffset(computeOffset()), 60000)
+    if (viewMode === 'solo') return
+    const id = setInterval(() => setSlotOffset(computeOffset()), 30000)
     return () => clearInterval(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order.slot, order.event_date])
+  }, [order.slot, order.event_date, viewMode])
 
   const ageState  = getAgeState(slotOffset)
   const headerCls = getHeaderStyle(ageState)
@@ -224,34 +225,46 @@ export function OrderCard({
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className={`bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 transition-opacity ${allStruck ? 'opacity-50' : ''}`}>
+    <div className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 transition-opacity ${allStruck ? 'opacity-50' : ''}`}>
 
       {/* Full-width coloured header — age-driven */}
       <button onClick={() => setExpanded(e => !e)} className={`w-full text-left px-4 py-3 ${headerCls} transition-colors active:opacity-80`}>
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold">#{order.id}</span>
+          <span className={`${viewMode === 'solo' ? 'text-2xl' : 'text-3xl'} font-bold`}>#{order.id}</span>
           <div className="flex items-center gap-2 font-medium text-sm">
+            {/* Customer name in header for KDS — replaces the subrow badge */}
+            {viewMode !== 'solo' && (
+              <span className="font-semibold">{order.customer_name}</span>
+            )}
             {order.slot && <span>{order.slot}</span>}
-            <span className="opacity-70">·{' '}
-              {!slotDt
-                ? `${getTicketAge(order.created_at)} min`
+            {(() => {
+              if (!slotDt) return <span className="opacity-70">· {getTicketAge(order.created_at)} min</span>
+              if (slotOffset < -1440) return null
+              const label = slotOffset < -60
+                ? `in ${Math.round(Math.abs(slotOffset) / 60)} hrs`
                 : slotOffset < 0
-                  ? `in ${Math.abs(slotOffset)} min`
+                  ? `in ${Math.abs(slotOffset)}m`
                   : slotOffset === 0
-                    ? 'due now'
-                    : `${slotOffset} min late`}
-            </span>
+                    ? 'now'
+                    : `${slotOffset}m late`
+              return <span className="opacity-70">· {label}</span>
+            })()}
             {allStruck && <span className="text-green-700 font-black text-xs">✓</span>}
             <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
           </div>
         </div>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
-          <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
-          {viewMode !== 'cook' && (
+        {/* Subrow: solo shows status badge + name + price; window shows price only; cook hidden */}
+        {viewMode !== 'cook' && (
+          <div className="flex items-center gap-2 mt-0.5">
+            {viewMode === 'solo' && (
+              <>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
+                <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
+              </>
+            )}
             <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
-          )}
-        </div>
+          </div>
+        )}
       </button>
 
       {expanded && (
@@ -267,7 +280,7 @@ export function OrderCard({
                 <div key={i}>
                   <button
                     onClick={() => tapItem(i, item.quantity)}
-                    className={`w-full flex justify-between items-center text-sm rounded px-2 py-1 -mx-2 transition-all active:scale-[0.99] select-none text-left ${
+                    className={`w-full flex justify-between items-center ${viewMode === 'solo' ? 'text-sm' : 'text-base'} rounded px-2 py-1 -mx-2 transition-all active:scale-[0.99] select-none text-left ${
                       allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
                     }`}>
                     <span className={`font-medium transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-800'}`}>
@@ -353,10 +366,10 @@ export function OrderCard({
           {/* Action buttons */}
           <div className="flex gap-2 flex-wrap">
             {renderButtons()}
-            {viewMode !== 'cook' && ['pending', 'confirmed', 'modified'].includes(order.status) && (
+            {viewMode === 'solo' && ['pending', 'confirmed', 'modified'].includes(order.status) && (
               <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />
             )}
-            {viewMode !== 'cook' && ['confirmed', 'modified', 'ready'].includes(order.status) && (
+            {viewMode === 'solo' && ['confirmed', 'modified', 'ready'].includes(order.status) && (
               <Btn label="✕ Cancel" colour="red" loading={isLoading('cancel')} onClick={() => onAction('cancel', order.id)} />
             )}
           </div>

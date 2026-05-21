@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, use } from 'react'
 import Image from 'next/image'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -955,6 +955,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [form, setForm] = useState({ ...truck })
   const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
+  const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
 
   const save = async () => {
     setSaving(true)
@@ -1040,6 +1042,81 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         {form.auto_accept && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
             ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
+          </div>
+        )}
+      </Card>
+
+      {/* Kitchen display */}
+      <Card className="p-4 space-y-3">
+        <div>
+          <p className="font-bold text-slate-900">Kitchen display</p>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Settings for your KDS screen at{' '}
+            <a href={`/dashboard/${token}/kds`} target="_blank" className="text-teal-600 underline">
+              /dashboard/{token}/kds
+            </a>
+          </p>
+        </div>
+
+        {/* Crew size */}
+        <div className="flex items-start justify-between gap-4 py-1">
+          <div>
+            <p className="text-sm font-bold text-slate-700">Crew size</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Solo/duo: one screen, one tap to mark done.
+              Full kitchen: window person and cook use separate screens.
+            </p>
+          </div>
+          <select
+            value={crewMode}
+            onChange={async e => {
+              const val = e.target.value as 'solo' | 'full'
+              setCrewMode(val)
+              try { await api('update_truck', { data: { crew_mode: val } }) }
+              catch (err: any) { showToast(err.message, 'error') }
+            }}
+            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white text-slate-900 flex-shrink-0"
+          >
+            <option value="solo">Solo / duo</option>
+            <option value="full">Full kitchen (3+ people)</option>
+          </select>
+        </div>
+
+        {/* KDS mode — cooking step */}
+        <div className="flex items-start justify-between gap-4 py-1 border-t border-slate-100 pt-3">
+          <div>
+            <p className="text-sm font-bold text-slate-700">Show cooking step</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Adds a "Cooking" button between confirmed and done.
+              Useful when your cook and window person use separate screens.
+            </p>
+          </div>
+          <button
+            role="switch"
+            aria-checked={kdsMode}
+            onClick={async () => {
+              const val = !kdsMode
+              setKdsMode(val)
+              try { await api('update_truck', { data: { kds_mode: val } }) }
+              catch (err: any) { showToast(err.message, 'error') }
+            }}
+            className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${kdsMode ? 'bg-teal-600' : 'bg-slate-200'}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${kdsMode ? 'translate-x-5' : 'translate-x-0'}`} />
+          </button>
+        </div>
+
+        {/* Cook screen URL — shown when full crew mode */}
+        {crewMode === 'full' && (
+          <div className="text-xs text-slate-500 bg-slate-50 rounded-md px-3 py-2.5 border-t border-slate-100 pt-3">
+            Cook screen URL (open on a second tablet):
+            <a
+              href={`/dashboard/${token}/kds?view=cook`}
+              target="_blank"
+              className="block text-teal-600 underline mt-0.5 break-all"
+            >
+              /dashboard/{token}/kds?view=cook
+            </a>
           </div>
         )}
       </Card>
