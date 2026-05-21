@@ -29,6 +29,7 @@ export function getBundleSlotCats(b: any): string[] {
 import type { Order } from './types'
 
 export type AgeState = 'new' | 'ok' | 'warn' | 'late'
+export type HeaderState = AgeState | 'ready' | 'cooking'
 
 /** Minutes elapsed since the order was created. Returns a non-negative integer. */
 export function getTicketAge(createdAt: string | Date): number {
@@ -61,13 +62,31 @@ export function getAgeState(slotOffset: number): AgeState {
   return 'late'
 }
 
+/**
+ * Combined urgency: the worse of slot-relative timing and time-since-creation.
+ * ready/cooking overrides are handled in the caller — this only covers time urgency.
+ */
+export function getCombinedUrgency(slotDt: Date | null, createdAt: string): AgeState {
+  const slotOffset = slotDt ? getSlotOffset(slotDt) : -999
+  const slotState  = getAgeState(slotOffset)
+  const ageMins    = getTicketAge(createdAt)
+  const ageState: AgeState =
+    ageMins < 5  ? 'new'  :
+    ageMins < 15 ? 'ok'   :
+    ageMins < 30 ? 'warn' : 'late'
+  const priority: Record<AgeState, number> = { new: 0, ok: 1, warn: 2, late: 3 }
+  return priority[slotState] >= priority[ageState] ? slotState : ageState
+}
+
 /** Tailwind classes for the full-width ticket header bar, covering bg, text, and border. */
-export function getHeaderStyle(state: AgeState): string {
+export function getHeaderStyle(state: HeaderState): string {
   switch (state) {
-    case 'new':  return 'bg-slate-100 text-slate-900 border-b border-slate-200'
-    case 'ok':   return 'bg-green-100 text-green-900 border-b border-green-200'
-    case 'warn': return 'bg-amber-100 text-amber-900 border-b border-amber-200'
-    case 'late': return 'bg-red-100 text-red-900 border-b border-red-200'
+    case 'ready':   return 'bg-green-50 text-green-900 border-b border-green-200 border-t-4 border-t-green-500'
+    case 'cooking': return 'bg-amber-50 text-amber-900 border-b border-amber-200 border-t-4 border-t-amber-400'
+    case 'new':     return 'bg-slate-50 text-slate-900 border-b border-slate-200'
+    case 'ok':      return 'bg-white text-slate-900 border-b border-slate-200'
+    case 'warn':    return 'bg-amber-50 text-amber-900 border-b border-amber-200 border-t-4 border-t-amber-400'
+    case 'late':    return 'bg-red-50 text-red-900 border-b border-red-200 border-t-4 border-t-red-500'
   }
 }
 

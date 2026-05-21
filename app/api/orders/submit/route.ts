@@ -10,11 +10,14 @@ import {
   addOrderToProductionSlot,
   getProductionSlotUnits,
   buildItemCatMap,
+  normaliseOrderLines,
 } from '@/lib/slot-bookings'
 import { canFitInProductionSlot, orderItemsToQtyByCat } from '@/lib/slot-capacity'
 import { generateCollectionTimes } from '@/lib/slot-generation'
+import { buildCatConfigs } from '@/lib/prep-utils'
 import type { CatConfig } from '@/lib/prep-utils'
 import { formatConfirmationEmail, sendConfirmationEmail } from '@/lib/email'
+import { nextOrderId } from '@/lib/order-utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,19 +31,10 @@ interface OrderItem {
 
 interface AppliedDeal {
   name: string
+  price?: number
   slots: Record<string, string>
   slotModifiers?: Record<string, { name: string; price: number }[]>
   slotNotes?: Record<string, string>
-}
-
-// ─── Order ID generator ───────────────────────────────────────────────────────
-
-async function nextOrderId(truckId: string): Promise<string> {
-  const { data, error } = await supabase.rpc('increment_order_counter', {
-    p_truck_id: truckId,
-  })
-  if (error) throw new Error(`Order counter failed: ${error.message}`)
-  return String(data).padStart(4, '0')
 }
 
 // ─── WhatsApp message formatter ───────────────────────────────────────────────
@@ -116,35 +110,6 @@ function formatWhatsAppOrder(params: {
 function timeToMins(t: string): number {
   const [h, m] = t.split(':').map(Number)
   return h * 60 + m
-}
-
-function allOrderLines(
-  items: OrderItem[],
-  deals: AppliedDeal[] | null | undefined
-): { name: string; quantity: number }[] {
-  const lines = items.map(i => ({ name: i.name, quantity: i.quantity }))
-  ;(deals || []).forEach(d => {
-    Object.values(d.slots || {}).filter(Boolean).forEach(name => {
-      lines.push({ name, quantity: 1 })
-    })
-  })
-  return lines
-}
-
-
-async function buildCatConfigs(truckId: string): Promise<Record<string, CatConfig>> {
-  const { data: categories } = await supabase
-    .from('menu_categories')
-    .select('name, prep_secs, batch_size')
-    .eq('truck_id', truckId)
-  const catConfigs: Record<string, CatConfig> = {}
-  ;(categories || []).forEach(c => {
-    catConfigs[c.name.toLowerCase()] = {
-      secs: c.prep_secs || 0,
-      batch: c.batch_size || 1,
-    }
-  })
-  return catConfigs
 }
 
 /** Resolve collection slot after auto-accept; bump if production window is batch-full. */
@@ -248,7 +213,7 @@ export async function POST(req: NextRequest) {
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
-    if (!truckId || !customerName || !customerEmail || !customerPhone || !items?.length) {
+    if (!truckId || !customerName || !customerEmail || !customerPhone || (!items?.length && !deals?.length)) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -277,10 +242,10 @@ export async function POST(req: NextRequest) {
     // Use the actual truck UUID for all subsequent queries
     const resolvedTruckId = truck.id
 
-    const orderLines = allOrderLines(items, deals)
+    const orderLines = normaliseOrderLines(items, deals)
     const [itemCatMap, catConfigs] = await Promise.all([
       buildItemCatMap(supabase, resolvedTruckId),
-      buildCatConfigs(resolvedTruckId),
+      buildCatConfigs(supabase, resolvedTruckId),
     ])
 
     // ── Slot capacity check (batch-based per production window) ───────────────

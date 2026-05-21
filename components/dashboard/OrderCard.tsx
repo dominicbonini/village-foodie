@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import type { Order, TruckData, Slot } from './types'
 import { STATUS } from './types'
-import { getCategoryTime, getTicketAge, getSlotOffset, getAgeState, getHeaderStyle, hasDealItems } from './helpers'
+import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle } from './helpers'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -28,6 +28,7 @@ export function Btn({ label, colour, loading, onClick }: {
     red:    'bg-red-500 hover:bg-red-600 text-white',
     blue:   'bg-blue-600 hover:bg-blue-700 text-white',
     teal:   'bg-teal-600 hover:bg-teal-700 text-white',
+    dark:   'bg-slate-800 hover:bg-slate-900 text-white',
     slate:  'bg-slate-500 hover:bg-slate-600 text-white',
     amber:  'bg-amber-500 hover:bg-amber-600 text-white',
     orange: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200',
@@ -60,7 +61,7 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
   return (
     <button onClick={() => { setVal(price.toFixed(2)); setEditing(true) }}
       className="flex items-center gap-1.5 shrink-0 text-right group" title="Tap to override price">
-      <span className="text-slate-700 font-bold text-sm">£{(price * quantity).toFixed(2)}</span>
+      <span className="text-slate-900 font-bold text-sm">£{(price * quantity).toFixed(2)}</span>
       <span className="text-slate-300 group-hover:text-orange-400 transition-colors text-xs" aria-hidden>✏</span>
     </button>
   )
@@ -82,6 +83,7 @@ export function OrderCard({
   onAction,
   onEdit,
   categoryOrder,
+  itemCategoryMap,
   viewMode = 'solo',
   kdsMode = false,
 }: {
@@ -92,6 +94,7 @@ export function OrderCard({
   onAction: (action: string, orderId: string) => void
   onEdit: (order: Order) => void
   categoryOrder?: string[]
+  itemCategoryMap?: Record<string, string>
   viewMode?: ViewMode
   kdsMode?: boolean
 }) {
@@ -115,8 +118,12 @@ export function OrderCard({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order.slot, order.event_date, viewMode])
 
-  const ageState  = getAgeState(slotOffset)
-  const headerCls = getHeaderStyle(ageState)
+  const urgencyState = order.status === 'ready'
+    ? 'ready'   as const
+    : order.status === 'cooking'
+    ? 'cooking' as const
+    : getCombinedUrgency(slotDt, order.created_at)
+  const headerCls = getHeaderStyle(urgencyState)
   const s         = STATUS[order.status] || STATUS.pending
   const isPub     = truck?.mode === 'pub'
 
@@ -135,8 +142,64 @@ export function OrderCard({
     })
   }
 
-  const hasDeal = hasDealItems(order)
   const isLoading = (action: string) => actionLoading === `${action}-${order.id}`
+  const showPrices = viewMode !== 'cook'
+
+  type CookLine = { name: string; quantity: number; modifiers?: { name: string; price: number }[]; note?: string; dealName?: string; dealPrice?: number }
+  const itemGroups: { cat: string; lines: CookLine[] }[] = (() => {
+    const allLines: CookLine[] = [
+      ...sortedItems.map(item => ({
+        name: item.name, quantity: item.quantity,
+        modifiers: item.modifiers, note: item.specialInstructions,
+      })),
+      ...(order.deals ?? []).flatMap(d =>
+        Object.entries(d.slots)
+          .filter(([, v]) => v)
+          .map(([cat, itemName]) => ({
+            name: itemName as string, quantity: 1,
+            modifiers: (d.slotModifiers || {})[cat] || undefined,
+            note: (d.slotNotes || {})[cat] || undefined,
+            dealName: d.name,
+            dealPrice: d.price,
+          }))
+      ),
+    ]
+    const buckets = new Map<string, CookLine[]>()
+    ;(categoryOrder || []).forEach(cat => buckets.set(cat, []))
+    buckets.set('__other__', [])
+    allLines.forEach(line => {
+      const cat = itemCategoryMap?.[line.name]
+      const key = cat && buckets.has(cat) ? cat : '__other__'
+      buckets.get(key)!.push(line)
+    })
+    buckets.forEach(lines => lines.sort((a, b) => a.name.localeCompare(b.name)))
+    return [...buckets.entries()]
+      .filter(([, lines]) => lines.length > 0)
+      .map(([cat, lines]) => ({ cat, lines }))
+  })()
+
+  const standaloneGroups = (() => {
+    const buckets = new Map<string, (typeof sortedItems)[number][]>()
+    ;(categoryOrder || []).forEach(cat => buckets.set(cat, []))
+    buckets.set('__other__', [])
+    sortedItems.forEach(item => {
+      const cat = itemCategoryMap?.[item.name]
+      const key = cat && buckets.has(cat) ? cat : '__other__'
+      buckets.get(key)!.push(item)
+    })
+    return [...buckets.entries()]
+      .filter(([, lines]) => lines.length > 0)
+      .map(([cat, lines]) => ({ cat, lines }))
+  })()
+
+  const offsetLabel = (() => {
+    if (!slotDt) return `${getTicketAge(order.created_at)}m`
+    if (slotOffset < -1440) return null
+    if (slotOffset < -60) return `in ${Math.round(Math.abs(slotOffset) / 60)}h`
+    if (slotOffset < 0) return `in ${Math.abs(slotOffset)}m`
+    if (slotOffset === 0) return 'now'
+    return `${slotOffset}m late`
+  })()
 
   // ── Button sets per viewMode ────────────────────────────────────────────────
 
@@ -174,9 +237,11 @@ export function OrderCard({
 
     if (viewMode === 'window') {
       if (!kdsMode) {
-        // No cooking gate — immediate collect
-        if (['confirmed', 'modified', 'ready'].includes(order.status)) {
-          return <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+        if (['confirmed', 'modified'].includes(order.status)) {
+          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+        }
+        if (order.status === 'ready') {
+          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
         }
       } else {
         // Cooking gate active
@@ -184,7 +249,7 @@ export function OrderCard({
           return (
             <>
               <span className="text-xs font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500">⏳ Waiting</span>
-              <button disabled className="flex-1 bg-teal-200 text-teal-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
+              <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
             </>
           )
         }
@@ -192,17 +257,12 @@ export function OrderCard({
           return (
             <>
               <span className="text-xs font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">🔥 Cooking…</span>
-              <button disabled className="flex-1 bg-teal-200 text-teal-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
+              <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
             </>
           )
         }
         if (order.status === 'ready') {
-          return (
-            <>
-              <span className="text-xs font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">✓ Ready</span>
-              <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
-            </>
-          )
+          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
         }
       }
     }
@@ -211,10 +271,10 @@ export function OrderCard({
     if (['confirmed', 'modified'].includes(order.status)) {
       return isPub
         ? <Btn label="🍕 Ready" colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
-        : <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+        : <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
     }
     if (order.status === 'ready') {
-      return <Btn label="Mark paid & done" colour="teal" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+      return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
     }
     if (order.status === 'collected') {
       return <Btn label="↩ Undo" colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.id)} />
@@ -225,126 +285,191 @@ export function OrderCard({
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 transition-opacity ${allStruck ? 'opacity-50' : ''}`}>
+    <div className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''}`}>
 
       {/* Full-width coloured header — age-driven */}
-      <button onClick={() => setExpanded(e => !e)} className={`w-full text-left px-4 py-3 ${headerCls} transition-colors active:opacity-80`}>
-        <div className="flex items-center justify-between">
-          <span className={`${viewMode === 'solo' ? 'text-2xl' : 'text-3xl'} font-bold`}>#{order.id}</span>
-          <div className="flex items-center gap-2 font-medium text-sm">
-            {/* Customer name in header for KDS — replaces the subrow badge */}
-            {viewMode !== 'solo' && (
-              <span className="font-semibold">{order.customer_name}</span>
-            )}
-            {order.slot && <span>{order.slot}</span>}
-            {(() => {
-              if (!slotDt) return <span className="opacity-70">· {getTicketAge(order.created_at)} min</span>
-              if (slotOffset < -1440) return null
-              const label = slotOffset < -60
-                ? `in ${Math.round(Math.abs(slotOffset) / 60)} hrs`
-                : slotOffset < 0
-                  ? `in ${Math.abs(slotOffset)}m`
-                  : slotOffset === 0
-                    ? 'now'
-                    : `${slotOffset}m late`
-              return <span className="opacity-70">· {label}</span>
-            })()}
-            {allStruck && <span className="text-green-700 font-black text-xs">✓</span>}
-            <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
+      {viewMode === 'cook' ? (
+        /* Cook: non-interactive two-line header, no collapse */
+        <div className={`w-full px-3 py-2 ${headerCls}`}>
+          <div className="flex items-baseline justify-between gap-1">
+            <span className="text-lg font-bold text-slate-900 truncate">#{order.id}</span>
+            <span className="text-xs text-slate-600 flex-shrink-0">
+              {order.slot ?? ''}
+              {offsetLabel ? ` · ${offsetLabel}` : ''}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 mt-0.5">
+            <span className="text-xs text-slate-600 truncate">{order.customer_name}</span>
+            {allStruck && <span className="text-green-700 font-black text-xs ml-1">✓</span>}
           </div>
         </div>
-        {/* Subrow: solo shows status badge + name + price; window shows price only; cook hidden */}
-        {viewMode !== 'cook' && (
-          <div className="flex items-center gap-2 mt-0.5">
-            {viewMode === 'solo' && (
-              <>
+      ) : (
+        /* Window / solo: interactive collapsible header */
+        <button onClick={() => setExpanded(e => !e)} className={`w-full text-left px-4 py-3 ${headerCls} transition-colors active:opacity-80`}>
+          {viewMode === 'solo' ? (
+            /* Solo (mobile): two-row layout with status badge */
+            <>
+              <div className="flex items-center justify-between">
+                <span className="text-2xl font-bold">#{order.id}</span>
+                <div className="flex items-center gap-2 font-medium text-sm">
+                  {order.slot && <span>{order.slot}</span>}
+                  {offsetLabel !== null && <span className="opacity-70">· {offsetLabel}</span>}
+                  {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
+                  <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mt-0.5">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
                 <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
-              </>
-            )}
-            <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
-          </div>
-        )}
-      </button>
+                <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
+              </div>
+            </>
+          ) : (
+            /* Window (KDS): compact single row — price inline, no second row */
+            <div className="flex items-baseline justify-between">
+              <span className="text-3xl font-bold">#{order.id}</span>
+              <div className="flex items-center gap-2 font-medium text-sm">
+                <span className="opacity-80 truncate max-w-[120px]">{order.customer_name}</span>
+                {order.slot && <span className="opacity-70">{order.slot}</span>}
+                {offsetLabel !== null && <span className="opacity-50">· {offsetLabel}</span>}
+                <span className="font-bold">£{Number(order.total).toFixed(2)}</span>
+                {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
+                <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
+              </div>
+            </div>
+          )}
+        </button>
+      )}
 
       {expanded && (
-        <div className="px-4 pb-3 pt-2 bg-slate-50">
+        <div className="px-4 pb-3 pt-2 bg-slate-50 flex flex-col flex-1">
 
-          {/* Standalone items */}
-          <div className="space-y-px mb-2">
-            {sortedItems.map((item, i) => {
-              const struck = Math.min(struckUnits[i] || 0, item.quantity)
-              const allDone = struck >= item.quantity
-              const partDone = struck > 0 && !allDone
-              return (
-                <div key={i}>
-                  <button
-                    onClick={() => tapItem(i, item.quantity)}
-                    className={`w-full flex justify-between items-center ${viewMode === 'solo' ? 'text-sm' : 'text-base'} rounded px-2 py-1 -mx-2 transition-all active:scale-[0.99] select-none text-left ${
-                      allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
-                    }`}>
-                    <span className={`font-medium transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-800'}`}>
-                      {item.quantity}× {item.name}
-                      {partDone && <span className="text-orange-500 text-xs font-black ml-1.5">({struck}/{item.quantity})</span>}
+          {/* ── Items: cook view vs window/solo view ── */}
+          {viewMode === 'cook' ? (
+            <div className="mb-2">
+              {itemGroups.map(({ cat, lines }, gi) => (
+                <div key={cat}>
+                  <div className={`flex items-center gap-2 mb-1 ${gi > 0 ? 'mt-3' : ''}`}>
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">
+                      {cat === '__other__' ? 'Other' : cat}
                     </span>
-                    <span className={`text-xs shrink-0 ml-2 ${allDone ? 'text-green-500 font-bold' : 'text-slate-400'}`}>
-                      {allDone ? '✓' : `£${(item.unit_price * item.quantity).toFixed(2)}`}
-                    </span>
-                  </button>
-                  {(item.modifiers?.length || item.specialInstructions) && (
-                    <div className="pl-4 -mt-0.5 mb-0.5 flex flex-wrap gap-x-2">
-                      {item.modifiers?.map(m => (
-                        <span key={m.name} className="text-[10px] text-orange-500 font-medium">+ {m.name}</span>
-                      ))}
-                      {item.specialInstructions && (
-                        <span className="text-[10px] text-slate-400 italic">📝 {item.specialInstructions}</span>
+                    <div className="flex-1 h-px bg-slate-200" />
+                  </div>
+                  {lines.map((line, j) => (
+                    <div key={j} className="mb-0.5">
+                      <p className="text-sm font-normal text-slate-900">{line.quantity}× {line.name}</p>
+                      {(line.modifiers?.length || line.note) && (
+                        <div className="pl-3">
+                          {line.modifiers?.map(m => (
+                            <p key={m.name} className="text-xs text-slate-500">+ {m.name}</p>
+                          ))}
+                          {line.note && <p className="text-xs text-slate-500 italic">📝 {line.note}</p>}
+                        </div>
                       )}
                     </div>
-                  )}
+                  ))}
                 </div>
-              )
-            })}
-          </div>
-
-          {/* Deals — bracketed group with amber left-border */}
-          {hasDeal && (
-            <div className="border-l-2 border-amber-300 pl-3 ml-1 mb-2 space-y-2">
-              {order.deals!.map((d, i) => {
-                const sortedSlotEntries = Object.entries(d.slots).sort(([a], [b]) => {
-                  if (!categoryOrder) return 0
-                  const ai = categoryOrder.findIndex(c => c.toLowerCase() === a.toLowerCase())
-                  const bi = categoryOrder.findIndex(c => c.toLowerCase() === b.toLowerCase())
-                  return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-                })
-                return (
-                  <div key={i}>
-                    <p className="text-[10px] uppercase tracking-wide text-amber-700 font-bold mb-0.5">🎁 {d.name}</p>
-                    <p className="text-xs text-slate-700 font-medium">
-                      {sortedSlotEntries.filter(([, v]) => v).map(([, v]) => v).join(', ')}
-                    </p>
-                    {sortedSlotEntries.map(([cat, itemName]) => {
-                      if (!itemName) return null
-                      const mods = (d.slotModifiers || {})[cat] || []
-                      const note = (d.slotNotes || {})[cat]
-                      if (!mods.length && !note) return null
-                      return (
-                        <div key={cat} className="pl-2 mt-0.5">
-                          {mods.map(m => <p key={m.name} className="text-[10px] text-orange-500 leading-tight">+ {m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>)}
-                          {note && <p className="text-[10px] text-slate-400 italic leading-tight">📝 {note}</p>}
-                        </div>
-                      )
-                    })}
+              ))}
+            </div>
+          ) : (
+            /* Window / solo: Section 1 (standalone items by category) + Deals divider + Section 2 (deal blocks) */
+            <div className="mb-2">
+              {standaloneGroups.map(({ cat, lines }, gi) => (
+                <div key={cat}>
+                  <div className={`flex items-center gap-2 mb-1 ${gi > 0 ? 'mt-3' : ''}`}>
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">
+                      {cat === '__other__' ? 'Other' : cat}
+                    </span>
+                    <div className="flex-1 h-px bg-slate-200" />
                   </div>
-                )
-              })}
+                  {lines.map((line, j) => {
+                    const itemIndex = sortedItems.findIndex(it => it.name === line.name)
+                    const struck = itemIndex >= 0 ? Math.min(struckUnits[itemIndex] || 0, line.quantity) : 0
+                    const allDone = struck >= line.quantity
+                    const partDone = struck > 0 && !allDone
+                    return (
+                      <div key={j}>
+                        <button
+                          onClick={() => itemIndex >= 0 && tapItem(itemIndex, line.quantity)}
+                          className={`w-full flex justify-between items-baseline gap-2 ${viewMode === 'solo' ? 'text-sm' : 'text-base'} rounded py-1.5 transition-all active:scale-[0.99] select-none text-left ${
+                            allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
+                          }`}>
+                          <span className={`flex-1 font-normal transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                            {line.quantity}× {line.name}
+                            {partDone && <span className="text-orange-500 text-xs font-black ml-1.5">({struck}/{line.quantity})</span>}
+                          </span>
+                          {allDone
+                            ? <span className="text-right tabular-nums w-16 flex-shrink-0 text-xs text-green-500 font-bold">✓</span>
+                            : <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">£{(line.unit_price * line.quantity).toFixed(2)}</span>
+                          }
+                        </button>
+                        {(line.modifiers?.length || line.specialInstructions) && (
+                          <div className="pl-4 -mt-0.5 mb-0.5 flex flex-col gap-y-0.5">
+                            {line.modifiers?.map(m => (
+                              <div key={m.name} className="flex items-baseline justify-between gap-2">
+                                <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
+                                {m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                              </div>
+                            ))}
+                            {line.specialInstructions && (
+                              <span className="text-xs text-slate-500 italic">📝 {line.specialInstructions}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
+
+              {standaloneGroups.length > 0 && (order.deals ?? []).length > 0 && (
+                <div className="flex items-center gap-2 mt-3 mb-1">
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Deals</span>
+                  <div className="flex-1 h-px bg-slate-200" />
+                </div>
+              )}
+
+              {(order.deals ?? []).map((deal, di) => (
+                <div key={di} className="mb-2">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-sm font-normal text-slate-900 flex-1">🎁 {deal.name}</span>
+                    <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">
+                      {deal.price != null ? `£${Number(deal.price).toFixed(2)}` : ''}
+                    </span>
+                  </div>
+                  {Object.entries(deal.slots).filter(([, v]) => v).map(([slotCat, itemName]) => {
+                    const mods = (deal.slotModifiers ?? {})[slotCat] ?? []
+                    const note = (deal.slotNotes ?? {})[slotCat]
+                    return (
+                      <div key={slotCat} className="pl-4 mt-0.5">
+                        <div className="flex items-baseline justify-between gap-2 text-sm">
+                          <span className="flex-1 font-normal text-slate-900">1× {itemName}</span>
+                          <span className="w-16 flex-shrink-0" />
+                        </div>
+                        {(mods.length > 0 || note) && (
+                          <div className="pl-3 flex flex-col gap-y-0.5">
+                            {mods.map(m => (
+                              <div key={m.name} className="flex items-baseline justify-between gap-2">
+                                <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
+                                {m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                              </div>
+                            ))}
+                            {note && <span className="text-xs text-slate-500 italic">📝 {note}</span>}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
             </div>
           )}
 
-          {/* Allergy / order notes — RED treatment */}
+          {/* Order notes */}
           {order.notes && (
-            <div className="bg-red-50 border border-red-300 text-red-800 font-medium px-3 py-2 mb-2 rounded-md flex items-center gap-2">
-              <span className="shrink-0">⚠</span>
-              <span className="text-sm">{order.notes}</span>
+            <div className="bg-slate-50 border border-slate-200 text-slate-700 px-3 py-2 mx-3 mb-2 rounded-md flex items-start gap-2 text-sm">
+              <span className="flex-shrink-0 mt-0.5">📝</span>
+              <span>{order.notes}</span>
             </div>
           )}
 
@@ -364,7 +489,7 @@ export function OrderCard({
           )}
 
           {/* Action buttons */}
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap mt-auto">
             {renderButtons()}
             {viewMode === 'solo' && ['pending', 'confirmed', 'modified'].includes(order.status) && (
               <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />

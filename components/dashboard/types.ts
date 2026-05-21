@@ -1,6 +1,8 @@
 // components/dashboard/types.ts
 // Shared types for the truck dashboard
 
+import type { Plan } from '@/lib/features'
+
 export interface OrderItem {
   name: string
   quantity: number
@@ -31,7 +33,7 @@ export interface Order {
   event_date: string | null
   status: OrderStatus
   items: OrderItem[]
-  deals: { name: string; slots: Record<string, string>; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }[] | null
+  deals: { name: string; price?: number; slots: Record<string, string>; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }[] | null
   total: number
   notes: string | null
   paid_at: string | null
@@ -62,6 +64,9 @@ export interface TruckData {
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'
+  plan: Plan
+  trial_expires_at: string | null
+  feature_overrides: Record<string, boolean> | null
 }
 
 export interface MenuItem {

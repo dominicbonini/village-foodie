@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   // Find truck by token
   const { data: truck, error } = await supabase
     .from('trucks')
-    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode')
+    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode, plan, trial_expires_at, feature_overrides')
     .eq('dashboard_token', token)
     .eq('active', true)
     .single()
@@ -36,10 +36,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid PIN', requiresPin: true }, { status: 401 })
   }
 
-  // Active orders: no date filter — pre-orders for future events must always be visible
-  const ACTIVE_STATUSES = ['pending', 'confirmed', 'modified']
-  // Completed + cancelled: scoped to the selected date so yesterday's orders don't bleed in
-  const DATE_DONE_STATUSES = ['ready', 'collected', 'rejected', 'cancelled']
+  // In-flight orders: no date filter — covers pre-orders AND orders that moved to cooking/ready
+  // before event_date ticks over (timezone edges, near-midnight walk-ups, etc.)
+  const ACTIVE_STATUSES = ['pending', 'confirmed', 'modified', 'cooking', 'ready']
+  // Terminal orders: scoped to the selected date so yesterday's collected orders don't bleed in
+  const DATE_DONE_STATUSES = ['collected', 'rejected', 'cancelled']
 
   const [{ data: activeOrders }, { data: doneToday }] = await Promise.all([
     supabase
@@ -110,16 +111,34 @@ export async function GET(req: NextRequest) {
   const capacityMap = Object.fromEntries(
     (capacities || []).map(c => [c.slot, c.max_orders])
   )
-  const { data: categories } = await supabase
-    .from('menu_categories')
-    .select('name, prep_secs, batch_size')
-    .eq('truck_id', truck.id)
+  const [{ data: categories }, { data: menuItemsForMap }] = await Promise.all([
+    supabase
+      .from('menu_categories')
+      .select('id, name, prep_secs, batch_size, sort_order')
+      .eq('truck_id', truck.id)
+      .order('sort_order', { ascending: true }),
+    supabase
+      .from('menu_items_db')
+      .select('name, category_id')
+      .eq('truck_id', truck.id),
+  ])
 
   const catConfigs: Record<string, CatConfig> = {}
   ;(categories || []).forEach(c => {
     catConfigs[c.name.toLowerCase()] = {
       secs: c.prep_secs || 0,
       batch: c.batch_size || 1,
+    }
+  })
+
+  const categoryOrder = (categories || []).map(c => c.name)
+  const catById: Record<string, string> = Object.fromEntries(
+    (categories || []).map(c => [c.id, c.name])
+  )
+  const itemCategoryMap: Record<string, string> = {}
+  ;(menuItemsForMap || []).forEach(item => {
+    if (item.category_id && catById[item.category_id]) {
+      itemCategoryMap[item.name] = catById[item.category_id]
     }
   })
 
@@ -183,6 +202,9 @@ export async function GET(req: NextRequest) {
       kds_mode:            truck.kds_mode ?? false,
       crew_mode:           truck.crew_mode ?? 'solo',
       display_mode:        (truck.display_mode ?? 'list') as 'list' | 'grid',
+      plan:                (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max' | 'trial',
+      trial_expires_at:    truck.trial_expires_at ?? null,
+      feature_overrides:   (truck.feature_overrides ?? null) as Record<string, boolean> | null,
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }
@@ -190,5 +212,7 @@ export async function GET(req: NextRequest) {
     orders:  orders || [],
     slots:   slotsWithCapacity,
     date,
+    categoryOrder,
+    itemCategoryMap,
   })
 }

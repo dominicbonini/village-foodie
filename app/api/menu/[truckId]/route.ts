@@ -183,6 +183,7 @@ export async function GET(
         const elapsed = (Date.now() - new Date(startedAt).getTime()) / 60000
         return Math.max(0, Math.ceil(mins - elapsed))
       })(),
+      plan: (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max',
     },
     menu,
   })

@@ -12,12 +12,12 @@ import type {
 } from '@/components/dashboard/types'
 import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
 import {
-  getAsapSlot, getCatConfig, catCookSecs, calcReadyTime,
-  calcMinsFromNow, getCategoryTime, getBundleSlotCats, getAllDayCounts
+  getAsapSlot, getCatConfig, catCookSecs,
+  calcMinsFromNow, getCategoryTime, getAllDayCounts
 } from '@/components/dashboard/helpers'
-import { calcQueueAwareReadySecs } from '@/lib/prep-utils'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
+import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
@@ -54,26 +54,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[extraWaitStartedAt,setExtraWaitStartedAt]=useState<string|null>(null)
   const[waitTick,setWaitTick]=useState(0)
   const[todayEvent,setTodayEvent]=useState<{id:string;event_date:string;start_time:string;end_time:string;venue_name?:string|null}|null>(null)
-  const[manualEvent,setManualEvent]=useState<{id:string;event_date:string;start_time:string;end_time:string;venue_name?:string|null}|null>(null)
-  const[upcomingEvents,setUpcomingEvents]=useState<{id:string;event_date:string;start_time:string;end_time:string;venue_name?:string|null}[]>([])
-  const[showEventPicker,setShowEventPicker]=useState(false)
-  const[manualSlots,setManualSlots]=useState<Slot[]>([])
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
-  // Add order
-  const[manualName,setManualName]=useState('')
-  const[manualEmail,setManualEmail]=useState('')
-  const[manualNotes,setManualNotes]=useState('')
-  const[manualSlot,setManualSlot]=useState('')
-  const[manualItems,setManualItems]=useState<BasketItem[]>([])
-  const[appliedDeals,setAppliedDeals]=useState<AppliedDeal[]>([])
-  // Item modal (modifier selection / edit)
-  const[itemModal,setItemModal]=useState<{item:MenuItem;modGroups:ModifierGroup[];editCartKey?:string}|null>(null)
-  const[modalMods,setModalMods]=useState<{name:string;price:number}[]>([])
-  const[modalNotes,setModalNotes]=useState('')
-  // Deal modal
-  const[showDealsModal,setShowDealsModal]=useState(false)
-  const[activeDealBundle,setActiveDealBundle]=useState<any>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
   const[undoPrep,setUndoPrep]=useState<{name:string;qty:number}|null>(null)
@@ -83,13 +65,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editCatForm,setEditCatForm]=useState<{name:string;prepMins:number;prepSecs30:number;batch:number;allowNotes:boolean}|null>(null)
   const[savingCat,setSavingCat]=useState(false)
   const[showPrepList,setShowPrepList]=useState(false)
-  const[dealSlotPicks,setDealSlotPicks]=useState<Record<string,string>>({})
   // Pause state (paused_until ISO string, null = not paused)
   const[pausedUntil,setPausedUntil]=useState<string|null>(null)
   const[showPauseModal,setShowPauseModal]=useState(false)
   const paused=pausedUntil?new Date(pausedUntil)>new Date():false
-  // Slot capacity confirmation
-  const[pendingSlot,setPendingSlot]=useState<{time:string;remaining:number;isFull:boolean}|null>(null)
   // Cancel confirmation
   const[cancelConfirmId,setCancelConfirmId]=useState<string|null>(null)
   // Edit modal
@@ -104,10 +83,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editModalMods,setEditModalMods]=useState<{name:string;price:number}[]>([])
   const[editModalNotes,setEditModalNotes]=useState('')
   const prevPendingCount=useRef(0)
-  const hasAutoSelected=useRef(false)
   const fetchAllRef=useRef<()=>void>(()=>{})
   const asapSlot=getAsapSlot(slots)
-  const manualAsapSlot=getAsapSlot(manualSlots)
+  const availableDeals = truckMenu?.bundles ?? []
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
   const waitMinutes=useMemo(()=>{
     void waitTick // re-evaluate every 30s
@@ -115,59 +93,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const elapsed=(Date.now()-new Date(extraWaitStartedAt).getTime())/60000
     return Math.max(0,Math.ceil(extraWaitMins-elapsed))
   },[extraWaitMins,extraWaitStartedAt,waitTick])
-
-  // Use shared calculation function for consistency
-  const calculation = useMemo(() => {
-    return calculateOrderTotal(
-      manualItems.map(item => ({ name: item.name, price: item.unit_price, quantity: item.quantity })),
-      appliedDeals,
-      truckMenu?.items || [],
-      null // No discount codes in manual orders
-    )
-  }, [manualItems, appliedDeals, truckMenu])
-  
-  const manualItemsSubtotal = calculation.itemsTotal
-  const dealSavings = calculation.dealSavings
-  const manualTotal = calculation.total
-  const calcQueueAwareReadyTime=()=>{
-    if(!manualItems.length&&!appliedDeals.length) return {readyTime:'',minsFromNow:0}
-    const nowMins=new Date().getHours()*60+new Date().getMinutes()
-    const eventStartMins=manualEvent?(()=>{const[h,m]=manualEvent.start_time.split(':').map(Number);return h*60+m})():null
-    const beforeEvent=eventStartMins!==null&&(!manualEvent||manualEvent.event_date>new Date().toISOString().split('T')[0]||nowMins<eventStartMins)
-    const queueByCat:Record<string,number>={}
-    orders.filter(o=>['pending','confirmed'].includes(o.status)).forEach(o=>{
-      o.items.forEach(item=>{
-        const cat=(truckMenu?.items.find(m=>m.name===item.name)?.category||'mains').toLowerCase()
-        queueByCat[cat]=(queueByCat[cat]||0)+item.quantity
-      })
-    })
-    const newByCat:Record<string,number>={}
-    manualItems.forEach(item=>{
-      const cat=(truckMenu?.items.find(m=>m.name===item.name)?.category||'mains').toLowerCase()
-      newByCat[cat]=(newByCat[cat]||0)+item.quantity
-    })
-    if(beforeEvent&&eventStartMins!==null){
-      let extraBatchMins=0
-      for(const[cat,newQty] of Object.entries(newByCat)){
-        const cfg=categoryConfigs[cat]||getCatConfig(cat)
-        if(!cfg.secs) continue
-        const totalQty=(queueByCat[cat]||0)+newQty
-        const totalBatches=Math.ceil(totalQty/cfg.batch)
-        const mins=Math.ceil(Math.max(0,totalBatches-1)*cfg.secs/60)
-        extraBatchMins=Math.max(extraBatchMins,mins)
-      }
-      const asapMins=Math.round((eventStartMins+extraBatchMins+waitMinutes)/5)*5
-      const h=Math.floor(asapMins/60);const m=asapMins%60
-      return{readyTime:`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`,minsFromNow:Math.max(0,asapMins-nowMins)}
-    }
-    const totalSecs=calcQueueAwareReadySecs(newByCat,queueByCat,categoryConfigs,waitMinutes*60+120)
-    if(totalSecs===0) return{readyTime:'',minsFromNow:0}
-    const t=new Date();t.setSeconds(t.getSeconds()+totalSecs)
-    return{readyTime:`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`,minsFromNow:Math.ceil(totalSecs/60)}
-  }
-  const queueAware=calcQueueAwareReadyTime()
-  const readyTime=queueAware.readyTime||calcReadyTime(manualItems,waitMinutes*60,truckMenu?.items,categoryConfigs)
-  const availableDeals=(truckMenu?.bundles||[]).filter(b=>b.available)
 
   const showToast=(msg:string,type:'success'|'error'='success')=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)}
 
@@ -199,57 +124,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         if(d.categoryStocks) setCategoryStocks(d.categoryStocks)
       }).catch(()=>null)
   },[token])
-
-  const fetchUpcomingEvents=useCallback(async(autoSelect=false)=>{
-    if(!truck?.id)return
-    try{
-      const res=await fetch(`/api/events?truck=${truck.id}`)
-      const data=await res.json()
-      if(!data.events?.length)return
-      // Mirror customer page: next 14 days, fall back to first event
-      const cutoff=new Date();cutoff.setDate(cutoff.getDate()+14)
-      const upcoming=data.events.filter((ev:any)=>{
-        const[d,m,y]=ev.date.split('/').map(Number);return new Date(y,m-1,d)<=cutoff
-      })
-      const eventsToShow=upcoming.length>0?upcoming:[data.events[0]]
-      const mapped=eventsToShow.map((ev:any)=>({
-        id:ev.date_iso,
-        event_date:ev.date_iso,
-        start_time:ev.start_time,
-        end_time:ev.end_time,
-        venue_name:[ev.venue_name,ev.village].filter(Boolean).join(', ')||null,
-      }))
-      setUpcomingEvents(mapped)
-      if(autoSelect){
-        const now=new Date();const todayIso=now.toISOString().split('T')[0];const nowMins=now.getHours()*60+now.getMinutes()
-        const current=mapped.find((ev:any)=>{
-          if(ev.event_date!==todayIso)return false
-          const[sh,sm]=ev.start_time.split(':').map(Number)
-          const[eh,em]=ev.end_time.split(':').map(Number)
-          return nowMins>=sh*60+sm&&nowMins<=eh*60+em+30
-        })
-        const next=mapped.find((ev:any)=>{
-          if(ev.event_date>todayIso)return true
-          const[sh,sm]=ev.start_time.split(':').map(Number)
-          return sh*60+sm>nowMins
-        })||mapped[0]||null
-        const best=current||next
-        if(best)setManualEvent(prev=>prev??best)
-      }
-    }catch{}
-  },[truck?.id])
-
-  const fetchManualSlots=useCallback(async(eventDate:string,startTime?:string,endTime?:string)=>{
-    if(!truck?.id)return
-    try{
-      const p=new URLSearchParams({date:eventDate})
-      if(startTime)p.set('start',startTime)
-      if(endTime)p.set('end',endTime)
-      const res=await fetch(`/api/slots/${truck.id}?${p}`)
-      const data=await res.json()
-      setManualSlots(data.slots||[])
-    }catch{setManualSlots([])}
-  },[truck?.id])
 
   const fetchAll=useCallback(async(currentPin=pin)=>{
     try {
@@ -289,12 +163,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       clearInterval(fallbackInterval)
     }
   },[truck?.id])
-  useEffect(()=>{
-    if(!authenticated||hasAutoSelected.current)return
-    hasAutoSelected.current=true
-    fetchUpcomingEvents(true)
-  },[authenticated,fetchUpcomingEvents])
-  useEffect(()=>{if(manualEvent?.event_date)fetchManualSlots(manualEvent.event_date,manualEvent.start_time,manualEvent.end_time)},[manualEvent?.event_date,manualEvent?.start_time,manualEvent?.end_time,fetchManualSlots])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
   useEffect(()=>{
     if(!authenticated)return; let lock:any=null
@@ -393,7 +261,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setEditNotes(order.notes||'')
     const itemsSubtotal=order.items.reduce((s,i)=>s+Number(i.unit_price)*i.quantity,0)
     setEditOrderBaseline({total:Number(order.total),itemsSubtotal,deals:(order.deals||[]).map(d=>({name:d.name}))})
-    if(slots.length===0&&todayEvent)fetchManualSlots(todayEvent.event_date,todayEvent.start_time,todayEvent.end_time)
   }
   const addEditItem=(item:MenuItem,mods:{name:string;price:number}[]=[],notes='')=>{
     const key=makeCartKey(item.name,mods,notes)
@@ -422,80 +289,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
   }
 
-  const addManualItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '') => {
-    const key = makeCartKey(item.name, mods, notes)
-    const unitPrice = item.price + mods.reduce((s, m) => s + m.price, 0)
-    setManualItems(prev => {
-      const ex = prev.find(i => i.cartKey === key)
-      if (ex) return prev.map(i => i.cartKey === key ? { ...i, quantity: i.quantity + 1 } : i)
-      return [...prev, { name: item.name, quantity: 1, unit_price: unitPrice, modifiers: mods, specialInstructions: notes || undefined, cartKey: key }]
-    })
-  }
-  const adjustManualQty = (cartKey: string, delta: number) => {
-    setManualItems(prev => prev
-      .map(i => i.cartKey === cartKey ? { ...i, quantity: i.quantity + delta } : i)
-      .filter(i => i.quantity > 0)
-    )
-  }
-  // editCartKey = updating an existing cart row; undefined = adding fresh
-  const openManualItemModal = (item: MenuItem, modGroups: ModifierGroup[], editCartKey?: string) => {
-    const existing = editCartKey ? manualItems.find(i => (i.cartKey || i.name) === editCartKey) : undefined
-    setItemModal({ item, modGroups, editCartKey })
-    setModalMods(existing?.modifiers || [])
-    setModalNotes(existing?.specialInstructions || '')
-  }
-  const toggleModalMod = (opt: ModifierOption) => {
-    setModalMods(prev => {
-      const has = prev.some(m => m.name === opt.name)
-      return has ? prev.filter(m => m.name !== opt.name) : [...prev, { name: opt.name, price: opt.price_adjustment }]
-    })
-  }
-  const confirmAddFromModal = () => {
-    if (!itemModal) return
-    const newKey = makeCartKey(itemModal.item.name, modalMods, modalNotes)
-    const newUnitPrice = itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)
-
-    if (itemModal.editCartKey) {
-      // UPDATE the existing entry in-place (or merge if new signature already exists)
-      setManualItems(prev => {
-        const editEntry = prev.find(i => (i.cartKey || i.name) === itemModal.editCartKey)
-        if (!editEntry) return prev
-        const without = prev.filter(i => (i.cartKey || i.name) !== itemModal.editCartKey)
-        const collision = without.find(i => i.cartKey === newKey)
-        if (collision) {
-          // Merge into the existing entry with the same signature
-          return without.map(i => i.cartKey === newKey ? { ...i, quantity: i.quantity + editEntry.quantity } : i)
-        }
-        return without.concat({ ...editEntry, modifiers: modalMods, specialInstructions: modalNotes || undefined, unit_price: newUnitPrice, cartKey: newKey })
-      })
-    } else {
-      addManualItem(itemModal.item, modalMods, modalNotes)
-    }
-
-    setItemModal(null)
-    setModalMods([])
-    setModalNotes('')
-  }
-  const resetManual=()=>{setManualName('');setManualEmail('');setManualNotes('');setManualSlot('');setManualItems([]);setAppliedDeals([]);setActiveDealBundle(null);setDealSlotPicks({})}
-
-  const submitManual=async()=>{
-    if(!manualName.trim()||(!manualItems.length && !appliedDeals.length))return
-    const effectiveSlot=manualSlot||manualAsapSlot?.collection_time||null
-    setActionLoading('manual')
-    try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'manual',manualOrder:{customerName:manualName,customerPhone:null,customerEmail:manualEmail||null,slot:effectiveSlot,items:manualItems,deals:appliedDeals.map(d=>({name:d.bundle.name,slots:d.slots,slotModifiers:d.slotModifiers,slotNotes:d.slotNotes,price:d.bundle.bundle_price})),discountAmt:dealSavings,total:manualTotal,subtotal:manualItemsSubtotal,notes:manualNotes||null,event_id:null,event_date:manualEvent?.event_date||null}})})
-      const data=await res.json(); if(!res.ok)throw new Error(data.error)
-      showToast(data.slotFull?`Order #${data.orderId} saved — slot full`:`Order #${data.orderId} confirmed`)
-      if(manualItems.length){
-        const categoryMap:Record<string,string>={}
-        manualItems.forEach(item=>{const mi=truckMenu?.items.find(m=>m.name===item.name);if(mi)categoryMap[item.name]=mi.category})
-        await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'decrement_stock',items:manualItems,categoryMap})}).catch(()=>null)
-      }
-      resetManual(); setActiveTab('orders'); await fetchAll()
-    }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
-  }
-
   const updateStock=async(itemName:string,available:boolean,stockCount:number|null,category?:string)=>{
     await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,category})})
     setItemStocks(prev=>{const ex=prev.find(s=>s.name===itemName);if(ex)return prev.map(s=>s.name===itemName?{...s,available,stock_count:stockCount}:s);return[...prev,{name:itemName,available,stock_count:stockCount,orders_count:0,category:category||null}]})
@@ -506,44 +299,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,orders_count:0}]})
   }
 
-  // Deal logic
-  const openDealModal=(bundle:Bundle)=>{
-    // Always start fresh — no pre-fill. Operator selects items explicitly.
-    setActiveDealBundle(bundle); setDealSlotPicks({}); setShowDealsModal(true)
-  }
-  const applyDeal=()=>{
-    if(!activeDealBundle)return
-    const cats=getBundleSlotCats(activeDealBundle)
-    if(!cats.every((c:string)=>dealSlotPicks[c])){showToast('Please select all items for this deal','error');return}
-
-    // For each slot: if "USE_EXISTING:name" prefix, link to basket item (don't add)
-    // Otherwise add new item to basket
-    const newItems=[...manualItems]
-    const resolvedSlots: Record<string,string>={}
-    cats.forEach((cat:string)=>{
-      const val=dealSlotPicks[cat]
-      if(!val) return
-      if(val.startsWith('USE_EXISTING:')){
-        // Link to existing basket item — don't increment
-        const itemName=val.replace('USE_EXISTING:','')
-        resolvedSlots[cat]=itemName
-      } else {
-        // Add new item
-        resolvedSlots[cat]=val
-        const existing=newItems.find(i=>i.name===val)
-        if(existing){
-          existing.quantity+=1
-        } else {
-          const menuItem=truckMenu?.items.find(i=>i.name===val)
-          if(menuItem) newItems.push({name:menuItem.name,quantity:1,unit_price:menuItem.price})
-        }
-      }
-    })
-    setManualItems(newItems)
-    setAppliedDeals(prev=>[...prev,{bundle:activeDealBundle,slots:resolvedSlots,itemsTakenFromBasket:[]}])
-    setShowDealsModal(false); setActiveDealBundle(null); setDealSlotPicks({})
-    showToast(`${activeDealBundle.name} applied`)
-  }
+  const categoryOrder = useMemo(
+    () => truckMenu?.categories?.map(c => c.name) ?? [],
+    [truckMenu]
+  )
+  const itemCategoryMap = useMemo(() => {
+    const map: Record<string, string> = {}
+    truckMenu?.items?.forEach(item => { if (item.category) map[item.name] = item.category })
+    return map
+  }, [truckMenu])
 
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
   if(error)return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← Village Foodie</Link></div></div>
@@ -860,13 +624,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={truckMenu?.categories?.map(c=>c.name)} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={truckMenu?.categories?.map(c=>c.name)} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {showCompleted&&otherOrders.length>0&&(
@@ -907,249 +671,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         )}
 
         {/* ADD ORDER TAB */}
-        {activeTab==='add'&&(
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-5">
-            {/* Event banner */}
-            {manualEvent?(
-              <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-orange-900 truncate">{(()=>{const t=new Date().toISOString().split('T')[0];const tmrw=new Date(Date.now()+86400000).toISOString().split('T')[0];const d=manualEvent.event_date;const label=d===t?'Today':d===tmrw?'Tomorrow':new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});return`📅 ${label} · ${manualEvent.start_time}–${manualEvent.end_time}`})()}</p>
-                  {manualEvent.venue_name&&<p className="text-xs text-orange-600 truncate mt-0.5">{manualEvent.venue_name}</p>}
-                </div>
-                <button onClick={()=>{fetchUpcomingEvents();setShowEventPicker(true)}} className="text-xs font-bold text-orange-600 border border-orange-300 rounded-lg px-2.5 py-1 shrink-0 hover:bg-orange-100 active:scale-95">Change</button>
-              </div>
-            ):(
-              <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 flex items-center justify-between">
-                <span className="text-sm text-slate-400">No event selected</span>
-                <button onClick={()=>{fetchUpcomingEvents();setShowEventPicker(true)}} className="text-xs font-bold text-slate-600 border border-slate-200 rounded-lg px-2.5 py-1 hover:bg-slate-100 active:scale-95">Select event</button>
-              </div>
-            )}
-            {/* STEP 1 */}
-            <div>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">1. What would you like?</p>
-              {truckMenu?(
-                <div className="space-y-3">
-                  {Object.entries(menuGroups).map(([cat,items])=>(
-                    <div key={cat}>
-                      <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-1.5">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {items.map(item=>{
-                          const isSoldOut=!(item.available ?? true)
-                          const stock=itemStocks.find(s=>s.name===item.name)
-                          const itemRem=stock?.stock_count!=null?stock.stock_count-(stock.orders_count||0):null
-                          const catSt=categoryStocks.find(s=>s.category===cat)
-                          const catRem=catSt?.stock_count!=null?catSt.stock_count-(catSt.orders_count||0):null
-                          const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
-                          const isLow=!isSoldOut&&effectiveRem!==null&&effectiveRem<=10
-                          const catModGroups=truckMenu?.categories?.find(c=>c.name===cat)?.modifierGroups||[]
-                          const hasModifiers=catModGroups.length>0
-                          const totalInBasket=manualItems.filter(i=>i.name===item.name).reduce((s,i)=>s+i.quantity,0)
-                          if(isSoldOut)return(
-                            <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60">
-                              <span className="text-xs text-slate-500 line-through">{item.name}</span>
-                              <span className="text-[10px] text-red-400 font-bold">sold out</span>
-                            </div>
-                          )
-                          return(
-                            <button key={item.name}
-                              onClick={()=>addManualItem(item)}
-                              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-bold transition-all active:scale-95 ${totalInBasket>0?'bg-orange-600 border-orange-600 text-white':'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
-                              {totalInBasket>0&&<span className="text-orange-200">{totalInBasket}×</span>}
-                              <span>{item.name}</span>
-                              <span className={totalInBasket>0?'text-orange-200':'text-slate-400'}>£{item.price.toFixed(2)}</span>
-                              {isLow&&!totalInBasket&&<span className="text-[10px] text-orange-500 font-black ml-0.5">({effectiveRem} left)</span>}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  ))}
-
-                  {(manualItems.length > 0 || appliedDeals.length > 0) && (
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
-                      <p className="text-xs font-black text-slate-500 uppercase tracking-wide">Order</p>
-                      {(()=>{
-                        // Group basket items by category for readback
-                        const grouped: Record<string, typeof manualItems> = {}
-                        manualItems.forEach(item => {
-                          const cat = truckMenu?.items.find(m=>m.name===item.name)?.category || 'other'
-                          if(!grouped[cat]) grouped[cat]=[]
-                          grouped[cat].push(item)
-                        })
-                        return Object.entries(grouped).map(([cat, items]) => (
-                          <div key={cat}>
-                            {Object.keys(grouped).length > 1 && (
-                              <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1 mt-2 first:mt-0">{cat}</p>
-                            )}
-                            {items.map(item=>{
-                              const modLabel=(item.modifiers||[]).map(m=>m.name).join(', ')
-                              const subLabel=[modLabel,item.specialInstructions].filter(Boolean).join(' · ')
-                              const rowKey=item.cartKey||item.name
-                              const catAllowNotes=categoryAllowNotes[cat.toLowerCase()]??false
-                              const itemCatModGroups=truckMenu?.categories?.find(c=>c.name===(truckMenu?.items.find(m=>m.name===item.name)?.category||''))?.modifierGroups||[]
-                              const fullMenuItem=truckMenu?.items.find(m=>m.name===item.name)
-                              return(
-                              <div key={rowKey} className="flex items-start gap-2 py-1">
-                                {/* Qty controls — top-aligned with item name */}
-                                <div className="flex items-center gap-1 shrink-0 mt-0.5">
-                                  <button onClick={()=>adjustManualQty(rowKey,-1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 text-sm leading-none">−</button>
-                                  <span className="w-5 text-center font-black text-sm text-slate-900">{item.quantity}</span>
-                                  <button onClick={()=>adjustManualQty(rowKey,1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 text-sm leading-none">+</button>
-                                </div>
-                                {/* Name + sub-label */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="text-sm font-bold text-slate-900">{item.name}</span>
-                                    {itemCatModGroups.length>0&&fullMenuItem&&(
-                                      <button onClick={()=>openManualItemModal(fullMenuItem,itemCatModGroups,rowKey)}
-                                        className="text-[10px] font-bold text-orange-500 border border-orange-200 rounded-md px-1.5 py-0.5 hover:bg-orange-50 shrink-0">
-                                        {subLabel ? '✏ Edit' : '+ Customise'}
-                                      </button>
-                                    )}
-                                  </div>
-                                  {(subLabel || catAllowNotes) && (
-                                    <p className={`text-[10px] mt-0.5 leading-tight ${subLabel ? 'text-orange-500 font-medium' : 'text-slate-400 italic'}`}>
-                                      {subLabel || 'Standard'}
-                                    </p>
-                                  )}
-                                </div>
-                                {/* Price — top-aligned */}
-                                <div className="shrink-0 mt-0.5">
-                                  <InlinePriceEditor price={item.unit_price} quantity={item.quantity} onChange={p=>setManualItems(prev=>prev.map(i=>(i.cartKey||i.name)===rowKey?{...i,unit_price:p}:i))}/>
-                                </div>
-                              </div>
-                            )})}
-                          </div>
-                        ))
-                      })()}
-                      {appliedDeals.length>0&&(
-                        <div className="border-t border-slate-200 pt-2 space-y-1">
-                          <div className="flex justify-between text-xs"><span className="text-slate-500">Items subtotal</span><span className="text-slate-600">£{manualItemsSubtotal.toFixed(2)}</span></div>
-                          {appliedDeals.map((d,i)=>{
-                            const dealItemLabels=Object.entries(d.slots)
-                              .filter(([,n])=>n)
-                              .map(([cat,n])=>{const mods=d.slotModifiers?.[cat];return mods?.length?`${n} (+ ${mods.map(m=>m.name).join(', ')})`:n})
-                              .join(', ')
-                            const dealSlotMods=Object.entries(d.slotModifiers||{}).filter(([,mods])=>mods.length>0).map(([cat,mods])=>({itemName:d.slots[cat],mods})).filter(({itemName})=>itemName)
-                            return(
-                              <div key={i} className="text-xs space-y-0.5">
-                                <div className="flex justify-between items-start gap-2">
-                                  <div className="flex-1 min-w-0">
-                                    <span className="text-green-600 font-bold">🎁 {d.bundle.name}</span>
-                                    <span className="text-green-500 font-normal ml-1">({Object.values(d.slots).filter(Boolean).join(', ')})</span>
-                                    <button
-                                      onClick={()=>{
-                                        if (d.itemsTakenFromBasket?.length > 0) {
-                                          setManualItems(prev => prev.filter(item => !d.itemsTakenFromBasket.includes(item.cartKey || item.name)))
-                                        }
-                                        setAppliedDeals(prev=>prev.filter((_,n)=>n!==i))
-                                      }}
-                                      className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
-                                      title="Remove deal"
-                                    >×</button>
-                                  </div>
-                                  <span className="text-green-600 font-bold shrink-0">£{d.bundle.bundle_price.toFixed(2)}</span>
-                                </div>
-                                {dealSlotMods.map(({itemName,mods})=>(
-                                  <div key={itemName} className="flex justify-between pl-3">
-                                    <span className="text-slate-400">↳ {itemName}: + {mods.map(m=>m.name).join(', ')}</span>
-                                    <span className="text-slate-400">+£{mods.reduce((s,m)=>s+m.price,0).toFixed(2)}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            )
-                          })}
-                        </div>
-                      )}
-                      <div className="flex justify-between pt-2 border-t border-slate-200">
-                        <span className="text-slate-600 text-sm font-bold">Total</span>
-                        <span className="text-slate-900 font-black">£{manualTotal.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ):<p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
-
-              {/* Deal button — always visible, outside basket */}
-              {availableDeals.length>0&&(
-                <button onClick={()=>{
-                  if(availableDeals.length===1){openDealModal(availableDeals[0])}
-                  else{setActiveDealBundle(null);setShowDealsModal(true)}
-                }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mt-2">
-                  <span>🎁</span>
-                  <span>{appliedDeals.length>0?'+ Add another deal':'+ Apply a deal'}</span>
-                  {appliedDeals.length>0&&<span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
-                </button>
-              )}
-            </div>
-
-            {/* STEP 2 — Collection time */}
-            <div>
-              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-2">2. When to collect?</p>
-              <div className="flex gap-2">
-                <div className={`flex-1 rounded-xl px-3 py-2.5 ${readyTime?'bg-green-50 border border-green-200':'bg-slate-100 border border-slate-100'}`}>
-                  {manualItems.length>0?(
-                    <p className="text-green-700 font-black text-sm">⚡ ~{queueAware.minsFromNow} min{queueAware.minsFromNow!==1?'s':''} · around {readyTime}</p>
-                  ):manualAsapSlot?(
-                    <p className="text-slate-600 font-bold text-sm">⚡ Next slot: {manualAsapSlot.collection_time}</p>
-                  ):(
-                    <p className="text-slate-400 text-sm">Walk-up only</p>
-                  )}
-                </div>
-                <div className="flex-1">
-                  {manualSlots.length>0?(
-                    <select value={manualSlot} onChange={e=>{
-                      const chosen=e.target.value
-                      if(!chosen){setManualSlot('');return}
-                      const s=manualSlots.find(s=>s.collection_time===chosen)
-                      if(s&&s.max_orders<999){
-                        const remaining=Math.max(0,s.max_orders-s.current_orders)
-                        const pct=s.current_orders/s.max_orders
-                        if(pct>=0.7){setPendingSlot({time:chosen,remaining,isFull:pct>=1});return}
-                      }
-                      setManualSlot(chosen)
-                    }} className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                      <option value="">ASAP</option>
-                      {manualSlots.filter(s=>!s.is_past||s.is_grace).map(s=>{if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>;const unlimited=s.max_orders>=999;const remaining=Math.max(0,s.max_orders-s.current_orders);const pct=unlimited?0:s.current_orders/s.max_orders;const ind=pct>=1?'🔴':pct>=0.7?'🟡':'🟢';const label=(!unlimited&&pct>=1)?' · Full':(!unlimited&&pct>=0.7)?` · ${remaining} left`:'';return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind}{label}</option>})}
-                    </select>
-                  ):(
-                    <select value={manualSlot} onChange={e=>setManualSlot(e.target.value)}
-                      className="w-full h-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                      <option value="">ASAP</option>
-                      {(()=>{
-                        const startMins=manualEvent?(()=>{const[h,m]=manualEvent.start_time.split(':').map(Number);return h*60+m})():10*60
-                        const endMins=manualEvent?(()=>{const[h,m]=manualEvent.end_time.split(':').map(Number);return h*60+m})():22*60+30
-                        const opts=[]
-                        for(let t=startMins;t<=endMins;t+=5){
-                          const hh=String(Math.floor(t/60)).padStart(2,'0')
-                          const mm=String(t%60).padStart(2,'0')
-                          opts.push(`${hh}:${mm}`)
-                        }
-                        return opts.map(time=><option key={time} value={time}>{time}</option>)
-                      })()}
-                    </select>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* STEP 3-5 */}
-            <div><p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">3. Customer name *</p><input type="text" value={manualName} onChange={e=>setManualName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"/></div>
-            <div><p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">4. Email <span className="font-normal normal-case text-slate-400">— optional</span></p><input type="email" value={manualEmail} onChange={e=>setManualEmail(e.target.value)} placeholder="For confirmation" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"/></div>
-            <div><p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">5. Notes <span className="font-normal normal-case text-slate-400">— optional</span></p><textarea value={manualNotes} onChange={e=>setManualNotes(e.target.value)} placeholder="Allergies, no onion…" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"/></div>
-
-            {(()=>{
-              const isPastGrace=manualEvent?(()=>{const today=new Date().toISOString().split('T')[0];if(manualEvent.event_date>today)return false;const[h,m]=manualEvent.end_time.split(':').map(Number);return new Date().getHours()*60+new Date().getMinutes()>h*60+m+30})():false
-              return(
-                <button onClick={submitManual} disabled={actionLoading==='manual'||!manualName.trim()||(!manualItems.length && !appliedDeals.length)||isPastGrace}
-                  className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40">
-                  {actionLoading==='manual'?'Saving...':isPastGrace?'Grace period ended':`Save order${manualItems.length || appliedDeals.length ? ` · £${manualTotal.toFixed(2)}` : ''}`}
-                </button>
-              )
-            })()}
-          </div>
+        {activeTab==='add'&&truck&&(
+          <AddOrderPanel
+            truck={truck}
+            truckMenu={truckMenu}
+            menuGroups={menuGroups}
+            itemStocks={itemStocks}
+            categoryStocks={categoryStocks}
+            categoryConfigs={categoryConfigs}
+            categoryAllowNotes={categoryAllowNotes}
+            orders={orders}
+            waitMinutes={waitMinutes}
+            token={token}
+            pin={pin}
+            todayEvent={todayEvent}
+            categoryOrder={categoryOrder}
+            itemCategoryMap={itemCategoryMap}
+            showToast={showToast}
+            onOrderPlaced={()=>{fetchAll();setActiveTab('orders')}}
+          />
         )}
+
 
         {/* MENU & STOCK TAB */}
         {activeTab==='stock'&&(
@@ -1309,103 +851,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         )}
       </main>
 
-      {/* Item modifier modal */}
-      {itemModal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={()=>setItemModal(null)}/>
-          <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl">
-            <div className="px-5 pt-5 pb-4">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="font-black text-slate-900 text-lg">{itemModal.item.name}</h3>
-                  <p className="text-slate-400 text-sm">£{itemModal.item.price.toFixed(2)} base</p>
-                </div>
-                <button onClick={()=>setItemModal(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none ml-4 mt-0.5">✕</button>
-              </div>
-              <div className="space-y-4">
-                {itemModal.modGroups.map(group=>(
-                  <div key={group.id}>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{group.name}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {group.options.map((opt:ModifierOption)=>{
-                        const selected=modalMods.some(m=>m.name===opt.name)
-                        return(
-                          <button key={opt.id} onClick={()=>toggleModalMod(opt)}
-                            className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 ${selected?'bg-orange-600 border-orange-600 text-white':'bg-white border-slate-200 text-slate-700 hover:border-orange-300'}`}>
-                            <span>{opt.name}</span>
-                            {opt.price_adjustment>0&&<span className={selected?'text-orange-200':'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
-                {(truckMenu?.categories?.find(c => c.name === itemModal.item.category)?.allowNotes ?? false) && (
-                  <div>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Note <span className="font-normal normal-case text-slate-400">— optional</span></p>
-                    <textarea
-                      value={modalNotes}
-                      onChange={e=>setModalNotes(e.target.value.slice(0,60))}
-                      placeholder="e.g. No onions, well done…"
-                      rows={2}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
-                    />
-                    <p className="text-right text-[10px] text-slate-400 mt-0.5">{modalNotes.length}/60</p>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="px-5 pb-5 pt-2 border-t border-slate-100">
-              <button onClick={confirmAddFromModal}
-                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98]">
-                {itemModal.editCartKey ? 'Save changes' : 'Add'} · £{(itemModal.item.price+modalMods.reduce((s,m)=>s+m.price,0)).toFixed(2)}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Deals modal */}
-      {showDealsModal && (
-        <DealsModal
-          bundles={activeDealBundle ? [activeDealBundle] : availableDeals}
-          menuItems={truckMenu?.items || []}
-          menuCategories={truckMenu?.categories || []}
-          basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: i.unit_price, cartKey: i.cartKey, modifiers: i.modifiers, specialInstructions: i.specialInstructions }))}
-          existingDeals={appliedDeals}
-          onApply={(deal, slots, price, discount, rawSlots, modifierExtra, slotModifiers, slotNotes) => {
-            const itemsTakenFromBasket = Object.entries(rawSlots)
-              .filter(([, raw]) => raw.startsWith('USE_EXISTING:'))
-              .map(([, raw]) => raw.replace('USE_EXISTING:', ''))
-              .filter(Boolean)
-
-            if (itemsTakenFromBasket.length > 0) {
-              setManualItems(prev => prev.filter(item => !itemsTakenFromBasket.includes(item.cartKey || item.name)))
-            }
-
-            setAppliedDeals(prev => [...prev, {
-              bundle: {
-                ...deal,
-                available: true,
-                start_time: deal.start_time ?? null,
-                end_time: deal.end_time ?? null
-              },
-              slots,
-              itemsTakenFromBasket,
-              modifierExtra,
-              slotModifiers,
-              slotNotes,
-            }])
-            setShowDealsModal(false)
-            setActiveDealBundle(null)
-          }}
-          onClose={() => {
-            setShowDealsModal(false)
-            setActiveDealBundle(null)
-          }}
-        />
-      )}
-
       {/* Pause duration picker */}
       {showPauseModal&&(
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
@@ -1419,27 +864,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
             </div>
             <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
-          </div>
-        </div>
-      )}
-
-      {/* Slot capacity confirmation */}
-      {pendingSlot&&(
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <div className="text-center mb-4">
-              <div className="text-3xl mb-2">{pendingSlot.isFull?'🔴':'🟡'}</div>
-              <p className="font-bold text-slate-900 text-base">
-                {pendingSlot.isFull
-                  ?`This slot is full. Use anyway?`
-                  :`This slot only has ${pendingSlot.remaining} space${pendingSlot.remaining!==1?'s':''} left. Use anyway?`
-                }
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={()=>{setManualSlot('');setPendingSlot(null)}} className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
-              <button onClick={()=>{setManualSlot(pendingSlot.time);setPendingSlot(null)}} className="flex-1 bg-orange-600 text-white font-bold py-3 rounded-xl hover:bg-orange-700 text-sm">Use anyway</button>
-            </div>
           </div>
         </div>
       )}
@@ -1575,7 +999,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="mb-4">
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Collection time</label>
               {(()=>{
-                const editModalSlots=slots.length>0?slots:manualSlots
+                const editModalSlots=slots
                 if(editModalSlots.length===0)return<input type="time" value={editSlot} onChange={e=>setEditSlot(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                 return(
                   <select value={editSlot} onChange={e=>setEditSlot(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
@@ -1667,38 +1091,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {toast&&<div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600 text-white'}`}>{toast.msg}</div>}
 
-      {/* Event picker sheet */}
-      {showEventPicker&&(
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center" onClick={()=>setShowEventPicker(false)}>
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm" onClick={e=>e.stopPropagation()}>
-            <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex items-center justify-between">
-              <p className="font-black text-slate-900 text-base">Select event</p>
-              <button onClick={()=>setShowEventPicker(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-lg">✕</button>
-            </div>
-            <div className="p-3 space-y-2 max-h-72 overflow-y-auto">
-              {upcomingEvents.length===0?(
-                <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>
-              ):upcomingEvents.map(ev=>{
-                const t=new Date().toISOString().split('T')[0]
-                const tmrw=new Date(Date.now()+86400000).toISOString().split('T')[0]
-                const label=ev.event_date===t?'Today':ev.event_date===tmrw?'Tomorrow':new Date(ev.event_date+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})
-                const isSelected=manualEvent?.id===ev.id
-                return(
-                  <button key={ev.id} onClick={()=>{setManualEvent(ev);setShowEventPicker(false);fetchManualSlots(ev.event_date,ev.start_time,ev.end_time);setManualSlot('')}}
-                    className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected?'border-orange-400 bg-orange-50':'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
-                    <p className="text-sm font-bold text-slate-900">{label} · {ev.start_time}–{ev.end_time}</p>
-                    {ev.venue_name&&<p className="text-xs text-slate-500 mt-0.5">{ev.venue_name}</p>}
-                    {isSelected&&<span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
-                  </button>
-                )
-              })}
-            </div>
-            <div className="p-3 border-t border-slate-100 pb-8">
-              <button onClick={()=>setShowEventPicker(false)} className="w-full border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600 font-medium hover:bg-slate-50">Done</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

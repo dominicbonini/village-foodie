@@ -13,6 +13,43 @@ import type { CatConfig } from '@/lib/prep-utils'
 
 export type ProductionSlotUnits = Record<string, QtyByCat>
 
+/**
+ * Flatten order items + deal slot items into a single normalised lines array.
+ * quantity coerced to number defensively (DB may return strings for older rows).
+ * Canonical single source — replaces orderLinesFromOrder (action) and allOrderLines (submit).
+ */
+export function normaliseOrderLines(
+  items: Array<{ name: string; quantity: number | string }>,
+  deals?: Array<{ slots?: Record<string, any> }> | null
+): Array<{ name: string; quantity: number }> {
+  const lines = (items || []).map(i => ({
+    name: i.name,
+    quantity: typeof i.quantity === 'string' ? parseInt(i.quantity) || 1 : i.quantity,
+  }))
+  ;(deals || []).forEach(d => {
+    Object.values(d.slots || {}).filter(Boolean).forEach(name =>
+      lines.push({ name: String(name), quantity: 1 })
+    )
+  })
+  return lines
+}
+
+/**
+ * Derive the production slot key from a collection time on dynamic-slot trucks
+ * (those without static collection_times rows). On static-slot trucks callers
+ * should prefer the production_slot value from the collection_times table.
+ */
+export function deriveProductionSlot(
+  collectionTime: string,
+  slotDurationMins: number
+): string {
+  if (slotDurationMins <= 0) return collectionTime
+  const [h, m] = collectionTime.split(':').map(Number)
+  const slotMins = h * 60 + m
+  const prodMins = Math.floor(slotMins / slotDurationMins) * slotDurationMins
+  return `${String(Math.floor(prodMins / 60)).padStart(2, '0')}:${String(prodMins % 60).padStart(2, '0')}`
+}
+
 export async function buildItemCatMap(
   supabase: SupabaseClient,
   truckId: string

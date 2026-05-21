@@ -9,37 +9,12 @@ import {
   moveSlotBooking,
   buildItemCatMap,
   getProductionSlotUnits,
+  normaliseOrderLines,
+  deriveProductionSlot,
 } from '@/lib/slot-bookings'
 import { canFitInProductionSlot } from '@/lib/slot-capacity'
-import type { CatConfig } from '@/lib/prep-utils'
-
-async function buildCatConfigs(truckId: string): Promise<Record<string, CatConfig>> {
-  const { data: categories } = await supabase
-    .from('menu_categories')
-    .select('name, prep_secs, batch_size')
-    .eq('truck_id', truckId)
-  const catConfigs: Record<string, CatConfig> = {}
-  ;(categories || []).forEach(c => {
-    catConfigs[c.name.toLowerCase()] = {
-      secs: c.prep_secs || 0,
-      batch: c.batch_size || 1,
-    }
-  })
-  return catConfigs
-}
-
-function orderLinesFromOrder(order: { items?: any[]; deals?: any[] | null }) {
-  const lines = (order.items || []).map((i: any) => ({
-    name: i.name,
-    quantity: parseInt(i.quantity) || 1,
-  }))
-  ;(order.deals || []).forEach((d: any) => {
-    Object.values(d.slots || {}).filter(Boolean).forEach((name: any) => {
-      lines.push({ name: String(name), quantity: 1 })
-    })
-  })
-  return lines
-}
+import { buildCatConfigs } from '@/lib/prep-utils'
+import { nextOrderId } from '@/lib/order-utils'
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -111,7 +86,7 @@ export async function POST(req: NextRequest) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
           supabase, truck.id, order.event_date, order.slot,
-          orderLinesFromOrder(order), itemCatMap
+          normaliseOrderLines(order.items || [], order.deals), itemCatMap
         )
       }
       if (order.customer_email) {
@@ -135,7 +110,7 @@ export async function POST(req: NextRequest) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
           supabase, truck.id, order.event_date, order.slot,
-          orderLinesFromOrder(order), itemCatMap
+          normaliseOrderLines(order.items || [], order.deals), itemCatMap
         )
       }
       if (order.customer_email) {
@@ -183,7 +158,7 @@ export async function POST(req: NextRequest) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await removeOrderFromProductionSlot(
             supabase, truck.id, order.event_date, order.slot,
-            orderLinesFromOrder(full.data), itemCatMap
+            normaliseOrderLines(full.data.items || [], full.data.deals), itemCatMap
           )
         }
       }
@@ -200,7 +175,7 @@ export async function POST(req: NextRequest) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await addOrderToProductionSlot(
             supabase, truck.id, order.event_date, order.slot,
-            orderLinesFromOrder(full.data), itemCatMap
+            normaliseOrderLines(full.data.items || [], full.data.deals), itemCatMap
           )
         }
       }
@@ -235,8 +210,8 @@ export async function POST(req: NextRequest) {
 
       if (order.event_date && (items || slot !== undefined)) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
-        const oldLines = orderLinesFromOrder(order)
-        const newLines = orderLinesFromOrder({ items: items || order.items, deals: order.deals })
+        const oldLines = normaliseOrderLines(order.items || [], order.deals)
+        const newLines = normaliseOrderLines(items || order.items || [], order.deals)
         if (order.slot) {
           await removeOrderFromProductionSlot(
             supabase, truck.id, order.event_date, order.slot, oldLines, itemCatMap
@@ -333,14 +308,14 @@ export async function POST(req: NextRequest) {
     if (action === 'manual') {
       const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal, event_date: passedEventDate } = manualOrder
       const deals = manualOrder.deals ?? null
-      if (!customerName || (!items?.length && !deals?.length)) {
-        return NextResponse.json({ error: 'Name and items required' }, { status: 400 })
+      if (!items?.length && !deals?.length) {
+        return NextResponse.json({ error: 'Items required' }, { status: 400 })
       }
       const eventDate = passedEventDate || new Date().toISOString().split('T')[0]
       let autoConfirm = true
-      const manualLines = (items || []).map((i: any) => ({ name: i.name, quantity: parseInt(i.quantity) || 1 }))
+      const manualLines = normaliseOrderLines(items || [])
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
-      const catConfigs = await buildCatConfigs(truck.id)
+      const catConfigs = await buildCatConfigs(supabase, truck.id)
       if (slot) {
         const [{ data: timeRow }, slotUnits, { data: capacities }] = await Promise.all([
           supabase.from('collection_times').select('production_slot').eq('truck_id', truck.id).eq('collection_time', slot).maybeSingle(),
@@ -348,22 +323,26 @@ export async function POST(req: NextRequest) {
           supabase.from('slot_capacity').select('slot, max_orders').eq('truck_id', truck.id).eq('event_date', eventDate),
         ])
         const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
-        const productionSlot = timeRow?.production_slot ?? slot
+        const productionSlot = timeRow?.production_slot ?? deriveProductionSlot(
+          slot,
+          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
+        )
         const maxBatches = capacityMap[productionSlot] ?? 999
         if (!canFitInProductionSlot(
           slotUnits[productionSlot] || {}, manualLines, itemCatMap, maxBatches, catConfigs
         )) autoConfirm = false
       }
-      const { data: counterData, error: counterErr } = await supabase.rpc('increment_order_counter', { p_truck_id: truck.id })
-      if (counterErr || counterData == null) {
-        console.error('[manual] order counter failed:', counterErr)
+      let newOrderId: string
+      try {
+        newOrderId = await nextOrderId(truck.id)
+      } catch (err: any) {
+        console.error('[manual] order counter failed:', err.message)
         return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
       }
-      const newOrderId = String(counterData).padStart(4, '0')
       const total = (items || []).reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
       const { error: insertErr } = await supabase.from('orders').insert({
         id: newOrderId, truck_id: truck.id,
-        customer_name: customerName, customer_phone: customerPhone || null,
+        customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
         customer_email: customerEmail || null,
         slot: slot || null, order_type: 'collection', event_date: eventDate,
         items, deals, discount_code: null,
@@ -529,7 +508,7 @@ export async function POST(req: NextRequest) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await moveSlotBooking(
             supabase, truck.id, ord.event_date, ord.slot, newSlot,
-            orderLinesFromOrder(full.data), itemCatMap
+            normaliseOrderLines(full.data.items || [], full.data.deals), itemCatMap
           )
         }
       }

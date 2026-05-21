@@ -9,6 +9,7 @@ import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-cal
 import { cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
+import { hasFeature } from '@/lib/features';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -32,7 +33,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; extra_wait_mins?: number }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max' }
 interface EventData {
   date: string          // dd/mm/yyyy
   date_iso: string      // yyyy-mm-dd
@@ -593,7 +594,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             modifiers: b.modifiers.length > 0 ? b.modifiers : undefined,
             specialInstructions: b.specialInstructions || undefined,
           })),
-          deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots, slotModifiers: d.slotModifiers, slotNotes: d.slotNotes })),
+          deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots, slotModifiers: d.slotModifiers, slotNotes: d.slotNotes, price: d.bundle.bundle_price })),
           discountCode: appliedCode?.code || null,
           subtotal: subtotal, discountAmt: discountAmt, total, notes: notes || null,
         }),
@@ -625,6 +626,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       </div>
     </Shell>
   )
+
+  if (truck && !hasFeature(truck.plan, 'advance_preordering')) {
+    return (
+      <Shell>
+        <Hdr slug={slug} truck={truck} scrolled={false} />
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="text-center">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">🚚</div>
+            <p className="font-bold text-slate-900 mb-1">Online ordering not available</p>
+            <p className="text-slate-500 text-sm">This truck takes walk-up orders at the hatch.</p>
+            <Link href={`/trucks/${slug}`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back</Link>
+          </div>
+        </div>
+      </Shell>
+    )
+  }
 
   if (submitted) return (
     <Shell><Hdr slug={slug} truck={truck} scrolled={false} />

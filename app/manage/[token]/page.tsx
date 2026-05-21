@@ -4,9 +4,11 @@
 
 import { useState, useEffect, useCallback, use } from 'react'
 import Image from 'next/image'
+import { PLAN_META } from '@/lib/features'
+import type { Plan } from '@/lib/features'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; plan: Plan }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -988,6 +990,28 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   return (
     <div className="space-y-6 max-w-lg">
       <h2 className="font-black text-slate-900 text-lg">Settings</h2>
+
+      {/* Plan */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between py-1">
+          <div>
+            <div className="text-sm font-medium text-slate-900">Current plan</div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              {PLAN_META[truck.plan].description}
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-teal-600">
+              {PLAN_META[truck.plan].name} · {PLAN_META[truck.plan].price}
+            </span>
+            {truck.plan !== 'max' && (
+              <a href="/pricing" className="text-xs text-slate-400 hover:text-slate-600 underline">
+                Upgrade
+              </a>
+            )}
+          </div>
+        </div>
+      </Card>
 
       {/* Logo */}
       <Card className="p-4">

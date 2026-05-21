@@ -2,6 +2,8 @@
 // SINGLE SOURCE OF TRUTH for prep time / ready time calculations
 // Used by: truck dashboard (client), slots API (server), customer order form (client)
 
+import type { SupabaseClient } from '@supabase/supabase-js'
+
 export interface CatConfig {
     secs: number
     batch: number
@@ -116,6 +118,25 @@ export interface CatConfig {
     return Math.max(30, maxSecs) + bufferSecs
   }
   
+  /**
+   * Fetch and normalise per-category prep configs from the DB for a given truck.
+   * Canonical single source — used by both the manual-order and customer-order paths.
+   */
+  export async function buildCatConfigs(
+    supabase: SupabaseClient,
+    truckId: string
+  ): Promise<Record<string, CatConfig>> {
+    const { data: categories } = await supabase
+      .from('menu_categories')
+      .select('name, prep_secs, batch_size')
+      .eq('truck_id', truckId)
+    const catConfigs: Record<string, CatConfig> = {}
+    ;(categories || []).forEach(c => {
+      catConfigs[c.name.toLowerCase()] = { secs: c.prep_secs || 0, batch: c.batch_size || 1 }
+    })
+    return catConfigs
+  }
+
   /**
    * Minimum minutes before earliest collection, used by slots API.
    */
