@@ -158,6 +158,7 @@ export default function KdsPage() {
   const cardViewMode = kdsView === 'cook' ? 'cook' : 'window'
 
   const kdsMode = truck?.kds_mode ?? false
+  const displayMode = truck?.display_mode ?? 'list'
 
   // Active orders: exclude collected, cancelled, and rejected
   const activeOrders = orders.filter(o =>
@@ -286,7 +287,12 @@ export default function KdsPage() {
       <div className="flex flex-1 min-h-0">
 
         {/* ── Queue panel ── */}
-        <div className="flex flex-col flex-1 min-w-0 overflow-y-auto px-3 py-3 gap-3">
+        <div className="flex flex-col flex-1 min-w-0 overflow-y-auto">
+        <div className={
+          displayMode === 'grid'
+            ? 'grid grid-cols-2 xl:grid-cols-3 gap-3 items-start p-3'
+            : 'flex flex-col gap-3 p-3'
+        }>
 
           {displayOrders.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1 text-slate-300 gap-2">
@@ -309,8 +315,8 @@ export default function KdsPage() {
             ))
           )}
 
-          {/* Done strip — window view only */}
-          {kdsView === 'window' && doneOrders.length > 0 && (
+          {/* Done strip — window view, list mode only */}
+          {kdsView === 'window' && displayMode === 'list' && doneOrders.length > 0 && (
             <div className="mt-2 border-t border-slate-200 pt-2">
               <div className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
                 Done today · {doneOrders.length}
@@ -324,6 +330,7 @@ export default function KdsPage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   )

@@ -957,6 +957,13 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
+  const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
+
+  const handleDisplayModeChange = async (value: 'list' | 'grid') => {
+    setDisplayMode(value)
+    try { await api('update_truck', { data: { display_mode: value } }) }
+    catch (err: any) { showToast(err.message, 'error') }
+  }
 
   const save = async () => {
     setSaving(true)
@@ -1104,6 +1111,25 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           >
             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${kdsMode ? 'translate-x-5' : 'translate-x-0'}`} />
           </button>
+        </div>
+
+        {/* Display layout */}
+        <div className="flex items-start justify-between gap-4 py-3 border-b border-slate-100">
+          <div>
+            <div className="text-sm font-medium text-slate-900">Display layout</div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              Grid view fits more tickets on screen at once — best for mounted
+              displays. List view is simpler for counter-top setups.
+            </div>
+          </div>
+          <select
+            value={displayMode}
+            onChange={e => handleDisplayModeChange(e.target.value as 'list' | 'grid')}
+            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white text-slate-900 flex-shrink-0"
+          >
+            <option value="list">List (single column)</option>
+            <option value="grid">Grid (side by side)</option>
+          </select>
         </div>
 
         {/* Cook screen URL — shown when full crew mode */}

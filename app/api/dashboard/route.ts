@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   // Find truck by token
   const { data: truck, error } = await supabase
     .from('trucks')
-    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode')
+    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode')
     .eq('dashboard_token', token)
     .eq('active', true)
     .single()
@@ -182,6 +182,7 @@ export async function GET(req: NextRequest) {
       extra_wait_started_at: truck.extra_wait_started_at ?? null,
       kds_mode:            truck.kds_mode ?? false,
       crew_mode:           truck.crew_mode ?? 'solo',
+      display_mode:        (truck.display_mode ?? 'list') as 'list' | 'grid',
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

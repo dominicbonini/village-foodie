@@ -61,6 +61,7 @@ export interface TruckData {
   auto_accept?: boolean
   kds_mode: boolean
   crew_mode: CrewMode
+  display_mode: 'list' | 'grid'
 }
 
 export interface MenuItem {
