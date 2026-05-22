@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
       .select('id, start_time, end_time, venue_name, event_date')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
-      .neq('is_cancelled', true)
+      .neq('status', 'cancelled')
       .order('start_time', { ascending: true }),
   ])
 

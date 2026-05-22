@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback, use } from 'react'
 import Image from 'next/image'
 import { PLAN_META } from '@/lib/features'
 import type { Plan } from '@/lib/features'
+import type { TruckEvent } from '@/components/dashboard/types'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; plan: Plan }
@@ -14,9 +15,9 @@ interface Item { id: string; name: string; description: string | null; price: nu
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
-interface TruckEvent { id: string; venue_name: string; address: string | null; event_date: string; start_time: string | null; end_time: string | null; notes: string | null; source: string; is_confirmed: boolean; is_cancelled: boolean }
+interface ScheduleEvent { id: string; venue_name: string; address: string | null; event_date: string; start_time: string | null; end_time: string | null; notes: string | null; source: string; status: string }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'settings'
+type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'events' | 'settings'
 
 // ── Helpers ────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -103,7 +104,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [modifierOptions, setModifierOptions] = useState<ModifierOption[]>([])
   const [categoryModGroups, setCategoryModGroups] = useState<{category_id:string;group_id:string}[]>([])
   const [bundles, setBundles] = useState<Bundle[]>([])
-  const [events, setEvents] = useState<TruckEvent[]>([])
+  const [events, setEvents] = useState<ScheduleEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
 
@@ -157,6 +158,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'modifiers', label: 'Modifiers', icon: '⚙️' },
     { id: 'deals',     label: 'Deals',     icon: '🎁' },
     { id: 'schedule',  label: 'Schedule',  icon: '📅' },
+    { id: 'events',    label: 'Events',    icon: '🗓️' },
     { id: 'settings',  label: 'Settings',  icon: '🔧' },
   ]
 
@@ -192,6 +194,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'schedule'  && <ScheduleTab  events={events} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'events'    && <EventsTab    token={token} showToast={showToast} />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
       </main>
 
@@ -845,11 +848,11 @@ function DealsTab({ categories, bundles, api, reload, showToast }: {
 // SCHEDULE TAB
 // ══════════════════════════════════════════════════════════════
 function ScheduleTab({ events, api, reload, showToast }: {
-  events: TruckEvent[]
+  events: ScheduleEvent[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const emptyEvent = { venue_name: '', address: '', event_date: '', start_time: '', end_time: '', notes: '' }
-  const [editing, setEditing] = useState<Partial<TruckEvent> | null>(null)
+  const [editing, setEditing] = useState<Partial<ScheduleEvent> | null>(null)
   const [saving, setSaving] = useState(false)
 
   const save = async () => {
@@ -941,6 +944,311 @@ function ScheduleTab({ events, api, reload, showToast }: {
               <Btn label={saving ? 'Saving...' : 'Save event'} loading={saving} onClick={save} />
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════
+// EVENTS TAB
+// ══════════════════════════════════════════════════════════════
+interface EventForm {
+  auto_open: boolean | null
+  auto_close: boolean
+  venue_address: string
+  customer_note: string
+}
+
+function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
+  if (status === 'unconfirmed') return (
+    <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600">
+      <span className="inline-block w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />Unconfirmed
+    </span>
+  )
+  if (status === 'confirmed') return (
+    <span className="flex items-center gap-1.5 text-xs font-semibold text-blue-600">
+      <span className="inline-block w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />Confirmed
+    </span>
+  )
+  if (status === 'open') return (
+    <span className="flex items-center gap-1.5 text-xs font-semibold text-green-600">
+      <span className="inline-block w-2 h-2 rounded-full bg-green-400 flex-shrink-0" />Open now
+    </span>
+  )
+  return (
+    <span className="flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+      <span className="inline-block w-2 h-2 rounded-full bg-slate-300 flex-shrink-0" />Closed
+    </span>
+  )
+}
+
+function EventsTab({ token, showToast }: {
+  token: string
+  showToast: (m: string, t?: any) => void
+}) {
+  const [events, setEvents] = useState<TruckEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
+  const [form, setForm] = useState<EventForm>({ auto_open: null, auto_close: true, venue_address: '', customer_note: '' })
+  const [saving, setSaving] = useState(false)
+  const [showPast, setShowPast] = useState(false)
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`/api/events/manage?token=${token}`)
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error)
+        setEvents(data.events)
+      } catch (e: any) { showToast(e.message || 'Failed to load events', 'error') }
+      finally { setLoading(false) }
+    }
+    load()
+  }, [token])
+
+  const today = new Date().toISOString().split('T')[0]
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+
+  const upcoming = events.filter(e => e.event_date >= today)
+  const past = events.filter(e => e.event_date < today && e.event_date >= thirtyDaysAgo)
+
+  const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
+  const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
+  const openEvents = upcoming.filter(e => e.status === 'open')
+  const otherUpcoming = upcoming.filter(e => !['unconfirmed', 'confirmed', 'open'].includes(e.status))
+
+  const expandEvent = (event: TruckEvent) => {
+    if (expandedEventId === event.id) {
+      setExpandedEventId(null)
+      return
+    }
+    setExpandedEventId(event.id)
+    if (event.status === 'confirmed') {
+      setForm({
+        auto_open: event.auto_open,
+        auto_close: event.auto_close,
+        venue_address: event.venue_address || '',
+        customer_note: event.customer_note || '',
+      })
+    } else {
+      setForm({ auto_open: null, auto_close: true, venue_address: event.venue_address || '', customer_note: event.customer_note || '' })
+    }
+  }
+
+  const confirmEvent = async (eventId: string) => {
+    if (form.auto_open === null) return
+    setSaving(true)
+    try {
+      const res = await fetch('/api/events/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          action: 'confirm',
+          eventId,
+          payload: {
+            auto_open: form.auto_open,
+            auto_close: form.auto_close,
+            venue_address: form.venue_address,
+            customer_note: form.customer_note,
+          },
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setEvents(prev => prev.map(e => e.id === eventId ? {
+        ...e,
+        status: 'confirmed' as const,
+        auto_open: form.auto_open!,
+        auto_close: form.auto_close,
+        venue_address: form.venue_address || null,
+        customer_note: form.customer_note || null,
+      } : e))
+      setExpandedEventId(null)
+      showToast('Event confirmed')
+    } catch (e: any) { showToast(e.message, 'error') }
+    finally { setSaving(false) }
+  }
+
+  const cancelEvent = async (eventId: string) => {
+    if (!window.confirm('Cancel this event? This cannot be undone.')) return
+    try {
+      const res = await fetch('/api/events/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'cancel', eventId, payload: {} }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setEvents(prev => prev.filter(e => e.id !== eventId))
+      showToast('Event cancelled')
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  const renderEvent = (event: TruckEvent) => {
+    const expanded = expandedEventId === event.id
+    const canExpand = event.status === 'unconfirmed' || event.status === 'confirmed'
+    return (
+      <Card key={event.id}>
+        <div
+          className={`p-4 flex items-start justify-between gap-3 ${canExpand ? 'cursor-pointer' : ''}`}
+          onClick={() => canExpand && expandEvent(event)}
+        >
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-bold text-slate-900">{event.venue_name}</p>
+              <EventStatusBadge status={event.status} />
+            </div>
+            {event.venue_address && <p className="text-slate-400 text-xs mt-0.5">{event.venue_address}</p>}
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-slate-700">{fmtDate(event.event_date)}</span>
+              {event.start_time && event.end_time && (
+                <span className="text-slate-400 text-xs">{event.start_time} – {event.end_time}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+            {event.status === 'unconfirmed' && (
+              <Btn label="Confirm" size="sm" colour="green" onClick={() => expandEvent(event)} />
+            )}
+            {event.status === 'confirmed' && (
+              <Btn label="Edit" size="sm" colour="ghost" onClick={() => expandEvent(event)} />
+            )}
+            <Btn label="Cancel" size="sm" colour="red" onClick={() => cancelEvent(event.id)} />
+          </div>
+        </div>
+
+        {expanded && canExpand && (
+          <div className="px-4 pb-4 mt-0 pt-3 border-t border-slate-100 flex flex-col gap-4">
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Venue address — optional
+              </label>
+              <input type="text" value={form.venue_address}
+                onChange={e => setForm(f => ({...f, venue_address: e.target.value}))}
+                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Customer note — optional
+              </label>
+              <input type="text" placeholder="e.g. Park in the main car park"
+                value={form.customer_note}
+                onChange={e => setForm(f => ({...f, customer_note: e.target.value}))}
+                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                When should this event open for orders?
+              </p>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name={`open-${event.id}`}
+                    checked={form.auto_open === false}
+                    onChange={() => setForm(f => ({...f, auto_open: false}))} />
+                  <span className="text-sm">I'll open it manually when I arrive</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name={`open-${event.id}`}
+                    checked={form.auto_open === true}
+                    onChange={() => setForm(f => ({...f, auto_open: true}))} />
+                  <span className="text-sm">Open automatically at {event.start_time}</span>
+                </label>
+              </div>
+              {form.auto_open === null && (
+                <p className="text-xs text-red-500 mt-1">Please choose when this event should open</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                When should it close?
+              </p>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name={`close-${event.id}`}
+                    checked={form.auto_close === true}
+                    onChange={() => setForm(f => ({...f, auto_close: true}))} />
+                  <span className="text-sm">Close automatically at {event.end_time}</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="radio" name={`close-${event.id}`}
+                    checked={form.auto_close === false}
+                    onChange={() => setForm(f => ({...f, auto_close: false}))} />
+                  <span className="text-sm">I'll close it manually</span>
+                </label>
+              </div>
+            </div>
+
+            <button
+              disabled={form.auto_open === null || saving}
+              onClick={() => confirmEvent(event.id)}
+              className="w-full bg-teal-600 text-white font-semibold py-3 rounded-xl disabled:opacity-40 hover:bg-teal-700 transition-colors"
+            >
+              {saving ? 'Confirming...' : 'Confirm event'}
+            </button>
+          </div>
+        )}
+      </Card>
+    )
+  }
+
+  if (loading) return (
+    <div className="flex items-center justify-center py-12"><Spinner /></div>
+  )
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="font-black text-slate-900 text-lg">Events</h2>
+        <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
+      </div>
+
+      {upcoming.length === 0 && (
+        <EmptyState icon="🗓️" title="No upcoming events" body="Events scraped from your social media and booking calendar will appear here for you to confirm" />
+      )}
+
+      {unconfirmedEvents.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Needs confirmation</p>
+          {unconfirmedEvents.map(renderEvent)}
+        </div>
+      )}
+
+      {confirmedEvents.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Confirmed</p>
+          {confirmedEvents.map(renderEvent)}
+        </div>
+      )}
+
+      {openEvents.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Open now</p>
+          {openEvents.map(renderEvent)}
+        </div>
+      )}
+
+      {otherUpcoming.length > 0 && (
+        <div className="space-y-2">{otherUpcoming.map(renderEvent)}</div>
+      )}
+
+      {past.length > 0 && (
+        <div className="pt-2">
+          <button
+            onClick={() => setShowPast(p => !p)}
+            className="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
+          >
+            <span>{showPast ? '▲' : '▼'}</span>
+            Past events ({past.length})
+          </button>
+          {showPast && (
+            <div className="mt-3 space-y-2">{past.map(renderEvent)}</div>
+          )}
         </div>
       )}
     </div>

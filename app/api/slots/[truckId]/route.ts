@@ -107,7 +107,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       .select('start_time, end_time')
       .eq('truck_id', truckId)
       .eq('event_date', date)
-      .neq('is_cancelled', true)
+      .neq('status', 'cancelled')
       .maybeSingle(),
   ])
 

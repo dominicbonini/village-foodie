@@ -36,6 +36,7 @@
     "out",
     "dist",
     "build",
+    "supabase/functions",
     "**/*.spec.ts",
     "**/*.test.ts"
   ]

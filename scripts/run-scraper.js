@@ -2,9 +2,24 @@ import puppeteer from 'puppeteer';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
-import fs from 'fs'; 
+import fs from 'fs';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config({ path: '.env.local' });
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+function toISODate(ddmmyyyy) {
+  if (!ddmmyyyy) return null;
+  const parts = String(ddmmyyyy).split('/');
+  if (parts.length !== 3) return null;
+  let y = parseInt(parts[2]);
+  if (y < 100) y += 2000;
+  return `${y}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+}
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
 const TABS = { EVENTS: 'Events', TRUCKS: 'Trucks', VENUES: 'Venues', EXCLUSIONS: 'Exclusions' };
@@ -640,6 +655,12 @@ for (const [index, site] of sitesToScrape.entries()) {
                         });
                         excludedTerms.add(cleanEx);
                         console.log(`   🤖 Auto-Excluded via Scraper: ${ex}`);
+                        // DB mirror — parallel run
+                        supabase.from('excluded_terms').upsert({
+                          term: ex,
+                        }, { onConflict: 'term', ignoreDuplicates: true }).then(({ error }) => {
+                          if (error) console.warn('[DB] Exclusion write failed:', error.message);
+                        });
                     } catch (err) { console.error("Failed to append exclusion:", err.message); }
                 }
             }
@@ -881,6 +902,15 @@ if (newTrucksDetected.size > 0) {
           resource: { values: newTruckRows },
       });
       console.log(`✅ Successfully added ${newTruckRows.length} new trucks!`);
+      // DB mirror — parallel run
+      for (const row of newTruckRows) {
+        supabase.from('discovery_trucks').upsert({
+          name: row[0],
+          exclude_reason: 'Yes - New Truck',
+        }, { onConflict: 'name', ignoreDuplicates: true }).then(({ error }) => {
+          if (error) console.warn('[DB] Truck write failed:', error.message);
+        });
+      }
   } catch (error) {
       console.error("❌ Failed to add new trucks:", error.message);
   }
@@ -893,6 +923,23 @@ if (newRowsToAdd.length > 0) {
     spreadsheetId: SPREADSHEET_ID, range: `${TABS.EVENTS}!A:I`, valueInputOption: 'USER_ENTERED', resource: { values: newRowsToAdd },
   });
   console.log("🎉 Database Sync Complete!");
+  // DB mirror — parallel run
+  for (let i = 0; i < newRowsToAdd.length; i += 100) {
+    const batch = newRowsToAdd.slice(i, i + 100).map(r => ({
+      event_date: toISODate(r[0]),
+      start_time: r[1] || null,
+      end_time: r[2] || null,
+      truck_name: r[3] || '',
+      venue_name: r[4] || null,
+      village: r[5] || null,
+      event_notes: r[6] || null,
+      source: r[7] || null,
+      ai_notes: r[8] || null,
+    }));
+    supabase.from('discovery_events').upsert(batch, { onConflict: 'event_date,truck_name,venue_name' }).then(({ error }) => {
+      if (error) console.warn('[DB] Event write failed:', error.message);
+    });
+  }
 } else { console.log("\n💤 No new events found."); }
 
 // --- ADD NEW VENUES & GEOCODE ---
@@ -935,9 +982,20 @@ if (newVenuesDetected.size > 0) {
           resource: { values: newVenueRows }, 
       });
       console.log(`📍 Successfully added ${newVenueRows.length} new locations to the Venues tab!`);
+      // DB mirror — parallel run
+      for (const v of geoResult) {
+        supabase.from('venues').upsert({
+          name: v.name,
+          village: v.village || null,
+          latitude: v.lat || null,
+          longitude: v.lng || null,
+        }, { onConflict: 'name', ignoreDuplicates: true }).then(({ error }) => {
+          if (error) console.warn('[DB] Venue write failed:', error.message);
+        });
+      }
     }
-  } catch (error) { 
-      console.error("❌ Geocoder Failed:", error.message); 
+  } catch (error) {
+      console.error("❌ Geocoder Failed:", error.message);
   }
 }
 }

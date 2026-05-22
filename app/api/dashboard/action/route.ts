@@ -590,7 +590,7 @@ export async function POST(req: NextRequest) {
         .from('truck_events')
         .select('id, event_date, start_time, end_time, venue_name')
         .eq('truck_id', truck.id)
-        .neq('is_cancelled', true)
+        .neq('status', 'cancelled')
         .gte('event_date', today)
         .order('event_date', { ascending: true })
         .order('start_time', { ascending: true })

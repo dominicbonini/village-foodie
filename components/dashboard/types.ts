@@ -160,3 +160,22 @@ export const STATUS: Record<OrderStatus, { label: string; bg: string; text: stri
 // Moved to lib/prep-utils.ts — single source of truth
 export type { CatConfig } from '@/lib/prep-utils'
 export { DEFAULT_CAT_CONFIG } from '@/lib/prep-utils'
+
+export interface TruckEvent {
+  id: string
+  truck_id: string
+  event_date: string
+  venue_name: string
+  venue_address: string | null
+  start_time: string
+  end_time: string
+  status: 'unconfirmed' | 'confirmed' | 'open' | 'closed' | 'cancelled'
+  auto_open: boolean
+  auto_close: boolean
+  opened_at: string | null
+  closed_at: string | null
+  confirmed_at: string | null
+  customer_note: string | null
+  notes: string | null
+  source: string | null
+}

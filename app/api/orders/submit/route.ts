@@ -354,7 +354,7 @@ export async function POST(req: NextRequest) {
       .select('id, start_time, end_time')
       .eq('truck_id', resolvedTruckId)
       .eq('event_date', orderEventDate)
-      .neq('is_cancelled', true)
+      .neq('status', 'cancelled')
       .maybeSingle()
 
     // ── Save to Supabase ──────────────────────────────────────────────────────

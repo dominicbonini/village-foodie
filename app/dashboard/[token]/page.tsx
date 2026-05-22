@@ -8,7 +8,7 @@ import Link from 'next/link'
 import type {
   Order, Slot, TruckData, TruckMenu, Bundle, MenuItem,
   BasketItem, AppliedDeal, ItemStock, CategoryStock, CatConfig,
-  ModifierOption, ModifierGroup,
+  ModifierOption, ModifierGroup, TruckEvent,
 } from '@/components/dashboard/types'
 import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
 import {
@@ -53,7 +53,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[extraWaitMins,setExtraWaitMins]=useState(0)
   const[extraWaitStartedAt,setExtraWaitStartedAt]=useState<string|null>(null)
   const[waitTick,setWaitTick]=useState(0)
-  const[todayEvent,setTodayEvent]=useState<{id:string;event_date:string;start_time:string;end_time:string;venue_name?:string|null}|null>(null)
+  const[todayEvents,setTodayEvents]=useState<TruckEvent[]>([])
+  const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
+  const[showEventMenu,setShowEventMenu]=useState(false)
+  const[eventNoteInput,setEventNoteInput]=useState('')
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
   const[showCompleted,setShowCompleted]=useState(false)
@@ -138,7 +141,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
       setAuthenticated(true); setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
-      if(data.todayEvent) setTodayEvent(data.todayEvent)
+      try{
+        const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true`)
+        const eventsData=await eventsRes.json()
+        const todayStr=new Date().toISOString().split('T')[0]
+        const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
+        setTodayEvents(fetched)
+        const currentTime=new Date().toTimeString().slice(0,5)
+        const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
+        for(const ev of stale){
+          await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
+        }
+        if(stale.length>0) setTodayEvents(prev=>prev.map(e=>stale.some((s:TruckEvent)=>s.id===e.id)?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
+      }catch{}
     } catch{setError('Connection error')} finally{setLoading(false)}
   },[token,pin,fetchMenu,fetchStock])
 
@@ -181,7 +196,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const p=new URLSearchParams({token,pin:pinInput}); const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
     setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
-    if(data.todayEvent) setTodayEvent(data.todayEvent)
     setAuthenticated(true); setRequiresPin(false)
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput)}
   }
@@ -299,6 +313,65 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,orders_count:0}]})
   }
 
+  const openEvent=async(eventId:string)=>{
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
+      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
+      showToast('Open for orders')
+    }catch(err:any){showToast(err.message||'Failed','error')}
+  }
+
+  const extendEvent=async(eventId:string,addMins:number)=>{
+    const ev=todayEvents.find(e=>e.id===eventId); if(!ev) return
+    const[h,m]=ev.end_time.split(':').map(Number)
+    const total=h*60+m+addMins
+    const newEnd=`${String(Math.floor(total/60)%24).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{end_time:newEnd}})})
+      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,end_time:newEnd}:e))
+      showToast(`Extended to ${newEnd}`)
+    }catch(err:any){showToast(err.message||'Failed','error')}
+  }
+
+  const closeEventEarly=async(eventId:string)=>{
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'close',eventId,payload:{}})})
+      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'closed' as const,closed_at:new Date().toISOString()}:e))
+      setShowEventMenu(false); showToast('Event closed')
+    }catch(err:any){showToast(err.message||'Failed','error')}
+  }
+
+  const cancelEventFromMenu=async(eventId:string)=>{
+    if(!window.confirm('Cancel this event? This cannot be undone.')) return
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'cancel',eventId,payload:{}})})
+      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
+      setSelectedEventId(null); setShowEventMenu(false); showToast('Event cancelled')
+    }catch(err:any){showToast(err.message||'Failed','error')}
+  }
+
+  const saveEventNote=async(eventId:string)=>{
+    try{
+      const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update',eventId,payload:{customer_note:eventNoteInput}})})
+      const data=await res.json(); if(!res.ok) throw new Error(data.error)
+      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,customer_note:eventNoteInput||null}:e))
+      setShowEventMenu(false); showToast('Note saved')
+    }catch(err:any){showToast(err.message||'Failed','error')}
+  }
+
+  const switchEvent=(event:TruckEvent)=>{
+    const active=todayEvents.find(e=>e.id===selectedEventId)||(todayEvents.find(e=>e.status==='open')??todayEvents.find(e=>e.status==='confirmed')??todayEvents[0]??null)
+    if(active?.status==='open'&&event.id!==active.id){
+      const confirmed=window.confirm(`You're currently serving at ${active.venue_name}. Switch to ${event.venue_name}? Tap the current event to switch back.`)
+      if(!confirmed) return
+    }
+    setSelectedEventId(event.id)
+  }
+
   const categoryOrder = useMemo(
     () => truckMenu?.categories?.map(c => c.name) ?? [],
     [truckMenu]
@@ -323,6 +396,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       </div>
     </div>
   )
+
+  const activeEvent:TruckEvent|null=selectedEventId
+    ?todayEvents.find(e=>e.id===selectedEventId)??null
+    :(todayEvents.find(e=>e.status==='open')
+      ??todayEvents.find(e=>e.status==='confirmed')
+      ??todayEvents[0]
+      ??null)
+  const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
 
   // Sort by collection time (soonest first), then by order ID (oldest first)
   // Orders without slot get high sort value so they appear after timed orders
@@ -392,6 +473,55 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
           <div>
+            {/* Multi-event switcher */}
+            {todayEvents.length>1&&(
+              <div className="flex gap-2 pb-3 overflow-x-auto">
+                {todayEvents.map(event=>(
+                  <button key={event.id} onClick={()=>switchEvent(event)}
+                    className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${(activeEvent?.id===event.id)?'bg-slate-900 text-white border-slate-900':'bg-white text-slate-600 border-slate-200'}`}>
+                    {event.venue_name.split(',')[0]} {event.start_time}{event.status==='open'?' ●':''}
+                  </button>
+                ))}
+              </div>
+            )}
+            {/* Open for orders banner */}
+            {activeEvent?.status==='confirmed'&&!activeEvent.auto_open&&(
+              <div className="bg-white border-2 border-teal-500 rounded-2xl p-6 mb-4 text-center">
+                <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
+                <div className="text-sm text-slate-500 mb-4">Today · {activeEvent.start_time}–{activeEvent.end_time}</div>
+                <button onClick={()=>openEvent(activeEvent.id)}
+                  className="w-full bg-teal-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-teal-700 active:scale-[0.98] transition-all">
+                  Open for orders
+                </button>
+              </div>
+            )}
+            {/* Event header when open */}
+            {activeEvent?.status==='open'&&(
+              <div className="flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl mb-3 flex-shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
+                  <span className="text-sm font-medium text-slate-900 truncate">{activeEvent.venue_name}</span>
+                  <span className="text-xs text-slate-400 flex-shrink-0">{activeEvent.start_time}–{activeEvent.end_time}</span>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button onClick={()=>extendEvent(activeEvent.id,30)}
+                    className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
+                    +30 min
+                  </button>
+                  <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
+                    className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
+                    ⋯
+                  </button>
+                </div>
+              </div>
+            )}
+            {/* Recently closed banner */}
+            {recentlyClosed&&activeEvent&&(
+              <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4 flex items-center justify-between">
+                <span className="text-sm text-slate-600">Event closed · {activeEvent.venue_name} ended at {activeEvent.end_time}</span>
+                <button onClick={()=>extendEvent(activeEvent.id,30)} className="text-sm font-medium text-teal-600 hover:text-teal-700">Extend 30 min</button>
+              </div>
+            )}
             <div className="flex gap-2 mb-3">
               <button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null})});setPausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>
               {waitMinutes>0?(
@@ -684,7 +814,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             waitMinutes={waitMinutes}
             token={token}
             pin={pin}
-            todayEvent={todayEvent}
+            todayEvent={activeEvent}
             categoryOrder={categoryOrder}
             itemCategoryMap={itemCategoryMap}
             showToast={showToast}
@@ -1085,6 +1215,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm">
               Add to order
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Event menu */}
+      {showEventMenu&&activeEvent&&(
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowEventMenu(false)}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-black text-slate-900">{activeEvent.venue_name}</h3>
+              <button onClick={()=>setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
+            </div>
+            <div className="mb-4">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Customer note</label>
+              <input type="text" value={eventNoteInput} onChange={e=>setEventNoteInput(e.target.value)}
+                placeholder="e.g. Park in the main car park"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"/>
+              <button onClick={()=>saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
+            </div>
+            <div className="space-y-2 border-t border-slate-100 pt-3">
+              <button onClick={()=>closeEventEarly(activeEvent.id)}
+                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Close early</button>
+              <button onClick={()=>cancelEventFromMenu(activeEvent.id)}
+                className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
+            </div>
           </div>
         </div>
       )}

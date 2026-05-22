@@ -1,53 +1,33 @@
 // app/api/events/route.ts
-// Returns the next upcoming event(s) for a given truck slug
-// Reads from the same master Google Sheet CSV as the main site
+// Returns upcoming events for a given truck slug.
+// Called by the order page and AddOrderPanel.
 
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { createSlug } from '@/lib/utils'
 
-const EVENTS_CSV_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=0&single=true&output=csv'
-const TRUCKS_CSV_URL  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQyBxhM8rEpKLs0-iqHVAp0Xn7Ucz8RidtTeMQ0j7zV6nQFlLHxAYbZU9ppuYGUwr3gLydD_zKgeCpD/pub?gid=28504033&single=true&output=csv'
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
-export const revalidate = 300  // cache for 5 minutes
+export const revalidate = 300
 
-function parseCSVRow(row: string): string[] {
-  const cols: string[] = []
-  let cell = '', inQuotes = false
-  for (let i = 0; i < row.length; i++) {
-    const ch = row[i]
-    if (ch === '"' && inQuotes && row[i+1] === '"') { cell += '"'; i++ }
-    else if (ch === '"') { inQuotes = !inQuotes }
-    else if (ch === ',' && !inQuotes) { cols.push(cell.trim()); cell = '' }
-    else { cell += ch }
-  }
-  cols.push(cell.trim())
-  return cols.map(c => c.replace(/^"|"$/g, '').trim())
+function toddmmyyyy(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-')
+  return `${d}/${m}/${y}`
 }
 
-// Parse dd/mm/yyyy to a Date
-function parseDate(dateStr: string): Date | null {
-  if (!dateStr) return null
-  const parts = dateStr.split('/')
-  if (parts.length !== 3) return null
-  return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]))
-}
-
-function formatISODate(dateStr: string): string {
-  const d = parseDate(dateStr)
-  if (!d) return ''
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
-}
-
-function formatFriendly(dateStr: string): string {
-  const d = parseDate(dateStr)
-  if (!d) return dateStr
-  const today = new Date(); today.setHours(0,0,0,0)
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1)
-  const check = new Date(d); check.setHours(0,0,0,0)
-  const dayName = d.toLocaleDateString('en-GB', { weekday: 'long' })
-  const day = d.getDate()
-  const suffix = [11,12,13].includes(day) ? 'th' : ['st','nd','rd'][((day%10)-1)] || 'th'
-  const month = d.toLocaleDateString('en-GB', { month: 'long' })
+function formatFriendly(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1)
+  const check = new Date(date); check.setHours(0, 0, 0, 0)
+  const dayName = date.toLocaleDateString('en-GB', { weekday: 'long' })
+  const day = date.getDate()
+  const suffix = [11, 12, 13].includes(day) ? 'th' : (['st', 'nd', 'rd'][(day % 10) - 1] || 'th')
+  const month = date.toLocaleDateString('en-GB', { month: 'long' })
   const base = `${dayName} ${day}${suffix} ${month}`
   if (check.getTime() === today.getTime()) return `Today — ${base}`
   if (check.getTime() === tomorrow.getTime()) return `Tomorrow — ${base}`
@@ -60,98 +40,69 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'truck param required' }, { status: 400 })
   }
 
-  const fetchOpts = { next: { revalidate: 300 } as RequestInit['next'] }
+  const today = new Date().toISOString().split('T')[0]
 
-  try {
-    const [eventsRes, trucksRes] = await Promise.all([
-      fetch(EVENTS_CSV_URL, fetchOpts),
-      fetch(TRUCKS_CSV_URL, fetchOpts),
-    ])
+  // Build alias map from all discovery trucks
+  const { data: trucks } = await supabase
+    .from('discovery_trucks')
+    .select('name, aliases')
 
-    const [eventsText, trucksText] = await Promise.all([
-      eventsRes.text(),
-      trucksRes.text(),
-    ])
-
-    // Build truck alias map: slug -> canonical name
-    const truckRows = trucksText.split('\n').slice(1)
-    const aliasMap: Record<string, string> = {}
-    truckRows.forEach(row => {
-      const cols = parseCSVRow(row)
-      if (!cols[0]) return
-      const name = cols[0]
-      const slug = createSlug(name)
-      aliasMap[slug] = name
-      // Also map aliases (column 17)
-      if (cols[17]) {
-        cols[17].split(',').forEach(alias => {
-          const aSlug = createSlug(alias.trim())
-          if (aSlug) aliasMap[aSlug] = name
-        })
-      }
+  const aliasMap: Record<string, string> = {}
+  ;(trucks || []).forEach((t: any) => {
+    aliasMap[createSlug(t.name)] = t.name
+    ;(t.aliases || []).forEach((a: string) => {
+      const s = createSlug(a.trim())
+      if (s) aliasMap[s] = t.name
     })
+  })
 
-    const canonicalName = aliasMap[truckSlug]
+  const canonicalName = aliasMap[truckSlug]
 
-    // Find upcoming events for this truck
-    const today = new Date(); today.setHours(0,0,0,0)
-    const eventRows = eventsText.split('\n').slice(1)
-    const upcoming: any[] = []
-
-    eventRows.forEach(row => {
-      const cols = parseCSVRow(row)
-      if (!cols[0] || !cols[3]) return
-
-      const rawTruck = cols[3]
-      const truckSlugInEvent = createSlug(rawTruck)
-      const canonicalInEvent = aliasMap[truckSlugInEvent]
-
-      // Match by slug or by canonical name
-      const isMatch = truckSlugInEvent === truckSlug ||
-        (canonicalName && canonicalInEvent === canonicalName) ||
-        createSlug(rawTruck) === truckSlug
-
-      if (!isMatch) return
-
-      const eventDate = parseDate(cols[0])
-      if (!eventDate || eventDate < today) return
-
-      upcoming.push({
-        date:       cols[0],                    // dd/mm/yyyy
-        date_iso:   formatISODate(cols[0]),     // yyyy-mm-dd for Supabase
-        date_friendly: formatFriendly(cols[0]),
-        start_time: cols[1] || '',
-        end_time:   cols[2] || '',
-        truck_name: canonicalName || rawTruck,
-        venue_name: cols[4] || '',
-        village:    cols[5] || '',
-        notes:      cols[6] || '',
-        _sortDate:  eventDate.getTime(),
-      })
-    })
-
-    // Sort by date ascending and deduplicate
-    upcoming.sort((a, b) => a._sortDate - b._sortDate)
-    const seen = new Set<string>()
-    const deduped = upcoming.filter(e => {
-      const key = `${e.date_iso}|${createSlug(e.venue_name)}|${createSlug(e.village)}`
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
-
-    // Remove internal sort key
-    const events = deduped.map(({ _sortDate, ...e }) => e)
-
+  if (!canonicalName) {
     return NextResponse.json({
       truck_slug: truckSlug,
-      truck_name: canonicalName || truckSlug,
-      events,
-      next_event: events[0] || null,
+      truck_name: truckSlug,
+      events: [],
+      next_event: null,
     })
-
-  } catch (err: any) {
-    console.error('Events API error:', err)
-    return NextResponse.json({ error: 'Failed to load events' }, { status: 500 })
   }
+
+  const { data: rows, error } = await supabase
+    .from('discovery_events')
+    .select('event_date, start_time, end_time, truck_name, venue_name, village, event_notes')
+    .eq('truck_name', canonicalName)
+    .gte('event_date', today)
+    .order('event_date', { ascending: true })
+    .order('start_time', { ascending: true, nullsFirst: false })
+    .limit(50)
+
+  if (error) {
+    console.error('Events API error:', error.message)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  const seen = new Set<string>()
+  const events = (rows || []).map(e => {
+    const key = `${e.event_date}|${createSlug(e.venue_name || '')}|${createSlug(e.village || '')}`
+    if (seen.has(key)) return null
+    seen.add(key)
+    return {
+      date:          toddmmyyyy(e.event_date),
+      date_iso:      e.event_date,
+      date_friendly: formatFriendly(e.event_date),
+      start_time:    e.start_time || '',
+      end_time:      e.end_time || '',
+      truck_name:    canonicalName,
+      venue_name:    e.venue_name || '',
+      village:       e.village || '',
+      notes:         e.event_notes || '',
+    }
+  }).filter(Boolean)
+
+  return NextResponse.json({
+    truck_slug:  truckSlug,
+    truck_name:  canonicalName,
+    events,
+    next_event:  events[0] || null,
+  })
 }

@@ -221,7 +221,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'delete_event') {
-    await supabase.from('truck_events').update({ is_cancelled: true }).eq('id', body.id).eq('truck_id', truck.id)
+    await supabase.from('truck_events').update({ status: 'cancelled' }).eq('id', body.id).eq('truck_id', truck.id)
     return NextResponse.json({ success: true })
   }
 
