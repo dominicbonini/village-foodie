@@ -53,9 +53,7 @@ const MAX_FEATURES: Feature[] = [
   'whatsapp_replies',
 ]
 
-const TRIAL_FEATURES: Feature[] = MAX_FEATURES.filter(
-  f => f !== 'whatsapp_replies'
-)
+const TRIAL_FEATURES: Feature[] = [...MAX_FEATURES]
 
 // Single source of truth — what each plan includes
 export const PLAN_FEATURES: Record<Plan, Set<Feature>> = {
