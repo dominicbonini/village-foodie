@@ -45,6 +45,18 @@ const PRO_FEATURES: Feature[] = [
   'instagram_messenger_replies',
 ]
 
+const MAX_FEATURES: Feature[] = [
+  ...PRO_FEATURES,
+  'ticket_printing',
+  'multi_device_kds',
+  'cook_screen',
+  'whatsapp_replies',
+]
+
+const TRIAL_FEATURES: Feature[] = MAX_FEATURES.filter(
+  f => f !== 'whatsapp_replies'
+)
+
 // Single source of truth — what each plan includes
 export const PLAN_FEATURES: Record<Plan, Set<Feature>> = {
   starter: new Set([
@@ -60,21 +72,8 @@ export const PLAN_FEATURES: Record<Plan, Set<Feature>> = {
     'stock_countdown',
   ]),
   pro: new Set(PRO_FEATURES),
-  max: new Set([
-    ...PRO_FEATURES,
-    'ticket_printing',
-    'multi_device_kds',
-    'cook_screen',
-    'whatsapp_replies',
-  ]),
-  // Trial = full Max access, valid only while trial_expires_at is in the future
-  trial: new Set([
-    ...PRO_FEATURES,
-    'ticket_printing',
-    'multi_device_kds',
-    'cook_screen',
-    'whatsapp_replies',
-  ]),
+  max: new Set(MAX_FEATURES),
+  trial: new Set(TRIAL_FEATURES),
 }
 
 // Base check — plan tier only, no overrides

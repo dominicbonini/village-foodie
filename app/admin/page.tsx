@@ -9,11 +9,10 @@ import { PLAN_META, PLAN_FEATURES, type Plan, type Feature } from '@/lib/feature
 interface AdminTruck {
   id: string
   name: string
-  slug: string
   plan: Plan
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null
-  is_active: boolean
+  active: boolean
   auto_accept: boolean
   contact_email: string | null
   onboarded_at: string | null
@@ -149,8 +148,7 @@ export default function AdminPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-black text-slate-900">{truck.name}</p>
-                      <span className="text-xs text-slate-400 font-mono">{truck.slug}</span>
-                      {!truck.is_active && <span className="text-[10px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">Inactive</span>}
+                      {!truck.active && <span className="text-[10px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">Inactive</span>}
                     </div>
                     {truck.contact_email && <p className="text-slate-400 text-xs mt-0.5">{truck.contact_email}</p>}
                     {truck.onboarded_at && <p className="text-slate-300 text-xs">Joined {new Date(truck.onboarded_at).toLocaleDateString('en-GB')}</p>}
@@ -206,8 +204,8 @@ export default function AdminPage() {
                     {/* Active toggle */}
                     <div className="text-center">
                       <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Active</label>
-                      <input type="checkbox" checked={truck.is_active}
-                        onChange={e => update(truck.id, { is_active: e.target.checked })}
+                      <input type="checkbox" checked={truck.active}
+                        onChange={e => update(truck.id, { active: e.target.checked })}
                         className="w-4 h-4 accent-orange-500" />
                     </div>
 

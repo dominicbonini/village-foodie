@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://villagefoodie.co.uk"),
+  manifest: "/manifest.json",
   title: {
     default: "Village Foodie", 
     template: "%s | Village Foodie",

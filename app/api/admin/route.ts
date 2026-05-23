@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,slug,plan,trial_expires_at,feature_overrides,is_active,auto_accept,contact_email,onboarded_at')
+    .select('id,name,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at')
     .order('name')
   return NextResponse.json({ trucks: trucks || [] })
 }
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const allowed = ['plan', 'is_active', 'auto_accept', 'onboarded_at', 'trial_expires_at', 'feature_overrides']
+  const allowed = ['plan', 'active', 'auto_accept', 'onboarded_at', 'trial_expires_at', 'feature_overrides']
   const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => allowed.includes(k)))
   const { error } = await supabase.from('trucks').update(safe).eq('id', truckId)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })

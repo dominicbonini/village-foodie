@@ -5,7 +5,7 @@ interface FeatureGateProps {
   plan?: Plan | null
   overrides?: Record<string, boolean> | null
   trialExpiresAt?: string | null
-  children: React.ReactNode
+  children?: React.ReactNode
   showUpgrade?: boolean
   upgradeMessage?: string
 }

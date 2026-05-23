@@ -8,8 +8,11 @@ const fromWa     = process.env.TWILIO_WHATSAPP_NUMBER!
 const baseUrl = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
 const auth    = () => Buffer.from(`${accountSid}:${authToken}`).toString('base64')
 
-export async function sendWhatsApp(to: string, body: string): Promise<void> {
-  const toFormatted = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`
+export async function sendWhatsApp(to: string, body: string, from?: string): Promise<void> {
+  const toFormatted  = to.startsWith('whatsapp:')   ? to   : `whatsapp:${to}`
+  const fromFormatted = from
+    ? (from.startsWith('whatsapp:') ? from : `whatsapp:${from}`)
+    : fromWa
 
   const res = await fetch(baseUrl, {
     method: 'POST',
@@ -19,7 +22,7 @@ export async function sendWhatsApp(to: string, body: string): Promise<void> {
     },
     body: new URLSearchParams({
       To:   toFormatted,
-      From: fromWa,
+      From: fromFormatted,
       Body: body,
     }).toString(),
   })
@@ -31,21 +34,25 @@ export async function sendWhatsApp(to: string, body: string): Promise<void> {
 }
 
 export async function logMessage(params: {
-  orderId?: string
-  direction: 'inbound' | 'outbound'
-  channel:   'whatsapp' | 'sms' | 'email'
-  from:      string
-  to:        string
-  body:      string
+  orderId?:         string
+  truckId?:         string
+  direction:        'inbound' | 'outbound'
+  channel:          'whatsapp' | 'sms' | 'email'
+  from:             string
+  to:               string
+  body:             string
+  inboundMessage?:  string
 }): Promise<void> {
   try {
     await supabase.from('messages').insert({
-      order_id:    params.orderId ?? null,
-      direction:   params.direction,
-      channel:     params.channel,
-      from_number: params.from,
-      to_number:   params.to,
-      body:        params.body,
+      order_id:        params.orderId ?? null,
+      truck_id:        params.truckId ?? null,
+      direction:       params.direction,
+      channel:         params.channel,
+      from_number:     params.from,
+      to_number:       params.to,
+      body:            params.body,
+      inbound_message: params.inboundMessage ?? null,
     })
   } catch (err) {
     console.error('logMessage failed:', err)

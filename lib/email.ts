@@ -223,3 +223,78 @@ export async function sendConfirmationEmail(params: {
     // Never throw — email failure must not fail the order
   }
 }
+
+export async function sendCancellationEmail({
+  to, customerName, orderId, truckName, reason, paymentStatus,
+}: {
+  to: string
+  customerName: string
+  orderId: string
+  truckName: string
+  reason: string | null
+  paymentStatus: string | null
+}): Promise<void> {
+  const reasonLine = reason ? `<p style="color:#475569">${reason}</p>` : ''
+  const refundLine = paymentStatus === 'paid'
+    ? `<p>Your refund will be processed automatically within 3–5 working days.</p>`
+    : ''
+  const html = `
+    <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
+      <p>Hi ${customerName || 'there'},</p>
+      <p>Your order <strong>#${orderId}</strong> from <strong>${truckName}</strong> has been cancelled.</p>
+      ${reasonLine}
+      ${refundLine}
+      <p>We're sorry for any inconvenience.</p>
+      <p>${truckName}</p>
+      <p style="color:#94a3b8;font-size:12px">Powered by Village Foodie · villagefoodie.co.uk</p>
+    </div>
+  `
+  await sendConfirmationEmail({
+    to,
+    subject: `Your order has been cancelled — ${truckName}`,
+    html,
+    text: `Hi ${customerName || 'there'}, your order #${orderId} from ${truckName} has been cancelled.${reason ? ' ' + reason : ''}${paymentStatus === 'paid' ? ' Your refund will be processed within 3–5 working days.' : ''} We're sorry for any inconvenience.`,
+    truckName,
+  })
+}
+
+export async function sendEventCancellationEmail({
+  to, customerName, orderId, truckName, venueName, village, eventDate, note, paymentStatus,
+}: {
+  to: string
+  customerName: string
+  orderId: string
+  truckName: string
+  venueName: string | null
+  village: string | null
+  eventDate: string | null
+  note: string | null
+  paymentStatus: string | null
+}): Promise<void> {
+  const location = [venueName, village].filter(Boolean).join(', ')
+  const dateFormatted = eventDate
+    ? new Date(eventDate).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
+    : null
+  const noteLine = note ? `<p>${note}</p>` : ''
+  const refundLine = paymentStatus === 'paid'
+    ? ' Your refund will be processed automatically within 3–5 working days.'
+    : ''
+  const html = `
+    <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
+      <p>Hi ${customerName || 'there'},</p>
+      <p>Unfortunately <strong>${truckName}</strong>'s event${location ? ` at ${location}` : ''}${dateFormatted ? ` on ${dateFormatted}` : ''} has been cancelled.</p>
+      ${noteLine}
+      <p>Your order <strong>#${orderId}</strong> has been cancelled.${refundLine}</p>
+      <p>We're sorry for any inconvenience.</p>
+      <p>${truckName}</p>
+      <p style="color:#94a3b8;font-size:12px">Powered by Village Foodie · villagefoodie.co.uk</p>
+    </div>
+  `
+  await sendConfirmationEmail({
+    to,
+    subject: `${truckName} at ${location || 'your event'} — cancelled`,
+    html,
+    text: `Hi ${customerName || 'there'}, unfortunately ${truckName}'s event${location ? ` at ${location}` : ''}${dateFormatted ? ` on ${dateFormatted}` : ''} has been cancelled. Your order #${orderId} has been cancelled.${refundLine}${note ? ' ' + note : ''} We're sorry for any inconvenience.`,
+    truckName,
+  })
+}

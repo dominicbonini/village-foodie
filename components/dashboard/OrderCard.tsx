@@ -86,6 +86,7 @@ export function OrderCard({
   itemCategoryMap,
   viewMode = 'solo',
   kdsMode = false,
+  pendingSync = false,
 }: {
   order: Order
   truck: TruckData | null
@@ -97,6 +98,7 @@ export function OrderCard({
   itemCategoryMap?: Record<string, string>
   viewMode?: ViewMode
   kdsMode?: boolean
+  pendingSync?: boolean
 }) {
   const [expanded, setExpanded] = useState(true)
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
@@ -204,6 +206,15 @@ export function OrderCard({
   // ── Button sets per viewMode ────────────────────────────────────────────────
 
   const renderButtons = () => {
+    if (pendingSync) {
+      return (
+        <div className="flex items-center gap-2 py-3 text-slate-400 text-sm justify-center">
+          <span>⏳</span>
+          <span>Syncing…</span>
+        </div>
+      )
+    }
+
     if (order.status === 'pending') {
       return (
         <>
@@ -285,7 +296,7 @@ export function OrderCard({
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200 transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''}`}>
+    <div className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${pendingSync ? 'border-amber-300' : 'border-slate-200'}`}>
 
       {/* Full-width coloured header — age-driven */}
       {viewMode === 'cook' ? (

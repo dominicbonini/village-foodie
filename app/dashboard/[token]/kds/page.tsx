@@ -11,6 +11,7 @@ import { enableKeepAwake, disableKeepAwake } from '@/lib/native/keepAwake'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission, playNewOrderAlert } from '@/lib/native/notifications'
 import { configureStatusBar } from '@/lib/native/statusBar'
+import { registerServiceWorker, addSWMessageListener, getQueueCount } from '@/lib/native/serviceWorker'
 
 // View mode driven by ?view= query param
 // /kds           → window view (default, for the main iPad at the hatch)
@@ -42,6 +43,8 @@ export default function KdsPage() {
   const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(null)
   const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(null)
   const [isOffline, setIsOffline] = useState(false)
+  const [pendingSyncCount, setPendingSyncCount] = useState(0)
+  const [pendingSync, setPendingSync] = useState<Set<string>>(new Set())
   const [todayEvents, setTodayEvents] = useState<TruckEvent[]>([])
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
   const [showEventMenu, setShowEventMenu] = useState(false)
@@ -122,8 +125,23 @@ export default function KdsPage() {
 
   useEffect(() => {
     getNetworkStatus().then(s => setIsOffline(s === 'offline'))
-    const remove = addNetworkListener(s => setIsOffline(s === 'offline'))
+    const remove = addNetworkListener(s => {
+      setIsOffline(s === 'offline')
+      if (s === 'online') getQueueCount().then(setPendingSyncCount)
+    })
     return remove
+  }, [])
+
+  useEffect(() => {
+    registerServiceWorker()
+    getQueueCount().then(setPendingSyncCount)
+    return addSWMessageListener(count => {
+      setPendingSyncCount(count)
+      if (count === 0) {
+        setPendingSync(new Set())
+        fetchAllRef.current()
+      }
+    })
   }, [])
 
   useEffect(() => {
@@ -181,11 +199,20 @@ export default function KdsPage() {
 
   const handleAction = useCallback(async (action: string, orderId: string) => {
     setActionLoading(`${action}-${orderId}`)
-    await fetch('/api/dashboard/action', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, pin, action, orderId }),
-    })
+    try {
+      const res = await fetch('/api/dashboard/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, pin, action, orderId }),
+      })
+      const data = await res.json()
+      if (data?.queued) {
+        setPendingSyncCount(c => c + 1)
+        setPendingSync(prev => new Set(prev).add(orderId))
+        setActionLoading(null)
+        return
+      }
+    } catch {}
     setActionLoading(null)
     fetchAllRef.current()
   }, [token, pin])
@@ -200,21 +227,31 @@ export default function KdsPage() {
       ? null
       : new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()
     setPausedUntil(paused_until)
-    await fetch('/api/dashboard/action', {
+    const res = await fetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, pin, action: 'set_paused', paused_until }),
     })
+    const data = await res.json()
+    if (data?.queued) {
+      setPendingSyncCount(c => c + 1)
+      return
+    }
     fetchAllRef.current()
   }, [token, pin, pausedUntil])
 
   const handleSetWait = useCallback(async (mins: number) => {
     setExtraWaitMins(mins)
-    await fetch('/api/dashboard/action', {
+    const res = await fetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, pin, action: 'set_extra_wait', minutes: mins }),
     })
+    const data = await res.json()
+    if (data?.queued) {
+      setPendingSyncCount(c => c + 1)
+      return
+    }
     fetchAllRef.current()
   }, [token, pin])
 
@@ -240,7 +277,9 @@ export default function KdsPage() {
   const openEvent = async (eventId: string) => {
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'open', eventId, payload: {} }) })
-      const data = await res.json(); if (!res.ok) throw new Error(data.error)
+      const data = await res.json()
+      if (data?.queued) { setPendingSyncCount(c => c + 1); return }
+      if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
       showKdsToast('Open for orders')
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
@@ -253,7 +292,9 @@ export default function KdsPage() {
     const newEnd = `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { end_time: newEnd } }) })
-      const data = await res.json(); if (!res.ok) throw new Error(data.error)
+      const data = await res.json()
+      if (data?.queued) { setPendingSyncCount(c => c + 1); return }
+      if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, end_time: newEnd } : e))
       showKdsToast(`Extended to ${newEnd}`)
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
@@ -262,7 +303,9 @@ export default function KdsPage() {
   const closeEventEarly = async (eventId: string) => {
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'close', eventId, payload: {} }) })
-      const data = await res.json(); if (!res.ok) throw new Error(data.error)
+      const data = await res.json()
+      if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
+      if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'closed' as const, closed_at: new Date().toISOString() } : e))
       setShowEventMenu(false); showKdsToast('Event closed')
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
@@ -272,7 +315,9 @@ export default function KdsPage() {
     if (!window.confirm('Cancel this event? This cannot be undone.')) return
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'cancel', eventId, payload: {} }) })
-      const data = await res.json(); if (!res.ok) throw new Error(data.error)
+      const data = await res.json()
+      if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
+      if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.filter(e => e.id !== eventId))
       setSelectedEventId(null); setShowEventMenu(false); showKdsToast('Event cancelled')
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
@@ -281,7 +326,9 @@ export default function KdsPage() {
   const saveEventNote = async (eventId: string) => {
     try {
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'update', eventId, payload: { customer_note: eventNoteInput } }) })
-      const data = await res.json(); if (!res.ok) throw new Error(data.error)
+      const data = await res.json()
+      if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
+      if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, customer_note: eventNoteInput || null } : e))
       setShowEventMenu(false); showKdsToast('Note saved')
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
@@ -452,16 +499,18 @@ export default function KdsPage() {
         <div className="flex-1" />
 
         {/* Extra wait selector */}
-        <select
-          value={extraWaitMins}
-          onChange={e => handleSetWait(parseInt(e.target.value))}
-          className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
-        >
-          <option value="0">No extra wait</option>
-          <option value="10">+10 min</option>
-          <option value="20">+20 min</option>
-          <option value="30">+30 min</option>
-        </select>
+        <div className="flex items-center gap-1">
+          <select
+            value={extraWaitMins}
+            onChange={e => handleSetWait(parseInt(e.target.value))}
+            className="text-xs border border-slate-200 rounded-md px-2 py-1.5 bg-white text-slate-700"
+          >
+            <option value="0">No extra wait</option>
+            <option value="10">+10 min</option>
+            <option value="20">+20 min</option>
+            <option value="30">+30 min</option>
+          </select>
+        </div>
 
         {/* Pause — both views */}
         <button
@@ -509,7 +558,10 @@ export default function KdsPage() {
       {isOffline && (
         <div className="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
           <span className="inline-block w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
-          <span>No connection — showing last known orders. New orders paused.</span>
+          <span>
+            No connection — showing last known orders. New orders paused.
+            {pendingSyncCount > 0 && ` · ${pendingSyncCount} action${pendingSyncCount > 1 ? 's' : ''} queued`}
+          </span>
         </div>
       )}
 
@@ -621,9 +673,10 @@ export default function KdsPage() {
                 onAction={handleAction}
                 onEdit={() => {}}
                 viewMode={cardViewMode}
-              kdsMode={kdsMode}
+                kdsMode={kdsMode}
                 categoryOrder={categoryOrder}
                 itemCategoryMap={itemCategoryMap}
+                pendingSync={pendingSync.has(order.id)}
               />
             ))
           )}

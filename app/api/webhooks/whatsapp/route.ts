@@ -1,0 +1,105 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { canAccess } from '@/lib/features'
+import { sendWhatsApp, logMessage } from '@/lib/twilio'
+import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+// Twilio sends webhooks as form-encoded POST
+export async function POST(req: NextRequest) {
+  try {
+    const formData = await req.formData()
+    const from = formData.get('From') as string  // e.g. whatsapp:+447700900000
+    const to   = formData.get('To')   as string  // e.g. whatsapp:+14155238886
+    const body = (formData.get('Body') as string || '').trim()
+
+    if (!from || !to || !body) {
+      return new NextResponse('OK', { status: 200 })
+    }
+
+    const toNumber   = to.replace('whatsapp:', '')
+    const fromNumber = from.replace('whatsapp:', '')
+
+    const { data: truck } = await supabase
+      .from('trucks')
+      .select(`
+        id, name,
+        whatsapp_sender, whatsapp,
+        plan, feature_overrides, trial_expires_at
+      `)
+      .eq('whatsapp_sender', toNumber)
+      .eq('active', true)
+      .single()
+
+    if (!truck) {
+      console.warn('[WhatsApp webhook] No truck found for number:', toNumber)
+      return new NextResponse('OK', { status: 200 })
+    }
+
+    if (!canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      return new NextResponse('OK', { status: 200 })
+    }
+
+    const today = new Date().toISOString().split('T')[0]
+    const { data: events } = await supabase
+      .from('truck_events')
+      .select('event_date, start_time, end_time, venue_name, village, status')
+      .eq('truck_id', truck.id)
+      .gte('event_date', today)
+      .in('status', ['confirmed', 'open', 'unconfirmed'])
+      .order('event_date', { ascending: true })
+      .limit(10)
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? ''
+    const reply = await generateWhatsAppReply({
+      truckName:       truck.name,
+      truckId:         truck.id,
+      customerMessage: body,
+      events:          events ?? [],
+      scheduleUrl:     `${baseUrl}/trucks/${truck.id}`,
+      orderUrl:        `${baseUrl}/trucks/${truck.id}/order`,
+    })
+
+    if (!reply) {
+      // IGNORE bucket — log inbound but don't reply
+      await logMessage({
+        truckId:   truck.id,
+        direction: 'inbound',
+        channel:   'whatsapp',
+        from:      fromNumber,
+        to:        toNumber,
+        body:      `[IGNORED] ${body}`,
+      })
+      return new NextResponse('OK', { status: 200 })
+    }
+
+    await sendWhatsApp(fromNumber, reply, toNumber)
+
+    await logMessage({
+      truckId:   truck.id,
+      direction: 'inbound',
+      channel:   'whatsapp',
+      from:      fromNumber,
+      to:        toNumber,
+      body,
+    })
+    await logMessage({
+      truckId:        truck.id,
+      direction:      'outbound',
+      channel:        'whatsapp',
+      from:           toNumber,
+      to:             fromNumber,
+      body:           reply,
+      inboundMessage: body,
+    })
+  } catch (err) {
+    console.error('[WhatsApp webhook] Unhandled error:', err)
+  }
+
+  // Always return 200 — Twilio will retry on non-200
+  return new NextResponse('OK', { status: 200 })
+}

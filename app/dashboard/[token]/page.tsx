@@ -72,8 +72,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[pausedUntil,setPausedUntil]=useState<string|null>(null)
   const[showPauseModal,setShowPauseModal]=useState(false)
   const paused=pausedUntil?new Date(pausedUntil)>new Date():false
-  // Cancel confirmation
-  const[cancelConfirmId,setCancelConfirmId]=useState<string|null>(null)
+  // Cancel confirmation modal
+  const[showCancelModal,setShowCancelModal]=useState(false)
+  const[cancellingOrder,setCancellingOrder]=useState<Order|null>(null)
+  const[cancelReason,setCancelReason]=useState('')
+  const[cancelNote,setCancelNote]=useState('')
   // Edit modal
   const[editingOrder,setEditingOrder]=useState<Order|null>(null)
   const[editItems,setEditItems]=useState<BasketItem[]>([])
@@ -242,7 +245,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const doAction=async(action:string,orderId:string)=>{
-    if(action==='cancel'){setCancelConfirmId(orderId);return}
+    if(action==='cancel'){const ord=orders.find(o=>o.id===orderId)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
     setActionLoading(`${action}-${orderId}`)
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,orderId})})
@@ -342,6 +345,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'closed' as const,closed_at:new Date().toISOString()}:e))
       setShowEventMenu(false); showToast('Event closed')
     }catch(err:any){showToast(err.message||'Failed','error')}
+  }
+
+  const confirmCancelOrder=()=>{
+    if(!cancellingOrder) return
+    const id=cancellingOrder.id
+    const fullReason=[cancelReason,cancelNote].filter(Boolean).join(' — ')
+    setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')
+    setActionLoading(`cancel-${id}`)
+    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'cancel',orderId:id,cancellationReason:fullReason||null})})
+      .then(r=>r.json()).then(()=>{showToast(`Order #${id} cancelled`);fetchAll()})
+      .catch(()=>showToast('Failed to cancel','error'))
+      .finally(()=>setActionLoading(null))
   }
 
   const cancelEventFromMenu=async(eventId:string)=>{
@@ -998,14 +1013,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      {/* Cancel confirmation */}
-      {cancelConfirmId&&(
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <p className="font-bold text-slate-900 text-base text-center mb-4">Are you sure you want to cancel order #{cancelConfirmId}?</p>
-            <div className="flex gap-2">
-              <button onClick={()=>setCancelConfirmId(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">No</button>
-              <button onClick={()=>{const id=cancelConfirmId;setCancelConfirmId(null);setActionLoading(`cancel-${id}`);fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'cancel',orderId:id})}).then(r=>r.json()).then(()=>{showToast(`Order #${id} cancelled`);fetchAll()}).catch(()=>showToast('Failed to cancel','error')).finally(()=>setActionLoading(null))}} className="flex-1 bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700 text-sm">Yes, cancel</button>
+      {/* Cancel order modal */}
+      {showCancelModal&&cancellingOrder&&(
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Cancel order #{cancellingOrder.id}?</h3>
+              <p className="text-sm text-slate-500 mt-1">{cancellingOrder.customer_name} · £{cancellingOrder.total.toFixed(2)}</p>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — optional</label>
+              <select value={cancelReason} onChange={e=>setCancelReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
+                <option value="">Select a reason</option>
+                <option value="Sold out / item unavailable">Sold out / item unavailable</option>
+                <option value="Requested by customer">Requested by customer</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Additional note — optional</label>
+              <textarea value={cancelNote} onChange={e=>setCancelNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
+              <button onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm">Cancel order</button>
             </div>
           </div>
         </div>

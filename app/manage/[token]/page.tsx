@@ -4,12 +4,14 @@
 
 import { useState, useEffect, useCallback, use } from 'react'
 import Image from 'next/image'
-import { PLAN_META } from '@/lib/features'
-import type { Plan } from '@/lib/features'
+import { PLAN_META, canAccess } from '@/lib/features'
+import type { Plan, Feature } from '@/lib/features'
+import { FeatureGate } from '@/components/FeatureGate'
 import type { TruckEvent } from '@/components/dashboard/types'
+import { Tooltip } from '@/components/ui/Tooltip'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; plan: Plan }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -993,6 +995,11 @@ function EventsTab({ token, showToast }: {
   const [form, setForm] = useState<EventForm>({ auto_open: null, auto_close: true, venue_address: '', customer_note: '' })
   const [saving, setSaving] = useState(false)
   const [showPast, setShowPast] = useState(false)
+  const [showEventCancelModal, setShowEventCancelModal] = useState(false)
+  const [cancellingEvent, setCancellingEvent] = useState<TruckEvent | null>(null)
+  const [eventCancelReason, setEventCancelReason] = useState('')
+  const [eventCancelNote, setEventCancelNote] = useState('')
+  const [affectedOrderCount, setAffectedOrderCount] = useState(0)
 
   useEffect(() => {
     const load = async () => {
@@ -1072,19 +1079,35 @@ function EventsTab({ token, showToast }: {
     finally { setSaving(false) }
   }
 
-  const cancelEvent = async (eventId: string) => {
-    if (!window.confirm('Cancel this event? This cannot be undone.')) return
+  const openEventCancelModal = (event: TruckEvent) => {
+    setCancellingEvent(event)
+    setAffectedOrderCount(0)
+    setShowEventCancelModal(true)
+  }
+
+  const confirmCancelEvent = async () => {
+    if (!cancellingEvent) return
+    setShowEventCancelModal(false)
     try {
       const res = await fetch('/api/events/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, action: 'cancel', eventId, payload: {} }),
+        body: JSON.stringify({
+          token,
+          action: 'cancel',
+          eventId: cancellingEvent.id,
+          payload: { cancellationReason: eventCancelReason, cancellationNote: eventCancelNote },
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      setEvents(prev => prev.filter(e => e.id !== eventId))
-      showToast('Event cancelled')
+      setEvents(prev => prev.filter(e => e.id !== cancellingEvent.id))
+      const cancelled = data.cancelledOrders ?? 0
+      showToast(cancelled > 0
+        ? `Event cancelled · ${cancelled} order${cancelled !== 1 ? 's' : ''} cancelled`
+        : 'Event cancelled')
     } catch (e: any) { showToast(e.message, 'error') }
+    finally { setCancellingEvent(null); setEventCancelReason(''); setEventCancelNote('') }
   }
 
   const renderEvent = (event: TruckEvent) => {
@@ -1116,7 +1139,7 @@ function EventsTab({ token, showToast }: {
             {event.status === 'confirmed' && (
               <Btn label="Edit" size="sm" colour="ghost" onClick={() => expandEvent(event)} />
             )}
-            <Btn label="Cancel" size="sm" colour="red" onClick={() => cancelEvent(event.id)} />
+            <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
           </div>
         </div>
 
@@ -1142,8 +1165,12 @@ function EventsTab({ token, showToast }: {
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                 When should this event open for orders?
+                <Tooltip
+                  content="Auto: orders open automatically at your start time. Manual: you tap 'Open for orders' on your dashboard when you're ready."
+                  position="right"
+                />
               </p>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -1165,8 +1192,12 @@ function EventsTab({ token, showToast }: {
             </div>
 
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
                 When should it close?
+                <Tooltip
+                  content="Auto: orders close automatically at your end time. Manual: you close it yourself — useful if you want to run late."
+                  position="right"
+                />
               </p>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center gap-3 cursor-pointer">
@@ -1251,6 +1282,57 @@ function EventsTab({ token, showToast }: {
           )}
         </div>
       )}
+
+      {showEventCancelModal && cancellingEvent && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Cancel this event?</h3>
+              <p className="text-sm text-slate-500 mt-1">{cancellingEvent.venue_name} · {cancellingEvent.event_date}</p>
+              {affectedOrderCount > 0 && (
+                <p className="text-sm font-medium text-red-600 mt-2">
+                  {affectedOrderCount} order{affectedOrderCount !== 1 ? 's' : ''} will be cancelled and customers notified.
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — optional</label>
+              <select value={eventCancelReason} onChange={e => setEventCancelReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
+                <option value="">Select a reason</option>
+                <option value="Vehicle breakdown">Vehicle breakdown</option>
+                <option value="Weather">Weather</option>
+                <option value="Venue issue">Venue issue</option>
+                <option value="Personal emergency">Personal emergency</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Message to customers — optional</label>
+              <textarea
+                value={eventCancelNote}
+                onChange={e => setEventCancelNote(e.target.value)}
+                placeholder="e.g. Sorry, our trailer broke down on the way to the venue..."
+                rows={3}
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setShowEventCancelModal(false); setEventCancelReason(''); setEventCancelNote('') }}
+                className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm"
+              >
+                Keep event
+              </button>
+              <button
+                onClick={() => confirmCancelEvent()}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm"
+              >
+                Cancel event
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -1268,6 +1350,23 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
+  const [whatsappSender, setWhatsappSender] = useState(truck.whatsapp_sender ?? '')
+
+  const can = (feature: Feature) => canAccess(
+    truck.plan,
+    feature,
+    truck.feature_overrides ?? {},
+    truck.trial_expires_at ?? null
+  )
+
+  const saveSetting = async (key: string, value: string) => {
+    try {
+      await api('update_truck', { data: { [key]: value } })
+      showToast('Saved')
+    } catch (e: any) {
+      showToast(e.message, 'error')
+    }
+  }
 
   const handleDisplayModeChange = async (value: 'list' | 'grid') => {
     setDisplayMode(value)
@@ -1400,7 +1499,13 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         {/* Crew size */}
         <div className="flex items-start justify-between gap-4 py-1">
           <div>
-            <p className="text-sm font-bold text-slate-700">Crew size</p>
+            <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+              Crew size
+              <Tooltip
+                content="Shows a separate Cook screen on a second device for your kitchen. Max plan feature."
+                position="right"
+              />
+            </p>
             <p className="text-xs text-slate-400 mt-0.5">
               Solo/duo: one screen, one tap to mark done.
               Full kitchen: window person and cook use separate screens.
@@ -1424,7 +1529,13 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         {/* KDS mode — cooking step */}
         <div className="flex items-start justify-between gap-4 py-1 border-t border-slate-100 pt-3">
           <div>
-            <p className="text-sm font-bold text-slate-700">Show cooking step</p>
+            <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
+              Show cooking step
+              <Tooltip
+                content="Enables a two-step cooking workflow: orders move through Cooking → Ready → Collected. Best for crews of 2 or more."
+                position="right"
+              />
+            </p>
             <p className="text-xs text-slate-400 mt-0.5">
               Adds a "Cooking" button between confirmed and done.
               Useful when your cook and window person use separate screens.
@@ -1477,6 +1588,56 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             </a>
           </div>
         )}
+      </Card>
+
+      {/* WhatsApp Auto-Replies */}
+      <Card className="p-4">
+        <div className="border-t border-slate-100 pt-4 -mt-4 first:mt-0 first:border-t-0 first:pt-0">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <p className="text-sm font-semibold text-slate-900">
+                WhatsApp Auto-Replies
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Automatically reply to customer WhatsApp messages with your schedule and order link
+              </p>
+            </div>
+            <FeatureGate
+              feature="whatsapp_replies"
+              plan={truck.plan}
+              overrides={truck.feature_overrides}
+              trialExpiresAt={truck.trial_expires_at}
+              showUpgrade={true}
+            />
+          </div>
+
+          {can('whatsapp_replies') && (
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                WhatsApp Business Number
+              </label>
+              <p className="text-xs text-slate-400 mt-0.5 mb-2">
+                The number your customers message. Must be registered with WhatsApp Business API.
+                Format: +447700900000
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  value={whatsappSender}
+                  onChange={e => setWhatsappSender(e.target.value)}
+                  placeholder="+447700900000"
+                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+                />
+                <button
+                  onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
+                  className="px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </Card>
 
       <div className="flex gap-3">

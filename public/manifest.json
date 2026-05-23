@@ -1,0 +1,16 @@
+{
+  "name": "Village Foodie Kitchen",
+  "short_name": "VF Kitchen",
+  "description": "Kitchen display system for Village Foodie food trucks",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

@@ -103,9 +103,10 @@ export async function POST(req: NextRequest) {
 
     // ── CANCEL ────────────────────────────────────────────────────────────────
     if (action === 'cancel') {
+      const { cancellationReason } = body
       const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'cancelled' }).eq('id', orderId)
+      await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('id', orderId)
       if (order.slot && order.event_date) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
@@ -114,12 +115,17 @@ export async function POST(req: NextRequest) {
         )
       }
       if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Order #${orderId} cancelled`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Order cancelled</h2>
-            <p>Your order #${orderId} with <strong>${truck.name}</strong> has been cancelled.</p>
-            <p>Please speak to the team at the truck if you have any questions.</p>
-            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+        const reasonLine = cancellationReason ? `<p style="color:#475569">${cancellationReason}</p>` : ''
+        const refundLine = order.paid_at ? `<p>Your refund will be processed automatically within 3–5 working days.</p>` : ''
+        await notifyCustomer(order.customer_email, `Your order has been cancelled — ${truck.name}`,
+          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
+            <p>Hi ${order.customer_name || 'there'},</p>
+            <p>Your order <strong>#${orderId}</strong> from <strong>${truck.name}</strong> has been cancelled.</p>
+            ${reasonLine}
+            ${refundLine}
+            <p>We're sorry for any inconvenience.</p>
+            <p>${truck.name}</p>
+            <p style="color:#94a3b8;font-size:12px">Powered by Village Foodie · villagefoodie.co.uk</p>
           </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'cancelled' })
@@ -357,19 +363,21 @@ export async function POST(req: NextRequest) {
 
       if (slot) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
 
+      const manualEmailItems = (items || []).map((i: any) => ({
+        name: i.name,
+        quantity: parseInt(i.quantity) || 1,
+        unit_price: parseFloat(i.unit_price) || 0,
+        modifiers: i.modifiers,
+        specialInstructions: i.specialInstructions,
+      }))
+
       if (customerEmail) {
         const { subject, html, text } = formatConfirmationEmail({
           orderId: newOrderId,
           truckName: truck.name,
           customerName,
           slot: slot || null,
-          items: (items || []).map((i: any) => ({
-            name: i.name,
-            quantity: parseInt(i.quantity) || 1,
-            unit_price: parseFloat(i.unit_price) || 0,
-            modifiers: i.modifiers,
-            specialInstructions: i.specialInstructions,
-          })),
+          items: manualEmailItems,
           deals: deals || [],
           discountAmt: manualOrder.discountAmt || 0,
           total: passedTotal || total,
@@ -377,6 +385,28 @@ export async function POST(req: NextRequest) {
           autoAccepted: true,
         })
         await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
+      }
+
+      if (truck.contact_email) {
+        const { subject, html, text } = formatConfirmationEmail({
+          orderId: newOrderId,
+          truckName: truck.name,
+          customerName: customerName || 'Walk-up',
+          slot: slot || null,
+          items: manualEmailItems,
+          deals: deals || [],
+          discountAmt: manualOrder.discountAmt || 0,
+          total: passedTotal || total,
+          notes: notes || null,
+          autoAccepted: true,
+        })
+        await sendConfirmationEmail({
+          to: truck.contact_email,
+          subject: `[Order copy] ${subject}`,
+          html,
+          text,
+          truckName: truck.name,
+        })
       }
 
       return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: autoConfirm, slotFull: !autoConfirm })

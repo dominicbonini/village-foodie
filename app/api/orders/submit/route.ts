@@ -542,6 +542,20 @@ export async function POST(req: NextRequest) {
       console.error('Customer email failed:', emailErr)
     }
 
+    if (truck.contact_email) {
+      try {
+        await sendConfirmationEmail({
+          to: truck.contact_email,
+          subject: `[Order copy] ${subject}`,
+          html,
+          text,
+          truckName: truck.name,
+        })
+      } catch (emailErr) {
+        console.error('Truck copy email failed:', emailErr)
+      }
+    }
+
     // ── Done ──────────────────────────────────────────────────────────────────
     return NextResponse.json({
       success:       true,
