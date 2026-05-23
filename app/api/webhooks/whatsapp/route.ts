@@ -18,11 +18,13 @@ export async function POST(req: NextRequest) {
     const body = (formData.get('Body') as string || '').trim()
 
     if (!from || !to || !body) {
+      console.log('[WA webhook] missing fields — from:', from, 'to:', to, 'body:', body)
       return new NextResponse('OK', { status: 200 })
     }
 
     const toNumber   = to.replace('whatsapp:', '')
     const fromNumber = from.replace('whatsapp:', '')
+    console.log('[WA webhook] from:', fromNumber, 'to:', toNumber, 'body:', body)
 
     const { data: truck } = await supabase
       .from('trucks')
@@ -35,10 +37,14 @@ export async function POST(req: NextRequest) {
       .eq('active', true)
       .single()
 
+    console.log('[WA webhook] truck found:', truck?.id, truck?.name)
+
     if (!truck) {
       console.warn('[WhatsApp webhook] No truck found for number:', toNumber)
       return new NextResponse('OK', { status: 200 })
     }
+
+    console.log('[WA webhook] feature access:', canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at))
 
     if (!canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
       return new NextResponse('OK', { status: 200 })
@@ -54,6 +60,8 @@ export async function POST(req: NextRequest) {
       .order('event_date', { ascending: true })
       .limit(10)
 
+    console.log('[WA webhook] events found:', events?.length)
+
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? ''
     const reply = await generateWhatsAppReply({
       truckName:       truck.name,
@@ -63,6 +71,8 @@ export async function POST(req: NextRequest) {
       scheduleUrl:     `${baseUrl}/trucks/${truck.id}`,
       orderUrl:        `${baseUrl}/trucks/${truck.id}/order`,
     })
+
+    console.log('[WA webhook] reply generated:', reply)
 
     if (!reply) {
       // IGNORE bucket — log inbound but don't reply
@@ -78,6 +88,7 @@ export async function POST(req: NextRequest) {
     }
 
     await sendWhatsApp(fromNumber, reply, toNumber)
+    console.log('[WA webhook] reply sent')
 
     await logMessage({
       truckId:   truck.id,
