@@ -43,8 +43,8 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm
+    <div className="min-h-screen bg-[#111827] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-xl
                       w-full max-w-sm p-8 flex flex-col gap-6">
 
         {/* Logo */}
@@ -63,8 +63,8 @@ function LoginForm() {
         </div>
 
         {message === 'password_reset' && (
-          <div className="bg-teal-50 border border-teal-200 rounded-xl
-                          px-4 py-3 text-sm text-teal-700 text-center">
+          <div className="bg-orange-50 border border-orange-200 rounded-xl
+                          px-4 py-3 text-sm text-orange-700 text-center">
             Password updated successfully. Please sign in.
           </div>
         )}
@@ -85,7 +85,7 @@ function LoginForm() {
               autoComplete="email"
               className="w-full border border-slate-200 rounded-xl px-3 py-3
                          text-sm focus:outline-none focus:ring-2
-                         focus:ring-teal-400"
+                         focus:ring-orange-400"
             />
           </div>
 
@@ -103,7 +103,7 @@ function LoginForm() {
               autoComplete="current-password"
               className="w-full border border-slate-200 rounded-xl px-3 py-3
                          text-sm focus:outline-none focus:ring-2
-                         focus:ring-teal-400"
+                         focus:ring-orange-400"
             />
           </div>
 
@@ -114,7 +114,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white
                        font-semibold py-3 rounded-xl transition-colors
                        disabled:opacity-40"
           >
@@ -126,7 +126,7 @@ function LoginForm() {
         <div className="text-center">
           <a
             href="/forgot-password"
-            className="text-xs text-slate-400 hover:text-slate-600"
+            className="text-xs text-orange-500 hover:text-orange-600"
           >
             Forgot your password?
           </a>

@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
       <p>Your Village Foodie dashboard for <strong>${truckName}</strong> is ready.</p>
       <p style="margin:24px 0;">
         <a href="${loginUrl}"
-           style="background:#0f9488;color:white;padding:14px 28px;
+           style="background:#ea580c;color:white;padding:14px 28px;
                   text-decoration:none;border-radius:8px;font-weight:bold;
                   display:inline-block;">
           Open your dashboard

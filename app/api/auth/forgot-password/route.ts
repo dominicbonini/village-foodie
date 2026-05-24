@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       <p>Click the button below to choose a new password. This link expires in 1 hour.</p>
       <p style="margin:32px 0;">
         <a href="${resetUrl}"
-           style="background:#0f9488;color:white;padding:14px 28px;
+           style="background:#ea580c;color:white;padding:14px 28px;
                   text-decoration:none;border-radius:8px;font-weight:bold;
                   display:inline-block;">
           Reset password

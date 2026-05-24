@@ -17,10 +17,10 @@ function ResetPasswordForm() {
   // No token and not first login — invalid URL
   if (!token && !isFirstLogin) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center
+      <div className="min-h-screen bg-[#111827] flex items-center
                       justify-center p-4">
         <div className="bg-white rounded-2xl border border-slate-200
-                        p-8 max-w-sm w-full text-center">
+                        p-8 max-w-sm w-full text-center border-slate-100 shadow-xl">
           <div className="text-3xl mb-4">⚠️</div>
           <h2 className="text-lg font-semibold text-slate-900 mb-2">
             Invalid reset link
@@ -29,7 +29,7 @@ function ResetPasswordForm() {
             This link is invalid or has expired.
           </p>
           <a href="/forgot-password"
-             className="text-sm text-teal-600 font-medium">
+             className="text-sm text-orange-600 font-medium">
             Request a new reset link
           </a>
         </div>
@@ -89,8 +89,8 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm
+    <div className="min-h-screen bg-[#111827] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-xl
                       w-full max-w-sm p-8 flex flex-col gap-6">
         <div className="text-center">
           <img
@@ -124,7 +124,7 @@ function ResetPasswordForm() {
               autoComplete="new-password"
               className="w-full border border-slate-200 rounded-xl px-3 py-3
                          text-sm focus:outline-none focus:ring-2
-                         focus:ring-teal-400"
+                         focus:ring-orange-400"
             />
           </div>
           <div>
@@ -141,7 +141,7 @@ function ResetPasswordForm() {
               autoComplete="new-password"
               className="w-full border border-slate-200 rounded-xl px-3 py-3
                          text-sm focus:outline-none focus:ring-2
-                         focus:ring-teal-400"
+                         focus:ring-orange-400"
             />
           </div>
 
@@ -152,7 +152,7 @@ function ResetPasswordForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-600 hover:bg-teal-700 text-white
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white
                        font-semibold py-3 rounded-xl transition-colors
                        disabled:opacity-40"
           >

@@ -25,9 +25,9 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center
+      <div className="min-h-screen bg-[#111827] flex items-center
                       justify-center p-4">
-        <div className="bg-white rounded-2xl border border-slate-200
+        <div className="bg-white rounded-2xl border border-slate-100
                         p-8 max-w-sm w-full text-center">
           <div className="text-3xl mb-4">📧</div>
           <h2 className="text-lg font-semibold text-slate-900 mb-2">
@@ -42,9 +42,9 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center
+    <div className="min-h-screen bg-[#111827] flex items-center
                     justify-center p-4">
-      <div className="bg-white rounded-2xl border border-slate-200
+      <div className="bg-white rounded-2xl border border-slate-100
                       p-8 max-w-sm w-full flex flex-col gap-6">
         <div className="text-center">
           <h1 className="text-xl font-semibold text-slate-900">
@@ -61,21 +61,21 @@ export default function ForgotPasswordPage() {
             onChange={e => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
-            className="w-full border border-slate-200 rounded-xl
+            className="w-full border border-slate-100 rounded-xl
                        px-3 py-3 text-sm focus:outline-none
                        focus:ring-2 focus:ring-teal-400"
           />
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-600 text-white font-semibold
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold
                        py-3 rounded-xl disabled:opacity-40"
           >
             {loading ? 'Sending...' : 'Send reset link'}
           </button>
         </form>
         <a href="/login"
-           className="text-xs text-slate-400 hover:text-slate-600
+           className="text-xs text-orange-500 hover:text-orange-600
                       text-center">
           Back to sign in
         </a>
