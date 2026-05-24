@@ -1,18 +1,41 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 function ResetPasswordForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const token = searchParams.get('token')
   const isFirstLogin = searchParams.get('firstLogin') === 'true'
 
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // No token and not first login — invalid URL
+  if (!token && !isFirstLogin) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center
+                      justify-center p-4">
+        <div className="bg-white rounded-2xl border border-slate-200
+                        p-8 max-w-sm w-full text-center">
+          <div className="text-3xl mb-4">⚠️</div>
+          <h2 className="text-lg font-semibold text-slate-900 mb-2">
+            Invalid reset link
+          </h2>
+          <p className="text-sm text-slate-500 mb-4">
+            This link is invalid or has expired.
+          </p>
+          <a href="/forgot-password"
+             className="text-sm text-teal-600 font-medium">
+            Request a new reset link
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,20 +51,41 @@ function ResetPasswordForm() {
     setLoading(true)
     setError(null)
 
-    const supabase = createSupabaseBrowserClient()
-    const { error } = await supabase.auth.updateUser({
-      password,
-      data: { must_change_password: false },
-    })
+    if (token) {
+      const res = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password }),
+      })
+      const data = await res.json()
 
-    if (error) {
-      setError(error.message)
-      setLoading(false)
+      if (!res.ok || data.error) {
+        setError(data.error || 'Something went wrong. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      router.push('/login?message=password_reset')
       return
     }
 
-    router.push('/dashboard')
-    router.refresh()
+    if (isFirstLogin) {
+      const { createSupabaseBrowserClient } = await import('@/lib/supabase/client')
+      const supabase = createSupabaseBrowserClient()
+      const { error } = await supabase.auth.updateUser({
+        password,
+        data: { must_change_password: false },
+      })
+
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      router.push('/dashboard')
+      router.refresh()
+    }
   }
 
   return (

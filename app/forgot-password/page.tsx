@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -11,10 +10,15 @@ export default function ForgotPasswordPage() {
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    const supabase = createSupabaseBrowserClient()
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/reset-password`,
+
+    await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
     })
+
+    // Always show success regardless of whether email exists
+    // This prevents email enumeration attacks
     setSent(true)
     setLoading(false)
   }

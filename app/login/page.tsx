@@ -8,6 +8,7 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') || '/dashboard'
+  const message = searchParams.get('message')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -60,6 +61,13 @@ function LoginForm() {
             Village Foodie operator dashboard
           </p>
         </div>
+
+        {message === 'password_reset' && (
+          <div className="bg-teal-50 border border-teal-200 rounded-xl
+                          px-4 py-3 text-sm text-teal-700 text-center">
+            Password updated successfully. Please sign in.
+          </div>
+        )}
 
         {/* Form */}
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
