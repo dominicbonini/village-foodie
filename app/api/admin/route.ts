@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at')
+    .select('id,name,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id')
     .order('name')
   return NextResponse.json({ trucks: trucks || [] })
 }

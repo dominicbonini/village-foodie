@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { getBatchCountsByCollectionTime } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest) {
   // Find truck by token
   const { data: truck, error } = await supabase
     .from('trucks')
-    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode, plan, trial_expires_at, feature_overrides')
+    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode, plan, trial_expires_at, feature_overrides, operator_id')
     .eq('dashboard_token', token)
     .eq('active', true)
     .single()
@@ -29,6 +30,22 @@ export async function GET(req: NextRequest) {
   if (error || !truck) {
     console.error('[dashboard] truck lookup failed:', error?.message, error?.details)
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  }
+
+  // If there's a logged-in user, verify they own this truck
+  const supabaseAuth = await createSupabaseServerClient()
+  const { data: { user } } = await supabaseAuth.auth.getUser()
+
+  if (user) {
+    const { data: operator } = await supabase
+      .from('operators')
+      .select('id')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    if (operator && truck.operator_id && truck.operator_id !== operator.id) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
+    }
   }
 
   // Check PIN if set

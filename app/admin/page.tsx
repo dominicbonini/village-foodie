@@ -16,6 +16,7 @@ interface AdminTruck {
   auto_accept: boolean
   contact_email: string | null
   onboarded_at: string | null
+  operator_id: string | null
 }
 
 const PLAN_ORDER: Plan[] = ['starter', 'trial', 'pro', 'max']
@@ -35,6 +36,11 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const [createModalTruck, setCreateModalTruck] = useState<AdminTruck | null>(null)
+  const [createEmail, setCreateEmail] = useState('')
+  const [createLoading, setCreateLoading] = useState(false)
+  const [createdPassword, setCreatedPassword] = useState<string | null>(null)
+  const [createError, setCreateError] = useState<string | null>(null)
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
@@ -64,6 +70,42 @@ export default function AdminPage() {
       showToast('Saved')
     } catch (e: any) { alert(e.message) }
     finally { setSaving(null) }
+  }
+
+  const openCreateModal = (truck: AdminTruck) => {
+    setCreateModalTruck(truck)
+    setCreateEmail(truck.contact_email || '')
+    setCreatedPassword(null)
+    setCreateError(null)
+  }
+
+  const submitCreateOperator = async () => {
+    if (!createModalTruck || !createEmail) return
+    setCreateLoading(true)
+    setCreateError(null)
+
+    const res = await fetch('/api/admin/create-operator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret,
+        truckId: createModalTruck.id,
+        email: createEmail,
+      }),
+    })
+    const data = await res.json()
+    setCreateLoading(false)
+
+    if (data.ok) {
+      setCreatedPassword(data.tempPassword)
+      setTrucks(prev => prev.map(t =>
+        t.id === createModalTruck.id
+          ? { ...t, operator_id: data.operatorId }
+          : t
+      ))
+    } else {
+      setCreateError(data.error || 'Something went wrong')
+    }
   }
 
   const setTrial = (truck: AdminTruck, months: 1 | 3) => {
@@ -209,6 +251,21 @@ export default function AdminPage() {
                         className="w-4 h-4 accent-orange-500" />
                     </div>
 
+                    {/* Create operator account */}
+                    <div className="text-center">
+                      {!truck.operator_id ? (
+                        <button
+                          onClick={() => openCreateModal(truck)}
+                          className="text-xs px-3 py-1.5 border border-teal-200 text-teal-600
+                                     rounded-lg hover:bg-teal-50"
+                        >
+                          + Create account
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-400">Account linked</span>
+                      )}
+                    </div>
+
                     {saving === truck.id && <span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
                   </div>
                 </div>
@@ -251,6 +308,84 @@ export default function AdminPage() {
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg z-50">
           ✓ {toast}
+        </div>
+      )}
+
+      {/* Create operator modal */}
+      {createModalTruck && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            {!createdPassword ? (
+              <>
+                <h3 className="text-lg font-semibold text-slate-900">
+                  Create account — {createModalTruck.name}
+                </h3>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Email address
+                  </label>
+                  <input
+                    type="email"
+                    value={createEmail}
+                    onChange={e => setCreateEmail(e.target.value)}
+                    placeholder="operator@example.com"
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  />
+                </div>
+                {createError && (
+                  <p className="text-sm text-red-600">{createError}</p>
+                )}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setCreateModalTruck(null)}
+                    className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitCreateOperator}
+                    disabled={createLoading || !createEmail}
+                    className="flex-1 bg-teal-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+                  >
+                    {createLoading ? 'Creating...' : 'Create account'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-center">
+                  <div className="text-3xl mb-2">✅</div>
+                  <h3 className="text-lg font-semibold text-slate-900">Account created</h3>
+                  <p className="text-sm text-slate-500 mt-1">{createEmail}</p>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Temporary password — copy this now
+                  </label>
+                  <div className="mt-1 flex gap-2">
+                    <code className="flex-1 bg-slate-100 rounded-xl px-3 py-2.5 text-sm font-mono">
+                      {createdPassword}
+                    </code>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(createdPassword!)}
+                      className="px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-400 text-center">
+                  Send this password to the operator. They'll be prompted to change it on first login.
+                </p>
+                <button
+                  onClick={() => { setCreateModalTruck(null); setCreatedPassword(null) }}
+                  className="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm"
+                >
+                  Done
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
