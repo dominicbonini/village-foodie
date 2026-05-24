@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
 
     if (!from || !to || !body) {
       console.log('[WA webhook] missing fields — from:', from, 'to:', to, 'body:', body)
-      return new NextResponse('OK', { status: 200 })
+      return new NextResponse(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { status: 200, headers: { 'Content-Type': 'text/xml' } }
+    )
     }
 
     const toNumber   = to.replace('whatsapp:', '')
@@ -41,13 +44,19 @@ export async function POST(req: NextRequest) {
 
     if (!truck) {
       console.warn('[WhatsApp webhook] No truck found for number:', toNumber)
-      return new NextResponse('OK', { status: 200 })
+      return new NextResponse(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { status: 200, headers: { 'Content-Type': 'text/xml' } }
+    )
     }
 
     console.log('[WA webhook] feature access:', canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at))
 
     if (!canAccess(truck.plan, 'whatsapp_replies', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
-      return new NextResponse('OK', { status: 200 })
+      return new NextResponse(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { status: 200, headers: { 'Content-Type': 'text/xml' } }
+    )
     }
 
     const today = new Date().toISOString().split('T')[0]
@@ -84,7 +93,10 @@ export async function POST(req: NextRequest) {
         to:        toNumber,
         body:      `[IGNORED] ${body}`,
       })
-      return new NextResponse('OK', { status: 200 })
+      return new NextResponse(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { status: 200, headers: { 'Content-Type': 'text/xml' } }
+    )
     }
 
     await sendWhatsApp(fromNumber, reply, toNumber)
@@ -112,5 +124,8 @@ export async function POST(req: NextRequest) {
   }
 
   // Always return 200 — Twilio will retry on non-200
-  return new NextResponse('OK', { status: 200 })
+  return new NextResponse(
+      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      { status: 200, headers: { 'Content-Type': 'text/xml' } }
+    )
 }
