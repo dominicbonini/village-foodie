@@ -2,6 +2,25 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // ── Domain redirect: operator routes on villagefoodie.co.uk → hatchgrab.com ──
+  const host = request.headers.get('host') || ''
+  const isVillageFoodie =
+    host === 'villagefoodie.co.uk' ||
+    host === 'www.villagefoodie.co.uk'
+
+  const operatorPaths = ['/dashboard', '/manage', '/kds', '/login',
+                         '/forgot-password', '/reset-password', '/admin']
+  const isOperatorRoute = operatorPaths.some(p => pathname.startsWith(p))
+
+  if (isVillageFoodie && isOperatorRoute) {
+    return NextResponse.redirect(
+      `https://www.hatchgrab.com${pathname}${request.nextUrl.search}`
+    )
+  }
+
+  // ── Supabase auth session ──────────────────────────────────────
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -27,8 +46,6 @@ export async function proxy(request: NextRequest) {
 
   // Refresh session if expired
   const { data: { user } } = await supabase.auth.getUser()
-
-  const { pathname } = request.nextUrl
 
   // Protected routes — require authentication
   const isProtected =
