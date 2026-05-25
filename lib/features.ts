@@ -138,6 +138,13 @@ export const PLAN_META: Record<Plan, {
   },
 }
 
+// Maximum vans allowed per plan
+export function maxVans(plan: Plan): number {
+  if (plan === 'starter') return 1
+  if (plan === 'pro') return 2
+  return 999 // max / trial
+}
+
 // Which plan is needed for a given feature
 export function requiredPlan(feature: Feature): Plan {
   if (PLAN_FEATURES.starter.has(feature)) return 'starter'

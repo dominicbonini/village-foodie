@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -74,6 +75,29 @@ export async function POST(req: NextRequest) {
 
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+
+  // ── Staff permission gate ─────────────────────────────────
+  const writeActions = [
+    'upsert_event', 'upsert_item', 'upsert_category', 'delete_item', 'delete_category',
+    'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
+    'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
+    'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
+  ]
+  if (writeActions.includes(action)) {
+    const supabaseAuth = await createSupabaseServerClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    if (user) {
+      const { data: truckUser } = await supabase
+        .from('truck_users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .eq('truck_id', truck.id)
+        .single()
+      if (truckUser?.role === 'staff') {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      }
+    }
+  }
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
   if (action === 'upsert_category') {
@@ -290,7 +314,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'keep_screen_on', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -373,12 +397,22 @@ export async function POST(req: NextRequest) {
   if (action === 'get_vans') {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, truck_id, name, kds_token, active')
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ vans: data || [] })
+  }
+
+  if (action === 'update_van_settings') {
+    const { vanId, autoPauseOnOffline } = body
+    await supabase
+      .from('truck_vans')
+      .update({ auto_pause_on_offline: autoPauseOnOffline })
+      .eq('id', vanId)
+      .eq('truck_id', truck.id)
+    return NextResponse.json({ ok: true })
   }
 
   if (action === 'add_van') {
@@ -393,6 +427,24 @@ export async function POST(req: NextRequest) {
       .single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true, van: data })
+  }
+
+  if (action === 'delete_van') {
+    const { vanId } = body
+    const { count } = await supabase
+      .from('truck_vans')
+      .select('*', { count: 'exact', head: true })
+      .eq('truck_id', truck.id)
+      .eq('active', true)
+    if (!count || count <= 1) {
+      return NextResponse.json({ error: 'Cannot delete the last van' }, { status: 400 })
+    }
+    await supabase
+      .from('truck_vans')
+      .update({ active: false })
+      .eq('id', vanId)
+      .eq('truck_id', truck.id)
+    return NextResponse.json({ ok: true })
   }
 
   if (action === 'rename_van') {
@@ -509,6 +561,7 @@ export async function POST(req: NextRequest) {
     // Send invite email via Brevo
     const inviteUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/reset-password?token=${inviteToken}&invite=true`
     const roleLabel = role === 'manager' ? 'Manager' : 'Staff'
+    const firstName = (name || '').split(' ')[0] || 'there'
 
     const html = `
       <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
@@ -517,7 +570,7 @@ export async function POST(req: NextRequest) {
         <h2 style="color:#0f172a;margin:0 0 16px;">
           You've been invited to join ${truck.name} on HatchGrab
         </h2>
-        <p>Hi ${name || 'there'},</p>
+        <p>Hi ${firstName},</p>
         <p>${truck.name} has invited you to join their team as ${roleLabel === 'Manager' ? 'a Manager' : 'a Staff member'} on HatchGrab.</p>
         <p>Click the button below to set your password and get started. This link expires in 7 days.</p>
         <p style="margin:32px 0;">

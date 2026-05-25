@@ -64,6 +64,7 @@ export interface TruckData {
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'
+  keep_screen_on: boolean
   plan: Plan
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null

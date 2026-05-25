@@ -4,20 +4,20 @@
 
 import { useState, useEffect, useCallback, use } from 'react'
 import Image from 'next/image'
-import { PLAN_META, canAccess } from '@/lib/features'
+import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
 import { FeatureGate } from '@/components/FeatureGate'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
 
 type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'team' | 'settings'
@@ -1540,12 +1540,15 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
+  const [keepScreenOn, setKeepScreenOn] = useState<boolean>(truck.keep_screen_on ?? true)
   const [whatsappSender, setWhatsappSender] = useState(truck.whatsapp_sender ?? '')
   const [vans, setVans] = useState<Van[]>([])
   const [addingVan, setAddingVan] = useState(false)
   const [newVanName, setNewVanName] = useState('')
   const [renamingVanId, setRenamingVanId] = useState<string | null>(null)
   const [renameVanName, setRenameVanName] = useState('')
+  const [deletingVan, setDeletingVan] = useState<Van | null>(null)
+  const [deleteVanConfirm, setDeleteVanConfirm] = useState('')
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
@@ -1595,7 +1598,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
   const copyKdsLink = async (kdsToken: string) => {
     await navigator.clipboard.writeText(`https://www.hatchgrab.com/kds/${kdsToken}`)
-    showToast('KDS link copied')
+    showToast('Order screen link copied')
   }
 
   const saveNewVan = async () => {
@@ -1617,6 +1620,22 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       setRenamingVanId(null)
       setRenameVanName('')
     } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  const confirmDeleteVan = async () => {
+    if (!deletingVan || deleteVanConfirm !== deletingVan.name) return
+    try {
+      await api('delete_van', { vanId: deletingVan.id })
+      setVans(prev => prev.filter(v => v.id !== deletingVan.id))
+      setDeletingVan(null)
+      setDeleteVanConfirm('')
+      showToast('Van deleted')
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  const toggleAutoPause = async (vanId: string, enabled: boolean) => {
+    setVans(prev => prev.map(v => v.id === vanId ? { ...v, auto_pause_on_offline: enabled } : v))
+    await api('update_van_settings', { vanId, autoPauseOnOffline: enabled })
   }
 
   return (
@@ -1714,26 +1733,25 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         <div>
           <p className="font-bold text-slate-900">Kitchen display</p>
           <p className="text-xs text-slate-400 mt-0.5">
-            Settings for your KDS screen at{' '}
+            Settings for your order screen at{' '}
             <a href={`/dashboard/${token}/kds`} target="_blank" className="text-teal-600 underline">
               /dashboard/{token}/kds
             </a>
           </p>
         </div>
 
-        {/* Crew size */}
+        {/* Split kitchen screen */}
         <div className="flex items-start justify-between gap-4 py-1">
           <div>
             <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-              Crew size
+              Split kitchen screen
               <Tooltip
-                content="Shows a separate Cook screen on a second device for your kitchen. Max plan feature."
+                content="Shows a separate cooking view on a second device in the kitchen."
                 position="right"
               />
             </p>
             <p className="text-xs text-slate-400 mt-0.5">
-              Solo/duo: one screen, one tap to mark done.
-              Full kitchen: window person and cook use separate screens.
+              Show a separate cooking view on a second device. The order screen link appears in the header when enabled.
             </p>
           </div>
           <select
@@ -1746,8 +1764,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             }}
             className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white text-slate-900 flex-shrink-0"
           >
-            <option value="solo">Solo / duo</option>
-            <option value="full">Full kitchen (3+ people)</option>
+            <option value="solo">Single screen</option>
+            <option value="full">Show cook screen link</option>
           </select>
         </div>
 
@@ -1800,6 +1818,31 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           </select>
         </div>
 
+        {/* Keep screen on */}
+        <div className="flex items-start justify-between gap-4 py-3 border-b border-slate-100">
+          <div>
+            <div className="text-sm font-medium text-slate-900">Keep screen on</div>
+            <div className="text-xs text-slate-500 mt-0.5">
+              Prevents the device screen from turning off while the dashboard is open.
+              Recommended when offline detection is enabled — if the screen turns off,
+              online orders may pause automatically.
+            </div>
+          </div>
+          <button
+            role="switch"
+            aria-checked={keepScreenOn}
+            onClick={async () => {
+              const val = !keepScreenOn
+              setKeepScreenOn(val)
+              try { await api('update_truck', { data: { keep_screen_on: val } }) }
+              catch (err: any) { showToast(err.message, 'error') }
+            }}
+            className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${keepScreenOn ? 'bg-teal-600' : 'bg-slate-200'}`}
+          >
+            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${keepScreenOn ? 'translate-x-5' : 'translate-x-0'}`} />
+          </button>
+        </div>
+
         {/* Cook screen URL — shown when full crew mode */}
         {crewMode === 'full' && (
           <div className="text-xs text-slate-500 bg-slate-50 rounded-md px-3 py-2.5 border-t border-slate-100 pt-3">
@@ -1815,72 +1858,95 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         )}
       </Card>
 
-      {/* WhatsApp Auto-Replies */}
+      {/* Social Media Auto-Replies */}
       <Card className="p-4">
-        <div className="border-t border-slate-100 pt-4 -mt-4 first:mt-0 first:border-t-0 first:pt-0">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-sm font-semibold text-slate-900">
-                WhatsApp Auto-Replies
-              </p>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Automatically reply to customer WhatsApp messages with your schedule and order link
-              </p>
-            </div>
-            <FeatureGate
-              feature="whatsapp_replies"
-              plan={truck.plan}
-              overrides={truck.feature_overrides}
-              trialExpiresAt={truck.trial_expires_at}
-              showUpgrade={true}
-            />
-          </div>
+        <p className="font-bold text-slate-900 mb-1">Social media auto-replies</p>
+        <p className="text-xs text-slate-500 mb-4">
+          Automatically reply to customer messages with your schedule
+          and order link. Requires Business accounts on each platform.
+        </p>
 
-          {can('whatsapp_replies') && (
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                WhatsApp Business Number
-              </label>
-              <p className="text-xs text-slate-400 mt-0.5 mb-2">
-                The number your customers message. Must be registered with WhatsApp Business API.
-                Format: +447700900000
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="tel"
-                  value={whatsappSender}
-                  onChange={e => setWhatsappSender(e.target.value)}
-                  placeholder="+447700900000"
-                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
-                />
-                <button
-                  onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
-                  className="px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl"
-                >
-                  Save
-                </button>
-              </div>
+        {/* WhatsApp */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              WhatsApp Business number
+            </label>
+            {!can('whatsapp_replies') && (
+              <FeatureGate
+                feature="whatsapp_replies"
+                plan={truck.plan}
+                overrides={truck.feature_overrides}
+                trialExpiresAt={truck.trial_expires_at}
+                showUpgrade={true}
+              />
+            )}
+          </div>
+          <p className="text-xs text-slate-400 mt-0.5 mb-2">
+            Your customers message this number. Must be a WhatsApp
+            Business account. Format: +447700900000
+          </p>
+          {can('whatsapp_replies') ? (
+            <div className="flex gap-2">
+              <input
+                type="tel"
+                value={whatsappSender}
+                onChange={e => setWhatsappSender(e.target.value)}
+                placeholder="+447700900000"
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+              />
+              <button
+                onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
+                className="px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl"
+              >
+                Save
+              </button>
             </div>
+          ) : (
+            <p className="text-xs text-slate-400 italic">Available on Max plan</p>
           )}
+        </div>
+
+        {/* Facebook / Instagram */}
+        <div className="border-t border-slate-100 pt-4">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+            Facebook &amp; Instagram
+          </label>
+          <p className="text-xs text-slate-400 mt-0.5 mb-2">
+            Connect your Facebook Business Page to auto-reply to
+            messages and post comments.
+          </p>
+          <span className="text-xs text-slate-400 italic">
+            Facebook &amp; Instagram integration coming soon
+          </span>
         </div>
       </Card>
 
       {/* Vans */}
       <Card className="p-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-slate-900">Vans</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Manage your vehicles. Each van gets its own KDS screen.
+              Manage your vehicles. Each van has its own order screen.
             </p>
           </div>
-          <button
-            onClick={() => setAddingVan(true)}
-            className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
-          >
-            + Add van
-          </button>
+          {vans.length < maxVans(truck.plan) && (
+            <button
+              onClick={() => setAddingVan(true)}
+              className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+            >
+              + Add van
+            </button>
+          )}
         </div>
+        <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-1 mb-3">
+          One van is included on all plans. Additional vans are available on
+          Pro and Max plans — contact us to add more.
+        </p>
+        {vans.length >= maxVans(truck.plan) && truck.plan === 'starter' && (
+          <p className="text-xs text-slate-400 mb-2">Upgrade to Pro to add more vans</p>
+        )}
 
         {vans.map(van => (
           <div key={van.id}>
@@ -1888,15 +1954,24 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               <div>
                 <p className="text-sm font-medium text-slate-900">{van.name}</p>
                 <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  KDS: hatchgrab.com/kds/{van.kds_token.slice(0, 12)}...
+                  Screen: hatchgrab.com/kds/{van.kds_token.slice(0, 12)}...
                 </p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <button
+                    onClick={() => toggleAutoPause(van.id, !van.auto_pause_on_offline)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${van.auto_pause_on_offline ? 'bg-orange-600' : 'bg-slate-200'}`}
+                  >
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${van.auto_pause_on_offline ? 'translate-x-5' : 'translate-x-1'}`} />
+                  </button>
+                  <span className="text-xs text-slate-500">Pause online orders if this device goes offline</span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => copyKdsLink(van.kds_token)}
                   className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
                 >
-                  Copy KDS link
+                  Copy order screen link
                 </button>
                 <button
                   onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
@@ -1904,6 +1979,14 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 >
                   Rename
                 </button>
+                {vans.length > 1 && (
+                  <button
+                    onClick={() => setDeletingVan(van)}
+                    className="text-xs px-2.5 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
             {renamingVanId === van.id && (
@@ -1959,6 +2042,50 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           </div>
         )}
       </Card>
+
+      {/* Delete van confirmation modal */}
+      {deletingVan && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Delete {deletingVan.name}?</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                This will remove {deletingVan.name} from all future events.
+                Past orders won't be affected. Staff assigned only to this
+                van will need their access updated.
+              </p>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Type the van name to confirm
+              </label>
+              <input
+                type="text"
+                value={deleteVanConfirm}
+                onChange={e => setDeleteVanConfirm(e.target.value)}
+                placeholder={deletingVan.name}
+                autoFocus
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setDeletingVan(null); setDeleteVanConfirm('') }}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteVan}
+                disabled={deleteVanConfirm !== deletingVan.name}
+                className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-red-700"
+              >
+                Delete van
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-3">
         <Btn label={saving ? 'Saving...' : 'Save settings'} loading={saving} onClick={save} />
@@ -2067,7 +2194,7 @@ function TeamTab({ truck, token, api, reload, showToast }: {
         <div>
           <p className="text-sm font-semibold text-slate-900">Team members</p>
           <p className="text-xs text-slate-500 mt-0.5">
-            Invite staff to access the KDS and take orders
+            Invite staff to access the order screen and take orders
           </p>
         </div>
         <button
@@ -2166,8 +2293,8 @@ function TeamTab({ truck, token, api, reload, showToast }: {
                 onChange={e => setInviteRole(e.target.value as 'manager' | 'staff')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
               >
-                <option value="staff">Staff — KDS and orders only</option>
-                <option value="manager">Manager — full access except team management</option>
+                <option value="staff">Staff — Take orders and manage the kitchen</option>
+                <option value="manager">Manager — Full access including menu and settings</option>
               </select>
             </div>
 

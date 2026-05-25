@@ -33,7 +33,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max' }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max' }
 interface EventData {
   date: string          // dd/mm/yyyy
   date_iso: string      // yyyy-mm-dd
@@ -784,13 +784,29 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
       {/* Paused banner — stays visible while scrolling */}
       {isPaused && !isEventClosed && (
-        <div className="sticky top-[60px] z-40 bg-amber-500 text-white px-4 py-3 shadow-md">
-          <div className="max-w-lg mx-auto flex items-start justify-between gap-3">
-            <div>
-              <p className="font-black text-sm">Woah, we're slammed! 🍔</p>
-              <p className="text-xs text-amber-100 mt-0.5">Online ordering is paused right now. Order at the window or check back shortly.</p>
+        <div className="sticky top-[60px] z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
+          <div className="flex items-start gap-3 max-w-lg mx-auto">
+            <span className="text-xl flex-shrink-0">
+              {truck?.pauseReason === 'offline' ? '📡' : '⏸️'}
+            </span>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-800">
+                {truck?.pauseReason === 'offline'
+                  ? 'Online ordering temporarily unavailable'
+                  : 'Orders are temporarily paused'
+                }
+              </p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                {truck?.pauseReason === 'offline'
+                  ? "We're having a connection issue but you can still order at the window. Check back soon!"
+                  : 'Check back shortly or order at the window when you arrive.'
+                }
+              </p>
             </div>
-            <button onClick={() => window.location.reload()} className="text-xs font-bold text-amber-100 hover:text-white shrink-0 mt-0.5 underline underline-offset-2">
+            <button
+              onClick={() => window.location.reload()}
+              className="text-xs text-amber-700 font-medium underline flex-shrink-0 mt-0.5"
+            >
               Check again
             </button>
           </div>

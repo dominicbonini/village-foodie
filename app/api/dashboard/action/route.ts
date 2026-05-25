@@ -560,6 +560,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, newSlot })
     }
 
+    // ── update_keep_screen_on ─────────────────────────────────────────────────
+    if (action === 'update_keep_screen_on') {
+      const { keepScreenOn } = body
+      await supabase.from('trucks').update({ keep_screen_on: !!keepScreenOn }).eq('id', truck.id)
+      return NextResponse.json({ ok: true })
+    }
+
     // ── set_auto_accept ──────────────────────────────────────────────────────
     if (action === 'set_auto_accept') {
       const { value } = body

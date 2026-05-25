@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   // Find truck by token
   const { data: truck, error } = await supabase
     .from('trucks')
-    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode, plan, trial_expires_at, feature_overrides, operator_id')
+    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode, keep_screen_on, plan, trial_expires_at, feature_overrides, operator_id')
     .eq('dashboard_token', token)
     .eq('active', true)
     .single()

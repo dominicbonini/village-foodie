@@ -7,7 +7,7 @@ import { getAllDayCounts } from '@/components/dashboard/helpers'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import { useFeatures } from '@/lib/useFeatures'
-import { enableKeepAwake, disableKeepAwake } from '@/lib/native/keepAwake'
+import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission, playNewOrderAlert } from '@/lib/native/notifications'
 import { configureStatusBar } from '@/lib/native/statusBar'
@@ -42,6 +42,9 @@ export default function KdsPage() {
   const [pinError, setPinError] = useState('')
   const [requiresPin, setRequiresPin] = useState(false)
 
+  const [keepScreenOn, setKeepScreenOn] = useState(true)
+  const [showScreenOffWarning, setShowScreenOffWarning] = useState(false)
+  const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
   const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(null)
   const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(null)
   const [isOffline, setIsOffline] = useState(false)
@@ -76,6 +79,7 @@ export default function KdsPage() {
       if (!res.ok) throw new Error('Failed to fetch')
 
       setTruck(data.truck)
+      setKeepScreenOn(data.truck?.keep_screen_on ?? true)
       setOrders(data.orders ?? [])
       setPausedUntil(data.truck?.paused_until ?? null)
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
@@ -118,9 +122,13 @@ export default function KdsPage() {
 
   useEffect(() => {
     configureStatusBar()
-    enableKeepAwake()
-    return () => { disableKeepAwake() }
+    keepAwake() // on by default; updated when truck.keep_screen_on loads
+    return () => { allowSleep() }
   }, [])
+
+  useEffect(() => {
+    if (keepScreenOn) { keepAwake() } else { allowSleep() }
+  }, [keepScreenOn])
 
   useEffect(() => {
     requestNotificationPermission()
@@ -146,6 +154,22 @@ export default function KdsPage() {
       }
     })
   }, [])
+
+  useEffect(() => {
+    const sendHeartbeat = async () => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) return
+      try {
+        await fetch('/api/heartbeat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, vanId: vanId || undefined }),
+        })
+      } catch {}
+    }
+    sendHeartbeat()
+    const heartbeatInterval = setInterval(sendHeartbeat, 15000)
+    return () => { clearInterval(heartbeatInterval) }
+  }, [token, vanId])
 
   useEffect(() => {
     fetchAllRef.current = fetchAll
@@ -199,6 +223,29 @@ export default function KdsPage() {
       clearInterval(fallback)
     }
   }, [truck?.id])
+
+  const applyKeepScreenOn = async (value: boolean) => {
+    setKeepScreenOn(value)
+    if (value) { await keepAwake() } else { await allowSleep() }
+    try {
+      await fetch('/api/dashboard/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'update_keep_screen_on', keepScreenOn: value }),
+      })
+    } catch {}
+  }
+  const toggleKeepScreenOn = async () => {
+    if (keepScreenOn && truck?.id) {
+      try {
+        const { data: vans } = await supabaseBrowser.from('truck_vans').select('name,auto_pause_on_offline').eq('truck_id', truck.id).eq('active', true)
+        const autoPauseVans = (vans || []).filter((v: any) => v.auto_pause_on_offline).map((v: any) => v.name)
+        if (autoPauseVans.length > 0) { setVansWithAutoPause(autoPauseVans); setShowScreenOffWarning(true); return }
+      } catch {}
+    }
+    await applyKeepScreenOn(!keepScreenOn)
+  }
+  const confirmScreenOff = async () => { setShowScreenOffWarning(false); await applyKeepScreenOn(false) }
 
   const handleAction = useCallback(async (action: string, orderId: string) => {
     setActionLoading(`${action}-${orderId}`)
@@ -540,6 +587,15 @@ export default function KdsPage() {
             Open cook screen
           </a>
         )}
+
+        <button
+          onClick={toggleKeepScreenOn}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${keepScreenOn ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
+          title={keepScreenOn ? 'Screen will stay on' : 'Screen may turn off'}
+        >
+          <span>{keepScreenOn ? '☀️' : '🌙'}</span>
+          <span className="hidden sm:inline">{keepScreenOn ? 'Screen on' : 'Screen off'}</span>
+        </button>
       </header>
 
       {/* ── To Make bar ── */}
@@ -564,7 +620,7 @@ export default function KdsPage() {
         <div className="bg-slate-900 text-white text-sm font-medium px-4 py-2.5 flex items-center gap-3 flex-shrink-0">
           <span className="inline-block w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
           <span>
-            No connection — showing last known orders. New orders paused.
+            No connection — showing last known orders. Online ordering has been paused for customers.
             {pendingSyncCount > 0 && ` · ${pendingSyncCount} action${pendingSyncCount > 1 ? 's' : ''} queued`}
           </span>
         </div>
@@ -709,6 +765,28 @@ export default function KdsPage() {
         </div>
       </div>
       </div>
+
+      {/* Screen-off warning modal */}
+      {showScreenOffWarning && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                {vansWithAutoPause.length > 0
+                  ? `${vansWithAutoPause.join(', ')} ${vansWithAutoPause.length === 1 ? 'has' : 'have'} offline detection enabled. If the screen turns off, the device may stop sending its online signal and automatically pause customer orders.`
+                  : 'If the screen turns off, the device may stop sending its online signal.'
+                }
+              </p>
+              <p className="text-sm text-slate-500 mt-2">Keep the screen on to ensure uninterrupted ordering.</p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
+              <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Allow screen off</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Event menu modal ── */}
       {showEventMenu && activeEvent && (

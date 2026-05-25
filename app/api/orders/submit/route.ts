@@ -242,6 +242,52 @@ export async function POST(req: NextRequest) {
     // Use the actual truck UUID for all subsequent queries
     const resolvedTruckId = truck.id
 
+    // Pause guard — truck level
+    if (truck.paused_until && new Date(truck.paused_until) > new Date()) {
+      return NextResponse.json(
+        { error: 'Orders are currently paused', paused: true, reason: 'manual' },
+        { status: 423 }
+      )
+    }
+
+    // Pause guard — van level (look up the event assigned to this date)
+    const pauseCheckDate = eventDate ?? new Date().toISOString().split('T')[0]
+    const { data: pauseEvent } = await supabase
+      .from('truck_events')
+      .select('van_id')
+      .eq('truck_id', resolvedTruckId)
+      .eq('event_date', pauseCheckDate)
+      .neq('status', 'cancelled')
+      .maybeSingle()
+
+    if (pauseEvent?.van_id) {
+      const { data: pauseVan } = await supabase
+        .from('truck_vans')
+        .select('paused_until, online_paused_until')
+        .eq('id', pauseEvent.van_id)
+        .single()
+
+      if (pauseVan) {
+        const offlinePaused = pauseVan.online_paused_until
+          ? new Date(pauseVan.online_paused_until) > new Date()
+          : false
+        const manualPaused = pauseVan.paused_until
+          ? new Date(pauseVan.paused_until) > new Date()
+          : false
+
+        if (offlinePaused || manualPaused) {
+          return NextResponse.json(
+            {
+              error: 'Orders are currently paused',
+              paused: true,
+              reason: offlinePaused ? 'offline' : 'manual',
+            },
+            { status: 423 }
+          )
+        }
+      }
+    }
+
     const orderLines = normaliseOrderLines(items, deals)
     const [itemCatMap, catConfigs] = await Promise.all([
       buildItemCatMap(supabase, resolvedTruckId),

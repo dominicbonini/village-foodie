@@ -137,6 +137,40 @@ export async function GET(
     }
   }
 
+  // Van-level pause check — extends truck-level pause state
+  let isPaused = truck.paused_until
+    ? new Date(truck.paused_until) > new Date()
+    : false
+  let pauseReason: 'manual' | 'offline' | null = isPaused ? 'manual' : null
+
+  if (effectiveEventId) {
+    const { data: eventVan } = await supabase
+      .from('truck_events')
+      .select('van_id')
+      .eq('id', effectiveEventId)
+      .single()
+
+    if (eventVan?.van_id) {
+      const { data: van } = await supabase
+        .from('truck_vans')
+        .select('paused_until, online_paused_until')
+        .eq('id', eventVan.van_id)
+        .single()
+
+      if (van) {
+        const manualPaused = van.paused_until
+          ? new Date(van.paused_until) > new Date()
+          : false
+        const offlinePaused = van.online_paused_until
+          ? new Date(van.online_paused_until) > new Date()
+          : false
+
+        if (offlinePaused) { isPaused = true; pauseReason = 'offline' }
+        if (manualPaused) { isPaused = true; pauseReason = 'manual' }
+      }
+    }
+  }
+
   // Build category → modifier groups map
   const groupMap: Record<string, { id: string; name: string; options: { id: string; name: string; price_adjustment: number }[] }[]> = {}
   ;(categories || []).forEach(c => { groupMap[c.id] = [] })
@@ -208,7 +242,8 @@ export async function GET(
       mode: truck.mode,
       venue_name: truck.venue_name,
       time_selection_enabled: truck.time_selection_enabled ?? false,
-      paused: truck.paused_until ? new Date(truck.paused_until) > new Date() : false,
+      paused: isPaused,
+      pauseReason: pauseReason,
       extra_wait_mins: (() => {
         const mins = truck.extra_wait_mins ?? 0
         const startedAt = truck.extra_wait_started_at ?? null

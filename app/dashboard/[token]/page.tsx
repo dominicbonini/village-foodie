@@ -2,6 +2,7 @@
 // app/dashboard/[token]/page.tsx
 
 import { useState, useEffect, useCallback, useRef, useMemo, use } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -21,6 +22,7 @@ import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
+import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -33,6 +35,8 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
 
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
   const{token}=use(params)
+  const searchParams=useSearchParams()
+  const vanName=searchParams.get('van_name')??''
   const[pin,setPin]=useState('')
   const[pinInput,setPinInput]=useState('')
   const[pinError,setPinError]=useState('')
@@ -68,6 +72,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editCatForm,setEditCatForm]=useState<{name:string;prepMins:number;prepSecs30:number;batch:number;allowNotes:boolean}|null>(null)
   const[savingCat,setSavingCat]=useState(false)
   const[showPrepList,setShowPrepList]=useState(false)
+  const[keepScreenOn,setKeepScreenOn]=useState(true)
+  const[showScreenOffWarning,setShowScreenOffWarning]=useState(false)
+  const[vansWithAutoPause,setVansWithAutoPause]=useState<string[]>([])
   // Pause state (paused_until ISO string, null = not paused)
   const[pausedUntil,setPausedUntil]=useState<string|null>(null)
   const[showPauseModal,setShowPauseModal]=useState(false)
@@ -138,6 +145,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
       if(!res.ok){setError(data.error||'Failed to load');setLoading(false);return}
       setTruck(data.truck)
+      setKeepScreenOn(data.truck?.keep_screen_on ?? true)
       setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderIds=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.id))
@@ -183,10 +191,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[truck?.id])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
   useEffect(()=>{
-    if(!authenticated)return; let lock:any=null
-    const get=async()=>{try{if('wakeLock' in navigator)lock=await(navigator as any).wakeLock.request('screen')}catch{}}
-    get(); return()=>{lock?.release().catch(()=>null)}
-  },[authenticated])
+    const sendHeartbeat=async()=>{
+      if(typeof navigator!=='undefined'&&!navigator.onLine)return
+      try{await fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})}catch{}
+    }
+    sendHeartbeat()
+    const id=setInterval(sendHeartbeat,15000)
+    return()=>clearInterval(id)
+  },[token])
+  useEffect(()=>{
+    if(!authenticated)return
+    if(keepScreenOn){keepAwake()}else{allowSleep()}
+    return()=>{allowSleep()}
+  },[authenticated,keepScreenOn])
   useEffect(()=>{
     const count=orders.filter(o=>o.status==='pending').length
     if(count>prevPendingCount.current&&authenticated){
@@ -215,6 +232,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{showToast('Failed to save','error')}
     finally{setSavingAutoAccept(false)}
   }
+
+  const applyKeepScreenOn=async(value:boolean)=>{
+    setKeepScreenOn(value)
+    if(value){await keepAwake()}else{await allowSleep()}
+    try{
+      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'update_keep_screen_on',keepScreenOn:value})})
+    }catch{}
+  }
+  const toggleKeepScreenOn=async()=>{
+    if(keepScreenOn){
+      try{
+        const{data:vans}=await supabaseBrowser.from('truck_vans').select('name,auto_pause_on_offline').eq('truck_id',truck?.id??'').eq('active',true)
+        const autoPauseVans=(vans||[]).filter((v:any)=>v.auto_pause_on_offline).map((v:any)=>v.name)
+        if(autoPauseVans.length>0){setVansWithAutoPause(autoPauseVans);setShowScreenOffWarning(true);return}
+      }catch{}
+    }
+    await applyKeepScreenOn(!keepScreenOn)
+  }
+  const confirmScreenOff=async()=>{setShowScreenOffWarning(false);await applyKeepScreenOn(false)}
 
   const openCatEdit=(catId:string,catName:string)=>{
     const key=catName.toLowerCase()
@@ -461,14 +498,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="flex items-center gap-2">
               {truck?.logo&&<img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0"/>}
               <div>
-                <p className="font-black text-sm text-white leading-none">{truck?.name}</p>
+                <p className="font-black text-sm text-white leading-none">{truck?.name}{vanName?` — ${vanName}`:''}</p>
                 {truck?.venue_name&&<p className="text-slate-400 text-[11px] mt-0.5">{truck.venue_name}</p>}
               </div>
             </div>
           </div>
           <div className="flex items-center gap-2 z-10">
-            <Link href={`/manage/${token}`} className="text-slate-400 hover:text-white text-xs font-bold hidden sm:block transition-colors">⚙ Manage</Link>
+            {(!vanName) && <Link href={`/manage/${token}`} className="text-slate-400 hover:text-white text-xs font-bold hidden sm:block transition-colors">⚙ Manage</Link>}
             {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
+            <button onClick={toggleKeepScreenOn} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${keepScreenOn?'bg-teal-600 text-white':'bg-slate-700 text-slate-300'}`} title={keepScreenOn?'Screen will stay on':'Screen may turn off'}>
+              <span>{keepScreenOn?'☀️':'🌙'}</span>
+              <span className="hidden sm:inline">{keepScreenOn?'Screen on':'Screen off'}</span>
+            </button>
             <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
           </div>
         </div>
@@ -1009,6 +1050,28 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
             </div>
             <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Screen-off warning modal */}
+      {showScreenOffWarning&&(
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                {vansWithAutoPause.length>0
+                  ?`${vansWithAutoPause.join(', ')} ${vansWithAutoPause.length===1?'has':'have'} offline detection enabled. If the screen turns off, the device may stop sending its online signal and automatically pause customer orders.`
+                  :'If the screen turns off, the device may stop sending its online signal.'
+                }
+              </p>
+              <p className="text-sm text-slate-500 mt-2">Keep the screen on to ensure uninterrupted ordering.</p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={()=>setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
+              <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Allow screen off</button>
+            </div>
           </div>
         </div>
       )}
