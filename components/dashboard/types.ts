@@ -178,4 +178,5 @@ export interface TruckEvent {
   customer_note: string | null
   notes: string | null
   source: string | null
+  event_deals?: { id?: string; bundle_id: string; active: boolean; overridden: boolean }[]
 }

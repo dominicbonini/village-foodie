@@ -66,7 +66,7 @@ export async function GET(
 
     supabase
       .from('bundles_db')
-      .select('*')
+      .select('*, apply_to_new_events')
       .eq('truck_id', truck.id),
 
     supabase
@@ -104,6 +104,39 @@ export async function GET(
   console.log('  items data:', items)
   console.log('  bundles:', bundles?.length || 0)
 
+  // Filter bundles by event_deals: use explicit event_id param, or auto-detect the current open/confirmed event
+  let filteredBundles = bundles || []
+  const eventIdParam = req.nextUrl.searchParams.get('event_id')
+  let effectiveEventId = eventIdParam
+
+  if (!effectiveEventId) {
+    const today = new Date().toISOString().split('T')[0]
+    const { data: openEvent } = await supabase
+      .from('truck_events')
+      .select('id')
+      .eq('truck_id', truck.id)
+      .in('status', ['open', 'confirmed'])
+      .gte('event_date', today)
+      .order('event_date', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+    effectiveEventId = openEvent?.id ?? null
+  }
+
+  if (effectiveEventId) {
+    const { data: eventDeals } = await supabase
+      .from('event_deals')
+      .select('bundle_id, active')
+      .eq('event_id', effectiveEventId)
+
+    if (eventDeals && eventDeals.length > 0) {
+      const activeBundleIds = new Set(eventDeals.filter(d => d.active).map(d => d.bundle_id))
+      filteredBundles = filteredBundles.filter(b => activeBundleIds.has(b.id))
+    } else {
+      filteredBundles = filteredBundles.filter(b => b.apply_to_new_events)
+    }
+  }
+
   // Build category → modifier groups map
   const groupMap: Record<string, { id: string; name: string; options: { id: string; name: string; price_adjustment: number }[] }[]> = {}
   ;(categories || []).forEach(c => { groupMap[c.id] = [] })
@@ -136,7 +169,7 @@ export async function GET(
       stock_remaining: i.stock_count,
     })),
     
-    bundles: (bundles || []).map(b => ({
+    bundles: filteredBundles.map(b => ({
       name: b.name,
       description: b.description || '',
       bundle_price: b.bundle_price,

@@ -42,7 +42,9 @@ export async function GET(req: NextRequest) {
 
   const today = new Date().toISOString().split('T')[0]
 
-  // Build alias map from all discovery trucks
+  // Build alias map from all discovery trucks.
+  // Test trucks (is_test=true) have no discovery_trucks / discovery_events entries,
+  // so they're naturally excluded from customer-facing results.
   const { data: trucks } = await supabase
     .from('discovery_trucks')
     .select('name, aliases')

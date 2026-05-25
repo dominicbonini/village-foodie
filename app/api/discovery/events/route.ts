@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSlug } from '@/lib/utils'
 
@@ -21,8 +21,17 @@ function toddmmyyyy(isoDate: string): string {
   return `${d}/${m}/${y}`
 }
 
-export async function GET() {
+// Convert DD/MM/YYYY back to YYYY-MM-DD for correct chronological string sort
+function toIso(ddmmyyyy: string): string {
+  const [d, m, y] = ddmmyyyy.split('/')
+  return `${y}-${m}-${d}`
+}
+
+const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
+  const slug = req.nextUrl.searchParams.get('slug')
 
   const [evResult, trResult] = await Promise.all([
     supabase
@@ -65,6 +74,7 @@ export async function GET() {
       .order('event_date', { ascending: true })
       .order('start_time', { ascending: true, nullsFirst: false })
       .limit(1000),
+
     supabase
       .from('discovery_trucks')
       .select('name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason')
@@ -80,12 +90,15 @@ export async function GET() {
     return NextResponse.json({ error: trResult.error.message }, { status: 500 })
   }
 
-  const events = (evResult.data || []).map((e: any, idx: number) => {
+  // ── Map discovery events ───────────────────────────────────────
+  const mappedDiscoveryEvents = (evResult.data || []).map((e: any, idx: number) => {
     const truck = e.discovery_trucks || {}
     const venue = e.venues || {}
 
-    // Skip events for trucks explicitly excluded
     if (truck.name && (truck.exclude_reason || '').toLowerCase().includes('y')) return null
+
+    const truckSlug = createSlug(truck.name || e.truck_name || '')
+    if (slug && truckSlug !== slug) return null
 
     return {
       id: `event-${idx}`,
@@ -111,9 +124,115 @@ export async function GET() {
       eventNotes: e.event_notes || '',
       logoUrl: formatImageUrl(truck.logo_url || null, 'logos'),
       foodPhotoUrl: formatImageUrl(truck.photo_url || null, 'photos'),
+      source: 'discovery' as const,
     }
   }).filter(Boolean)
 
+  // ── Operator events (additive — failure must never break discovery map) ──
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+
+  let mappedOperatorEvents: any[] = []
+  try {
+    const opResult = await supabase
+      .from('truck_events')
+      .select(`
+        id,
+        event_date,
+        start_time,
+        end_time,
+        venue_name,
+        town,
+        postcode,
+        latitude,
+        longitude,
+        notes,
+        status,
+        trucks!truck_id (
+          id,
+          name,
+          cuisine_type,
+          logo_storage_path,
+          dashboard_token,
+          is_test,
+          active
+        )
+      `)
+      .in('status', ['confirmed', 'open'])
+      .gte('event_date', today)
+      .order('event_date', { ascending: true })
+      .order('start_time', { ascending: true })
+      .limit(200)
+
+    if (opResult.error) {
+      console.error('[Discovery] Operator events query failed:', opResult.error.message)
+    } else {
+      mappedOperatorEvents = (opResult.data || [])
+        .filter((e: any) => {
+          const truck = e.trucks as any
+          if (!truck) return false
+          if (truck.is_test) return false
+          if (!truck.active) return false
+          if (slug && createSlug(truck.name || '') !== slug) return false
+          return true
+        })
+        .map((e: any) => {
+          const truck = e.trucks as any
+          return {
+            id: e.id,
+            date: toddmmyyyy(e.event_date),
+            startTime: e.start_time || '',
+            endTime: e.end_time || '',
+            truckName: truck?.name || '',
+            venueName: e.venue_name || '',
+            village: e.town || '',
+            postcode: e.postcode || '',
+            venueLat: e.latitude ? parseFloat(String(e.latitude)) : undefined,
+            venueLong: e.longitude ? parseFloat(String(e.longitude)) : undefined,
+            venuePhone: null,
+            venueWebsite: null,
+            venuePhoto: null,
+            type: truck?.cuisine_type || '',
+            phoneNumber: null,
+            orderUrl: truck?.dashboard_token ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}` : null,
+            acceptedMethods: null,
+            websiteUrl: null,
+            menuUrl: null,
+            notes: e.notes || '',
+            eventNotes: '',
+            logoUrl: truck?.logo_storage_path
+              ? `${supabaseUrl}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
+              : '',
+            foodPhotoUrl: '',
+            source: 'operator' as const,
+          }
+        })
+    }
+  } catch (err) {
+    console.error('[Discovery] Operator events query failed:', err)
+    // Fall through with empty array — existing discovery events unaffected
+  }
+
+  // ── Dedup: operator version wins ──────────────────────────────
+  const operatorKeys = new Set(
+    mappedOperatorEvents.map((e: any) =>
+      `${normalize(e.truckName)}-${e.date}-${normalize(e.venueName)}`
+    )
+  )
+
+  const filteredDiscovery = (mappedDiscoveryEvents as any[]).filter(e =>
+    !operatorKeys.has(`${normalize(e.truckName)}-${e.date}-${normalize(e.venueName)}`)
+  )
+
+  // ── Merge and sort chronologically ────────────────────────────
+  const allEvents = [...mappedOperatorEvents, ...filteredDiscovery]
+    .sort((a: any, b: any) => {
+      const da = toIso(a.date), db = toIso(b.date)
+      if (da < db) return -1
+      if (da > db) return 1
+      return (a.startTime || '').localeCompare(b.startTime || '')
+    })
+
+  // ── Trucks list (discovery only, unchanged) ───────────────────
   const trucks = (trResult.data || [])
     .filter((t: any) => !(t.exclude_reason || '').toLowerCase().includes('y'))
     .map((t: any) => ({
@@ -132,5 +251,5 @@ export async function GET() {
       exclude: t.exclude_reason || '',
     }))
 
-  return NextResponse.json({ events, trucks })
+  return NextResponse.json({ events: allEvents, trucks })
 }

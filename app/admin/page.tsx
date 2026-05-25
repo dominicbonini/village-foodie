@@ -17,6 +17,7 @@ interface AdminTruck {
   contact_email: string | null
   onboarded_at: string | null
   operator_id: string | null
+  is_test: boolean
 }
 
 const PLAN_ORDER: Plan[] = ['starter', 'trial', 'pro', 'max']
@@ -249,6 +250,14 @@ export default function AdminPage() {
                       <input type="checkbox" checked={truck.active}
                         onChange={e => update(truck.id, { active: e.target.checked })}
                         className="w-4 h-4 accent-orange-500" />
+                    </div>
+
+                    {/* Test account toggle */}
+                    <div className="text-center">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Test</label>
+                      <input type="checkbox" checked={truck.is_test ?? false}
+                        onChange={e => update(truck.id, { is_test: e.target.checked })}
+                        className="w-4 h-4 accent-slate-500" />
                     </div>
 
                     {/* Create operator account */}

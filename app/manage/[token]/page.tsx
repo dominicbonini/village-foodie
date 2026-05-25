@@ -16,10 +16,10 @@ interface Category { id: string; name: string; slug: string; prep_secs: number; 
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
-interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
-interface ScheduleEvent { id: string; venue_name: string; address: string | null; event_date: string; start_time: string | null; end_time: string | null; notes: string | null; source: string; status: string }
+interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'events' | 'settings'
+
+type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'settings'
 
 // ── Helpers ────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -106,7 +106,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [modifierOptions, setModifierOptions] = useState<ModifierOption[]>([])
   const [categoryModGroups, setCategoryModGroups] = useState<{category_id:string;group_id:string}[]>([])
   const [bundles, setBundles] = useState<Bundle[]>([])
-  const [events, setEvents] = useState<ScheduleEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
 
@@ -125,7 +124,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setModifierOptions(data.modifierOptions)
       setCategoryModGroups(data.categoryModGroups)
       setBundles(data.bundles)
-      setEvents(data.events)
     } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
     finally { setLoading(false) }
   }, [token])
@@ -160,7 +158,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'modifiers', label: 'Modifiers', icon: '⚙️' },
     { id: 'deals',     label: 'Deals',     icon: '🎁' },
     { id: 'schedule',  label: 'Schedule',  icon: '📅' },
-    { id: 'events',    label: 'Events',    icon: '🗓️' },
     { id: 'settings',  label: 'Settings',  icon: '🔧' },
   ]
 
@@ -194,9 +191,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       <main className="max-w-5xl mx-auto px-4 py-6">
         {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'schedule'  && <ScheduleTab  events={events} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'events'    && <EventsTab    token={token} showToast={showToast} />}
+        {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
       </main>
 
@@ -731,12 +727,20 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
 // ══════════════════════════════════════════════════════════════
 // DEALS TAB
 // ══════════════════════════════════════════════════════════════
-function DealsTab({ categories, bundles, api, reload, showToast }: {
-  categories: Category[]; bundles: Bundle[]
+function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
+  categories: Category[]; bundles: Bundle[]; setBundles: React.Dispatch<React.SetStateAction<Bundle[]>>
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [editing, setEditing] = useState<Partial<Bundle> | null>(null)
   const [saving, setSaving] = useState(false)
+  const [showDefaultWarning, setShowDefaultWarning] = useState<string | null>(null)
+
+  const handleToggleDefault = async (bundleId: string, newValue: boolean) => {
+    setShowDefaultWarning(bundleId)
+    setTimeout(() => setShowDefaultWarning(null), 4000)
+    setBundles(prev => prev.map(b => b.id === bundleId ? { ...b, apply_to_new_events: newValue } : b))
+    await api('update_bundle_default', { bundleId, applyToNewEvents: newValue })
+  }
 
   const emptyBundle: Partial<Bundle> = { is_available: true, bundle_price: 0, slot_1_category: null, slot_2_category: null, slot_3_category: null, slot_4_category: null, slot_5_category: null, slot_6_category: null }
 
@@ -801,6 +805,25 @@ function DealsTab({ categories, bundles, api, reload, showToast }: {
                 <Btn label="Delete" size="sm" colour="red" onClick={() => del(bundle.id)} />
               </div>
             </div>
+
+            <div className="flex items-center justify-between py-2 border-t border-slate-100 mt-3">
+              <div>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">New events</p>
+                <p className="text-xs text-slate-400 mt-0.5">Automatically add this deal to events created from now on</p>
+              </div>
+              <button
+                onClick={() => handleToggleDefault(bundle.id, !bundle.apply_to_new_events)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${bundle.apply_to_new_events ? 'bg-orange-600' : 'bg-slate-200'}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${bundle.apply_to_new_events ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
+
+            {showDefaultWarning === bundle.id && (
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-1">
+                ⚠️ This change only applies to events added from now on. To update existing events, go to the Schedule tab.
+              </p>
+            )}
           </Card>
         )
       })}
@@ -847,114 +870,25 @@ function DealsTab({ categories, bundles, api, reload, showToast }: {
 }
 
 // ══════════════════════════════════════════════════════════════
-// SCHEDULE TAB
+// SCHEDULE TAB (merged schedule CRUD + live event operations)
 // ══════════════════════════════════════════════════════════════
-function ScheduleTab({ events, api, reload, showToast }: {
-  events: ScheduleEvent[]
-  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
-}) {
-  const emptyEvent = { venue_name: '', address: '', event_date: '', start_time: '', end_time: '', notes: '' }
-  const [editing, setEditing] = useState<Partial<ScheduleEvent> | null>(null)
-  const [saving, setSaving] = useState(false)
-
-  const save = async () => {
-    if (!editing?.venue_name || !editing?.event_date) return
-    setSaving(true)
-    try {
-      await api('upsert_event', editing)
-      showToast(editing.id ? 'Event updated' : 'Event added')
-      setEditing(null); reload()
-    } catch (e: any) { showToast(e.message, 'error') }
-    finally { setSaving(false) }
+async function geocodeLocation(
+  venueName: string,
+  town: string,
+  postcode: string
+): Promise<{ lat: number | null; lng: number | null }> {
+  try {
+    const res = await fetch('/api/manage/geocode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ venueName, town, postcode }),
+    })
+    const data = await res.json()
+    return { lat: data.lat, lng: data.lng }
+  } catch {
+    return { lat: null, lng: null }
   }
-
-  const cancel = async (id: string) => {
-    if (!confirm('Cancel this event?')) return
-    try { await api('delete_event', { id }); reload(); showToast('Event cancelled') }
-    catch (e: any) { showToast(e.message, 'error') }
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="font-black text-slate-900 text-lg">Upcoming schedule</h2>
-          <p className="text-slate-400 text-sm">{events.length} upcoming event{events.length !== 1 ? 's' : ''}</p>
-        </div>
-        <Btn label="+ Add event" onClick={() => setEditing(emptyEvent)} />
-      </div>
-
-      {events.length === 0 && (
-        <EmptyState icon="📅" title="No upcoming events" body="Add your schedule so customers know where to find you" />
-      )}
-
-      <div className="space-y-3">
-        {events.map(ev => (
-          <Card key={ev.id} className="p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="font-black text-slate-900">{ev.venue_name}</p>
-                  <Badge label={ev.source === 'manual' ? 'Manual' : ev.source === 'scraped' ? 'Scraped' : 'AI'} colour={ev.source === 'manual' ? 'green' : 'slate'} />
-                </div>
-                {ev.address && <p className="text-slate-400 text-xs mt-0.5">{ev.address}</p>}
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-sm font-bold text-slate-700">{fmtDate(ev.event_date)}</span>
-                  {(ev.start_time || ev.end_time) && (
-                    <span className="text-slate-400 text-xs">{[ev.start_time, ev.end_time].filter(Boolean).join(' – ')}</span>
-                  )}
-                </div>
-                {ev.notes && <p className="text-slate-400 text-xs mt-0.5 italic">{ev.notes}</p>}
-              </div>
-              <div className="flex gap-1.5 shrink-0">
-                <Btn label="Edit" size="sm" colour="ghost" onClick={() => setEditing(ev)} />
-                <Btn label="Cancel" size="sm" colour="red" onClick={() => cancel(ev.id)} />
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {editing && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-4">{editing.id ? 'Edit event' : 'Add event'}</h3>
-            <div className="space-y-3">
-              <Input label="Venue / location name" required value={editing.venue_name || ''} onChange={v => setEditing(p => ({...p!, venue_name: v}))} placeholder='e.g. The Red Lion, Long Melford' />
-              <Input label="Address" value={editing.address || ''} onChange={v => setEditing(p => ({...p!, address: v}))} placeholder='Optional' />
-              <Input label="Date" required type="date" value={editing.event_date || ''} onChange={v => setEditing(p => ({...p!, event_date: v}))} />
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Start time</label>
-                  <input type="time" value={editing.start_time || ''} onChange={e => setEditing(p => ({...p!, start_time: e.target.value || null}))}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">End time</label>
-                  <input type="time" value={editing.end_time || ''} onChange={e => setEditing(p => ({...p!, end_time: e.target.value || null}))}
-                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
-                <textarea value={editing.notes || ''} onChange={e => setEditing(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Limited menu, parking available"
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={2} />
-              </div>
-            </div>
-            <div className="flex gap-2 mt-4">
-              <Btn label="Cancel" colour="slate" onClick={() => setEditing(null)} />
-              <Btn label={saving ? 'Saving...' : 'Save event'} loading={saving} onClick={save} />
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
 }
-
-// ══════════════════════════════════════════════════════════════
-// EVENTS TAB
-// ══════════════════════════════════════════════════════════════
 interface EventForm {
   auto_open: boolean | null
   auto_close: boolean
@@ -985,12 +919,14 @@ function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
   )
 }
 
-function EventsTab({ token, showToast }: {
-  token: string
-  showToast: (m: string, t?: any) => void
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string }
+
+function ScheduleTab({ token, bundles, api, reload, showToast }: {
+  token: string; bundles: Bundle[]
+  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [events, setEvents] = useState<TruckEvent[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loadingEvents, setLoadingEvents] = useState(true)
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [form, setForm] = useState<EventForm>({ auto_open: null, auto_close: true, venue_address: '', customer_note: '' })
   const [saving, setSaving] = useState(false)
@@ -1000,31 +936,104 @@ function EventsTab({ token, showToast }: {
   const [eventCancelReason, setEventCancelReason] = useState('')
   const [eventCancelNote, setEventCancelNote] = useState('')
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
+  const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
+  const [editSaving, setEditSaving] = useState(false)
+  const [addMode, setAddMode] = useState<'manual' | 'upload'>('manual')
+  const [uploadFile, setUploadFile] = useState<File | null>(null)
+  const [uploadText, setUploadText] = useState('')
+  const [uploadProcessing, setUploadProcessing] = useState(false)
+  const [extractedEvents, setExtractedEvents] = useState<any[]>([])
+  const [savingExtracted, setSavingExtracted] = useState(false)
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      try {
-        const res = await fetch(`/api/events/manage?token=${token}`)
-        const data = await res.json()
-        if (!res.ok) throw new Error(data.error)
-        setEvents(data.events)
-      } catch (e: any) { showToast(e.message || 'Failed to load events', 'error') }
-      finally { setLoading(false) }
-    }
-    load()
+  const loadEvents = useCallback(async () => {
+    setLoadingEvents(true)
+    try {
+      const res = await fetch(`/api/events/manage?token=${token}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setEvents(data.events)
+    } catch (e: any) { showToast(e.message || 'Failed to load events', 'error') }
+    finally { setLoadingEvents(false) }
   }, [token])
 
-  const today = new Date().toISOString().split('T')[0]
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  useEffect(() => { loadEvents() }, [loadEvents])
 
-  const upcoming = events.filter(e => e.event_date >= today)
-  const past = events.filter(e => e.event_date < today && e.event_date >= thirtyDaysAgo)
+  const closeAddModal = () => {
+    setEditingEvent(null)
+    setExtractedEvents([])
+    setUploadFile(null)
+    setUploadText('')
+  }
 
-  const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
-  const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
-  const openEvents = upcoming.filter(e => e.status === 'open')
-  const otherUpcoming = upcoming.filter(e => !['unconfirmed', 'confirmed', 'open'].includes(e.status))
+  const saveEdit = async () => {
+    if (!editingEvent?.venue_name || !editingEvent?.event_date) return
+    setEditSaving(true)
+    try {
+      const { lat, lng } = await geocodeLocation(
+        editingEvent.venue_name,
+        editingEvent.town,
+        editingEvent.postcode
+      )
+      if (lat === null || lng === null) {
+        console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
+      }
+      await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })
+      showToast(editingEvent.id ? 'Event updated' : 'Event added')
+      closeAddModal()
+      await loadEvents()
+    } catch (e: any) { showToast(e.message, 'error') }
+    finally { setEditSaving(false) }
+  }
+
+  const processUpload = async () => {
+    setUploadProcessing(true)
+    const fd = new FormData()
+    if (uploadFile) fd.append('file', uploadFile)
+    if (uploadText) fd.append('text', uploadText)
+    fd.append('token', token)
+    const res = await fetch('/api/manage/process-schedule', { method: 'POST', body: fd })
+    const data = await res.json()
+    setExtractedEvents(data.events || [])
+    setUploadProcessing(false)
+  }
+
+  const saveExtractedEvents = async () => {
+    setSavingExtracted(true)
+    try {
+      for (const ev of extractedEvents) {
+        const parts = (ev.event_date || '').split('/')
+        const isoDate = parts.length === 3
+          ? `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+          : ev.event_date
+
+        const { lat, lng } = (ev.town || ev.postcode)
+          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '')
+          : { lat: null, lng: null }
+
+        if (lat === null || lng === null) {
+          console.warn('Geocoding returned null for extracted event:', ev.venue_name)
+        }
+
+        await api('upsert_event', {
+          venue_name: ev.venue_name || '',
+          town: ev.town || '',
+          postcode: ev.postcode || '',
+          address: [ev.town, ev.postcode].filter(Boolean).join(', '),
+          event_date: isoDate,
+          start_time: ev.start_time || '',
+          end_time: ev.end_time || '',
+          notes: ev.notes || '',
+          latitude: lat,
+          longitude: lng,
+        })
+      }
+      const count = extractedEvents.length
+      await loadEvents()
+      closeAddModal()
+      showToast(`${count} event${count !== 1 ? 's' : ''} saved`)
+    } catch (e: any) { showToast(e.message || 'Failed to save events', 'error') }
+    finally { setSavingExtracted(false) }
+  }
 
   const expandEvent = (event: TruckEvent) => {
     if (expandedEventId === event.id) {
@@ -1110,6 +1119,18 @@ function EventsTab({ token, showToast }: {
     finally { setCancellingEvent(null); setEventCancelReason(''); setEventCancelNote('') }
   }
 
+  const handleEventDealToggle = async (eventId: string, bundleId: string, active: boolean) => {
+    setEvents(prev => prev.map(e => {
+      if (e.id !== eventId) return e
+      const existing = e.event_deals?.find(d => d.bundle_id === bundleId)
+      const updated = existing
+        ? e.event_deals!.map(d => d.bundle_id === bundleId ? { ...d, active, overridden: true } : d)
+        : [...(e.event_deals || []), { bundle_id: bundleId, active, overridden: true }]
+      return { ...e, event_deals: updated }
+    }))
+    await api('update_event_deal', { eventId, bundleId, active })
+  }
+
   const renderEvent = (event: TruckEvent) => {
     const expanded = expandedEventId === event.id
     const canExpand = event.status === 'unconfirmed' || event.status === 'confirmed'
@@ -1133,15 +1154,42 @@ function EventsTab({ token, showToast }: {
             </div>
           </div>
           <div className="flex gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
+            <Btn label="Edit" size="sm" colour="ghost" onClick={() => setEditingEvent({ id: event.id, venue_name: event.venue_name, town: (event as any).town || '', postcode: (event as any).postcode || '', address: event.venue_address || '', event_date: event.event_date, start_time: event.start_time || '', end_time: event.end_time || '', notes: event.customer_note || '' })} />
             {event.status === 'unconfirmed' && (
               <Btn label="Confirm" size="sm" colour="green" onClick={() => expandEvent(event)} />
             )}
             {event.status === 'confirmed' && (
-              <Btn label="Edit" size="sm" colour="ghost" onClick={() => expandEvent(event)} />
+              <Btn label="Settings" size="sm" colour="ghost" onClick={() => expandEvent(event)} />
             )}
             <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
           </div>
         </div>
+
+        {bundles.length > 0 && (
+          <div className="px-4 pb-3 border-t border-slate-100 mt-0">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 pt-3">
+              Deals for this event
+            </p>
+            {bundles.map(bundle => {
+              const eventDeal = event.event_deals?.find(d => d.bundle_id === bundle.id)
+              const isActive = eventDeal ? eventDeal.active : bundle.apply_to_new_events
+              return (
+                <div key={bundle.id} className="flex items-center justify-between py-1.5">
+                  <div>
+                    <span className="text-sm text-slate-700">{bundle.name}</span>
+                    <span className="text-xs text-slate-400 ml-2">£{bundle.bundle_price}</span>
+                  </div>
+                  <button
+                    onClick={() => handleEventDealToggle(event.id, bundle.id, !isActive)}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isActive ? 'bg-orange-600' : 'bg-slate-200'}`}
+                  >
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-5' : 'translate-x-1'}`} />
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         {expanded && canExpand && (
           <div className="px-4 pb-4 mt-0 pt-3 border-t border-slate-100 flex flex-col gap-4">
@@ -1228,15 +1276,26 @@ function EventsTab({ token, showToast }: {
     )
   }
 
-  if (loading) return (
+  if (loadingEvents) return (
     <div className="flex items-center justify-center py-12"><Spinner /></div>
   )
 
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const upcoming = events.filter(e => e.status !== 'cancelled' && new Date(e.event_date) >= today)
+  const past = events.filter(e => e.status !== 'cancelled' && new Date(e.event_date) < today)
+  const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
+  const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
+  const openEvents = upcoming.filter(e => e.status === 'open')
+  const otherUpcoming = upcoming.filter(e => !['unconfirmed', 'confirmed', 'open'].includes(e.status))
+
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="font-black text-slate-900 text-lg">Events</h2>
-        <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-black text-slate-900 text-lg">Schedule</h2>
+          <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
+        </div>
+        <Btn label="+ Add event" onClick={() => { setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: '', end_time: '', notes: '' }); setAddMode('manual'); setExtractedEvents([]) }} />
       </div>
 
       {upcoming.length === 0 && (
@@ -1280,6 +1339,134 @@ function EventsTab({ token, showToast }: {
           {showPast && (
             <div className="mt-3 space-y-2">{past.map(renderEvent)}</div>
           )}
+        </div>
+      )}
+
+      {editingEvent && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="font-black text-slate-900 mb-4">
+              {editingEvent.id ? 'Edit event' : 'Add event'}
+            </h3>
+
+            {/* Mode toggle — new events only */}
+            {!editingEvent.id && (
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => { setAddMode('manual'); setExtractedEvents([]) }}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium ${addMode === 'manual' ? 'bg-orange-600 text-white' : 'border border-slate-200 text-slate-600'}`}
+                >
+                  Add manually
+                </button>
+                <button
+                  onClick={() => setAddMode('upload')}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium ${addMode === 'upload' ? 'bg-orange-600 text-white' : 'border border-slate-200 text-slate-600'}`}
+                >
+                  Upload schedule
+                </button>
+              </div>
+            )}
+
+            {/* Manual form */}
+            {(editingEvent.id || addMode === 'manual') && (
+              <div className="space-y-3">
+                <Input label="Venue name" required value={editingEvent.venue_name} onChange={v => setEditingEvent(p => ({...p!, venue_name: v}))} placeholder="e.g. The Crown" />
+                <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
+                <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
+                <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
+                <Input label="Date" required type="date" value={editingEvent.event_date} onChange={v => setEditingEvent(p => ({...p!, event_date: v}))} />
+                <div className="grid grid-cols-2 gap-3">
+                  <Input label="Start time" type="time" value={editingEvent.start_time} onChange={v => setEditingEvent(p => ({...p!, start_time: v}))} />
+                  <Input label="End time" type="time" value={editingEvent.end_time} onChange={v => setEditingEvent(p => ({...p!, end_time: v}))} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
+                  <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
+                </div>
+                <div className="flex gap-2 pt-1">
+                  <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
+                  <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
+                </div>
+              </div>
+            )}
+
+            {/* Upload mode — new events only */}
+            {!editingEvent.id && addMode === 'upload' && (
+              <div className="flex flex-col gap-4">
+                <p className="text-sm text-slate-500">
+                  Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
+                  Our AI will extract your events for you to review.
+                </p>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Upload image or PDF
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={e => setUploadFile(e.target.files?.[0] || null)}
+                    className="mt-1 w-full text-sm text-slate-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Or paste schedule text
+                  </label>
+                  <textarea
+                    value={uploadText}
+                    onChange={e => setUploadText(e.target.value)}
+                    placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+                    rows={4}
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+
+                <button
+                  onClick={processUpload}
+                  disabled={(!uploadFile && !uploadText) || uploadProcessing}
+                  className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+                >
+                  {uploadProcessing ? 'Analysing...' : 'Extract events with AI'}
+                </button>
+
+                {extractedEvents.length > 0 && (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-sm font-semibold text-slate-900">
+                      We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
+                    </p>
+                    {extractedEvents.map((ev, i) => (
+                      <div key={i} className="border border-slate-200 rounded-xl p-3 text-sm">
+                        <p className="font-medium">{ev.venue_name}</p>
+                        <p className="text-slate-500">{ev.event_date} · {ev.start_time}–{ev.end_time}</p>
+                        <p className="text-slate-500">{ev.town}{ev.postcode ? `, ${ev.postcode}` : ''}</p>
+                      </div>
+                    ))}
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setExtractedEvents([])}
+                        className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm"
+                      >
+                        Try again
+                      </button>
+                      <button
+                        onClick={saveExtractedEvents}
+                        disabled={savingExtracted}
+                        className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40"
+                      >
+                        {savingExtracted ? 'Saving...' : 'Save all events'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <button onClick={closeAddModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

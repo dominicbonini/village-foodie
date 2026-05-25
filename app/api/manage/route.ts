@@ -208,16 +208,57 @@ export async function POST(req: NextRequest) {
 
   // ── EVENT CRUD ────────────────────────────────────────────
   if (action === 'upsert_event') {
-    const { id, venue_name, address, event_date, start_time, end_time, notes } = body
+    const { id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude } = body
     if (id) {
-      const { data, error } = await supabase.from('truck_events').update({ venue_name, address, event_date, start_time, end_time, notes, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', truck.id).select().single()
+      const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ event: data })
     } else {
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: truck.id, venue_name, address, event_date, start_time, end_time, notes, source: 'manual' }).select().single()
+      const { data, error } = await supabase.from('truck_events').insert({ truck_id: truck.id, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, source: 'manual' }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+      // Auto-create event_deals from current bundle defaults
+      const newEventId = data.id
+      const { data: bundles } = await supabase
+        .from('bundles_db')
+        .select('id, apply_to_new_events')
+        .eq('truck_id', truck.id)
+        .eq('is_available', true)
+
+      if (bundles && bundles.length > 0 && newEventId) {
+        const eventDeals = bundles.map(bundle => ({
+          event_id: newEventId,
+          bundle_id: bundle.id,
+          active: bundle.apply_to_new_events,
+          overridden: false,
+        }))
+        await supabase
+          .from('event_deals')
+          .upsert(eventDeals, { onConflict: 'event_id,bundle_id', ignoreDuplicates: true })
+      }
+
       return NextResponse.json({ event: data })
     }
+  }
+
+  if (action === 'update_event_deal') {
+    const { eventId, bundleId, active } = body
+    const { error } = await supabase
+      .from('event_deals')
+      .upsert({ event_id: eventId, bundle_id: bundleId, active, overridden: true }, { onConflict: 'event_id,bundle_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  if (action === 'update_bundle_default') {
+    const { bundleId, applyToNewEvents } = body
+    const { error } = await supabase
+      .from('bundles_db')
+      .update({ apply_to_new_events: applyToNewEvents })
+      .eq('id', bundleId)
+      .eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
   }
 
   if (action === 'delete_event') {

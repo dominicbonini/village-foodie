@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from('truck_events')
-    .select('*')
+    .select(`*, event_deals ( id, bundle_id, active, overridden )`)
     .eq('truck_id', truck.id)
     .neq('status', 'cancelled')
     .order('event_date', { ascending: true })
