@@ -4,6 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import crypto from 'crypto'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -295,6 +296,272 @@ export async function POST(req: NextRequest) {
     )
     const { error } = await supabase.from('trucks').update(safeData).eq('id', truck.id)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── TEAM CRUD ─────────────────────────────────────────────────
+  if (action === 'get_team') {
+    const { data, error } = await supabase
+      .from('truck_users')
+      .select(`
+        id, email, name, role, accepted_at,
+        truck_user_vans (
+          van_id,
+          truck_vans ( name )
+        )
+      `)
+      .eq('truck_id', truck.id)
+      .order('created_at', { ascending: true })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    const members = (data || []).map((m: any) => ({
+      id: m.id,
+      email: m.email,
+      name: m.name,
+      role: m.role,
+      accepted_at: m.accepted_at,
+      van_names: (m.truck_user_vans || []).map((tuv: any) => tuv.truck_vans?.name).filter(Boolean),
+    }))
+    return NextResponse.json({ members })
+  }
+
+  if (action === 'invite_member') {
+    const { name, email, role, van_ids } = body
+    if (!email?.trim()) return NextResponse.json({ error: 'Email required' }, { status: 400 })
+    const { data: member, error } = await supabase
+      .from('truck_users')
+      .insert({ truck_id: truck.id, email: email.trim().toLowerCase(), name: name?.trim() || null, role })
+      .select('id, email, name, role, accepted_at')
+      .single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (van_ids?.length > 0) {
+      await supabase.from('truck_user_vans').insert(
+        van_ids.map((van_id: string) => ({ truck_user_id: member.id, van_id }))
+      )
+    }
+    return NextResponse.json({ ok: true, member: { ...member, van_names: [] } })
+  }
+
+  if (action === 'update_member') {
+    const { memberId, name, role, van_ids } = body
+    const { error } = await supabase
+      .from('truck_users')
+      .update({ name: name?.trim() || null, role })
+      .eq('id', memberId)
+      .eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    await supabase.from('truck_user_vans').delete().eq('truck_user_id', memberId)
+    if (van_ids?.length > 0) {
+      await supabase.from('truck_user_vans').insert(
+        van_ids.map((van_id: string) => ({ truck_user_id: memberId, van_id }))
+      )
+    }
+    return NextResponse.json({ ok: true })
+  }
+
+  if (action === 'remove_member') {
+    const { memberId } = body
+    const { error } = await supabase
+      .from('truck_users')
+      .delete()
+      .eq('id', memberId)
+      .eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── VAN CRUD ──────────────────────────────────────────────────
+  if (action === 'get_vans') {
+    const { data, error } = await supabase
+      .from('truck_vans')
+      .select('id, truck_id, name, kds_token, active')
+      .eq('truck_id', truck.id)
+      .eq('active', true)
+      .order('created_at', { ascending: true })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ vans: data || [] })
+  }
+
+  if (action === 'add_van') {
+    const { name } = body
+    if (!name?.trim()) {
+      return NextResponse.json({ error: 'Name required' }, { status: 400 })
+    }
+    const { data, error } = await supabase
+      .from('truck_vans')
+      .insert({ truck_id: truck.id, name: name.trim() })
+      .select('id, truck_id, name, kds_token, active')
+      .single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true, van: data })
+  }
+
+  if (action === 'rename_van') {
+    const { vanId, name } = body
+    if (!name?.trim()) {
+      return NextResponse.json({ error: 'Name required' }, { status: 400 })
+    }
+    const { error } = await supabase
+      .from('truck_vans')
+      .update({ name: name.trim() })
+      .eq('id', vanId)
+      .eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true })
+  }
+
+  // ── STAFF INVITE (full: auth user + email) ───────────────────
+  if (action === 'invite_team_member') {
+    const { email, name, role, vanIds } = body
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email required' }, { status: 400 })
+    }
+
+    // Check not already a member
+    const { data: existing } = await supabase
+      .from('truck_users')
+      .select('id')
+      .eq('truck_id', truck.id)
+      .eq('email', email.toLowerCase().trim())
+      .single()
+
+    if (existing) {
+      return NextResponse.json({ error: 'This person is already a team member' }, { status: 400 })
+    }
+
+    // Create truck_user record
+    const { data: newMember, error: memberError } = await supabase
+      .from('truck_users')
+      .insert({
+        truck_id: truck.id,
+        email: email.toLowerCase().trim(),
+        name: name || null,
+        role: role || 'staff',
+      })
+      .select('id')
+      .single()
+
+    if (memberError || !newMember) {
+      return NextResponse.json({ error: 'Failed to create member' }, { status: 500 })
+    }
+
+    // Assign van access if specified
+    if (vanIds && vanIds.length > 0) {
+      await supabase
+        .from('truck_user_vans')
+        .insert(vanIds.map((vanId: string) => ({
+          truck_user_id: newMember.id,
+          van_id: vanId,
+        })))
+    }
+
+    // Create Supabase Auth user
+    const tempPassword = crypto.randomBytes(16).toString('hex')
+    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      email: email.toLowerCase().trim(),
+      password: tempPassword,
+      email_confirm: true,
+      user_metadata: {
+        must_change_password: true,
+        truck_user_id: newMember.id,
+      },
+    })
+
+    if (authError) {
+      console.warn('Auth user creation failed:', authError.message)
+    }
+
+    if (authData?.user) {
+      await supabase
+        .from('truck_users')
+        .update({ auth_user_id: authData.user.id })
+        .eq('id', newMember.id)
+
+      await supabase
+        .from('operators')
+        .upsert({
+          auth_user_id: authData.user.id,
+          email: email.toLowerCase().trim(),
+          name: name || null,
+        }, { onConflict: 'auth_user_id' })
+    }
+
+    // Generate password reset / invite token
+    const inviteToken = crypto.randomBytes(32).toString('hex')
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+    const { data: operatorData } = await supabase
+      .from('operators')
+      .select('id')
+      .eq('email', email.toLowerCase().trim())
+      .single()
+
+    if (operatorData) {
+      await supabase
+        .from('password_reset_tokens')
+        .insert({
+          operator_id: operatorData.id,
+          token: inviteToken,
+          expires_at: expiresAt.toISOString(),
+        })
+    }
+
+    // Send invite email via Brevo
+    const inviteUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/reset-password?token=${inviteToken}&invite=true`
+    const roleLabel = role === 'manager' ? 'Manager' : 'Staff'
+
+    const html = `
+      <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
+        <img src="${process.env.NEXT_PUBLIC_BASE_URL}/logos/village-foodie-logo-v2.png"
+             width="160" style="margin-bottom:24px;display:block;"/>
+        <h2 style="color:#0f172a;margin:0 0 16px;">
+          You've been invited to join ${truck.name} on HatchGrab
+        </h2>
+        <p>Hi ${name || 'there'},</p>
+        <p>${truck.name} has invited you to join their team as ${roleLabel === 'Manager' ? 'a Manager' : 'a Staff member'} on HatchGrab.</p>
+        <p>Click the button below to set your password and get started. This link expires in 7 days.</p>
+        <p style="margin:32px 0;">
+          <a href="${inviteUrl}"
+             style="background:#ea580c;color:white;padding:14px 28px;
+                    text-decoration:none;border-radius:8px;font-weight:bold;
+                    display:inline-block;">
+            Accept invitation
+          </a>
+        </p>
+        <p style="color:#64748b;font-size:13px;">
+          If you weren't expecting this invitation, you can safely ignore this email.
+        </p>
+        <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;"/>
+        <p style="color:#94a3b8;font-size:12px;">HatchGrab</p>
+      </div>
+    `
+
+    await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY!,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: { name: 'HatchGrab', email: 'hello@villagefoodie.co.uk' },
+        to: [{ email }],
+        replyTo: { email: 'hello@villagefoodie.co.uk' },
+        subject: `You've been invited to join ${truck.name} on HatchGrab`,
+        htmlContent: html,
+      }),
+    })
+
+    return NextResponse.json({ ok: true, memberId: newMember.id })
+  }
+
+  if (action === 'remove_team_member') {
+    const { memberId } = body
+    await supabase
+      .from('truck_users')
+      .delete()
+      .eq('id', memberId)
+      .eq('truck_id', truck.id)
     return NextResponse.json({ ok: true })
   }
 

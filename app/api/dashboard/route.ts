@@ -13,6 +13,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
   const pin   = req.nextUrl.searchParams.get('pin')
+  const vanId = req.nextUrl.searchParams.get('van_id')
   const date  = req.nextUrl.searchParams.get('date') || new Date().toISOString().split('T')[0]
 
   if (!token) {
@@ -59,20 +60,30 @@ export async function GET(req: NextRequest) {
   // Terminal orders: scoped to the selected date so yesterday's collected orders don't bleed in
   const DATE_DONE_STATUSES = ['collected', 'rejected', 'cancelled']
 
+  let activeOrdersQuery = supabase
+    .from('orders')
+    .select('*')
+    .eq('truck_id', truck.id)
+    .in('status', ACTIVE_STATUSES)
+    .order('created_at', { ascending: true })
+
+  let doneOrdersQuery = supabase
+    .from('orders')
+    .select('*')
+    .eq('truck_id', truck.id)
+    .eq('event_date', date)
+    .in('status', DATE_DONE_STATUSES)
+    .order('created_at', { ascending: true })
+
+  // Van KDS: show orders for this van OR unassigned orders (van_id null appears on all vans)
+  if (vanId) {
+    activeOrdersQuery = activeOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
+    doneOrdersQuery   = doneOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
+  }
+
   const [{ data: activeOrders }, { data: doneToday }] = await Promise.all([
-    supabase
-      .from('orders')
-      .select('*')
-      .eq('truck_id', truck.id)
-      .in('status', ACTIVE_STATUSES)
-      .order('created_at', { ascending: true }),
-    supabase
-      .from('orders')
-      .select('*')
-      .eq('truck_id', truck.id)
-      .eq('event_date', date)
-      .in('status', DATE_DONE_STATUSES)
-      .order('created_at', { ascending: true }),
+    activeOrdersQuery,
+    doneOrdersQuery,
   ])
 
   const orderMap = new Map<string, NonNullable<typeof activeOrders>[number]>()

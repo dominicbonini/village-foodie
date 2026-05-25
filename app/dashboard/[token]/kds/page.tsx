@@ -22,6 +22,8 @@ export default function KdsPage() {
   const { token } = useParams<{ token: string }>()
   const searchParams = useSearchParams()
   const kdsView: KdsView = searchParams.get('view') === 'cook' ? 'cook' : 'window'
+  const vanId = searchParams.get('van_id') ?? ''
+  const vanName = searchParams.get('van_name') ?? ''
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [orders, setOrders] = useState<Order[]>([])
@@ -58,6 +60,7 @@ export default function KdsPage() {
     try {
       const params = new URLSearchParams({ token })
       if (currentPin) params.set('pin', currentPin)
+      if (vanId) params.set('van_id', vanId)
       const res = await fetch(`/api/dashboard?${params}`)
       const data = await res.json()
 
@@ -446,7 +449,9 @@ export default function KdsPage() {
       <header className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0">
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="font-medium text-slate-900">{truck.name}</span>
+          <span className="font-medium text-slate-900">
+            {truck.name}{vanName ? ` — ${vanName}` : ''}
+          </span>
         </div>
 
         {/* View / layout switcher */}

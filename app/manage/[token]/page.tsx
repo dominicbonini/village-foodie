@@ -17,9 +17,10 @@ interface Item { id: string; name: string; description: string | null; price: nu
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean }
+interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
 
-
-type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'settings'
+type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'team' | 'settings'
 
 // ── Helpers ────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -158,6 +159,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'modifiers', label: 'Modifiers', icon: '⚙️' },
     { id: 'deals',     label: 'Deals',     icon: '🎁' },
     { id: 'schedule',  label: 'Schedule',  icon: '📅' },
+    { id: 'team',      label: 'Team',      icon: '👥' },
     { id: 'settings',  label: 'Settings',  icon: '🔧' },
   ]
 
@@ -193,6 +195,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
       </main>
 
@@ -1538,6 +1541,15 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
   const [whatsappSender, setWhatsappSender] = useState(truck.whatsapp_sender ?? '')
+  const [vans, setVans] = useState<Van[]>([])
+  const [addingVan, setAddingVan] = useState(false)
+  const [newVanName, setNewVanName] = useState('')
+  const [renamingVanId, setRenamingVanId] = useState<string | null>(null)
+  const [renameVanName, setRenameVanName] = useState('')
+
+  useEffect(() => {
+    api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
+  }, [])
 
   const can = (feature: Feature) => canAccess(
     truck.plan,
@@ -1579,6 +1591,32 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       showToast('Logo uploaded — save settings to apply')
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setUploadingLogo(false) }
+  }
+
+  const copyKdsLink = async (kdsToken: string) => {
+    await navigator.clipboard.writeText(`https://www.hatchgrab.com/kds/${kdsToken}`)
+    showToast('KDS link copied')
+  }
+
+  const saveNewVan = async () => {
+    try {
+      const result = await api('add_van', { name: newVanName })
+      if (result.van) {
+        setVans(prev => [...prev, result.van])
+        setAddingVan(false)
+        setNewVanName('')
+      }
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  const confirmRenameVan = async (vanId: string) => {
+    if (!renameVanName.trim()) return
+    try {
+      await api('rename_van', { vanId, name: renameVanName })
+      setVans(prev => prev.map(v => v.id === vanId ? { ...v, name: renameVanName.trim() } : v))
+      setRenamingVanId(null)
+      setRenameVanName('')
+    } catch (e: any) { showToast(e.message, 'error') }
   }
 
   return (
@@ -1827,10 +1865,353 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         </div>
       </Card>
 
+      {/* Vans */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="text-sm font-semibold text-slate-900">Vans</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Manage your vehicles. Each van gets its own KDS screen.
+            </p>
+          </div>
+          <button
+            onClick={() => setAddingVan(true)}
+            className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+          >
+            + Add van
+          </button>
+        </div>
+
+        {vans.map(van => (
+          <div key={van.id}>
+            <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
+              <div>
+                <p className="text-sm font-medium text-slate-900">{van.name}</p>
+                <p className="text-xs text-slate-400 font-mono mt-0.5">
+                  KDS: hatchgrab.com/kds/{van.kds_token.slice(0, 12)}...
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => copyKdsLink(van.kds_token)}
+                  className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+                >
+                  Copy KDS link
+                </button>
+                <button
+                  onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
+                  className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+                >
+                  Rename
+                </button>
+              </div>
+            </div>
+            {renamingVanId === van.id && (
+              <div className="mt-2 mb-2 flex gap-2">
+                <input
+                  type="text"
+                  value={renameVanName}
+                  onChange={e => setRenameVanName(e.target.value)}
+                  autoFocus
+                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
+                />
+                <button
+                  onClick={() => confirmRenameVan(van.id)}
+                  disabled={!renameVanName.trim()}
+                  className="px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => { setRenamingVanId(null); setRenameVanName('') }}
+                  className="px-3 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+
+        {addingVan && (
+          <div className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={newVanName}
+              onChange={e => setNewVanName(e.target.value)}
+              placeholder="e.g. Van 2, Festival Van"
+              autoFocus
+              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm"
+            />
+            <button
+              onClick={saveNewVan}
+              disabled={!newVanName.trim()}
+              className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl disabled:opacity-40"
+            >
+              Add
+            </button>
+            <button
+              onClick={() => { setAddingVan(false); setNewVanName('') }}
+              className="px-4 py-2 border border-slate-200 text-slate-600 text-sm rounded-xl"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </Card>
+
       <div className="flex gap-3">
         <Btn label={saving ? 'Saving...' : 'Save settings'} loading={saving} onClick={save} />
         <a href={`/dashboard/${token}`} className="text-sm text-slate-400 hover:text-slate-600 font-bold py-2">← Back to dashboard</a>
       </div>
+    </div>
+  )
+}
+
+// ── TeamTab ────────────────────────────────────────────────────
+function TeamTab({ truck, token, api, reload, showToast }: {
+  truck: Truck; token: string
+  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
+}) {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const [vans, setVans] = useState<Van[]>([])
+  const [invitingMember, setInvitingMember] = useState(false)
+  const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
+  const [inviteName, setInviteName] = useState('')
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState<'manager' | 'staff'>('staff')
+  const [inviteVanIds, setInviteVanIds] = useState<string[]>([])
+  const [inviteLoading, setInviteLoading] = useState(false)
+
+  const loadTeam = useCallback(async () => {
+    try {
+      const [teamResult, vansResult] = await Promise.all([
+        api('get_team'),
+        api('get_vans'),
+      ])
+      setTeamMembers(teamResult.members || [])
+      setVans(vansResult.vans || [])
+    } catch {}
+  }, [])
+
+  useEffect(() => { loadTeam() }, [loadTeam])
+
+  const openInviteModal = () => {
+    setEditingMember(null)
+    setInviteName(''); setInviteEmail(''); setInviteRole('staff'); setInviteVanIds([])
+    setInvitingMember(true)
+  }
+
+  const editMember = (member: TeamMember) => {
+    setEditingMember(member)
+    setInviteName(member.name || '')
+    setInviteEmail(member.email)
+    setInviteRole(member.role === 'owner' ? 'manager' : member.role)
+    const matchedVanIds = vans
+      .filter(v => member.van_names?.includes(v.name))
+      .map(v => v.id)
+    setInviteVanIds(matchedVanIds)
+    setInvitingMember(true)
+  }
+
+  const closeModal = () => {
+    setInvitingMember(false)
+    setEditingMember(null)
+    setInviteName(''); setInviteEmail(''); setInviteRole('staff'); setInviteVanIds([])
+  }
+
+  const sendInvite = async () => {
+    if (!inviteEmail.trim()) return
+    setInviteLoading(true)
+    try {
+      if (editingMember) {
+        await api('update_member', {
+          memberId: editingMember.id,
+          name: inviteName,
+          role: inviteRole,
+          van_ids: inviteVanIds,
+        })
+        showToast('Member updated')
+      } else {
+        await api('invite_team_member', {
+          name: inviteName,
+          email: inviteEmail,
+          role: inviteRole,
+          vanIds: inviteVanIds,
+        })
+        showToast('Invite sent')
+      }
+      await loadTeam()
+      closeModal()
+    } catch (e: any) {
+      showToast(e.message, 'error')
+    } finally {
+      setInviteLoading(false)
+    }
+  }
+
+  const removeMember = async (memberId: string) => {
+    if (!window.confirm('Remove this team member?')) return
+    try {
+      await api('remove_team_member', { memberId })
+      setTeamMembers(prev => prev.filter(m => m.id !== memberId))
+      showToast('Member removed')
+    } catch (e: any) {
+      showToast(e.message, 'error')
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4 max-w-lg">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-semibold text-slate-900">Team members</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Invite staff to access the KDS and take orders
+          </p>
+        </div>
+        <button
+          onClick={openInviteModal}
+          className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+        >
+          + Invite member
+        </button>
+      </div>
+
+      <Card className="p-4">
+        {/* Owner row — always shown */}
+        <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
+          <div>
+            <p className="text-sm font-medium text-slate-900">
+              {truck.contact_email} (you)
+            </p>
+            <p className="text-xs text-slate-400">Owner · All vans</p>
+          </div>
+        </div>
+
+        {/* Team member rows */}
+        {teamMembers.map(member => (
+          <div key={member.id} className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
+            <div>
+              <p className="text-sm font-medium text-slate-900">
+                {member.name || member.email}
+              </p>
+              <p className="text-xs text-slate-400">
+                {member.role === 'manager' ? 'Manager' : 'Staff'}
+                {' · '}
+                {member.van_names?.length
+                  ? member.van_names.join(', ')
+                  : 'All vans'}
+                {!member.accepted_at && ' · Invite pending'}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => editMember(member)}
+                className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => removeMember(member.id)}
+                className="text-xs px-2.5 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {teamMembers.length === 0 && (
+          <p className="text-xs text-slate-400 py-3 text-center">No team members yet</p>
+        )}
+      </Card>
+
+      {/* Invite / edit modal */}
+      {invitingMember && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4"
+             onClick={e => e.target === e.currentTarget && closeModal()}>
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-slate-900">
+              {editingMember ? 'Edit team member' : 'Invite team member'}
+            </h3>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</label>
+              <input
+                type="text"
+                value={inviteName}
+                onChange={e => setInviteName(e.target.value)}
+                placeholder="e.g. Sarah"
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={e => setInviteEmail(e.target.value)}
+                placeholder="sarah@example.com"
+                disabled={!!editingMember}
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm disabled:bg-slate-50 disabled:text-slate-400"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Role</label>
+              <select
+                value={inviteRole}
+                onChange={e => setInviteRole(e.target.value as 'manager' | 'staff')}
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+              >
+                <option value="staff">Staff — KDS and orders only</option>
+                <option value="manager">Manager — full access except team management</option>
+              </select>
+            </div>
+
+            {vans.length > 1 && (
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Van access</label>
+                <p className="text-xs text-slate-400 mb-2">Leave all unchecked to allow access to all vans</p>
+                {vans.map(van => (
+                  <label key={van.id} className="flex items-center gap-2 py-1 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inviteVanIds.includes(van.id)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setInviteVanIds(prev => [...prev, van.id])
+                        } else {
+                          setInviteVanIds(prev => prev.filter(id => id !== van.id))
+                        }
+                      }}
+                    />
+                    <span className="text-sm text-slate-700">{van.name}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeModal}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={sendInvite}
+                disabled={!inviteEmail || inviteLoading}
+                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700"
+              >
+                {inviteLoading ? 'Saving...' : editingMember ? 'Save changes' : 'Send invite'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
