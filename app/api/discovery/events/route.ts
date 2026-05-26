@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSlug } from '@/lib/utils'
+import { isHatchGrabHost } from '@/lib/brand'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,6 +34,12 @@ export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
   const slug = req.nextUrl.searchParams.get('slug')
 
+  const host = req.headers.get('host') || ''
+  const isHG = isHatchGrabHost(host)
+  // After running migration 20260526_visibility.sql:
+  // public = both sites, hg_only = HatchGrab only, hidden = neither
+  const allowedVisibility = isHG ? ['public', 'hg_only'] : ['public']
+
   const [evResult, trResult] = await Promise.all([
     supabase
       .from('discovery_events')
@@ -45,6 +52,7 @@ export async function GET(req: NextRequest) {
         venue_name,
         village,
         event_notes,
+        visibility,
         discovery_trucks!discovery_truck_id (
           name,
           cuisine,
@@ -57,7 +65,8 @@ export async function GET(req: NextRequest) {
           logo_url,
           photo_url,
           aliases,
-          exclude_reason
+          exclude_reason,
+          visibility
         ),
         venues!venue_id (
           name,
@@ -70,6 +79,7 @@ export async function GET(req: NextRequest) {
           photo_url
         )
       `)
+      .in('visibility', allowedVisibility)
       .gte('event_date', today)
       .order('event_date', { ascending: true })
       .order('start_time', { ascending: true, nullsFirst: false })
@@ -77,7 +87,8 @@ export async function GET(req: NextRequest) {
 
     supabase
       .from('discovery_trucks')
-      .select('name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason')
+      .select('name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason, visibility')
+      .in('visibility', allowedVisibility)
       .order('name'),
   ])
 
@@ -96,6 +107,10 @@ export async function GET(req: NextRequest) {
     const venue = e.venues || {}
 
     if (truck.name && (truck.exclude_reason || '').toLowerCase().includes('y')) return null
+
+    // Filter by truck-level visibility (in case the event passed but its truck didn't)
+    const truckVis = truck.visibility || 'public'
+    if (!allowedVisibility.includes(truckVis)) return null
 
     const truckSlug = createSlug(truck.name || e.truck_name || '')
     if (slug && truckSlug !== slug) return null
@@ -212,9 +227,12 @@ export async function GET(req: NextRequest) {
     // Fall through with empty array — existing discovery events unaffected
   }
 
+  // Operator events are HatchGrab-native — only include on HG, never on VF
+  const visibleOperatorEvents = isHG ? mappedOperatorEvents : []
+
   // ── Dedup: operator version wins ──────────────────────────────
   const operatorKeys = new Set(
-    mappedOperatorEvents.map((e: any) =>
+    visibleOperatorEvents.map((e: any) =>
       `${normalize(e.truckName)}-${e.date}-${normalize(e.venueName)}`
     )
   )
@@ -224,7 +242,7 @@ export async function GET(req: NextRequest) {
   )
 
   // ── Merge and sort chronologically ────────────────────────────
-  const allEvents = [...mappedOperatorEvents, ...filteredDiscovery]
+  const allEvents = [...visibleOperatorEvents, ...filteredDiscovery]
     .sort((a: any, b: any) => {
       const da = toIso(a.date), db = toIso(b.date)
       if (da < db) return -1
@@ -232,9 +250,12 @@ export async function GET(req: NextRequest) {
       return (a.startTime || '').localeCompare(b.startTime || '')
     })
 
-  // ── Trucks list (discovery only, unchanged) ───────────────────
+  // ── Trucks list (discovery only) ─────────────────────────────
   const trucks = (trResult.data || [])
-    .filter((t: any) => !(t.exclude_reason || '').toLowerCase().includes('y'))
+    .filter((t: any) =>
+      !(t.exclude_reason || '').toLowerCase().includes('y') &&
+      allowedVisibility.includes(t.visibility || 'public')
+    )
     .map((t: any) => ({
       rawName: t.name,
       cleanKey: createSlug(t.name),

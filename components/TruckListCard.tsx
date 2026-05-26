@@ -3,6 +3,7 @@
 import { VillageEvent } from '@/types';
 import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
+import { isHatchGrab } from '@/lib/domain';
 
 interface TruckListCardProps {
   event: VillageEvent;
@@ -89,6 +90,18 @@ export default function TruckListCard({ event }: TruckListCardProps) {
                     </div>
                 )}
             </div>
+        )}
+
+        {/* PRE-ORDER BUTTON — HatchGrab only, operator confirmed events */}
+        {isHatchGrab() && event.orderUrl && (
+            <a
+                href={event.orderUrl}
+                className="mt-3 flex items-center justify-center gap-2 w-full
+                           bg-orange-600 hover:bg-orange-700 text-white
+                           font-semibold py-2.5 rounded-xl text-sm transition-colors"
+            >
+                🛒 Pre-order
+            </a>
         )}
     </div>
   );

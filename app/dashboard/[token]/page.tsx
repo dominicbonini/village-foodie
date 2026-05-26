@@ -37,6 +37,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const{token}=use(params)
   const searchParams=useSearchParams()
   const vanName=searchParams.get('van_name')??''
+  const vanId=searchParams.get('van_id')??''
   const[pin,setPin]=useState('')
   const[pinInput,setPinInput]=useState('')
   const[pinError,setPinError]=useState('')
@@ -76,6 +77,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
   const[showScreenOffWarning,setShowScreenOffWarning]=useState(false)
   const[vansWithAutoPause,setVansWithAutoPause]=useState<string[]>([])
+  const[vans,setVans]=useState<{id:string;name:string;auto_pause_on_offline:boolean}[]>([])
   // Pause state (paused_until ISO string, null = not paused)
   const[pausedUntil,setPausedUntil]=useState<string|null>(null)
   const[showPauseModal,setShowPauseModal]=useState(false)
@@ -192,6 +194,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       clearInterval(fallbackInterval)
     }
   },[truck?.id])
+  useEffect(()=>{
+    if(!truck?.id)return
+    supabaseBrowser.from('truck_vans').select('id,name,auto_pause_on_offline').eq('truck_id',truck.id).eq('active',true)
+      .then(({data})=>setVans(data||[]))
+  },[truck?.id])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
   useEffect(()=>{
     const sendHeartbeat=async()=>{
@@ -246,11 +253,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
   const toggleKeepScreenOn=async()=>{
     if(keepScreenOn){
-      try{
-        const{data:vans}=await supabaseBrowser.from('truck_vans').select('name,auto_pause_on_offline').eq('truck_id',truck?.id??'').eq('active',true)
-        const autoPauseVans=(vans||[]).filter((v:any)=>v.auto_pause_on_offline).map((v:any)=>v.name)
-        if(autoPauseVans.length>0){setVansWithAutoPause(autoPauseVans);setShowScreenOffWarning(true);return}
-      }catch{}
+      let affectedVans:string[]=[]
+      if(vanId){
+        const thisVan=vans.find(v=>v.id===vanId)
+        if(thisVan?.auto_pause_on_offline) affectedVans=[thisVan.name]
+      } else {
+        affectedVans=vans.filter(v=>v.auto_pause_on_offline).map(v=>v.name)
+      }
+      if(affectedVans.length>0){setVansWithAutoPause(affectedVans);setShowScreenOffWarning(true);return}
     }
     await applyKeepScreenOn(!keepScreenOn)
   }
@@ -1071,10 +1081,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
               <p className="text-sm text-slate-500 mt-2">
-                {vansWithAutoPause.length>0
-                  ?`${vansWithAutoPause.join(', ')} ${vansWithAutoPause.length===1?'has':'have'} offline detection enabled. If the screen turns off, the device may stop sending its online signal and automatically pause customer orders.`
-                  :'If the screen turns off, the device may stop sending its online signal.'
-                }
+                <strong>{vansWithAutoPause.join(' and ')}</strong>
+                {vansWithAutoPause.length===1?' has':' have'} offline detection enabled. If this screen turns off and loses its signal, online ordering will automatically pause for{vansWithAutoPause.length===1?` ${vansWithAutoPause[0]}`:' these vans'}.
               </p>
               <p className="text-sm text-slate-500 mt-2">Keep the screen on to ensure uninterrupted ordering.</p>
             </div>

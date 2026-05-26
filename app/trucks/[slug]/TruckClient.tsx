@@ -11,8 +11,9 @@ import { createSlug } from '@/lib/utils';
 import TruckListCard from '@/components/TruckListCard';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { isHatchGrab } from '@/lib/domain';
 
-const MapView = dynamic(() => import('@/components/MapView'), { 
+const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
   loading: () => <div className="w-full h-full bg-slate-100 animate-pulse flex items-center justify-center text-slate-400 font-bold">Loading Map...</div>
 });
@@ -47,9 +48,10 @@ export default function TruckClient({ slug }: { slug: string }) {
         name: truck.rawName,
         type: truck.type,
         logo: truck.logoUrl,
-        menuUrl: truck.menuUrl,          
+        menuUrl: truck.menuUrl,
         phoneNumber: truck.phoneNumber,
-        websiteUrl: truck.websiteUrl
+        websiteUrl: truck.websiteUrl,
+        orderUrl: truck.orderUrl || null,
     };
   }, [allTrucks, slug]);
 
@@ -219,6 +221,16 @@ export default function TruckClient({ slug }: { slug: string }) {
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                 <span>Share</span>
               </button>
+              {!isHatchGrab() && truckInfo.orderUrl && (
+                <a
+                  href={truckInfo.orderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 min-w-[80px] border border-slate-200 text-slate-600 hover:text-slate-900 font-medium py-2.5 px-2 rounded-xl flex justify-center items-center gap-1.5 text-xs hover:bg-slate-50 transition-transform hover:scale-105 active:scale-95 shadow-sm whitespace-nowrap overflow-hidden"
+                >
+                  🔗 <span>Order</span>
+                </a>
+              )}
             </div>
         </div>
       )}

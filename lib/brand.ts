@@ -17,3 +17,7 @@ export function getBrandFromHost(host: string) {
   if (host.includes('hatchgrab')) return BRANDS.HATCHGRAB
   return BRANDS.VILLAGE_FOODIE // default
 }
+
+export function isHatchGrabHost(host: string): boolean {
+  return host.includes('hatchgrab')
+}

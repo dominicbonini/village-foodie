@@ -20,6 +20,14 @@ interface AdminTruck {
   is_test: boolean
 }
 
+interface DiscoveryTruck {
+  id: string
+  name: string
+  visibility: 'public' | 'hg_only' | 'hidden'
+  hatchgrab_truck_id: string | null
+  exclude_reason: string | null
+}
+
 const PLAN_ORDER: Plan[] = ['starter', 'trial', 'pro', 'max']
 
 const OVERRIDEABLE_FEATURES: Feature[] = [
@@ -34,6 +42,7 @@ export default function AdminPage() {
   const [secret, setSecret] = useState('')
   const [authed, setAuthed] = useState(false)
   const [trucks, setTrucks] = useState<AdminTruck[]>([])
+  const [discoveryTrucks, setDiscoveryTrucks] = useState<DiscoveryTruck[]>([])
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
@@ -42,19 +51,46 @@ export default function AdminPage() {
   const [createLoading, setCreateLoading] = useState(false)
   const [createdPassword, setCreatedPassword] = useState<string | null>(null)
   const [createError, setCreateError] = useState<string | null>(null)
+  const [showDiscovery, setShowDiscovery] = useState(false)
+  const [discoveryFilter, setDiscoveryFilter] = useState('')
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
   const load = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin?secret=${secret}`)
+      const [res, discRes] = await Promise.all([
+        fetch(`/api/admin?secret=${secret}`),
+        fetch(`/api/admin?secret=${secret}&section=discovery`),
+      ])
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTrucks(data.trucks)
+      if (discRes.ok) {
+        const discData = await discRes.json()
+        setDiscoveryTrucks(discData.discoveryTrucks || [])
+      }
       setAuthed(true)
     } catch (e: any) { alert(e.message || 'Auth failed') }
     finally { setLoading(false) }
+  }
+
+  const updateDiscovery = async (discoveryTruckId: string, visibility: string) => {
+    setSaving(discoveryTruckId)
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret, discoveryTruckId, visibility }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setDiscoveryTrucks(prev => prev.map(t =>
+        t.id === discoveryTruckId ? { ...t, visibility: visibility as DiscoveryTruck['visibility'] } : t
+      ))
+      showToast('Saved')
+    } catch (e: any) { alert(e.message) }
+    finally { setSaving(null) }
   }
 
   const update = async (truckId: string, updates: Record<string, any>) => {
@@ -312,6 +348,60 @@ export default function AdminPage() {
             )
           })}
         </div>
+
+        {/* Discovery trucks visibility */}
+        <div className="mt-8">
+          <button
+            onClick={() => setShowDiscovery(v => !v)}
+            className="flex items-center gap-2 font-black text-slate-700 text-lg mb-4 hover:text-slate-900"
+          >
+            {showDiscovery ? '▼' : '▶'} Discovery trucks ({discoveryTrucks.length})
+          </button>
+          {showDiscovery && (
+            <>
+              <input
+                type="text"
+                placeholder="Filter by name…"
+                value={discoveryFilter}
+                onChange={e => setDiscoveryFilter(e.target.value)}
+                className="mb-3 w-full max-w-sm border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+              />
+              <div className="space-y-2">
+                {discoveryTrucks
+                  .filter(t => !discoveryFilter || t.name.toLowerCase().includes(discoveryFilter.toLowerCase()))
+                  .map(truck => (
+                    <div key={truck.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-slate-900 text-sm truncate">{truck.name}</p>
+                        {truck.hatchgrab_truck_id && (
+                          <p className="text-[10px] text-teal-600 font-bold mt-0.5">HatchGrab operator</p>
+                        )}
+                        {(truck.exclude_reason || '').toLowerCase().includes('y') && (
+                          <p className="text-[10px] text-red-500 font-bold mt-0.5">Excluded</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <select
+                          value={truck.visibility || 'public'}
+                          onChange={e => updateDiscovery(truck.id, e.target.value)}
+                          disabled={saving === truck.id}
+                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                        >
+                          <option value="public">Public (VF + HG)</option>
+                          <option value="hg_only">HG only</option>
+                          <option value="hidden">Hidden</option>
+                        </select>
+                        {saving === truck.id && (
+                          <span className="text-xs text-slate-400 animate-pulse">Saving…</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </>
+          )}
+        </div>
+
       </div>
 
       {toast && (

@@ -12,6 +12,17 @@ function checkAuth(secret: string) {
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret') || ''
   if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
+  const section = req.nextUrl.searchParams.get('section')
+
+  if (section === 'discovery') {
+    const { data: discoveryTrucks } = await supabase
+      .from('discovery_trucks')
+      .select('id, name, visibility, hatchgrab_truck_id, exclude_reason')
+      .order('name')
+    return NextResponse.json({ discoveryTrucks: discoveryTrucks || [] })
+  }
+
   const { data: trucks } = await supabase
     .from('trucks')
     .select('id,name,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,is_test')
@@ -21,10 +32,19 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  const { secret, truckId, ...updates } = body
+  const { secret, truckId, discoveryTruckId, ...updates } = body
   if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  // Validate plan if being updated
+  // Discovery truck update (visibility only)
+  if (discoveryTruckId) {
+    const allowed = ['visibility']
+    const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => allowed.includes(k)))
+    const { error } = await supabase.from('discovery_trucks').update(safe).eq('id', discoveryTruckId)
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ success: true })
+  }
+
+  // Operator truck update
   if (updates.plan) {
     const validPlans = Object.keys(PLAN_META) as Plan[]
     if (!validPlans.includes(updates.plan)) {
