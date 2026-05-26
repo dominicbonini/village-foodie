@@ -555,14 +555,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className="flex items-center gap-2 z-10">
             {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
             <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
+            <button
+              onClick={toggleKeepScreenOn}
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${keepScreenOn?'text-teal-400 hover:text-teal-300':'text-slate-500 hover:text-slate-400'}`}
+              title={keepScreenOn?'Screen on — tap to allow sleep':'Screen off — tap to keep on'}
+            >
+              <span>{keepScreenOn?'☀️':'🌙'}</span>
+              <div className={`relative w-8 h-4 rounded-full transition-colors ${keepScreenOn?'bg-teal-600':'bg-slate-600'}`}>
+                <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${keepScreenOn?'translate-x-4':'translate-x-0.5'}`}/>
+              </div>
+            </button>
             <UserMenu
               currentUserName={currentUserName}
               truckName={truck?.name||null}
               token={token}
-              keepScreenOn={keepScreenOn}
               userRole={userRole}
               vanName={vanName}
-              onToggleScreen={toggleKeepScreenOn}
               onSignOut={handleSignOut}
               onEditProfile={()=>{setEditProfileName(currentUserName||'');setShowProfileModal(true)}}
             />

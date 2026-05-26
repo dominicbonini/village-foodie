@@ -7,10 +7,8 @@ interface UserMenuProps {
   currentUserName: string | null
   truckName: string | null
   token: string
-  keepScreenOn: boolean
   userRole: 'owner' | 'manager' | 'staff' | null
   vanName?: string
-  onToggleScreen: () => void
   onSignOut: () => void
   onEditProfile: () => void
 }
@@ -19,10 +17,8 @@ export default function UserMenu({
   currentUserName,
   truckName,
   token,
-  keepScreenOn,
   userRole,
   vanName,
-  onToggleScreen,
   onSignOut,
   onEditProfile,
 }: UserMenuProps) {
@@ -34,11 +30,23 @@ export default function UserMenu({
     <div className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center
-                   text-xs font-semibold text-orange-700 focus:outline-none shrink-0"
+        className="flex items-center gap-1.5 rounded-xl px-2 py-1
+                   hover:bg-white/10 transition-colors"
         aria-label="User menu"
       >
-        {initial}
+        <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center
+                        justify-center text-sm font-semibold text-orange-700">
+          {initial}
+        </div>
+        <svg
+          className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
+            open ? 'rotate-180' : ''
+          }`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round"
+                strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
 
       {open && (
@@ -79,27 +87,6 @@ export default function UserMenu({
                 ⚙️ Manage
               </Link>
             )}
-
-            <hr className="border-slate-100" />
-
-            {/* Keep screen on toggle */}
-            <div className="px-4 py-2.5 flex items-center justify-between">
-              <span className="text-sm text-slate-700">
-                {keepScreenOn ? 'Screen on' : 'Screen off'}
-              </span>
-              <button
-                onClick={() => { onToggleScreen(); setOpen(false) }}
-                className={`relative w-11 h-6 rounded-full transition-colors shrink-0
-                            ${keepScreenOn ? 'bg-teal-600' : 'bg-slate-300'}`}
-                title={keepScreenOn ? 'Screen will stay on' : 'Screen may turn off'}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full
-                               shadow transition-transform
-                               ${keepScreenOn ? 'translate-x-5' : 'translate-x-0'}`}
-                />
-              </button>
-            </div>
 
             <hr className="border-slate-100" />
 
