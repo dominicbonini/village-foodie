@@ -137,7 +137,7 @@ export function formatConfirmationEmail(params: {
   </div>
 
   <p style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8">
-    Powered by <a href="https://villagefoodie.co.uk" style="color:#ea580c;text-decoration:none;font-weight:700">Village Foodie</a>
+    Powered by <a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">HatchGrab</a>
   </p>
 
 </body>
@@ -181,7 +181,7 @@ export function formatConfirmationEmail(params: {
     '',
     'Pay at the truck on collection.',
     '',
-    'Powered by Village Foodie — villagefoodie.co.uk',
+    'Powered by HatchGrab — hatchgrab.com',
   ].filter(Boolean).join('\n')
 
   return { subject, html, text }
@@ -248,14 +248,14 @@ export async function sendCancellationEmail({
       ${refundLine}
       <p>We're sorry for any inconvenience.</p>
       <p>${truckName}</p>
-      <p style="color:#94a3b8;font-size:12px">Powered by Village Foodie · villagefoodie.co.uk</p>
+      <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
     </div>
   `
   await sendConfirmationEmail({
     to,
     subject: `Your order has been cancelled — ${truckName}`,
     html,
-    text: `Hi ${customerName || 'there'}, your order #${orderId} from ${truckName} has been cancelled.${reason ? ' ' + reason : ''}${paymentStatus === 'paid' ? ' Your refund will be processed within 3–5 working days.' : ''} We're sorry for any inconvenience.`,
+    text: `Hi ${customerName || 'there'}, your order #${orderId} from ${truckName} has been cancelled.${reason ? ' ' + reason : ''}${paymentStatus === 'paid' ? ' Your refund will be processed within 3–5 working days.' : ''} We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`,
     truckName,
   })
 }
@@ -289,14 +289,14 @@ export async function sendEventCancellationEmail({
       <p>Your order <strong>#${orderId}</strong> has been cancelled.${refundLine}</p>
       <p>We're sorry for any inconvenience.</p>
       <p>${truckName}</p>
-      <p style="color:#94a3b8;font-size:12px">Powered by Village Foodie · villagefoodie.co.uk</p>
+      <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
     </div>
   `
   await sendConfirmationEmail({
     to,
     subject: `${truckName} at ${location || 'your event'} — cancelled`,
     html,
-    text: `Hi ${customerName || 'there'}, unfortunately ${truckName}'s event${location ? ` at ${location}` : ''}${dateFormatted ? ` on ${dateFormatted}` : ''} has been cancelled. Your order #${orderId} has been cancelled.${refundLine}${note ? ' ' + note : ''} We're sorry for any inconvenience.`,
+    text: `Hi ${customerName || 'there'}, unfortunately ${truckName}'s event${location ? ` at ${location}` : ''}${dateFormatted ? ` on ${dateFormatted}` : ''} has been cancelled. Your order #${orderId} has been cancelled.${refundLine}${note ? ' ' + note : ''} We're sorry for any inconvenience. Powered by HatchGrab — hatchgrab.com`,
     truckName,
   })
 }

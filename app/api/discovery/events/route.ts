@@ -30,79 +30,114 @@ function toIso(ddmmyyyy: string): string {
 
 const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
 
+const EV_SELECT = `
+  id,
+  event_date,
+  start_time,
+  end_time,
+  truck_name,
+  venue_name,
+  village,
+  event_notes,
+  visibility,
+  discovery_trucks!discovery_truck_id (
+    name,
+    cuisine,
+    phone,
+    order_url,
+    accepted_methods,
+    notes,
+    website,
+    menu_url,
+    logo_url,
+    photo_url,
+    aliases,
+    exclude_reason,
+    visibility
+  ),
+  venues!venue_id (
+    name,
+    village,
+    postcode,
+    latitude,
+    longitude,
+    phone,
+    website,
+    photo_url
+  )
+`
+
+const TR_SELECT = 'name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason, visibility'
+
 export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
   const slug = req.nextUrl.searchParams.get('slug')
 
   const host = req.headers.get('host') || ''
   const isHG = isHatchGrabHost(host)
-  // After running migration 20260526_visibility.sql:
   // public = both sites, hg_only = HatchGrab only, hidden = neither
   const allowedVisibility = isHG ? ['public', 'hg_only'] : ['public']
 
-  const [evResult, trResult] = await Promise.all([
-    supabase
-      .from('discovery_events')
-      .select(`
-        id,
-        event_date,
-        start_time,
-        end_time,
-        truck_name,
-        venue_name,
-        village,
-        event_notes,
-        visibility,
-        discovery_trucks!discovery_truck_id (
-          name,
-          cuisine,
-          phone,
-          order_url,
-          accepted_methods,
-          notes,
-          website,
-          menu_url,
-          logo_url,
-          photo_url,
-          aliases,
-          exclude_reason,
-          visibility
-        ),
-        venues!venue_id (
-          name,
-          village,
-          postcode,
-          latitude,
-          longitude,
-          phone,
-          website,
-          photo_url
-        )
-      `)
-      .in('visibility', allowedVisibility)
-      .gte('event_date', today)
-      .order('event_date', { ascending: true })
-      .order('start_time', { ascending: true, nullsFirst: false })
-      .limit(1000),
+  let evData: any[] = []
+  let trData: any[] = []
 
-    supabase
-      .from('discovery_trucks')
-      .select('name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason, visibility')
-      .in('visibility', allowedVisibility)
-      .order('name'),
-  ])
+  try {
+    const [evResult, trResult] = await Promise.all([
+      supabase
+        .from('discovery_events')
+        .select(EV_SELECT)
+        .in('visibility', allowedVisibility)
+        .gte('event_date', today)
+        .order('event_date', { ascending: true })
+        .order('start_time', { ascending: true, nullsFirst: false })
+        .limit(1000),
 
-  if (evResult.error) {
-    console.error('Discovery events error:', evResult.error.message)
-    return NextResponse.json({ error: evResult.error.message }, { status: 500 })
-  }
-  if (trResult.error) {
-    console.error('Discovery trucks error:', trResult.error.message)
-    return NextResponse.json({ error: trResult.error.message }, { status: 500 })
+      supabase
+        .from('discovery_trucks')
+        .select(TR_SELECT)
+        .in('visibility', allowedVisibility)
+        .order('name'),
+    ])
+
+    if (evResult.error || trResult.error) {
+      throw evResult.error || trResult.error
+    }
+
+    evData = evResult.data || []
+    trData = trResult.data || []
+  } catch (err) {
+    console.error('[Discovery] Query failed, falling back to no visibility filter:', err)
+
+    const [evResult, trResult] = await Promise.all([
+      supabase
+        .from('discovery_events')
+        .select(EV_SELECT)
+        .gte('event_date', today)
+        .order('event_date', { ascending: true })
+        .order('start_time', { ascending: true, nullsFirst: false })
+        .limit(1000),
+
+      supabase
+        .from('discovery_trucks')
+        .select(TR_SELECT)
+        .order('name'),
+    ])
+
+    if (evResult.error) {
+      console.error('[Discovery] Fallback events query failed:', evResult.error.message)
+      return NextResponse.json({ error: evResult.error.message }, { status: 500 })
+    }
+    if (trResult.error) {
+      console.error('[Discovery] Fallback trucks query failed:', trResult.error.message)
+      return NextResponse.json({ error: trResult.error.message }, { status: 500 })
+    }
+
+    evData = evResult.data || []
+    trData = trResult.data || []
   }
 
   // ── Map discovery events ───────────────────────────────────────
-  const mappedDiscoveryEvents = (evResult.data || []).map((e: any, idx: number) => {
+  const mappedDiscoveryEvents = evData.map((e: any, idx: number) => {
     const truck = e.discovery_trucks || {}
     const venue = e.venues || {}
 
@@ -251,7 +286,7 @@ export async function GET(req: NextRequest) {
     })
 
   // ── Trucks list (discovery only) ─────────────────────────────
-  const trucks = (trResult.data || [])
+  const trucks = trData
     .filter((t: any) =>
       !(t.exclude_reason || '').toLowerCase().includes('y') &&
       allowedVisibility.includes(t.visibility || 'public')
