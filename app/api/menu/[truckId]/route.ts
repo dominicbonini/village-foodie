@@ -4,6 +4,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+
 export const revalidate = 0  // No cache
 
 export async function GET(
@@ -201,6 +203,11 @@ export async function GET(
       category: (i.menu_categories as any)?.name || 'Uncategorized',
       available: i.is_available,
       stock_remaining: i.stock_count,
+      photo_url: i.image_path
+        ? `${supabaseUrl}/storage/v1/object/public/truck-media/${i.image_path}`
+        : null,
+      allergens: (i.allergens as string[]) || [],
+      dietary: (i.dietary_info as string[]) || [],
     })),
     
     bundles: filteredBundles.map(b => ({

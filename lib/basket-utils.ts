@@ -16,6 +16,9 @@ export interface MenuItem {
   available?: boolean
   stock_remaining?: number | null
   image?: string | null
+  photo_url?: string | null
+  allergens?: string[]
+  dietary?: string[]
 }
 
 export interface Deal {

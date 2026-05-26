@@ -14,7 +14,7 @@ import { hasFeature } from '@/lib/features';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description?: string; price: number; available?: boolean; category: string; stock_remaining?: number | null; image?: string | null
+  name: string; description?: string; price: number; available?: boolean; category: string; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]
 }
 interface UpsellRule {
   trigger_category: string; suggest_category: string; max_suggestions: number
@@ -990,6 +990,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   return (
                     <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
                     <div className={`flex items-center gap-3 py-3`}>
+                      {item.photo_url && (
+                        <img
+                          src={item.photo_url}
+                          alt={item.name}
+                          className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-slate-100"
+                        />
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className={`font-bold text-sm leading-snug ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
@@ -1003,6 +1010,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           )}
                         </div>
                         {item.description && <p className="text-slate-400 text-xs mt-0.5 leading-snug">{item.description}</p>}
+                        {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0) && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {item.dietary?.map((d: string) => (
+                              <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
+                            ))}
+                            {item.allergens?.map((a: string) => (
+                              <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium">{a}</span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <span className={`font-bold text-sm shrink-0 ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
                       <div className="flex items-center gap-2 shrink-0">

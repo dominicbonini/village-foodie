@@ -4,12 +4,53 @@ interface QRCodeOptions {
   url: string
   logoUrl?: string | null
   truckName: string
+  hatchgrabLogoUrl?: string | null
+}
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number,
+  width: number, height: number,
+  radius: number
+) {
+  ctx.beginPath()
+  ctx.moveTo(x + radius, y)
+  ctx.lineTo(x + width - radius, y)
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius)
+  ctx.lineTo(x + width, y + height - radius)
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height)
+  ctx.lineTo(x + radius, y + height)
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius)
+  ctx.lineTo(x, y + radius)
+  ctx.quadraticCurveTo(x, y, x + radius, y)
+  ctx.closePath()
+}
+
+// Fetch an external image as a same-origin blob URL to avoid canvas CORS taint.
+async function loadImageViaBlobUrl(url: string): Promise<HTMLImageElement | null> {
+  try {
+    const resp = await fetch(url)
+    if (!resp.ok) return null
+    const blob = await resp.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const img = new Image()
+    await new Promise<void>((resolve) => {
+      img.onload = () => resolve()
+      img.onerror = () => resolve()
+      img.src = blobUrl
+    })
+    URL.revokeObjectURL(blobUrl)
+    return img.naturalWidth > 0 ? img : null
+  } catch {
+    return null
+  }
 }
 
 export async function generateQRCodePNG({
   url,
   logoUrl,
   truckName,
+  hatchgrabLogoUrl,
 }: QRCodeOptions): Promise<string> {
   const qrDataUrl = await QRCode.toDataURL(url, {
     width: 400,
@@ -22,60 +63,82 @@ export async function generateQRCodePNG({
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas not supported')
 
-  const size = 500
-  canvas.width = size
-  canvas.height = size + 60
+  // QR drawn at x=50, y=30, 400×400 → bottom edge at y=430
+  // Bottom strip: 50px for branding row
+  const qrX = 50
+  const qrY = 30
+  const qrSize = 400
+  const stripHeight = 50
+  canvas.width = 500
+  canvas.height = qrY + qrSize + stripHeight  // 480
 
   // White background
   ctx.fillStyle = '#FFFFFF'
   ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-  // Draw QR code
+  // Draw QR pattern
   const qrImg = new Image()
   await new Promise<void>((resolve, reject) => {
     qrImg.onload = () => resolve()
     qrImg.onerror = reject
     qrImg.src = qrDataUrl
   })
-  ctx.drawImage(qrImg, 50, 30, size - 100, size - 100)
+  ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize)
 
-  // Draw logo in centre if available
+  // Truck logo centred over QR pattern — fetch via blob URL to avoid CORS taint
   if (logoUrl) {
-    try {
-      const logo = new Image()
-      logo.crossOrigin = 'anonymous'
-      await new Promise<void>((resolve) => {
-        logo.onload = () => resolve()
-        logo.onerror = () => resolve()
-        logo.src = logoUrl
-      })
-      if (logo.complete && logo.naturalWidth > 0) {
-        const logoSize = 80
-        const logoX = (size - logoSize) / 2
-        const logoY = (size - logoSize) / 2 - 20
-        // White circle behind logo
-        ctx.fillStyle = '#FFFFFF'
-        ctx.beginPath()
-        ctx.arc(size / 2, logoY + logoSize / 2, logoSize / 2 + 10, 0, Math.PI * 2)
-        ctx.fill()
-        ctx.drawImage(logo, logoX, logoY, logoSize, logoSize)
-      }
-    } catch {
-      // Logo failed — QR still valid
+    const logo = await loadImageViaBlobUrl(logoUrl)
+    if (logo) {
+      const logoSize = 80
+      // Centre of QR pattern
+      const centreX = qrX + qrSize / 2  // 250
+      const centreY = qrY + qrSize / 2  // 230
+      const logoX = centreX - logoSize / 2  // 210
+      const logoY = centreY - logoSize / 2  // 190
+
+      // White rounded square behind logo
+      const padding = 8
+      ctx.fillStyle = '#FFFFFF'
+      roundRect(ctx, logoX - padding, logoY - padding,
+                logoSize + padding * 2, logoSize + padding * 2, 8)
+      ctx.fill()
+
+      ctx.drawImage(logo, logoX, logoY, logoSize, logoSize)
     }
   }
 
-  // Truck name — bottom left
-  ctx.fillStyle = '#334155'
-  ctx.font = 'bold 14px Arial, sans-serif'
-  ctx.textAlign = 'left'
-  ctx.fillText(truckName, 20, size + 45)
+  // Branding row — directly below QR (20px margin)
+  const brandingY = qrY + qrSize + 30  // y=460, text baseline
 
-  // "Powered by HatchGrab" — bottom right
-  ctx.fillStyle = '#94A3B8'
-  ctx.font = '13px Arial, sans-serif'
-  ctx.textAlign = 'right'
-  ctx.fillText('Powered by HatchGrab', size - 20, size + 45)
+  // Truck name — bottom left, aligned with QR left edge
+  ctx.fillStyle = '#334155'
+  ctx.font = 'bold 13px Arial, sans-serif'
+  ctx.textAlign = 'left'
+  ctx.fillText(truckName, qrX, brandingY)
+
+  // HatchGrab branding — bottom right, aligned with QR right edge
+  const rightX = qrX + qrSize  // 450
+
+  if (hatchgrabLogoUrl) {
+    const hgLogo = await loadImageViaBlobUrl(hatchgrabLogoUrl)
+    if (hgLogo) {
+      // Scale logo to 20px high
+      const logoH = 20
+      const logoW = Math.round((hgLogo.naturalWidth / hgLogo.naturalHeight) * logoH)
+      ctx.drawImage(hgLogo, rightX - logoW, brandingY - logoH, logoW, logoH)
+    } else {
+      // File not yet uploaded — fall back to text
+      ctx.fillStyle = '#94A3B8'
+      ctx.font = '12px Arial, sans-serif'
+      ctx.textAlign = 'right'
+      ctx.fillText('Powered by HatchGrab', rightX, brandingY)
+    }
+  } else {
+    ctx.fillStyle = '#94A3B8'
+    ctx.font = '12px Arial, sans-serif'
+    ctx.textAlign = 'right'
+    ctx.fillText('Powered by HatchGrab', rightX, brandingY)
+  }
 
   return canvas.toDataURL('image/png')
 }

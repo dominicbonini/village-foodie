@@ -19,22 +19,12 @@ export interface CatConfig {
     category: string
   }
   
-  export const DEFAULT_CAT_CONFIG: Record<string, CatConfig> = {
-    pizzas:   { secs: 480, batch: 3 }, pizza:    { secs: 480, batch: 3 },
-    burgers:  { secs: 360, batch: 2 }, burger:   { secs: 360, batch: 2 }, mains: { secs: 360, batch: 2 },
-    drinks:   { secs: 0,   batch: 99 }, drink:   { secs: 0,   batch: 99 },
-    dips:     { secs: 0,   batch: 99 }, dip:     { secs: 0,   batch: 99 },
-    sides:    { secs: 60,  batch: 5 },  side:    { secs: 60,  batch: 5 },
-    desserts: { secs: 180, batch: 3 },  extras:  { secs: 0,   batch: 99 },
-  }
-  
-  export function getCatConfig(
-    cat: string,
-    customConfigs?: Record<string, CatConfig>
-  ): CatConfig {
-    const key = cat.toLowerCase()
-    if (customConfigs?.[key]) return customConfigs[key]
-    return DEFAULT_CAT_CONFIG[key] ?? { secs: 240, batch: 2 }
+  // Kept as empty export so existing dashboard imports don't break
+  export const DEFAULT_CAT_CONFIG: Record<string, CatConfig> = {}
+
+  export function getCatConfig(catName: string): CatConfig {
+    // All config comes from DB — safe instant/unlimited default for unknown categories
+    return { secs: 0, batch: 999 }
   }
   
   export function catCookSecs(qty: number, cfg: CatConfig): number {
@@ -56,7 +46,7 @@ export interface CatConfig {
     })
     let maxSecs = 0
     Object.entries(catGroups).forEach(([cat, qty]) => {
-      const cfg = getCatConfig(cat, customConfigs)
+      const cfg = customConfigs?.[cat.toLowerCase()] ?? getCatConfig(cat)
       const secs = catCookSecs(qty, cfg)
       if (secs > maxSecs) maxSecs = secs
     })
@@ -132,7 +122,10 @@ export interface CatConfig {
       .eq('truck_id', truckId)
     const catConfigs: Record<string, CatConfig> = {}
     ;(categories || []).forEach(c => {
-      catConfigs[c.name.toLowerCase()] = { secs: c.prep_secs || 0, batch: c.batch_size || 1 }
+      catConfigs[c.name.toLowerCase()] = {
+        secs: c.prep_secs || 0,
+        batch: c.batch_size && c.batch_size > 0 ? c.batch_size : 999,
+      }
     })
     return catConfigs
   }

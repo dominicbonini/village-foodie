@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_categories').select('sort_order').eq('truck_id', truck.id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_categories')
-        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs || 240, batch_size: batch_size || 2, allow_notes: !!allow_notes, sort_order: sort_order ?? nextOrder })
+        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs ?? 0, batch_size: batch_size ?? 999, allow_notes: !!allow_notes, sort_order: sort_order ?? nextOrder })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })
@@ -127,12 +127,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  if (action === 'save_slot_capacity') {
+    const { eventDate, startTime, endTime, maxOrdersPerSlot } = body
+    if (!maxOrdersPerSlot) {
+      await supabase.from('slot_capacity').delete().eq('truck_id', truck.id).eq('event_date', eventDate)
+      return NextResponse.json({ ok: true })
+    }
+    const slots = generateSlots(startTime, endTime, 5)
+    const rows = slots.map((slot: string) => ({
+      truck_id: truck.id,
+      event_date: eventDate,
+      slot,
+      max_orders: maxOrdersPerSlot,
+    }))
+    await supabase.from('slot_capacity').upsert(rows, { onConflict: 'truck_id,event_date,slot' })
+    return NextResponse.json({ ok: true })
+  }
+
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, is_available, stock_count, sort_order, image_path } = body
+    const { id, name, description, price, category_id, is_available, stock_count, sort_order, image_path, allergens, dietary_info } = body
     if (id) {
       const { data, error } = await supabase.from('menu_items_db')
-        .update({ name, description, price, category_id, is_available, stock_count, sort_order, image_path, updated_at: new Date().toISOString() })
+        .update({ name, description, price, category_id, is_available, stock_count, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -140,7 +157,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
-        .insert({ truck_id: truck.id, name, description, price, category_id, is_available: is_available ?? true, stock_count: stock_count ?? null, sort_order: sort_order ?? nextOrder, image_path })
+        .insert({ truck_id: truck.id, name, description, price, category_id, is_available: is_available ?? true, stock_count: stock_count ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -317,7 +334,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'keep_screen_on', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -628,4 +645,17 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+}
+
+function generateSlots(start: string, end: string, intervalMins: number): string[] {
+  const slots: string[] = []
+  const [startH, startM] = start.split(':').map(Number)
+  const [endH, endM] = end.split(':').map(Number)
+  let mins = startH * 60 + startM
+  const endMins = endH * 60 + endM
+  while (mins <= endMins) {
+    slots.push(`${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`)
+    mins += intervalMins
+  }
+  return slots
 }

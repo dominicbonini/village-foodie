@@ -10,11 +10,12 @@ import { FeatureGate } from '@/components/FeatureGate'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { useDragDrop } from '@/lib/useDragDrop'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
-interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
+interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
@@ -285,10 +286,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
       </main>
@@ -351,35 +352,155 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // ══════════════════════════════════════════════════════════════
 // MENU TAB
 // ══════════════════════════════════════════════════════════════
-function MenuTab({ truck, categories, items, api, reload, showToast }: {
-  truck: Truck; categories: Category[]; items: Item[]
+type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'prep' | 'saving' | 'done'
+
+function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
+  truck: Truck; categories: Category[]; items: Item[]; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [editingCat, setEditingCat] = useState<Partial<Category> | null>(null)
   const [editingItem, setEditingItem] = useState<Partial<Item> | null>(null)
   const [saving, setSaving] = useState(false)
-  const [expandedCat, setExpandedCat] = useState<string | null>(categories[0]?.id || null)
-  const [allergenText, setAllergenText] = useState(truck.allergen_info_text || '')
-  const [allergenUploading, setAllergenUploading] = useState(false)
-  const [allergenUrl, setAllergenUrl] = useState(truck.allergen_info_url || '')
+  const [uploadingItemPhoto, setUploadingItemPhoto] = useState(false)
+  const [importStep, setImportStep] = useState<ImportStep>('idle')
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [importText, setImportText] = useState('')
+  const [importDoneSkipped, setImportDoneSkipped] = useState(0)
+  const [categoryPrep, setCategoryPrep] = useState<Record<string, { prep_secs: number | null; batch_size: number | null }>>({})
 
-  const saveAllergenSetting = async (key: string, value: string | null) => {
-    try { await api('update_settings', { [key]: value }) } catch {}
+  const [importResult, setImportResult] = useState<{
+    categories: string[]
+    items: Array<{ name: string; description?: string; price: number; category: string; price_missing?: boolean; _skip?: boolean; allergens?: string[]; dietary?: string[] }>
+    existing_categories: string[]
+  } | null>(null)
+
+  const { isDragging: isMenuDragging, dragProps: menuDragProps } = useDragDrop(
+    (file) => setImportFile(file),
+    ['image/*', '.pdf']
+  )
+  const { isDragging: isAllergenDragging, dragProps: allergenDragProps } = useDragDrop(
+    (file) => handleAllergenUploadAndProcess(file),
+    ['image/*', '.pdf']
+  )
+
+  const handleProcessMenu = async () => {
+    setImportStep('processing')
+    try {
+      const fd = new FormData()
+      fd.append('token', token)
+      if (importFile) fd.append('file', importFile)
+      if (importText) fd.append('text', importText)
+      const res = await fetch('/api/manage/process-menu', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setImportResult(data)
+      setImportStep('review')
+    } catch (err) {
+      console.error('Menu processing failed:', err)
+      setImportStep('upload')
+    }
   }
 
-  const handleAllergenUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setAllergenUploading(true)
+  const handleCommitMenu = async () => {
+    if (!importResult) return
+    setImportStep('saving')
+    try {
+      const res = await fetch('/api/manage/commit-menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, categories: importResult.categories, items: importResult.items, categoryPrep }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setImportDoneSkipped(data.skipped ?? 0)
+        setImportStep('done')
+        setTimeout(() => {
+          setImportStep('idle')
+          setImportResult(null)
+          setImportFile(null)
+          setImportText('')
+          setImportDoneSkipped(0)
+          setCategoryPrep({})
+          reload()
+        }, 2500)
+      }
+    } catch (err) {
+      console.error('Menu commit failed:', err)
+      setImportStep('prep')
+    }
+  }
+
+  const uploadItemPhoto = async (file: File) => {
+    if (!editingItem) return
+    setUploadingItemPhoto(true)
+    try {
+      const { upload_url, path } = await api('get_upload_url', { filename: file.name, content_type: file.type })
+      await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+      setEditingItem(prev => prev ? { ...prev, image_path: path } : prev)
+      await api('upsert_item', { id: editingItem.id, image_path: path })
+    } catch (err: any) { showToast(err.message || 'Upload failed', 'error') }
+    finally { setUploadingItemPhoto(false) }
+  }
+  const [expandedCat, setExpandedCat] = useState<string | null>(categories[0]?.id || null)
+  const [allergenText, setAllergenText] = useState('')
+  const [allergenUrl, setAllergenUrl] = useState(truck.allergen_info_url || '')
+  const [allergenInfoText, setAllergenInfoText] = useState(truck.allergen_info_text || '')
+  type AllergenStep = 'idle' | 'processing' | 'review'
+  const [allergenStep, setAllergenStep] = useState<AllergenStep>('idle')
+  const [allergenExtracted, setAllergenExtracted] = useState<any>(null)
+  const [showAllergenModal, setShowAllergenModal] = useState(false)
+
+  const handleAllergenUploadAndProcess = async (file: File) => {
+    setAllergenStep('processing')
     try {
       const { upload_url, path } = await api('get_upload_url', { filename: file.name, content_type: file.type })
       await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
       const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${path}`
       setAllergenUrl(publicUrl)
-      await saveAllergenSetting('allergen_info_url', publicUrl)
-      showToast('Allergen card uploaded')
-    } catch (e: any) { showToast(e.message || 'Upload failed', 'error') }
-    finally { setAllergenUploading(false) }
+      await api('update_settings', { allergen_info_url: publicUrl })
+    } catch { /* file upload failure — continue with AI */ }
+
+    const fd = new FormData()
+    fd.append('token', token)
+    fd.append('file', file)
+    try {
+      const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.ok) { setAllergenExtracted(data.allergens); setAllergenStep('review') }
+      else { setAllergenStep('idle'); showToast('AI processing failed', 'error') }
+    } catch { setAllergenStep('idle'); showToast('Processing failed', 'error') }
+  }
+
+  const handleAllergenTextProcess = async (text: string) => {
+    setAllergenStep('processing')
+    const fd = new FormData()
+    fd.append('token', token)
+    fd.append('text', text)
+    try {
+      const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.ok) { setAllergenExtracted(data.allergens); setAllergenStep('review') }
+      else { setAllergenStep('idle'); showToast('AI processing failed', 'error') }
+    } catch { setAllergenStep('idle'); showToast('Processing failed', 'error') }
+  }
+
+  const handleSaveAllergens = async () => {
+    if (!allergenExtracted) return
+    const formattedText = allergenExtracted.formatted_text || [
+      allergenExtracted.summary,
+      allergenExtracted.contains?.length ? `Contains: ${allergenExtracted.contains.join(', ')}` : null,
+      allergenExtracted.may_contain?.length ? `May contain: ${allergenExtracted.may_contain.join(', ')}` : null,
+      allergenExtracted.dietary_options?.length ? allergenExtracted.dietary_options.join('. ') : null,
+      allergenExtracted.additional_notes,
+    ].filter(Boolean).join('\n')
+    try {
+      await api('update_settings', { allergen_info_text: formattedText })
+      setAllergenInfoText(formattedText)
+      setAllergenStep('idle')
+      setAllergenExtracted(null)
+      setAllergenText('')
+      setShowAllergenModal(false)
+    } catch (e: any) { showToast(e.message || 'Save failed', 'error') }
   }
 
   const saveCat = async (overrides?: Partial<Category>) => {
@@ -420,18 +541,48 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between mb-2">
         <div>
           <h2 className="font-black text-slate-900 text-lg">Menu</h2>
-          <p className="text-slate-400 text-sm">{categories.length} categories · {items.length} items</p>
+          <p className="text-slate-400 text-sm mt-0.5">
+            {categories.length} {categories.length === 1 ? 'category' : 'categories'} · {items.length} items
+          </p>
         </div>
-        <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
+        <div className="flex items-center gap-3">
+          {categories.length > 0 && (
+            <div className="flex flex-col items-end gap-0.5">
+              <button onClick={() => setImportStep('upload')}
+                className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
+                ✨ Import with AI
+              </button>
+              <p className="text-xs text-slate-400">photo, PDF or text</p>
+            </div>
+          )}
+          <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
+        </div>
       </div>
 
-      {/* Category list */}
-      {categories.length === 0 && (
-        <EmptyState icon="🍕" title="No categories yet" body="Add a category (e.g. Pizza, Burgers, Drinks) to start building your menu" />
-      )}
+      {/* Empty state / Category list */}
+      {categories.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="text-5xl mb-4">✨</div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-2">Build your menu in seconds</h3>
+          <p className="text-sm text-slate-500 text-center max-w-sm mb-2">
+            Take a photo of your menu board, screenshot your existing menu, or drag in a PDF — our AI will extract everything and build your digital menu automatically.
+          </p>
+          <p className="text-xs text-slate-400 text-center max-w-xs mb-8">
+            Works with photos, screenshots, PDFs and plain text. You can review and edit everything before it's saved.
+          </p>
+          <button onClick={() => setImportStep('upload')}
+            className="flex items-center gap-2 px-6 py-3 bg-orange-600 text-white font-semibold rounded-xl text-sm hover:bg-orange-700 transition-colors shadow-sm">
+            ✨ Import menu with AI
+          </button>
+          <button onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)}
+            className="mt-3 text-xs text-slate-400 hover:text-slate-600 underline">
+            or add categories manually
+          </button>
+        </div>
+      ) : null}
 
       {categories.map((cat, index) => {
         const catItems = items.filter(i => i.category_id === cat.id)
@@ -510,8 +661,14 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-black text-slate-900">{cat.name}</span>
                   <span className="text-slate-400 text-xs">{catItems.length} item{catItems.length !== 1 ? 's' : ''}</span>
-                  <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{Math.round(cat.prep_secs / 60)}m prep</span>
-                  <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">batch {cat.batch_size}</span>
+                  {cat.prep_secs > 0 && (
+                    <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
+                      {cat.prep_secs < 60 ? `${cat.prep_secs}s prep` : `${Math.round(cat.prep_secs / 60)}m prep`}
+                    </span>
+                  )}
+                  {cat.batch_size > 0 && cat.batch_size < 999 && (
+                    <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{cat.batch_size} at a time</span>
+                  )}
                   {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
                 </div>
               </div>
@@ -596,6 +753,16 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
                       {item.description && <p className="text-slate-400 text-xs truncate">{item.description}</p>}
+                      {(item.dietary_info?.length > 0 || item.allergens?.length > 0) && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {item.dietary_info?.map(d => (
+                            <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
+                          ))}
+                          {item.allergens?.map(a => (
+                            <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
+                          ))}
+                        </div>
+                      )}
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="font-black text-orange-600 text-sm">£{Number(item.price).toFixed(2)}</span>
                         {item.stock_count !== null && <Badge label={`Stock: ${item.stock_count}`} colour="orange" />}
@@ -656,54 +823,179 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
         </div>
       )}
 
-      {/* Allergen information */}
-      <div className="border-t border-slate-200 pt-6 mt-6">
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-slate-900">Allergen information</h3>
-          <p className="text-xs text-slate-500 mt-1">
-            Upload your allergen card or enter allergen information. This will be shown to customers when they order.
-          </p>
+      {/* Allergen information — card */}
+      {!allergenInfoText && allergenStep === 'idle' && (
+        <div className="border border-slate-200 rounded-2xl p-6 flex flex-col items-center text-center gap-3 mt-8">
+          <div className="text-3xl">🛡️</div>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900">Allergen information</h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-xs">
+              Help customers with allergies order safely. Upload your allergen card and our AI will structure it automatically.
+            </p>
+          </div>
+          <button onClick={() => setShowAllergenModal(true)}
+            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
+            Add allergen info
+          </button>
+          <p className="text-xs text-slate-400">photo, PDF or text</p>
         </div>
-        <div className="mb-4">
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Upload allergen card</label>
-          <p className="text-xs text-slate-400 mt-0.5 mb-2">PDF, JPG or PNG. Max 5MB.</p>
-          {allergenUrl && (
-            <div className="flex items-center gap-3 mb-2">
-              <a href={allergenUrl} target="_blank" rel="noopener noreferrer"
-                className="text-sm text-orange-600 hover:underline">
-                📎 View current allergen card
-              </a>
-              <button
-                onClick={() => { setAllergenUrl(''); saveAllergenSetting('allergen_info_url', null) }}
-                className="text-xs text-red-500 hover:text-red-700"
-              >
-                Remove
+      )}
+
+      {allergenInfoText && allergenStep === 'idle' && (
+        <div className="border border-green-100 bg-green-50 rounded-2xl p-4 mt-8">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <span className="text-lg flex-shrink-0">🛡️</span>
+              <div>
+                <p className="text-sm font-semibold text-slate-900">Allergen information</p>
+                <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{allergenInfoText}</p>
+                {allergenUrl && (
+                  <a href={allergenUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-green-600 underline mt-1 inline-block">
+                    View original card
+                  </a>
+                )}
+              </div>
+            </div>
+            <button onClick={() => setShowAllergenModal(true)}
+              className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-white flex-shrink-0">
+              Edit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {allergenStep === 'processing' && (
+        <div className="border border-slate-200 rounded-2xl p-6 flex items-center gap-3 mt-8">
+          <div className="w-5 h-5 border-2 border-orange-600 border-t-transparent rounded-full animate-spin flex-shrink-0" />
+          <p className="text-sm text-slate-500">Reading allergen information...</p>
+        </div>
+      )}
+
+      {allergenStep === 'review' && allergenExtracted && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 flex flex-col gap-3 max-h-[90vh] overflow-y-auto">
+            <p className="text-sm font-semibold text-slate-900">Extracted allergen information</p>
+
+            {allergenExtracted.summary && (
+              <p className="text-sm text-slate-600">{allergenExtracted.summary}</p>
+            )}
+
+            {allergenExtracted.contains?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-1">Contains</p>
+                <div className="flex flex-wrap gap-1">
+                  {allergenExtracted.contains.map((a: string) => (
+                    <span key={a} className="text-xs px-2 py-1 bg-red-50 border border-red-200 text-red-700 rounded-lg">{a}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {allergenExtracted.may_contain?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-1">May contain</p>
+                <div className="flex flex-wrap gap-1">
+                  {allergenExtracted.may_contain.map((a: string) => (
+                    <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{a}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {allergenExtracted.free_from?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-1">Free from</p>
+                <div className="flex flex-wrap gap-1">
+                  {allergenExtracted.free_from.map((a: string) => (
+                    <span key={a} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{a}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {allergenExtracted.dietary_options?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-slate-500 mb-1">Dietary options</p>
+                <div className="flex flex-wrap gap-1">
+                  {allergenExtracted.dietary_options.map((d: string) => (
+                    <span key={d} className="text-xs px-2 py-1 bg-green-50 border border-green-200 text-green-700 rounded-lg">{d}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {allergenExtracted.additional_notes && (
+              <p className="text-xs text-slate-500 italic">{allergenExtracted.additional_notes}</p>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => { setAllergenStep('idle'); setAllergenExtracted(null); setShowAllergenModal(true) }}
+                className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm hover:bg-slate-50">
+                Try again
+              </button>
+              <button onClick={handleSaveAllergens}
+                className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm hover:bg-orange-700">
+                Save allergen info
               </button>
             </div>
-          )}
-          <input
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleAllergenUpload}
-            className="mt-1 w-full text-sm text-slate-600
-                       file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0
-                       file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700
-                       hover:file:bg-orange-100"
-          />
-          {allergenUploading && <p className="text-xs text-slate-400 mt-1">Uploading...</p>}
+          </div>
         </div>
-        <div>
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Or enter allergen information as text</label>
-          <textarea
-            value={allergenText}
-            onChange={e => setAllergenText(e.target.value)}
-            onBlur={() => saveAllergenSetting('allergen_info_text', allergenText)}
-            placeholder="e.g. Contains gluten, dairy, eggs. Our kitchen handles nuts..."
-            rows={4}
-            className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-          />
+      )}
+
+      {/* Allergen modal */}
+      {showAllergenModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900">
+                {allergenInfoText ? 'Update allergen info' : 'Add allergen info'}
+              </h3>
+              <button onClick={() => { setShowAllergenModal(false); setAllergenText('') }}
+                className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
+            </div>
+            <p className="text-sm text-slate-500">
+              Upload your allergen card or paste your allergen information. Our AI will extract and structure it clearly for customers.
+            </p>
+            <label
+              {...allergenDragProps}
+              className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isAllergenDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+            >
+              <span className="text-3xl">{isAllergenDragging ? '📂' : '📋'}</span>
+              <span className="text-sm text-slate-500 text-center">
+                {isAllergenDragging ? 'Drop your allergen card here' : 'Drag and drop or tap to upload'}
+              </span>
+              <span className="text-xs text-slate-400">Image or PDF</span>
+              <input type="file" accept="image/*,.pdf" className="sr-only"
+                onChange={e => { const f = e.target.files?.[0]; if (f) { setShowAllergenModal(false); handleAllergenUploadAndProcess(f) } }} />
+            </label>
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-slate-100" />
+              <span className="text-xs text-slate-400">or type / paste</span>
+              <div className="flex-1 h-px bg-slate-100" />
+            </div>
+            <textarea
+              value={allergenText}
+              onChange={e => setAllergenText(e.target.value)}
+              placeholder="Paste your allergen information here..."
+              rows={4}
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+            <div className="flex gap-3">
+              <button onClick={() => { setShowAllergenModal(false); setAllergenText('') }}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50">
+                Cancel
+              </button>
+              <button
+                onClick={() => { setShowAllergenModal(false); handleAllergenTextProcess(allergenText) }}
+                disabled={!allergenText.trim()}
+                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
+                Extract with AI
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Edit Item Modal */}
       {editingItem && (
@@ -739,18 +1031,373 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
                 </select>
               </div>
 
-              {editingItem.image_path && (
-                <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Current image</label>
-                  <img src={imgUrl(editingItem.image_path)!} alt="" className="w-20 h-20 rounded-xl object-cover" />
-                  <button onClick={() => setEditingItem(p => ({...p!, image_path: null}))} className="text-xs text-red-400 hover:text-red-600 mt-1">Remove image</button>
+              {/* Photo */}
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-2">Photo</label>
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden flex-shrink-0 bg-slate-50 flex items-center justify-center">
+                    {editingItem.image_path
+                      ? <img src={imgUrl(editingItem.image_path)!} alt={editingItem.name || ''} className="w-full h-full object-cover" />
+                      : <span className="text-2xl">🍽️</span>
+                    }
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                      {uploadingItemPhoto ? 'Uploading…' : editingItem.image_path ? 'Change photo' : 'Add photo'}
+                      <input type="file" accept="image/*" className="sr-only" onChange={e => e.target.files?.[0] && uploadItemPhoto(e.target.files[0])} />
+                    </label>
+                    {editingItem.image_path && (
+                      <button onClick={() => setEditingItem(p => p ? { ...p, image_path: null } : p)} className="text-xs text-red-500 hover:text-red-700 text-left">
+                        Remove photo
+                      </button>
+                    )}
+                  </div>
                 </div>
-              )}
+                <p className="text-xs text-slate-400 mt-1">Square photos work best. JPG or PNG.</p>
+              </div>
+
+              {/* Allergens */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
+                <p className="text-xs text-slate-400 mt-0.5 mb-2">Select all that apply</p>
+                <div className="flex flex-wrap gap-2">
+                  {['Dairy', 'Lactose', 'Gluten', 'Eggs', 'Nuts', 'Soy', 'Fish', 'Shellfish', 'Celery', 'Mustard'].map(allergen => {
+                    const active = ((editingItem as any).allergens || []).includes(allergen)
+                    return (
+                      <button key={allergen} type="button"
+                        onClick={() => {
+                          const current: string[] = (editingItem as any).allergens || []
+                          const updated = active ? current.filter(a => a !== allergen) : [...current, allergen]
+                          setEditingItem(prev => prev ? { ...prev, allergens: updated } as any : prev)
+                        }}
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                        {allergen}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Dietary */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten Free', 'Dairy Free'].map(diet => {
+                    const active = ((editingItem as any).dietary_info || []).includes(diet)
+                    return (
+                      <button key={diet} type="button"
+                        onClick={() => {
+                          const current: string[] = (editingItem as any).dietary_info || []
+                          const updated = active ? current.filter(d => d !== diet) : [...current, diet]
+                          setEditingItem(prev => prev ? { ...prev, dietary_info: updated } as any : prev)
+                        }}
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-green-50 border-green-300 text-green-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                        {diet}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
             <div className="flex gap-2 mt-4">
               <Btn label="Cancel" colour="slate" onClick={() => setEditingItem(null)} />
               <Btn label={saving ? 'Saving...' : 'Save item'} loading={saving} onClick={saveItem} />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Import — Upload modal */}
+      {importStep === 'upload' && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h3 className="font-black text-slate-900 mb-1">Import your menu</h3>
+            <p className="text-slate-400 text-sm mb-5">Upload a photo of your menu board, a screenshot, a PDF, or paste your menu as text. Our AI reads it and builds your digital menu — you review everything before it saves.</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Upload menu file</label>
+                <label
+                  {...menuDragProps}
+                  className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isMenuDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+                >
+                  <span className="text-3xl">{isMenuDragging ? '📂' : importFile ? '✅' : '📷'}</span>
+                  <span className="text-sm text-slate-500 text-center">
+                    {isMenuDragging ? 'Drop your menu here' : importFile ? importFile.name : 'Drag and drop or tap to choose'}
+                  </span>
+                  {!isMenuDragging && !importFile && (
+                    <span className="text-xs text-slate-400">Image or PDF</span>
+                  )}
+                  <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setImportFile(e.target.files?.[0] || null)} />
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-slate-200" />
+                <span className="text-xs text-slate-400 font-medium">or</span>
+                <div className="flex-1 h-px bg-slate-200" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Paste menu text</label>
+                <textarea
+                  value={importText}
+                  onChange={e => setImportText(e.target.value)}
+                  placeholder="Paste your menu here — item names, descriptions, prices..."
+                  rows={5}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-5">
+              <Btn label="Cancel" colour="slate" onClick={() => { setImportStep('idle'); setImportFile(null); setImportText('') }} />
+              <Btn
+                label="Process menu"
+                disabled={!importFile && !importText.trim()}
+                onClick={handleProcessMenu}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Import — Processing spinner */}
+      {importStep === 'processing' && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
+            <div className="w-12 h-12 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4" />
+            <p className="font-black text-slate-900 mb-1">Analysing your menu</p>
+            <p className="text-slate-400 text-sm">AI is reading and categorising your items…</p>
+          </div>
+        </div>
+      )}
+
+      {/* AI Import — Review screen */}
+      {importStep === 'review' && importResult && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="p-5 border-b border-slate-100">
+              <h3 className="font-black text-slate-900">Review imported items</h3>
+              <p className="text-slate-400 text-sm mt-0.5">
+                {importResult.items.filter(i => !i._skip).length} items ready to add.{' '}
+                Uncheck any you don't want — you can edit details after importing.
+              </p>
+            </div>
+            <div className="overflow-y-auto flex-1 p-6 flex flex-col gap-6">
+              {importResult.categories.map(cat => {
+                const catItems = importResult.items.filter(i => i.category === cat)
+                if (catItems.length === 0) return null
+                return (
+                  <div key={cat} className="first:pt-0 pt-4 first:border-0 border-t border-slate-100">
+                    <div className="flex items-center gap-2 mb-3">
+                      <h4 className="text-base font-bold text-slate-900 tracking-tight">{cat}</h4>
+                      <span className="text-xs text-slate-400">
+                        {catItems.filter(i => !i._skip).length} of {catItems.length}
+                      </span>
+                      {importResult.existing_categories.includes(cat) && (
+                        <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">existing</span>
+                      )}
+                    </div>
+                    <div className="flex flex-col divide-y divide-slate-100">
+                      {catItems.map((item) => {
+                        const globalIdx = importResult.items.indexOf(item)
+                        return (
+                          <div key={globalIdx} className={`flex items-start gap-3 py-3 transition-opacity ${item._skip ? 'opacity-40' : 'opacity-100'}`}>
+                            <button
+                              type="button"
+                              onClick={() => setImportResult(prev => prev ? {
+                                ...prev,
+                                items: prev.items.map((it, i) => i === globalIdx ? { ...it, _skip: !it._skip } : it)
+                              } : prev)}
+                              className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5 border-2 transition-colors ${item._skip ? 'border-slate-300 bg-white' : 'border-orange-500 bg-orange-500'}`}
+                            >
+                              {!item._skip && (
+                                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              )}
+                            </button>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-slate-900">{item.name}</p>
+                              {item.description && <p className="text-xs text-slate-400 mt-0.5">{item.description}</p>}
+                              {((item.allergens ?? []).length > 0 || (item.dietary ?? []).length > 0) && (
+                                <div className="flex flex-wrap gap-1 mt-1.5">
+                                  {item.dietary?.map((d: string) => (
+                                    <span key={d} className="text-xs px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
+                                  ))}
+                                  {item.allergens?.map((a: string) => (
+                                    <span key={a} className="text-xs px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex items-center flex-shrink-0">
+                              {item.price_missing ? (
+                                <div className="flex flex-col items-end gap-1">
+                                  <span className="text-xs text-amber-600 font-medium">Price missing</span>
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-sm text-slate-400">£</span>
+                                    <input
+                                      type="number"
+                                      value={item.price || ''}
+                                      onChange={e => setImportResult(prev => prev ? {
+                                        ...prev,
+                                        items: prev.items.map((it, i) => i === globalIdx ? { ...it, price: parseFloat(e.target.value) || 0, price_missing: !e.target.value } : it)
+                                      } : prev)}
+                                      placeholder="0.00"
+                                      step="0.50"
+                                      className="w-16 text-sm text-right border border-amber-400 bg-amber-50 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <span className="text-sm font-semibold text-orange-600">£{Number(item.price).toFixed(2)}</span>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="p-5 border-t border-slate-100 flex gap-2">
+              <Btn label="Back" colour="slate" onClick={() => setImportStep('upload')} />
+              <Btn
+                label="Next →"
+                onClick={() => {
+                  const newCats = importResult.categories.filter(c => !importResult.existing_categories.includes(c))
+                  const initPrep: Record<string, { prep_secs: number | null; batch_size: number | null }> = {}
+                  newCats.forEach(cat => { initPrep[cat] = { prep_secs: null, batch_size: null } })
+                  setCategoryPrep(initPrep)
+                  setImportStep('prep')
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Import — Prep time */}
+      {(importStep === 'prep' || importStep === 'saving') && importResult && (() => {
+        const newCats = importResult.categories.filter(c => !importResult.existing_categories.includes(c))
+        return (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl flex flex-col max-h-[90vh]">
+              <div className="p-5 border-b border-slate-100">
+                <h3 className="font-black text-slate-900">Kitchen setup</h3>
+                <p className="text-slate-400 text-sm mt-0.5">Help customers know how long to wait — you can always change these later.</p>
+              </div>
+
+              <div className="mx-5 mt-4 mb-0 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex-shrink-0">
+                <p className="text-xs font-semibold text-blue-700 mb-2">How kitchen setup works</p>
+                <p className="text-xs text-blue-600 mb-1.5">
+                  <strong>Example:</strong> If your kitchen can cook 10 pizzas every 10 minutes, set Pizza to <strong>10 min prep</strong> and <strong>10 items at a time</strong>. Once 10 pizza items are in progress, the next customer is automatically told their order takes 20 minutes.
+                </p>
+                <p className="text-xs text-blue-500">
+                  Items like drinks or dips that are ready instantly can be left as "No wait time" and "No limit".
+                </p>
+                <p className="text-xs text-blue-500 mt-1.5">
+                  You can also set a maximum orders-per-window limit when creating an event — this acts as a safety cap across all categories combined.
+                </p>
+              </div>
+
+              <div className="overflow-y-auto flex-1 p-5 space-y-5">
+                {newCats.length === 0 ? (
+                  <p className="text-sm text-slate-500 text-center py-4">All categories already exist — no times to set.</p>
+                ) : (
+                  newCats.map(cat => {
+                    const prep = categoryPrep[cat] || { prep_secs: null, batch_size: null }
+                    return (
+                      <div key={cat} className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-slate-900">{cat}</p>
+                          {prep.prep_secs && prep.prep_secs > 0 ? (
+                            <span className="text-xs px-2 py-0.5 bg-orange-50 text-orange-600 border border-orange-100 rounded-full">🔥 Cooked</span>
+                          ) : (
+                            <span className="text-xs px-2 py-0.5 bg-green-50 text-green-600 border border-green-100 rounded-full">⚡ Instant</span>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-slate-700">Prep time per order</p>
+                            <p className="text-xs text-slate-400">How long one order takes to prepare</p>
+                          </div>
+                          <select
+                            value={prep.prep_secs ?? ''}
+                            onChange={e => setCategoryPrep(prev => ({
+                              ...prev,
+                              [cat]: { ...prev[cat], prep_secs: e.target.value === '' ? null : parseInt(e.target.value) }
+                            }))}
+                            className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-1 focus:ring-orange-400"
+                          >
+                            <option value="">No wait time</option>
+                            <option value="120">2 minutes</option>
+                            <option value="300">5 minutes</option>
+                            <option value="600">10 minutes</option>
+                            <option value="900">15 minutes</option>
+                            <option value="1200">20 minutes</option>
+                            <option value="1800">30 minutes</option>
+                            <option value="2700">45 minutes</option>
+                            <option value="3600">60 minutes</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-slate-700">Items at a time</p>
+                            <p className="text-xs text-slate-400">How many items your kitchen can cook simultaneously</p>
+                          </div>
+                          <select
+                            value={prep.batch_size ?? ''}
+                            onChange={e => setCategoryPrep(prev => ({
+                              ...prev,
+                              [cat]: { ...prev[cat], batch_size: e.target.value === '' ? null : parseInt(e.target.value) }
+                            }))}
+                            className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-1 focus:ring-orange-400"
+                          >
+                            <option value="">No limit</option>
+                            <option value="1">1 item</option>
+                            <option value="2">2 items</option>
+                            <option value="3">3 items</option>
+                            <option value="4">4 items</option>
+                            <option value="5">5 items</option>
+                            <option value="8">8 items</option>
+                            <option value="10">10 items</option>
+                            <option value="20">20 items</option>
+                          </select>
+                        </div>
+                        {(!prep.prep_secs || prep.prep_secs === 0) && (
+                          <p className="text-xs text-slate-400">
+                            Instant items don't count towards kitchen capacity — customers receive them immediately.
+                          </p>
+                        )}
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+
+              <div className="p-5 border-t border-slate-100 flex gap-2">
+                <Btn label="← Back" colour="slate" onClick={() => setImportStep('review')} disabled={importStep === 'saving'} />
+                <div className="flex-1" />
+                <Btn label="Skip for now" colour="ghost" onClick={handleCommitMenu} loading={importStep === 'saving'} />
+                <Btn label="Save & add to menu" onClick={handleCommitMenu} loading={importStep === 'saving'} />
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* AI Import — Done */}
+      {importStep === 'done' && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
+            <p className="text-5xl mb-4">✅</p>
+            <p className="font-black text-slate-900 mb-1">Menu imported!</p>
+            <p className="text-slate-400 text-sm">Your items have been added to the menu.</p>
+            {importDoneSkipped > 0 && (
+              <p className="text-sm text-slate-400 mt-1">
+                {importDoneSkipped} duplicate{importDoneSkipped !== 1 ? 's' : ''} skipped
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -1137,10 +1784,10 @@ function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
   )
 }
 
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string }
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; maxOrdersPerSlot?: number | null }
 
-function ScheduleTab({ token, bundles, api, reload, showToast }: {
-  token: string; bundles: Bundle[]
+function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
+  token: string; bundles: Bundle[]; categories: Category[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [events, setEvents] = useState<TruckEvent[]>([])
@@ -1196,6 +1843,14 @@ function ScheduleTab({ token, bundles, api, reload, showToast }: {
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
       }
       await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })
+      if (editingEvent.start_time && editingEvent.end_time) {
+        await api('save_slot_capacity', {
+          eventDate: editingEvent.event_date,
+          startTime: editingEvent.start_time,
+          endTime: editingEvent.end_time,
+          maxOrdersPerSlot: editingEvent.maxOrdersPerSlot ?? null,
+        })
+      }
       showToast(editingEvent.id ? 'Event updated' : 'Event added')
       closeAddModal()
       await loadEvents()
@@ -1601,6 +2256,25 @@ function ScheduleTab({ token, bundles, api, reload, showToast }: {
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
+                {categories.some(c => c.prep_secs > 0) && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Kitchen capacity</label>
+                    <p className="text-xs text-slate-400 mb-2">Maximum orders your kitchen can handle per 5-minute window. Leave blank for no limit.</p>
+                    <select
+                      value={editingEvent.maxOrdersPerSlot ?? ''}
+                      onChange={e => setEditingEvent(p => ({...p!, maxOrdersPerSlot: e.target.value ? parseInt(e.target.value) : null}))}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                    >
+                      <option value="">No limit</option>
+                      <option value="3">3 orders per 5 mins (very small kitchen)</option>
+                      <option value="5">5 orders per 5 mins (small kitchen)</option>
+                      <option value="8">8 orders per 5 mins (medium kitchen)</option>
+                      <option value="10">10 orders per 5 mins (busy kitchen)</option>
+                      <option value="15">15 orders per 5 mins (large kitchen)</option>
+                      <option value="20">20 orders per 5 mins (very high volume)</option>
+                    </select>
+                  </div>
+                )}
                 <div className="flex gap-2 pt-1">
                   <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
                   <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
@@ -1755,13 +2429,13 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
-  const [keepScreenOn, setKeepScreenOn] = useState<boolean>(truck.keep_screen_on ?? true)
   const [whatsappSender, setWhatsappSender] = useState(truck.whatsapp_sender ?? '')
   const [vans, setVans] = useState<Van[]>([])
   const [addingVan, setAddingVan] = useState(false)
   const [newVanName, setNewVanName] = useState('')
   const [renamingVanId, setRenamingVanId] = useState<string | null>(null)
   const [renameVanName, setRenameVanName] = useState('')
+  const [showAutoPauseInfo, setShowAutoPauseInfo] = useState<string | null>(null)
   const [deletingVan, setDeletingVan] = useState<Van | null>(null)
   const [deleteVanConfirm, setDeleteVanConfirm] = useState('')
   const [showVanBillingModal, setShowVanBillingModal] = useState(false)
@@ -1785,6 +2459,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
           : null,
         truckName: truck.name,
+        hatchgrabLogoUrl: `${window.location.origin}/logos/hatchgrab.png`,
       })
       setQrDataUrl(dataUrl)
     } catch (err) {
@@ -1824,7 +2499,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const saveSetting = async (key: string, value: string) => {
     try {
       await api('update_truck', { data: { [key]: value } })
-      showToast('Saved')
     } catch (e: any) {
       showToast(e.message, 'error')
     }
@@ -1840,7 +2514,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     setSaving(true)
     try {
       await api('update_settings', { ...form, website: (form as any).website })
-      showToast('Settings saved'); reload()
+      reload()
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
   }
@@ -1851,7 +2525,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       const { upload_url, path } = await api('get_upload_url', { filename: file.name, content_type: file.type })
       await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
       setForm(p => ({ ...p, logo_storage_path: path }))
-      showToast('Logo uploaded — save settings to apply')
+      await api('update_settings', { logo_storage_path: path })
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setUploadingLogo(false) }
   }
@@ -1893,8 +2567,13 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     } catch (e: any) { showToast(e.message, 'error') }
   }
 
-  const toggleAutoPause = async (vanId: string, enabled: boolean) => {
+  const handleToggleAutoPause = async (vanId: string, enabled: boolean) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, auto_pause_on_offline: enabled } : v))
+    if (enabled) {
+      setShowAutoPauseInfo(vanId)
+    } else {
+      setShowAutoPauseInfo(null)
+    }
     await api('update_van_settings', { vanId, autoPauseOnOffline: enabled })
   }
 
@@ -1935,11 +2614,149 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             }
           </div>
           <div>
-            <label className="cursor-pointer">
-              <Btn label={uploadingLogo ? 'Uploading...' : 'Upload logo'} loading={uploadingLogo} colour="ghost" onClick={() => {}} />
+            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+              {uploadingLogo ? 'Uploading…' : 'Upload logo'}
               <input type="file" accept="image/*" className="sr-only" onChange={e => e.target.files?.[0] && uploadLogo(e.target.files[0])} />
             </label>
             <p className="text-xs text-slate-400 mt-1">PNG or JPG, square recommended</p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Truck details */}
+      <Card className="p-4 space-y-3">
+        <p className="font-bold text-slate-900">Truck details</p>
+        <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} />
+        <div>
+          <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
+          <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} placeholder="Tell customers about your food..."
+            className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={3} />
+        </div>
+        <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} placeholder="e.g. Italian, Thai, Burgers" />
+      </Card>
+
+      {/* Contact */}
+      <Card className="p-4 space-y-3">
+        <p className="font-bold text-slate-900">Contact</p>
+        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} placeholder="hello@yourtruck.com" />
+        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} placeholder="07700 900123" />
+      </Card>
+
+      {/* Online presence & social */}
+      <Card className="p-4 space-y-3">
+        <p className="font-bold text-slate-900">Online presence &amp; social</p>
+
+        {/* Website */}
+        <div className="flex items-center gap-3">
+          <label className="text-sm text-slate-600 w-24 flex-shrink-0">Website</label>
+          <input
+            type="text"
+            value={(form as any).website || ''}
+            onChange={e => setForm(p => ({...p, website: e.target.value}))}
+            onBlur={() => saveSetting('website', (form as any).website || '')}
+            placeholder="https://yourtruck.co.uk"
+            className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+
+        {/* Auto-replies subsection */}
+        <div className="border-t border-slate-100 pt-4 mt-1">
+          <p className="text-sm font-bold text-slate-700 mb-0.5">Auto-replies</p>
+          <p className="text-xs text-slate-400 mb-3">Requires Business accounts on each platform.</p>
+
+          <div className="space-y-3">
+            {/* WhatsApp */}
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-slate-600 w-24 flex-shrink-0">WhatsApp</label>
+              {can('whatsapp_replies') ? (
+                <>
+                  <input
+                    type="tel"
+                    value={whatsappSender}
+                    onChange={e => setWhatsappSender(e.target.value)}
+                    placeholder="+447700900000"
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                  <button
+                    onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
+                    className="text-xs px-3 py-2 bg-teal-600 text-white font-medium rounded-xl flex-shrink-0"
+                  >
+                    Connect
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="tel"
+                    disabled
+                    placeholder="+447700900000"
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+                  />
+                  <FeatureGate
+                    feature="whatsapp_replies"
+                    plan={truck.plan}
+                    overrides={truck.feature_overrides}
+                    trialExpiresAt={truck.trial_expires_at}
+                    showUpgrade={true}
+                  />
+                </>
+              )}
+            </div>
+
+            {/* Messenger */}
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-slate-600 w-24 flex-shrink-0">Messenger</label>
+              <input
+                type="text"
+                disabled
+                placeholder="Coming soon"
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+              />
+              <button
+                disabled
+                className="text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed flex-shrink-0"
+              >
+                Connect
+              </button>
+            </div>
+
+            {/* Instagram */}
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-slate-600 w-24 flex-shrink-0">Instagram</label>
+              <input
+                type="text"
+                value={form.social_instagram || ''}
+                onChange={e => setForm(p => ({...p, social_instagram: e.target.value}))}
+                onBlur={() => saveSetting('social_instagram', form.social_instagram || '')}
+                placeholder="@youraccount"
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+              />
+              <button
+                disabled
+                className="text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed flex-shrink-0"
+              >
+                Connect
+              </button>
+            </div>
+
+            {/* Facebook */}
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-slate-600 w-24 flex-shrink-0">Facebook</label>
+              <input
+                type="text"
+                value={form.social_facebook || ''}
+                onChange={e => setForm(p => ({...p, social_facebook: e.target.value}))}
+                onBlur={() => saveSetting('social_facebook', form.social_facebook || '')}
+                placeholder="facebook.com/yourtruck"
+                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+              />
+              <button
+                disabled
+                className="text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed flex-shrink-0"
+              >
+                Connect
+              </button>
+            </div>
           </div>
         </div>
       </Card>
@@ -1988,87 +2805,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             {generatingQR ? 'Generating...' : 'Generate QR code'}
           </button>
         )}
-      </Card>
-
-      {/* Truck details */}
-      <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Truck details</p>
-        <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} />
-        <div>
-          <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
-          <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} placeholder="Tell customers about your food..."
-            className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={3} />
-        </div>
-        <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} placeholder="e.g. Italian, Thai, Burgers" />
-      </Card>
-
-      {/* Contact */}
-      <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Contact</p>
-        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} placeholder="hello@yourtruck.com" />
-        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} placeholder="07700 900123" />
-      </Card>
-
-      {/* Online presence & social */}
-      <Card className="p-4 space-y-4">
-        <p className="font-bold text-slate-900">Online presence &amp; social</p>
-        <Input label="Website URL" value={(form as any).website || ''} onChange={v => setForm(p => ({...p, website: v}))} placeholder="https://yourtruck.co.uk" />
-        <Input label="Instagram handle" value={form.social_instagram || ''} onChange={v => setForm(p => ({...p, social_instagram: v}))} placeholder="@yourtruck" />
-        <Input label="Facebook page URL" value={form.social_facebook || ''} onChange={v => setForm(p => ({...p, social_facebook: v}))} placeholder="facebook.com/yourtruck" />
-        <div className="border-t border-slate-100 pt-3 space-y-3">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Auto-replies</p>
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="text-xs font-semibold text-slate-600">WhatsApp Business number</label>
-              {!can('whatsapp_replies') && (
-                <FeatureGate
-                  feature="whatsapp_replies"
-                  plan={truck.plan}
-                  overrides={truck.feature_overrides}
-                  trialExpiresAt={truck.trial_expires_at}
-                  showUpgrade={true}
-                />
-              )}
-            </div>
-            {can('whatsapp_replies') ? (
-              <div className="flex gap-2">
-                <input
-                  type="tel"
-                  value={whatsappSender}
-                  onChange={e => setWhatsappSender(e.target.value)}
-                  placeholder="+447700900000"
-                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
-                />
-                <button
-                  onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
-                  className="px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl"
-                >
-                  Save
-                </button>
-              </div>
-            ) : (
-              <p className="text-xs text-slate-400 italic">Available on Max plan</p>
-            )}
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-slate-600">Facebook</p>
-              <p className="text-xs text-slate-400">Auto-reply to messages and comments</p>
-            </div>
-            <button disabled className="text-xs px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed">
-              Connect (coming soon)
-            </button>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-slate-600">Instagram</p>
-              <p className="text-xs text-slate-400">Auto-reply to DMs and comments</p>
-            </div>
-            <button disabled className="text-xs px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed">
-              Connect (coming soon)
-            </button>
-          </div>
-        </div>
       </Card>
 
       {/* Orders */}
@@ -2178,31 +2914,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           </select>
         </div>
 
-        {/* Keep screen on */}
-        <div className="flex items-start justify-between gap-4 py-3 border-b border-slate-100">
-          <div>
-            <div className="text-sm font-medium text-slate-900">Keep screen on</div>
-            <div className="text-xs text-slate-500 mt-0.5">
-              Prevents the device screen from turning off while the dashboard is open.
-              Recommended when offline detection is enabled — if the screen turns off,
-              online orders may pause automatically.
-            </div>
-          </div>
-          <button
-            role="switch"
-            aria-checked={keepScreenOn}
-            onClick={async () => {
-              const val = !keepScreenOn
-              setKeepScreenOn(val)
-              try { await api('update_truck', { data: { keep_screen_on: val } }) }
-              catch (err: any) { showToast(err.message, 'error') }
-            }}
-            className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${keepScreenOn ? 'bg-teal-600' : 'bg-slate-200'}`}
-          >
-            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${keepScreenOn ? 'translate-x-5' : 'translate-x-0'}`} />
-          </button>
-        </div>
-
         {/* Cook screen URL — shown when full crew mode */}
         {crewMode === 'full' && (
           <div className="text-xs text-slate-500 bg-slate-50 rounded-md px-3 py-2.5 border-t border-slate-100 pt-3">
@@ -2238,18 +2949,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         {vans.map(van => (
           <div key={van.id}>
             <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
-              <div>
-                <p className="text-sm font-medium text-slate-900">{van.name}</p>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <button
-                    onClick={() => toggleAutoPause(van.id, !van.auto_pause_on_offline)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${van.auto_pause_on_offline ? 'bg-orange-600' : 'bg-slate-200'}`}
-                  >
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${van.auto_pause_on_offline ? 'translate-x-5' : 'translate-x-1'}`} />
-                  </button>
-                  <span className="text-xs text-slate-500">Pause online orders if this device goes offline</span>
-                </div>
-              </div>
+              <p className="text-sm font-medium text-slate-900">{van.name}</p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
@@ -2266,6 +2966,56 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                   </button>
                 )}
               </div>
+            </div>
+
+            {/* Offline Order Protection card */}
+            <div className={`mt-2 rounded-xl border p-3 transition-colors ${
+              van.auto_pause_on_offline
+                ? 'border-teal-200 bg-teal-50'
+                : 'border-slate-100 bg-slate-50'
+            }`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                  <p className={`text-sm font-semibold ${
+                    van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-600'
+                  }`}>
+                    Offline order protection
+                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {van.auto_pause_on_offline
+                      ? 'Enabled — online orders pause if kitchen device loses connection'
+                      : 'Disabled — online orders continue even if kitchen device goes offline'
+                    }
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleToggleAutoPause(van.id, !van.auto_pause_on_offline)}
+                  className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 mt-0.5 ${
+                    van.auto_pause_on_offline ? 'bg-teal-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                    van.auto_pause_on_offline ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
+
+              {van.auto_pause_on_offline && showAutoPauseInfo === van.id && (
+                <div className="mt-3 pt-3 border-t border-teal-200">
+                  <p className="text-xs text-teal-700">
+                    <strong>Keep your screen on during service.</strong> This feature
+                    works by checking your device is online every 15 seconds. If the
+                    screen turns off and the device loses its signal, online ordering
+                    will pause automatically for customers until the device reconnects.
+                  </p>
+                  <button
+                    onClick={() => setShowAutoPauseInfo(null)}
+                    className="mt-3 w-full py-2 bg-teal-600 text-white text-xs font-semibold rounded-lg"
+                  >
+                    Got it
+                  </button>
+                </div>
+              )}
             </div>
             {renamingVanId === van.id && (
               <div className="mt-2 mb-2 flex gap-2">

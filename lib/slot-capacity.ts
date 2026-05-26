@@ -50,10 +50,11 @@ export function totalBatchesForQtyByCat(
 ): number {
   let maxBatches = 0
   Object.entries(qtyByCat).forEach(([cat, qty]) => {
-    const cfg = getCatConfig(cat, catConfigs)
-    if (!cfg.secs) return
-    const b = qtyToBatches(qty, cfg.batch)
-    if (b > maxBatches) maxBatches = b
+    const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
+    // Skip instant categories — they don't consume kitchen capacity
+    if (!cfg.secs || cfg.secs === 0) return
+    const batches = Math.ceil(qty / cfg.batch)
+    if (batches > maxBatches) maxBatches = batches
   })
   return maxBatches
 }

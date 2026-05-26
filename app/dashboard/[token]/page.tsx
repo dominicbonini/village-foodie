@@ -74,6 +74,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editCatForm,setEditCatForm]=useState<{name:string;prepMins:number;prepSecs30:number;batch:number;allowNotes:boolean}|null>(null)
   const[savingCat,setSavingCat]=useState(false)
   const[showPrepList,setShowPrepList]=useState(false)
+  const[showPrepTimeBanner,setShowPrepTimeBanner]=useState(false)
   const[keepScreenOn,setKeepScreenOn]=useState(true)
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
   const[currentUserEmail,setCurrentUserEmail]=useState<string|null>(null)
@@ -148,6 +149,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           })
           setCategoryConfigs(fromDb)
           setCategoryAllowNotes(notesFromDb)
+          const cats = d.menu.categories || []
+          const allAtDefault = cats.length > 0 && cats.every((c:any) => c.prep_secs === 300 && c.batch_size === 1)
+          setShowPrepTimeBanner(allAtDefault)
         }
       }).catch(()=>null)
   },[])
@@ -565,12 +569,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
             <button
               onClick={toggleKeepScreenOn}
-              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${keepScreenOn?'text-teal-400 hover:text-teal-300':'text-slate-500 hover:text-slate-400'}`}
-              title={keepScreenOn?'Screen on — tap to allow sleep':'Screen off — tap to keep on'}
+              className="flex items-center gap-2"
             >
-              <span>{keepScreenOn?'☀️':'🌙'}</span>
-              <div className={`relative w-8 h-4 rounded-full transition-colors ${keepScreenOn?'bg-teal-600':'bg-slate-600'}`}>
-                <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${keepScreenOn?'translate-x-4':'translate-x-0.5'}`}/>
+              <span className="text-xs font-medium text-slate-400 select-none hidden sm:inline">
+                {keepScreenOn ? 'Screen on' : 'Screen off'}
+              </span>
+              <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
+                <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
               </div>
             </button>
             <UserMenu
@@ -639,6 +644,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
                     ⋯
                   </button>
+                </div>
+              </div>
+            )}
+            {/* Prep time banner */}
+            {showPrepTimeBanner&&(
+              <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
+                <span className="text-orange-500 text-lg flex-shrink-0">⚙️</span>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-orange-800">Set your prep times before going live</p>
+                  <p className="text-xs text-orange-700 mt-0.5">Your menu is using default prep times. Update them in Manage so your kitchen doesn't get overwhelmed with orders.</p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <a href={`/manage/${token}`} className="text-xs font-medium text-orange-700 underline">Edit categories</a>
+                  <button onClick={()=>setShowPrepTimeBanner(false)} className="text-orange-400 hover:text-orange-600 text-lg leading-none">×</button>
                 </div>
               </div>
             )}
@@ -742,7 +761,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 })
                 let maxSecs=0
                 Object.entries(catGroups).forEach(([cat,qty]:[string,number])=>{
-                  const cfg=getCatConfig(cat,categoryConfigs)
+                  const cfg=categoryConfigs[cat.toLowerCase()]??getCatConfig(cat)
                   const secs=catCookSecs(qty,cfg)
                   if(secs>maxSecs)maxSecs=secs
                 })
@@ -1132,10 +1151,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
               <p className="text-sm text-slate-500 mt-2">
-                <strong>{vansWithAutoPause.join(' and ')}</strong>
-                {vansWithAutoPause.length===1?' has':' have'} offline detection enabled. If this screen turns off and loses its signal, online ordering will automatically pause for{vansWithAutoPause.length===1?` ${vansWithAutoPause[0]}`:' these vans'}.
+                Offline order protection is currently enabled. If the screen turns off and the device loses its connection, online ordering may pause automatically.
               </p>
-              <p className="text-sm text-slate-500 mt-2">Keep the screen on to ensure uninterrupted ordering.</p>
+              <p className="text-sm text-slate-500 mt-2">Are you sure you want to allow the screen to turn off?</p>
             </div>
             <div className="flex gap-3">
               <button onClick={()=>setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
