@@ -252,6 +252,8 @@ export async function GET(
         return Math.max(0, Math.ceil(mins - elapsed))
       })(),
       plan: (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max',
+      allergen_info_url: truck.allergen_info_url ?? null,
+      allergen_info_text: truck.allergen_info_text ?? null,
     },
     menu,
   })

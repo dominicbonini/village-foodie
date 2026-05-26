@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabaseAuth.auth.getUser()
 
   let currentUserName: string | null = null
+  let userRole: 'owner' | 'manager' | 'staff' | null = null
 
   if (user) {
     const { data: operator } = await supabase
@@ -52,13 +53,18 @@ export async function GET(req: NextRequest) {
 
     if (operator) {
       currentUserName = operator.name || operator.email || null
+      userRole = 'owner'
     } else {
       const { data: truckUser } = await supabase
         .from('truck_users')
-        .select('name, email')
+        .select('name, email, role')
         .eq('auth_user_id', user.id)
+        .eq('truck_id', truck.id)
         .single()
-      if (truckUser) currentUserName = truckUser.name || truckUser.email || null
+      if (truckUser) {
+        currentUserName = truckUser.name || truckUser.email || null
+        userRole = (truckUser.role as 'owner' | 'manager' | 'staff') || 'staff'
+      }
     }
   }
 
@@ -232,6 +238,7 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     currentUserName,
+    userRole,
     truck: {
       id:          truck.id,
       name:        truck.name,

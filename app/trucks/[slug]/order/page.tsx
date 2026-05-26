@@ -33,7 +33,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max' }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null }
 interface EventData {
   date: string          // dd/mm/yyyy
   date_iso: string      // yyyy-mm-dd
@@ -101,6 +101,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [menu, setMenu] = useState<TruckMenu | null>(null)
+  const [showAllergenModal, setShowAllergenModal] = useState(false)
   const [events, setEvents] = useState<EventData[]>([])
   const [event, setEvent] = useState<EventData | null>(null)
   const [eventLoading, setEventLoading] = useState(true)
@@ -959,7 +960,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
         {/* MENU — grouped by category */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-4 mb-4">
-          <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Menu</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">Menu</h2>
+            {(truck?.allergen_info_url || truck?.allergen_info_text) && (
+              <button
+                onClick={() => setShowAllergenModal(true)}
+                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 underline"
+              >
+                ⚠️ Allergen information
+              </button>
+            )}
+          </div>
           {groupedMenu.map(([category, items]) => (
             <div key={category} className="mb-4 last:mb-0">
               <div className="flex items-center gap-2 mb-1">
@@ -1417,7 +1428,32 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         />
       )}
 
-      
+      {/* Allergen information modal */}
+      {showAllergenModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900">Allergen information</h3>
+              <button onClick={() => setShowAllergenModal(false)}
+                className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
+            </div>
+            {truck?.allergen_info_url && (
+              <a href={truck.allergen_info_url} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-4 py-3
+                           text-sm text-orange-700 font-medium hover:bg-orange-100">
+                📎 View allergen card (PDF/image)
+              </a>
+            )}
+            {truck?.allergen_info_text && (
+              <p className="text-sm text-slate-600 whitespace-pre-wrap">{truck.allergen_info_text}</p>
+            )}
+            <p className="text-xs text-slate-400">
+              If you have a severe allergy, please contact the vendor directly before ordering.
+            </p>
+          </div>
+        </div>
+      )}
+
     </Shell>
   )
 }

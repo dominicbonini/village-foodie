@@ -293,11 +293,13 @@ export async function POST(req: NextRequest) {
 
   // ── SETTINGS ──────────────────────────────────────────────
   if (action === 'update_settings') {
-    const { name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept, logo_storage_path, website } = body
+    const { name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept, logo_storage_path, website, allergen_info_url, allergen_info_text } = body
     const { data, error } = await supabase.from('trucks').update({
       name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept,
-      ...(logo_storage_path !== undefined ? { logo_storage_path } : {})
-, ...(website !== undefined ? { website } : {})
+      ...(logo_storage_path !== undefined ? { logo_storage_path } : {}),
+      ...(website !== undefined ? { website } : {}),
+      ...(allergen_info_url !== undefined ? { allergen_info_url } : {}),
+      ...(allergen_info_text !== undefined ? { allergen_info_text } : {}),
     }).eq('id', truck.id).select().single()
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
     return NextResponse.json({ truck: data })
@@ -469,6 +471,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email required' }, { status: 400 })
     }
 
+    // Validate van selection when truck has multiple vans
+    const { data: allVans } = await supabase.from('truck_vans').select('id').eq('truck_id', truck.id).eq('active', true)
+    if ((allVans?.length ?? 0) > 1 && (!vanIds || vanIds.length === 0)) {
+      return NextResponse.json({ error: 'Please select at least one van' }, { status: 400 })
+    }
+
     // Check not already a member
     const { data: existing } = await supabase
       .from('truck_users')
@@ -560,7 +568,7 @@ export async function POST(req: NextRequest) {
 
     // Send invite email via Brevo
     const inviteUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/reset-password?token=${inviteToken}&invite=true`
-    const roleLabel = role === 'manager' ? 'Manager' : 'Staff'
+    const roleLabel = role === 'owner' ? 'Owner' : role === 'manager' ? 'Manager' : 'Staff'
     const firstName = (name || '').split(' ')[0] || 'there'
 
     const html = `
@@ -571,7 +579,7 @@ export async function POST(req: NextRequest) {
           You've been invited to join ${truck.name} on HatchGrab
         </h2>
         <p>Hi ${firstName},</p>
-        <p>${truck.name} has invited you to join their team as ${roleLabel === 'Manager' ? 'a Manager' : 'a Staff member'} on HatchGrab.</p>
+        <p>${truck.name} has invited you to join their team as ${roleLabel === 'Owner' ? 'an Owner' : roleLabel === 'Manager' ? 'a Manager' : 'a Staff member'} on HatchGrab.</p>
         <p>Click the button below to set your password and get started. This link expires in 7 days.</p>
         <p style="margin:32px 0;">
           <a href="${inviteUrl}"

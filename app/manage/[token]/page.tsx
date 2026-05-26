@@ -12,7 +12,7 @@ import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -111,6 +111,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
   const [currentUserName, setCurrentUserName] = useState<string | null>(null)
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null)
+  const [showProfileModal, setShowProfileModal] = useState(false)
+  const [editProfileName, setEditProfileName] = useState('')
+  const [savingProfile, setSavingProfile] = useState(false)
+  const [showUserDropdown, setShowUserDropdown] = useState(false)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => setToast({ msg, type })
 
@@ -134,13 +139,37 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   useEffect(() => { load() }, [load])
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => setCurrentUserName(d.name ?? null)).catch(() => null)
+    fetch('/api/auth/me').then(r => r.json()).then(d => {
+      setCurrentUserName(d.name ?? null)
+      setCurrentUserEmail(d.email ?? null)
+    }).catch(() => null)
   }, [])
 
   const handleSignOut = async () => {
     const supabase = createSupabaseBrowserClient()
     await supabase.auth.signOut()
     window.location.href = '/login'
+  }
+
+  const saveProfile = async () => {
+    if (!editProfileName.trim()) return
+    setSavingProfile(true)
+    try {
+      const res = await fetch('/api/auth/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editProfileName }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setCurrentUserName(data.name)
+      setShowProfileModal(false)
+      showToast('Profile updated')
+    } catch (e: any) {
+      showToast(e.message || 'Failed to save', 'error')
+    } finally {
+      setSavingProfile(false)
+    }
   }
 
   const api = async (action: string, extra: Record<string, any> = {}) => {
@@ -191,15 +220,35 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           </div>
           <div className="flex items-center gap-3">
             <a href={`/dashboard/${token}`} className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">← Orders dashboard</a>
-            {currentUserName && (
-              <div className="flex items-center gap-2">
+            <div className="relative">
+              <button
+                onClick={() => setShowUserDropdown(v => !v)}
+                className="flex items-center gap-2 focus:outline-none"
+              >
                 <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-700">
-                  {currentUserName.charAt(0).toUpperCase()}
+                  {currentUserName ? currentUserName.charAt(0).toUpperCase() : '?'}
                 </div>
                 <span className="text-sm text-slate-300 hidden sm:inline">{currentUserName}</span>
-              </div>
-            )}
-            <button onClick={handleSignOut} className="text-xs text-slate-400 hover:text-white">Sign out</button>
+              </button>
+              {showUserDropdown && (
+                <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50"
+                     onBlur={() => setShowUserDropdown(false)}>
+                  <button
+                    onClick={() => { setEditProfileName(currentUserName || ''); setShowProfileModal(true); setShowUserDropdown(false) }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                  >
+                    Edit profile
+                  </button>
+                  <hr className="my-1 border-slate-100" />
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         {/* Tabs */}
@@ -214,6 +263,28 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-6">
+        {/* Mandatory fields banner */}
+        {(() => {
+          const missing = [
+            !truck.name?.trim() && 'truck name',
+            !truck.cuisine_type?.trim() && 'cuisine type',
+            !truck.contact_email?.trim() && 'contact email',
+            !truck.contact_phone?.trim() && 'contact phone',
+          ].filter(Boolean) as string[]
+          if (missing.length === 0) return null
+          return (
+            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-start gap-3">
+              <span className="text-amber-500 text-lg shrink-0">⚠</span>
+              <div>
+                <p className="text-sm font-semibold text-amber-800">Complete your profile</p>
+                <p className="text-xs text-amber-700 mt-0.5">
+                  Missing: {missing.join(', ')}.{' '}
+                  <button onClick={() => setActiveTab('settings')} className="underline font-medium">Go to Settings →</button>
+                </p>
+              </div>
+            </div>
+          )
+        })()}
         {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
@@ -223,6 +294,56 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       </main>
 
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Edit profile modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+             onClick={e => e.target === e.currentTarget && setShowProfileModal(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-slate-900">Edit profile</h3>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</label>
+              <input
+                type="text"
+                value={editProfileName}
+                onChange={e => setEditProfileName(e.target.value)}
+                placeholder="Your name"
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+                autoFocus
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <input
+                type="email"
+                value={currentUserEmail || ''}
+                disabled
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 text-slate-400"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowProfileModal(false)}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveProfile}
+                disabled={!editProfileName.trim() || savingProfile}
+                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700"
+              >
+                {savingProfile ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Close dropdown on outside click */}
+      {showUserDropdown && (
+        <div className="fixed inset-0 z-40" onClick={() => setShowUserDropdown(false)} />
+      )}
     </div>
   )
 }
@@ -238,6 +359,28 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
   const [editingItem, setEditingItem] = useState<Partial<Item> | null>(null)
   const [saving, setSaving] = useState(false)
   const [expandedCat, setExpandedCat] = useState<string | null>(categories[0]?.id || null)
+  const [allergenText, setAllergenText] = useState(truck.allergen_info_text || '')
+  const [allergenUploading, setAllergenUploading] = useState(false)
+  const [allergenUrl, setAllergenUrl] = useState(truck.allergen_info_url || '')
+
+  const saveAllergenSetting = async (key: string, value: string | null) => {
+    try { await api('update_settings', { [key]: value }) } catch {}
+  }
+
+  const handleAllergenUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setAllergenUploading(true)
+    try {
+      const { upload_url, path } = await api('get_upload_url', { filename: file.name, content_type: file.type })
+      await fetch(upload_url, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+      const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${path}`
+      setAllergenUrl(publicUrl)
+      await saveAllergenSetting('allergen_info_url', publicUrl)
+      showToast('Allergen card uploaded')
+    } catch (e: any) { showToast(e.message || 'Upload failed', 'error') }
+    finally { setAllergenUploading(false) }
+  }
 
   const saveCat = async (overrides?: Partial<Category>) => {
     const data = { ...(editingCat || {}), ...overrides } as Partial<Category>
@@ -512,6 +655,55 @@ function MenuTab({ truck, categories, items, api, reload, showToast }: {
           </div>
         </div>
       )}
+
+      {/* Allergen information */}
+      <div className="border-t border-slate-200 pt-6 mt-6">
+        <div className="mb-4">
+          <h3 className="text-sm font-semibold text-slate-900">Allergen information</h3>
+          <p className="text-xs text-slate-500 mt-1">
+            Upload your allergen card or enter allergen information. This will be shown to customers when they order.
+          </p>
+        </div>
+        <div className="mb-4">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Upload allergen card</label>
+          <p className="text-xs text-slate-400 mt-0.5 mb-2">PDF, JPG or PNG. Max 5MB.</p>
+          {allergenUrl && (
+            <div className="flex items-center gap-3 mb-2">
+              <a href={allergenUrl} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-orange-600 hover:underline">
+                📎 View current allergen card
+              </a>
+              <button
+                onClick={() => { setAllergenUrl(''); saveAllergenSetting('allergen_info_url', null) }}
+                className="text-xs text-red-500 hover:text-red-700"
+              >
+                Remove
+              </button>
+            </div>
+          )}
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={handleAllergenUpload}
+            className="mt-1 w-full text-sm text-slate-600
+                       file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0
+                       file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700
+                       hover:file:bg-orange-100"
+          />
+          {allergenUploading && <p className="text-xs text-slate-400 mt-1">Uploading...</p>}
+        </div>
+        <div>
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Or enter allergen information as text</label>
+          <textarea
+            value={allergenText}
+            onChange={e => setAllergenText(e.target.value)}
+            onBlur={() => saveAllergenSetting('allergen_info_text', allergenText)}
+            placeholder="e.g. Contains gluten, dairy, eggs. Our kitchen handles nuts..."
+            rows={4}
+            className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+        </div>
+      </div>
 
       {/* Edit Item Modal */}
       {editingItem && (
@@ -1572,6 +1764,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [renameVanName, setRenameVanName] = useState('')
   const [deletingVan, setDeletingVan] = useState<Van | null>(null)
   const [deleteVanConfirm, setDeleteVanConfirm] = useState('')
+  const [showVanBillingModal, setShowVanBillingModal] = useState(false)
+  const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
@@ -1583,6 +1777,27 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     truck.feature_overrides ?? {},
     truck.trial_expires_at ?? null
   )
+
+  // £/month for each additional van beyond included count
+  // TODO: Wire to Stripe billing API when payments are integrated.
+  const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }
+  const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
+
+  const handleAddVanClick = () => {
+    const included = INCLUDED_VANS[truck.plan] ?? 1
+    const addonPrice = VAN_ADDON_PRICE[truck.plan] ?? 0
+    if (vans.length >= included) {
+      if (addonPrice > 0) {
+        setShowVanBillingModal(true)
+      } else if (truck.plan === 'starter') {
+        setShowVanUpgradeModal(true)
+      } else {
+        setAddingVan(true)
+      }
+    } else {
+      setAddingVan(true)
+    }
+  }
 
   const saveSetting = async (key: string, value: string) => {
     try {
@@ -1716,22 +1931,76 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} placeholder="Tell customers about your food..."
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={3} />
         </div>
-        <Input label="Cuisine type" value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} placeholder="e.g. Italian, Thai, Burgers" />
+        <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} placeholder="e.g. Italian, Thai, Burgers" />
       </Card>
 
       {/* Contact */}
       <Card className="p-4 space-y-3">
         <p className="font-bold text-slate-900">Contact</p>
-        <Input label="Email" type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} placeholder="hello@yourtruck.com" />
-        <Input label="Phone" type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} placeholder="07700 900123" />
+        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} placeholder="hello@yourtruck.com" />
+        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} placeholder="07700 900123" />
       </Card>
 
-      {/* Social */}
-      <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Online presence</p>
+      {/* Online presence & social */}
+      <Card className="p-4 space-y-4">
+        <p className="font-bold text-slate-900">Online presence &amp; social</p>
         <Input label="Website URL" value={(form as any).website || ''} onChange={v => setForm(p => ({...p, website: v}))} placeholder="https://yourtruck.co.uk" />
         <Input label="Instagram handle" value={form.social_instagram || ''} onChange={v => setForm(p => ({...p, social_instagram: v}))} placeholder="@yourtruck" />
         <Input label="Facebook page URL" value={form.social_facebook || ''} onChange={v => setForm(p => ({...p, social_facebook: v}))} placeholder="facebook.com/yourtruck" />
+        <div className="border-t border-slate-100 pt-3 space-y-3">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Auto-replies</p>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs font-semibold text-slate-600">WhatsApp Business number</label>
+              {!can('whatsapp_replies') && (
+                <FeatureGate
+                  feature="whatsapp_replies"
+                  plan={truck.plan}
+                  overrides={truck.feature_overrides}
+                  trialExpiresAt={truck.trial_expires_at}
+                  showUpgrade={true}
+                />
+              )}
+            </div>
+            {can('whatsapp_replies') ? (
+              <div className="flex gap-2">
+                <input
+                  type="tel"
+                  value={whatsappSender}
+                  onChange={e => setWhatsappSender(e.target.value)}
+                  placeholder="+447700900000"
+                  className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
+                />
+                <button
+                  onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
+                  className="px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl"
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">Available on Max plan</p>
+            )}
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-600">Facebook</p>
+              <p className="text-xs text-slate-400">Auto-reply to messages and comments</p>
+            </div>
+            <button disabled className="text-xs px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed">
+              Connect (coming soon)
+            </button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-slate-600">Instagram</p>
+              <p className="text-xs text-slate-400">Auto-reply to DMs and comments</p>
+            </div>
+            <button disabled className="text-xs px-3 py-1.5 border border-slate-200 text-slate-400 rounded-lg cursor-not-allowed">
+              Connect (coming soon)
+            </button>
+          </div>
+        </div>
       </Card>
 
       {/* Orders */}
@@ -1881,70 +2150,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         )}
       </Card>
 
-      {/* Social Media Auto-Replies */}
-      <Card className="p-4">
-        <p className="font-bold text-slate-900 mb-1">Social media auto-replies</p>
-        <p className="text-xs text-slate-500 mb-4">
-          Automatically reply to customer messages with your schedule
-          and order link. Requires Business accounts on each platform.
-        </p>
-
-        {/* WhatsApp */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-              WhatsApp Business number
-            </label>
-            {!can('whatsapp_replies') && (
-              <FeatureGate
-                feature="whatsapp_replies"
-                plan={truck.plan}
-                overrides={truck.feature_overrides}
-                trialExpiresAt={truck.trial_expires_at}
-                showUpgrade={true}
-              />
-            )}
-          </div>
-          <p className="text-xs text-slate-400 mt-0.5 mb-2">
-            Your customers message this number. Must be a WhatsApp
-            Business account. Format: +447700900000
-          </p>
-          {can('whatsapp_replies') ? (
-            <div className="flex gap-2">
-              <input
-                type="tel"
-                value={whatsappSender}
-                onChange={e => setWhatsappSender(e.target.value)}
-                placeholder="+447700900000"
-                className="flex-1 border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
-              />
-              <button
-                onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
-                className="px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-xl"
-              >
-                Save
-              </button>
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 italic">Available on Max plan</p>
-          )}
-        </div>
-
-        {/* Facebook / Instagram */}
-        <div className="border-t border-slate-100 pt-4">
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-            Facebook &amp; Instagram
-          </label>
-          <p className="text-xs text-slate-400 mt-0.5 mb-2">
-            Connect your Facebook Business Page to auto-reply to
-            messages and post comments.
-          </p>
-          <span className="text-xs text-slate-400 italic">
-            Facebook &amp; Instagram integration coming soon
-          </span>
-        </div>
-      </Card>
-
       {/* Vans */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
@@ -1954,31 +2159,19 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               Manage your vehicles. Each van has its own order screen.
             </p>
           </div>
-          {vans.length < maxVans(truck.plan) && (
-            <button
-              onClick={() => setAddingVan(true)}
-              className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
-            >
-              + Add van
-            </button>
-          )}
+          <button
+            onClick={handleAddVanClick}
+            className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+          >
+            + Add van
+          </button>
         </div>
-        <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 mt-1 mb-3">
-          One van is included on all plans. Additional vans are available on
-          Pro and Max plans — contact us to add more.
-        </p>
-        {vans.length >= maxVans(truck.plan) && truck.plan === 'starter' && (
-          <p className="text-xs text-slate-400 mb-2">Upgrade to Pro to add more vans</p>
-        )}
 
         {vans.map(van => (
           <div key={van.id}>
             <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
               <div>
                 <p className="text-sm font-medium text-slate-900">{van.name}</p>
-                <p className="text-xs text-slate-400 font-mono mt-0.5">
-                  Screen: hatchgrab.com/kds/{van.kds_token.slice(0, 12)}...
-                </p>
                 <div className="flex items-center gap-2 mt-1.5">
                   <button
                     onClick={() => toggleAutoPause(van.id, !van.auto_pause_on_offline)}
@@ -1990,12 +2183,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => copyKdsLink(van.kds_token)}
-                  className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
-                >
-                  Copy order screen link
-                </button>
                 <button
                   onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
                   className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
@@ -2110,6 +2297,70 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         </div>
       )}
 
+      {/* Van billing modal */}
+      {showVanBillingModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Add another van</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                Your {truck.plan === 'pro' ? 'Pro' : 'Max'} plan includes{' '}
+                {truck.plan === 'pro' ? '2 vans' : 'unlimited vans'}.
+                Adding an additional van costs{' '}
+                <strong>£{VAN_ADDON_PRICE[truck.plan]}/month</strong>{' '}
+                and will be added to your next billing cycle.
+              </p>
+              <div className="mt-3 bg-slate-50 rounded-xl px-4 py-3">
+                <p className="text-xs text-slate-500">
+                  ⚠️ Note: Billing adjustment is processed manually during early access.
+                  You will receive a confirmation email within 24 hours.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowVanBillingModal(false)}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setShowVanBillingModal(false); setAddingVan(true) }}
+                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-orange-700"
+              >
+                Add van — £{VAN_ADDON_PRICE[truck.plan]}/mo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Van upgrade modal (starter plan) */}
+      {showVanUpgradeModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-slate-900">Upgrade to add more vans</h3>
+            <p className="text-sm text-slate-500">
+              The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowVanUpgradeModal(false)}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <a
+                href="/pricing"
+                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-orange-700"
+              >
+                View plans
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3">
         <Btn label={saving ? 'Saving...' : 'Save settings'} loading={saving} onClick={save} />
         <a href={`/dashboard/${token}`} className="text-sm text-slate-400 hover:text-slate-600 font-bold py-2">← Back to dashboard</a>
@@ -2129,7 +2380,7 @@ function TeamTab({ truck, token, api, reload, showToast }: {
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
   const [inviteName, setInviteName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
-  const [inviteRole, setInviteRole] = useState<'manager' | 'staff'>('staff')
+  const [inviteRole, setInviteRole] = useState<'owner' | 'manager' | 'staff'>('staff')
   const [inviteVanIds, setInviteVanIds] = useState<string[]>([])
   const [inviteLoading, setInviteLoading] = useState(false)
 
@@ -2148,7 +2399,9 @@ function TeamTab({ truck, token, api, reload, showToast }: {
 
   const openInviteModal = () => {
     setEditingMember(null)
-    setInviteName(''); setInviteEmail(''); setInviteRole('staff'); setInviteVanIds([])
+    setInviteName(''); setInviteEmail(''); setInviteRole('staff')
+    // Pre-select the only van if there's just one
+    setInviteVanIds(vans.length === 1 ? [vans[0].id] : [])
     setInvitingMember(true)
   }
 
@@ -2156,7 +2409,7 @@ function TeamTab({ truck, token, api, reload, showToast }: {
     setEditingMember(member)
     setInviteName(member.name || '')
     setInviteEmail(member.email)
-    setInviteRole(member.role === 'owner' ? 'manager' : member.role)
+    setInviteRole(member.role)
     const matchedVanIds = vans
       .filter(v => member.van_names?.includes(v.name))
       .map(v => v.id)
@@ -2313,36 +2566,46 @@ function TeamTab({ truck, token, api, reload, showToast }: {
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Role</label>
               <select
                 value={inviteRole}
-                onChange={e => setInviteRole(e.target.value as 'manager' | 'staff')}
+                onChange={e => setInviteRole(e.target.value as 'owner' | 'manager' | 'staff')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
               >
                 <option value="staff">Staff — Take orders and manage the kitchen</option>
                 <option value="manager">Manager — Full access including menu and settings</option>
+                <option value="owner">Owner — Full access including team and billing</option>
               </select>
             </div>
 
-            {vans.length > 1 && (
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Van access</label>
-                <p className="text-xs text-slate-400 mb-2">Leave all unchecked to allow access to all vans</p>
-                {vans.map(van => (
-                  <label key={van.id} className="flex items-center gap-2 py-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={inviteVanIds.includes(van.id)}
-                      onChange={e => {
-                        if (e.target.checked) {
-                          setInviteVanIds(prev => [...prev, van.id])
-                        } else {
-                          setInviteVanIds(prev => prev.filter(id => id !== van.id))
-                        }
-                      }}
-                    />
-                    <span className="text-sm text-slate-700">{van.name}</span>
-                  </label>
-                ))}
-              </div>
-            )}
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Van access</label>
+              {vans.length === 1 ? (
+                <label className="flex items-center gap-2 py-1.5 opacity-60 cursor-not-allowed">
+                  <input type="checkbox" checked disabled />
+                  <span className="text-sm text-slate-700">{vans[0].name} <span className="text-slate-400">(only van)</span></span>
+                </label>
+              ) : (
+                <>
+                  {vans.map(van => (
+                    <label key={van.id} className="flex items-center gap-2 py-1 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={inviteVanIds.includes(van.id)}
+                        onChange={e => {
+                          if (e.target.checked) {
+                            setInviteVanIds(prev => [...prev, van.id])
+                          } else {
+                            setInviteVanIds(prev => prev.filter(id => id !== van.id))
+                          }
+                        }}
+                      />
+                      <span className="text-sm text-slate-700">{van.name}</span>
+                    </label>
+                  ))}
+                  {vans.length > 1 && inviteVanIds.length === 0 && (
+                    <p className="text-xs text-amber-600 mt-1">Select at least one van</p>
+                  )}
+                </>
+              )}
+            </div>
 
             <div className="flex gap-3">
               <button
@@ -2353,7 +2616,7 @@ function TeamTab({ truck, token, api, reload, showToast }: {
               </button>
               <button
                 onClick={sendInvite}
-                disabled={!inviteEmail || inviteLoading}
+                disabled={!inviteEmail || inviteLoading || (vans.length > 1 && inviteVanIds.length === 0)}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700"
               >
                 {inviteLoading ? 'Saving...' : editingMember ? 'Save changes' : 'Send invite'}

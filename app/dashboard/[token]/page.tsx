@@ -19,6 +19,7 @@ import {
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
+import UserMenu from '@/components/dashboard/UserMenu'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
@@ -75,9 +76,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showPrepList,setShowPrepList]=useState(false)
   const[keepScreenOn,setKeepScreenOn]=useState(true)
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
+  const[currentUserEmail,setCurrentUserEmail]=useState<string|null>(null)
+  const[userRole,setUserRole]=useState<'owner'|'manager'|'staff'|null>(null)
   const[showScreenOffWarning,setShowScreenOffWarning]=useState(false)
   const[vansWithAutoPause,setVansWithAutoPause]=useState<string[]>([])
   const[vans,setVans]=useState<{id:string;name:string;auto_pause_on_offline:boolean}[]>([])
+  const[showProfileModal,setShowProfileModal]=useState(false)
+  const[editProfileName,setEditProfileName]=useState('')
+  const[savingProfile,setSavingProfile]=useState(false)
+  // (showUserDropdown removed — UserMenu component manages its own open state)
   // Pause state (paused_until ISO string, null = not paused)
   const[pausedUntil,setPausedUntil]=useState<string|null>(null)
   const[showPauseModal,setShowPauseModal]=useState(false)
@@ -112,6 +119,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const showToast=(msg:string,type:'success'|'error'='success')=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)}
   const handleSignOut=async()=>{await supabaseBrowser.auth.signOut();window.location.href='/login'}
+
+  const saveProfile=async()=>{
+    if(!editProfileName.trim())return
+    setSavingProfile(true)
+    try{
+      const res=await fetch('/api/auth/update-profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:editProfileName})})
+      const data=await res.json()
+      if(!res.ok)throw new Error(data.error)
+      setCurrentUserName(data.name)
+      setShowProfileModal(false)
+    }catch{}finally{setSavingProfile(false)}
+  }
 
   const fetchMenu=useCallback((truckId:string,currentPin:string)=>{
     fetch(`/api/menu/${truckId}?dashboard=1&nocache=${Date.now()}`)
@@ -155,6 +174,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const activeOrderIds=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.id))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
+      if(data.userRole !== undefined) setUserRole(data.userRole)
       setAuthenticated(true); setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
       try{
@@ -175,6 +195,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   useEffect(()=>{fetchAll()},[fetchAll])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
+  useEffect(()=>{
+    fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email)}).catch(()=>null)
+  },[])
   useEffect(()=>{
     if(!truck?.id)return
     const ordersChannel=supabaseBrowser
@@ -197,7 +220,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useEffect(()=>{
     if(!truck?.id)return
     supabaseBrowser.from('truck_vans').select('id,name,auto_pause_on_offline').eq('truck_id',truck.id).eq('active',true)
-      .then(({data})=>setVans(data||[]))
+      .then(({data})=>{
+        console.log('[vans] loaded',data)
+        setVans(data||[])
+      })
   },[truck?.id])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
   useEffect(()=>{
@@ -253,12 +279,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
   const toggleKeepScreenOn=async()=>{
     if(keepScreenOn){
+      // Ensure vans are loaded before evaluating auto-pause
+      let currentVans=vans
+      if(currentVans.length===0&&truck?.id){
+        const{data}=await supabaseBrowser.from('truck_vans').select('id,name,auto_pause_on_offline').eq('truck_id',truck.id).eq('active',true)
+        currentVans=data||[]
+        setVans(currentVans)
+        console.log('[vans] fetched on demand',currentVans)
+      }
       let affectedVans:string[]=[]
       if(vanId){
-        const thisVan=vans.find(v=>v.id===vanId)
+        const thisVan=currentVans.find(v=>v.id===vanId)
+        console.log('[screen-off] vanId',vanId,'thisVan',thisVan,'vans',currentVans)
         if(thisVan?.auto_pause_on_offline) affectedVans=[thisVan.name]
       } else {
-        affectedVans=vans.filter(v=>v.auto_pause_on_offline).map(v=>v.name)
+        affectedVans=currentVans.filter(v=>v.auto_pause_on_offline).map(v=>v.name)
+        console.log('[screen-off] no vanId, affectedVans',affectedVans,'vans',currentVans)
       }
       if(affectedVans.length>0){setVansWithAutoPause(affectedVans);setShowScreenOffWarning(true);return}
     }
@@ -517,20 +553,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
           </div>
           <div className="flex items-center gap-2 z-10">
-            {currentUserName&&(
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-700">{currentUserName.charAt(0).toUpperCase()}</div>
-                <span className="text-sm text-slate-300 hidden sm:inline">{currentUserName}</span>
-              </div>
-            )}
-            <button onClick={handleSignOut} className="text-xs text-slate-400 hover:text-white">Sign out</button>
-            {(!vanName) && <Link href={`/manage/${token}`} className="text-slate-400 hover:text-white text-xs font-bold hidden sm:block transition-colors">⚙ Manage</Link>}
             {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
-            <button onClick={toggleKeepScreenOn} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${keepScreenOn?'bg-teal-600 text-white':'bg-slate-700 text-slate-300'}`} title={keepScreenOn?'Screen will stay on':'Screen may turn off'}>
-              <span>{keepScreenOn?'☀️':'🌙'}</span>
-              <span className="hidden sm:inline">{keepScreenOn?'Screen on':'Screen off'}</span>
-            </button>
             <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
+            <UserMenu
+              currentUserName={currentUserName}
+              truckName={truck?.name||null}
+              token={token}
+              keepScreenOn={keepScreenOn}
+              userRole={userRole}
+              vanName={vanName}
+              onToggleScreen={toggleKeepScreenOn}
+              onSignOut={handleSignOut}
+              onEditProfile={()=>{setEditProfileName(currentUserName||'');setShowProfileModal(true)}}
+            />
           </div>
         </div>
       </header>
@@ -1089,6 +1124,34 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="flex gap-3">
               <button onClick={()=>setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
               <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Allow screen off</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit profile modal */}
+      {showProfileModal&&(
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+             onClick={e=>e.target===e.currentTarget&&setShowProfileModal(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <h3 className="text-lg font-semibold text-slate-900">Edit profile</h3>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Name</label>
+              <input type="text" value={editProfileName} onChange={e=>setEditProfileName(e.target.value)}
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm" autoFocus/>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <input type="email" value={currentUserEmail||''} disabled
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-slate-50 text-slate-400"/>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={()=>setShowProfileModal(false)}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
+              <button onClick={saveProfile} disabled={!editProfileName.trim()||savingProfile}
+                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40">
+                {savingProfile?'Saving...':'Save'}
+              </button>
             </div>
           </div>
         </div>

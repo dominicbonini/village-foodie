@@ -11,7 +11,7 @@ export async function GET() {
   const supabaseAuth = await createSupabaseServerClient()
   const { data: { user } } = await supabaseAuth.auth.getUser()
 
-  if (!user) return NextResponse.json({ name: null })
+  if (!user) return NextResponse.json({ name: null, email: null })
 
   const { data: operator } = await supabase
     .from('operators')
@@ -20,7 +20,7 @@ export async function GET() {
     .single()
 
   if (operator) {
-    return NextResponse.json({ name: operator.name || operator.email || null })
+    return NextResponse.json({ name: operator.name || operator.email || null, email: user.email || null })
   }
 
   const { data: truckUser } = await supabase
@@ -30,8 +30,8 @@ export async function GET() {
     .single()
 
   if (truckUser) {
-    return NextResponse.json({ name: truckUser.name || truckUser.email || null })
+    return NextResponse.json({ name: truckUser.name || truckUser.email || null, email: user.email || null })
   }
 
-  return NextResponse.json({ name: user.email || null })
+  return NextResponse.json({ name: user.email || null, email: user.email || null })
 }
