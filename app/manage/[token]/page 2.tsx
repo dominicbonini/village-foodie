@@ -1766,32 +1766,10 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [deleteVanConfirm, setDeleteVanConfirm] = useState('')
   const [showVanBillingModal, setShowVanBillingModal] = useState(false)
   const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
-  const [generatingQR, setGeneratingQR] = useState(false)
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
   }, [])
-
-  const orderUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
-
-  const handleGenerateQR = async () => {
-    setGeneratingQR(true)
-    try {
-      const { generateQRCodePNG } = await import('@/lib/generateQRCode')
-      const dataUrl = await generateQRCodePNG({
-        url: orderUrl,
-        logoUrl: truck.logo_storage_path
-          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
-          : null,
-        truckName: truck.name,
-      })
-      setQrDataUrl(dataUrl)
-    } catch (err) {
-      console.error('QR generation failed:', err)
-    }
-    setGeneratingQR(false)
-  }
 
   const can = (feature: Feature) => canAccess(
     truck.plan,
@@ -1942,52 +1920,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             <p className="text-xs text-slate-400 mt-1">PNG or JPG, square recommended</p>
           </div>
         </div>
-      </Card>
-
-      {/* QR Code */}
-      <Card className="p-4">
-        <p className="font-bold text-slate-900 mb-1">Order QR code</p>
-        <p className="text-xs text-slate-500 mb-4">
-          Print or display this code so customers can scan and pre-order.
-          Place it at your hatch, on your van, or share it online.
-        </p>
-        {qrDataUrl ? (
-          <div className="flex flex-col items-center gap-4">
-            <img
-              src={qrDataUrl}
-              alt="Order QR code"
-              className="w-48 h-auto rounded-xl border border-slate-100 shadow-sm"
-            />
-            <div className="flex gap-3 w-full">
-              <a
-                href={qrDataUrl}
-                download={`${truck.name.toLowerCase().replace(/\s+/g, '-')}-qr.png`}
-                className="flex-1 flex items-center justify-center gap-2
-                           px-4 py-2.5 bg-orange-600 text-white text-sm
-                           font-medium rounded-xl"
-              >
-                Download PNG
-              </a>
-              <button
-                onClick={() => setQrDataUrl(null)}
-                className="px-4 py-2.5 border border-slate-200 text-slate-600
-                           text-sm rounded-xl"
-              >
-                Regenerate
-              </button>
-            </div>
-            <p className="text-xs text-slate-400 self-start">{orderUrl}</p>
-          </div>
-        ) : (
-          <button
-            onClick={handleGenerateQR}
-            disabled={generatingQR}
-            className="w-full bg-orange-600 text-white font-semibold
-                       py-3 rounded-xl text-sm disabled:opacity-40"
-          >
-            {generatingQR ? 'Generating...' : 'Generate QR code'}
-          </button>
-        )}
       </Card>
 
       {/* Truck details */}

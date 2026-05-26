@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     let resolvedVanId = vanId as string | undefined
 
     if (!resolvedVanId) {
-      // No van specified — verify via dashboard_token only, nothing to heartbeat
+      // No van specified — stamp all active vans for this truck
       const { data: truck } = await supabaseAdmin
         .from('trucks')
         .select('id')
@@ -29,6 +29,12 @@ export async function POST(req: NextRequest) {
       if (!truck) {
         return NextResponse.json({ error: 'invalid token' }, { status: 401 })
       }
+
+      await supabaseAdmin
+        .from('truck_vans')
+        .update({ last_heartbeat_at: new Date().toISOString() })
+        .eq('truck_id', truck.id)
+        .eq('active', true)
 
       return NextResponse.json({ ok: true })
     }

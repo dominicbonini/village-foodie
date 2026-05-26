@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const { data: truck } = await supabase
       .from('trucks')
       .select(`
-        id, name,
+        id, name, dashboard_token,
         whatsapp_sender, whatsapp,
         plan, feature_overrides, trial_expires_at
       `)
@@ -71,14 +71,14 @@ export async function POST(req: NextRequest) {
 
     console.log('[WA webhook] events found:', events?.length)
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? ''
+    const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
     const reply = await generateWhatsAppReply({
       truckName:       truck.name,
       truckId:         truck.id,
       customerMessage: body,
       events:          events ?? [],
-      scheduleUrl:     `${baseUrl}/trucks/${truck.id}`,
-      orderUrl:        `${baseUrl}/trucks/${truck.id}/order`,
+      scheduleUrl:     `${hgUrl}/order/${truck.dashboard_token}`,
+      orderUrl:        `${hgUrl}/order/${truck.dashboard_token}`,
     })
 
     console.log('[WA webhook] reply generated:', reply)

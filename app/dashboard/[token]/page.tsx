@@ -218,18 +218,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }
   },[truck?.id])
   useEffect(()=>{
-    if(!truck?.id)return
-    supabaseBrowser.from('truck_vans').select('id,name,auto_pause_on_offline').eq('truck_id',truck.id).eq('active',true)
-      .then(({data})=>{
-        console.log('[vans] loaded',data)
-        setVans(data||[])
-      })
+    const truckId=truck?.id
+    if(!truckId)return
+    console.log('[VansFetch] truckId:',truckId)
+    fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'get_vans'})})
+      .then(r=>r.json()).then(d=>{
+        console.log('[VansFetch] result:',d.vans)
+        setVans(d.vans||[])
+      }).catch(err=>console.error('[VansFetch] error:',err))
   },[truck?.id])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
   useEffect(()=>{
     const sendHeartbeat=async()=>{
       if(typeof navigator!=='undefined'&&!navigator.onLine)return
-      try{await fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})}catch{}
+      console.log('[Heartbeat] sending token:',token,'vanId:',vanId||'(none)')
+      try{
+        const res=await fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,vanId:vanId||undefined})})
+        const data=await res.json()
+        console.log('[Heartbeat] response:',data)
+      }catch(err){console.error('[Heartbeat] failed:',err)}
     }
     sendHeartbeat()
     const id=setInterval(sendHeartbeat,15000)
@@ -282,10 +289,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Ensure vans are loaded before evaluating auto-pause
       let currentVans=vans
       if(currentVans.length===0&&truck?.id){
-        const{data}=await supabaseBrowser.from('truck_vans').select('id,name,auto_pause_on_offline').eq('truck_id',truck.id).eq('active',true)
-        currentVans=data||[]
+        const res=await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'get_vans'})})
+        const d=await res.json()
+        currentVans=d.vans||[]
         setVans(currentVans)
-        console.log('[vans] fetched on demand',currentVans)
+        console.log('[VansFetch] on-demand result:',currentVans)
       }
       let affectedVans:string[]=[]
       if(vanId){
