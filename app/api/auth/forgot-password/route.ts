@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
+import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!
+const HG_URL = process.env.NEXT_PUBLIC_HATCHGRAB_URL!
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json()
@@ -47,15 +48,15 @@ export async function POST(req: NextRequest) {
       expires_at: expiresAt.toISOString(),
     })
 
-  // Send reset email via Brevo
-  const resetUrl = `${BASE_URL}/reset-password?token=${token}`
+  // Reset link points to HatchGrab (operator platform)
+  const resetUrl = `${HG_URL}/reset-password?token=${token}`
 
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <img src="${BASE_URL}/logos/village-foodie-logo-v2.png"
-           width="160" style="margin-bottom:24px;display:block;"/>
+      <img src="${HATCHGRAB_LOGO_URL}"
+           width="180" style="margin-bottom:24px;display:block;"/>
       <h2 style="color:#0f172a;margin:0 0 16px;">Reset your password</h2>
-      <p>We received a request to reset the password for your Village Foodie account.</p>
+      <p>We received a request to reset the password for your HatchGrab account.</p>
       <p>Click the button below to choose a new password. This link expires in 1 hour.</p>
       <p style="margin:32px 0;">
         <a href="${resetUrl}"
@@ -70,7 +71,7 @@ export async function POST(req: NextRequest) {
         Your password won't change until you click the link above.
       </p>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;"/>
-      <p style="color:#94a3b8;font-size:12px;">Village Foodie</p>
+      <p style="color:#94a3b8;font-size:12px;">HatchGrab</p>
     </div>
   `
 
@@ -82,10 +83,10 @@ export async function POST(req: NextRequest) {
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      sender: { name: 'Village Foodie', email: 'hello@villagefoodie.co.uk' },
+      sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
       to: [{ email: operator.email }],
-      replyTo: { email: 'hello@villagefoodie.co.uk' },
-      subject: 'Reset your Village Foodie password',
+      replyTo: { email: HATCHGRAB_SENDER.replyTo },
+      subject: 'Reset your HatchGrab password',
       htmlContent: html,
     }),
   })

@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -573,8 +574,8 @@ export async function POST(req: NextRequest) {
 
     const html = `
       <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-        <img src="${process.env.NEXT_PUBLIC_BASE_URL}/logos/village-foodie-logo-v2.png"
-             width="160" style="margin-bottom:24px;display:block;"/>
+        <img src="${HATCHGRAB_LOGO_URL}"
+             width="180" style="margin-bottom:24px;display:block;"/>
         <h2 style="color:#0f172a;margin:0 0 16px;">
           You've been invited to join ${truck.name} on HatchGrab
         </h2>
@@ -605,9 +606,9 @@ export async function POST(req: NextRequest) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'HatchGrab', email: 'hello@villagefoodie.co.uk' },
+        sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
         to: [{ email }],
-        replyTo: { email: 'hello@villagefoodie.co.uk' },
+        replyTo: { email: HATCHGRAB_SENDER.replyTo },
         subject: `You've been invited to join ${truck.name} on HatchGrab`,
         htmlContent: html,
       }),

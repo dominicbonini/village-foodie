@@ -406,6 +406,7 @@ export async function POST(req: NextRequest) {
           html,
           text,
           truckName: truck.name,
+          senderName: 'HatchGrab',
         })
       }
 

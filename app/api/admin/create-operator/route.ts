@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -74,16 +75,16 @@ export async function POST(req: NextRequest) {
   }
 
   // Send welcome email via Brevo
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
-  const loginUrl = `${baseUrl}/login`
+  const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL
+  const loginUrl = `${hgUrl}/login`
 
   const welcomeHtml = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <img src="${baseUrl}/logos/village-foodie-logo-v2.png"
-           width="160" style="margin-bottom:24px;display:block;"/>
-      <h2 style="color:#0f172a;">Welcome to Village Foodie 🚚</h2>
+      <img src="${HATCHGRAB_LOGO_URL}"
+           width="180" style="margin-bottom:24px;display:block;"/>
+      <h2 style="color:#0f172a;">Welcome to HatchGrab 🚚</h2>
       <p>Hi there,</p>
-      <p>Your Village Foodie dashboard for <strong>${truckName}</strong> is ready.</p>
+      <p>Your HatchGrab dashboard for <strong>${truckName}</strong> is ready.</p>
       <p style="margin:24px 0;">
         <a href="${loginUrl}"
            style="background:#ea580c;color:white;padding:14px 28px;
@@ -104,10 +105,7 @@ export async function POST(req: NextRequest) {
         <li>Confirm your next event so customers can pre-order</li>
         <li>Add the dashboard to your iPad home screen for the kitchen display</li>
       </ol>
-      <p>Any questions? Reply to this email or visit
-        <a href="${baseUrl}/help">our help page</a>.
-      </p>
-      <p>Welcome aboard,<br/>Dominic<br/>Village Foodie</p>
+      <p>Welcome aboard,<br/>Dominic<br/>HatchGrab</p>
     </div>
   `
 
@@ -120,10 +118,10 @@ export async function POST(req: NextRequest) {
         'content-type': 'application/json',
       },
       body: JSON.stringify({
-        sender: { name: 'Village Foodie', email: 'hello@villagefoodie.co.uk' },
+        sender: { name: HATCHGRAB_SENDER.name, email: HATCHGRAB_SENDER.email },
         to: [{ email }],
-        replyTo: { email: 'hello@villagefoodie.co.uk' },
-        subject: 'Your Village Foodie dashboard is ready 🚚',
+        replyTo: { email: HATCHGRAB_SENDER.replyTo },
+        subject: 'Your HatchGrab dashboard is ready 🚚',
         htmlContent: welcomeHtml,
       }),
     }).catch(err => console.error('Welcome email failed:', err))

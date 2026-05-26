@@ -193,6 +193,7 @@ export async function sendConfirmationEmail(params: {
   html: string
   text: string
   truckName?: string
+  senderName?: string  // override sender display name (e.g. 'HatchGrab' for operator copies)
 }): Promise<void> {
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey) {
@@ -200,6 +201,7 @@ export async function sendConfirmationEmail(params: {
     return
   }
   try {
+    const senderName = params.senderName || params.truckName || 'Village Foodie'
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
@@ -207,7 +209,7 @@ export async function sendConfirmationEmail(params: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender:      { name: params.truckName || 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
+        sender:      { name: senderName, email: 'donotreply@villagefoodie.co.uk' },
         to:          [{ email: params.to }],
         subject:     params.subject,
         htmlContent: params.html,
