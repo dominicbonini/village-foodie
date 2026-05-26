@@ -254,11 +254,19 @@ export async function POST(req: NextRequest) {
     const pauseCheckDate = eventDate ?? new Date().toISOString().split('T')[0]
     const { data: pauseEvent } = await supabase
       .from('truck_events')
-      .select('van_id')
+      .select('van_id, status')
       .eq('truck_id', resolvedTruckId)
       .eq('event_date', pauseCheckDate)
       .neq('status', 'cancelled')
       .maybeSingle()
+
+    // Event status guard — block orders for unconfirmed events
+    if (pauseEvent?.status && !['confirmed', 'open'].includes(pauseEvent.status)) {
+      return NextResponse.json(
+        { error: 'This event is not available for ordering', event_status: pauseEvent.status },
+        { status: 403 }
+      )
+    }
 
     if (pauseEvent?.van_id) {
       const { data: pauseVan } = await supabase

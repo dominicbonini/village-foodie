@@ -33,7 +33,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean }
 interface EventData {
   date: string          // dd/mm/yyyy
   date_iso: string      // yyyy-mm-dd
@@ -816,6 +816,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
       <main className="flex-1 w-full max-w-lg mx-auto px-4 py-6" style={{ paddingBottom: `${footerHeight + 8}px` }}>
 
+        {/* Unconfirmed event — ordering blocked */}
+        {truck?.ordering_available === false && (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <div className="text-5xl mb-4">🕐</div>
+            <h2 className="text-lg font-semibold text-slate-900 mb-2">Orders not open yet</h2>
+            <p className="text-sm text-slate-500 max-w-xs">
+              {truck?.name} hasn&apos;t confirmed this event yet. Check back closer to the date or follow them on social media for updates.
+            </p>
+          </div>
+        )}
+
+        <div className={truck?.ordering_available === false ? 'hidden' : ''}>
+
         {/* Truck hero — logo, name, event details */}
         <div className="text-center mb-5">
           {truck?.logo ? (
@@ -1261,6 +1274,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               /></Fld>
           </div>
         </Sec>
+
+      </div>{/* end ordering_available wrapper */}
 
       </main>
 

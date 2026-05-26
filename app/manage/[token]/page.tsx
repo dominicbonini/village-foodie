@@ -558,7 +558,9 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
               <p className="text-xs text-slate-400">photo, PDF or text</p>
             </div>
           )}
-          <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
+          <div className="self-start">
+            <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
+          </div>
         </div>
       </div>
 
@@ -769,7 +771,12 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <Toggle on={item.is_available} onToggle={() => toggleItem(item)} />
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-xs font-medium hidden sm:inline ${item.is_available ? 'text-green-600' : 'text-slate-400'}`}>
+                          {item.is_available ? 'Available' : 'Hidden'}
+                        </span>
+                        <Toggle on={item.is_available} onToggle={() => toggleItem(item)} />
+                      </div>
                       <button onClick={() => setEditingItem(item)} className="text-slate-400 hover:text-orange-600 text-xs font-bold p-1.5 rounded-lg hover:bg-orange-50 transition-colors">✏️</button>
                       <button onClick={() => deleteItem(item.id)} className="text-slate-300 hover:text-red-500 text-xs p-1.5 rounded-lg hover:bg-red-50 transition-colors">🗑️</button>
                     </div>

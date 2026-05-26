@@ -110,8 +110,25 @@ export async function GET(
   let filteredBundles = bundles || []
   const eventIdParam = req.nextUrl.searchParams.get('event_id')
   let effectiveEventId = eventIdParam
+  let orderingAvailable = true
 
-  if (!effectiveEventId) {
+  if (eventIdParam) {
+    // Explicit event — check its status
+    const { data: explicitEvent } = await supabase
+      .from('truck_events')
+      .select('id, status')
+      .eq('id', eventIdParam)
+      .eq('truck_id', truck.id)
+      .maybeSingle()
+
+    if (explicitEvent && !['confirmed', 'open'].includes(explicitEvent.status)) {
+      return NextResponse.json({
+        error: 'This event is not yet confirmed',
+        event_status: explicitEvent.status,
+        ordering_available: false,
+      }, { status: 404 })
+    }
+  } else {
     const today = new Date().toISOString().split('T')[0]
     const { data: openEvent } = await supabase
       .from('truck_events')
@@ -123,6 +140,19 @@ export async function GET(
       .limit(1)
       .maybeSingle()
     effectiveEventId = openEvent?.id ?? null
+
+    // If no confirmed/open event, check for unconfirmed upcoming events
+    if (!effectiveEventId) {
+      const { data: unconfirmedEvent } = await supabase
+        .from('truck_events')
+        .select('id')
+        .eq('truck_id', truck.id)
+        .eq('status', 'unconfirmed')
+        .gte('event_date', today)
+        .limit(1)
+        .maybeSingle()
+      if (unconfirmedEvent) orderingAvailable = false
+    }
   }
 
   if (effectiveEventId) {
@@ -261,6 +291,7 @@ export async function GET(
       plan: (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max',
       allergen_info_url: truck.allergen_info_url ?? null,
       allergen_info_text: truck.allergen_info_text ?? null,
+      ordering_available: orderingAvailable,
     },
     menu,
   })

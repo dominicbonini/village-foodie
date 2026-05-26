@@ -68,9 +68,9 @@ export async function generateQRCodePNG({
   const qrX = 50
   const qrY = 30
   const qrSize = 400
-  const stripHeight = 50
+  const stripHeight = 72
   canvas.width = 500
-  canvas.height = qrY + qrSize + stripHeight  // 480
+  canvas.height = qrY + qrSize + stripHeight  // 502
 
   // White background
   ctx.fillStyle = '#FFFFFF'
@@ -89,15 +89,15 @@ export async function generateQRCodePNG({
   if (logoUrl) {
     const logo = await loadImageViaBlobUrl(logoUrl)
     if (logo) {
-      const logoSize = 80
+      const logoSize = 116
       // Centre of QR pattern
       const centreX = qrX + qrSize / 2  // 250
       const centreY = qrY + qrSize / 2  // 230
-      const logoX = centreX - logoSize / 2  // 210
-      const logoY = centreY - logoSize / 2  // 190
+      const logoX = centreX - logoSize / 2  // 192
+      const logoY = centreY - logoSize / 2  // 172
 
       // White rounded square behind logo
-      const padding = 8
+      const padding = 6
       ctx.fillStyle = '#FFFFFF'
       roundRect(ctx, logoX - padding, logoY - padding,
                 logoSize + padding * 2, logoSize + padding * 2, 8)
@@ -107,12 +107,12 @@ export async function generateQRCodePNG({
     }
   }
 
-  // Branding row — directly below QR (20px margin)
-  const brandingY = qrY + qrSize + 30  // y=460, text baseline
+  // Branding row — directly below QR, centred in 72px strip
+  const brandingY = qrY + qrSize + 52  // y=482, text baseline
 
   // Truck name — bottom left, aligned with QR left edge
-  ctx.fillStyle = '#334155'
-  ctx.font = 'bold 13px Arial, sans-serif'
+  ctx.fillStyle = '#1C1C1E'
+  ctx.font = 'bold 22px Arial, sans-serif'
   ctx.textAlign = 'left'
   ctx.fillText(truckName, qrX, brandingY)
 
@@ -122,20 +122,20 @@ export async function generateQRCodePNG({
   if (hatchgrabLogoUrl) {
     const hgLogo = await loadImageViaBlobUrl(hatchgrabLogoUrl)
     if (hgLogo) {
-      // Scale logo to 20px high
-      const logoH = 20
+      // Scale logo to 28px high to match larger text
+      const logoH = 28
       const logoW = Math.round((hgLogo.naturalWidth / hgLogo.naturalHeight) * logoH)
       ctx.drawImage(hgLogo, rightX - logoW, brandingY - logoH, logoW, logoH)
     } else {
       // File not yet uploaded — fall back to text
-      ctx.fillStyle = '#94A3B8'
-      ctx.font = '12px Arial, sans-serif'
+      ctx.fillStyle = '#6B7280'
+      ctx.font = '18px Arial, sans-serif'
       ctx.textAlign = 'right'
       ctx.fillText('Powered by HatchGrab', rightX, brandingY)
     }
   } else {
-    ctx.fillStyle = '#94A3B8'
-    ctx.font = '12px Arial, sans-serif'
+    ctx.fillStyle = '#6B7280'
+    ctx.font = '18px Arial, sans-serif'
     ctx.textAlign = 'right'
     ctx.fillText('Powered by HatchGrab', rightX, brandingY)
   }
