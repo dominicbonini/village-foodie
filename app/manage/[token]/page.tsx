@@ -9,6 +9,7 @@ import type { Plan, Feature } from '@/lib/features'
 import { FeatureGate } from '@/components/FeatureGate'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null }
@@ -109,6 +110,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [bundles, setBundles] = useState<Bundle[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => setToast({ msg, type })
 
@@ -130,6 +132,16 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [token])
 
   useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    fetch('/api/auth/me').then(r => r.json()).then(d => setCurrentUserName(d.name ?? null)).catch(() => null)
+  }, [])
+
+  const handleSignOut = async () => {
+    const supabase = createSupabaseBrowserClient()
+    await supabase.auth.signOut()
+    window.location.href = '/login'
+  }
 
   const api = async (action: string, extra: Record<string, any> = {}) => {
     const res = await fetch('/api/manage', {
@@ -177,7 +189,18 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               <p className="text-slate-400 text-[10px]">Management console</p>
             </div>
           </div>
-          <a href={`/dashboard/${token}`} className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors">← Orders dashboard</a>
+          <div className="flex items-center gap-3">
+            <a href={`/dashboard/${token}`} className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">← Orders dashboard</a>
+            {currentUserName && (
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-700">
+                  {currentUserName.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm text-slate-300 hidden sm:inline">{currentUserName}</span>
+              </div>
+            )}
+            <button onClick={handleSignOut} className="text-xs text-slate-400 hover:text-white">Sign out</button>
+          </div>
         </div>
         {/* Tabs */}
         <div className="max-w-5xl mx-auto px-4 flex gap-1 pb-0 overflow-x-auto">

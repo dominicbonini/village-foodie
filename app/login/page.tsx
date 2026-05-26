@@ -58,7 +58,9 @@ function LoginForm() {
             Sign in to your kitchen
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Village Foodie operator dashboard
+            {typeof window !== 'undefined' && window.location.hostname.includes('hatchgrab')
+              ? 'HatchGrab'
+              : 'Village Foodie'} operator dashboard
           </p>
         </div>
 

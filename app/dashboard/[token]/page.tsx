@@ -73,6 +73,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[savingCat,setSavingCat]=useState(false)
   const[showPrepList,setShowPrepList]=useState(false)
   const[keepScreenOn,setKeepScreenOn]=useState(true)
+  const[currentUserName,setCurrentUserName]=useState<string|null>(null)
   const[showScreenOffWarning,setShowScreenOffWarning]=useState(false)
   const[vansWithAutoPause,setVansWithAutoPause]=useState<string[]>([])
   // Pause state (paused_until ISO string, null = not paused)
@@ -108,6 +109,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[extraWaitMins,extraWaitStartedAt,waitTick])
 
   const showToast=(msg:string,type:'success'|'error'='success')=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)}
+  const handleSignOut=async()=>{await supabaseBrowser.auth.signOut();window.location.href='/login'}
 
   const fetchMenu=useCallback((truckId:string,currentPin:string)=>{
     fetch(`/api/menu/${truckId}?dashboard=1&nocache=${Date.now()}`)
@@ -150,6 +152,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderIds=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.id))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
+      if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       setAuthenticated(true); setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
       try{
@@ -435,7 +438,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }, [truckMenu])
 
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
-  if(error)return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← Village Foodie</Link></div></div>
+  if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
   if(requiresPin&&!authenticated)return(
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
       <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
@@ -504,6 +507,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
           </div>
           <div className="flex items-center gap-2 z-10">
+            {currentUserName&&(
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-700">{currentUserName.charAt(0).toUpperCase()}</div>
+                <span className="text-sm text-slate-300 hidden sm:inline">{currentUserName}</span>
+              </div>
+            )}
+            <button onClick={handleSignOut} className="text-xs text-slate-400 hover:text-white">Sign out</button>
             {(!vanName) && <Link href={`/manage/${token}`} className="text-slate-400 hover:text-white text-xs font-bold hidden sm:block transition-colors">⚙ Manage</Link>}
             {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
             <button onClick={toggleKeepScreenOn} className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${keepScreenOn?'bg-teal-600 text-white':'bg-slate-700 text-slate-300'}`} title={keepScreenOn?'Screen will stay on':'Screen may turn off'}>

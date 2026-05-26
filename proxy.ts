@@ -48,10 +48,10 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Protected routes — require authentication
+  // Note: /kds uses kds_token auth, not session auth — excluded here
   const isProtected =
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/manage') ||
-    pathname.startsWith('/kds')
+    pathname.startsWith('/manage')
 
   // Public routes — always accessible
   const isPublic =

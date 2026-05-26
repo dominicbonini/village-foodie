@@ -20,10 +20,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Missing token' }, { status: 401 })
   }
 
-  // Find truck by token
+  // Find truck by token — select('*') avoids 401 errors from missing columns
   const { data: truck, error } = await supabase
     .from('trucks')
-    .select('id, name, dashboard_pin, mode, venue_name, slot_duration_mins, collection_interval_mins, items_per_minute, walkin_buffer_pct, auto_accept, paused_until, extra_wait_mins, extra_wait_started_at, kds_mode, crew_mode, display_mode, keep_screen_on, plan, trial_expires_at, feature_overrides, operator_id')
+    .select('*')
     .eq('dashboard_token', token)
     .eq('active', true)
     .single()
@@ -37,15 +37,28 @@ export async function GET(req: NextRequest) {
   const supabaseAuth = await createSupabaseServerClient()
   const { data: { user } } = await supabaseAuth.auth.getUser()
 
+  let currentUserName: string | null = null
+
   if (user) {
     const { data: operator } = await supabase
       .from('operators')
-      .select('id')
+      .select('id, name, email')
       .eq('auth_user_id', user.id)
       .single()
 
     if (operator && truck.operator_id && truck.operator_id !== operator.id) {
       return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
+    }
+
+    if (operator) {
+      currentUserName = operator.name || operator.email || null
+    } else {
+      const { data: truckUser } = await supabase
+        .from('truck_users')
+        .select('name, email')
+        .eq('auth_user_id', user.id)
+        .single()
+      if (truckUser) currentUserName = truckUser.name || truckUser.email || null
     }
   }
 
@@ -218,6 +231,7 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({
+    currentUserName,
     truck: {
       id:          truck.id,
       name:        truck.name,
