@@ -2408,7 +2408,10 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                   )}
                   {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
                 </div>
-                <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
+                <div>
+                  <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
+                  <p className="text-xs text-slate-400 mt-1">Used for WhatsApp auto-replies and discovery map</p>
+                </div>
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
                 <div className="sm:col-span-2">
                   <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />

@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     const today = new Date().toISOString().split('T')[0]
     const { data: events } = await supabase
       .from('truck_events')
-      .select('event_date, start_time, end_time, venue_name, village, status')
+      .select('event_date, start_time, end_time, venue_name, town, postcode, status')
       .eq('truck_id', truck.id)
       .gte('event_date', today)
       .in('status', ['confirmed', 'open', 'unconfirmed'])

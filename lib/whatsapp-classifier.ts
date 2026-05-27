@@ -3,7 +3,8 @@ interface TruckEvent {
   start_time: string | null
   end_time: string | null
   venue_name: string | null
-  village: string | null
+  town: string | null
+  postcode: string | null
   status: string
 }
 
@@ -16,16 +17,25 @@ interface ClassifierParams {
   orderUrl: string
 }
 
-function formatEventForPrompt(event: TruckEvent): string {
-  const date = new Date(event.event_date).toLocaleDateString('en-GB', {
+function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
+  const eventDate = new Date(event.event_date + 'T12:00:00')
+  const today = new Date(todayStr + 'T12:00:00')
+  const diffDays = Math.round((eventDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+
+  let relativeLabel = ''
+  if (diffDays === 0) relativeLabel = ' (TODAY)'
+  else if (diffDays === 1) relativeLabel = ' (TOMORROW)'
+  else if (diffDays === 2) relativeLabel = ' (IN 2 DAYS)'
+
+  const friendlyDate = eventDate.toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long'
   })
-  const time = event.start_time && event.end_time
-    ? `${event.start_time}–${event.end_time}`
-    : event.start_time || 'time TBC'
-  const location = [event.venue_name, event.village].filter(Boolean).join(', ')
+  const start = event.start_time?.substring(0, 5) || ''
+  const end = event.end_time?.substring(0, 5) || ''
+  const time = start && end ? `${start}–${end}` : start || 'time TBC'
+  const location = [event.venue_name, event.town, event.postcode].filter(Boolean).join(', ')
   const confirmed = event.status === 'confirmed' || event.status === 'open'
-  return `- ${date}: ${location} ${time} [${confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}]`
+  return `- ${friendlyDate}${relativeLabel}: ${location} ${time} [${confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}]`
 }
 
 export async function generateWhatsAppReply(params: ClassifierParams): Promise<string | null> {
@@ -34,15 +44,19 @@ export async function generateWhatsAppReply(params: ClassifierParams): Promise<s
     scheduleUrl, orderUrl
   } = params
 
-  const today = new Date().toLocaleDateString('en-GB', {
+  const todayStr = new Date().toISOString().split('T')[0]
+  const todayFriendly = new Date(todayStr + 'T12:00:00').toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   })
 
   const eventsSection = events.length > 0
-    ? `UPCOMING EVENTS:\n${events.map(formatEventForPrompt).join('\n')}`
+    ? `UPCOMING EVENTS (dates include TODAY/TOMORROW labels for clarity):\n${events.map(e => formatEventForPrompt(e, todayStr)).join('\n')}`
     : 'UPCOMING EVENTS: None currently scheduled'
 
-  const prompt = `Today is ${today}. You are handling WhatsApp messages for ${truckName}, a food truck.
+  const prompt = `You are a helpful assistant for ${truckName}, a food truck.
+
+Today is ${todayFriendly}.
+Today's date string: ${todayStr}
 
 ${eventsSection}
 
@@ -59,8 +73,8 @@ CLASSIFICATION RULES:
 - IGNORE: complaints, personal questions, booking requests, anything unrelated to schedule/ordering
 
 REPLY RULES:
-- For SPECIFIC_QUERY: search confirmed events for a match to their query. If found, reply with specific venue, date and time, and the order link. If only unconfirmed events match, say you don't have anything confirmed yet for that date/area and provide the schedule link. If nothing at all matches, provide schedule link only.
-- For GENERAL_QUERY: reply with schedule link. Keep it friendly and brief.
+- For SPECIFIC_QUERY: search confirmed events for a match to their query. If the customer asks about tomorrow, look for events labelled (TOMORROW). If the customer asks about today, look for events labelled (TODAY). If the customer asks about a specific village or town, check if any event's venue name or town field matches or is nearby — if no town data is available, mention the venue name and suggest they check the schedule link for full location details. If found, reply with specific venue, date and time, and the order link. If only unconfirmed events match, say you don't have anything confirmed yet for that date/area and provide the schedule link. If the customer asks about a specific location with no events that day, check if there are upcoming confirmed events at that location within the next 7 days and mention the next one — e.g. "Nothing in Wickhambrook tomorrow but we'll be there on Friday 29 May at Village Hall 17:00–20:00 🙌". If nothing at all matches, provide schedule link only.
+- For GENERAL_QUERY: reply with order link and schedule link. Keep it friendly and brief.
 - For IGNORE: return null — do not reply.
 
 TONE: Casual, warm, like the truck owner typed it. Include the truck name at the end. Use 1-2 relevant emojis max. Never mention Village Foodie or any platform name. Never make up events that aren't in the list above.
