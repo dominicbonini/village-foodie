@@ -31,6 +31,22 @@ export async function GET(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
 
+  // Determine the calling user's role for this truck
+  let userRole: 'owner' | 'manager' | 'staff' = 'owner'
+  try {
+    const supabaseAuth = await createSupabaseServerClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    if (user) {
+      const { data: truckUser } = await supabase
+        .from('truck_users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .eq('truck_id', truck.id)
+        .single()
+      if (truckUser?.role) userRole = truckUser.role as 'owner' | 'manager' | 'staff'
+    }
+  } catch { /* if auth check fails, default to owner */ }
+
   const [
     { data: categories },
     { data: items },
@@ -65,6 +81,7 @@ export async function GET(req: NextRequest) {
     bundles: bundles || [],
     codes: codes || [],
     events: events || [],
+    userRole,
   })
 }
 
@@ -334,7 +351,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -642,6 +659,84 @@ export async function POST(req: NextRequest) {
       .eq('id', memberId)
       .eq('truck_id', truck.id)
     return NextResponse.json({ ok: true })
+  }
+
+  if (action === 'get_report') {
+    const { date, eventId } = body
+
+    let query = supabase
+      .from('orders')
+      .select('id, total, discount_amt, created_at, items, deals, event_date')
+      .eq('truck_id', truck.id)
+      .in('status', ['confirmed', 'collected', 'ready', 'cooking'])
+
+    // If a specific event is selected, resolve its date and filter by event_date
+    if (eventId) {
+      const { data: ev } = await supabase
+        .from('truck_events')
+        .select('event_date')
+        .eq('id', eventId)
+        .eq('truck_id', truck.id)
+        .single()
+      if (ev?.event_date) {
+        query = query.eq('event_date', ev.event_date)
+      }
+    } else if (date) {
+      query = query
+        .gte('created_at', `${date}T00:00:00`)
+        .lte('created_at', `${date}T23:59:59`)
+    }
+
+    const { data: orders } = await query
+
+    if (!orders || orders.length === 0) {
+      return NextResponse.json({ ok: true, report: null })
+    }
+
+    const totalRevenue = orders.reduce((s: number, o: any) => s + (o.total || 0), 0)
+    const dealsRedeemed = orders.filter((o: any) => (o.discount_amt || 0) > 0).length
+    const dealSavings = orders.reduce((s: number, o: any) => s + (o.discount_amt || 0), 0)
+
+    const itemMap: Record<string, { qty: number; revenue: number }> = {}
+    orders.forEach((order: any) => {
+      const items = Array.isArray(order.items) ? order.items : []
+      items.forEach((item: any) => {
+        const key = item.name
+        if (!itemMap[key]) itemMap[key] = { qty: 0, revenue: 0 }
+        itemMap[key].qty += item.quantity || 1
+        itemMap[key].revenue += (item.unit_price || 0) * (item.quantity || 1)
+      })
+    })
+
+    const topItems = Object.entries(itemMap)
+      .map(([name, data]) => ({ name, ...data }))
+      .sort((a, b) => b.qty - a.qty)
+      .slice(0, 10)
+
+    return NextResponse.json({
+      ok: true,
+      report: {
+        totalOrders: orders.length,
+        totalRevenue,
+        avgOrder: totalRevenue / orders.length,
+        topItems,
+        dealsRedeemed,
+        dealSavings,
+        upsellRevenue: 0,
+      },
+    })
+  }
+
+  if (action === 'get_recent_events') {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    const { data: events } = await supabase
+      .from('truck_events')
+      .select('id, venue_name, event_date, status')
+      .eq('truck_id', truck.id)
+      .gte('event_date', thirtyDaysAgo)
+      .order('event_date', { ascending: false })
+      .limit(20)
+    return NextResponse.json({ ok: true, events: events || [] })
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

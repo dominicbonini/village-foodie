@@ -30,6 +30,17 @@ export function formatConfirmationEmail(params: {
   total: number
   notes: string | null
   autoAccepted?: boolean
+  // Truck contact & venue info
+  venueName?: string | null
+  preferredContactMethod?: string | null
+  contactPhone?: string | null
+  whatsappSender?: string | null
+  socialFacebook?: string | null
+  socialInstagram?: string | null
+  contactEmail?: string | null
+  allowCancellation?: boolean
+  cancellationCutoffMins?: number
+  baseUrl?: string
 }): { subject: string; html: string; text: string } {
   const subject = params.autoAccepted
     ? `Order #${params.orderId} confirmed`
@@ -103,6 +114,49 @@ export function formatConfirmationEmail(params: {
       <strong>Special instructions:</strong> ${params.notes}
     </div>` : ''
 
+  // Collection venue section
+  const collectionSection = params.venueName ? `
+    <div style="margin-top:12px;padding:12px 16px;background:#f8fafc;border-radius:8px">
+      <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Collection</p>
+      <p style="margin:0;font-size:14px;font-weight:700;color:#1e293b">${params.venueName}</p>
+      ${params.slot ? `<p style="margin:4px 0 0;font-size:14px;color:#475569">Ready at ${params.slot}</p>` : ''}
+    </div>` : ''
+
+  // Contact section
+  const contactSection = (() => {
+    const method = params.preferredContactMethod
+    if (!method) return ''
+    type ContactEntry = { label: string; value: string | null | undefined; isLink: boolean }
+    const map: Record<string, ContactEntry> = {
+      phone:     { label: 'Call us',                  value: params.contactPhone,     isLink: false },
+      whatsapp:  { label: 'WhatsApp us',               value: params.whatsappSender ? `https://wa.me/${params.whatsappSender.replace(/\D/g, '')}` : null, isLink: true },
+      facebook:  { label: 'Message us on Facebook',    value: params.socialFacebook,   isLink: true },
+      messenger: { label: 'Message us on Messenger',   value: params.socialFacebook ? `https://m.me/${params.socialFacebook.split('/').pop()}` : null, isLink: true },
+      instagram: { label: 'DM us on Instagram',        value: params.socialInstagram ? `https://instagram.com/${params.socialInstagram.replace('@', '')}` : null, isLink: true },
+      email:     { label: 'Email us',                  value: params.contactEmail,     isLink: false },
+    }
+    const contact = map[method]
+    if (!contact?.value) return ''
+    return `
+    <div style="margin-top:12px;padding:14px 16px;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0">
+      <p style="margin:0 0 6px;font-size:12px;color:#64748b;font-weight:600">Questions about your order?</p>
+      ${contact.isLink
+        ? `<a href="${contact.value}" style="color:#ea580c;font-size:14px;text-decoration:none">${contact.label} →</a>`
+        : `<p style="margin:0;font-size:14px;color:#334155">${contact.label}: ${contact.value}</p>`
+      }
+    </div>`
+  })()
+
+  // Cancellation link section
+  const cancellationSection = params.allowCancellation ? `
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0">
+      <p style="margin:0;font-size:12px;color:#94a3b8">
+        Need to cancel?
+        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderId}/manage" style="color:#ea580c;margin-left:4px">Cancel your order</a>
+        (up to ${params.cancellationCutoffMins ?? 30} minutes before your pickup time)
+      </p>
+    </div>` : ''
+
   const heading = params.autoAccepted ? 'Order confirmed!' : 'Order received!'
 
   const html = `<!DOCTYPE html>
@@ -132,9 +186,15 @@ export function formatConfirmationEmail(params: {
 
   ${notesSection}
 
+  ${collectionSection}
+
   <div style="background:#f1f5f9;border-radius:10px;padding:16px;margin-top:12px;text-align:center">
     <p style="margin:0;font-size:16px;font-weight:800;color:#1e293b">Pay at the truck on collection</p>
   </div>
+
+  ${contactSection}
+
+  ${cancellationSection}
 
   <p style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8">
     Powered by <a href="https://hatchgrab.com" style="color:#ea580c;text-decoration:none;font-weight:700">HatchGrab</a>

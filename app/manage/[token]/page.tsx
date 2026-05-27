@@ -3,6 +3,7 @@
 // Truck management page — menu, modifiers, deals, schedule, settings
 
 import { useState, useEffect, useCallback, use } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
@@ -13,7 +14,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -22,7 +23,8 @@ interface Bundle { id: string; name: string; description: string | null; bundle_
 interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'schedule' | 'team' | 'settings'
+type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'billing'
+type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -101,7 +103,9 @@ function EmptyState({ icon, title, body }: { icon: string; title: string; body: 
 // ── Main page ──────────────────────────────────────────────────
 export default function ManagePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params)
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
+  const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<Item[]>([])
@@ -127,6 +131,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTruck(data.truck)
+      setUserRole(data.userRole || 'owner')
       setCategories(data.categories)
       setItems(data.items)
       setModifierGroups(data.modifierGroups)
@@ -138,6 +143,18 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [token])
 
   useEffect(() => { load() }, [load])
+
+  // Read ?tab= query param on mount and activate that tab
+  useEffect(() => {
+    const tabParam = new URLSearchParams(window.location.search).get('tab') as Tab | null
+    const allTabIds: Tab[] = ['menu', 'modifiers', 'deals', 'reports', 'schedule', 'team', 'settings', 'billing']
+    if (tabParam && allTabIds.includes(tabParam)) setActiveTab(tabParam)
+  }, [])
+
+  // Staff have no business on the manage page — send them to the dashboard
+  useEffect(() => {
+    if (userRole === 'staff') router.replace(`/dashboard/${token}`)
+  }, [userRole, token, router])
 
   useEffect(() => {
     fetch('/api/auth/me').then(r => r.json()).then(d => {
@@ -196,14 +213,17 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     </div>
   )
 
-  const tabs: { id: Tab; label: string; icon: string }[] = [
-    { id: 'menu',      label: 'Menu',      icon: '🍕' },
-    { id: 'modifiers', label: 'Modifiers', icon: '⚙️' },
-    { id: 'deals',     label: 'Deals',     icon: '🎁' },
-    { id: 'schedule',  label: 'Schedule',  icon: '📅' },
-    { id: 'team',      label: 'Team',      icon: '👥' },
-    { id: 'settings',  label: 'Settings',  icon: '🔧' },
+  const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
+    { id: 'menu',      label: 'Menu',      icon: '🍕', roles: ['owner', 'manager'] },
+    { id: 'modifiers', label: 'Modifiers', icon: '⚙️', roles: ['owner', 'manager'] },
+    { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
+    { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
+    { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
+    { id: 'team',      label: 'Team',      icon: '👥', roles: ['owner', 'manager'] },
+    { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
+    { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
+  const tabs = allTabs.filter(t => t.roles.includes(userRole))
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -289,9 +309,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'billing'   && <BillingTab   truck={truck} />}
       </main>
 
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
@@ -2437,6 +2459,9 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
   const [whatsappSender, setWhatsappSender] = useState(truck.whatsapp_sender ?? '')
+  const [preferredContact, setPreferredContact] = useState(truck.preferred_contact_method ?? '')
+  const [allowCancellation, setAllowCancellation] = useState(truck.allow_customer_cancellation ?? true)
+  const [cancellationCutoff, setCancellationCutoff] = useState(truck.cancellation_cutoff_mins ?? 30)
   const [vans, setVans] = useState<Van[]>([])
   const [addingVan, setAddingVan] = useState(false)
   const [newVanName, setNewVanName] = useState('')
@@ -2503,7 +2528,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     }
   }
 
-  const saveSetting = async (key: string, value: string) => {
+  const saveSetting = async (key: string, value: string | boolean | number | null) => {
     try {
       await api('update_truck', { data: { [key]: value } })
     } catch (e: any) {
@@ -2829,6 +2854,87 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
           </div>
         )}
+      </Card>
+
+      {/* Customer contact */}
+      <Card className="p-4 space-y-3">
+        <div>
+          <p className="font-bold text-slate-900">Customer contact</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            How customers should contact you about their order. This appears on their confirmation email.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <label className="text-sm text-slate-600 w-36 flex-shrink-0">Preferred method</label>
+          <select
+            value={preferredContact}
+            onChange={async e => {
+              const val = e.target.value
+              setPreferredContact(val)
+              await saveSetting('preferred_contact_method', val || null)
+            }}
+            className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
+          >
+            <option value="">Not specified</option>
+            <option value="phone">Phone call</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="facebook">Facebook Messenger</option>
+            <option value="messenger">Messenger</option>
+            <option value="instagram">Instagram DM</option>
+            <option value="email">Email</option>
+          </select>
+        </div>
+
+        {preferredContact === 'phone' && !truck.contact_phone && (
+          <p className="text-xs text-amber-600">⚠️ Add your phone number in truck details above</p>
+        )}
+        {preferredContact === 'whatsapp' && !truck.whatsapp_sender && (
+          <p className="text-xs text-amber-600">⚠️ Add your WhatsApp number in Online presence &amp; social above</p>
+        )}
+        {preferredContact === 'facebook' && !truck.social_facebook && (
+          <p className="text-xs text-amber-600">⚠️ Add your Facebook page in Online presence &amp; social above</p>
+        )}
+        {preferredContact === 'instagram' && !truck.social_instagram && (
+          <p className="text-xs text-amber-600">⚠️ Add your Instagram handle in Online presence &amp; social above</p>
+        )}
+        {preferredContact === 'email' && !truck.contact_email && (
+          <p className="text-xs text-amber-600">⚠️ Add your contact email in truck details above</p>
+        )}
+
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div>
+            <p className="text-sm text-slate-700">Allow customers to cancel orders</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Customers can cancel up to{' '}
+              <select
+                value={cancellationCutoff}
+                onChange={async e => {
+                  const val = parseInt(e.target.value)
+                  setCancellationCutoff(val)
+                  await saveSetting('cancellation_cutoff_mins', val)
+                }}
+                className="border-b border-slate-300 text-xs px-1 bg-transparent"
+              >
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">60 minutes</option>
+                <option value="120">2 hours</option>
+              </select>
+              {' '}before their pickup time
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              const next = !allowCancellation
+              setAllowCancellation(next)
+              await saveSetting('allow_customer_cancellation', next)
+            }}
+            className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${allowCancellation ? 'bg-teal-500' : 'bg-slate-300'}`}
+          >
+            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${allowCancellation ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
       </Card>
 
       {/* Kitchen display */}
@@ -3190,6 +3296,323 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         <Btn label={saving ? 'Saving...' : 'Save settings'} loading={saving} onClick={save} />
         <a href={`/dashboard/${token}`} className="text-sm text-slate-400 hover:text-slate-600 font-bold py-2">← Back to dashboard</a>
       </div>
+    </div>
+  )
+}
+
+// ── BillingTab ──────────────────────────────────────────────────
+type FeatureCellValue = boolean | 'coming_soon'
+interface FeatureRow { name: string; detail?: string; starter: FeatureCellValue; pro: FeatureCellValue; max: FeatureCellValue }
+const BILLING_SECTIONS: { title: string; rows: FeatureRow[] }[] = [
+  {
+    title: 'Transaction fees',
+    rows: [
+      { name: 'Walk-up orders — platform fee',      detail: '0% on all plans',           starter: true,  pro: true,  max: true  },
+      { name: 'Online pre-orders — platform fee',   detail: '0.99% per transaction',     starter: false, pro: true,  max: true  },
+      { name: 'Online pre-orders — card processing',detail: '~1.5% + 20p per transaction (Stripe)', starter: false, pro: true,  max: true  },
+      { name: 'Pay at Hatch — no card processing',  detail: 'Customers pay in person',   starter: true,  pro: false, max: false },
+    ],
+  },
+  {
+    title: 'Core operations',
+    rows: [
+      { name: 'Village Foodie discovery map listing', starter: true, pro: true, max: true },
+      { name: 'Web dashboard',                        starter: true, pro: true, max: true },
+      { name: 'iPad kitchen display (KDS)',            starter: true, pro: true, max: true },
+      { name: 'QR code menu & ordering',              starter: true, pro: true, max: true },
+      { name: 'Meal deals & upsell engine',           starter: true, pro: true, max: true },
+      { name: 'Walk-up order processing',             starter: true, pro: true, max: true },
+      { name: 'Online ordering — Pay at Hatch',       starter: true, pro: false, max: false },
+      { name: 'Instant sold out toggle',              starter: true, pro: true, max: true },
+      { name: 'Automated stock countdown',            starter: true, pro: true, max: true },
+    ],
+  },
+  {
+    title: 'Online sales & automation',
+    rows: [
+      { name: 'Offline sync protection',              starter: false, pro: true,           max: true },
+      { name: 'Online payments (Stripe Connect)',     starter: false, pro: true,           max: true },
+      { name: 'Dynamic fee splitting & tax controls', starter: false, pro: true,           max: true },
+      { name: 'Advance pre-ordering',                 starter: false, pro: true,           max: true },
+      { name: 'Customer time slot selection',         starter: false, pro: true,           max: true },
+      { name: 'Smart batch pacing',                   starter: false, pro: true,           max: true },
+      { name: 'Auto-accept online orders',            starter: false, pro: true,           max: true },
+      { name: 'Instagram & Messenger auto-replies',   starter: false, pro: true,           max: true },
+      { name: 'Personalised schedule generator',      starter: false, pro: 'coming_soon',  max: 'coming_soon' },
+      { name: 'Advanced reporting',                   starter: false, pro: 'coming_soon',  max: 'coming_soon' },
+    ],
+  },
+  {
+    title: 'Max tier',
+    rows: [
+      { name: 'Unlimited WhatsApp auto-replies', starter: false, pro: false, max: true },
+      { name: 'Kitchen ticket printing',         starter: false, pro: false, max: true },
+      { name: 'Multi-device kitchen sync',       starter: false, pro: false, max: true },
+      { name: 'Customer-facing display',         starter: false, pro: false, max: 'coming_soon' },
+      { name: 'Event & festival pricing',        starter: false, pro: false, max: 'coming_soon' },
+    ],
+  },
+]
+
+const PLAN_PRICE: Record<string, string> = {
+  starter: 'Free',
+  pro: '£29/month',
+  max: '£49/month',
+  trial: 'Free trial (Max features)',
+}
+const PLAN_DESCRIPTION: Record<string, string> = {
+  starter: 'Weekend traders & simple walk-up pitches',
+  pro: 'Busy trucks scaling online pre-orders',
+  max: 'High-volume operations & festivals',
+  trial: 'Full access during your trial period',
+}
+
+function BillingTab({ truck }: { truck: Truck | null }) {
+  if (!truck) return null
+  const currentPlan = truck.plan
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+
+  return (
+    <div className="max-w-2xl flex flex-col gap-6">
+      {/* Current plan card */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <p className="text-xs text-slate-400 uppercase tracking-wide">Current plan</p>
+            <p className="text-2xl font-bold text-slate-900 mt-1">
+              {PLAN_META[currentPlan]?.name ?? currentPlan}
+            </p>
+            <p className="text-sm text-slate-500 mt-0.5">{PLAN_PRICE[currentPlan] ?? ''}</p>
+            <p className="text-xs text-slate-400 mt-1">{PLAN_DESCRIPTION[currentPlan] ?? ''}</p>
+            {truck.trial_expires_at && (
+              <p className="text-xs text-amber-600 mt-1">
+                Trial ends {formatDate(truck.trial_expires_at)}
+              </p>
+            )}
+          </div>
+          {currentPlan !== 'max' && currentPlan !== 'trial' && (
+            <button className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors">
+              Upgrade
+            </button>
+          )}
+        </div>
+
+        {/* Feature matrix */}
+        {BILLING_SECTIONS.map(section => (
+          <div key={section.title} className="mb-2">
+            {/* Section heading row */}
+            <div className="flex items-center justify-between py-2 border-t-2 border-slate-100 mt-3 first:mt-0">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                {section.title}
+              </span>
+              <div className="flex gap-8">
+                {(['starter', 'pro', 'max'] as const).map(p => (
+                  <div key={p} className={`w-16 text-center text-xs font-bold uppercase tracking-wide ${
+                    p === currentPlan || (currentPlan === 'trial' && p === 'max')
+                      ? 'text-orange-600' : 'text-slate-400'
+                  }`}>
+                    {p}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Feature rows */}
+            {section.rows.map(row => (
+              <div key={row.name} className="flex items-center justify-between py-2 border-t border-slate-100">
+                <div className="flex-1 pr-4">
+                  <span className="text-sm text-slate-700">{row.name}</span>
+                  {row.detail && (
+                    <p className="text-xs text-slate-400 mt-0.5">{row.detail}</p>
+                  )}
+                </div>
+                <div className="flex gap-8">
+                  {(['starter', 'pro', 'max'] as const).map(p => {
+                    const val = row[p]
+                    const isCurrentPlan = p === currentPlan || (currentPlan === 'trial' && p === 'max')
+                    return (
+                      <div key={p} className="w-16 text-center">
+                        {val === true && (
+                          <span className={`text-sm font-semibold ${isCurrentPlan ? 'text-orange-500' : 'text-slate-400'}`}>✓</span>
+                        )}
+                        {val === false && (
+                          <span className="text-slate-200 text-sm">—</span>
+                        )}
+                        {val === 'coming_soon' && (
+                          <span className="text-xs text-slate-400 italic whitespace-nowrap">Coming soon</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+
+        {/* Legend */}
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <p className="text-xs text-slate-400">
+            Card processing fees are charged by Stripe and vary by card type. Typical UK rate: 1.5% + 20p per transaction.
+          </p>
+        </div>
+      </div>
+
+      {/* Billing section */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-6">
+        <p className="text-sm font-semibold text-slate-900 mb-4">Billing & payments</p>
+        <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-start gap-3">
+          <span className="text-amber-500 flex-shrink-0 mt-0.5">⚙️</span>
+          <div>
+            <p className="text-sm font-medium text-amber-800">Payment setup coming soon</p>
+            <p className="text-xs text-amber-700 mt-0.5">
+              We&apos;re setting up our payment system. During early access, billing is handled manually.
+              We&apos;ll contact you when automated billing is ready.
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <p className="text-xs text-slate-400">
+            {truck.name} · {PLAN_META[currentPlan]?.name ?? currentPlan} plan{truck.trial_expires_at ? ' (trial)' : ''}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── ReportsTab ──────────────────────────────────────────────────
+interface ReportData {
+  totalOrders: number
+  totalRevenue: number
+  avgOrder: number
+  topItems: Array<{ name: string; qty: number; revenue: number }>
+  dealsRedeemed: number
+  dealSavings: number
+  upsellRevenue: number
+}
+interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
+
+function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: any) => Promise<any> }) {
+  const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0])
+  const [reportEventId, setReportEventId] = useState('')
+  const [reportData, setReportData] = useState<ReportData | null | undefined>(undefined)
+  const [reportLoaded, setReportLoaded] = useState(false)
+  const [recentEvents, setRecentEvents] = useState<RecentEvent[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    api('get_recent_events').then(r => setRecentEvents(r.events || [])).catch(() => {})
+    loadReport()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const loadReport = async (date = reportDate, eventId = reportEventId) => {
+    setLoading(true)
+    try {
+      const r = await api('get_report', { date, eventId: eventId || undefined })
+      setReportData(r.report ?? null)
+    } catch { setReportData(null) }
+    finally { setLoading(false); setReportLoaded(true) }
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Filters */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <input
+          type="date"
+          value={reportDate}
+          onChange={e => setReportDate(e.target.value)}
+          className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
+        />
+        <select
+          value={reportEventId}
+          onChange={e => setReportEventId(e.target.value)}
+          className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
+        >
+          <option value="">All events</option>
+          {recentEvents.map(event => (
+            <option key={event.id} value={event.id}>
+              {event.venue_name || 'Event'} — {event.event_date}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={() => loadReport(reportDate, reportEventId)}
+          disabled={loading}
+          className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50"
+        >
+          {loading ? 'Loading…' : 'View report'}
+        </button>
+      </div>
+
+      {reportData && (
+        <>
+          {/* Summary cards */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <p className="text-xs text-slate-400">Orders</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">{reportData.totalOrders}</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <p className="text-xs text-slate-400">Revenue</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.totalRevenue.toFixed(2)}</p>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <p className="text-xs text-slate-400">Avg order</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.avgOrder.toFixed(2)}</p>
+            </div>
+          </div>
+
+          {/* Top items */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-slate-900 mb-3">Items sold</p>
+            {reportData.topItems.map((item, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-slate-400 w-4">{i + 1}</span>
+                  <span className="text-sm text-slate-700">{item.name}</span>
+                  <span className="text-xs text-slate-400">×{item.qty}</span>
+                </div>
+                <span className="text-sm font-medium text-slate-900">£{item.revenue.toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Deals summary */}
+          {reportData.dealsRedeemed > 0 && (
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <p className="text-sm font-semibold text-slate-900 mb-3">Deals & discounts</p>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-slate-600">Deals redeemed</span>
+                <span className="text-sm font-medium text-slate-900">{reportData.dealsRedeemed}</span>
+              </div>
+              <div className="flex items-center justify-between py-2 border-t border-slate-100">
+                <span className="text-sm text-slate-600">Customer savings</span>
+                <span className="text-sm font-medium text-green-600">£{reportData.dealSavings.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Pro upgrade prompt */}
+          {truck?.plan === 'starter' && (
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+              <p className="text-sm font-semibold text-slate-700">Want more insights?</p>
+              <p className="text-xs text-slate-500 mt-1">
+                Upgrade to Pro for trend reports, export to CSV, and weekly summaries by email.
+              </p>
+            </div>
+          )}
+        </>
+      )}
+
+      {reportData === null && reportLoaded && (
+        <div className="text-center py-12">
+          <p className="text-sm text-slate-400">No orders found for this period.</p>
+        </div>
+      )}
     </div>
   )
 }
