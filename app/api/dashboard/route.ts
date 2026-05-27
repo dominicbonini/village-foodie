@@ -47,24 +47,29 @@ export async function GET(req: NextRequest) {
       .eq('auth_user_id', user.id)
       .single()
 
-    if (operator && truck.operator_id && truck.operator_id !== operator.id) {
-      return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
-    }
+    const isOwner = !!(operator && truck.operator_id && truck.operator_id === operator.id)
 
-    if (operator) {
-      currentUserName = operator.name || operator.email || null
+    if (isOwner) {
+      currentUserName = operator!.name || operator!.email || null
       userRole = 'owner'
     } else {
+      // Not the owner — check truck_users membership (staff/manager, or invited user
+      // whose operators record was created during invite but doesn't own any truck)
       const { data: truckUser } = await supabase
         .from('truck_users')
         .select('name, email, role')
         .eq('auth_user_id', user.id)
         .eq('truck_id', truck.id)
         .single()
+
       if (truckUser) {
         currentUserName = truckUser.name || truckUser.email || null
         userRole = (truckUser.role as 'owner' | 'manager' | 'staff') || 'staff'
+      } else if (operator && truck.operator_id) {
+        // User has an operator account for a different truck → deny
+        return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
       }
+      // No operator record + no truck_users → token-only access (KDS/anonymous), userRole stays null
     }
   }
 
