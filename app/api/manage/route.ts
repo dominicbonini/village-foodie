@@ -283,13 +283,16 @@ export async function POST(req: NextRequest) {
   // ── EVENT CRUD ────────────────────────────────────────────
   if (action === 'upsert_event') {
     const { id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude } = body
+    let savedEvent: Record<string, unknown> | null = null
+
     if (id) {
       const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-      return NextResponse.json({ event: data })
+      savedEvent = data
     } else {
       const { data, error } = await supabase.from('truck_events').insert({ truck_id: truck.id, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, source: 'manual' }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      savedEvent = data
 
       // Auto-create event_deals from current bundle defaults
       const newEventId = data.id
@@ -300,7 +303,7 @@ export async function POST(req: NextRequest) {
         .eq('is_available', true)
 
       if (bundles && bundles.length > 0 && newEventId) {
-        const eventDeals = bundles.map(bundle => ({
+        const eventDeals = bundles.map((bundle: { id: string; apply_to_new_events: boolean }) => ({
           event_id: newEventId,
           bundle_id: bundle.id,
           active: bundle.apply_to_new_events,
@@ -310,9 +313,31 @@ export async function POST(req: NextRequest) {
           .from('event_deals')
           .upsert(eventDeals, { onConflict: 'event_id,bundle_id', ignoreDuplicates: true })
       }
-
-      return NextResponse.json({ event: data })
     }
+
+    // Write slot_capacity rows from van kitchen_capacity if a van is assigned
+    if (savedEvent?.van_id && start_time && end_time) {
+      const { data: van } = await supabase
+        .from('truck_vans')
+        .select('kitchen_capacity')
+        .eq('id', savedEvent.van_id as string)
+        .single()
+
+      if (van?.kitchen_capacity) {
+        const slots = generateSlots(start_time, end_time, 5)
+        const rows = slots.map((slot: string) => ({
+          truck_id: truck.id,
+          event_date,
+          slot,
+          max_orders: van.kitchen_capacity,
+        }))
+        await supabase
+          .from('slot_capacity')
+          .upsert(rows, { onConflict: 'truck_id,event_date,slot' })
+      }
+    }
+
+    return NextResponse.json({ event: savedEvent })
   }
 
   if (action === 'update_event_deal') {
@@ -448,7 +473,7 @@ export async function POST(req: NextRequest) {
   if (action === 'get_vans') {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, display_layout, split_screen')
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, display_layout, split_screen, kitchen_capacity')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
@@ -457,10 +482,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, show_cooking_step } = body
+    const { vanId, autoPauseOnOffline, show_cooking_step, kitchen_capacity } = body
     const updates: Record<string, unknown> = {}
     if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
     if (show_cooking_step !== undefined)  updates.show_cooking_step = show_cooking_step
+    if (kitchen_capacity !== undefined)   updates.kitchen_capacity = kitchen_capacity
     await supabase
       .from('truck_vans')
       .update(updates)

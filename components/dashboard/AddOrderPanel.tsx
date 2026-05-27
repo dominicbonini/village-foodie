@@ -759,19 +759,17 @@ export function AddOrderPanel({
       </div>
 
       {/* ── Phone: sticky bottom bar ── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center gap-3 z-10">
-        <div className="flex-1 text-sm font-medium text-slate-700">
-          {hasItems
-            ? `${totalItemCount} item${totalItemCount !== 1 ? 's' : ''} · £${manualTotal.toFixed(2)}`
-            : <span className="text-slate-400">No items yet</span>
-          }
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 z-20">
+        <div>
+          <p className="text-sm font-bold text-slate-900">£{manualTotal.toFixed(2)}</p>
+          <p className="text-xs text-slate-400">{totalItemCount} item{totalItemCount !== 1 ? 's' : ''}</p>
         </div>
         <button
           onClick={() => setShowOrderSheet(true)}
           disabled={!hasItems}
-          className="bg-teal-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl disabled:opacity-40 active:scale-95"
+          className="flex-1 max-w-xs bg-teal-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 active:scale-95"
         >
-          Order →
+          Review order →
         </button>
       </div>
 

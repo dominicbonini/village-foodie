@@ -21,7 +21,7 @@ interface Item { id: string; name: string; description: string | null; price: nu
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; kitchen_capacity: number | null }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
 
 type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'billing'
@@ -1862,7 +1862,7 @@ function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
   )
 }
 
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; maxOrdersPerSlot?: number | null }
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string }
 
 function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
   token: string; bundles: Bundle[]; categories: Category[]
@@ -1921,14 +1921,6 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
       }
       await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })
-      if (editingEvent.start_time && editingEvent.end_time) {
-        await api('save_slot_capacity', {
-          eventDate: editingEvent.event_date,
-          startTime: editingEvent.start_time,
-          endTime: editingEvent.end_time,
-          maxOrdersPerSlot: editingEvent.maxOrdersPerSlot ?? null,
-        })
-      }
       showToast(editingEvent.id ? 'Event updated' : 'Event added')
       closeAddModal()
       await loadEvents()
@@ -2342,25 +2334,6 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
-                {categories.some(c => c.prep_secs > 0) && (
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Kitchen capacity</label>
-                    <p className="text-xs text-slate-400 mb-2">Maximum orders your kitchen can handle per 5-minute window. Leave blank for no limit.</p>
-                    <select
-                      value={editingEvent.maxOrdersPerSlot ?? ''}
-                      onChange={e => setEditingEvent(p => ({...p!, maxOrdersPerSlot: e.target.value ? parseInt(e.target.value) : null}))}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
-                    >
-                      <option value="">No limit</option>
-                      <option value="3">3 orders per 5 mins (very small kitchen)</option>
-                      <option value="5">5 orders per 5 mins (small kitchen)</option>
-                      <option value="8">8 orders per 5 mins (medium kitchen)</option>
-                      <option value="10">10 orders per 5 mins (busy kitchen)</option>
-                      <option value="15">15 orders per 5 mins (large kitchen)</option>
-                      <option value="20">20 orders per 5 mins (very high volume)</option>
-                    </select>
-                  </div>
-                )}
                 <div className="flex gap-2 pt-1">
                   <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
                   <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
@@ -2668,8 +2641,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step',
-    value: boolean
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'kitchen_capacity',
+    value: boolean | number | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
     await api('update_van_settings', { vanId, [field]: value })
@@ -3102,6 +3075,34 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                     van.show_cooking_step ? 'translate-x-6' : 'translate-x-1'
                   }`} />
                 </button>
+              </div>
+
+              {/* Kitchen capacity */}
+              <div className="flex items-center justify-between gap-3 mt-3">
+                <div>
+                  <p className="text-slate-800">Kitchen capacity</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Maximum items your kitchen can handle every 5 minutes.
+                    Leave blank for no limit.
+                  </p>
+                </div>
+                <select
+                  value={van.kitchen_capacity ?? ''}
+                  onChange={e => updateVanSetting(
+                    van.id,
+                    'kitchen_capacity',
+                    e.target.value === '' ? null : parseInt(e.target.value)
+                  )}
+                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-32"
+                >
+                  <option value="">No limit</option>
+                  <option value="3">3 per 5 mins</option>
+                  <option value="5">5 per 5 mins</option>
+                  <option value="8">8 per 5 mins</option>
+                  <option value="10">10 per 5 mins</option>
+                  <option value="15">15 per 5 mins</option>
+                  <option value="20">20 per 5 mins</option>
+                </select>
               </div>
 
             </div>
