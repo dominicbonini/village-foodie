@@ -68,6 +68,7 @@ export interface TruckData {
   plan: Plan
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null
+  is_test?: boolean
 }
 
 export interface MenuItem {

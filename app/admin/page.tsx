@@ -5,6 +5,7 @@
 'use client'
 import { useState } from 'react'
 import { PLAN_META, PLAN_FEATURES, type Plan, type Feature } from '@/lib/features'
+import { PLAN_PRICES } from '@/lib/plan-features'
 
 interface AdminTruck {
   id: string
@@ -188,7 +189,7 @@ export default function AdminPage() {
                 {PLAN_ORDER.map(p => (
                   <th key={p} className="px-3 pb-2 text-slate-500 font-bold">
                     {PLAN_META[p].name}
-                    <span className="block text-[10px] font-normal text-slate-400">{PLAN_META[p].price}</span>
+                    <span className="block text-[10px] font-normal text-slate-400">{PLAN_PRICES[p]}</span>
                   </th>
                 ))}
               </tr>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
+import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -14,13 +15,13 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
-interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean }
+interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
 
 type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'billing'
@@ -117,6 +118,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
   const [currentUserName, setCurrentUserName] = useState<string | null>(null)
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null)
+  const [currentUserFirstName, setCurrentUserFirstName] = useState<string | null>(null)
+  const [currentUserLastName, setCurrentUserLastName] = useState<string | null>(null)
+  const [currentUserPhone, setCurrentUserPhone] = useState<string | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
@@ -160,6 +164,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     fetch('/api/auth/me').then(r => r.json()).then(d => {
       setCurrentUserName(d.name ?? null)
       setCurrentUserEmail(d.email ?? null)
+      setCurrentUserFirstName(d.first_name ?? null)
+      setCurrentUserLastName(d.last_name ?? null)
+      setCurrentUserPhone(d.phone ?? null)
     }).catch(() => null)
   }, [])
 
@@ -215,15 +222,18 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
     { id: 'menu',      label: 'Menu',      icon: '🍕', roles: ['owner', 'manager'] },
-    { id: 'modifiers', label: 'Modifiers', icon: '⚙️', roles: ['owner', 'manager'] },
-    { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
-    { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
+    { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
+    { id: 'modifiers', label: 'Modifiers', icon: '⚙️', roles: ['owner', 'manager'] },
+    { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'team',      label: 'Team',      icon: '👥', roles: ['owner', 'manager'] },
     { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
     { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
-  const tabs = allTabs.filter(t => t.roles.includes(userRole))
+  const tabs = allTabs.filter(t => {
+    if (t.id === 'billing') return userRole === 'owner' && !truck?.is_test
+    return t.roles.includes(userRole)
+  })
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -249,7 +259,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                 <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-700">
                   {currentUserName ? currentUserName.charAt(0).toUpperCase() : '?'}
                 </div>
-                <span className="text-sm text-slate-300 hidden sm:inline">{currentUserName}</span>
+                <span className="text-sm text-slate-300 hidden sm:inline">
+                  {currentUserFirstName || (currentUserName || '').split(' ')[0] || currentUserName}
+                </span>
               </button>
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50"
@@ -311,7 +323,19 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
+          currentUserEmail={currentUserEmail}
+          currentUserFirstName={currentUserFirstName}
+          currentUserLastName={currentUserLastName}
+          currentUserPhone={currentUserPhone}
+          onProfileSaved={(firstName, lastName, phone) => {
+            const fullName = `${firstName} ${lastName}`.trim()
+            setCurrentUserName(fullName)
+            setCurrentUserFirstName(firstName)
+            setCurrentUserLastName(lastName)
+            setCurrentUserPhone(phone)
+          }}
+        />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
       </main>
@@ -1627,16 +1651,8 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
 }) {
   const [editing, setEditing] = useState<Partial<Bundle> | null>(null)
   const [saving, setSaving] = useState(false)
-  const [showDefaultWarning, setShowDefaultWarning] = useState<string | null>(null)
 
-  const handleToggleDefault = async (bundleId: string, newValue: boolean) => {
-    setShowDefaultWarning(bundleId)
-    setTimeout(() => setShowDefaultWarning(null), 4000)
-    setBundles(prev => prev.map(b => b.id === bundleId ? { ...b, apply_to_new_events: newValue } : b))
-    await api('update_bundle_default', { bundleId, applyToNewEvents: newValue })
-  }
-
-  const emptyBundle: Partial<Bundle> = { is_available: true, bundle_price: 0, slot_1_category: null, slot_2_category: null, slot_3_category: null, slot_4_category: null, slot_5_category: null, slot_6_category: null }
+  const emptyBundle: Partial<Bundle> = { is_available: true, apply_to_new_events: true, bundle_price: 0, slot_1_category: null, slot_2_category: null, slot_3_category: null, slot_4_category: null, slot_5_category: null, slot_6_category: null }
 
   const save = async () => {
     if (!editing?.name || !editing?.bundle_price) return
@@ -1678,9 +1694,16 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
           <Card key={bundle.id} className="p-4">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-black text-slate-900">{bundle.name}</p>
                   <Badge label={bundle.is_available ? 'Active' : 'Off'} colour={bundle.is_available ? 'green' : 'slate'} />
+                  <span className={`text-xs px-2 py-0.5 rounded-full border ${
+                    bundle.apply_to_new_events
+                      ? 'bg-teal-50 text-teal-700 border-teal-100'
+                      : 'bg-slate-100 text-slate-500 border-slate-200'
+                  }`}>
+                    {bundle.apply_to_new_events ? 'Auto-apply' : 'Manual'}
+                  </span>
                 </div>
                 {bundle.description && <p className="text-slate-400 text-xs mt-0.5">{bundle.description}</p>}
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
@@ -1700,23 +1723,11 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
               </div>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-t border-slate-100 mt-3">
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">New events</p>
-                <p className="text-xs text-slate-400 mt-0.5">Automatically add this deal to events created from now on</p>
+            {bundle.stock_warning && (
+              <div className="mt-3 flex items-center gap-2 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
+                <p className="text-xs text-amber-700">Currently hidden from customers — {bundle.stock_warning}</p>
               </div>
-              <button
-                onClick={() => handleToggleDefault(bundle.id, !bundle.apply_to_new_events)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${bundle.apply_to_new_events ? 'bg-orange-600' : 'bg-slate-200'}`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${bundle.apply_to_new_events ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-            </div>
-
-            {showDefaultWarning === bundle.id && (
-              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mt-1">
-                ⚠️ This change only applies to events added from now on. To update existing events, go to the Schedule tab.
-              </p>
             )}
           </Card>
         )
@@ -1750,6 +1761,44 @@ function DealsTab({ categories, bundles, setBundles, api, reload, showToast }: {
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                 <span className="text-sm font-bold text-slate-700">Deal active</span>
                 <Toggle on={!!editing.is_available} onToggle={() => setEditing(p => ({...p!, is_available: !p!.is_available}))} />
+              </div>
+
+              <div className="border-t border-slate-100 pt-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Apply to events</p>
+                <p className="text-xs text-slate-400 mt-0.5 mb-3">Choose whether this deal is automatically applied to your events</p>
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="apply_to_new_events"
+                      checked={editing.apply_to_new_events === true}
+                      onChange={() => setEditing(p => p ? { ...p, apply_to_new_events: true } : p)}
+                      className="mt-0.5 flex-shrink-0"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">Apply to all future events automatically</p>
+                      <p className="text-xs text-slate-500">This deal will be active on every new event you create. You can still turn it off for specific events in Schedule.</p>
+                    </div>
+                  </label>
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="apply_to_new_events"
+                      checked={editing.apply_to_new_events === false}
+                      onChange={() => setEditing(p => p ? { ...p, apply_to_new_events: false } : p)}
+                      className="mt-0.5 flex-shrink-0"
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">Select manually per event</p>
+                      <p className="text-xs text-slate-500">This deal won't appear on events unless you enable it in the Schedule tab.</p>
+                    </div>
+                  </label>
+                </div>
+                {editing.apply_to_new_events && (
+                  <div className="mt-3 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                    <p className="text-xs text-amber-700">This deal will be added to new events. For existing events, go to Schedule to manage deals per event.</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex gap-2 mt-4">
@@ -2076,16 +2125,24 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
               const eventDeal = event.event_deals?.find(d => d.bundle_id === bundle.id)
               const isActive = eventDeal ? eventDeal.active : bundle.apply_to_new_events
               return (
-                <div key={bundle.id} className="flex items-center justify-between py-1.5">
-                  <div>
-                    <span className="text-sm text-slate-700">{bundle.name}</span>
-                    <span className="text-xs text-slate-400 ml-2">£{bundle.bundle_price}</span>
+                <div key={bundle.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-slate-800 truncate">{bundle.name}</span>
+                      <span className="text-xs text-slate-400 flex-shrink-0">£{bundle.bundle_price.toFixed(2)}</span>
+                      {bundle.stock_warning && (
+                        <span className="text-xs text-amber-600 flex-shrink-0">⚠️ Stock</span>
+                      )}
+                    </div>
+                    {bundle.stock_warning && (
+                      <p className="text-xs text-amber-600 mt-0.5">Hidden — {bundle.stock_warning}</p>
+                    )}
                   </div>
                   <button
                     onClick={() => handleEventDealToggle(event.id, bundle.id, !isActive)}
-                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${isActive ? 'bg-orange-600' : 'bg-slate-200'}`}
+                    className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ml-3 ${isActive ? 'bg-teal-500' : 'bg-slate-300'}`}
                   >
-                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${isActive ? 'translate-x-5' : 'translate-x-1'}`} />
+                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-1'}`} />
                   </button>
                 </div>
               )
@@ -2609,31 +2666,18 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     await api('update_van_settings', { vanId, autoPauseOnOffline: enabled })
   }
 
+  const updateVanSetting = async (
+    vanId: string,
+    field: 'show_cooking_step',
+    value: boolean
+  ) => {
+    setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
+    await api('update_van_settings', { vanId, [field]: value })
+  }
+
   return (
     <div className="space-y-6 max-w-lg">
       <h2 className="font-black text-slate-900 text-lg">Settings</h2>
-
-      {/* Plan */}
-      <Card className="p-4">
-        <div className="flex items-center justify-between py-1">
-          <div>
-            <div className="text-sm font-medium text-slate-900">Current plan</div>
-            <div className="text-xs text-slate-500 mt-0.5">
-              {PLAN_META[truck.plan].description}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-teal-600">
-              {PLAN_META[truck.plan].name} · {PLAN_META[truck.plan].price}
-            </span>
-            {truck.plan !== 'max' && (
-              <a href="/pricing" className="text-xs text-slate-400 hover:text-slate-600 underline">
-                Upgrade
-              </a>
-            )}
-          </div>
-        </div>
-      </Card>
 
       {/* Logo */}
       <Card className="p-4">
@@ -2667,9 +2711,12 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} placeholder="e.g. Italian, Thai, Burgers" />
       </Card>
 
-      {/* Contact */}
+      {/* Business contact */}
       <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Contact</p>
+        <div>
+          <p className="font-bold text-slate-900">Business contact</p>
+          <p className="text-xs text-slate-400 mt-0.5">Shown to customers on order confirmations. For your personal account details, go to Team → My profile.</p>
+        </div>
         <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} placeholder="hello@yourtruck.com" />
         <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} placeholder="07700 900123" />
       </Card>
@@ -2905,7 +2952,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         <div className="flex items-center justify-between pt-3 border-t border-slate-100">
           <div>
             <p className="text-sm text-slate-700">Allow customers to cancel orders</p>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-sm text-slate-700 mt-0.5">
               Customers can cancel up to{' '}
               <select
                 value={cancellationCutoff}
@@ -2937,143 +2984,45 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         </div>
       </Card>
 
-      {/* Kitchen display */}
-      <Card className="p-4 space-y-3">
-        <div>
-          <p className="font-bold text-slate-900">Kitchen display</p>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Settings for your order screen at{' '}
-            <a href={`/dashboard/${token}/kds`} target="_blank" className="text-teal-600 underline">
-              /dashboard/{token}/kds
-            </a>
-          </p>
-        </div>
-
-        {/* Split kitchen screen */}
-        <div className="flex items-start justify-between gap-4 py-1">
-          <div>
-            <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-              Split kitchen screen
-              <Tooltip
-                content="Shows a separate cooking view on a second device in the kitchen."
-                position="right"
-              />
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Show a separate cooking view on a second device. The order screen link appears in the header when enabled.
-            </p>
-          </div>
-          <select
-            value={crewMode}
-            onChange={async e => {
-              const val = e.target.value as 'solo' | 'full'
-              setCrewMode(val)
-              try { await api('update_truck', { data: { crew_mode: val } }) }
-              catch (err: any) { showToast(err.message, 'error') }
-            }}
-            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white text-slate-900 flex-shrink-0"
-          >
-            <option value="solo">Single screen</option>
-            <option value="full">Show cook screen link</option>
-          </select>
-        </div>
-
-        {/* KDS mode — cooking step */}
-        <div className="flex items-start justify-between gap-4 py-1 border-t border-slate-100 pt-3">
-          <div>
-            <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-              Show cooking step
-              <Tooltip
-                content="Enables a two-step cooking workflow: orders move through Cooking → Ready → Collected. Best for crews of 2 or more."
-                position="right"
-              />
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Adds a "Cooking" button between confirmed and done.
-              Useful when your cook and window person use separate screens.
-            </p>
-          </div>
-          <button
-            role="switch"
-            aria-checked={kdsMode}
-            onClick={async () => {
-              const val = !kdsMode
-              setKdsMode(val)
-              try { await api('update_truck', { data: { kds_mode: val } }) }
-              catch (err: any) { showToast(err.message, 'error') }
-            }}
-            className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ${kdsMode ? 'bg-teal-600' : 'bg-slate-200'}`}
-          >
-            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${kdsMode ? 'translate-x-5' : 'translate-x-0'}`} />
-          </button>
-        </div>
-
-        {/* Display layout */}
-        <div className="flex items-start justify-between gap-4 py-3 border-b border-slate-100">
-          <div>
-            <div className="text-sm font-medium text-slate-900">Display layout</div>
-            <div className="text-xs text-slate-500 mt-0.5">
-              Grid view fits more tickets on screen at once — best for mounted
-              displays. List view is simpler for counter-top setups.
-            </div>
-          </div>
-          <select
-            value={displayMode}
-            onChange={e => handleDisplayModeChange(e.target.value as 'list' | 'grid')}
-            className="text-sm border border-slate-200 rounded-md px-3 py-1.5 bg-white text-slate-900 flex-shrink-0"
-          >
-            <option value="list">List (single column)</option>
-            <option value="grid">Grid (side by side)</option>
-          </select>
-        </div>
-
-        {/* Cook screen URL — shown when full crew mode */}
-        {crewMode === 'full' && (
-          <div className="text-xs text-slate-500 bg-slate-50 rounded-md px-3 py-2.5 border-t border-slate-100 pt-3">
-            Cook screen URL (open on a second tablet):
-            <a
-              href={`/dashboard/${token}/kds?view=cook`}
-              target="_blank"
-              className="block text-teal-600 underline mt-0.5 break-all"
-            >
-              /dashboard/{token}/kds?view=cook
-            </a>
-          </div>
-        )}
-      </Card>
-
-      {/* Vans */}
+      {/* Your vehicles */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Vans</p>
+            <p className="text-sm font-semibold text-slate-900">Your vehicles</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Manage your vehicles. Each van has its own order screen.
+              Manage your vehicles. Each has its own order screen and settings.
             </p>
           </div>
           <button
             onClick={handleAddVanClick}
             className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
           >
-            + Add van
+            + Add vehicle
           </button>
         </div>
 
         {vans.map(van => (
           <div key={van.id}>
-            <div className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
-              <p className="text-sm font-medium text-slate-900">{van.name}</p>
+            <div className="flex items-center justify-between py-3 border-b border-slate-200 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-900">{van.name}</span>
+                {van.auto_pause_on_offline && (
+                  <span className="text-xs px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-100 rounded-full">
+                    Protected
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => { setRenamingVanId(van.id); setRenameVanName(van.name) }}
-                  className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+                  className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
                 >
                   Rename
                 </button>
                 {vans.length > 1 && (
                   <button
                     onClick={() => setDeletingVan(van)}
-                    className="text-xs px-2.5 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
+                    className="text-xs px-3 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
                   >
                     Delete
                   </button>
@@ -3130,6 +3079,33 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 </div>
               )}
             </div>
+            {/* Van-specific display settings */}
+            <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-3">
+              <p className="text-xs text-slate-400 mt-3 mb-2">Display settings</p>
+
+              {/* Show cooking step */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm text-slate-800">Show cooking step</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Adds a "Cooking" step between confirmed and done.
+                    Useful when your cook and window person use separate screens.
+                  </p>
+                </div>
+                <button
+                  onClick={() => updateVanSetting(van.id, 'show_cooking_step', !van.show_cooking_step)}
+                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
+                    van.show_cooking_step ? 'bg-teal-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                    van.show_cooking_step ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
+
+            </div>
+
             {renamingVanId === van.id && (
               <div className="mt-2 mb-2 flex gap-2">
                 <input
@@ -3301,161 +3277,202 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 }
 
 // ── BillingTab ──────────────────────────────────────────────────
-type FeatureCellValue = boolean | 'coming_soon'
-interface FeatureRow { name: string; detail?: string; starter: FeatureCellValue; pro: FeatureCellValue; max: FeatureCellValue }
-const BILLING_SECTIONS: { title: string; rows: FeatureRow[] }[] = [
-  {
-    title: 'Transaction fees',
-    rows: [
-      { name: 'Walk-up orders — platform fee',      detail: '0% on all plans',           starter: true,  pro: true,  max: true  },
-      { name: 'Online pre-orders — platform fee',   detail: '0.99% per transaction',     starter: false, pro: true,  max: true  },
-      { name: 'Online pre-orders — card processing',detail: '~1.5% + 20p per transaction (Stripe)', starter: false, pro: true,  max: true  },
-      { name: 'Pay at Hatch — no card processing',  detail: 'Customers pay in person',   starter: true,  pro: false, max: false },
-    ],
-  },
-  {
-    title: 'Core operations',
-    rows: [
-      { name: 'Village Foodie discovery map listing', starter: true, pro: true, max: true },
-      { name: 'Web dashboard',                        starter: true, pro: true, max: true },
-      { name: 'iPad kitchen display (KDS)',            starter: true, pro: true, max: true },
-      { name: 'QR code menu & ordering',              starter: true, pro: true, max: true },
-      { name: 'Meal deals & upsell engine',           starter: true, pro: true, max: true },
-      { name: 'Walk-up order processing',             starter: true, pro: true, max: true },
-      { name: 'Online ordering — Pay at Hatch',       starter: true, pro: false, max: false },
-      { name: 'Instant sold out toggle',              starter: true, pro: true, max: true },
-      { name: 'Automated stock countdown',            starter: true, pro: true, max: true },
-    ],
-  },
-  {
-    title: 'Online sales & automation',
-    rows: [
-      { name: 'Offline sync protection',              starter: false, pro: true,           max: true },
-      { name: 'Online payments (Stripe Connect)',     starter: false, pro: true,           max: true },
-      { name: 'Dynamic fee splitting & tax controls', starter: false, pro: true,           max: true },
-      { name: 'Advance pre-ordering',                 starter: false, pro: true,           max: true },
-      { name: 'Customer time slot selection',         starter: false, pro: true,           max: true },
-      { name: 'Smart batch pacing',                   starter: false, pro: true,           max: true },
-      { name: 'Auto-accept online orders',            starter: false, pro: true,           max: true },
-      { name: 'Instagram & Messenger auto-replies',   starter: false, pro: true,           max: true },
-      { name: 'Personalised schedule generator',      starter: false, pro: 'coming_soon',  max: 'coming_soon' },
-      { name: 'Advanced reporting',                   starter: false, pro: 'coming_soon',  max: 'coming_soon' },
-    ],
-  },
-  {
-    title: 'Max tier',
-    rows: [
-      { name: 'Unlimited WhatsApp auto-replies', starter: false, pro: false, max: true },
-      { name: 'Kitchen ticket printing',         starter: false, pro: false, max: true },
-      { name: 'Multi-device kitchen sync',       starter: false, pro: false, max: true },
-      { name: 'Customer-facing display',         starter: false, pro: false, max: 'coming_soon' },
-      { name: 'Event & festival pricing',        starter: false, pro: false, max: 'coming_soon' },
-    ],
-  },
-]
-
-const PLAN_PRICE: Record<string, string> = {
-  starter: 'Free',
-  pro: '£29/month',
-  max: '£49/month',
-  trial: 'Free trial (Max features)',
-}
-const PLAN_DESCRIPTION: Record<string, string> = {
-  starter: 'Weekend traders & simple walk-up pitches',
-  pro: 'Busy trucks scaling online pre-orders',
-  max: 'High-volume operations & festivals',
-  trial: 'Full access during your trial period',
-}
+// TODO: Replace upgrade modal with Stripe Checkout/Customer Portal when Stripe Connect billing is implemented
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hello@villagefoodie.co.uk'
 
 function BillingTab({ truck }: { truck: Truck | null }) {
   if (!truck) return null
   const currentPlan = truck.plan
+  const isCurrent = (p: 'starter' | 'pro' | 'max') =>
+    p === currentPlan || (currentPlan === 'trial' && p === 'max')
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
+  const [upgradeTarget, setUpgradeTarget] = useState<'pro' | 'max'>('max')
+  const openUpgrade = (target: 'pro' | 'max') => { setUpgradeTarget(target); setShowUpgradeModal(true) }
 
   return (
     <div className="max-w-2xl flex flex-col gap-6">
       {/* Current plan card */}
       <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-start justify-between mb-6">
-          <div>
-            <p className="text-xs text-slate-400 uppercase tracking-wide">Current plan</p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">
-              {PLAN_META[currentPlan]?.name ?? currentPlan}
+
+        {/* Plan info */}
+        <div className="mb-4">
+          <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Current plan</p>
+          <p className="text-2xl font-bold text-slate-900 mt-1">
+            {PLAN_META[currentPlan]?.name ?? currentPlan}
+          </p>
+          <p className="text-sm text-slate-700 mt-0.5">{PLAN_PRICES[currentPlan]}</p>
+          <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
+          {truck.trial_expires_at && (
+            <p className="text-xs text-amber-600 mt-1">
+              Trial ends {formatDate(truck.trial_expires_at)}
             </p>
-            <p className="text-sm text-slate-500 mt-0.5">{PLAN_PRICE[currentPlan] ?? ''}</p>
-            <p className="text-xs text-slate-400 mt-1">{PLAN_DESCRIPTION[currentPlan] ?? ''}</p>
-            {truck.trial_expires_at && (
-              <p className="text-xs text-amber-600 mt-1">
-                Trial ends {formatDate(truck.trial_expires_at)}
-              </p>
-            )}
-          </div>
-          {currentPlan !== 'max' && currentPlan !== 'trial' && (
-            <button className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors">
-              Upgrade
-            </button>
           )}
         </div>
 
-        {/* Feature matrix */}
-        {BILLING_SECTIONS.map(section => (
+        {/* Plan switch CTA — TODO: wire to Stripe billing when payments are integrated */}
+        {(truck.plan === 'trial' || truck.plan === 'max') && (
+          <div className={`rounded-xl p-4 mb-6 ${
+            truck.plan === 'trial'
+              ? 'bg-orange-50 border border-orange-200'
+              : 'bg-slate-50 border border-slate-200'
+          }`}>
+            {truck.plan === 'trial' ? (
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-bold text-slate-900">
+                    Your trial ends {truck.trial_expires_at ? formatDate(truck.trial_expires_at) : 'soon'}
+                  </p>
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    You&apos;re on Max features. Choose a plan before your trial ends to keep access.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => openUpgrade('max')}
+                    className="px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
+                  >
+                    Upgrade to Max — £49/mo
+                  </button>
+                  <button
+                    onClick={() => openUpgrade('pro')}
+                    className="px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
+                  >
+                    Choose Pro — £29/mo
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-600 text-center">You&apos;re on the highest plan ✓</p>
+            )}
+          </div>
+        )}
+
+        {truck.plan === 'starter' && (
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
+            <p className="text-sm font-bold text-slate-900 mb-3">Upgrade your plan</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => openUpgrade('pro')}
+                className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
+              >
+                Pro — £29/mo
+              </button>
+              <button
+                onClick={() => openUpgrade('max')}
+                className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
+              >
+                Max — £49/mo
+              </button>
+            </div>
+          </div>
+        )}
+
+        {truck.plan === 'pro' && (
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-slate-900">Unlock Max features</p>
+              <p className="text-xs text-slate-500 mt-0.5">WhatsApp, kitchen printing, multi-device sync</p>
+            </div>
+            <button
+              onClick={() => openUpgrade('max')}
+              className="px-4 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors flex-shrink-0"
+            >
+              Upgrade to Max — £49/mo
+            </button>
+          </div>
+        )}
+
+        {/* Plan columns header with prices */}
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1" />
+          {(['starter', 'pro', 'max'] as const).map(p => (
+            <div key={p} className={`w-28 text-center pb-3 border-b-2 ${
+              isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
+            }`}>
+              <p className={`text-xs font-semibold uppercase tracking-widest ${
+                isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
+              }`}>{p}</p>
+              <p className={`text-xl font-bold mt-1 ${
+                isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
+              }`}>{PLAN_PRICES[p]}</p>
+              <p className="text-xs text-slate-400 mt-0.5">per truck / month</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Transaction fees — value display */}
+        <div className="mb-2">
+          <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
+            <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
+            <div className="w-28" /><div className="w-28" /><div className="w-28" />
+          </div>
+          {TRANSACTION_ROWS.map(row => (
+            <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
+              <div className="flex-1 pr-4">
+                <span className="text-sm font-medium text-slate-800">
+                  {row.name}
+                  {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
+                </span>
+              </div>
+              {(['starter', 'pro', 'max'] as const).map(p => (
+                <div key={p} className={`w-28 text-center text-sm font-semibold leading-snug ${
+                  isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
+                }`}>
+                  {row.values[p]}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Feature sections — checkmark display */}
+        {FEATURE_SECTIONS.map(section => (
           <div key={section.title} className="mb-2">
-            {/* Section heading row */}
-            <div className="flex items-center justify-between py-2 border-t-2 border-slate-100 mt-3 first:mt-0">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
+              <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
                 {section.title}
               </span>
-              <div className="flex gap-8">
-                {(['starter', 'pro', 'max'] as const).map(p => (
-                  <div key={p} className={`w-16 text-center text-xs font-bold uppercase tracking-wide ${
-                    p === currentPlan || (currentPlan === 'trial' && p === 'max')
-                      ? 'text-orange-600' : 'text-slate-400'
-                  }`}>
-                    {p}
-                  </div>
-                ))}
-              </div>
+              <div className="w-28" /><div className="w-28" /><div className="w-28" />
             </div>
-
-            {/* Feature rows */}
             {section.rows.map(row => (
-              <div key={row.name} className="flex items-center justify-between py-2 border-t border-slate-100">
+              <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
                 <div className="flex-1 pr-4">
-                  <span className="text-sm text-slate-700">{row.name}</span>
-                  {row.detail && (
-                    <p className="text-xs text-slate-400 mt-0.5">{row.detail}</p>
-                  )}
+                  <span className="text-sm text-slate-800">
+                    {row.name}
+                    {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
+                  </span>
+                  {row.detail && <p className="text-xs text-slate-600 mt-0.5">{row.detail}</p>}
                 </div>
-                <div className="flex gap-8">
-                  {(['starter', 'pro', 'max'] as const).map(p => {
-                    const val = row[p]
-                    const isCurrentPlan = p === currentPlan || (currentPlan === 'trial' && p === 'max')
-                    return (
-                      <div key={p} className="w-16 text-center">
-                        {val === true && (
-                          <span className={`text-sm font-semibold ${isCurrentPlan ? 'text-orange-500' : 'text-slate-400'}`}>✓</span>
-                        )}
-                        {val === false && (
-                          <span className="text-slate-200 text-sm">—</span>
-                        )}
-                        {val === 'coming_soon' && (
-                          <span className="text-xs text-slate-400 italic whitespace-nowrap">Coming soon</span>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
+                {(['starter', 'pro', 'max'] as const).map(p => {
+                  const val = row[p]
+                  return (
+                    <div key={p} className="w-28 text-center">
+                      {val === true && (
+                        <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
+                      )}
+                      {val === false && (
+                        <span className="text-slate-300 text-sm">—</span>
+                      )}
+                      {val === 'coming_soon' && (
+                        <span className="text-xs text-slate-400 italic whitespace-nowrap">Coming soon</span>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
             ))}
           </div>
         ))}
 
-        {/* Legend */}
-        <div className="mt-4 pt-4 border-t border-slate-100">
-          <p className="text-xs text-slate-400">
-            Card processing fees are charged by Stripe and vary by card type. Typical UK rate: 1.5% + 20p per transaction.
-          </p>
+        {/* Footnotes */}
+        <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
+          {FOOTNOTES.map(f => (
+            <p key={f.number} className="text-xs text-slate-700">
+              <sup>{f.number}</sup> {f.text}
+            </p>
+          ))}
         </div>
       </div>
 
@@ -3478,6 +3495,42 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           </p>
         </div>
       </div>
+
+      {/* Upgrade interest modal */}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">
+                Upgrade to {upgradeTarget === 'max' ? 'Max' : 'Pro'}
+              </h3>
+              <p className="text-sm text-slate-500 mt-1">
+                {upgradeTarget === 'max'
+                  ? '£49/month — High-volume operations & festivals'
+                  : '£29/month — Busy trucks scaling pre-orders'
+                }
+              </p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <p className="text-sm text-slate-700">
+                We&apos;re setting up automated billing. To upgrade now, drop us a message and we&apos;ll get you set up within 24 hours.
+              </p>
+            </div>
+            <a
+              href={`mailto:${SUPPORT_EMAIL}?subject=Upgrade to ${upgradeTarget === 'max' ? 'Max' : 'Pro'} — ${truck.name}&body=Hi, I'd like to upgrade ${truck.name} to the ${upgradeTarget === 'max' ? 'Max (£49/mo)' : 'Pro (£29/mo)'} plan.`}
+              className="w-full py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl text-center hover:bg-orange-700 transition-colors"
+            >
+              Email us to upgrade
+            </a>
+            <button
+              onClick={() => setShowUpgradeModal(false)}
+              className="w-full py-3 border border-slate-200 text-slate-600 text-sm rounded-xl hover:bg-slate-50 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -3618,9 +3671,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 }
 
 // ── TeamTab ────────────────────────────────────────────────────
-function TeamTab({ truck, token, api, reload, showToast }: {
+function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, onProfileSaved }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
+  currentUserEmail: string | null; currentUserFirstName: string | null; currentUserLastName: string | null; currentUserPhone: string | null
+  onProfileSaved: (firstName: string, lastName: string, phone: string | null) => void
 }) {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
   const [vans, setVans] = useState<Van[]>([])
@@ -3631,6 +3686,55 @@ function TeamTab({ truck, token, api, reload, showToast }: {
   const [inviteRole, setInviteRole] = useState<'owner' | 'manager' | 'staff'>('staff')
   const [inviteVanIds, setInviteVanIds] = useState<string[]>([])
   const [inviteLoading, setInviteLoading] = useState(false)
+  const [editingOwnProfile, setEditingOwnProfile] = useState(false)
+  const [ownProfileFirstName, setOwnProfileFirstName] = useState('')
+  const [ownProfileLastName, setOwnProfileLastName] = useState('')
+  const [ownProfilePhone, setOwnProfilePhone] = useState('')
+  const [ownProfileEmail, setOwnProfileEmail] = useState('')
+  const [pendingEmailChange, setPendingEmailChange] = useState<string | null>(null)
+  const [savingOwnProfile, setSavingOwnProfile] = useState(false)
+
+  const saveOwnProfile = async () => {
+    if (!ownProfileFirstName.trim() || !ownProfileLastName.trim()) return
+    setSavingOwnProfile(true)
+    try {
+      const fullName = `${ownProfileFirstName.trim()} ${ownProfileLastName.trim()}`
+      const res = await fetch('/api/auth/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: ownProfileFirstName.trim(),
+          last_name: ownProfileLastName.trim(),
+          name: fullName,
+          phone: ownProfilePhone.trim() || null,
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to save')
+
+      if (ownProfileEmail.trim() && ownProfileEmail.trim() !== currentUserEmail) {
+        const emailRes = await fetch('/api/auth/change-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ newEmail: ownProfileEmail.trim() }),
+        })
+        const emailData = await emailRes.json()
+        if (emailData.ok) {
+          setPendingEmailChange(ownProfileEmail.trim())
+          showToast('Verification email sent')
+        } else {
+          showToast(emailData.error || 'Email change failed', 'error')
+        }
+      }
+
+      onProfileSaved(ownProfileFirstName.trim(), ownProfileLastName.trim(), ownProfilePhone.trim() || null)
+      setEditingOwnProfile(false)
+      showToast('Profile updated')
+    } catch {
+      showToast('Failed to save profile', 'error')
+    } finally {
+      setSavingOwnProfile(false)
+    }
+  }
 
   const loadTeam = useCallback(async () => {
     try {
@@ -3734,11 +3838,103 @@ function TeamTab({ truck, token, api, reload, showToast }: {
         <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
           <div>
             <p className="text-sm font-medium text-slate-900">
-              {truck.contact_email} (you)
+              {currentUserFirstName && currentUserLastName
+                ? `${currentUserFirstName} ${currentUserLastName} (you)`
+                : `${currentUserEmail || truck.contact_email} (you)`}
             </p>
             <p className="text-xs text-slate-400">Owner · All vans</p>
           </div>
+          <button
+            onClick={() => {
+              setOwnProfileFirstName(currentUserFirstName || '')
+              setOwnProfileLastName(currentUserLastName || '')
+              setOwnProfilePhone(currentUserPhone || '')
+              setOwnProfileEmail(currentUserEmail || '')
+              setEditingOwnProfile(true)
+            }}
+            className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+          >
+            Edit
+          </button>
         </div>
+
+        {editingOwnProfile && (
+          <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-3 mt-2">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">My profile</p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">First name *</label>
+                <input
+                  type="text"
+                  value={ownProfileFirstName}
+                  onChange={e => setOwnProfileFirstName(e.target.value)}
+                  className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Last name *</label>
+                <input
+                  type="text"
+                  value={ownProfileLastName}
+                  onChange={e => setOwnProfileLastName(e.target.value)}
+                  className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Phone</label>
+              <input
+                type="tel"
+                value={ownProfilePhone}
+                onChange={e => setOwnProfilePhone(e.target.value)}
+                placeholder="+44 7700 900000"
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Email</label>
+              <input
+                type="email"
+                value={ownProfileEmail}
+                onChange={e => setOwnProfileEmail(e.target.value)}
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white"
+              />
+              {ownProfileEmail !== currentUserEmail && (
+                <p className="text-xs text-amber-600 mt-1">
+                  A verification link will be sent to this address. Your current email remains active until verified.
+                </p>
+              )}
+              {pendingEmailChange && (
+                <p className="text-xs text-blue-600 mt-1">
+                  ⏳ Verification pending for {pendingEmailChange}. Check your inbox.
+                </p>
+              )}
+            </div>
+
+            <p className="text-xs text-slate-600 bg-white border border-slate-100 rounded-lg px-3 py-2">
+              Your personal details are private and never shown to customers. They're used for account management and billing verification.
+            </p>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setEditingOwnProfile(false)}
+                className="flex-1 border border-slate-200 text-slate-600 py-2 rounded-xl text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveOwnProfile}
+                disabled={!ownProfileFirstName.trim() || !ownProfileLastName.trim() || savingOwnProfile}
+                className="flex-1 bg-orange-600 text-white font-semibold py-2 rounded-xl text-sm disabled:opacity-40"
+              >
+                {savingOwnProfile ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Team member rows */}
         {teamMembers.map(member => (

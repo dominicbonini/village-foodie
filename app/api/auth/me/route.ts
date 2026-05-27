@@ -11,16 +11,22 @@ export async function GET() {
   const supabaseAuth = await createSupabaseServerClient()
   const { data: { user } } = await supabaseAuth.auth.getUser()
 
-  if (!user) return NextResponse.json({ name: null, email: null })
+  if (!user) return NextResponse.json({ name: null, email: null, first_name: null, last_name: null, phone: null })
 
   const { data: operator } = await supabase
     .from('operators')
-    .select('name, email')
+    .select('name, email, first_name, last_name, phone')
     .eq('auth_user_id', user.id)
     .single()
 
   if (operator) {
-    return NextResponse.json({ name: operator.name || operator.email || null, email: user.email || null })
+    return NextResponse.json({
+      name: operator.name || operator.email || null,
+      email: user.email || null,
+      first_name: operator.first_name || null,
+      last_name: operator.last_name || null,
+      phone: operator.phone || null,
+    })
   }
 
   const { data: truckUser } = await supabase
@@ -30,8 +36,8 @@ export async function GET() {
     .single()
 
   if (truckUser) {
-    return NextResponse.json({ name: truckUser.name || truckUser.email || null, email: user.email || null })
+    return NextResponse.json({ name: truckUser.name || truckUser.email || null, email: user.email || null, first_name: null, last_name: null, phone: null })
   }
 
-  return NextResponse.json({ name: user.email || null, email: user.email || null })
+  return NextResponse.json({ name: user.email || null, email: user.email || null, first_name: null, last_name: null, phone: null })
 }

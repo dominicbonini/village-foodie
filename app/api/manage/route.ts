@@ -71,6 +71,20 @@ export async function GET(req: NextRequest) {
       .order('event_date'),
   ])
 
+  // Stock check: mark bundles where any slot category has no available items
+  const slotKeys = ['slot_1_category', 'slot_2_category', 'slot_3_category', 'slot_4_category', 'slot_5_category', 'slot_6_category'] as const
+  const stockCheckedBundles = (bundles || []).map(b => {
+    const slotCategories = slotKeys.map(k => (b as any)[k]).filter(Boolean) as string[]
+    if (slotCategories.length === 0) return { ...b, stock_warning: null }
+    const unavailableSlot = slotCategories.find(slug => {
+      const cat = (categories || []).find((c: any) => c.slug === slug || c.name?.toLowerCase() === slug?.toLowerCase())
+      if (!cat) return false
+      const catItems = (items || []).filter((i: any) => i.category_id === cat.id)
+      return !catItems.some((i: any) => i.is_available && (i.stock_count === null || i.stock_count > 0))
+    })
+    return { ...b, stock_warning: unavailableSlot ? `No available items in "${unavailableSlot}"` : null }
+  })
+
   return NextResponse.json({
     truck,
     categories: categories || [],
@@ -78,7 +92,7 @@ export async function GET(req: NextRequest) {
     modifierGroups: modifierGroups || [],
     modifierOptions: modifierOptions || [],
     categoryModGroups: categoryModGroups || [],
-    bundles: bundles || [],
+    bundles: stockCheckedBundles,
     codes: codes || [],
     events: events || [],
     userRole,
@@ -434,7 +448,7 @@ export async function POST(req: NextRequest) {
   if (action === 'get_vans') {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline')
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, display_layout, split_screen')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
@@ -443,10 +457,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline } = body
+    const { vanId, autoPauseOnOffline, show_cooking_step } = body
+    const updates: Record<string, unknown> = {}
+    if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
+    if (show_cooking_step !== undefined)  updates.show_cooking_step = show_cooking_step
     await supabase
       .from('truck_vans')
-      .update({ auto_pause_on_offline: autoPauseOnOffline })
+      .update(updates)
       .eq('id', vanId)
       .eq('truck_id', truck.id)
     return NextResponse.json({ ok: true })

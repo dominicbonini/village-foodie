@@ -55,7 +55,7 @@ export async function GET(
   ] = await Promise.all([
     supabase
       .from('menu_categories')
-      .select('id, name, prep_secs, batch_size, allow_notes')
+      .select('id, name, slug, prep_secs, batch_size, allow_notes')
       .eq('truck_id', truck.id)
       .order('sort_order', { ascending: true })
       .order('name'),
@@ -168,6 +168,19 @@ export async function GET(
       filteredBundles = filteredBundles.filter(b => b.apply_to_new_events)
     }
   }
+
+  // Stock check: filter out bundles where any slot category has no available items
+  const menuSlotKeys = ['slot_1_category', 'slot_2_category', 'slot_3_category', 'slot_4_category', 'slot_5_category', 'slot_6_category'] as const
+  filteredBundles = filteredBundles.filter(bundle => {
+    const slotCategories = menuSlotKeys.map(k => bundle[k]).filter(Boolean) as string[]
+    if (slotCategories.length === 0) return true
+    return slotCategories.every(slug => {
+      const cat = (categories || []).find((c: any) => c.slug === slug || c.name?.toLowerCase() === slug?.toLowerCase())
+      if (!cat) return true
+      const catItems = (items || []).filter((i: any) => i.category_id === cat.id)
+      return catItems.some((i: any) => i.is_available && (i.stock_count === null || i.stock_count > 0))
+    })
+  })
 
   // Van-level pause check — extends truck-level pause state
   let isPaused = truck.paused_until

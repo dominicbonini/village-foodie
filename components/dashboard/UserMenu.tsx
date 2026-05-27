@@ -9,6 +9,7 @@ interface UserMenuProps {
   token: string
   userRole: 'owner' | 'manager' | 'staff' | null
   vanName?: string
+  isTest?: boolean
   onSignOut: () => void
   onEditProfile: () => void
 }
@@ -19,6 +20,7 @@ export default function UserMenu({
   token,
   userRole,
   vanName,
+  isTest,
   onSignOut,
   onEditProfile,
 }: UserMenuProps) {
@@ -88,8 +90,8 @@ export default function UserMenu({
               </Link>
             )}
 
-            {/* Plan & billing — owner only */}
-            {userRole === 'owner' && (
+            {/* Plan & billing — owner only, hidden for test accounts */}
+            {userRole === 'owner' && !isTest && (
               <Link
                 href={`/manage/${token}?tab=billing`}
                 onClick={() => setOpen(false)}
