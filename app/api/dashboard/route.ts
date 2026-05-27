@@ -259,6 +259,9 @@ export async function GET(req: NextRequest) {
       plan:                (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max' | 'trial',
       trial_expires_at:    truck.trial_expires_at ?? null,
       feature_overrides:   (truck.feature_overrides ?? null) as Record<string, boolean> | null,
+      logo: truck.logo_storage_path
+        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
+        : null,
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

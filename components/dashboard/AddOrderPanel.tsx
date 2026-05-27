@@ -21,9 +21,8 @@ function getAsapBaseTime(event: { event_date: string; start_time: string } | nul
   const todayStr = now.toISOString().split('T')[0]
   const [startH, startM] = (event.start_time || '00:00').split(':').map(Number)
   if (event.event_date > todayStr) {
-    const d = new Date(event.event_date)
-    d.setHours(startH, startM, 0, 0)
-    return d
+    const [y, mo, d] = event.event_date.split('-').map(Number)
+    return new Date(y, mo - 1, d, startH, startM, 0, 0)
   }
   if (event.event_date === todayStr) {
     const eventStart = new Date()
@@ -114,7 +113,7 @@ export function AddOrderPanel({
   const [showOrderSheet, setShowOrderSheet] = useState(false)
 
   // ── derived ─────────────────────────────────────────────────────────────────
-  const manualAsapSlot = getAsapSlot(manualSlots)
+  const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date)
   const availableDeals = (truckMenu?.bundles || []).filter(b => b.available)
 
   const calculation = useMemo(() => calculateOrderTotal(

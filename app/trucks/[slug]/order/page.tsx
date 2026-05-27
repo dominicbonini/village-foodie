@@ -227,7 +227,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       setAvailableSlots(slots)
       setQueueByCat(data.queueByCat || {})
       setServerCatConfigs(data.catConfigs || {})
-      const first = getAsapSlot(slots)
+      const first = getAsapSlot(slots, dateIso)
       setAsapSlot(first?.collection_time || null)
     } catch { setAvailableSlots([]) }
     finally { setLoadingSlots(false) }

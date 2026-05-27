@@ -2123,7 +2123,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   const renderEvent = (event: TruckEvent) => {
     return (
       <Card key={event.id}>
-        <div className="p-4 flex items-start justify-between gap-3">
+        <div className="px-4 py-3 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             {operatorTrucks.length > 1 && (
               <p className="text-xs font-semibold text-orange-600 mb-0.5">
@@ -2131,29 +2131,26 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               </p>
             )}
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-bold text-slate-900">
+              <p className="text-sm font-semibold text-slate-900">
                 {event.venue_name}{event.town ? `, ${event.town}` : ''}
               </p>
               <EventStatusBadge status={event.status} />
             </div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-slate-700">{fmtDate(event.event_date)}</span>
-              {event.start_time && event.end_time && (
-                <span className="text-slate-400 text-xs">{formatTime(event.start_time)} – {formatTime(event.end_time)}</span>
-              )}
-            </div>
-            {event.postcode && <p className="text-xs text-slate-400 mt-0.5">{event.postcode}</p>}
-            {event.address && <p className="text-xs text-slate-400">{event.address}</p>}
-            {event.notes && <p className="text-xs text-slate-500 mt-0.5">📝 {event.notes}</p>}
-            {event.van_id && vans.length > 1 && (
-              <p className="text-xs text-teal-600 mt-0.5">🚐 {vans.find(v => v.id === event.van_id)?.name}</p>
-            )}
+            <p className="text-xs text-slate-500 mt-0.5">
+              {fmtDate(event.event_date)}
+              {event.start_time && event.end_time && ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
+              {event.postcode && ` · ${event.postcode}`}
+              {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
+            </p>
+            {event.address && <p className="text-xs text-slate-400 mt-0.5 truncate">{event.address}</p>}
+            {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
           </div>
-          <div className="flex gap-1.5 shrink-0">
-            <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
+          <div className="flex items-center gap-1.5 shrink-0">
             {event.status === 'unconfirmed' && (
               <Btn label="Confirm" size="sm" colour="green" onClick={() => handleConfirmEvent(event.id)} />
             )}
+            <Btn label="Copy" size="sm" colour="ghost" onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} />
+            <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
             <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
           </div>
         </div>
@@ -2289,8 +2286,8 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
       )}
 
       {editingEvent && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-black text-slate-900 mb-4">
               {editingEvent.id ? 'Edit event' : 'Add event'}
             </h3>
@@ -2342,9 +2339,9 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
 
             {/* Manual form */}
             {(editingEvent.id || addMode === 'manual') && (
-              <div id="add-event-form" className="space-y-3">
-                {operatorTrucks.length > 1 ? (
-                  <div>
+              <div id="add-event-form" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {operatorTrucks.length > 1 && (
+                  <div className="sm:col-span-2">
                     <label className="block text-xs font-bold text-slate-600 mb-1">Truck</label>
                     <select
                       value={editingEvent.truck_id || truck.id}
@@ -2356,14 +2353,9 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                       ))}
                     </select>
                   </div>
-                ) : (
-                  <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck</label>
-                    <p className="text-sm text-slate-500 py-2">{truck.name}</p>
-                  </div>
                 )}
                 {vans.length > 1 && (
-                  <div>
+                  <div className="sm:col-span-2">
                     <label className="block text-xs font-bold text-slate-600 mb-1">Van</label>
                     <select
                       value={editingEvent.van_id || ''}
@@ -2378,7 +2370,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     <p className="text-xs text-slate-400 mt-1">Assign this event to a specific van for separate order screens.</p>
                   </div>
                 )}
-                <div className="relative">
+                <div className="sm:col-span-2 relative">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Venue name <span className="text-red-400">*</span></label>
                   <input
                     type="text"
@@ -2415,23 +2407,25 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                 </div>
                 <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
-                <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
-                <Input label="Date" required type="date" value={editingEvent.event_date}
-                  onChange={v => { setEditingEvent(p => ({...p!, event_date: v})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
-                  error={formErrors.event_date} />
-                <div className="grid grid-cols-2 gap-3">
-                  <Input label="Start time" required type="time" value={editingEvent.start_time}
-                    onChange={v => { setEditingEvent(p => ({...p!, start_time: v})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
-                    error={formErrors.start_time} />
-                  <Input label="End time" required type="time" value={editingEvent.end_time}
-                    onChange={v => { setEditingEvent(p => ({...p!, end_time: v})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
-                    error={formErrors.end_time} />
+                <div className="sm:col-span-2">
+                  <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
                 </div>
-                <div>
+                <div className="sm:col-span-2">
+                  <Input label="Date" required type="date" value={editingEvent.event_date}
+                    onChange={v => { setEditingEvent(p => ({...p!, event_date: v})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
+                    error={formErrors.event_date} />
+                </div>
+                <Input label="Start time" required type="time" value={editingEvent.start_time}
+                  onChange={v => { setEditingEvent(p => ({...p!, start_time: v})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
+                  error={formErrors.start_time} />
+                <Input label="End time" required type="time" value={editingEvent.end_time}
+                  onChange={v => { setEditingEvent(p => ({...p!, end_time: v})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
+                  error={formErrors.end_time} />
+                <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
                 </div>
-                <div className="flex gap-2 pt-1">
+                <div className="sm:col-span-2 flex gap-2 pt-1">
                   <Btn label="Cancel" colour="slate" onClick={closeAddModal} />
                   <Btn label={editSaving ? 'Saving...' : editingEvent.id ? 'Save changes' : 'Add event'} loading={editSaving} onClick={saveEdit} />
                 </div>
@@ -2523,7 +2517,14 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
               <h3 className="text-lg font-semibold text-slate-900">Cancel this event?</h3>
-              <p className="text-sm text-slate-500 mt-1">{cancellingEvent.venue_name} · {cancellingEvent.event_date}</p>
+              <p className="text-sm text-slate-500 mt-1">
+                {cancellingEvent.venue_name}{cancellingEvent.town ? `, ${cancellingEvent.town}` : ''}
+                {' · '}
+                {fmtDate(cancellingEvent.event_date)}
+                {cancellingEvent.start_time && cancellingEvent.end_time
+                  ? ` · ${formatTime(cancellingEvent.start_time)}–${formatTime(cancellingEvent.end_time)}`
+                  : ''}
+              </p>
               {affectedOrderCount > 0 && (
                 <p className="text-sm font-medium text-red-600 mt-2">
                   {affectedOrderCount} order{affectedOrderCount !== 1 ? 's' : ''} will be cancelled and customers notified.

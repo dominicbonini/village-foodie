@@ -110,7 +110,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editModalNotes,setEditModalNotes]=useState('')
   const prevPendingCount=useRef(0)
   const fetchAllRef=useRef<()=>void>(()=>{})
-  const asapSlot=getAsapSlot(slots)
+  const asapSlot=getAsapSlot(slots,(todayEvents.find(e=>e.status==='open')??todayEvents[0])?.event_date)
   const availableDeals = truckMenu?.bundles ?? []
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
   const waitMinutes=useMemo(()=>{
