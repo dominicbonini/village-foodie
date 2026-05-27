@@ -38,76 +38,105 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
   return `- ${friendlyDate}${relativeLabel}: ${location} ${time} [${confirmed ? 'CONFIRMED' : 'UNCONFIRMED'}]`
 }
 
-export async function generateWhatsAppReply(params: ClassifierParams): Promise<string | null> {
-  const {
-    truckName, customerMessage, events,
-    scheduleUrl, orderUrl
-  } = params
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`
 
-  const todayStr = new Date().toISOString().split('T')[0]
-  const todayFriendly = new Date(todayStr + 'T12:00:00').toLocaleDateString('en-GB', {
-    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+async function callGemini(prompt: string, temperature: number): Promise<string> {
+  const res = await fetch(GEMINI_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature }
+    })
   })
+  const data = await res.json()
+  return (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim()
+}
 
-  const eventsSection = events.length > 0
-    ? `UPCOMING EVENTS (dates include TODAY/TOMORROW labels for clarity):\n${events.map(e => formatEventForPrompt(e, todayStr)).join('\n')}`
-    : 'UPCOMING EVENTS: None currently scheduled'
+export async function generateWhatsAppReply(params: ClassifierParams): Promise<string | null> {
+  const { truckName, customerMessage, events, scheduleUrl, orderUrl } = params
 
-  const prompt = `You are a helpful assistant for ${truckName}, a food truck.
+  // Step 1: classify with a generous, keyword-aware prompt
+  const classifierPrompt = `Classify this customer message into one of three categories:
 
-Today is ${todayFriendly}.
-Today's date string: ${todayStr}
+SPECIFIC_QUERY — customer is asking about schedule, location, dates, or availability.
+Examples of SPECIFIC_QUERY (be generous — classify as SPECIFIC_QUERY if in doubt):
+- "where are you tomorrow"
+- "where are you tomorrow night"
+- "are you out this Friday"
+- "what time are you there on Friday"
+- "will you be in Wickhambrook this week"
+- "are you near me this weekend"
+- "when are you next in the village"
+- "where are you at the weekend"
+- "trading this week"
+- "what days are you out"
+- "when's your next event"
+- ANY question containing: tomorrow, tonight, Friday, Saturday, Sunday, Monday, Tuesday, Wednesday, Thursday, this week, next week, weekend, today, near, village, town, location, where, when, schedule, trading
 
-${eventsSection}
+GENERAL_QUERY — asking about menu, prices, ordering, or general info.
+Examples: "what do you sell", "how much is a pizza", "do you do gluten free"
 
-Schedule page: ${scheduleUrl}
-Order/pre-order page: ${orderUrl}
+IGNORE — spam, gibberish, complaints, booking requests, or completely unrelated.
+
+Message: "${customerMessage}"
+
+Reply with exactly one word: SPECIFIC_QUERY, GENERAL_QUERY, or IGNORE`
+
+  let classification: string
+  try {
+    classification = (await callGemini(classifierPrompt, 0.1)).toUpperCase()
+  } catch {
+    classification = 'SPECIFIC_QUERY' // fail open
+  }
+
+  if (classification === 'IGNORE') return null
+
+  if (classification === 'GENERAL_QUERY') {
+    return `Hey! You can check out our menu and pre-order here: ${orderUrl} 🍽️\n\n${truckName}`
+  }
+
+  // Step 2: SPECIFIC_QUERY — reply with explicit date mapping so Gemini never guesses
+  const today = new Date()
+  const todayStr = today.toISOString().split('T')[0]
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+  const dateMapping = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today)
+    d.setDate(d.getDate() + i)
+    const dateStr = d.toISOString().split('T')[0]
+    const label = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : dayNames[d.getDay()]
+    const friendly = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
+    return `${label} = ${dateStr} (${friendly})`
+  }).join('\n')
+
+  const formattedEvents = events.map(e => formatEventForPrompt(e, todayStr))
+
+  const replyPrompt = `You are a helpful assistant for ${truckName}, a food truck.
+
+DATE REFERENCE (use these exact mappings — do not guess):
+${dateMapping}
+
+Upcoming confirmed events:
+${formattedEvents.length > 0 ? formattedEvents.join('\n') : 'No upcoming events.'}
 
 Customer message: "${customerMessage}"
 
-TASK: Classify this message and generate a reply if appropriate.
-
-CLASSIFICATION RULES:
-- SPECIFIC_QUERY: customer asking about a specific date, day, or location (e.g. "where are you tonight", "are you in Wickhambrook this weekend", "when are you next at The Crown")
-- GENERAL_QUERY: customer asking about ordering, menu, schedule, how to order, where to find them generally
-- IGNORE: complaints, personal questions, booking requests, anything unrelated to schedule/ordering
-
-REPLY RULES:
-- For SPECIFIC_QUERY: search confirmed events for a match to their query. If the customer asks about tomorrow, look for events labelled (TOMORROW). If the customer asks about today, look for events labelled (TODAY). If the customer asks about a specific village or town, check if any event's venue name or town field matches or is nearby — if no town data is available, mention the venue name and suggest they check the schedule link for full location details. If found, reply with specific venue, date and time, and the order link. If only unconfirmed events match, say you don't have anything confirmed yet for that date/area and provide the schedule link. If the customer asks about a specific location with no events that day, check if there are upcoming confirmed events at that location within the next 7 days and mention the next one — e.g. "Nothing in Wickhambrook tomorrow but we'll be there on Friday 29 May at Village Hall 17:00–20:00 🙌". If nothing at all matches, provide schedule link only.
-- For GENERAL_QUERY: reply with order link and schedule link. Keep it friendly and brief.
-- For IGNORE: return null — do not reply.
-
-TONE: Casual, warm, like the truck owner typed it. Include the truck name at the end. Use 1-2 relevant emojis max. Never mention Village Foodie or any platform name. Never make up events that aren't in the list above.
-
-RESPONSE FORMAT — return valid JSON only:
-{
-  "classification": "SPECIFIC_QUERY" | "GENERAL_QUERY" | "IGNORE",
-  "reply": "the reply text" | null
-}`
+Instructions:
+- Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above
+- If they ask about a day by name (e.g. "Friday"), look up the exact date from DATE REFERENCE
+- If events exist for that date, give venue name, town and times in a friendly tone
+- If asked about a location (village/town), check if any event's town field matches
+- If no event that specific day but there are upcoming events at that location within 7 days, mention the next one: "Nothing tomorrow but we're in Wickhambrook on Friday!"
+- If no event that specific day but there are other upcoming events, mention the next one
+- Always end with the order link: ${orderUrl}
+- Keep response under 3 sentences, friendly tone
+- Sign off as ${truckName}
+- Use 1-2 relevant emojis max. Never mention Village Foodie or any platform name. Never make up events.`
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            responseMimeType: 'application/json'
-          }
-        })
-      }
-    )
-
-    const data = await response.json()
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) return null
-
-    const parsed = JSON.parse(text)
-    return parsed.reply || null
-
+    const reply = await callGemini(replyPrompt, 0.4)
+    return reply || null
   } catch (err) {
     console.error('[WhatsApp classifier] Gemini error:', err)
     return `Hey! Check out our latest schedule here: ${scheduleUrl}\n\n${truckName}`
