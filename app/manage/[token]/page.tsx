@@ -1954,7 +1954,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
       address: event.address || '',
       notes: '',
       van_id: event.van_id || null,
-      truck_id: event.truck_id || truck.id,
+      truck_id: operatorTrucks.length === 1 ? operatorTrucks[0].id : (event.truck_id || ''),
     })
     setFormErrors({})
     setTimeout(() => {
@@ -1968,6 +1968,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     if (!form.venue_name?.trim()) errors.venue_name = 'Venue name is required'
     if (!form.start_time) errors.start_time = 'Start time is required'
     if (!form.end_time) errors.end_time = 'End time is required'
+    if (operatorTrucks.length > 1 && !form.truck_id) errors.truck_id = 'Please select a truck'
     return errors
   }
 
@@ -2235,7 +2236,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
           <Btn label="+ Add event" onClick={() => {
             const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
             setFormErrors({})
-            setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id })
+            setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: operatorTrucks.length === 1 ? operatorTrucks[0].id : '' })
             setAddMode('manual'); setExtractedEvents([])
           }} />
         </div>
@@ -2342,16 +2343,18 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               <div id="add-event-form" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {operatorTrucks.length > 1 && (
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck</label>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck <span className="text-red-500">*</span></label>
                     <select
-                      value={editingEvent.truck_id || truck.id}
-                      onChange={e => setEditingEvent(p => ({ ...p!, truck_id: e.target.value }))}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                      value={editingEvent.truck_id || ''}
+                      onChange={e => { setEditingEvent(p => ({ ...p!, truck_id: e.target.value })); if (formErrors.truck_id) setFormErrors(p => ({ ...p, truck_id: '' })) }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.truck_id ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
                     >
+                      <option value="">Select a truck</option>
                       {operatorTrucks.map(t => (
                         <option key={t.id} value={t.id}>{t.name}</option>
                       ))}
                     </select>
+                    {formErrors.truck_id && <p className="text-xs text-red-500 mt-1">{formErrors.truck_id}</p>}
                   </div>
                 )}
                 {vans.length > 1 && (

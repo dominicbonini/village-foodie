@@ -83,7 +83,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[userRole,setUserRole]=useState<'owner'|'manager'|'staff'|null>(null)
   const[showScreenOffWarning,setShowScreenOffWarning]=useState(false)
   const[vansWithAutoPause,setVansWithAutoPause]=useState<string[]>([])
-  const[vans,setVans]=useState<{id:string;name:string;auto_pause_on_offline:boolean}[]>([])
+  const[vans,setVans]=useState<{id:string;name:string;auto_pause_on_offline:boolean;kds_token?:string|null}[]>([])
+  const[showKDSPicker,setShowKDSPicker]=useState(false)
   const[showProfileModal,setShowProfileModal]=useState(false)
   const[editProfileName,setEditProfileName]=useState('')
   const[savingProfile,setSavingProfile]=useState(false)
@@ -260,6 +261,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }
     prevPendingCount.current=count
   },[orders,authenticated])
+
+  const handleOpenKDS=()=>{
+    if(vans.length===1){
+      const van=vans[0]
+      if(van?.kds_token){window.open(`/kds/${van.kds_token}`,'_blank')}
+      else{window.open(`/dashboard/${token}/kds`,'_blank')}
+      return
+    }
+    if(vans.length===0){window.open(`/dashboard/${token}/kds`,'_blank');return}
+    setShowKDSPicker(true)
+  }
 
   const submitPin=async()=>{
     const p=new URLSearchParams({token,pin:pinInput}); const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
@@ -594,10 +606,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {/* Tabs */}
       <div className="bg-slate-800 px-4 border-b border-slate-700">
-        <div className="max-w-5xl mx-auto flex">
+        <div className="max-w-5xl mx-auto flex items-center">
           {([['orders',`Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length>0?` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})`:''}`],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
             <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
           ))}
+          <div className="ml-auto">
+            <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap">
+              Kitchen screen
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1160,6 +1178,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <button onClick={()=>setShowScreenOffWarning(false)} className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Keep screen on</button>
               <button onClick={confirmScreenOff} className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Allow screen off</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* KDS van picker modal */}
+      {showKDSPicker&&(
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowKDSPicker(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-3">
+            <h3 className="text-lg font-semibold text-slate-900">Open kitchen screen</h3>
+            <p className="text-sm text-slate-500">Choose which van's kitchen screen to open:</p>
+            {vans.map(van=>(
+              <button key={van.id} onClick={()=>{window.open(`/kds/${van.kds_token}`,'_blank');setShowKDSPicker(false)}} className="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 hover:border-orange-300 hover:bg-orange-50 text-left transition-colors flex items-center justify-between">
+                {van.name}
+                <span className="text-xs text-slate-400">Kitchen screen →</span>
+              </button>
+            ))}
+            <button onClick={()=>setShowKDSPicker(false)} className="text-sm text-slate-400 hover:text-slate-600 pt-1">Cancel</button>
           </div>
         </div>
       )}
