@@ -9,7 +9,7 @@ import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
-import { requestNotificationPermission, playNewOrderAlert } from '@/lib/native/notifications'
+import { requestNotificationPermission, playNewOrderAlert, notifyNewOrder } from '@/lib/native/notifications'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener, getQueueCount } from '@/lib/native/serviceWorker'
 
@@ -57,6 +57,8 @@ export default function KdsPage() {
   const [kdsToast, setKdsToast] = useState<string | null>(null)
 
   const fetchAllRef = useRef<() => void>(() => {})
+  const prevOrderCountRef = useRef(0)
+  const initialLoadDoneRef = useRef(false)
 
   const fetchAll = useCallback(async (currentPin = pin) => {
     if (!token) return
@@ -178,6 +180,19 @@ export default function KdsPage() {
   useEffect(() => {
     fetchAll()
   }, [fetchAll])
+
+  useEffect(() => {
+    if (!initialLoadDoneRef.current) {
+      initialLoadDoneRef.current = true
+      prevOrderCountRef.current = orders.length
+      return
+    }
+    if (orders.length > prevOrderCountRef.current) {
+      const newCount = orders.length - prevOrderCountRef.current
+      notifyNewOrder(newCount)
+    }
+    prevOrderCountRef.current = orders.length
+  }, [orders])
 
   useEffect(() => {
     if (truck?.name) document.title = `${truck.name} Kitchen`

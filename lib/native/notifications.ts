@@ -33,6 +33,26 @@ export async function playNewOrderAlert(orderNumber: string) {
   })
 }
 
+export async function notifyNewOrder(count: number) {
+  const plugin = await getPlugin()
+  if (!plugin) return
+  try {
+    await plugin.requestPermissions()
+    await plugin.schedule({
+      notifications: [{
+        id: Date.now(),
+        title: 'New order',
+        body: count === 1 ? 'You have a new order' : `You have ${count} new orders`,
+        sound: 'beep.wav',
+        actionTypeId: '',
+        extra: null,
+      }]
+    })
+  } catch (err) {
+    console.warn('[Notifications] Failed:', err)
+  }
+}
+
 function playWebBeep() {
   try {
     const ctx = new AudioContext()
