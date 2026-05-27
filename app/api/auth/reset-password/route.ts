@@ -84,5 +84,12 @@ export async function POST(req: NextRequest) {
     .update({ used_at: new Date().toISOString() })
     .eq('id', resetToken.id)
 
+  // Accept invite: set accepted_at on any pending truck_users row for this auth account
+  await supabase
+    .from('truck_users')
+    .update({ accepted_at: new Date().toISOString() })
+    .eq('auth_user_id', operator.auth_user_id)
+    .is('accepted_at', null)
+
   return NextResponse.json({ ok: true })
 }

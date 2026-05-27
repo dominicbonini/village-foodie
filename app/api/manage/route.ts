@@ -579,20 +579,30 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    if (authError) {
-      console.warn('Auth user creation failed:', authError.message)
+    let authUserId: string | null = authData?.user?.id ?? null
+
+    // Auth user already exists (e.g. invited twice, or person has an operator account)
+    // Fall back to finding the existing auth_user_id via the operators table
+    if (!authUserId && authError) {
+      const { data: existingOp } = await supabase
+        .from('operators')
+        .select('auth_user_id')
+        .eq('email', email.toLowerCase().trim())
+        .not('auth_user_id', 'is', null)
+        .maybeSingle()
+      authUserId = existingOp?.auth_user_id ?? null
     }
 
-    if (authData?.user) {
+    if (authUserId) {
       await supabase
         .from('truck_users')
-        .update({ auth_user_id: authData.user.id })
+        .update({ auth_user_id: authUserId })
         .eq('id', newMember.id)
 
       await supabase
         .from('operators')
         .upsert({
-          auth_user_id: authData.user.id,
+          auth_user_id: authUserId,
           email: email.toLowerCase().trim(),
           name: name || null,
         }, { onConflict: 'auth_user_id' })
