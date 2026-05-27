@@ -584,9 +584,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               token={token}
               userRole={userRole}
               vanName={vanName}
-              isTest={truck?.is_test}
               onSignOut={handleSignOut}
-              onEditProfile={()=>{setEditProfileName(currentUserName||'');setShowProfileModal(true)}}
             />
           </div>
         </div>

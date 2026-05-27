@@ -615,6 +615,85 @@ export function AddOrderPanel({
     </div>
   )
 
+  const menuList = (
+    <div>
+      {[
+        ...categoryOrder.filter(cat => menuGroups[cat]?.length),
+        ...Object.keys(menuGroups).filter(cat => !categoryOrder.includes(cat) && menuGroups[cat]?.length),
+      ].map(cat => {
+        const items = menuGroups[cat]
+        if (!items?.length) return null
+        return (
+          <div key={cat}>
+            <div className="sticky top-0 bg-white z-10 py-2 border-b border-slate-100">
+              <p className="text-xs font-black text-orange-600 uppercase tracking-wide">
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </p>
+            </div>
+            <div>
+              {items.map(item => {
+                const isSoldOut = !(item.available ?? true)
+                const stock = itemStocks.find(s => s.name === item.name)
+                const itemRem = stock?.stock_count != null ? stock.stock_count - (stock.orders_count || 0) : null
+                const catSt = categoryStocks.find(s => s.category === cat)
+                const catRem = catSt?.stock_count != null ? catSt.stock_count - (catSt.orders_count || 0) : null
+                const effectiveRem = itemRem !== null ? (catRem !== null ? Math.min(itemRem, catRem) : itemRem) : catRem
+                const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
+                const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
+                return (
+                  <div key={item.name} className={`flex items-center gap-3 py-3 border-b border-slate-50 ${isSoldOut ? 'opacity-50' : ''}`}>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
+                        {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
+                        {isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
+                      </div>
+                    </div>
+                    {!isSoldOut && (
+                      totalInBasket > 0 ? (
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => adjustManualQty(item.name, -1)}
+                            className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-lg leading-none active:scale-90"
+                          >−</button>
+                          <span className="text-sm font-bold text-slate-800 w-4 text-center">{totalInBasket}</span>
+                          <button
+                            onClick={() => addManualItem(item)}
+                            className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg leading-none active:scale-90"
+                          >+</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => addManualItem(item)}
+                          className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xl leading-none active:scale-90 shrink-0"
+                        >+</button>
+                      )
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })}
+
+      {availableDeals.length > 0 && (
+        <button
+          onClick={() => {
+            if (availableDeals.length === 1) { setActiveDealBundle(availableDeals[0]); setShowDealsModal(true) }
+            else { setActiveDealBundle(null); setShowDealsModal(true) }
+          }}
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mt-4"
+        >
+          <span>🎁</span>
+          <span>{appliedDeals.length > 0 ? '+ Add another deal' : '+ Apply a deal'}</span>
+          {appliedDeals.length > 0 && <span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
+        </button>
+      )}
+    </div>
+  )
+
   const eventBanner = (
     <div className="mb-4">
       {manualEvent ? (
@@ -676,7 +755,7 @@ export function AddOrderPanel({
       {/* ── Phone: single column ── */}
       <div className="md:hidden pb-24">
         {eventBanner}
-        {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
+        {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
       </div>
 
       {/* ── Phone: sticky bottom bar ── */}

@@ -9,9 +9,7 @@ interface UserMenuProps {
   token: string
   userRole: 'owner' | 'manager' | 'staff' | null
   vanName?: string
-  isTest?: boolean
   onSignOut: () => void
-  onEditProfile: () => void
 }
 
 export default function UserMenu({
@@ -19,10 +17,7 @@ export default function UserMenu({
   truckName,
   token,
   userRole,
-  vanName,
-  isTest,
   onSignOut,
-  onEditProfile,
 }: UserMenuProps) {
   const [open, setOpen] = useState(false)
   const initial = currentUserName ? currentUserName.charAt(0).toUpperCase() : '?'
@@ -69,17 +64,8 @@ export default function UserMenu({
               )}
             </div>
 
-            {/* My profile */}
-            <button
-              onClick={() => { onEditProfile(); setOpen(false) }}
-              className="w-full text-left flex items-center gap-2 px-4 py-2.5
-                         text-sm text-slate-700 hover:bg-slate-50"
-            >
-              👤 My profile
-            </button>
-
             {/* Manage — owner/manager only */}
-            {canManage && !vanName && (
+            {canManage && (
               <Link
                 href={`/manage/${token}`}
                 onClick={() => setOpen(false)}
@@ -87,18 +73,6 @@ export default function UserMenu({
                            text-slate-700 hover:bg-slate-50"
               >
                 ⚙️ Manage
-              </Link>
-            )}
-
-            {/* Plan & billing — owner only, hidden for test accounts */}
-            {userRole === 'owner' && !isTest && (
-              <Link
-                href={`/manage/${token}?tab=billing`}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm
-                           text-slate-700 hover:bg-slate-50"
-              >
-                💳 Plan & billing
               </Link>
             )}
 
