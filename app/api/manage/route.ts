@@ -85,6 +85,15 @@ export async function GET(req: NextRequest) {
     return { ...b, stock_warning: unavailableSlot ? `No available items in "${unavailableSlot}"` : null }
   })
 
+  const { data: operatorTrucks } = truck.operator_id
+    ? await supabase
+        .from('trucks')
+        .select('id, name, dashboard_token')
+        .eq('operator_id', truck.operator_id)
+        .eq('active', true)
+        .order('name')
+    : { data: [] }
+
   return NextResponse.json({
     truck,
     categories: categories || [],
@@ -96,6 +105,7 @@ export async function GET(req: NextRequest) {
     codes: codes || [],
     events: events || [],
     userRole,
+    operatorTrucks: operatorTrucks || [],
   })
 }
 
@@ -282,15 +292,29 @@ export async function POST(req: NextRequest) {
 
   // ── EVENT CRUD ────────────────────────────────────────────
   if (action === 'upsert_event') {
-    const { id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude } = body
+    const { id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude, van_id } = body
     let savedEvent: Record<string, unknown> | null = null
 
+    // Allow a sibling truck (same operator) to be targeted, but default to current truck
+    let targetTruckId = truck.id
+    if (body.truck_id && body.truck_id !== truck.id && truck.operator_id) {
+      const { data: siblingTruck } = await supabase
+        .from('trucks')
+        .select('id')
+        .eq('id', body.truck_id)
+        .eq('operator_id', truck.operator_id)
+        .single()
+      if (siblingTruck) targetTruckId = siblingTruck.id
+    }
+
     if (id) {
-      const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', truck.id).select().single()
+      const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', targetTruckId).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
     } else {
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: truck.id, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, source: 'manual' }).select().single()
+      const now = new Date().toISOString()
+      const eventStatus = 'confirmed'
+      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
 
@@ -299,7 +323,7 @@ export async function POST(req: NextRequest) {
       const { data: bundles } = await supabase
         .from('bundles_db')
         .select('id, apply_to_new_events')
-        .eq('truck_id', truck.id)
+        .eq('truck_id', targetTruckId)
         .eq('is_available', true)
 
       if (bundles && bundles.length > 0 && newEventId) {
@@ -326,7 +350,7 @@ export async function POST(req: NextRequest) {
       if (van?.kitchen_capacity) {
         const slots = generateSlots(start_time, end_time, 5)
         const rows = slots.map((slot: string) => ({
-          truck_id: truck.id,
+          truck_id: targetTruckId,
           event_date,
           slot,
           max_orders: van.kitchen_capacity,
@@ -390,7 +414,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )

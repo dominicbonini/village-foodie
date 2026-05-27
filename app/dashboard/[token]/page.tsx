@@ -25,6 +25,8 @@ import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/bask
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 
+const formatTime = (time: string) => time ? time.substring(0, 5) : ''
+
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
   const modStr = [...mods].map(m => m.name).sort().join('|')
@@ -610,7 +612,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 {todayEvents.map(event=>(
                   <button key={event.id} onClick={()=>switchEvent(event)}
                     className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${(activeEvent?.id===event.id)?'bg-slate-900 text-white border-slate-900':'bg-white text-slate-600 border-slate-200'}`}>
-                    {event.venue_name.split(',')[0]} {event.start_time}{event.status==='open'?' ●':''}
+                    {event.venue_name.split(',')[0]} {formatTime(event.start_time)}{event.status==='open'?' ●':''}
                   </button>
                 ))}
               </div>
@@ -619,7 +621,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent?.status==='confirmed'&&!activeEvent.auto_open&&(
               <div className="bg-white border-2 border-teal-500 rounded-2xl p-6 mb-4 text-center">
                 <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
-                <div className="text-sm text-slate-500 mb-4">Today · {activeEvent.start_time}–{activeEvent.end_time}</div>
+                <div className="text-sm text-slate-500 mb-4">Today · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</div>
                 <button onClick={()=>openEvent(activeEvent.id)}
                   className="w-full bg-teal-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-teal-700 active:scale-[0.98] transition-all">
                   Open for orders
@@ -632,7 +634,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
                   <span className="text-sm font-medium text-slate-900 truncate">{activeEvent.venue_name}</span>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{activeEvent.start_time}–{activeEvent.end_time}</span>
+                  <span className="text-xs text-slate-400 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button onClick={()=>extendEvent(activeEvent.id,30)}
@@ -663,7 +665,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* Recently closed banner */}
             {recentlyClosed&&activeEvent&&(
               <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4 flex items-center justify-between">
-                <span className="text-sm text-slate-600">Event closed · {activeEvent.venue_name} ended at {activeEvent.end_time}</span>
+                <span className="text-sm text-slate-600">Event closed · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
                 <button onClick={()=>extendEvent(activeEvent.id,30)} className="text-sm font-medium text-teal-600 hover:text-teal-700">Extend 30 min</button>
               </div>
             )}

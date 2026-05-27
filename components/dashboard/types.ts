@@ -169,6 +169,9 @@ export interface TruckEvent {
   event_date: string
   venue_name: string
   venue_address: string | null
+  address: string | null
+  town: string | null
+  postcode: string | null
   start_time: string
   end_time: string
   status: 'unconfirmed' | 'confirmed' | 'open' | 'closed' | 'cancelled'
@@ -180,5 +183,6 @@ export interface TruckEvent {
   customer_note: string | null
   notes: string | null
   source: string | null
+  van_id: string | null
   event_deals?: { id?: string; bundle_id: string; active: boolean; overridden: boolean }[]
 }

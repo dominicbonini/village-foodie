@@ -2,7 +2,7 @@
 // app/manage/[token]/page.tsx
 // Truck management page — menu, modifiers, deals, schedule, settings
 
-import { useState, useEffect, useCallback, use } from 'react'
+import { useState, useEffect, useCallback, useMemo, use } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
@@ -15,7 +15,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -60,13 +60,14 @@ function Btn({ label, colour = 'orange', size = 'md', loading = false, disabled 
     </button>
   )
 }
-function Input({ label, value, onChange, type = 'text', placeholder, required, hint }: { label: string; value: string | number; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean; hint?: string }) {
+function Input({ label, value, onChange, type = 'text', placeholder, required, hint, error }: { label: string; value: string | number; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean; hint?: string; error?: string }) {
   return (
     <div>
       <label className="block text-xs font-bold text-slate-600 mb-1">{label}{required && <span className="text-red-400 ml-0.5">*</span>}</label>
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+        className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${error ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
       {hint && <p className="text-slate-400 text-xs mt-0.5">{hint}</p>}
+      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
   )
 }
@@ -114,6 +115,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [modifierOptions, setModifierOptions] = useState<ModifierOption[]>([])
   const [categoryModGroups, setCategoryModGroups] = useState<{category_id:string;group_id:string}[]>([])
   const [bundles, setBundles] = useState<Bundle[]>([])
+  const [operatorTrucks, setOperatorTrucks] = useState<{ id: string; name: string; dashboard_token: string }[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
   const [currentUserName, setCurrentUserName] = useState<string | null>(null)
@@ -142,6 +144,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setModifierOptions(data.modifierOptions)
       setCategoryModGroups(data.categoryModGroups)
       setBundles(data.bundles)
+      setOperatorTrucks(data.operatorTrucks || [])
     } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
     finally { setLoading(false) }
   }, [token])
@@ -322,7 +325,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        {activeTab === 'schedule'  && <ScheduleTab  token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'schedule'  && <ScheduleTab  truck={truck} token={token} bundles={bundles} categories={categories} operatorTrucks={operatorTrucks} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -1832,11 +1835,9 @@ async function geocodeLocation(
     return { lat: null, lng: null }
   }
 }
-interface EventForm {
-  auto_open: boolean | null
-  auto_close: boolean
-  venue_address: string
-  customer_note: string
+const formatTime = (time: string) => {
+  if (!time) return ''
+  return time.substring(0, 5)
 }
 
 function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
@@ -1862,16 +1863,15 @@ function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
   )
 }
 
-type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string }
+type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null }
 
-function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
-  token: string; bundles: Bundle[]; categories: Category[]
+function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, reload, showToast }: {
+  truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
+  operatorTrucks: { id: string; name: string; dashboard_token: string }[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [events, setEvents] = useState<TruckEvent[]>([])
   const [loadingEvents, setLoadingEvents] = useState(true)
-  const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
-  const [form, setForm] = useState<EventForm>({ auto_open: null, auto_close: true, venue_address: '', customer_note: '' })
   const [saving, setSaving] = useState(false)
   const [showPast, setShowPast] = useState(false)
   const [showEventCancelModal, setShowEventCancelModal] = useState(false)
@@ -1880,13 +1880,17 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
   const [eventCancelNote, setEventCancelNote] = useState('')
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [editSaving, setEditSaving] = useState(false)
+  const [vans, setVans] = useState<{ id: string; name: string }[]>([])
+  const [scheduleFilterTruckId, setScheduleFilterTruckId] = useState<string>('')
   const [addMode, setAddMode] = useState<'manual' | 'upload'>('manual')
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [uploadText, setUploadText] = useState('')
   const [uploadProcessing, setUploadProcessing] = useState(false)
   const [extractedEvents, setExtractedEvents] = useState<any[]>([])
   const [savingExtracted, setSavingExtracted] = useState(false)
+  const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
 
   const loadEvents = useCallback(async () => {
     setLoadingEvents(true)
@@ -1900,16 +1904,86 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
   }, [token])
 
   useEffect(() => { loadEvents() }, [loadEvents])
+  useEffect(() => { api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {}) }, [])
+
+  const recentEvents = useMemo(() => {
+    const seen = new Set<string>()
+    return [...events]
+      .filter(e => e.status === 'confirmed' || e.status === 'open')
+      .sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())
+      .filter(e => {
+        const key = `${e.venue_name}-${e.town}`.toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+      .slice(0, 5)
+  }, [events])
+
+  const venueSuggestions = useMemo(() => {
+    const seen = new Set<string>()
+    return [...events]
+      .sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())
+      .filter(e => {
+        if (!e.venue_name) return false
+        const key = e.venue_name.toLowerCase()
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+      .slice(0, 10)
+      .map(e => ({
+        venue_name: e.venue_name,
+        town: e.town,
+        postcode: e.postcode,
+        address: e.address,
+        start_time: e.start_time,
+        end_time: e.end_time,
+      }))
+  }, [events])
+
+  const handleCopyEvent = (event: TruckEvent) => {
+    setEditingEvent({
+      id: undefined,
+      event_date: '',
+      start_time: event.start_time?.substring(0, 5) || '',
+      end_time: event.end_time?.substring(0, 5) || '',
+      venue_name: event.venue_name || '',
+      town: event.town || '',
+      postcode: event.postcode || '',
+      address: event.address || '',
+      notes: '',
+      van_id: event.van_id || null,
+      truck_id: event.truck_id || truck.id,
+    })
+    setFormErrors({})
+    setTimeout(() => {
+      document.getElementById('add-event-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+  }
+
+  const validateEventForm = (form: EditingEvent) => {
+    const errors: Record<string, string> = {}
+    if (!form.event_date) errors.event_date = 'Date is required'
+    if (!form.venue_name?.trim()) errors.venue_name = 'Venue name is required'
+    if (!form.start_time) errors.start_time = 'Start time is required'
+    if (!form.end_time) errors.end_time = 'End time is required'
+    return errors
+  }
 
   const closeAddModal = () => {
     setEditingEvent(null)
+    setFormErrors({})
     setExtractedEvents([])
     setUploadFile(null)
     setUploadText('')
   }
 
   const saveEdit = async () => {
-    if (!editingEvent?.venue_name || !editingEvent?.event_date) return
+    if (!editingEvent) return
+    const errors = validateEventForm(editingEvent)
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return }
+    setFormErrors({})
     setEditSaving(true)
     try {
       const { lat, lng } = await geocodeLocation(
@@ -1968,6 +2042,7 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
           notes: ev.notes || '',
           latitude: lat,
           longitude: lng,
+          truck_id: editingEvent?.truck_id || truck.id,
         })
       }
       const count = extractedEvents.length
@@ -1978,26 +2053,7 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
     finally { setSavingExtracted(false) }
   }
 
-  const expandEvent = (event: TruckEvent) => {
-    if (expandedEventId === event.id) {
-      setExpandedEventId(null)
-      return
-    }
-    setExpandedEventId(event.id)
-    if (event.status === 'confirmed') {
-      setForm({
-        auto_open: event.auto_open,
-        auto_close: event.auto_close,
-        venue_address: event.venue_address || '',
-        customer_note: event.customer_note || '',
-      })
-    } else {
-      setForm({ auto_open: null, auto_close: true, venue_address: event.venue_address || '', customer_note: event.customer_note || '' })
-    }
-  }
-
-  const confirmEvent = async (eventId: string) => {
-    if (form.auto_open === null) return
+  const handleConfirmEvent = async (eventId: string) => {
     setSaving(true)
     try {
       const res = await fetch('/api/events/action', {
@@ -2008,24 +2064,14 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
           action: 'confirm',
           eventId,
           payload: {
-            auto_open: form.auto_open,
-            auto_close: form.auto_close,
-            venue_address: form.venue_address,
-            customer_note: form.customer_note,
+            auto_open: truck.default_auto_open ?? true,
+            auto_close: truck.default_auto_close ?? true,
           },
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      setEvents(prev => prev.map(e => e.id === eventId ? {
-        ...e,
-        status: 'confirmed' as const,
-        auto_open: form.auto_open!,
-        auto_close: form.auto_close,
-        venue_address: form.venue_address || null,
-        customer_note: form.customer_note || null,
-      } : e))
-      setExpandedEventId(null)
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'confirmed' as const } : e))
       showToast('Event confirmed')
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
@@ -2075,34 +2121,38 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
   }
 
   const renderEvent = (event: TruckEvent) => {
-    const expanded = expandedEventId === event.id
-    const canExpand = event.status === 'unconfirmed' || event.status === 'confirmed'
     return (
       <Card key={event.id}>
-        <div
-          className={`p-4 flex items-start justify-between gap-3 ${canExpand ? 'cursor-pointer' : ''}`}
-          onClick={() => canExpand && expandEvent(event)}
-        >
+        <div className="p-4 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
+            {operatorTrucks.length > 1 && (
+              <p className="text-xs font-semibold text-orange-600 mb-0.5">
+                {operatorTrucks.find(t => t.id === event.truck_id)?.name ?? truck.name}
+              </p>
+            )}
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-bold text-slate-900">{event.venue_name}</p>
+              <p className="font-bold text-slate-900">
+                {event.venue_name}{event.town ? `, ${event.town}` : ''}
+              </p>
               <EventStatusBadge status={event.status} />
             </div>
-            {event.venue_address && <p className="text-slate-400 text-xs mt-0.5">{event.venue_address}</p>}
             <div className="flex items-center gap-2 mt-1">
               <span className="text-sm text-slate-700">{fmtDate(event.event_date)}</span>
               {event.start_time && event.end_time && (
-                <span className="text-slate-400 text-xs">{event.start_time} – {event.end_time}</span>
+                <span className="text-slate-400 text-xs">{formatTime(event.start_time)} – {formatTime(event.end_time)}</span>
               )}
             </div>
-          </div>
-          <div className="flex gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
-            <Btn label="Edit" size="sm" colour="ghost" onClick={() => setEditingEvent({ id: event.id, venue_name: event.venue_name, town: (event as any).town || '', postcode: (event as any).postcode || '', address: event.venue_address || '', event_date: event.event_date, start_time: event.start_time || '', end_time: event.end_time || '', notes: event.customer_note || '' })} />
-            {event.status === 'unconfirmed' && (
-              <Btn label="Confirm" size="sm" colour="green" onClick={() => expandEvent(event)} />
+            {event.postcode && <p className="text-xs text-slate-400 mt-0.5">{event.postcode}</p>}
+            {event.address && <p className="text-xs text-slate-400">{event.address}</p>}
+            {event.notes && <p className="text-xs text-slate-500 mt-0.5">📝 {event.notes}</p>}
+            {event.van_id && vans.length > 1 && (
+              <p className="text-xs text-teal-600 mt-0.5">🚐 {vans.find(v => v.id === event.van_id)?.name}</p>
             )}
-            {event.status === 'confirmed' && (
-              <Btn label="Settings" size="sm" colour="ghost" onClick={() => expandEvent(event)} />
+          </div>
+          <div className="flex gap-1.5 shrink-0">
+            <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
+            {event.status === 'unconfirmed' && (
+              <Btn label="Confirm" size="sm" colour="green" onClick={() => handleConfirmEvent(event.id)} />
             )}
             <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
           </div>
@@ -2142,98 +2192,24 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
           </div>
         )}
 
-        {expanded && canExpand && (
-          <div className="px-4 pb-4 mt-0 pt-3 border-t border-slate-100 flex flex-col gap-4">
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Venue address — optional
-              </label>
-              <input type="text" value={form.venue_address}
-                onChange={e => setForm(f => ({...f, venue_address: e.target.value}))}
-                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Customer note — optional
-              </label>
-              <input type="text" placeholder="e.g. Park in the main car park"
-                value={form.customer_note}
-                onChange={e => setForm(f => ({...f, customer_note: e.target.value}))}
-                className="mt-1 w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                When should this event open for orders?
-                <Tooltip
-                  content="Auto: orders open automatically at your start time. Manual: you tap 'Open for orders' on your dashboard when you're ready."
-                  position="right"
-                />
-              </p>
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="radio" name={`open-${event.id}`}
-                    checked={form.auto_open === false}
-                    onChange={() => setForm(f => ({...f, auto_open: false}))} />
-                  <span className="text-sm">I'll open it manually when I arrive</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="radio" name={`open-${event.id}`}
-                    checked={form.auto_open === true}
-                    onChange={() => setForm(f => ({...f, auto_open: true}))} />
-                  <span className="text-sm">Open automatically at {event.start_time}</span>
-                </label>
-              </div>
-              {form.auto_open === null && (
-                <p className="text-xs text-red-500 mt-1">Please choose when this event should open</p>
-              )}
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                When should it close?
-                <Tooltip
-                  content="Auto: orders close automatically at your end time. Manual: you close it yourself — useful if you want to run late."
-                  position="right"
-                />
-              </p>
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="radio" name={`close-${event.id}`}
-                    checked={form.auto_close === true}
-                    onChange={() => setForm(f => ({...f, auto_close: true}))} />
-                  <span className="text-sm">Close automatically at {event.end_time}</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="radio" name={`close-${event.id}`}
-                    checked={form.auto_close === false}
-                    onChange={() => setForm(f => ({...f, auto_close: false}))} />
-                  <span className="text-sm">I'll close it manually</span>
-                </label>
-              </div>
-            </div>
-
-            <button
-              disabled={form.auto_open === null || saving}
-              onClick={() => confirmEvent(event.id)}
-              className="w-full bg-teal-600 text-white font-semibold py-3 rounded-xl disabled:opacity-40 hover:bg-teal-700 transition-colors"
-            >
-              {saving ? 'Confirming...' : 'Confirm event'}
-            </button>
-          </div>
-        )}
       </Card>
     )
   }
+
+  const filteredVenueSuggestions = editingEvent?.venue_name
+    ? venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editingEvent.venue_name.toLowerCase()))
+    : venueSuggestions
 
   if (loadingEvents) return (
     <div className="flex items-center justify-center py-12"><Spinner /></div>
   )
 
   const today = new Date(); today.setHours(0, 0, 0, 0)
-  const upcoming = events.filter(e => e.status !== 'cancelled' && new Date(e.event_date) >= today)
-  const past = events.filter(e => e.status !== 'cancelled' && new Date(e.event_date) < today)
+  const filteredEvents = scheduleFilterTruckId
+    ? events.filter(e => e.truck_id === scheduleFilterTruckId)
+    : events
+  const upcoming = filteredEvents.filter(e => e.status !== 'cancelled' && new Date(e.event_date) >= today)
+  const past = filteredEvents.filter(e => e.status !== 'cancelled' && new Date(e.event_date) < today)
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
   const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
   const openEvents = upcoming.filter(e => e.status === 'open')
@@ -2246,7 +2222,26 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
           <h2 className="font-black text-slate-900 text-lg">Schedule</h2>
           <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
         </div>
-        <Btn label="+ Add event" onClick={() => { setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: '', end_time: '', notes: '' }); setAddMode('manual'); setExtractedEvents([]) }} />
+        <div className="flex items-center gap-2">
+          {operatorTrucks.length > 1 && (
+            <select
+              value={scheduleFilterTruckId}
+              onChange={e => setScheduleFilterTruckId(e.target.value)}
+              className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+            >
+              <option value="">All trucks</option>
+              {operatorTrucks.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          )}
+          <Btn label="+ Add event" onClick={() => {
+            const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
+            setFormErrors({})
+            setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id })
+            setAddMode('manual'); setExtractedEvents([])
+          }} />
+        </div>
       </div>
 
       {upcoming.length === 0 && (
@@ -2300,6 +2295,33 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
               {editingEvent.id ? 'Edit event' : 'Add event'}
             </h3>
 
+            {/* Recent events quick-copy — new events only */}
+            {!editingEvent.id && recentEvents.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Copy a recent event</p>
+                <div className="flex flex-col gap-2">
+                  {recentEvents.map(event => (
+                    <button
+                      key={event.id}
+                      onClick={() => handleCopyEvent(event)}
+                      className="flex items-center justify-between w-full px-3 py-2.5 border border-slate-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 transition-colors text-left group"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-slate-800">{event.venue_name}{event.town ? `, ${event.town}` : ''}</p>
+                        <p className="text-xs text-slate-400">{fmtDate(event.event_date)} · {formatTime(event.start_time)}–{formatTime(event.end_time)}</p>
+                      </div>
+                      <span className="text-xs text-orange-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">Copy →</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3 mt-3">
+                  <div className="flex-1 h-px bg-slate-100" />
+                  <span className="text-xs text-slate-400">or add manually</span>
+                  <div className="flex-1 h-px bg-slate-100" />
+                </div>
+              </div>
+            )}
+
             {/* Mode toggle — new events only */}
             {!editingEvent.id && (
               <div className="flex gap-2 mb-4">
@@ -2320,15 +2342,90 @@ function ScheduleTab({ token, bundles, categories, api, reload, showToast }: {
 
             {/* Manual form */}
             {(editingEvent.id || addMode === 'manual') && (
-              <div className="space-y-3">
-                <Input label="Venue name" required value={editingEvent.venue_name} onChange={v => setEditingEvent(p => ({...p!, venue_name: v}))} placeholder="e.g. The Crown" />
+              <div id="add-event-form" className="space-y-3">
+                {operatorTrucks.length > 1 ? (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck</label>
+                    <select
+                      value={editingEvent.truck_id || truck.id}
+                      onChange={e => setEditingEvent(p => ({ ...p!, truck_id: e.target.value }))}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                    >
+                      {operatorTrucks.map(t => (
+                        <option key={t.id} value={t.id}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck</label>
+                    <p className="text-sm text-slate-500 py-2">{truck.name}</p>
+                  </div>
+                )}
+                {vans.length > 1 && (
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Van</label>
+                    <select
+                      value={editingEvent.van_id || ''}
+                      onChange={e => setEditingEvent(p => ({ ...p!, van_id: e.target.value || null }))}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                    >
+                      <option value="">Not specified</option>
+                      {vans.map(van => (
+                        <option key={van.id} value={van.id}>{van.name}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-slate-400 mt-1">Assign this event to a specific van for separate order screens.</p>
+                  </div>
+                )}
+                <div className="relative">
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Venue name <span className="text-red-400">*</span></label>
+                  <input
+                    type="text"
+                    value={editingEvent.venue_name}
+                    onChange={e => { setEditingEvent(p => ({ ...p!, venue_name: e.target.value })); setShowVenueSuggestions(true); if (formErrors.venue_name) setFormErrors(p => ({ ...p, venue_name: '' })) }}
+                    onFocus={() => setShowVenueSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowVenueSuggestions(false), 150)}
+                    placeholder="e.g. The Crown"
+                    className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.venue_name ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                  />
+                  {showVenueSuggestions && filteredVenueSuggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-48 overflow-y-auto">
+                      {filteredVenueSuggestions.map((venue, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => {
+                            setEditingEvent(p => ({ ...p!, venue_name: venue.venue_name, town: venue.town || p!.town, postcode: venue.postcode || p!.postcode, address: venue.address || p!.address, start_time: venue.start_time?.substring(0, 5) || p!.start_time, end_time: venue.end_time?.substring(0, 5) || p!.end_time }))
+                            setShowVenueSuggestions(false)
+                            if (formErrors.venue_name) setFormErrors(p => ({ ...p, venue_name: '' }))
+                          }}
+                          className="w-full text-left px-4 py-2.5 hover:bg-slate-50 border-b border-slate-100 last:border-0"
+                        >
+                          <p className="text-sm font-medium text-slate-800">{venue.venue_name}</p>
+                          <p className="text-xs text-slate-400">
+                            {[venue.town, venue.postcode].filter(Boolean).join(' · ')}
+                            {venue.start_time ? ` · ${formatTime(venue.start_time)}–${formatTime(venue.end_time || '')}` : ''}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {formErrors.venue_name && <p className="text-xs text-red-500 mt-1">{formErrors.venue_name}</p>}
+                </div>
                 <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
                 <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
-                <Input label="Date" required type="date" value={editingEvent.event_date} onChange={v => setEditingEvent(p => ({...p!, event_date: v}))} />
+                <Input label="Date" required type="date" value={editingEvent.event_date}
+                  onChange={v => { setEditingEvent(p => ({...p!, event_date: v})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
+                  error={formErrors.event_date} />
                 <div className="grid grid-cols-2 gap-3">
-                  <Input label="Start time" type="time" value={editingEvent.start_time} onChange={v => setEditingEvent(p => ({...p!, start_time: v}))} />
-                  <Input label="End time" type="time" value={editingEvent.end_time} onChange={v => setEditingEvent(p => ({...p!, end_time: v}))} />
+                  <Input label="Start time" required type="time" value={editingEvent.start_time}
+                    onChange={v => { setEditingEvent(p => ({...p!, start_time: v})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
+                    error={formErrors.start_time} />
+                  <Input label="End time" required type="time" value={editingEvent.end_time}
+                    onChange={v => { setEditingEvent(p => ({...p!, end_time: v})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
+                    error={formErrors.end_time} />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
@@ -2625,7 +2722,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       setVans(prev => prev.filter(v => v.id !== deletingVan.id))
       setDeletingVan(null)
       setDeleteVanConfirm('')
-      showToast('Van deleted')
+      showToast('Truck deleted')
     } catch (e: any) { showToast(e.message, 'error') }
   }
 
@@ -2874,6 +2971,48 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
           </div>
         )}
+
+        <div className="flex items-center justify-between py-3 border-t border-slate-100">
+          <div>
+            <p className="text-sm font-medium text-slate-800">Open for orders automatically</p>
+            <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
+          </div>
+          <button
+            onClick={() => {
+              const next = !form.default_auto_open
+              setForm(p => ({...p, default_auto_open: next}))
+              saveSetting('default_auto_open', next)
+            }}
+            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
+              form.default_auto_open ? 'bg-teal-500' : 'bg-slate-300'
+            }`}
+          >
+            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+              form.default_auto_open ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+          </button>
+        </div>
+
+        <div className="flex items-center justify-between py-3 border-t border-slate-100">
+          <div>
+            <p className="text-sm font-medium text-slate-800">Close for orders automatically</p>
+            <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
+          </div>
+          <button
+            onClick={() => {
+              const next = !form.default_auto_close
+              setForm(p => ({...p, default_auto_close: next}))
+              saveSetting('default_auto_close', next)
+            }}
+            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
+              form.default_auto_close ? 'bg-teal-500' : 'bg-slate-300'
+            }`}
+          >
+            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+              form.default_auto_close ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+          </button>
+        </div>
       </Card>
 
       {/* Customer contact */}
@@ -2957,20 +3096,20 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         </div>
       </Card>
 
-      {/* Your vehicles */}
+      {/* Your trucks */}
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Your vehicles</p>
+            <p className="text-sm font-semibold text-slate-900">Your trucks</p>
             <p className="text-xs text-slate-500 mt-0.5">
-              Manage your vehicles. Each has its own order screen and settings.
+              Manage your trucks. Each has its own order screen and settings.
             </p>
           </div>
           <button
             onClick={handleAddVanClick}
             className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
           >
-            + Add vehicle
+            + Add truck
           </button>
         </div>
 
@@ -3175,7 +3314,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             </div>
             <div>
               <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Type the van name to confirm
+                Type the truck name to confirm
               </label>
               <input
                 type="text"
@@ -3198,7 +3337,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 disabled={deleteVanConfirm !== deletingVan.name}
                 className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-red-700"
               >
-                Delete van
+                Delete truck
               </button>
             </div>
           </div>
@@ -3210,11 +3349,11 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Add another van</h3>
+              <h3 className="text-lg font-semibold text-slate-900">Add another truck</h3>
               <p className="text-sm text-slate-500 mt-2">
                 Your {truck.plan === 'pro' ? 'Pro' : 'Max'} plan includes{' '}
-                {truck.plan === 'pro' ? '2 vans' : 'unlimited vans'}.
-                Adding an additional van costs{' '}
+                {truck.plan === 'pro' ? '2 trucks' : 'unlimited trucks'}.
+                Adding an additional truck costs{' '}
                 <strong>£{VAN_ADDON_PRICE[truck.plan]}/month</strong>{' '}
                 and will be added to your next billing cycle.
               </p>
@@ -3236,7 +3375,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 onClick={() => { setShowVanBillingModal(false); setAddingVan(true) }}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-orange-700"
               >
-                Add van — £{VAN_ADDON_PRICE[truck.plan]}/mo
+                Add truck — £{VAN_ADDON_PRICE[truck.plan]}/mo
               </button>
             </div>
           </div>
@@ -3949,7 +4088,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
                 {' · '}
                 {member.van_names?.length
                   ? member.van_names.join(', ')
-                  : 'All vans'}
+                  : 'All trucks'}
                 {!member.accepted_at && ' · Invite pending'}
               </p>
             </div>
@@ -4021,11 +4160,11 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Van access</label>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Truck access</label>
               {vans.length === 1 ? (
                 <label className="flex items-center gap-2 py-1.5 opacity-60 cursor-not-allowed">
                   <input type="checkbox" checked disabled />
-                  <span className="text-sm text-slate-700">{vans[0].name} <span className="text-slate-400">(only van)</span></span>
+                  <span className="text-sm text-slate-700">{vans[0].name} <span className="text-slate-400">(only truck)</span></span>
                 </label>
               ) : (
                 <>
@@ -4046,7 +4185,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
                     </label>
                   ))}
                   {vans.length > 1 && inviteVanIds.length === 0 && (
-                    <p className="text-xs text-amber-600 mt-1">Select at least one van</p>
+                    <p className="text-xs text-amber-600 mt-1">Select at least one truck</p>
                   )}
                 </>
               )}

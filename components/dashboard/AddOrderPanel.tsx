@@ -13,6 +13,26 @@ import { calculateOrderTotal } from '@/lib/order-calculations'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
+const formatTime = (t: string) => t ? t.substring(0, 5) : ''
+
+function getAsapBaseTime(event: { event_date: string; start_time: string } | null): Date {
+  if (!event) return new Date()
+  const now = new Date()
+  const todayStr = now.toISOString().split('T')[0]
+  const [startH, startM] = (event.start_time || '00:00').split(':').map(Number)
+  if (event.event_date > todayStr) {
+    const d = new Date(event.event_date)
+    d.setHours(startH, startM, 0, 0)
+    return d
+  }
+  if (event.event_date === todayStr) {
+    const eventStart = new Date()
+    eventStart.setHours(startH, startM, 0, 0)
+    return now < eventStart ? eventStart : now
+  }
+  return now
+}
+
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
   const modStr = [...mods].map(m => m.name).sort().join('|')
@@ -28,6 +48,7 @@ type EventRecord = {
   start_time: string
   end_time: string
   venue_name?: string | null
+  status?: string
 }
 
 // ─── props ────────────────────────────────────────────────────────────────────
@@ -138,11 +159,14 @@ export function AddOrderPanel({
         const mins = Math.ceil(Math.max(0, totalBatches - 1) * cfg.secs / 60)
         extraBatchMins = Math.max(extraBatchMins, mins)
       }
-      const asapMins = Math.round((eventStartMins + extraBatchMins + waitMinutes) / 5) * 5
-      const h = Math.floor(asapMins / 60); const m2 = asapMins % 60
+      const asapBase = getAsapBaseTime(manualEvent)
+      const asapDate = new Date(asapBase.getTime() + (extraBatchMins + waitMinutes) * 60000)
+      const roundedMs = Math.round(asapDate.getTime() / (5 * 60000)) * (5 * 60000)
+      const asapRounded = new Date(roundedMs)
+      const h = asapRounded.getHours(); const m2 = asapRounded.getMinutes()
       return {
         readyTime: `${String(h).padStart(2, '0')}:${String(m2).padStart(2, '0')}`,
-        minsFromNow: Math.max(0, asapMins - nowMins),
+        minsFromNow: Math.max(0, Math.ceil((asapRounded.getTime() - Date.now()) / 60000)),
       }
     }
     const totalSecs = calcQueueAwareReadySecs(newByCat, queueByCat, categoryConfigs, waitMinutes * 60 + 120)
@@ -167,48 +191,27 @@ export function AddOrderPanel({
   const totalItemCount = manualItems.reduce((s, i) => s + i.quantity, 0) + appliedDeals.length
 
   // ── fetch events / slots ────────────────────────────────────────────────────
-  const hasAutoSelected = useRef(false)
 
-  const fetchUpcomingEvents = useCallback(async (autoSelect = false) => {
-    if (!truck?.id) return
+
+  const fetchUpcomingEvents = useCallback(async () => {
+    if (!token) return
     try {
-      const res = await fetch(`/api/events?truck=${truck.id}`)
+      const res = await fetch(`/api/events/manage?token=${token}&upcoming=true`)
       const data = await res.json()
       if (!data.events?.length) return
-      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() + 14)
-      const upcoming = data.events.filter((ev: any) => {
-        const [d, m, y] = ev.date.split('/').map(Number)
-        return new Date(y, m - 1, d) <= cutoff
-      })
-      const eventsToShow = upcoming.length > 0 ? upcoming : [data.events[0]]
-      const mapped: EventRecord[] = eventsToShow.map((ev: any) => ({
-        id: ev.date_iso,
-        event_date: ev.date_iso,
-        start_time: ev.start_time,
-        end_time: ev.end_time,
-        venue_name: [ev.venue_name, ev.village].filter(Boolean).join(', ') || null,
-      }))
+      const mapped: EventRecord[] = data.events
+        .filter((ev: any) => ev.status === 'confirmed' || ev.status === 'open')
+        .map((ev: any) => ({
+          id: ev.id,
+          event_date: ev.event_date,
+          start_time: ev.start_time || '',
+          end_time: ev.end_time || '',
+          venue_name: ev.venue_name || null,
+          status: ev.status,
+        }))
       setUpcomingEvents(mapped)
-      if (autoSelect) {
-        const now = new Date()
-        const todayIso = now.toISOString().split('T')[0]
-        const nowMins = now.getHours() * 60 + now.getMinutes()
-        const current = mapped.find(ev => {
-          if (ev.event_date !== todayIso) return false
-          const [sh, sm] = ev.start_time.split(':').map(Number)
-          const [eh, em] = ev.end_time.split(':').map(Number)
-          return nowMins >= sh * 60 + sm && nowMins <= eh * 60 + em + 30
-        })
-        const next = mapped.find(ev => {
-          if (ev.event_date > todayIso) return true
-          const [sh, sm] = ev.start_time.split(':').map(Number)
-          return sh * 60 + sm > nowMins
-        }) || mapped[0] || null
-        const best = current || next
-        if (best) setManualEvent(prev => prev ?? best)
-      }
     } catch { }
-  }, [truck?.id])
+  }, [token])
 
   const fetchManualSlots = useCallback(async (eventDate: string, startTime?: string, endTime?: string) => {
     if (!truck?.id) return
@@ -223,10 +226,20 @@ export function AddOrderPanel({
   }, [truck?.id])
 
   useEffect(() => {
-    if (hasAutoSelected.current) return
-    hasAutoSelected.current = true
-    if (!todayEvent) fetchUpcomingEvents(true)
-  }, [todayEvent, fetchUpcomingEvents])
+    fetchUpcomingEvents()
+  }, [fetchUpcomingEvents])
+
+  useEffect(() => {
+    if (manualEvent || upcomingEvents.length === 0) return
+    const todayIso = new Date().toISOString().split('T')[0]
+    const todayEvs = upcomingEvents.filter(e => e.event_date === todayIso)
+    if (todayEvs.length === 1) {
+      setManualEvent(todayEvs[0])
+    } else if (todayEvs.length === 0) {
+      // No today event — pre-select the next upcoming one
+      setManualEvent(upcomingEvents[0])
+    }
+  }, [upcomingEvents])
 
   useEffect(() => {
     if (manualEvent?.event_date) {
@@ -400,7 +413,14 @@ export function AddOrderPanel({
         </select>
       )}
       {readyTime && (
-        <p className="text-xs text-green-600 font-medium mt-1.5">⚡ ~{queueAware.minsFromNow} min{queueAware.minsFromNow !== 1 ? 's' : ''} · around {readyTime}</p>
+        <p className="text-xs text-green-600 font-medium mt-1.5">
+          ⚡ ~{queueAware.minsFromNow} min{queueAware.minsFromNow !== 1 ? 's' : ''} · around {readyTime}
+          {manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0] && (
+            <span className="text-slate-400 ml-1">
+              (on {new Date(manualEvent.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })})
+            </span>
+          )}
+        </p>
       )}
     </div>
   )
@@ -704,7 +724,7 @@ export function AddOrderPanel({
               const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
               const d = manualEvent.event_date
               const label = d === t ? 'Today' : d === tmrw ? 'Tomorrow' : new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-              return `📅 ${label} · ${manualEvent.start_time}–${manualEvent.end_time}`
+              return `📅 ${label} · ${formatTime(manualEvent.start_time)}–${formatTime(manualEvent.end_time)}`
             })()}</p>
             {manualEvent.venue_name && <p className="text-xs text-orange-600 truncate mt-0.5">{manualEvent.venue_name}</p>}
           </div>
@@ -892,37 +912,69 @@ export function AddOrderPanel({
       )}
 
       {/* ── Event picker sheet ── */}
-      {showEventPicker && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center" onClick={() => setShowEventPicker(false)}>
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm" onClick={e => e.stopPropagation()}>
-            <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex items-center justify-between">
-              <p className="font-black text-slate-900 text-base">Select event</p>
-              <button onClick={() => setShowEventPicker(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-lg">✕</button>
-            </div>
-            <div className="p-3 space-y-2 max-h-72 overflow-y-auto">
-              {upcomingEvents.length === 0
-                ? <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>
-                : upcomingEvents.map(ev => {
-                  const t = new Date().toISOString().split('T')[0]
-                  const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
-                  const label = ev.event_date === t ? 'Today' : ev.event_date === tmrw ? 'Tomorrow' : new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-                  const isSelected = manualEvent?.id === ev.id
-                  return (
-                    <button key={ev.id} onClick={() => { setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time); setManualSlot('') }}
-                      className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
-                      <p className="text-sm font-bold text-slate-900">{label} · {ev.start_time}–{ev.end_time}</p>
-                      {ev.venue_name && <p className="text-xs text-slate-500 mt-0.5">{ev.venue_name}</p>}
-                      {isSelected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
-                    </button>
-                  )
-                })}
-            </div>
-            <div className="p-3 border-t border-slate-100 pb-8">
-              <button onClick={() => setShowEventPicker(false)} className="w-full border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600 font-medium hover:bg-slate-50">Done</button>
+      {showEventPicker && (() => {
+        const todayIso = new Date().toISOString().split('T')[0]
+        const fmtEvDate = (d: string) => {
+          const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
+          if (d === todayIso) return 'Today'
+          if (d === tmrw) return 'Tomorrow'
+          return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+        }
+        const fmtT = (t: string) => t ? t.substring(0, 5) : ''
+        return (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center" onClick={() => setShowEventPicker(false)}>
+            <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm" onClick={e => e.stopPropagation()}>
+              <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex items-center justify-between">
+                <p className="font-black text-slate-900 text-base">Select event</p>
+                <button onClick={() => setShowEventPicker(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+              </div>
+              <div className="p-3 space-y-2 max-h-72 overflow-y-auto">
+                {upcomingEvents.length === 0
+                  ? <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>
+                  : upcomingEvents.map(ev => {
+                    const isSelected = manualEvent?.id === ev.id
+                    const isFuture = ev.event_date > todayIso
+                    return (
+                      <button key={ev.id} onClick={() => { setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time); setManualSlot('') }}
+                        className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {fmtT(ev.start_time)}–{fmtT(ev.end_time)}</p>
+                          {isFuture && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
+                        </div>
+                        {ev.venue_name && <p className="text-xs text-slate-500 mt-0.5">{ev.venue_name}</p>}
+                        {isSelected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
+                      </button>
+                    )
+                  })}
+              </div>
+
+              {/* Warning when a future event is selected */}
+              {manualEvent && manualEvent.event_date > todayIso && (
+                <div className="mx-3 mb-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                  <span className="text-amber-500 flex-shrink-0 text-sm">⚠️</span>
+                  <p className="text-xs text-amber-700">
+                    {fmtEvDate(manualEvent.event_date)} event selected. Orders will appear on the order screen when the event opens.
+                  </p>
+                </div>
+              )}
+
+              {/* Info when today's confirmed (not yet open) event is selected */}
+              {manualEvent && manualEvent.event_date === todayIso && manualEvent.status === 'confirmed' && (
+                <div className="mx-3 mb-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
+                  <span className="text-blue-500 flex-shrink-0 text-sm">ℹ️</span>
+                  <p className="text-xs text-blue-700">
+                    Today's event — not yet open for orders. Orders will be queued and visible when you open the event.
+                  </p>
+                </div>
+              )}
+
+              <div className="p-3 border-t border-slate-100 pb-8">
+                <button onClick={() => setShowEventPicker(false)} className="w-full border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600 font-medium hover:bg-slate-50">Done</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </>
   )
 }
