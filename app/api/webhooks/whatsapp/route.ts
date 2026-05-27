@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     console.log('[WA webhook] events found:', events?.length)
 
     const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
-    const reply = await generateWhatsAppReply({
+    const { reply, classification } = await generateWhatsAppReply({
       truckName:       truck.name,
       truckId:         truck.id,
       customerMessage: body,
@@ -81,7 +81,20 @@ export async function POST(req: NextRequest) {
       orderUrl:        `${hgUrl}/order/${truck.dashboard_token}`,
     })
 
-    console.log('[WA webhook] reply generated:', reply)
+    console.log('[WA webhook] classification:', classification, 'reply:', reply)
+
+    // Fire-and-forget interaction log — never let this block the response
+    supabase.from('whatsapp_logs').insert({
+      truck_id:       truck.id,
+      customer_number: fromNumber,
+      message_in:     body,
+      classification,
+      events_found:   events?.length ?? 0,
+      response_sent:  reply ?? null,
+      possible_miss:  classification === 'SPECIFIC_QUERY' && (events?.length ?? 0) === 0,
+    }).then(({ error }) => {
+      if (error) console.error('[WhatsApp] Logging failed:', error)
+    })
 
     if (!reply) {
       // IGNORE bucket — log inbound but don't reply

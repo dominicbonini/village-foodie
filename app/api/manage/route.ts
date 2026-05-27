@@ -94,6 +94,18 @@ export async function GET(req: NextRequest) {
         .order('name')
     : { data: [] }
 
+  const { data: pendingEmailChange } = truck.operator_id
+    ? await supabase
+        .from('operator_email_changes')
+        .select('id, new_email, requested_at, expires_at')
+        .eq('operator_id', truck.operator_id)
+        .is('verified_at', null)
+        .gte('expires_at', new Date().toISOString())
+        .order('requested_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null }
+
   return NextResponse.json({
     truck,
     categories: categories || [],
@@ -106,6 +118,7 @@ export async function GET(req: NextRequest) {
     events: events || [],
     userRole,
     operatorTrucks: operatorTrucks || [],
+    pendingEmailChange: pendingEmailChange || null,
   })
 }
 
@@ -764,10 +777,24 @@ export async function POST(req: NextRequest) {
         .lte('created_at', `${date}T23:59:59`)
     }
 
-    const { data: orders } = await query
+    const [{ data: orders }, { data: waLogs }] = await Promise.all([
+      query,
+      supabase
+        .from('whatsapp_logs')
+        .select('classification, possible_miss')
+        .eq('truck_id', truck.id)
+        .gte('created_at', `${date ?? new Date().toISOString().split('T')[0]}T00:00:00`)
+        .lte('created_at', `${date ?? new Date().toISOString().split('T')[0]}T23:59:59`),
+    ])
+
+    const whatsappStats = waLogs && waLogs.length > 0 ? {
+      total:   waLogs.length,
+      handled: waLogs.filter((w: any) => w.classification !== 'IGNORE').length,
+      misses:  waLogs.filter((w: any) => w.possible_miss).length,
+    } : null
 
     if (!orders || orders.length === 0) {
-      return NextResponse.json({ ok: true, report: null })
+      return NextResponse.json({ ok: true, report: whatsappStats ? { whatsappStats } : null })
     }
 
     const totalRevenue = orders.reduce((s: number, o: any) => s + (o.total || 0), 0)
@@ -800,6 +827,7 @@ export async function POST(req: NextRequest) {
         dealsRedeemed,
         dealSavings,
         upsellRevenue: 0,
+        whatsappStats,
       },
     })
   }

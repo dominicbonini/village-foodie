@@ -46,6 +46,50 @@ async function loadImageViaBlobUrl(url: string): Promise<HTMLImageElement | null
   }
 }
 
+// QR + centred square logo composite — no branding strip.
+// Used for the fullscreen customer-facing QR modal.
+export async function generateQRWithLogo(
+  url: string,
+  logoUrl: string | null | undefined,
+  size = 600
+): Promise<string> {
+  const qrDataUrl = await QRCode.toDataURL(url, {
+    width: size,
+    margin: 2,
+    color: { dark: '#0f172a', light: '#ffffff' },
+    errorCorrectionLevel: 'H',
+  })
+
+  if (!logoUrl) return qrDataUrl
+
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return qrDataUrl
+  canvas.width = size
+  canvas.height = size
+
+  const qrImg = new Image()
+  await new Promise<void>(resolve => { qrImg.onload = () => resolve(); qrImg.src = qrDataUrl })
+  ctx.drawImage(qrImg, 0, 0, size, size)
+
+  const logo = await loadImageViaBlobUrl(logoUrl)
+  if (!logo) return qrDataUrl
+
+  // Match the 29% logo size used in generateQRCodePNG (116px on 400px QR)
+  const logoSize = Math.round(size * 0.29)
+  const cx = size / 2
+  const logoX = cx - logoSize / 2
+  const logoY = cx - logoSize / 2
+  const padding = 6
+
+  ctx.fillStyle = '#ffffff'
+  roundRect(ctx, logoX - padding, logoY - padding, logoSize + padding * 2, logoSize + padding * 2, 8)
+  ctx.fill()
+  ctx.drawImage(logo, logoX, logoY, logoSize, logoSize)
+
+  return canvas.toDataURL('image/png')
+}
+
 export async function generateQRCodePNG({
   url,
   logoUrl,

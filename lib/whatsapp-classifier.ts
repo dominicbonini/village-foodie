@@ -53,7 +53,12 @@ async function callGemini(prompt: string, temperature: number): Promise<string> 
   return (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim()
 }
 
-export async function generateWhatsAppReply(params: ClassifierParams): Promise<string | null> {
+export interface WhatsAppReplyResult {
+  reply: string | null
+  classification: string
+}
+
+export async function generateWhatsAppReply(params: ClassifierParams): Promise<WhatsAppReplyResult> {
   const { truckName, customerMessage, events, scheduleUrl, orderUrl } = params
 
   // Step 1: classify with a generous, keyword-aware prompt
@@ -90,10 +95,13 @@ Reply with exactly one word: SPECIFIC_QUERY, GENERAL_QUERY, or IGNORE`
     classification = 'SPECIFIC_QUERY' // fail open
   }
 
-  if (classification === 'IGNORE') return null
+  if (classification === 'IGNORE') return { reply: null, classification: 'IGNORE' }
 
   if (classification === 'GENERAL_QUERY') {
-    return `Hey! You can check out our menu and pre-order here: ${orderUrl} 🍽️\n\n${truckName}`
+    return {
+      reply: `Hey! You can check out our menu and pre-order here: ${orderUrl} 🍽️\n\n${truckName}`,
+      classification: 'GENERAL_QUERY',
+    }
   }
 
   // Step 2: SPECIFIC_QUERY — reply with explicit date mapping so Gemini never guesses
@@ -136,9 +144,12 @@ Instructions:
 
   try {
     const reply = await callGemini(replyPrompt, 0.4)
-    return reply || null
+    return { reply: reply || null, classification: 'SPECIFIC_QUERY' }
   } catch (err) {
     console.error('[WhatsApp classifier] Gemini error:', err)
-    return `Hey! Check out our latest schedule here: ${scheduleUrl}\n\n${truckName}`
+    return {
+      reply: `Hey! Check out our latest schedule here: ${scheduleUrl}\n\n${truckName}`,
+      classification: 'SPECIFIC_QUERY',
+    }
   }
 }

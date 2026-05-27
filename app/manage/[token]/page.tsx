@@ -123,6 +123,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [currentUserFirstName, setCurrentUserFirstName] = useState<string | null>(null)
   const [currentUserLastName, setCurrentUserLastName] = useState<string | null>(null)
   const [currentUserPhone, setCurrentUserPhone] = useState<string | null>(null)
+  const [pendingEmailChange, setPendingEmailChange] = useState<{ id: string; new_email: string; requested_at: string; expires_at: string } | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
@@ -145,6 +146,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setCategoryModGroups(data.categoryModGroups)
       setBundles(data.bundles)
       setOperatorTrucks(data.operatorTrucks || [])
+      setPendingEmailChange(data.pendingEmailChange || null)
     } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
     finally { setLoading(false) }
   }, [token])
@@ -331,6 +333,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           currentUserFirstName={currentUserFirstName}
           currentUserLastName={currentUserLastName}
           currentUserPhone={currentUserPhone}
+          initialPendingEmailChange={pendingEmailChange}
           onProfileSaved={(firstName, lastName, phone) => {
             const fullName = `${firstName} ${lastName}`.trim()
             setCurrentUserName(fullName)
@@ -1065,14 +1068,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                 <input value={editingItem.description || ''} onChange={e => setEditingItem(p => ({...p!, description: e.target.value}))}
                   placeholder="e.g. Tomato, Mozzarella, Basil"
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                <p className="text-slate-400 text-xs mt-0.5">Shown to customers — they can request to add/remove if Allow Edit is on</p>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                <div>
-                  <p className="text-sm font-bold text-slate-700">Allow customer to edit ingredients?</p>
-                  <p className="text-xs text-slate-400">Customers can request to add/remove ingredients from the list above</p>
-                </div>
-                <Toggle on={!!(editingItem as any).allow_customer_edit} onToggle={() => setEditingItem(p => ({...p!, allow_customer_edit: !(p as any).allow_customer_edit}))} />
+                <p className="text-slate-400 text-xs mt-0.5">Shown to customers on the order page</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Input label="Price" required type="number" value={editingItem.price || ''} onChange={v => setEditingItem(p => ({...p!, price: parseFloat(v) || 0}))} placeholder="10.00" />
@@ -2608,12 +2604,21 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [generatingQR, setGeneratingQR] = useState(false)
+  const [copiedOrderLink, setCopiedOrderLink] = useState(false)
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
   }, [])
 
   const orderUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
+
+  const handleCopyOrderLink = async () => {
+    try {
+      await navigator.clipboard.writeText(orderUrl)
+      setCopiedOrderLink(true)
+      setTimeout(() => setCopiedOrderLink(false), 2000)
+    } catch { /* clipboard permission denied — fail silently */ }
+  }
 
   const handleGenerateQR = async () => {
     setGeneratingQR(true)
@@ -2924,6 +2929,15 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           Print or display this code so customers can scan and pre-order.
           Place it at your hatch, on your van, or share it online.
         </p>
+        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-4">
+          <p className="text-sm text-slate-600 flex-1 truncate font-mono">{orderUrl}</p>
+          <button
+            onClick={handleCopyOrderLink}
+            className="text-xs text-orange-600 font-semibold flex-shrink-0 hover:text-orange-700"
+          >
+            {copiedOrderLink ? '✓ Copied' : 'Copy'}
+          </button>
+        </div>
         {qrDataUrl ? (
           <div className="flex flex-col items-center gap-4">
             <img
@@ -3228,8 +3242,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 <div>
                   <p className="text-slate-800">Kitchen capacity</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Maximum items your kitchen can handle every 5 minutes.
-                    Leave blank for no limit.
+                    Maximum cooked items per 5-minute window. Drinks and instant items don&apos;t count. Leave blank for no limit.
                   </p>
                 </div>
                 <select
@@ -3242,12 +3255,12 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                   className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-32"
                 >
                   <option value="">No limit</option>
-                  <option value="3">3 per 5 mins</option>
-                  <option value="5">5 per 5 mins</option>
-                  <option value="8">8 per 5 mins</option>
-                  <option value="10">10 per 5 mins</option>
-                  <option value="15">15 per 5 mins</option>
-                  <option value="20">20 per 5 mins</option>
+                  <option value="3">3 items</option>
+                  <option value="5">5 items</option>
+                  <option value="8">8 items</option>
+                  <option value="10">10 items</option>
+                  <option value="15">15 items</option>
+                  <option value="20">20 items</option>
                 </select>
               </div>
 
@@ -3684,13 +3697,14 @@ function BillingTab({ truck }: { truck: Truck | null }) {
 
 // ── ReportsTab ──────────────────────────────────────────────────
 interface ReportData {
-  totalOrders: number
-  totalRevenue: number
-  avgOrder: number
-  topItems: Array<{ name: string; qty: number; revenue: number }>
-  dealsRedeemed: number
-  dealSavings: number
-  upsellRevenue: number
+  totalOrders?: number
+  totalRevenue?: number
+  avgOrder?: number
+  topItems?: Array<{ name: string; qty: number; revenue: number }>
+  dealsRedeemed?: number
+  dealSavings?: number
+  upsellRevenue?: number
+  whatsappStats?: { total: number; handled: number; misses: number } | null
 }
 interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
 
@@ -3751,38 +3765,42 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
       {reportData && (
         <>
           {/* Summary cards */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <p className="text-xs text-slate-400">Orders</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">{reportData.totalOrders}</p>
+          {reportData.totalOrders != null && (
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white border border-slate-200 rounded-xl p-4">
+                <p className="text-xs text-slate-400">Orders</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">{reportData.totalOrders}</p>
+              </div>
+              <div className="bg-white border border-slate-200 rounded-xl p-4">
+                <p className="text-xs text-slate-400">Revenue</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.totalRevenue!.toFixed(2)}</p>
+              </div>
+              <div className="bg-white border border-slate-200 rounded-xl p-4">
+                <p className="text-xs text-slate-400">Avg order</p>
+                <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.avgOrder!.toFixed(2)}</p>
+              </div>
             </div>
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <p className="text-xs text-slate-400">Revenue</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.totalRevenue.toFixed(2)}</p>
-            </div>
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <p className="text-xs text-slate-400">Avg order</p>
-              <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.avgOrder.toFixed(2)}</p>
-            </div>
-          </div>
+          )}
 
           {/* Top items */}
-          <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <p className="text-sm font-semibold text-slate-900 mb-3">Items sold</p>
-            {reportData.topItems.map((item, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400 w-4">{i + 1}</span>
-                  <span className="text-sm text-slate-700">{item.name}</span>
-                  <span className="text-xs text-slate-400">×{item.qty}</span>
+          {reportData.topItems && reportData.topItems.length > 0 && (
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <p className="text-sm font-semibold text-slate-900 mb-3">Items sold</p>
+              {reportData.topItems.map((item, i) => (
+                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-400 w-4">{i + 1}</span>
+                    <span className="text-sm text-slate-700">{item.name}</span>
+                    <span className="text-xs text-slate-400">×{item.qty}</span>
+                  </div>
+                  <span className="text-sm font-medium text-slate-900">£{item.revenue.toFixed(2)}</span>
                 </div>
-                <span className="text-sm font-medium text-slate-900">£{item.revenue.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Deals summary */}
-          {reportData.dealsRedeemed > 0 && (
+          {(reportData.dealsRedeemed ?? 0) > 0 && (
             <div className="bg-white border border-slate-200 rounded-xl p-4">
               <p className="text-sm font-semibold text-slate-900 mb-3">Deals & discounts</p>
               <div className="flex items-center justify-between py-2">
@@ -3791,13 +3809,43 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               </div>
               <div className="flex items-center justify-between py-2 border-t border-slate-100">
                 <span className="text-sm text-slate-600">Customer savings</span>
-                <span className="text-sm font-medium text-green-600">£{reportData.dealSavings.toFixed(2)}</span>
+                <span className="text-sm font-medium text-green-600">£{reportData.dealSavings!.toFixed(2)}</span>
               </div>
             </div>
           )}
 
+          {/* WhatsApp auto-replies */}
+          {reportData.whatsappStats && reportData.whatsappStats.total > 0 && (
+            <div className="bg-white border border-slate-200 rounded-xl p-4">
+              <p className="text-sm font-semibold text-slate-900 mb-3">WhatsApp auto-replies</p>
+              <div className="grid grid-cols-3 gap-3 mb-3">
+                <div className="text-center">
+                  <p className="text-xl font-bold text-slate-900">{reportData.whatsappStats.total}</p>
+                  <p className="text-xs text-slate-400">Messages</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xl font-bold text-slate-900">{reportData.whatsappStats.handled}</p>
+                  <p className="text-xs text-slate-400">Answered</p>
+                </div>
+                <div className="text-center">
+                  <p className={`text-xl font-bold ${reportData.whatsappStats.misses > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+                    {reportData.whatsappStats.misses}
+                  </p>
+                  <p className="text-xs text-slate-400">Possible misses</p>
+                </div>
+              </div>
+              {reportData.whatsappStats.misses > 0 && (
+                <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                  <p className="text-xs text-amber-700">
+                    ⚠️ {reportData.whatsappStats.misses} message{reportData.whatsappStats.misses !== 1 ? 's' : ''} asked about your schedule but we couldn&apos;t find a matching event. Check your events are confirmed with correct dates and towns.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Pro upgrade prompt */}
-          {truck?.plan === 'starter' && (
+          {truck?.plan === 'starter' && reportData.totalOrders != null && (
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
               <p className="text-sm font-semibold text-slate-700">Want more insights?</p>
               <p className="text-xs text-slate-500 mt-1">
@@ -3818,10 +3866,13 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 }
 
 // ── TeamTab ────────────────────────────────────────────────────
-function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, onProfileSaved }: {
+type PendingEmailChange = { id: string; new_email: string; requested_at: string; expires_at: string }
+
+function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, initialPendingEmailChange, onProfileSaved }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   currentUserEmail: string | null; currentUserFirstName: string | null; currentUserLastName: string | null; currentUserPhone: string | null
+  initialPendingEmailChange: PendingEmailChange | null
   onProfileSaved: (firstName: string, lastName: string, phone: string | null) => void
 }) {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
@@ -3838,7 +3889,8 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
   const [ownProfileLastName, setOwnProfileLastName] = useState('')
   const [ownProfilePhone, setOwnProfilePhone] = useState('')
   const [ownProfileEmail, setOwnProfileEmail] = useState('')
-  const [pendingEmailChange, setPendingEmailChange] = useState<string | null>(null)
+  const [pendingEmailChange, setPendingEmailChange] = useState<PendingEmailChange | null>(initialPendingEmailChange)
+  const [resendingVerification, setResendingVerification] = useState(false)
   const [savingOwnProfile, setSavingOwnProfile] = useState(false)
 
   const saveOwnProfile = async () => {
@@ -3866,7 +3918,12 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
         })
         const emailData = await emailRes.json()
         if (emailData.ok) {
-          setPendingEmailChange(ownProfileEmail.trim())
+          setPendingEmailChange({
+            id: emailData.changeId,
+            new_email: ownProfileEmail.trim(),
+            requested_at: new Date().toISOString(),
+            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          })
           showToast('Verification email sent')
         } else {
           showToast(emailData.error || 'Email change failed', 'error')
@@ -3880,6 +3937,25 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
       showToast('Failed to save profile', 'error')
     } finally {
       setSavingOwnProfile(false)
+    }
+  }
+
+  const handleResendVerification = async (changeId: string) => {
+    setResendingVerification(true)
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ changeId }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        showToast('Verification email resent — check your inbox')
+      } else {
+        showToast(data.error || 'Failed to resend', 'error')
+      }
+    } finally {
+      setResendingVerification(false)
     }
   }
 
@@ -4005,6 +4081,24 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
           </button>
         </div>
 
+        {pendingEmailChange && !editingOwnProfile && (
+          <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold text-amber-800">⏳ Awaiting verification</p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                Verification sent to <strong>{pendingEmailChange.new_email}</strong>. Check your inbox.
+              </p>
+            </div>
+            <button
+              onClick={() => handleResendVerification(pendingEmailChange.id)}
+              disabled={resendingVerification}
+              className="text-xs text-amber-700 font-semibold underline flex-shrink-0 disabled:opacity-50"
+            >
+              {resendingVerification ? 'Sending...' : 'Resend'}
+            </button>
+          </div>
+        )}
+
         {editingOwnProfile && (
           <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-3 mt-2">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">My profile</p>
@@ -4052,11 +4146,6 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
               {ownProfileEmail !== currentUserEmail && (
                 <p className="text-xs text-amber-600 mt-1">
                   A verification link will be sent to this address. Your current email remains active until verified.
-                </p>
-              )}
-              {pendingEmailChange && (
-                <p className="text-xs text-blue-600 mt-1">
-                  ⏳ Verification pending for {pendingEmailChange}. Check your inbox.
                 </p>
               )}
             </div>

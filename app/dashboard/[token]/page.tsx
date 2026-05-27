@@ -109,6 +109,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editItemModal,setEditItemModal]=useState<{item:MenuItem;modGroups:ModifierGroup[];allowNotes:boolean}|null>(null)
   const[editModalMods,setEditModalMods]=useState<{name:string;price:number}[]>([])
   const[editModalNotes,setEditModalNotes]=useState('')
+  const[copiedOrderLink,setCopiedOrderLink]=useState(false)
+  const[showQRFullscreen,setShowQRFullscreen]=useState(false)
+  const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
   const fetchAllRef=useRef<()=>void>(()=>{})
   const asapSlot=getAsapSlot(slots,(todayEvents.find(e=>e.status==='open')??todayEvents[0])?.event_date)
@@ -262,6 +265,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     prevPendingCount.current=count
   },[orders,authenticated])
 
+  useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo])
+
   const handleOpenKDS=()=>{
     if(vans.length===1){
       const van=vans[0]
@@ -271,6 +276,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }
     if(vans.length===0){window.open(`/dashboard/${token}/kds`,'_blank');return}
     setShowKDSPicker(true)
+  }
+
+  const handleCopyOrderLink=async()=>{
+    try{
+      const orderUrl=`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck?.dashboard_token}`
+      await navigator.clipboard.writeText(orderUrl)
+      setCopiedOrderLink(true)
+      setTimeout(()=>setCopiedOrderLink(false),2000)
+    }catch{/* clipboard permission denied — fail silently */}
+  }
+
+  const handleShowQR=async()=>{
+    setShowQRFullscreen(true)
+    if(qrFullscreenDataUrl) return
+    if(!truck) return
+    try{
+      const{generateQRWithLogo}=await import('@/lib/generateQRCode')
+      const orderUrl=`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
+      setQrFullscreenDataUrl(await generateQRWithLogo(orderUrl,truck.logo))
+    }catch(err){
+      console.error('[QR] Generation failed:',err)
+      setShowQRFullscreen(false)
+    }
   }
 
   const submitPin=async()=>{
@@ -610,7 +638,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           {([['orders',`Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length>0?` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})`:''}`],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
             <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
           ))}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center">
+            <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
+              {copiedOrderLink ? '✓ Copied' : 'Order link'}
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+            <button onClick={handleShowQR} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
+              QR code
+            </button>
             <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap">
               Kitchen screen
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -1490,6 +1525,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       )}
 
       {toast&&<div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600 text-white'}`}>{toast.msg}</div>}
+
+      {showQRFullscreen&&(
+        <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center" onClick={()=>setShowQRFullscreen(false)}>
+          <div className="w-[85vmin] h-[85vmin] flex-shrink-0">
+            {qrFullscreenDataUrl
+              ? <img src={qrFullscreenDataUrl} className="w-full h-full object-contain" alt="Order QR code"/>
+              : <div className="w-full h-full flex items-center justify-center"><div className="w-8 h-8 border-2 border-slate-300 border-t-orange-600 rounded-full animate-spin"/></div>
+            }
+          </div>
+          <p className="text-lg font-bold text-slate-900 mt-4">{truck?.name}</p>
+          <p className="text-xs text-slate-400 mt-1">Powered by <span className="font-semibold text-orange-600">HatchGrab</span></p>
+          <p className="text-xs text-slate-300 mt-4">Tap anywhere to close</p>
+        </div>
+      )}
 
     </div>
   )
