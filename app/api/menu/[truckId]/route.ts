@@ -288,7 +288,9 @@ export async function GET(
     truck: {
       id: truck.id,
       name: truck.name,
-      logo: truck.logo_storage_path,
+      logo: truck.logo_storage_path
+        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
+        : null,
       mode: truck.mode,
       venue_name: truck.venue_name,
       time_selection_enabled: truck.time_selection_enabled ?? false,
