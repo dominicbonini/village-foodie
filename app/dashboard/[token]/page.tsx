@@ -592,65 +592,96 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   return(
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-slate-900 px-4 py-3 sticky top-0 z-50 shadow-md">
-        <div className="max-w-5xl mx-auto flex items-center justify-between relative">
-          <Link href="/" className="shrink-0 z-10">
-            <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={90} height={27} className="object-contain opacity-70"/>
-          </Link>
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="flex items-center gap-2">
-              {truck?.logo&&<img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0"/>}
-              <div>
-                <p className="font-black text-sm text-white leading-none">{truck?.name}{vanName?` — ${vanName}`:''}</p>
-                {truck?.venue_name&&<p className="text-slate-400 text-[11px] mt-0.5">{truck.venue_name}</p>}
+      <header className="bg-slate-900 sticky top-0 z-50 shadow-md">
+        {/* Row 1 — logo · truck name · right actions */}
+        <div className="px-4 py-3">
+          <div className="max-w-5xl mx-auto flex items-center justify-between relative">
+            <Link href="/" className="shrink-0 z-10">
+              <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={90} height={27} className="object-contain opacity-70"/>
+            </Link>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="flex items-center gap-2">
+                {truck?.logo&&<img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0"/>}
+                <div>
+                  <p className="font-black text-sm text-white leading-none">{truck?.name}{vanName?` — ${vanName}`:''}</p>
+                  {truck?.venue_name&&<p className="text-slate-400 text-[11px] mt-0.5">{truck.venue_name}</p>}
+                </div>
               </div>
             </div>
+            <div className="flex items-center gap-2 z-10">
+              {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
+              <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
+              {/* Screen toggle — desktop only in row 1; mobile row 2 below */}
+              <button onClick={toggleKeepScreenOn} className="hidden sm:flex items-center gap-2">
+                <span className="text-xs font-medium text-slate-400 select-none">
+                  {keepScreenOn ? 'Screen on' : 'Screen off'}
+                </span>
+                <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
+                  <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
+                </div>
+              </button>
+              <UserMenu
+                currentUserName={currentUserName}
+                truckName={truck?.name||null}
+                token={token}
+                userRole={userRole}
+                vanName={vanName}
+                onSignOut={handleSignOut}
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2 z-10">
-            {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
-            <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
-            <button
-              onClick={toggleKeepScreenOn}
-              className="flex items-center gap-2"
-            >
-              <span className="text-xs font-medium text-slate-400 select-none hidden sm:inline">
-                {keepScreenOn ? 'Screen on' : 'Screen off'}
-              </span>
-              <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
-                <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
-              </div>
-            </button>
-            <UserMenu
-              currentUserName={currentUserName}
-              truckName={truck?.name||null}
-              token={token}
-              userRole={userRole}
-              vanName={vanName}
-              onSignOut={handleSignOut}
-            />
-          </div>
+        </div>
+        {/* Row 2 — mobile only: screen on/off toggle */}
+        <div className="sm:hidden px-4 pb-2.5 bg-slate-800 flex items-center justify-center">
+          <button onClick={toggleKeepScreenOn} className="flex items-center gap-2">
+            <span className={`text-xs font-medium select-none ${keepScreenOn ? 'text-teal-400' : 'text-slate-400'}`}>
+              {keepScreenOn ? 'Screen on' : 'Screen off'}
+            </span>
+            <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
+              <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
+            </div>
+          </button>
         </div>
       </header>
 
       {/* Tabs */}
-      <div className="bg-slate-800 px-4 border-b border-slate-700">
-        <div className="max-w-5xl mx-auto flex items-center">
-          {([['orders',`Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length>0?` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})`:''}`],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
-            <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
-          ))}
-          <div className="ml-auto flex items-center">
-            <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
-              {copiedOrderLink ? '✓ Copied' : 'Order link'}
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-            </button>
-            <button onClick={handleShowQR} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
-              QR code
-            </button>
-            <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap">
-              Kitchen screen
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            </button>
+      <div className="bg-slate-800 border-b border-slate-700">
+        {/* Nav tabs row */}
+        <div className="px-4">
+          <div className="max-w-5xl mx-auto flex items-center">
+            {([['orders',`Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length>0?` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})`:''}`],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
+              <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
+            ))}
+            {/* Utility actions — desktop only */}
+            <div className="ml-auto hidden sm:flex items-center">
+              <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
+                {copiedOrderLink ? '✓ Copied' : 'Order link'}
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+              <button onClick={handleShowQR} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
+                QR code
+              </button>
+              <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap">
+                Kitchen screen
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </button>
+            </div>
           </div>
+        </div>
+        {/* Mobile utility tray — 3 equal columns below nav tabs */}
+        <div className="sm:hidden grid grid-cols-3 border-t border-slate-700">
+          <button onClick={handleCopyOrderLink} className="flex flex-col items-center gap-1 py-2.5 text-slate-300 hover:text-white transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            <span className="text-[11px] font-medium">{copiedOrderLink ? '✓ Copied' : 'Order link'}</span>
+          </button>
+          <button onClick={handleShowQR} className="flex flex-col items-center gap-1 py-2.5 text-slate-300 hover:text-white transition-colors border-x border-slate-700">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+            <span className="text-[11px] font-medium">QR code</span>
+          </button>
+          <button onClick={handleOpenKDS} className="flex flex-col items-center gap-1 py-2.5 text-slate-300 hover:text-white transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            <span className="text-[11px] font-medium">Kitchen</span>
+          </button>
         </div>
       </div>
 
@@ -739,13 +770,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
             {paused&&pausedUntil&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pausedUntil).getTime()-Date.now())/60000));const isIndefinite=new Date(pausedUntil).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p></div>})()}
             {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ +{waitMinutes} min extra wait active</p></div>}
-            <div className="flex items-center justify-between mb-3">
-              <div className="grid grid-cols-3 gap-2 flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+              <div className="grid grid-cols-3 gap-2 mb-2 sm:mb-0 sm:flex-1">
                 {[{label:'New',value:pendingOrders.length,colour:'text-orange-500'},{label:'Confirmed',value:confirmedOrders.length,colour:'text-green-600'},{label:'Done',value:otherOrders.length,colour:'text-slate-400'}].map(s=>(
                   <div key={s.label} className="bg-white rounded-xl p-2.5 text-center border border-slate-200 shadow-sm"><p className={`text-xl font-black ${s.colour}`}>{s.value}</p><p className="text-slate-500 text-[11px] font-medium mt-0.5">{s.label}</p></div>
                 ))}
               </div>
-              <div className="flex gap-1.5 ml-2 shrink-0">
+              <div className="flex gap-1.5 sm:ml-2 sm:shrink-0">
                 <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
                 {otherOrders.length>0&&(
                   <button onClick={()=>setShowCompleted(c=>!c)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showCompleted?'bg-slate-700 text-white':cancelledCount>0?'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
