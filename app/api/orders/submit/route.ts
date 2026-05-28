@@ -75,8 +75,8 @@ function formatWhatsAppOrder(params: {
     lines.push('')
     params.deals.forEach(deal => {
       lines.push(`  🎁 ${deal.name}`)
-      Object.entries(deal.slots).forEach(([cat, item]) => {
-        if (item) lines.push(`     ${cap(cat)}: ${item}`)
+      Object.entries(deal.slots).forEach(([, item]) => {
+        if (item) lines.push(`     ${item}`)
       })
     })
   }

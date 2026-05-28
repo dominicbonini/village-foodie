@@ -102,12 +102,13 @@ export function DealsModal({
     const prefill: Record<string, string> = {}
     const prefillMods: Record<string, { name: string; price: number }[]> = {}
     const prefillNotes: Record<string, string> = {}
-    getBundleSlotCats(bundle).forEach(cat => {
+    getBundleSlotCats(bundle).forEach((cat, index) => {
+      const slotKey = String(index)
       const match = basketItems.find(b => menuItems.find(m => m.name === b.name)?.category === cat)
       if (match) {
-        prefill[cat] = `USE_EXISTING:${itemKey(match)}`
-        if (match.modifiers?.length) prefillMods[cat] = match.modifiers
-        if (match.specialInstructions) prefillNotes[cat] = match.specialInstructions
+        prefill[slotKey] = `USE_EXISTING:${itemKey(match)}`
+        if (match.modifiers?.length) prefillMods[slotKey] = match.modifiers
+        if (match.specialInstructions) prefillNotes[slotKey] = match.specialInstructions
       }
     })
     setSlotSelections(prefill)
@@ -115,13 +116,13 @@ export function DealsModal({
     setSlotNotes(prefillNotes)
   }
 
-  const toggleSlotMod = (cat: string, opt: SlotModifierOption) => {
+  const toggleSlotMod = (slotKey: string, opt: SlotModifierOption) => {
     setSlotMods(prev => {
-      const cur = prev[cat] || []
+      const cur = prev[slotKey] || []
       const already = cur.some(m => m.name === opt.name)
       return {
         ...prev,
-        [cat]: already
+        [slotKey]: already
           ? cur.filter(m => m.name !== opt.name)
           : [...cur, { name: opt.name, price: opt.price_adjustment }],
       }
@@ -131,7 +132,7 @@ export function DealsModal({
   const applyDeal = () => {
     if (!selectedDeal) return
     const cats = getBundleSlotCats(selectedDeal)
-    if (!cats.every(c => slotSelections[c])) return
+    if (!cats.every((_, i) => slotSelections[String(i)])) return
 
     const cleanSlots: Record<string, string> = {}
     const rawSlots: Record<string, string> = {}
@@ -139,28 +140,29 @@ export function DealsModal({
     let originalPrice = 0
     let modifierExtra = 0
 
-    cats.forEach(cat => {
-      const raw = slotSelections[cat]
-      rawSlots[cat] = raw
+    cats.forEach((cat, index) => {
+      const slotKey = String(index)
+      const raw = slotSelections[slotKey]
+      rawSlots[slotKey] = raw
       const isExisting = raw.startsWith('USE_EXISTING:')
       const identifier = raw.replace('USE_EXISTING:', '')
-      const dealModalMods = slotMods[cat] || []
+      const dealModalMods = slotMods[slotKey] || []
       const dealModalCost = dealModalMods.reduce((s, m) => s + m.price, 0)
 
       if (isExisting) {
         const basketItem = basketItems.find(b => itemKey(b) === identifier)
         const displayName = basketItem?.name || identifier
-        cleanSlots[cat] = displayName
+        cleanSlots[slotKey] = displayName
         const basePrice = menuItems.find(m => m.name === displayName)?.price ?? 0
         const dealModalCost = dealModalMods.reduce((s, m) => s + m.price, 0)
         originalPrice += basePrice + dealModalCost
         modifierExtra += dealModalCost
-        if (dealModalMods.length) slotModifiers[cat] = dealModalMods
+        if (dealModalMods.length) slotModifiers[slotKey] = dealModalMods
       } else {
-        cleanSlots[cat] = identifier
+        cleanSlots[slotKey] = identifier
         originalPrice += (menuItems.find(m => m.name === identifier)?.price ?? 0) + dealModalCost
         modifierExtra += dealModalCost
-        if (dealModalMods.length) slotModifiers[cat] = dealModalMods
+        if (dealModalMods.length) slotModifiers[slotKey] = dealModalMods
       }
     })
 
@@ -177,17 +179,11 @@ export function DealsModal({
   // Live button price
   let buttonPrice = selectedDeal?.bundle_price ?? 0
   if (selectedDeal) {
-    getBundleSlotCats(selectedDeal).forEach(cat => {
-      const raw = slotSelections[cat]
+    getBundleSlotCats(selectedDeal).forEach((_, index) => {
+      const slotKey = String(index)
+      const raw = slotSelections[slotKey]
       if (!raw) return
-      const isExisting = raw.startsWith('USE_EXISTING:')
-      const identifier = raw.replace('USE_EXISTING:', '')
-      if (isExisting) {
-        const basketItem = basketItems.find(b => itemKey(b) === identifier)
-        buttonPrice += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
-      } else {
-        buttonPrice += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
-      }
+      buttonPrice += (slotMods[slotKey] || []).reduce((s, m) => s + m.price, 0)
     })
   }
 
@@ -259,23 +255,24 @@ export function DealsModal({
 
             <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-3">Select items for each slot</p>
 
-            {getBundleSlotCats(selectedDeal).map(cat => {
+            {getBundleSlotCats(selectedDeal).map((cat, index) => {
+              const slotKey = String(index)
               const allOpts = menuItems.filter(i => i.category.toLowerCase() === cat.toLowerCase())
               const inBasketOpts = basketItems.filter(b => allOpts.some(m => m.name === b.name))
-              const isFilled = !!slotSelections[cat]
+              const isFilled = !!slotSelections[slotKey]
 
-              const raw = slotSelections[cat] || ''
+              const raw = slotSelections[slotKey] || ''
               const isExisting = raw.startsWith('USE_EXISTING:')
               const identifier = raw.replace('USE_EXISTING:', '')
               const selectedItemName = isExisting
                 ? (basketItems.find(b => itemKey(b) === identifier)?.name || identifier)
                 : identifier
               const modGroups = isFilled && selectedItemName ? getModGroups(selectedItemName) : []
-              const currentSlotMods = slotMods[cat] || []
-              const currentNote = slotNotes[cat] || ''
+              const currentSlotMods = slotMods[slotKey] || []
+              const currentNote = slotNotes[slotKey] || ''
 
               return (
-                <div key={cat} className="mb-5">
+                <div key={`${cat}:${index}`} className="mb-5">
                   {/* Slot label */}
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 ${isFilled ? 'bg-green-500 text-white' : 'bg-slate-200 text-slate-500'}`}>
@@ -289,33 +286,43 @@ export function DealsModal({
 
                   {/* Item picker dropdown */}
                   <select
-                    value={slotSelections[cat] || ''}
+                    value={slotSelections[slotKey] || ''}
                     onChange={e => {
                       const val = e.target.value
-                      setSlotSelections(prev => ({ ...prev, [cat]: val }))
+                      setSlotSelections(prev => ({ ...prev, [slotKey]: val }))
                       if (val.startsWith('USE_EXISTING:')) {
                         const bi = basketItems.find(b => itemKey(b) === val.replace('USE_EXISTING:', ''))
-                        setSlotMods(prev => ({ ...prev, [cat]: bi?.modifiers || [] }))
-                        setSlotNotes(prev => ({ ...prev, [cat]: bi?.specialInstructions || '' }))
+                        setSlotMods(prev => ({ ...prev, [slotKey]: bi?.modifiers || [] }))
+                        setSlotNotes(prev => ({ ...prev, [slotKey]: bi?.specialInstructions || '' }))
                       } else {
-                        setSlotMods(prev => ({ ...prev, [cat]: [] }))
-                        setSlotNotes(prev => ({ ...prev, [cat]: '' }))
+                        setSlotMods(prev => ({ ...prev, [slotKey]: [] }))
+                        setSlotNotes(prev => ({ ...prev, [slotKey]: '' }))
                       }
                     }}
                     className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${isFilled ? 'border-green-300' : 'border-slate-200'}`}>
                     <option value="">Choose {cat}…</option>
 
                     {inBasketOpts.length > 0 && <option disabled>── In your basket ──</option>}
-                    {inBasketOpts.map(b => {
-                      const key = itemKey(b)
-                      const isUsed = fullyUsedKeys.has(key)
-                      const modLabel = b.modifiers?.length ? ` (+ ${b.modifiers.map(m => m.name).join(', ')})` : ''
-                      return (
-                        <option key={`USE_EXISTING:${key}`} value={`USE_EXISTING:${key}`} disabled={isUsed}>
-                          {b.name}{modLabel} (in basket){isUsed ? ' — already in a deal' : ''}
-                        </option>
+                    {(() => {
+                      const takenByOtherSlots = new Set<string>(
+                        getBundleSlotCats(selectedDeal).flatMap((_, i) => {
+                          if (i === index) return []
+                          const r = slotSelections[String(i)] || ''
+                          return r.startsWith('USE_EXISTING:') ? [r.replace('USE_EXISTING:', '')] : []
+                        })
                       )
-                    })}
+                      return inBasketOpts.map(b => {
+                        const key = itemKey(b)
+                        const isUsed = fullyUsedKeys.has(key)
+                        const isTaken = takenByOtherSlots.has(key)
+                        const modLabel = b.modifiers?.length ? ` (+ ${b.modifiers.map(m => m.name).join(', ')})` : ''
+                        return (
+                          <option key={`USE_EXISTING:${key}`} value={`USE_EXISTING:${key}`} disabled={isUsed || isTaken}>
+                            {b.name}{modLabel} (in basket){isUsed ? ' — already in a deal' : isTaken ? ' — selected in another slot' : ''}
+                          </option>
+                        )
+                      })
+                    })()}
 
                     {inBasketOpts.length > 0 && <option disabled>── Add new ──</option>}
                     {allOpts.map(item => (
@@ -340,7 +347,7 @@ export function DealsModal({
                                 <button
                                   key={opt.id}
                                   type="button"
-                                  onClick={() => toggleSlotMod(cat, opt)}
+                                  onClick={() => toggleSlotMod(slotKey, opt)}
                                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-all active:scale-95 ${
                                     isSelected
                                       ? 'border-orange-500 bg-orange-500 text-white'
@@ -364,7 +371,7 @@ export function DealsModal({
                         type="text"
                         maxLength={60}
                         value={currentNote}
-                        onChange={e => setSlotNotes(prev => ({ ...prev, [cat]: e.target.value }))}
+                        onChange={e => setSlotNotes(prev => ({ ...prev, [slotKey]: e.target.value }))}
                         placeholder="Add a note, e.g. no onions (optional)"
                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 bg-white"
                       />
@@ -375,19 +382,20 @@ export function DealsModal({
             })}
 
             {/* Savings panel */}
-            {getBundleSlotCats(selectedDeal).every(c => slotSelections[c]) && (() => {
+            {getBundleSlotCats(selectedDeal).every((_, i) => slotSelections[String(i)]) && (() => {
               let orig = 0
-              getBundleSlotCats(selectedDeal).forEach(cat => {
-                const raw = slotSelections[cat]
+              getBundleSlotCats(selectedDeal).forEach((cat, index) => {
+                const slotKey = String(index)
+                const raw = slotSelections[slotKey]
                 const isEx = raw?.startsWith('USE_EXISTING:')
                 const id = raw?.replace('USE_EXISTING:', '') || ''
                 if (isEx) {
                   const b = basketItems.find(bi => itemKey(bi) === id)
                   const baseP = menuItems.find(m => m.name === b?.name)?.price ?? 0
-                  orig += baseP + (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
+                  orig += baseP + (slotMods[slotKey] || []).reduce((s, m) => s + m.price, 0)
                 } else {
                   orig += menuItems.find(m => m.name === id)?.price ?? 0
-                  orig += (slotMods[cat] || []).reduce((s, m) => s + m.price, 0)
+                  orig += (slotMods[slotKey] || []).reduce((s, m) => s + m.price, 0)
                 }
               })
               const saving = Math.max(0, orig - buttonPrice)
@@ -405,7 +413,7 @@ export function DealsModal({
                 {bundles.length > 1 ? 'Back' : 'Cancel'}
               </button>
               <button onClick={applyDeal}
-                disabled={!getBundleSlotCats(selectedDeal).every(c => slotSelections[c])}
+                disabled={!getBundleSlotCats(selectedDeal).every((_, i) => slotSelections[String(i)])}
                 className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-40">
                 Apply deal · £{buttonPrice.toFixed(2)}
               </button>

@@ -285,7 +285,7 @@ export async function POST(req: NextRequest) {
 
   // ── BUNDLE CRUD ───────────────────────────────────────────
   if (action === 'upsert_bundle') {
-    const { id, ...fields } = body
+    const { id, stock_warning, ...fields } = body
     delete fields.token; delete fields.action
     if (id) {
       const { data, error } = await supabase.from('bundles_db').update(fields).eq('id', id).eq('truck_id', truck.id).select().single()

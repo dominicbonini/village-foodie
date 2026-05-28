@@ -179,11 +179,12 @@ export function AddOrderPanel({
 
   const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
 
-  const isPastGrace = manualEvent ? (() => {
+  const isEventEnded = manualEvent ? (() => {
     const today = new Date().toISOString().split('T')[0]
     if (manualEvent.event_date > today) return false
+    if (manualEvent.event_date < today) return true
     const [h, m] = manualEvent.end_time.split(':').map(Number)
-    return new Date().getHours() * 60 + new Date().getMinutes() > h * 60 + m + 30
+    return new Date().getHours() * 60 + new Date().getMinutes() > h * 60 + m
   })() : false
 
   const hasItems = manualItems.length > 0 || appliedDeals.length > 0
@@ -411,16 +412,27 @@ export function AddOrderPanel({
           })()}
         </select>
       )}
-      {readyTime && (
-        <p className="text-xs text-green-600 font-medium mt-1.5">
-          ⚡ ~{queueAware.minsFromNow} min{queueAware.minsFromNow !== 1 ? 's' : ''} · around {readyTime}
-          {manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0] && (
-            <span className="text-slate-400 ml-1">
-              (on {new Date(manualEvent.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })})
-            </span>
-          )}
-        </p>
-      )}
+      {readyTime && (() => {
+        const isFutureDay = manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0]
+        const dateLabel = isFutureDay
+          ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+          : null
+        const m = queueAware.minsFromNow
+        const wait = m < 60
+          ? `~${m} min${m !== 1 ? 's' : ''}`
+          : `~${Math.round(m / 30) / 2} hr${Math.round(m / 30) / 2 !== 1 ? 's' : ''}`
+        return isFutureDay ? (
+          <div className="mt-2 bg-teal-50 border border-teal-200 rounded-xl px-3 py-2.5 flex items-center gap-2">
+            <span className="text-teal-600 text-base">⚡</span>
+            <div>
+              <p className="text-sm font-black text-teal-800">Ready around {readyTime}</p>
+              <p className="text-xs text-teal-600 font-medium">{dateLabel}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {readyTime}</p>
+        )
+      })()}
     </div>
   )
 
@@ -459,10 +471,10 @@ export function AddOrderPanel({
       {contactDetails}
       <button
         onClick={submitManual}
-        disabled={loading || !hasItems || isPastGrace}
+        disabled={loading || !hasItems}
         className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-40 transition-colors active:scale-[0.98]"
       >
-        {loading ? 'Confirming...' : isPastGrace ? 'Grace period ended' : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
+        {loading ? 'Confirming...' : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
       </button>
     </div>
   )
@@ -739,6 +751,11 @@ export function AddOrderPanel({
             className="text-xs font-bold text-slate-600 border border-slate-200 rounded-lg px-2.5 py-1 hover:bg-slate-100 active:scale-95">
             Select event
           </button>
+        </div>
+      )}
+      {isEventEnded && (
+        <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+          ⚠️ This event has ended — you're adding an order after close. Make sure you've selected the right event.
         </div>
       )}
     </div>

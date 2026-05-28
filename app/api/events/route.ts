@@ -1,17 +1,16 @@
 // app/api/events/route.ts
-// Returns upcoming events for a given truck slug.
-// Called by the order page and AddOrderPanel.
+// Returns upcoming confirmed/open events for a truck slug.
+// Reads from truck_events (the authoritative source) so all vans are included.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createSlug } from '@/lib/utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export const revalidate = 300
+export const revalidate = 60
 
 function toddmmyyyy(isoDate: string): string {
   const [y, m, d] = isoDate.split('-')
@@ -42,25 +41,14 @@ export async function GET(req: NextRequest) {
 
   const today = new Date().toISOString().split('T')[0]
 
-  // Build alias map from all discovery trucks.
-  // Test trucks (is_test=true) have no discovery_trucks / discovery_events entries,
-  // so they're naturally excluded from customer-facing results.
-  const { data: trucks } = await supabase
-    .from('discovery_trucks')
-    .select('name, aliases')
+  const { data: truck } = await supabase
+    .from('trucks')
+    .select('id, name')
+    .eq('slug', truckSlug)
+    .eq('active', true)
+    .single()
 
-  const aliasMap: Record<string, string> = {}
-  ;(trucks || []).forEach((t: any) => {
-    aliasMap[createSlug(t.name)] = t.name
-    ;(t.aliases || []).forEach((a: string) => {
-      const s = createSlug(a.trim())
-      if (s) aliasMap[s] = t.name
-    })
-  })
-
-  const canonicalName = aliasMap[truckSlug]
-
-  if (!canonicalName) {
+  if (!truck) {
     return NextResponse.json({
       truck_slug: truckSlug,
       truck_name: truckSlug,
@@ -70,9 +58,10 @@ export async function GET(req: NextRequest) {
   }
 
   const { data: rows, error } = await supabase
-    .from('discovery_events')
-    .select('event_date, start_time, end_time, truck_name, venue_name, village, event_notes')
-    .eq('truck_name', canonicalName)
+    .from('truck_events')
+    .select('event_date, start_time, end_time, venue_name, town, notes')
+    .eq('truck_id', truck.id)
+    .in('status', ['confirmed', 'open'])
     .gte('event_date', today)
     .order('event_date', { ascending: true })
     .order('start_time', { ascending: true, nullsFirst: false })
@@ -85,7 +74,7 @@ export async function GET(req: NextRequest) {
 
   const seen = new Set<string>()
   const events = (rows || []).map(e => {
-    const key = `${e.event_date}|${createSlug(e.venue_name || '')}|${createSlug(e.village || '')}`
+    const key = `${e.event_date}|${e.venue_name || ''}|${e.start_time || ''}`
     if (seen.has(key)) return null
     seen.add(key)
     return {
@@ -94,16 +83,16 @@ export async function GET(req: NextRequest) {
       date_friendly: formatFriendly(e.event_date),
       start_time:    e.start_time || '',
       end_time:      e.end_time || '',
-      truck_name:    canonicalName,
+      truck_name:    truck.name,
       venue_name:    e.venue_name || '',
-      village:       e.village || '',
-      notes:         e.event_notes || '',
+      village:       e.town || '',
+      notes:         e.notes || '',
     }
   }).filter(Boolean)
 
   return NextResponse.json({
     truck_slug:  truckSlug,
-    truck_name:  canonicalName,
+    truck_name:  truck.name,
     events,
     next_event:  events[0] || null,
   })

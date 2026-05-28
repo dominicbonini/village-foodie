@@ -579,7 +579,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
   const submitOrder = async () => {
-    if (!truck || !menu || !name || !email || !phone || !hasItems) return
+    if (!truck || !menu || !name || !email || !phone || !hasItems || !event) return
     if (truck.mode === 'village' && !selectedSlot) return
     setSubmitting(true)
     try {
@@ -857,34 +857,48 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             </div>
           ) : events.length > 0 ? (
             <div className="mt-3 text-left">
-              <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
+              {events.length > 1 && (
+                <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
+              )}
               {events.length === 1 ? (
-                // Single event — just show it, date+location on 2 lines
-                <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
-                  <p className="font-black text-slate-900 text-sm">
+                // Single event
+                <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3.5">
+                  <p className="font-black text-slate-900 text-base leading-tight">
+                    {event?.venue_name}
+                  </p>
+                  {event?.village && (
+                    <p className="text-orange-700 text-sm font-medium mt-0.5">{event.village}</p>
+                  )}
+                  <p className="text-slate-500 text-sm mt-1.5">
                     {event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${event.start_time}–${event.end_time}` : ''}
                   </p>
-                  <p className="text-slate-600 text-sm">{event?.venue_name}{event?.village ? `, ${event?.village}` : ''}</p>
                 </div>
               ) : (
-                // Multiple events — show selector
+                // Multiple events — selector
                 <div className="space-y-2">
-                  {events.map((e, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => { setEvent(e); setSlotHour(''); setSlotMinute('') }}
-                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all ${
-                        event?.date_iso === e.date_iso && event?.venue_name === e.venue_name
-                          ? 'bg-orange-50 border-2 border-orange-500'
-                          : 'bg-white border border-slate-200 hover:border-orange-200'
-                      }`}
-                    >
-                      <p className="font-black text-slate-900 text-sm">
-                        {e.date_friendly}{e.start_time && e.end_time ? ` · ${e.start_time}–${e.end_time}` : ''}
-                      </p>
-                      <p className="text-slate-600 text-xs">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
-                    </button>
-                  ))}
+                  {events.map((e, idx) => {
+                    const isSelected = event?.date_iso === e.date_iso && event?.venue_name === e.venue_name
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => { setEvent(e); setSlotHour(''); setSlotMinute('') }}
+                        className={`w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
+                          isSelected
+                            ? 'bg-orange-50 border-2 border-orange-500'
+                            : 'bg-white border border-slate-200 hover:border-orange-200'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}</p>
+                            {e.village && <p className={`text-sm font-medium mt-0.5 ${isSelected ? 'text-orange-700' : 'text-slate-500'}`}>{e.village}</p>}
+                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${e.start_time}–${e.end_time}` : ''}</p>
+                          </div>
+                          {isSelected && <span className="text-orange-500 text-sm font-black shrink-0 mt-0.5">✓</span>}
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -1371,9 +1385,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
           <button onClick={submitOrder}
-            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot)}
+            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : `Send order to ${truck?.name || 'truck'}`}
+            {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
           </button>
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
