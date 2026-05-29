@@ -34,8 +34,7 @@ import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
-
-const formatTime = (time: string) => time ? time.substring(0, 5) : ''
+import { formatTime } from '@/lib/time-utils'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -653,20 +652,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 userRole={userRole}
                 vanName={vanName}
                 onSignOut={handleSignOut}
+                keepScreenOn={keepScreenOn}
+                onToggleScreenOn={toggleKeepScreenOn}
+                copiedOrderLink={copiedOrderLink}
+                onCopyOrderLink={handleCopyOrderLink}
+                onShowQR={handleShowQR}
+                onOpenKDS={handleOpenKDS}
               />
             </div>
           </div>
-        </div>
-        {/* Row 2 — mobile only: screen on/off toggle */}
-        <div className="sm:hidden px-4 pb-2.5 bg-slate-800 flex items-center justify-center">
-          <button onClick={toggleKeepScreenOn} className="flex items-center gap-2">
-            <span className={`text-xs font-medium select-none ${keepScreenOn ? 'text-teal-400' : 'text-slate-400'}`}>
-              {keepScreenOn ? 'Screen on' : 'Screen off'}
-            </span>
-            <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
-              <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
-            </div>
-          </button>
         </div>
       </header>
 
@@ -694,22 +688,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
           </div>
         </div>
-        {/* Mobile utility tray — 3 equal columns below nav tabs */}
-        <div className="sm:hidden grid grid-cols-3 border-t border-slate-700">
-          <button onClick={handleCopyOrderLink} className="flex flex-col items-center gap-1 py-2.5 text-slate-300 hover:text-white transition-colors">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-            <span className="text-[11px] font-medium">{copiedOrderLink ? '✓ Copied' : 'Order link'}</span>
-          </button>
-          <button onClick={handleShowQR} className="flex flex-col items-center gap-1 py-2.5 text-slate-300 hover:text-white transition-colors border-x border-slate-700">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-            <span className="text-[11px] font-medium">QR code</span>
-          </button>
-          <button onClick={handleOpenKDS} className="flex flex-col items-center gap-1 py-2.5 text-slate-300 hover:text-white transition-colors">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            <span className="text-[11px] font-medium">Kitchen</span>
-          </button>
-        </div>
       </div>
+      {/* Mobile slim event bar — shown when event is open, sits between tab bar and content */}
+      {activeEvent?.status==='open'&&(
+        <div className="sm:hidden flex items-center justify-between px-3 py-1.5 bg-orange-50 border-b border-orange-200 text-xs">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+            <span className="font-medium text-orange-900 truncate max-w-[180px]">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
+            <span className="text-orange-600 flex-shrink-0">{formatTime(activeEvent.start_time)}</span>
+          </span>
+          <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}} className="text-orange-400 px-1">···</button>
+        </div>
+      )}
 
       <main className="max-w-5xl mx-auto px-4 py-4 pb-20">
 
@@ -738,9 +728,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </button>
               </div>
             )}
-            {/* Event header when open */}
+            {/* Event header when open — desktop only; mobile uses slim bar above tab content */}
             {activeEvent?.status==='open'&&(
-              <div className="flex items-center justify-between px-3 py-2.5 bg-orange-50 border border-orange-200 rounded-xl mb-3 flex-shrink-0">
+              <div className="hidden sm:flex items-center justify-between px-3 py-2.5 bg-orange-50 border border-orange-200 rounded-xl mb-3 flex-shrink-0">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
                   <span className="text-sm font-bold text-orange-900 truncate">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
@@ -1617,6 +1607,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <button onClick={()=>saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
+              <button onClick={()=>{extendEvent(activeEvent.id,30);setShowEventMenu(false)}}
+                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">+30 min</button>
               <button onClick={()=>closeEventEarly(activeEvent.id)}
                 className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Close early</button>
               <button onClick={()=>cancelEventFromMenu(activeEvent.id)}

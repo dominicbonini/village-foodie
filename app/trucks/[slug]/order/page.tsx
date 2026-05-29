@@ -11,6 +11,7 @@ import { cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
+import { formatTime } from '@/lib/time-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -63,11 +64,11 @@ function getBundleAvailabilityMessage(b: Bundle): string | null {
   const cur = now.getHours() * 60 + now.getMinutes()
   if (b.start_time) {
     const [h, m] = b.start_time.split(':').map(Number)
-    if (cur < h * 60 + m) return `Available from ${b.start_time}`
+    if (cur < h * 60 + m) return `Available from ${formatTime(b.start_time)}`
   }
   if (b.end_time) {
     const [h, m] = b.end_time.split(':').map(Number)
-    if (cur > h * 60 + m) return `Available until ${b.end_time} — no longer available`
+    if (cur > h * 60 + m) return `Available until ${formatTime(b.end_time)} — no longer available`
   }
   return null
 }
@@ -168,6 +169,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean;is_grace:boolean}[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [asapSlot, setAsapSlot] = useState<string|null>(null)
+  const [asapChosen, setAsapChosen] = useState(true)
   const [queueByCat, setQueueByCat] = useState<Record<string,number>>({})
   const [serverCatConfigs, setServerCatConfigs] = useState<Record<string,{secs:number;batch:number}>>({})
   const [notes, setNotes] = useState('')
@@ -262,16 +264,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         if (!res.ok) { setEventLoading(false); return }
         const data = await res.json()
         if (data.events && data.events.length > 0) {
-          // Show events in the next 14 days
+          const now = new Date()
           const cutoff = new Date()
           cutoff.setDate(cutoff.getDate() + 14)
           const upcoming = data.events.filter((e: EventData) => {
+            // Exclude events whose end time has passed — local time parse per engineering manual
+            if (e.date_iso && e.end_time && now >= new Date(`${e.date_iso}T${e.end_time}`)) return false
             const [d, m, y] = e.date.split('/').map(Number)
             return new Date(y, m-1, d) <= cutoff
           })
-          const eventsToShow = upcoming.length > 0 ? upcoming : [data.events[0]]
-          setEvents(eventsToShow)
-          setEvent(eventsToShow[0])
+          if (upcoming.length > 0) {
+            setEvents(upcoming)
+            setEvent(upcoming[0])
+          } else {
+            setNoEvents(true)
+          }
         } else {
           setNoEvents(true)
         }
@@ -567,6 +574,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   useEffect(() => {
     if (!selectedSlot || !customerAsapTime) return
     if (toMins(selectedSlot) < toMins(customerAsapTime)) {
+      setAsapChosen(true)
       const [h, m] = customerAsapTime.split(':')
       setSlotHour(h); setSlotMinute(m)
     }
@@ -595,7 +603,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const handleSubmitClick = () => submitOrder({})
 
   const submitOrder = async (extra: { upsellEvents?: any[] } = {}) => {
-    if (!truck || !menu || !name || !email || !phone || !hasItems || !event) return
+    if (!truck || !menu || !name || !email || !hasItems || !event) return
     if (truck.mode === 'village' && !selectedSlot) return
     setSubmitting(true)
     try {
@@ -799,7 +807,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <div className="sticky top-[60px] z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering has closed</p>
-            <p className="text-xs text-slate-300 mt-0.5">Online ordering for this event ended at {event?.end_time}. We hope to see you next time!</p>
+            <p className="text-xs text-slate-300 mt-0.5">Online ordering for this event ended at {formatTime(event?.end_time || '')}. We hope to see you next time!</p>
           </div>
         </div>
       )}
@@ -888,7 +896,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     📍 {event?.venue_name}{event?.village ? `, ${event.village}` : ''}
                   </p>
                   <p className="text-slate-600 text-sm mt-1.5 flex items-center gap-2 flex-wrap">
-                    <span>{event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${event.start_time.slice(0,5)}–${event.end_time.slice(0,5)}` : ''}</span>
+                    <span>{event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}` : ''}</span>
                     {isOpenNow && (
                       <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Open now
@@ -914,7 +922,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
                             <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
-                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${e.start_time.slice(0,5)}–${e.end_time.slice(0,5)}` : ''}</p>
+                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
                           </div>
                           {isSelected && <span className="text-orange-500 text-sm font-black shrink-0 mt-0.5">✓</span>}
                         </div>
@@ -1227,11 +1235,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     const asapTime = customerAsapTime || asapSlot || (availableHours.length > 0
                       ? `${availableHours[0]}:${availableMinutes[0] || '00'}`
                       : null)
-                    const isSelected = selectedSlot === asapTime && selectedSlot !== ''
+                    const isSelected = asapChosen
 
                     return (
                       <button
                         onClick={() => {
+                          setAsapChosen(true)
                           if (asapTime) {
                             const [h, m] = asapTime.split(':')
                             setSlotHour(h); setSlotMinute(m)
@@ -1247,7 +1256,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         }`}>
                         <span className="text-sm font-black">⚡ ASAP</span>
                         <span className={`text-xs mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-400'}`}>
-                          {asapTime ? `Around ${asapTime}` : 'Unavailable'}
+                          {asapTime ? `Around ${formatTime(asapTime)}` : 'Unavailable'}
                         </span>
                       </button>
                     )
@@ -1257,7 +1266,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <div className="flex-1">
                     {truck?.time_selection_enabled ? (() => {
                       const asapTime = customerAsapTime || asapSlot || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
-                      const hasChosenTime = selectedSlot && selectedSlot !== asapTime
+                      const hasChosenTime = !asapChosen && selectedSlot && selectedSlot !== asapTime
 
                       return (
                         <div className="relative h-full">
@@ -1266,11 +1275,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             onChange={e => {
                               const val = e.target.value
                               if (val) {
+                                setAsapChosen(false)
                                 const [h, m] = val.split(':')
                                 setSlotHour(h); setSlotMinute(m)
                               } else {
-                                // Deselect — clear selection
-                                setSlotHour(''); setSlotMinute('')
+                                // Deselect — back to ASAP
+                                setAsapChosen(true)
+                                if (asapTime) {
+                                  const [h, m] = asapTime.split(':')
+                                  setSlotHour(h); setSlotMinute(m)
+                                } else {
+                                  setSlotHour(''); setSlotMinute('')
+                                }
                               }
                             }}
                             className={`w-full h-full min-h-[68px] rounded-2xl border-2 px-3 py-3 text-sm font-bold appearance-none text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${
@@ -1335,7 +1351,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <div className="space-y-3">
             <Fld label="Name" required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
             <Fld label="Email" required note="confirmation sent here"><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label="Phone number" required><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
+            <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
             <Fld label="Special instructions" note="optional"><textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
@@ -1441,7 +1457,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
           <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
-            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot) || (!eventLoading && !event)}
+            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
           </button>

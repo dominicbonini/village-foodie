@@ -13,6 +13,7 @@ import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
+import { formatTime } from '@/lib/time-utils'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded' }
@@ -2168,11 +2169,6 @@ async function geocodeLocation(
     return { lat: null, lng: null }
   }
 }
-const formatTime = (time: string) => {
-  if (!time) return ''
-  return time.substring(0, 5)
-}
-
 function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {
   const isPast = end_time ? new Date() > new Date(`${event_date}T${end_time}`) : false
   if (isPast) return (

@@ -12,10 +12,9 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
+import { formatTime } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-
-const formatTime = (t: string) => t ? t.substring(0, 5) : ''
 
 function getAsapBaseTime(event: { event_date: string; start_time: string } | null): Date {
   if (!event) return new Date()
@@ -975,7 +974,6 @@ export function AddOrderPanel({
           if (d === tmrw) return 'Tomorrow'
           return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
         }
-        const fmtT = (t: string) => t ? t.substring(0, 5) : ''
         return (
           <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center" onClick={() => setShowEventPicker(false)}>
             <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm" onClick={e => e.stopPropagation()}>
@@ -993,7 +991,7 @@ export function AddOrderPanel({
                       <button key={ev.id} onClick={() => { setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time); setManualSlot('') }}
                         className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
                         <div className="flex items-center gap-2">
-                          <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {fmtT(ev.start_time)}–{fmtT(ev.end_time)}</p>
+                          <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>
                           {isFuture && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
                         </div>
                         {(ev.venue_name || ev.town) && <p className="text-xs text-slate-500 mt-0.5">{fmtVenue(ev.venue_name, ev.town)}</p>}
