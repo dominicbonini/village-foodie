@@ -70,6 +70,7 @@ export interface TruckData {
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null
   is_test?: boolean
+  qr_code_style?: 'standard' | 'branded'
 }
 
 export interface MenuItem {
@@ -79,6 +80,7 @@ export interface MenuItem {
   category: string
   available?: boolean
   stock_remaining?: number | null
+  default_stock?: number | null
   image?: string | null
 }
 
@@ -86,6 +88,7 @@ export interface ModifierOption {
   id: string
   name: string
   price_adjustment: number
+  available?: boolean
 }
 
 export interface ModifierGroup {
@@ -95,7 +98,7 @@ export interface ModifierGroup {
 }
 
 export interface TruckMenu {
-  categories?: Array<{ id?: string; name: string; prep_secs?: number; batch_size?: number; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>
+  categories?: Array<{ id?: string; name: string; prep_secs?: number; batch_size?: number; allowNotes?: boolean; default_stock?: number | null; modifierGroups?: ModifierGroup[] }>
   items: MenuItem[]
   bundles?: Bundle[]
   upsell_rules?: any[]
@@ -146,6 +149,7 @@ export interface ItemStock {
 export interface CategoryStock {
   category: string
   stock_count: number | null
+  default_stock: number | null
   orders_count: number
 }
 

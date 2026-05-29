@@ -262,6 +262,7 @@ export async function GET(req: NextRequest) {
       logo: truck.logo_storage_path
         ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
         : null,
+      qr_code_style: (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

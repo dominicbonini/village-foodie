@@ -137,6 +137,7 @@ export async function POST(req: NextRequest) {
     'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
     'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
+    'upsert_upsell_rule', 'delete_upsell_rule',
   ]
   if (writeActions.includes(action)) {
     const supabaseAuth = await createSupabaseServerClient()
@@ -156,11 +157,11 @@ export async function POST(req: NextRequest) {
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
   if (action === 'upsert_category') {
-    const { id, name, prep_secs, batch_size, allow_notes, sort_order } = body
+    const { id, name, prep_secs, batch_size, allow_notes, default_stock, sort_order } = body
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     if (id) {
       const { data, error } = await supabase.from('menu_categories')
-        .update({ name, slug, prep_secs, batch_size, allow_notes: !!allow_notes, sort_order })
+        .update({ name, slug, prep_secs, batch_size, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })
@@ -168,7 +169,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_categories').select('sort_order').eq('truck_id', truck.id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_categories')
-        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs ?? 0, batch_size: batch_size ?? 999, allow_notes: !!allow_notes, sort_order: sort_order ?? nextOrder })
+        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs ?? 0, batch_size: batch_size ?? 999, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })
@@ -200,10 +201,10 @@ export async function POST(req: NextRequest) {
 
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, is_available, stock_count, sort_order, image_path, allergens, dietary_info } = body
+    const { id, name, description, price, category_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info } = body
     if (id) {
       const { data, error } = await supabase.from('menu_items_db')
-        .update({ name, description, price, category_id, is_available, stock_count, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
+        .update({ name, description, price, category_id, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -211,7 +212,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
-        .insert({ truck_id: truck.id, name, description, price, category_id, is_available: is_available ?? true, stock_count: stock_count ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
+        .insert({ truck_id: truck.id, name, description, price, category_id, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -241,6 +242,39 @@ export async function POST(req: NextRequest) {
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ group: data })
     }
+  }
+
+  // ── UPSELL RULES ──────────────────────────────────────────────────────────
+  if (action === 'upsert_upsell_rule') {
+    const { id, trigger_category, suggest_category, max_suggestions, show_at_checkout } = body
+    if (!trigger_category || !suggest_category) {
+      return NextResponse.json({ error: 'trigger_category and suggest_category required' }, { status: 400 })
+    }
+    if (id) {
+      const { data, error } = await supabase
+        .from('upsell_rules')
+        .update({ trigger_category, suggest_category, max_suggestions: max_suggestions ?? 3, show_at_checkout: show_at_checkout ?? false })
+        .eq('id', id).eq('truck_id', truck.id).select().single()
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ rule: data })
+    } else {
+      const { data, error } = await supabase
+        .from('upsell_rules')
+        .insert({ truck_id: truck.id, trigger_category, suggest_category, max_suggestions: max_suggestions ?? 3, show_at_checkout: show_at_checkout ?? false })
+        .select().single()
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ rule: data })
+    }
+  }
+
+  if (action === 'delete_upsell_rule') {
+    await supabase.from('upsell_rules').delete().eq('id', body.id).eq('truck_id', truck.id)
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'get_upsell_rules') {
+    const { data } = await supabase.from('upsell_rules').select('*').eq('truck_id', truck.id).order('created_at', { ascending: true })
+    return NextResponse.json({ rules: data || [] })
   }
 
   if (action === 'delete_modifier_group') {
@@ -427,7 +461,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -539,7 +573,7 @@ export async function POST(req: NextRequest) {
     }
     const { data, error } = await supabase
       .from('truck_vans')
-      .insert({ truck_id: truck.id, name: name.trim() })
+      .insert({ truck_id: truck.id, name: name.trim(), active: true })
       .select('id, truck_id, name, kds_token, active')
       .single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -548,14 +582,17 @@ export async function POST(req: NextRequest) {
 
   if (action === 'delete_van') {
     const { vanId } = body
+    // Count active vans that would REMAIN after this deletion
     const { count } = await supabase
       .from('truck_vans')
       .select('*', { count: 'exact', head: true })
       .eq('truck_id', truck.id)
       .eq('active', true)
-    if (!count || count <= 1) {
-      return NextResponse.json({ error: 'Cannot delete the last van' }, { status: 400 })
+      .neq('id', vanId)
+    if ((count ?? 0) === 0) {
+      return NextResponse.json({ error: 'Cannot remove the last van' }, { status: 400 })
     }
+    // Soft delete — preserves all historical orders, events, and reports
     await supabase
       .from('truck_vans')
       .update({ active: false })

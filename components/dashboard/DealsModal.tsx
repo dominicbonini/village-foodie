@@ -82,6 +82,8 @@ export function DealsModal({
   const [slotNotes, setSlotNotes] = useState<Record<string, string>>({})
 
   const itemKey = (b: BasketItem) => b.cartKey || b.name
+  // Strip ::unit{n} suffix added internally for per-unit dedup — callers never see it
+  const stripUnit = (key: string) => key.replace(/::unit\d+$/, '')
 
   const getModGroups = (itemName: string): SlotModifierGroup[] => {
     if (!menuCategories) return []
@@ -106,7 +108,14 @@ export function DealsModal({
       const slotKey = String(index)
       const match = basketItems.find(b => menuItems.find(m => m.name === b.name)?.category === cat)
       if (match) {
-        prefill[slotKey] = `USE_EXISTING:${itemKey(match)}`
+        // Pick the first unit not already claimed by an earlier slot in this prefill pass
+        const usedUnitIndices = new Set(
+          Object.values(prefill)
+            .filter(v => v.startsWith(`USE_EXISTING:${itemKey(match)}::unit`))
+            .map(v => parseInt(v.match(/::unit(\d+)$/)?.[1] ?? '-1'))
+        )
+        const unitIdx = Array.from({ length: match.quantity }, (_, i) => i).find(i => !usedUnitIndices.has(i)) ?? 0
+        prefill[slotKey] = `USE_EXISTING:${itemKey(match)}::unit${unitIdx}`
         if (match.modifiers?.length) prefillMods[slotKey] = match.modifiers
         if (match.specialInstructions) prefillNotes[slotKey] = match.specialInstructions
       }
@@ -143,11 +152,12 @@ export function DealsModal({
     cats.forEach((cat, index) => {
       const slotKey = String(index)
       const raw = slotSelections[slotKey]
-      rawSlots[slotKey] = raw
       const isExisting = raw.startsWith('USE_EXISTING:')
-      const identifier = raw.replace('USE_EXISTING:', '')
+      const identifier = stripUnit(raw.replace('USE_EXISTING:', ''))
       const dealModalMods = slotMods[slotKey] || []
       const dealModalCost = dealModalMods.reduce((s, m) => s + m.price, 0)
+      // rawSlots uses base cartKey (no unit suffix) so callers can filter basket entries as before
+      rawSlots[slotKey] = isExisting ? `USE_EXISTING:${identifier}` : raw
 
       if (isExisting) {
         const basketItem = basketItems.find(b => itemKey(b) === identifier)
@@ -259,11 +269,15 @@ export function DealsModal({
               const slotKey = String(index)
               const allOpts = menuItems.filter(i => i.category.toLowerCase() === cat.toLowerCase())
               const inBasketOpts = basketItems.filter(b => allOpts.some(m => m.name === b.name))
+              // Expand basket items by quantity — one selectable unit per item copy
+              const expandedBasketOpts = inBasketOpts.flatMap(b =>
+                Array.from({ length: b.quantity }, (_, i) => ({ ...b, _unitIdx: i, _unitKey: `${itemKey(b)}::unit${i}` }))
+              )
               const isFilled = !!slotSelections[slotKey]
 
               const raw = slotSelections[slotKey] || ''
               const isExisting = raw.startsWith('USE_EXISTING:')
-              const identifier = raw.replace('USE_EXISTING:', '')
+              const identifier = stripUnit(raw.replace('USE_EXISTING:', ''))
               const selectedItemName = isExisting
                 ? (basketItems.find(b => itemKey(b) === identifier)?.name || identifier)
                 : identifier
@@ -279,9 +293,6 @@ export function DealsModal({
                       {isFilled ? '✓' : ''}
                     </span>
                     <label className="text-xs font-black text-slate-700 uppercase">{cat}</label>
-                    {inBasketOpts.length > 0 && (
-                      <span className="text-[10px] text-green-600 font-bold">({inBasketOpts.length} in basket)</span>
-                    )}
                   </div>
 
                   {/* Item picker dropdown */}
@@ -291,7 +302,7 @@ export function DealsModal({
                       const val = e.target.value
                       setSlotSelections(prev => ({ ...prev, [slotKey]: val }))
                       if (val.startsWith('USE_EXISTING:')) {
-                        const bi = basketItems.find(b => itemKey(b) === val.replace('USE_EXISTING:', ''))
+                        const bi = basketItems.find(b => itemKey(b) === stripUnit(val.replace('USE_EXISTING:', '')))
                         setSlotMods(prev => ({ ...prev, [slotKey]: bi?.modifiers || [] }))
                         setSlotNotes(prev => ({ ...prev, [slotKey]: bi?.specialInstructions || '' }))
                       } else {
@@ -302,8 +313,9 @@ export function DealsModal({
                     className={`w-full border rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${isFilled ? 'border-green-300' : 'border-slate-200'}`}>
                     <option value="">Choose {cat}…</option>
 
-                    {inBasketOpts.length > 0 && <option disabled>── In your basket ──</option>}
+                    {expandedBasketOpts.length > 0 && <option disabled>── In your basket ──</option>}
                     {(() => {
+                      // takenByOtherSlots collects full unit keys (cartKey::unitN) from other slots
                       const takenByOtherSlots = new Set<string>(
                         getBundleSlotCats(selectedDeal).flatMap((_, i) => {
                           if (i === index) return []
@@ -311,14 +323,13 @@ export function DealsModal({
                           return r.startsWith('USE_EXISTING:') ? [r.replace('USE_EXISTING:', '')] : []
                         })
                       )
-                      return inBasketOpts.map(b => {
-                        const key = itemKey(b)
-                        const isUsed = fullyUsedKeys.has(key)
-                        const isTaken = takenByOtherSlots.has(key)
-                        const modLabel = b.modifiers?.length ? ` (+ ${b.modifiers.map(m => m.name).join(', ')})` : ''
+                      return expandedBasketOpts.map(u => {
+                        const isUsed = fullyUsedKeys.has(itemKey(u))
+                        const isTaken = takenByOtherSlots.has(u._unitKey)
+                        const modLabel = u.modifiers?.length ? ` (+ ${u.modifiers.map(m => m.name).join(', ')})` : ''
                         return (
-                          <option key={`USE_EXISTING:${key}`} value={`USE_EXISTING:${key}`} disabled={isUsed || isTaken}>
-                            {b.name}{modLabel} (in basket){isUsed ? ' — already in a deal' : isTaken ? ' — selected in another slot' : ''}
+                          <option key={`USE_EXISTING:${u._unitKey}`} value={`USE_EXISTING:${u._unitKey}`} disabled={isUsed || isTaken}>
+                            {u.name}{modLabel} (in basket){isUsed ? ' — already in a deal' : isTaken ? ' — selected in another slot' : ''}
                           </option>
                         )
                       })
@@ -390,7 +401,7 @@ export function DealsModal({
                 const isEx = raw?.startsWith('USE_EXISTING:')
                 const id = raw?.replace('USE_EXISTING:', '') || ''
                 if (isEx) {
-                  const b = basketItems.find(bi => itemKey(bi) === id)
+                  const b = basketItems.find(bi => itemKey(bi) === stripUnit(id))
                   const baseP = menuItems.find(m => m.name === b?.name)?.price ?? 0
                   orig += baseP + (slotMods[slotKey] || []).reduce((s, m) => s + m.price, 0)
                 } else {

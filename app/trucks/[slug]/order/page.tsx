@@ -5,7 +5,8 @@ import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as c
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
 import Image from 'next/image';
-import { calculateOrderTotal, calculateDealOriginalPrice } from '@/lib/order-calculations';
+import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
+import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
 import { cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
@@ -17,7 +18,7 @@ interface MenuItem {
   name: string; description?: string; price: number; available?: boolean; category: string; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]
 }
 interface UpsellRule {
-  trigger_category: string; suggest_category: string; max_suggestions: number
+  id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean
 }
 interface Bundle {
   name: string; description: string
@@ -154,6 +155,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[] } | null>(null)
   const [modalMods, setModalMods] = useState<{ name: string; price: number }[]>([])
   const [modalNotes, setModalNotes] = useState('')
+  const [openNoteKey, setOpenNoteKey] = useState<string | null>(null)
+  const [noteInputVal, setNoteInputVal] = useState('')
   const [discountInput, setDiscountInput] = useState('')
   const [appliedCode, setAppliedCode] = useState<DiscountCode | null>(null)
   const [discountError, setDiscountError] = useState('')
@@ -308,7 +311,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 
-  const addItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '') => {
+  const addItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '', source: 'direct' | 'upsell' = 'direct') => {
     const key = makeCartKey(item.name, mods, notes)
     setBasket(prev => {
       const ex = prev.find(b => b.cartKey === key)
@@ -317,7 +320,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         if (totalQty >= item.stock_remaining) return prev
       }
       if (ex) return prev.map(b => b.cartKey === key ? { ...b, quantity: b.quantity + 1 } : b)
-      return [...prev, { menuItem: item, quantity: 1, modifiers: mods, specialInstructions: notes, cartKey: key }]
+      return [...prev, { menuItem: item, quantity: 1, modifiers: mods, specialInstructions: notes, cartKey: key, source }]
     })
   }
 
@@ -326,12 +329,23 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (!entry) return
     const isLastVariant = basket.filter(b => b.menuItem.name === entry.menuItem.name).length === 1 && entry.quantity === 1
     if (isLastVariant) setAppliedDeals(prev => cleanupDealsForItem(prev, entry.menuItem.name))
+    if (entry.quantity === 1) setOpenNoteKey(prev => prev === cartKey ? null : prev)
     setBasket(prev => {
       const ex = prev.find(b => b.cartKey === cartKey)
       if (!ex) return prev
       if (ex.quantity === 1) return prev.filter(b => b.cartKey !== cartKey)
       return prev.map(b => b.cartKey === cartKey ? { ...b, quantity: b.quantity - 1 } : b)
     })
+  }
+
+  const commitNote = (itemName: string) => {
+    const note = noteInputVal.trim()
+    setBasket(prev => prev.map(b =>
+      b.menuItem.name === itemName && b.modifiers.length === 0
+        ? { ...b, specialInstructions: note, cartKey: makeCartKey(b.menuItem.name, [], note) }
+        : b
+    ))
+    setOpenNoteKey(null)
   }
 
   // Total qty across all variants of an item (for UI badge and stock checks)
@@ -366,14 +380,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [menu])
 
   // ── Upsells ─────────────────────────────────────────────────────────────────
-  // Get upsell options for a specific item
+  // Inline upsells — item-specific, shown immediately when a matching item is in basket
   const getItemUpsells = (item: MenuItem): MenuItem[] => {
     if (!menu) return []
     const rules = menu.upsell_rules.filter(r => r.trigger_category === item.category)
     const suggestions: MenuItem[] = []
     for (const rule of rules) {
-      const matchedItems = menu.items.filter(i => 
-        i.category === rule.suggest_category && 
+      const matchedItems = menu.items.filter(i =>
+        i.category === rule.suggest_category &&
         i.available &&
         !basket.find(b => b.menuItem.name === i.name)
       ).slice(0, rule.max_suggestions)
@@ -578,7 +592,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
-  const submitOrder = async () => {
+  const handleSubmitClick = () => submitOrder({})
+
+  const submitOrder = async (extra: { upsellEvents?: any[] } = {}) => {
     if (!truck || !menu || !name || !email || !phone || !hasItems || !event) return
     if (truck.mode === 'village' && !selectedSlot) return
     setSubmitting(true)
@@ -594,10 +610,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             unit_price: b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0),
             modifiers: b.modifiers.length > 0 ? b.modifiers : undefined,
             specialInstructions: b.specialInstructions || undefined,
+            source: (b as any).source || 'direct',
           })),
           deals: appliedDeals.map(d => ({ name: d.bundle.name, slots: d.slots, slotModifiers: d.slotModifiers, slotNotes: d.slotNotes, price: d.bundle.bundle_price })),
           discountCode: appliedCode?.code || null,
           subtotal: subtotal, discountAmt: discountAmt, total, notes: notes || null,
+          upsellEvents: extra.upsellEvents || [],
         }),
       })
       const data = await res.json()
@@ -684,52 +702,47 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           )}
 
           <div className="bg-slate-50 rounded-xl p-4 text-left space-y-2 mb-4 border border-slate-100">
-            {basket.map(b => {
-              const modSum = b.modifiers.reduce((s, m) => s + m.price, 0)
-              return (
-                <div key={b.cartKey}>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-600">{b.quantity}× {b.menuItem.name}</span>
-                    <span className="font-medium text-slate-700">£{((b.menuItem.price + modSum) * b.quantity).toFixed(2)}</span>
-                  </div>
-                  {b.modifiers.map(m => (
-                    <div key={m.name} className="flex justify-between text-xs pl-3 text-slate-400">
-                      <span>+ {m.name}</span>
-                      <span>+£{(m.price * b.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                  {b.specialInstructions && (
-                    <div className="text-xs pl-3 text-slate-400 italic">📝 {b.specialInstructions}</div>
-                  )}
-                </div>
-              )
-            })}
+            {basket.map(b => (
+              <OrderLineItem
+                key={b.cartKey}
+                name={b.menuItem.name}
+                quantity={b.quantity}
+                unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
+                basePrice={b.menuItem.price}
+                modifiers={b.modifiers}
+                specialInstructions={b.specialInstructions}
+                variant="customer"
+              />
+            ))}
             {appliedDeals.map((deal, i) => {
               const origPrice = calcDealOriginalPrice(deal, menu?.items || [])
               const saving = origPrice > deal.bundle.bundle_price ? origPrice - deal.bundle.bundle_price : 0
               return (
-                <div key={i} className="space-y-0.5">
-                  <div className="flex justify-between text-sm">
-                    <span>
-                      {deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(', ')})
-                      {saving > 0 && <span className="ml-1.5 text-xs text-green-600 font-medium">save £{saving.toFixed(2)}</span>}
+                <div key={i}>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-600">
+                      🎁 {deal.bundle.name}
+                      {saving > 0 && <span className="ml-1.5 text-green-600 font-medium">save £{saving.toFixed(2)}</span>}
                     </span>
-                    <span className="font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
+                    <span className="font-medium text-slate-700">£{deal.bundle.bundle_price.toFixed(2)}</span>
                   </div>
-                  {Object.entries(deal.slots).filter(([, name]) => name).flatMap(([cat, itemName]) => {
-                    const mods = deal.slotModifiers?.[cat] || []
-                    const note = deal.slotNotes?.[cat]
-                    const rows = []
-                    if (mods.length > 0) rows.push(
-                      <div key={`${cat}-mods`} className="flex justify-between text-xs pl-3">
-                        <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
-                        <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
+                  {Object.keys(deal.slots).sort().map(slotKey => {
+                    const itemName = deal.slots[slotKey]
+                    if (!itemName) return null
+                    const mods = deal.slotModifiers?.[slotKey] || []
+                    const note = deal.slotNotes?.[slotKey]
+                    return (
+                      <div key={slotKey}>
+                        <div className="pl-3 text-xs text-slate-400">{itemName}</div>
+                        {mods.map(m => (
+                          <div key={m.name} className="flex justify-between pl-6 text-xs text-slate-400">
+                            <span>{m.name}</span>
+                            {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
+                          </div>
+                        ))}
+                        {note && <div className="pl-6 text-xs text-slate-400 italic">📝 {note}</div>}
                       </div>
                     )
-                    if (note) rows.push(
-                      <div key={`${cat}-note`} className="text-xs pl-3 text-slate-400 italic">↳ {itemName}: 📝 {note}</div>
-                    )
-                    return rows
                   })}
                 </div>
               )
@@ -1012,7 +1025,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   const isExpanded = expandedItem === item.name
                   const catModGroups = menu?.categories?.find(c => c.name === item.category)?.modifierGroups || []
                   const hasModifiers = catModGroups.length > 0
+                  const catAllowNotes = menu?.categories?.find(c => c.name.toLowerCase() === item.category.toLowerCase())?.allowNotes ?? false
                   const itemVariants = basket.filter(b => b.menuItem.name === item.name)
+                  const directEntry = !hasModifiers ? itemVariants.find(b => b.modifiers.length === 0) : undefined
                   const atStockLimit = item.stock_remaining != null && qty >= item.stock_remaining
                   return (
                     <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
@@ -1067,12 +1082,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           </button>
                         ) : qty > 0 ? (
                           <>
-                            <QBtn onClick={() => removeItem(makeCartKey(item.name, []))} label="−" />
+                            <QBtn onClick={() => removeItem(directEntry?.cartKey ?? makeCartKey(item.name, []))} label="−" />
                             <span className="w-5 text-center font-black text-slate-900 text-sm">{qty}</span>
                             {isOrderingBlocked || atStockLimit ? (
                               <button disabled className="w-7 h-7 rounded-lg bg-slate-100 text-slate-300 font-black text-sm cursor-not-allowed">+</button>
                             ) : (
-                              <QBtn onClick={() => addItem(item)} label="+" accent />
+                              <QBtn onClick={() => addItem(item, [], directEntry?.specialInstructions || '')} label="+" accent />
                             )}
                           </>
                         ) : (
@@ -1089,9 +1104,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="pl-2 pb-2 space-y-1.5">
                         {itemVariants.map(v => {
                           const modSum = v.modifiers.reduce((s, m) => s + m.price, 0)
-                          const modLabel = v.modifiers.map(m => m.name).join(', ')
+                          const modLabel = formatModifiers(v.modifiers)
                           const subLabel = [modLabel, v.specialInstructions].filter(Boolean).join(' · ')
-                          const catAllowNotes = menu?.categories?.find(c => c.name.toLowerCase() === item.category.toLowerCase())?.allowNotes ?? false
                           return (
                             <div key={v.cartKey} className="flex items-center gap-2 bg-orange-50 rounded-xl px-3 py-2 border border-orange-100">
                               <div className="flex items-center gap-1 shrink-0">
@@ -1109,6 +1123,41 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         })}
                       </div>
                     )}
+
+                    {/* Inline note affordance for direct-add (no-modifier) items */}
+                    {!hasModifiers && qty > 0 && catAllowNotes && (() => {
+                      const directEntry = basket.find(b => b.menuItem.name === item.name && b.modifiers.length === 0)
+                      const directCartKey = directEntry?.cartKey ?? makeCartKey(item.name, [])
+                      const directNote = directEntry?.specialInstructions || ''
+                      return (
+                        <div className="px-3 pb-2.5 -mt-1">
+                          {openNoteKey === directCartKey ? (
+                            <ItemNoteInput
+                              compact
+                              value={noteInputVal}
+                              onChange={setNoteInputVal}
+                              onBlur={() => commitNote(item.name)}
+                              onKeyDown={(e) => e.key === 'Enter' && commitNote(item.name)}
+                            />
+                          ) : directNote ? (
+                            <button
+                              onClick={() => { setNoteInputVal(directNote); setOpenNoteKey(directCartKey) }}
+                              className="flex items-center gap-1.5 text-xs text-slate-400 italic"
+                            >
+                              <span>📝 {directNote}</span>
+                              <span className="not-italic text-slate-300 ml-0.5">✏️</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => { setNoteInputVal(''); setOpenNoteKey(directCartKey) }}
+                              className="text-xs text-orange-500 font-medium"
+                            >
+                              + Add note
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })()}
 
                     {/* Upsells inline */}
                     {qty > 0 && itemUpsells.length > 0 && (
@@ -1318,56 +1367,54 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {/* Expanded breakdown */}
               {summaryExpanded && (
                 <div className="bg-slate-50 rounded-xl p-3 mb-2 space-y-1.5 border border-slate-100">
-                  {basket.map(b => {
-                    const modSum = b.modifiers.reduce((s, m) => s + m.price, 0)
-                    const linePrice = (b.menuItem.price + modSum) * b.quantity
-                    return (
-                      <div key={b.cartKey}>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-slate-600">{b.quantity}× {b.menuItem.name}</span>
-                          <span className="font-medium text-slate-700">£{linePrice.toFixed(2)}</span>
-                        </div>
-                        {b.modifiers.map(m => (
-                          <div key={m.name} className="flex justify-between text-[10px] pl-3 text-slate-400">
-                            <span>+ {m.name}</span>
-                            <span>+£{(m.price * b.quantity).toFixed(2)}</span>
-                          </div>
-                        ))}
-                        {b.specialInstructions && (
-                          <div className="text-[10px] pl-3 text-slate-400 italic">📝 {b.specialInstructions}</div>
-                        )}
+                  {/* Deals first */}
+                  {appliedDeals.map((deal, i) => (
+                    <div key={i}>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-slate-600">🎁 {deal.bundle.name}</span>
+                        <span className="text-slate-700 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
                       </div>
-                    )
-                  })}
-                  {appliedDeals.length > 0 && appliedDeals.map((deal, i) => {
-                    const dealSlotMods = Object.entries(deal.slotModifiers || {})
-                      .filter(([, mods]) => mods.length > 0)
-                      .map(([cat, mods]) => ({ cat, itemName: deal.slots[cat], mods }))
-                      .filter(({ itemName }) => itemName)
-                    const dealSlotNotes = Object.entries(deal.slotNotes || {})
-                      .filter(([, note]) => note.trim())
-                      .map(([cat, note]) => ({ cat, itemName: deal.slots[cat], note }))
-                      .filter(({ itemName }) => itemName)
-                    return (
-                      <div key={i} className="border-t border-slate-200 pt-1.5 space-y-0.5">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-green-600">{deal.bundle.name} ({Object.values(deal.slots).filter(Boolean).join(' + ')})</span>
-                          <span className="text-green-600 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
-                        </div>
-                        {dealSlotMods.map(({ itemName, mods }) => (
-                          <div key={itemName} className="flex justify-between text-xs pl-2">
-                            <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
-                            <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
+                      {Object.keys(deal.slots).sort().map(slotKey => {
+                        const itemName = deal.slots[slotKey]
+                        if (!itemName) return null
+                        const mods = deal.slotModifiers?.[slotKey] || []
+                        const note = deal.slotNotes?.[slotKey]
+                        return (
+                          <div key={slotKey}>
+                            <div className="pl-3 text-[10px] text-slate-400">{itemName}</div>
+                            {mods.map(m => (
+                              <div key={m.name} className="flex justify-between pl-6 text-[10px] text-slate-400">
+                                <span>{m.name}</span>
+                                {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
+                              </div>
+                            ))}
+                            {note && <div className="pl-6 text-[10px] text-slate-400 italic">📝 {note}</div>}
                           </div>
-                        ))}
-                        {dealSlotNotes.map(({ itemName, note }) => (
-                          <div key={`note-${itemName}`} className="text-xs pl-2 text-slate-400 italic">
-                            ↳ {itemName}: 📝 {note}
-                          </div>
-                        ))}
-                      </div>
-                    )
-                  })}
+                        )
+                      })}
+                    </div>
+                  ))}
+                  {/* Items sorted by menu category order */}
+                  {(() => {
+                    const catOrder = menu?.categories?.map(c => c.name) ?? []
+                    const sorted = [...basket].sort((a, b) => {
+                      const ai = catOrder.indexOf(a.menuItem.category)
+                      const bi = catOrder.indexOf(b.menuItem.category)
+                      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
+                    })
+                    return sorted.map(b => (
+                      <OrderLineItem
+                        key={b.cartKey}
+                        name={b.menuItem.name}
+                        quantity={b.quantity}
+                        unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
+                        basePrice={b.menuItem.price}
+                        modifiers={b.modifiers}
+                        specialInstructions={b.specialInstructions}
+                        variant="customer"
+                      />
+                    ))
+                  })()}
                   {discountAmt > 0 && (
                     <div className="flex justify-between text-xs">
                       <span className="text-green-600">Code: {appliedCode?.code}</span>
@@ -1385,6 +1432,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
           <button onClick={submitOrder}
+            onClick={e => { e.preventDefault(); handleSubmitClick() }}
             disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
@@ -1429,17 +1477,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 ))}
 
                 {(menu?.categories?.find(c => c.name === itemModal.item.category)?.allowNotes ?? false) && (
-                  <div>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Special instructions <span className="font-normal normal-case text-slate-400">— optional</span></p>
-                    <textarea
-                      value={modalNotes}
-                      onChange={e => setModalNotes(e.target.value.slice(0, 60))}
-                      placeholder="e.g. No onions, extra crispy…"
-                      rows={2}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
-                    />
-                    <p className="text-right text-[10px] text-slate-400 mt-0.5">{modalNotes.length}/60</p>
-                  </div>
+                  <ItemNoteInput value={modalNotes} onChange={setModalNotes} />
                 )}
               </div>
             </div>
@@ -1505,6 +1543,48 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
+
+// Shared note input used on basket lines (compact) and in the modifier popup (full)
+function ItemNoteInput({
+  value, onChange, compact = false, onBlur, onKeyDown,
+}: {
+  value: string
+  onChange: (v: string) => void
+  compact?: boolean
+  onBlur?: () => void
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void
+}) {
+  if (compact) {
+    return (
+      <input
+        autoFocus
+        type="text"
+        maxLength={60}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+        placeholder="Any requests? e.g. no onions"
+        className="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+      />
+    )
+  }
+  return (
+    <div>
+      <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">
+        Any requests? <span className="font-normal normal-case text-slate-400">— optional</span>
+      </p>
+      <textarea
+        value={value}
+        onChange={e => onChange(e.target.value.slice(0, 60))}
+        placeholder="e.g. no onions, extra crispy"
+        rows={2}
+        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none"
+      />
+      <p className="text-right text-[10px] text-slate-400 mt-0.5">{value.length}/60</p>
+    </div>
+  )
+}
 
 function Shell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-slate-50 flex flex-col">{children}</div>

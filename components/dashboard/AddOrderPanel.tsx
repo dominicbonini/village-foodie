@@ -10,6 +10,8 @@ import { calcQueueAwareReadySecs } from '@/lib/prep-utils'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
+import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
+import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -47,7 +49,17 @@ type EventRecord = {
   start_time: string
   end_time: string
   venue_name?: string | null
+  town?: string | null
   status?: string
+}
+
+/** "Village Hall - Wickhambrook", but skip town if already in venue name */
+function fmtVenue(venueName?: string | null, town?: string | null): string {
+  if (!venueName && !town) return ''
+  if (!venueName) return town!
+  if (!town) return venueName
+  if (venueName.toLowerCase().includes(town.toLowerCase())) return venueName
+  return `${venueName} — ${town}`
 }
 
 // ─── props ────────────────────────────────────────────────────────────────────
@@ -69,6 +81,7 @@ interface AddOrderPanelProps {
   itemCategoryMap: Record<string, string>
   showToast: (msg: string, type?: 'success' | 'error') => void
   onOrderPlaced: () => void
+  onOpenEvent?: (eventId: string) => void
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -78,7 +91,7 @@ export function AddOrderPanel({
   itemStocks, categoryStocks, categoryConfigs, categoryAllowNotes,
   orders, waitMinutes, token, pin, todayEvent,
   categoryOrder, itemCategoryMap,
-  showToast, onOrderPlaced,
+  showToast, onOrderPlaced, onOpenEvent,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -94,6 +107,7 @@ export function AddOrderPanel({
   // ── event / slot state ──────────────────────────────────────────────────────
   const [manualEvent, setManualEvent] = useState<EventRecord | null>(todayEvent)
   const [manualSlots, setManualSlots] = useState<Slot[]>([])
+  const [apiQueueByCat, setApiQueueByCat] = useState<Record<string, number>>({})
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
 
@@ -125,57 +139,40 @@ export function AddOrderPanel({
 
   const { itemsTotal: manualItemsSubtotal, dealSavings, total: manualTotal } = calculation
 
+  // Single formula for both pre-event and live: queue from API, new items from basket.
+  // Base time = max(now, eventStart) so pre-event orders anchor to event start correctly.
   const queueAware = useMemo(() => {
     if (!manualItems.length && !appliedDeals.length) return { readyTime: '', minsFromNow: 0 }
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
-    const eventStartMins = manualEvent
-      ? (() => { const [h, m] = manualEvent.start_time.split(':').map(Number); return h * 60 + m })()
-      : null
-    const beforeEvent = eventStartMins !== null && (
-      !manualEvent ||
-      manualEvent.event_date > new Date().toISOString().split('T')[0] ||
-      nowMins < eventStartMins
-    )
-    const queueByCat: Record<string, number> = {}
-    orders.filter(o => ['pending', 'confirmed'].includes(o.status)).forEach(o => {
-      o.items.forEach(item => {
-        const cat = (truckMenu?.items.find(m => m.name === item.name)?.category || 'mains').toLowerCase()
-        queueByCat[cat] = (queueByCat[cat] || 0) + item.quantity
-      })
-    })
     const newByCat: Record<string, number> = {}
     manualItems.forEach(item => {
       const cat = (truckMenu?.items.find(m => m.name === item.name)?.category || 'mains').toLowerCase()
       newByCat[cat] = (newByCat[cat] || 0) + item.quantity
     })
-    if (beforeEvent && eventStartMins !== null) {
-      let extraBatchMins = 0
-      for (const [cat, newQty] of Object.entries(newByCat)) {
-        const cfg = categoryConfigs[cat] || getCatConfig(cat)
-        if (!cfg.secs) continue
-        const totalQty = (queueByCat[cat] || 0) + newQty
-        const totalBatches = Math.ceil(totalQty / cfg.batch)
-        const mins = Math.ceil(Math.max(0, totalBatches - 1) * cfg.secs / 60)
-        extraBatchMins = Math.max(extraBatchMins, mins)
-      }
-      const asapBase = getAsapBaseTime(manualEvent)
-      const asapDate = new Date(asapBase.getTime() + (extraBatchMins + waitMinutes) * 60000)
-      const roundedMs = Math.round(asapDate.getTime() / (5 * 60000)) * (5 * 60000)
-      const asapRounded = new Date(roundedMs)
-      const h = asapRounded.getHours(); const m2 = asapRounded.getMinutes()
-      return {
-        readyTime: `${String(h).padStart(2, '0')}:${String(m2).padStart(2, '0')}`,
-        minsFromNow: Math.max(0, Math.ceil((asapRounded.getTime() - Date.now()) / 60000)),
-      }
-    }
-    const totalSecs = calcQueueAwareReadySecs(newByCat, queueByCat, categoryConfigs, waitMinutes * 60 + 120)
+    const totalSecs = calcQueueAwareReadySecs(newByCat, apiQueueByCat, categoryConfigs, waitMinutes * 60 + 120)
     if (totalSecs === 0) return { readyTime: '', minsFromNow: 0 }
-    const t = new Date(); t.setSeconds(t.getSeconds() + totalSecs)
+    // Base: event start time if pre-event, now if live — getAsapBaseTime handles both
+    const base = getAsapBaseTime(manualEvent)
+    const t = new Date(base.getTime())
+    t.setSeconds(t.getSeconds() + totalSecs)
     return {
       readyTime: `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`,
-      minsFromNow: Math.ceil(totalSecs / 60),
+      minsFromNow: Math.max(0, Math.ceil((t.getTime() - Date.now()) / 60000)),
     }
-  }, [manualItems, appliedDeals, orders, manualEvent, categoryConfigs, waitMinutes, truckMenu])
+  }, [manualItems, appliedDeals, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes, truckMenu])
+
+  // ASAP slot adjusted for the new order's prep time — keeps dropdown and sub-label in sync
+  const adjustedAsapSlot = useMemo(() => {
+    if (!manualSlots.length) return null
+    if (!queueAware.minsFromNow) return manualAsapSlot
+    const tMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const neededMins = nowMins + queueAware.minsFromNow
+    return (
+      manualSlots.find(s => !s.is_grace && s.available && tMins(s.collection_time) >= neededMins)
+      ?? manualSlots.filter(s => !s.is_grace && s.available).slice(-1)[0]
+      ?? manualAsapSlot
+    )
+  }, [manualSlots, queueAware.minsFromNow, manualAsapSlot])
 
   const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
 
@@ -207,6 +204,7 @@ export function AddOrderPanel({
           start_time: ev.start_time || '',
           end_time: ev.end_time || '',
           venue_name: ev.venue_name || null,
+          town: ev.town || null,
           status: ev.status,
         }))
       setUpcomingEvents(mapped)
@@ -222,7 +220,8 @@ export function AddOrderPanel({
       const res = await fetch(`/api/slots/${truck.id}?${p}`)
       const data = await res.json()
       setManualSlots(data.slots || [])
-    } catch { setManualSlots([]) }
+      setApiQueueByCat(data.queueByCat || {})
+    } catch { setManualSlots([]); setApiQueueByCat({}) }
   }, [truck?.id])
 
   useEffect(() => {
@@ -383,7 +382,7 @@ export function AddOrderPanel({
           onChange={e => handleSlotChange(e.target.value)}
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
         >
-          <option value="">⚡ ASAP{manualAsapSlot ? ` — ${manualAsapSlot.collection_time}` : ''}</option>
+          <option value="">⚡ ASAP{adjustedAsapSlot ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
           {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
             const unlimited = s.max_orders >= 999
@@ -481,6 +480,56 @@ export function AddOrderPanel({
 
   const cartLines = (
     <div className="space-y-1">
+      {/* Deals first — always with category header */}
+      {appliedDeals.length > 0 && (
+        <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1">Deals</p>
+      )}
+      {appliedDeals.map((d, i) => (
+        <div key={i} className="py-1">
+          {/* Deal header — same visual weight as standalone item rows */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-1 flex-1 min-w-0">
+              <span className="text-sm font-bold text-slate-900 truncate">🎁 {d.bundle.name}</span>
+              <button
+                onClick={() => {
+                  if (d.itemsTakenFromBasket?.length > 0) {
+                    setManualItems(prev => prev.filter(item => !d.itemsTakenFromBasket.includes(item.cartKey || item.name)))
+                  }
+                  setAppliedDeals(prev => prev.filter((_, n) => n !== i))
+                }}
+                className="text-slate-300 hover:text-red-500 ml-1 text-sm leading-none shrink-0"
+              >×</button>
+            </div>
+            <InlinePriceEditor
+              price={d.bundle.bundle_price}
+              quantity={1}
+              onChange={p => setAppliedDeals(prev => prev.map((deal, idx) =>
+                idx === i ? { ...deal, bundle: { ...deal.bundle, bundle_price: p } } : deal
+              ))}
+            />
+          </div>
+          {/* Constituent items — indented, muted */}
+          {Object.keys(d.slots).sort().map(slotKey => {
+            const itemName = d.slots[slotKey]
+            if (!itemName) return null
+            const mods = d.slotModifiers?.[slotKey] || []
+            const note = d.slotNotes?.[slotKey]
+            return (
+              <div key={slotKey}>
+                <div className="pl-4 text-xs text-slate-500">{itemName}</div>
+                {mods.map(m => (
+                  <div key={m.name} className="flex justify-between pl-8 text-xs text-slate-400">
+                    <span>{m.name}</span>
+                    {m.price > 0 && <span className="text-slate-500">+£{m.price.toFixed(2)}</span>}
+                  </div>
+                ))}
+                {note && <div className="pl-8 text-xs text-slate-400 italic">📝 {note}</div>}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+      {/* Items — sorted by menu category order, always show category header */}
       {(() => {
         const grouped: Record<string, BasketItem[]> = {}
         manualItems.forEach(item => {
@@ -488,18 +537,20 @@ export function AddOrderPanel({
           if (!grouped[cat]) grouped[cat] = []
           grouped[cat].push(item)
         })
-        return Object.entries(grouped).map(([cat, items]) => (
+        const sortedCats = [
+          ...categoryOrder.filter(cat => grouped[cat]),
+          ...Object.keys(grouped).filter(cat => !categoryOrder.includes(cat)),
+        ]
+        return sortedCats.map(cat => (
           <div key={cat}>
-            {Object.keys(grouped).length > 1 && (
-              <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1 mt-2 first:mt-0">{cat}</p>
-            )}
-            {items.map(item => {
-              const modLabel = (item.modifiers || []).map(m => m.name).join(', ')
-              const subLabel = [modLabel, item.specialInstructions].filter(Boolean).join(' · ')
+            <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1 mt-2 first:mt-0">{cat}</p>
+            {grouped[cat].map(item => {
               const rowKey = item.cartKey || item.name
+              const hasMods = (item.modifiers || []).length > 0
               const catAllowNotes = categoryAllowNotes[cat.toLowerCase()] ?? false
               const itemCatModGroups = truckMenu?.categories?.find(c => c.name === (truckMenu?.items.find(m => m.name === item.name)?.category || ''))?.modifierGroups || []
               const fullMenuItem = truckMenu?.items.find(m => m.name === item.name)
+              const showCustomise = itemCatModGroups.length > 0 && fullMenuItem
               return (
                 <div key={rowKey} className="flex items-start gap-2 py-1">
                   <div className="flex items-center gap-1 shrink-0 mt-0.5">
@@ -508,24 +559,26 @@ export function AddOrderPanel({
                     <button onClick={() => adjustManualQty(rowKey, 1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 text-sm leading-none">+</button>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-sm font-bold text-slate-900">{item.name}</span>
-                      {itemCatModGroups.length > 0 && fullMenuItem && (
-                        <button onClick={() => openManualItemModal(fullMenuItem, itemCatModGroups, rowKey)}
+                    <OrderLineItem
+                      name={item.name}
+                      quantity={item.quantity}
+                      unitPrice={item.unit_price}
+                      modifiers={item.modifiers}
+                      specialInstructions={item.specialInstructions}
+                      variant="operator"
+                      nameSuffix={showCustomise ? (
+                        <button onClick={() => openManualItemModal(fullMenuItem!, itemCatModGroups, rowKey)}
                           className="text-[10px] font-bold text-orange-500 border border-orange-200 rounded-md px-1.5 py-0.5 hover:bg-orange-50 shrink-0">
-                          {subLabel ? '✏ Edit' : '+ Customise'}
+                          {hasMods ? '✏ Edit' : '+ Customise'}
                         </button>
-                      )}
-                    </div>
-                    {(subLabel || catAllowNotes) && (
-                      <p className={`text-[10px] mt-0.5 leading-tight ${subLabel ? 'text-orange-500 font-medium' : 'text-slate-400 italic'}`}>
-                        {subLabel || 'Standard'}
-                      </p>
-                    )}
-                  </div>
-                  <div className="shrink-0 mt-0.5">
-                    <InlinePriceEditor price={item.unit_price} quantity={item.quantity}
-                      onChange={p => setManualItems(prev => prev.map(i => (i.cartKey || i.name) === rowKey ? { ...i, unit_price: p } : i))} />
+                      ) : catAllowNotes && !hasMods ? (
+                        <span className="text-[10px] text-slate-400 italic">Standard</span>
+                      ) : undefined}
+                      rightSlot={
+                        <InlinePriceEditor price={item.unit_price} quantity={item.quantity}
+                          onChange={p => setManualItems(prev => prev.map(i => (i.cartKey || i.name) === rowKey ? { ...i, unit_price: p } : i))} />
+                      }
+                    />
                   </div>
                 </div>
               )
@@ -533,48 +586,6 @@ export function AddOrderPanel({
           </div>
         ))
       })()}
-      {appliedDeals.length > 0 && (
-        <div className="border-t border-slate-200 pt-2 space-y-1">
-          {manualItems.length > 0 && (
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Items subtotal</span>
-              <span className="text-slate-600">£{manualItemsSubtotal.toFixed(2)}</span>
-            </div>
-          )}
-          {appliedDeals.map((d, i) => {
-            const dealSlotMods = Object.entries(d.slotModifiers || {})
-              .filter(([, mods]) => mods.length > 0)
-              .map(([cat, mods]) => ({ itemName: d.slots[cat], mods }))
-              .filter(({ itemName }) => itemName)
-            return (
-              <div key={i} className="text-xs space-y-0.5">
-                <div className="flex justify-between items-start gap-2">
-                  <div className="flex-1 min-w-0">
-                    <span className="text-green-600 font-bold">🎁 {d.bundle.name}</span>
-                    <span className="text-green-500 font-normal ml-1">({Object.values(d.slots).filter(Boolean).join(', ')})</span>
-                    <button
-                      onClick={() => {
-                        if (d.itemsTakenFromBasket?.length > 0) {
-                          setManualItems(prev => prev.filter(item => !d.itemsTakenFromBasket.includes(item.cartKey || item.name)))
-                        }
-                        setAppliedDeals(prev => prev.filter((_, n) => n !== i))
-                      }}
-                      className="text-slate-300 hover:text-red-500 ml-1.5 text-sm leading-none align-middle"
-                    >×</button>
-                  </div>
-                  <span className="text-green-600 font-bold shrink-0">£{d.bundle.bundle_price.toFixed(2)}</span>
-                </div>
-                {dealSlotMods.map(({ itemName, mods }) => (
-                  <div key={itemName} className="flex justify-between pl-3">
-                    <span className="text-slate-400">↳ {itemName}: + {mods.map(m => m.name).join(', ')}</span>
-                    <span className="text-slate-400">+£{mods.reduce((s, m) => s + m.price, 0).toFixed(2)}</span>
-                  </div>
-                ))}
-              </div>
-            )
-          })}
-        </div>
-      )}
     </div>
   )
 
@@ -595,13 +606,14 @@ export function AddOrderPanel({
               {items.map(item => {
                 const isSoldOut = !(item.available ?? true)
                 const stock = itemStocks.find(s => s.name === item.name)
-                const itemRem = stock?.stock_count != null ? stock.stock_count - (stock.orders_count || 0) : null
                 const catSt = categoryStocks.find(s => s.category === cat)
-                const catRem = catSt?.stock_count != null ? catSt.stock_count - (catSt.orders_count || 0) : null
-                const effectiveRem = itemRem !== null ? (catRem !== null ? Math.min(itemRem, catRem) : itemRem) : catRem
+                const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
+                const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
+                const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
                 const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
                 const catModGroups = truckMenu?.categories?.find(c => c.name === cat)?.modifierGroups || []
                 const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
+                const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
                 if (isSoldOut) return (
                   <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
                     <span className="text-xs text-slate-500 line-through">{item.name}</span>
@@ -611,16 +623,22 @@ export function AddOrderPanel({
                 return (
                   <button
                     key={item.name}
-                    onClick={() => addManualItem(item)}
-                    className={`flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all active:scale-95 min-h-[56px] min-w-[80px] ${totalInBasket > 0 ? 'bg-orange-600 border-orange-600 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-white'}`}
+                    onClick={() => !atStockLimit && addManualItem(item)}
+                    disabled={atStockLimit}
+                    className={`flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
+                      atStockLimit ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
+                      : totalInBasket > 0 ? 'bg-orange-600 border-orange-600 text-white active:scale-95'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-white active:scale-95'
+                    }`}
                   >
                     <div className="flex items-center gap-1.5">
-                      {totalInBasket > 0 && <span className="text-orange-200">{totalInBasket}×</span>}
+                      {totalInBasket > 0 && <span className={atStockLimit ? 'text-slate-500' : 'text-orange-200'}>{totalInBasket}×</span>}
                       <span>{item.name}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-xs font-normal ${totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
-                      {isLow && !totalInBasket && <span className="text-[10px] text-orange-500 font-black">({effectiveRem} left)</span>}
+                      <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
+                      {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
+                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">({effectiveRem} left)</span>}
                     </div>
                   </button>
                 )
@@ -665,12 +683,13 @@ export function AddOrderPanel({
               {items.map(item => {
                 const isSoldOut = !(item.available ?? true)
                 const stock = itemStocks.find(s => s.name === item.name)
-                const itemRem = stock?.stock_count != null ? stock.stock_count - (stock.orders_count || 0) : null
                 const catSt = categoryStocks.find(s => s.category === cat)
-                const catRem = catSt?.stock_count != null ? catSt.stock_count - (catSt.orders_count || 0) : null
-                const effectiveRem = itemRem !== null ? (catRem !== null ? Math.min(itemRem, catRem) : itemRem) : catRem
+                const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
+                const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
+                const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
                 const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
                 const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
+                const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
                 return (
                   <div key={item.name} className={`flex items-center gap-3 py-3 border-b border-slate-50 ${isSoldOut ? 'opacity-50' : ''}`}>
                     <div className="flex-1 min-w-0">
@@ -678,7 +697,8 @@ export function AddOrderPanel({
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
                         {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
-                        {isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
+                        {atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
+                        {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
                       </div>
                     </div>
                     {!isSoldOut && (
@@ -690,14 +710,16 @@ export function AddOrderPanel({
                           >−</button>
                           <span className="text-sm font-bold text-slate-800 w-4 text-center">{totalInBasket}</span>
                           <button
-                            onClick={() => addManualItem(item)}
-                            className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white font-bold text-lg leading-none active:scale-90"
+                            onClick={() => !atStockLimit && addManualItem(item)}
+                            disabled={atStockLimit}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-600 text-white active:scale-90'}`}
                           >+</button>
                         </div>
                       ) : (
                         <button
-                          onClick={() => addManualItem(item)}
-                          className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xl leading-none active:scale-90 shrink-0"
+                          onClick={() => !atStockLimit && addManualItem(item)}
+                          disabled={atStockLimit}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-100 text-orange-600 active:scale-90'}`}
                         >+</button>
                       )
                     )}
@@ -728,21 +750,34 @@ export function AddOrderPanel({
   const eventBanner = (
     <div className="mb-4">
       {manualEvent ? (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5 flex items-center gap-3">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-black text-orange-900 truncate">{(() => {
-              const t = new Date().toISOString().split('T')[0]
-              const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
-              const d = manualEvent.event_date
-              const label = d === t ? 'Today' : d === tmrw ? 'Tomorrow' : new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-              return `📅 ${label} · ${formatTime(manualEvent.start_time)}–${formatTime(manualEvent.end_time)}`
-            })()}</p>
-            {manualEvent.venue_name && <p className="text-xs text-orange-600 truncate mt-0.5">{manualEvent.venue_name}</p>}
+        <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              {(manualEvent.venue_name || manualEvent.town) && (
+                <p className="text-sm font-bold text-orange-900 truncate">
+                  {fmtVenue(manualEvent.venue_name, manualEvent.town)}
+                </p>
+              )}
+              <p className="text-xs text-orange-600 truncate">{(() => {
+                const t = new Date().toISOString().split('T')[0]
+                const tmrw = new Date(Date.now() + 86400000).toISOString().split('T')[0]
+                const d = manualEvent.event_date
+                const label = d === t ? 'Today' : d === tmrw ? 'Tomorrow' : new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+                return `${label} · ${formatTime(manualEvent.start_time)}–${formatTime(manualEvent.end_time)}`
+              })()}</p>
+            </div>
+            <button onClick={() => { fetchUpcomingEvents(); setShowEventPicker(true) }}
+              className="text-xs font-bold text-orange-600 border border-orange-300 rounded-lg px-2.5 py-1 shrink-0 hover:bg-orange-100 active:scale-95">
+              Change
+            </button>
           </div>
-          <button onClick={() => { fetchUpcomingEvents(); setShowEventPicker(true) }}
-            className="text-xs font-bold text-orange-600 border border-orange-300 rounded-lg px-2.5 py-1 shrink-0 hover:bg-orange-100 active:scale-95">
-            Change
-          </button>
+          {manualEvent.status === 'confirmed' && onOpenEvent && (
+            <button
+              onClick={() => onOpenEvent(manualEvent.id)}
+              className="mt-2 w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-teal-700 active:scale-[0.98] transition-all">
+              Open for orders
+            </button>
+          )}
         </div>
       ) : (
         <div className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 flex items-center justify-between">
@@ -957,7 +992,7 @@ export function AddOrderPanel({
                           <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {fmtT(ev.start_time)}–{fmtT(ev.end_time)}</p>
                           {isFuture && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
                         </div>
-                        {ev.venue_name && <p className="text-xs text-slate-500 mt-0.5">{ev.venue_name}</p>}
+                        {(ev.venue_name || ev.town) && <p className="text-xs text-slate-500 mt-0.5">{fmtVenue(ev.venue_name, ev.town)}</p>}
                         {isSelected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
                       </button>
                     )

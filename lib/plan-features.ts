@@ -60,6 +60,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Universal web dashboard',         starter: true,  pro: true,  max: true  },
       { name: 'iPad kitchen app', footnote: '3', starter: true,  pro: true,  max: true  },
       { name: 'QR code menu & ordering',         starter: true,  pro: true,  max: true  },
+      { name: 'Branded QR code (logo in centre)', footnote: '6', starter: false, pro: true,  max: true  },
       { name: 'Meal deals & upsells',            starter: true,  pro: true,  max: true  },
       { name: 'Walk-up order processing', footnote: '1', starter: true, pro: true, max: true },
       { name: 'Instant sold out toggle',         starter: true,  pro: true,  max: true  },
@@ -114,5 +115,9 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   {
     number: '5',
     text: 'Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
+  },
+  {
+    number: '6',
+    text: 'Branded QR code composites your truck logo into the centre of the QR code at high error-correction level. Requires a logo to be uploaded in Settings.',
   },
 ]

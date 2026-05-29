@@ -20,6 +20,7 @@ export type Feature =
   | 'smart_batch_pacing'
   | 'auto_accept'
   | 'instagram_messenger_replies'
+  | 'branded_qr_code'
   // Max
   | 'ticket_printing'
   | 'multi_device_kds'
@@ -43,6 +44,7 @@ const PRO_FEATURES: Feature[] = [
   'smart_batch_pacing',
   'auto_accept',
   'instagram_messenger_replies',
+  'branded_qr_code',
 ]
 
 const MAX_FEATURES: Feature[] = [

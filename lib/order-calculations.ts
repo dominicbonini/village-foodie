@@ -2,6 +2,12 @@
 // SINGLE SOURCE OF TRUTH for all order calculations
 // Used by: customer order form, truck dashboard, server-side validation
 
+/** Format modifier names with upcharge prices for cart line display.
+ *  e.g. [{name:'Extra Cheese',price:1.5}] → "Extra Cheese +£1.50" */
+export function formatModifiers(modifiers: { name: string; price: number }[]): string {
+  return modifiers.map(m => m.price > 0 ? `${m.name} +£${m.price.toFixed(2)}` : m.name).join(', ')
+}
+
 export interface OrderItem {
     name: string
     price: number

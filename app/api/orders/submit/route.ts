@@ -18,6 +18,7 @@ import { buildCatConfigs } from '@/lib/prep-utils'
 import type { CatConfig } from '@/lib/prep-utils'
 import { formatConfirmationEmail, sendConfirmationEmail } from '@/lib/email'
 import { nextOrderId } from '@/lib/order-utils'
+import { enforceStockLimits } from '@/lib/stock-availability'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -210,6 +211,7 @@ export async function POST(req: NextRequest) {
       subtotal,
       total,
       notes,
+      upsellEvents,
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
@@ -484,6 +486,33 @@ export async function POST(req: NextRequest) {
       } catch (slotErr) {
         console.error('[submit] production slot tracking failed:', slotErr)
       }
+    }
+
+    // ── Record upsell events ──────────────────────────────────────────────────
+    if (upsellEvents?.length) {
+      const eventRows = upsellEvents.map((e: any) => ({
+        truck_id:         resolvedTruckId,
+        order_id:         orderId,
+        event_date:       orderEventDate,
+        rule_id:          e.rule_id || null,
+        trigger_category: e.trigger_category,
+        suggest_category: e.suggest_category,
+        items_shown:      e.items_shown || [],
+        items_added:      e.items_added || {},
+        accepted:         !!e.accepted,
+        total_value:      e.total_value || 0,
+      }))
+      supabase.from('upsell_events').insert(eventRows).then(({ error }) => {
+        if (error) console.error('[submit] upsell_events insert failed:', error.message)
+      })
+    }
+
+    // ── Enforce stock limits (update sold-out flags) ──────────────────────────
+    try {
+      await enforceStockLimits(supabase, resolvedTruckId, orderEventDate, itemCatMap)
+    } catch (err) {
+      console.error('[submit] stock limit enforcement failed:', err)
+      // Never block the order — stock enforcement is best-effort
     }
 
     // ── WhatsApp to truck ─────────────────────────────────────────────────────

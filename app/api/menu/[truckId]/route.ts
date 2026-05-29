@@ -3,6 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { calcStockRemaining } from '@/lib/stock-utils'
+import { getLiveItemCounts } from '@/lib/stock-availability'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
@@ -52,17 +54,18 @@ export async function GET(
     { data: modifierGroups },
     { data: modifierOptions },
     { data: categoryModGroups },
+    { data: itemOverrides },
   ] = await Promise.all([
     supabase
       .from('menu_categories')
-      .select('id, name, slug, prep_secs, batch_size, allow_notes')
+      .select('*')
       .eq('truck_id', truck.id)
       .order('sort_order', { ascending: true })
       .order('name'),
 
     supabase
       .from('menu_items_db')
-      .select('*, menu_categories!category_id(name)')
+      .select('*, default_stock, menu_categories!category_id(name)')
       .eq('truck_id', truck.id)
       .order('name'),
 
@@ -89,7 +92,7 @@ export async function GET(
 
     supabase
       .from('modifier_options')
-      .select('id, group_id, name, price_adjustment')
+      .select('id, group_id, name, price_adjustment, available')
       .in('group_id',
         (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map((g: { id: string }) => g.id) || []
       )
@@ -98,7 +101,16 @@ export async function GET(
     supabase
       .from('category_modifier_groups')
       .select('category_id, group_id'),
+
+    supabase
+      .from('item_overrides')
+      .select('item_name, stock_count, available')
+      .eq('truck_id', truck.id),
   ])
+
+  // Live order counts scoped to today's event date
+  const today = new Date().toISOString().split('T')[0]
+  const liveItemCounts = await getLiveItemCounts(supabase, truck.id, today)
 
   console.log('[MENU API] Query results:')
   console.log('  categories:', categories?.length || 0, catError)
@@ -223,7 +235,7 @@ export async function GET(
     const group = (modifierGroups || []).find(g => g.id === cmg.group_id)
     if (!group || !groupMap[cmg.category_id]) return
     const options = (modifierOptions || [])
-      .filter(o => o.group_id === group.id)
+      .filter(o => o.group_id === group.id && o.available !== false)
       .map(o => ({ id: o.id, name: o.name, price_adjustment: o.price_adjustment ?? 0 }))
     groupMap[cmg.category_id].push({ id: group.id, name: group.name, options })
   })
@@ -236,22 +248,35 @@ export async function GET(
       prep_secs: c.prep_secs ?? null,
       batch_size: c.batch_size ?? null,
       allowNotes: c.allow_notes ?? false,
+      default_stock: c.default_stock ?? null,
       modifierGroups: groupMap[c.id] || [],
     })),
     
-    items: (items || []).map(i => ({
-      name: i.name,
-      description: i.description || '',
-      price: i.price,
-      category: (i.menu_categories as any)?.name || 'Uncategorized',
-      available: i.is_available,
-      stock_remaining: i.stock_count,
-      photo_url: i.image_path
-        ? `${supabaseUrl}/storage/v1/object/public/truck-media/${i.image_path}`
-        : null,
-      allergens: (i.allergens as string[]) || [],
-      dietary: (i.dietary_info as string[]) || [],
-    })),
+    items: (items || []).map(i => {
+      const override = (itemOverrides || []).find((o: any) => o.item_name === i.name)
+      const liveOrdered = liveItemCounts[i.name] || 0
+      // item_overrides.stock_count takes precedence; fall back to menu_items_db.default_stock
+      const effectiveStockCount = override?.stock_count ?? i.default_stock ?? null
+      const stockRemaining = calcStockRemaining(effectiveStockCount, liveOrdered)
+      // item_overrides.available takes precedence; also treat stock exhausted as unavailable
+      const isAvailable = override != null
+        ? (override.available !== false) && (stockRemaining === null || stockRemaining > 0)
+        : i.is_available !== false
+      return {
+        name: i.name,
+        description: i.description || '',
+        price: i.price,
+        category: (i.menu_categories as any)?.name || 'Uncategorized',
+        available: isAvailable,
+        stock_remaining: stockRemaining,
+        default_stock: i.default_stock ?? null,
+        photo_url: i.image_path
+          ? `${supabaseUrl}/storage/v1/object/public/truck-media/${i.image_path}`
+          : null,
+        allergens: (i.allergens as string[]) || [],
+        dietary: (i.dietary_info as string[]) || [],
+      }
+    }),
     
     bundles: filteredBundles.map(b => ({
       name: b.name,
@@ -270,9 +295,11 @@ export async function GET(
     })),
     
     upsell_rules: (upsellRules || []).map(r => ({
+      id: r.id,
       trigger_category: r.trigger_category,
       suggest_category: r.suggest_category,
       max_suggestions: r.max_suggestions,
+      show_at_checkout: r.show_at_checkout ?? false,
     })),
     
     codes: (codes || []).map(c => ({

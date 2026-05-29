@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef, useMemo, use } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { hasFeature } from '@/lib/features'
 
 import type {
   Order, Slot, TruckData, TruckMenu, Bundle, MenuItem,
@@ -17,6 +18,15 @@ import {
   calcMinsFromNow, getCategoryTime, getAllDayCounts
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
+
+/** "Village Hall — Wickhambrook", skip town if already in venue name */
+function fmtVenue(venueName?: string | null, town?: string | null): string {
+  if (!venueName && !town) return ''
+  if (!venueName) return town!
+  if (!town) return venueName
+  if (venueName.toLowerCase().includes(town.toLowerCase())) return venueName
+  return `${venueName} — ${town}`
+}
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import UserMenu from '@/components/dashboard/UserMenu'
@@ -265,7 +275,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     prevPendingCount.current=count
   },[orders,authenticated])
 
-  useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo])
+  useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo,truck?.qr_code_style])
 
   const handleOpenKDS=()=>{
     if(vans.length===1){
@@ -294,7 +304,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       const{generateQRWithLogo}=await import('@/lib/generateQRCode')
       const orderUrl=`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
-      setQrFullscreenDataUrl(await generateQRWithLogo(orderUrl,truck.logo))
+      const showBrandedQr=hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded'
+      setQrFullscreenDataUrl(await generateQRWithLogo(orderUrl,showBrandedQr?truck.logo:null))
     }catch(err){
       console.error('[QR] Generation failed:',err)
       setShowQRFullscreen(false)
@@ -453,7 +464,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
     await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount})})
-    setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,orders_count:0}]})
+    setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,default_stock:null,orders_count:0}]})
+  }
+
+  const updateModifierOptionAvailable=async(optionId:string,available:boolean)=>{
+    // Optimistic update in truckMenu state
+    setTruckMenu(prev=>{
+      if(!prev)return prev
+      return{...prev,categories:prev.categories?.map(cat=>({
+        ...cat,
+        modifierGroups:cat.modifierGroups?.map(grp=>({
+          ...grp,
+          options:grp.options?.map(opt=>opt.id===optionId?{...opt,available}:opt)
+        }))
+      }))}
+    })
+    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_available',optionId,available})})
   }
 
   const openEvent=async(eventId:string)=>{
@@ -704,8 +730,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* Open for orders banner */}
             {activeEvent?.status==='confirmed'&&!activeEvent.auto_open&&(
               <div className="bg-white border-2 border-teal-500 rounded-2xl p-6 mb-4 text-center">
-                <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
-                <div className="text-sm text-slate-500 mb-4">Today · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</div>
+                <div className="text-base font-semibold text-slate-900 mb-0.5">📍 {fmtVenue(activeEvent.venue_name, activeEvent.town)}</div>
+                <div className="text-sm text-slate-400 mb-4">Today · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</div>
                 <button onClick={()=>openEvent(activeEvent.id)}
                   className="w-full bg-teal-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-teal-700 active:scale-[0.98] transition-all">
                   Open for orders
@@ -717,7 +743,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl mb-3 flex-shrink-0">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                  <span className="text-sm font-medium text-slate-900 truncate">{activeEvent.venue_name}</span>
+                  <span className="text-sm font-medium text-slate-900 truncate">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
                   <span className="text-xs text-slate-400 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -1050,6 +1076,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             itemCategoryMap={itemCategoryMap}
             showToast={showToast}
             onOrderPlaced={()=>{fetchAll();setActiveTab('orders')}}
+            onOpenEvent={openEvent}
           />
         )}
 
@@ -1064,7 +1091,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
                     const catStock=categoryStocks.find(s=>s.category===cat)
-                    const catCount=catStock?.stock_count??null; const catOrdered=catStock?.orders_count??0
+                    const catDefStock=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())?.default_stock??null
+                    const catCount=catStock?.stock_count??catDefStock??null; const catOrdered=catStock?.orders_count??0
+                    const isCatDefault=catStock?.stock_count==null&&catDefStock!=null
                     const catRem=catCount!==null?catCount-catOrdered:null
                     const catObj=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())
                     const isEditingThis=editingCatId===catObj?.id&&editCatForm!==null
@@ -1075,9 +1104,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           <div className="flex items-center gap-2">
                             {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-400'}`}>{catRem} left</span>}
                             {catOrdered>0&&<span className="text-xs text-slate-400">{catOrdered} sold</span>}
-                            <input type="number" min="0" placeholder="∞" value={catCount??''}
-                              onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
-                              className="w-16 border border-orange-200 rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-orange-50"/>
+                            <div className="flex flex-col items-center gap-0.5">
+                              <input type="number" min="0" placeholder="∞" value={catCount??''}
+                                onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
+                                className={`w-16 border rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
+                                title={isCatDefault?'Default stock — save to override':'Category stock'}/>
+                              {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
+                            </div>
                             <span className="text-slate-400 text-xs">total</span>
                             {catObj&&(
                               <button onClick={()=>isEditingThis?(setEditingCatId(null),setEditCatForm(null)):openCatEdit(catObj.id??'',cat)}
@@ -1150,9 +1183,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             const stock=itemStocks.find(s=>s.name===item.name)
                             // isAvailable: check itemStocks first (override), then fall back to menu
                             const isAvailable = stock ? (stock.available ?? true) : (item.available ?? true)
-                            const itemCount=stock?.stock_count??null; const itemOrdered=stock?.orders_count??0
+                            // stock_count: explicit override wins; then fall back to item's default_stock as starting value
+                            const itemCount=stock?.stock_count ?? item.default_stock ?? null
+                            const itemOrdered=stock?.orders_count??0
                             const itemRem=itemCount!==null?itemCount-itemOrdered:null
                             const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
+                            const isDefault=stock?.stock_count==null&&item.default_stock!=null
                             return(
                               <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                 <div className="flex-1 min-w-0">
@@ -1163,14 +1199,48 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   </div>
                                   {itemOrdered>0&&<p className="text-xs text-slate-400 mt-0.5">{itemOrdered} ordered</p>}
                                 </div>
-                                <input type="number" min="0" placeholder="–" value={itemCount??''}
-                                  onChange={e=>updateStock(item.name,isAvailable,e.target.value===''?null:parseInt(e.target.value),cat)}
-                                  className="w-12 border border-slate-200 rounded-lg px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" title="Item stock"/>
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <input type="number" min="0" placeholder="–" value={itemCount??''}
+                                    onChange={e=>updateStock(item.name,isAvailable,e.target.value===''?null:parseInt(e.target.value),cat)}
+                                    className={`w-12 border rounded-lg px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={isDefault?'Default stock — save to override':'Item stock'}/>
+                                  {isDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
+                                </div>
                                 <Toggle on={isAvailable} onToggle={()=>updateStock(item.name,!isAvailable,itemCount,cat)}/>
                               </div>
                             )
                           })}
                         </div>
+                        {/* Modifier options for this category */}
+                        {(()=>{
+                          const catMods=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())?.modifierGroups??[]
+                          const allOpts=catMods.flatMap(g=>g.options??[])
+                          if(allOpts.length===0)return null
+                          return(
+                            <div className="mt-2 ml-2">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Modifier options</p>
+                              <div className="space-y-1">
+                                {catMods.map(grp=>(
+                                  <div key={grp.id}>
+                                    {catMods.length>1&&<p className="text-[10px] font-medium text-slate-400 mb-0.5 pl-1">{grp.name}</p>}
+                                    {(grp.options??[]).map(opt=>{
+                                      const isOptOn=opt.available!==false
+                                      return(
+                                        <div key={opt.id} className={`flex items-center gap-2 p-2 rounded-xl border ${!isOptOn?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
+                                          <div className="flex-1 min-w-0">
+                                            <p className={`text-sm font-medium ${!isOptOn?'text-red-500':'text-slate-700'}`}>{opt.name}</p>
+                                            {opt.price_adjustment!==0&&<p className="text-xs text-slate-400">{opt.price_adjustment>0?`+£${opt.price_adjustment.toFixed(2)}`:`-£${Math.abs(opt.price_adjustment).toFixed(2)}`}</p>}
+                                          </div>
+                                          {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">OFF</span>}
+                                          <Toggle on={isOptOn} onToggle={()=>updateModifierOptionAvailable(opt.id,!isOptOn)}/>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )
+                        })()}
                       </div>
                     )
                   })}

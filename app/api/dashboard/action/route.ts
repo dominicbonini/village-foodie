@@ -15,6 +15,7 @@ import {
 import { canFitInProductionSlot } from '@/lib/slot-capacity'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { nextOrderId } from '@/lib/order-utils'
+import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -416,27 +417,95 @@ export async function POST(req: NextRequest) {
     // ── GET STOCK ─────────────────────────────────────────────────────────────
     if (action === 'get_stock') {
       const today = new Date().toISOString().split('T')[0]
-      const [{ data: items }, { data: cats }] = await Promise.all([
+      const [{ data: overrides }, { data: cats }, liveItemCounts, { data: menuItems }, { data: menuCats }] = await Promise.all([
         supabase.from('item_overrides')
-          .select('item_name, available, stock_count, orders_count, category')
+          .select('item_name, available, stock_count, category')
           .eq('truck_id', truck.id),
         supabase.from('category_stock')
-          .select('category, stock_count, orders_count')
-          .eq('truck_id', truck.id).eq('date', today)
+          .select('category, stock_count')
+          .eq('truck_id', truck.id).eq('date', today),
+        getLiveItemCounts(supabase, truck.id, today),
+        supabase.from('menu_items_db')
+          .select('name, menu_categories!category_id(name)')
+          .eq('truck_id', truck.id),
+        supabase.from('menu_categories')
+          .select('*')
+          .eq('truck_id', truck.id),
       ])
-      return NextResponse.json({
-        success: true,
-        stocks: (items || []).map((r: any) => ({
-          name: r.item_name, available: r.available,
-          stock_count: r.stock_count, orders_count: r.orders_count || 0,
-          category: r.category
-        })),
-        categoryStocks: (cats || []).map((r: any) => ({
-          category: r.category,
-          stock_count: r.stock_count,
-          orders_count: r.orders_count || 0
-        }))
-      })
+
+      // Build item→category map from menu for category order counting
+      const itemCatMap: Record<string, string> = {}
+      for (const item of menuItems || []) {
+        const cat = (item.menu_categories as any)?.name
+        if (cat) itemCatMap[item.name] = cat
+      }
+
+      // Merge overrides + live counts; also include items that were ordered today
+      // but have no explicit override row (so ordered counts show for everyone)
+      const overrideMap: Record<string, any> = {}
+      for (const r of overrides || []) overrideMap[r.item_name] = r
+
+      const allNames = new Set([
+        ...Object.keys(overrideMap),
+        ...Object.keys(liveItemCounts),
+      ])
+
+      const stocks = Array.from(allNames)
+        .filter(name => (liveItemCounts[name] || 0) > 0 || overrideMap[name]?.stock_count != null)
+        .map(name => {
+          const override = overrideMap[name]
+          return {
+            name,
+            available:   override?.available ?? true,
+            stock_count: override?.stock_count ?? null,
+            orders_count: liveItemCounts[name] || 0,
+            category:    override?.category ?? itemCatMap[name] ?? null,
+          }
+        })
+
+      // Live category order counts
+      const liveCatCounts: Record<string, number> = {}
+      for (const [itemName, qty] of Object.entries(liveItemCounts)) {
+        const cat = itemCatMap[itemName]
+        if (cat) liveCatCounts[cat] = (liveCatCounts[cat] || 0) + qty
+      }
+
+      // category_stock row takes precedence; fall back to default_stock from menu_categories
+      const catDefaultMap: Record<string, number | null> = {}
+      for (const mc of menuCats || []) catDefaultMap[mc.name] = mc.default_stock ?? null
+
+      const catStockMap: Record<string, number | null> = {}
+      for (const r of cats || []) catStockMap[r.category] = r.stock_count
+
+      // Build merged list: all categories that have either explicit stock or a default
+      const allCatNames = new Set([
+        ...Object.keys(catStockMap),
+        ...Object.keys(catDefaultMap).filter(n => catDefaultMap[n] !== null),
+        ...Object.keys(liveCatCounts),
+      ])
+
+      const categoryStocks = Array.from(allCatNames).map(category => ({
+        category,
+        stock_count:   catStockMap[category] ?? null,
+        default_stock: catDefaultMap[category] ?? null,
+        orders_count:  liveCatCounts[category] || 0,
+      }))
+
+      return NextResponse.json({ success: true, stocks, categoryStocks })
+    }
+
+    // ── SET MODIFIER OPTION AVAILABILITY ─────────────────────────────────────
+    if (action === 'set_modifier_option_available') {
+      const { optionId, available } = body
+      if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
+      // Verify the option belongs to this truck via its group
+      const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
+      if (opt) {
+        const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
+        if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        await supabase.from('modifier_options').update({ available: available !== false }).eq('id', optionId)
+      }
+      return NextResponse.json({ success: true })
     }
 
     // ── SET ITEM STOCK ────────────────────────────────────────────────────────
@@ -470,57 +539,11 @@ export async function POST(req: NextRequest) {
 
     // ── DECREMENT STOCK ON ORDER ──────────────────────────────────────────────
     if (action === 'decrement_stock') {
-      const { items, categoryMap } = body
-      // categoryMap: { itemName: categoryName }
+      const { categoryMap } = body
       const today = new Date().toISOString().split('T')[0]
-
-      for (const item of (items || [])) {
-        const qty = parseInt(item.quantity) || 1
-        const cat = categoryMap?.[item.name] || null
-
-        // 1. Decrement item-level stock if set
-        const { data: existingItem } = await supabase
-          .from('item_overrides')
-          .select('stock_count, orders_count, available')
-          .eq('truck_id', truck.id)
-          .eq('item_name', item.name)
-          .single()
-
-        if (existingItem && existingItem.stock_count !== null) {
-          const newItemCount = (existingItem.orders_count || 0) + qty
-          const itemSoldOut = newItemCount >= existingItem.stock_count
-          await supabase.from('item_overrides')
-            .update({
-              orders_count: newItemCount,
-              available: itemSoldOut ? false : existingItem.available
-            })
-            .eq('truck_id', truck.id).eq('item_name', item.name)
-        }
-
-        // 2. Decrement category-level stock if set
-        if (cat) {
-          const { data: catStock } = await supabase
-            .from('category_stock')
-            .select('stock_count, orders_count')
-            .eq('truck_id', truck.id).eq('category', cat).eq('date', today)
-            .single()
-
-          if (catStock && catStock.stock_count !== null) {
-            const newCatCount = (catStock.orders_count || 0) + qty
-            const catSoldOut = newCatCount >= catStock.stock_count
-            await supabase.from('category_stock')
-              .update({ orders_count: newCatCount })
-              .eq('truck_id', truck.id).eq('category', cat).eq('date', today)
-
-            // If category is now sold out, mark ALL items in that category unavailable
-            if (catSoldOut) {
-              await supabase.from('item_overrides')
-                .update({ available: false })
-                .eq('truck_id', truck.id).eq('category', cat)
-            }
-          }
-        }
-      }
+      // Live counts are read from the orders table — no counters to maintain.
+      // categoryMap: { itemName: categoryName } from the caller.
+      await enforceStockLimits(supabase, truck.id, today, categoryMap || {})
       return NextResponse.json({ success: true })
     }
 

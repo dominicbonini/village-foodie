@@ -54,7 +54,7 @@ export function InlinePriceEditor({ price, quantity, onChange }: {
           onChange={e => setVal(e.target.value)}
           onBlur={() => { onChange(parseFloat(val) || 0); setEditing(false) }}
           onKeyDown={e => { if (e.key === 'Enter') { onChange(parseFloat(val) || 0); setEditing(false) } }}
-          className="w-16 border border-orange-400 rounded-lg px-1.5 py-1 text-sm font-bold text-slate-900 focus:outline-none text-center" />
+          className="w-16 border border-orange-400 rounded-lg px-1.5 py-1 text-sm font-bold text-slate-900 focus:outline-none text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
       </div>
     )
   }

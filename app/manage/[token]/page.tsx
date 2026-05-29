@@ -2,7 +2,7 @@
 // app/manage/[token]/page.tsx
 // Truck management page — menu, modifiers, deals, schedule, settings
 
-import { useState, useEffect, useCallback, useMemo, use } from 'react'
+import { useState, useEffect, useCallback, useMemo, use, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
@@ -15,13 +15,14 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean }
-interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; sort_order: number; is_active: boolean }
-interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded' }
+interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean }
+interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
 interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; kitchen_capacity: number | null }
+interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
 
 type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'billing'
@@ -229,7 +230,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'menu',      label: 'Menu',      icon: '🍕', roles: ['owner', 'manager'] },
     { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
     { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
-    { id: 'modifiers', label: 'Modifiers', icon: '⚙️', roles: ['owner', 'manager'] },
+    { id: 'modifiers', label: 'Extras & Upsells', icon: '⚡', roles: ['owner', 'manager'] },
     { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'team',      label: 'Team',      icon: '👥', roles: ['owner', 'manager'] },
     { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
@@ -410,10 +411,16 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
   truck: Truck; categories: Category[]; items: Item[]; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
-  const [editingCat, setEditingCat] = useState<Partial<Category> | null>(null)
+  const [editingCat, setEditingCat] = useState<Partial<Category> | null>(categories[0] ? categories[0] as any : null)
   const [editingItem, setEditingItem] = useState<Partial<Item> | null>(null)
+  const [deletingItem, setDeletingItem] = useState<Item | null>(null)
   const [saving, setSaving] = useState(false)
   const [uploadingItemPhoto, setUploadingItemPhoto] = useState(false)
+
+  // Optimistic local item state — mirrors `items` prop but updates instantly on toggle/delete
+  const [localItems, setLocalItems] = useState<Item[]>(items)
+  const prevItemsRef = useRef(items)
+  if (prevItemsRef.current !== items) { prevItemsRef.current = items; setLocalItems(items) }
   const [importStep, setImportStep] = useState<ImportStep>('idle')
   const [importFile, setImportFile] = useState<File | null>(null)
   const [importText, setImportText] = useState('')
@@ -560,7 +567,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
     if (!data?.name) return
     setSaving(true)
     try {
-      await api('upsert_category', { id: data.id, name: data.name, prep_secs: data.prep_secs || 0, batch_size: data.batch_size || 0, allow_notes: !!(data as any).allow_notes })
+      await api('upsert_category', { id: data.id, name: data.name, prep_secs: data.prep_secs || 0, batch_size: data.batch_size || 0, allow_notes: !!(data as any).allow_notes, default_stock: (data as any).default_stock ?? null })
       if (!data.id) { setEditingCat(null) } // only close for new category modal
       reload()
     } catch (e: any) { showToast(e.message, 'error') }
@@ -571,30 +578,65 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
     if (!editingItem?.name || !editingItem?.price) return
     setSaving(true)
     try {
-      await api('upsert_item', editingItem)
+      const result = await api('upsert_item', editingItem)
       showToast(editingItem.id ? 'Item updated' : 'Item added')
-      setEditingItem(null); reload()
+      if (editingItem.id) {
+        // Update in-place — no reload, category stays open
+        const saved = result.item || editingItem
+        setLocalItems(prev => prev.map(i => i.id === editingItem.id ? { ...i, ...saved } as Item : i))
+        setEditingItem(null)
+      } else {
+        // New item — reload to get server-assigned id, but keep category open
+        const catId = editingItem.category_id
+        setEditingItem(null)
+        await reload()
+        if (catId) handleExpandCat(catId)
+      }
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
   }
 
-  const toggleItem = async (item: Item) => {
-    try {
-      await api('toggle_item', { id: item.id, is_available: !item.is_available })
-      reload()
-    } catch (e: any) { showToast(e.message, 'error') }
+  // Expand a category and auto-load it into editingCat for inline settings
+  const handleExpandCat = (catId: string | null) => {
+    setExpandedCat(catId)
+    if (catId) {
+      const cat = categories.find(c => c.id === catId)
+      if (cat) setEditingCat(cat as any)
+    } else {
+      setEditingCat(null)
+    }
   }
 
-  const deleteItem = async (id: string) => {
-    if (!confirm('Remove this item?')) return
-    try { await api('delete_item', { id }); reload(); showToast('Item removed') }
-    catch (e: any) { showToast(e.message, 'error') }
+  const toggleItem = async (item: Item) => {
+    const newAvail = !item.is_available
+    setLocalItems(prev => prev.map(i => i.id === item.id ? { ...i, is_available: newAvail } : i))
+    try {
+      await api('toggle_item', { id: item.id, is_available: newAvail })
+    } catch (e: any) {
+      setLocalItems(prev => prev.map(i => i.id === item.id ? item : i))
+      showToast(e.message, 'error')
+    }
+  }
+
+  const confirmDeleteItem = async () => {
+    if (!deletingItem) return
+    const gone = deletingItem
+    setLocalItems(prev => prev.filter(i => i.id !== gone.id))
+    setDeletingItem(null)
+    try {
+      await api('delete_item', { id: gone.id })
+      showToast('Item removed')
+    } catch (e: any) {
+      setLocalItems(prev => [...prev, gone])
+      showToast(e.message, 'error')
+    }
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-start justify-between mb-2">
         <div>
+          {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
           <h2 className="font-black text-slate-900 text-lg">Menu</h2>
           <p className="text-slate-400 text-sm mt-0.5">
             {categories.length} {categories.length === 1 ? 'category' : 'categories'} · {items.length} items
@@ -639,7 +681,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
       ) : null}
 
       {categories.map((cat, index) => {
-        const catItems = items.filter(i => i.category_id === cat.id)
+        const catItems = localItems.filter(i => i.category_id === cat.id)
         const isOpen = expandedCat === cat.id
         return (
           <div
@@ -700,12 +742,11 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
           >
             <Card>
             {/* Category header */}
-            <div 
-              className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors" 
+            <div
+              className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
               onClick={(e) => {
-                // Only toggle if not clicking drag handle or edit button
                 if (!(e.target as HTMLElement).closest('button')) {
-                  setExpandedCat(isOpen ? null : cat.id)
+                  handleExpandCat(isOpen ? null : cat.id)
                 }
               }}>
               <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title="Drag to reorder" draggable={false}>
@@ -723,20 +764,19 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                   {cat.batch_size > 0 && cat.batch_size < 999 && (
                     <span className="text-[11px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{cat.batch_size} at a time</span>
                   )}
+                  {cat.default_stock != null && (
+                    <span className="text-[11px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{cat.default_stock} per event</span>
+                  )}
                   {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <button onClick={e => { e.stopPropagation(); setEditingCat(editingCat?.id === cat.id ? null : cat) }}
-                  className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${editingCat?.id === cat.id ? 'bg-orange-100 text-orange-600' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'}`}>
-                  {editingCat?.id === cat.id ? '✕ Close' : 'Edit'}
-                </button>
-                <span className="text-slate-400 text-xs">{isOpen ? '▲' : '▼'}</span>
+                <span className="text-slate-400 text-xs select-none">{isOpen ? '▲' : '▼'}</span>
               </div>
             </div>
 
-            {/* Inline category edit accordion — auto-saves on blur / toggle */}
-            {editingCat?.id === cat.id && (
+            {/* Inline category settings — visible when expanded and editingCat loaded */}
+            {isOpen && editingCat?.id === cat.id && (
               <div className="border-t border-orange-100 bg-orange-50/40 px-4 py-3 space-y-2">
                 {/* Row 1: Name + Allow notes toggle */}
                 <div className="flex items-center gap-3">
@@ -748,20 +788,23 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                     placeholder="Category name"
                     className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
                   />
-                  <label className="flex items-center gap-2 shrink-0 cursor-pointer select-none">
-                    <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Allow notes</span>
-                    <Toggle
-                      on={!!(editingCat as any).allow_notes}
-                      onToggle={() => {
-                        const newVal = !(editingCat as any).allow_notes
-                        setEditingCat(p => ({...p!, allow_notes: newVal} as any))
-                        saveCat({ allow_notes: newVal } as any)
-                      }}
-                    />
-                  </label>
+                  <div className="shrink-0">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Allow item notes</span>
+                      <Toggle
+                        on={!!(editingCat as any).allow_notes}
+                        onToggle={() => {
+                          const newVal = !(editingCat as any).allow_notes
+                          setEditingCat(p => ({...p!, allow_notes: newVal} as any))
+                          saveCat({ allow_notes: newVal } as any)
+                        }}
+                      />
+                    </label>
+                    <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">e.g. "no onion"</p>
+                  </div>
                 </div>
-                {/* Row 2: Prep time + Batch size */}
-                <div className="grid grid-cols-2 gap-2">
+                {/* Row 2: Prep time + Batch size + Default stock */}
+                <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Prep time (mins)</label>
                     <input type="number" min="0" max="60" placeholder="0 = instant"
@@ -777,6 +820,15 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                       onChange={e => setEditingCat(p => ({...p!, batch_size: parseInt(e.target.value) || 0}))}
                       onBlur={() => saveCat()}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Default stock/event</label>
+                    <input type="number" min="0" placeholder="e.g. 100"
+                      value={(editingCat as any).default_stock ?? ''}
+                      onChange={e => setEditingCat(p => ({...p!, default_stock: e.target.value === '' ? null : parseInt(e.target.value)} as any))}
+                      onBlur={() => saveCat()}
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                    <p className="text-[10px] text-slate-400 mt-0.5">Category-wide limit</p>
                   </div>
                 </div>
               </div>
@@ -805,9 +857,12 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                       }} />
                     </label>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
+                      <div className="flex items-baseline gap-2">
+                        <p className="font-bold text-slate-900 text-sm truncate">{item.name}</p>
+                        <span className="font-black text-orange-600 text-sm shrink-0">£{Number(item.price).toFixed(2)}</span>
+                      </div>
                       {item.description && <p className="text-slate-400 text-xs truncate">{item.description}</p>}
-                      {(item.dietary_info?.length > 0 || item.allergens?.length > 0) && (
+                      {(item.dietary_info?.length > 0 || item.allergens?.length > 0 || item.default_stock != null || item.stock_count != null) && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {item.dietary_info?.map(d => (
                             <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
@@ -815,12 +870,10 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                           {item.allergens?.map(a => (
                             <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
                           ))}
+                          {item.default_stock != null && <Badge label={`${item.default_stock} per event`} colour="slate" />}
+                          {item.stock_count != null && <Badge label={`Stock: ${item.stock_count}`} colour="orange" />}
                         </div>
                       )}
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="font-black text-orange-600 text-sm">£{Number(item.price).toFixed(2)}</span>
-                        {item.stock_count !== null && <Badge label={`Stock: ${item.stock_count}`} colour="orange" />}
-                      </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="flex items-center gap-1.5">
@@ -830,7 +883,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                         <Toggle on={item.is_available} onToggle={() => toggleItem(item)} />
                       </div>
                       <button onClick={() => setEditingItem(item)} className="text-slate-400 hover:text-orange-600 text-xs font-bold p-1.5 rounded-lg hover:bg-orange-50 transition-colors">✏️</button>
-                      <button onClick={() => deleteItem(item.id)} className="text-slate-300 hover:text-red-500 text-xs p-1.5 rounded-lg hover:bg-red-50 transition-colors">🗑️</button>
+                      <button onClick={() => setDeletingItem(item)} className="text-slate-300 hover:text-red-500 text-xs p-1.5 rounded-lg hover:bg-red-50 transition-colors">🗑️</button>
                     </div>
                   </div>
                 ))}
@@ -852,7 +905,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
             <h3 className="font-black text-slate-900 mb-4">New category</h3>
             <div className="space-y-3">
               <Input label="Category name" required value={editingCat.name || ''} onChange={v => setEditingCat(p => ({...p!, name: v}))} placeholder="e.g. Pizza" />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">Prep time (mins)</label>
                   <input type="number" min="0" max="60" placeholder="0 = instant" value={editingCat.prep_secs ? Math.round(editingCat.prep_secs / 60) : ""}
@@ -865,11 +918,19 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                     onChange={e => setEditingCat(p => ({...p!, batch_size: parseInt(e.target.value) || 0}))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                 </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Default stock/event</label>
+                  <input type="number" min="0" placeholder="e.g. 100"
+                    value={(editingCat as any).default_stock ?? ''}
+                    onChange={e => setEditingCat(p => ({...p!, default_stock: e.target.value === '' ? null : parseInt(e.target.value)} as any))}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                </div>
               </div>
+              {/* TODO: ask operator if allow_notes during onboarding menu setup — see session notes May 2026 */}
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                 <div>
-                  <p className="text-sm font-bold text-slate-700">Allow custom notes</p>
-                  <p className="text-xs text-slate-400">Customers can add special instructions</p>
+                  <p className="text-sm font-bold text-slate-700">Allow customer notes per item</p>
+                  <p className="text-xs text-slate-400">Customers can add a note to each item (e.g. "no onion"). All orders also have an order-level notes field.</p>
                 </div>
                 <Toggle on={!!(editingCat as any).allow_notes} onToggle={() => setEditingCat(p => ({...p!, allow_notes: !(p as any).allow_notes} as any))} />
               </div>
@@ -1056,6 +1117,33 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
         </div>
       )}
 
+      {/* Delete item confirmation modal */}
+      {deletingItem && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setDeletingItem(null)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4 shadow-2xl">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Remove {deletingItem.name}?</h3>
+              <p className="text-sm text-slate-500 mt-2">
+                This item will be hidden from your menu immediately. It won't appear on the customer order page or in the Add Order panel.
+              </p>
+              <p className="text-xs text-slate-400 mt-2">
+                Historical orders containing this item are preserved.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setDeletingItem(null)}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50">
+                Keep item
+              </button>
+              <button onClick={confirmDeleteItem}
+                className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-red-700">
+                Remove item
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Edit Item Modal */}
       {editingItem && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
@@ -1072,7 +1160,18 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <Input label="Price" required type="number" value={editingItem.price || ''} onChange={v => setEditingItem(p => ({...p!, price: parseFloat(v) || 0}))} placeholder="10.00" />
-
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">
+                    Default stock per event <span className="text-slate-400 font-normal">(optional)</span>
+                  </label>
+                  <input
+                    type="number" min="0" placeholder="e.g. 100"
+                    value={(editingItem as any).default_stock ?? ''}
+                    onChange={e => setEditingItem(p => ({...p!, default_stock: e.target.value === '' ? null : parseInt(e.target.value)} as any))}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-0.5">Pre-fills stock in Menu & Stock each event</p>
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-600 mb-1">Category</label>
@@ -1158,6 +1257,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
           </div>
         </div>
       )}
+
 
       {/* AI Import — Upload modal */}
       {importStep === 'upload' && (
@@ -1458,99 +1558,329 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
 }
 
 // ══════════════════════════════════════════════════════════════
+// UPSELL RULES SECTION (used inside MenuTab)
+// ══════════════════════════════════════════════════════════════
+function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
+  categories: Category[]
+  api: (a: string, e?: any) => Promise<any>
+  showToast: (m: string, t?: any) => void
+  adding: boolean
+  setAdding: (v: boolean) => void
+}) {
+  const [rules, setRules] = useState<UpsellRule[]>([])
+  const [loading, setLoading] = useState(true)
+  const [newTrigger, setNewTrigger] = useState('')
+  const [newSuggest, setNewSuggest] = useState('')
+
+  const load = useCallback(async () => {
+    try {
+      const data = await api('get_upsell_rules')
+      setRules(data.rules || [])
+    } catch { /* non-fatal */ }
+    finally { setLoading(false) }
+  }, [api])
+
+  useEffect(() => { load() }, [load])
+
+  const addRule = async () => {
+    if (!newTrigger || !newSuggest || newTrigger === newSuggest) return
+    try {
+      const data = await api('upsert_upsell_rule', { trigger_category: newTrigger, suggest_category: newSuggest, max_suggestions: 3, show_at_checkout: true })
+      setRules(prev => [...prev, data.rule])
+      setNewTrigger(''); setNewSuggest(''); setAdding(false)
+      showToast('Upsell rule added')
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  const deleteRule = async (rule: UpsellRule) => {
+    if (!window.confirm(`Remove upsell rule "${rule.trigger_category} → ${rule.suggest_category}"?`)) return
+    setRules(prev => prev.filter(r => r.id !== rule.id))
+    try {
+      await api('delete_upsell_rule', { id: rule.id })
+      showToast('Rule removed')
+    } catch (e: any) {
+      setRules(prev => [...prev, rule])
+      showToast(e.message, 'error')
+    }
+  }
+
+  const catNames = categories.map(c => c.name)
+
+  return (
+    <Card className="p-4">
+      {adding && (
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3 space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">When customer adds…</label>
+              <select value={newTrigger} onChange={e => setNewTrigger(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <option value="">Choose category</option>
+                {catNames.map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">Suggest items from…</label>
+              <select value={newSuggest} onChange={e => setNewSuggest(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                <option value="">Choose category</option>
+                {catNames.filter(n => n !== newTrigger).map(n => <option key={n} value={n}>{n}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Btn label="Cancel" colour="slate" onClick={() => { setAdding(false); setNewTrigger(''); setNewSuggest('') }} />
+            <Btn label="Add rule" onClick={addRule} />
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <p className="text-slate-400 text-sm animate-pulse">Loading…</p>
+      ) : rules.length === 0 ? (
+        <p className="text-slate-400 text-sm">No upsell rules yet.</p>
+      ) : (
+        <div className="space-y-2">
+          {rules.map(rule => (
+            <div key={rule.id} className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-slate-800 truncate">
+                  {rule.trigger_category} → {rule.suggest_category}
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">Up to {rule.max_suggestions} items suggested</p>
+              </div>
+              {/* show_at_checkout column exists in DB but is unused — all rules are inline */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button onClick={() => deleteRule(rule)}
+                  className="text-slate-400 hover:text-red-500 text-sm px-1.5 py-1 rounded hover:bg-red-50">
+                  🗑
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════
 // MODIFIERS TAB
 // ══════════════════════════════════════════════════════════════
 function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryModGroups, api, reload, showToast }: {
   categories: Category[]; modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]
   categoryModGroups: {category_id:string;group_id:string}[]; api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
-  const [editingGroup, setEditingGroup] = useState<Partial<ModifierGroup> | null>(null)
+  // New-group creation modal (name only)
+  const [newGroupName, setNewGroupName] = useState('')
+  const [showNewGroup, setShowNewGroup] = useState(false)
+  const [savingGroup, setSavingGroup] = useState(false)
+
+  // Inline rename
+  const [renamingGroupId, setRenamingGroupId] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
+  const [savingRename, setSavingRename] = useState(false)
+
+  // Option modal
   const [editingOption, setEditingOption] = useState<Partial<ModifierOption> | null>(null)
-  const [saving, setSaving] = useState(false)
+  const [savingOption, setSavingOption] = useState(false)
+
+  // Expanded card
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null)
 
-  const saveGroup = async () => {
-    if (!editingGroup?.name) return
-    setSaving(true)
-    try {
-      await api('upsert_modifier_group', editingGroup)
-      showToast(editingGroup.id ? 'Group updated' : 'Group created')
-      setEditingGroup(null); reload()
-    } catch (e: any) { showToast(e.message, 'error') }
-    finally { setSaving(false) }
+  // Upsell "add rule" form visibility — lifted from UpsellRulesSection for header button
+  const [upsellAdding, setUpsellAdding] = useState(false)
+
+  // Optimistic category assignments — local copy, no reload on toggle
+  const [localCatMGs, setLocalCatMGs] = useState<{category_id:string;group_id:string}[]>(categoryModGroups)
+  const prevCatMGsRef = useRef(categoryModGroups)
+  if (prevCatMGsRef.current !== categoryModGroups) {
+    prevCatMGsRef.current = categoryModGroups
+    // Sync from parent only when parent reloads; don't clobber in-flight optimistic changes
+    setLocalCatMGs(categoryModGroups)
   }
 
+  // ── Create new group ────────────────────────────────────────────────────────
+  const createGroup = async () => {
+    if (!newGroupName.trim()) return
+    setSavingGroup(true)
+    try {
+      const result = await api('upsert_modifier_group', {
+        name: newGroupName.trim(), is_required: false, min_choices: 0, max_choices: 99,
+      })
+      const newId = result.group?.id
+      setShowNewGroup(false)
+      setNewGroupName('')
+      await reload()
+      if (newId) setExpandedGroup(newId)
+      showToast('Group created')
+    } catch (e: any) { showToast(e.message, 'error') }
+    finally { setSavingGroup(false) }
+  }
+
+  // ── Rename (inline) ─────────────────────────────────────────────────────────
+  const startRename = (group: ModifierGroup) => {
+    setRenamingGroupId(group.id)
+    setRenameValue(group.name)
+  }
+  const saveRename = async (group: ModifierGroup) => {
+    if (!renameValue.trim() || renameValue.trim() === group.name) { setRenamingGroupId(null); return }
+    setSavingRename(true)
+    try {
+      await api('upsert_modifier_group', { id: group.id, name: renameValue.trim(), is_required: group.is_required, min_choices: group.min_choices, max_choices: group.max_choices })
+      setRenamingGroupId(null)
+      await reload()
+      setExpandedGroup(group.id)
+      showToast('Group renamed')
+    } catch (e: any) { showToast(e.message, 'error') }
+    finally { setSavingRename(false) }
+  }
+
+  // ── Delete group ────────────────────────────────────────────────────────────
+  const deleteGroup = async (group: ModifierGroup) => {
+    if (!window.confirm(`Delete "${group.name}"? All options will be removed and it will be unassigned from all categories.`)) return
+    try {
+      await api('delete_modifier_group', { id: group.id })
+      setExpandedGroup(null)
+      await reload()
+      showToast('Group deleted')
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  // ── Category pill toggle — optimistic, no reload ────────────────────────────
+  const toggleCatAssign = async (category_id: string, group_id: string, currentlyAssigned: boolean) => {
+    // Optimistic update
+    if (currentlyAssigned) {
+      setLocalCatMGs(prev => prev.filter(x => !(x.category_id === category_id && x.group_id === group_id)))
+    } else {
+      setLocalCatMGs(prev => [...prev, { category_id, group_id }])
+    }
+    try {
+      if (currentlyAssigned) {
+        await api('unassign_modifier_from_category', { category_id, group_id })
+      } else {
+        await api('assign_modifier_to_category', { category_id, group_id })
+      }
+    } catch (e: any) {
+      // Revert optimistic change
+      if (currentlyAssigned) {
+        setLocalCatMGs(prev => [...prev, { category_id, group_id }])
+      } else {
+        setLocalCatMGs(prev => prev.filter(x => !(x.category_id === category_id && x.group_id === group_id)))
+      }
+      showToast(e.message, 'error')
+    }
+  }
+
+  // ── Option save ─────────────────────────────────────────────────────────────
   const saveOption = async () => {
     if (!editingOption?.name || !editingOption.group_id) return
-    setSaving(true)
+    setSavingOption(true)
     try {
       await api('upsert_modifier_option', editingOption)
       showToast(editingOption.id ? 'Option updated' : 'Option added')
       const keepOpen = editingOption.group_id
       setEditingOption(null)
       await reload()
-      if(keepOpen) setExpandedGroup(keepOpen)
+      if (keepOpen) setExpandedGroup(keepOpen)
     } catch (e: any) { showToast(e.message, 'error') }
-    finally { setSaving(false) }
-  }
-
-  const toggleCatAssign = async (category_id: string, group_id: string, assigned: boolean) => {
-    try {
-      if (assigned) {
-        await api('unassign_modifier_from_category', { category_id, group_id })
-        showToast('Removed from category')
-      } else {
-        await api('assign_modifier_to_category', { category_id, group_id })
-        showToast('Added to category')
-      }
-      reload()
-    } catch (e: any) { showToast(e.message, 'error') }
+    finally { setSavingOption(false) }
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div>
+      {/* ── Section 1: Upsells ─────────────────────────────────────────────── */}
+      {/* Section heading — match this pattern for all manage page sections */}
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-black text-slate-900 text-lg">Modifiers</h2>
-          <p className="text-slate-400 text-sm">Customisation options customers can add to items</p>
+          {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
+          <h2 className="font-black text-slate-900 text-lg">Upsells</h2>
+          <p className="text-slate-400 text-sm mt-0.5">Nudge customers to add something extra. When someone orders from one category, suggest items from another — a drink with a pizza, a sauce with a burger.</p>
         </div>
-        <Btn label="+ New group" onClick={() => setEditingGroup({ is_required: false, min_choices: 0, max_choices: 99 })} />
+        {!upsellAdding && <Btn label="+ Add upsell" onClick={() => setUpsellAdding(true)} />}
       </div>
 
-      {/* Explainer */}
-      <Card className="p-4 bg-blue-50 border-blue-100">
-        <p className="text-xs text-blue-700 font-bold mb-1">How modifier groups work</p>
-        <p className="text-xs text-blue-600">Create a group (e.g. "Pizza extras"), add options to it (Extra Cheese +£1, No Onion £0), then assign it to one or more categories. All items in that category will offer those options. Individual item overrides can be added from the Menu tab.</p>
-      </Card>
+      <UpsellRulesSection categories={categories} api={api} showToast={showToast} adding={upsellAdding} setAdding={setUpsellAdding} />
 
+      {/* ── Section 2: Custom Extras ────────────────────────────────────────── */}
+      {/* Section heading — match this pattern for all manage page sections */}
+      <div className="flex items-center justify-between mt-10 mb-4">
+        <div>
+          {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
+          <h2 className="font-black text-slate-900 text-lg">Custom Extras</h2>
+          <p className="text-slate-400 text-sm mt-0.5">Add paid or free options customers can choose when ordering — e.g. Extra Cheese +£1.50, No Onion £0</p>
+        </div>
+        <Btn label="+ Add customisation" onClick={() => { setShowNewGroup(true); setNewGroupName('') }} />
+      </div>
+      <p className="text-xs text-slate-400 mb-4">Create a group of options and assign it to a menu category. All items in that category will offer those options when customers order. Individual item overrides can be set from the Menu tab.</p>
+
+      <div className="space-y-4">
       {modifierGroups.length === 0 && (
-        <EmptyState icon="⚙️" title="No modifier groups yet" body='Create a group like "Pizza extras" and add options like "Extra Cheese +£1.00"' />
+        <EmptyState icon="⚙️" title="No custom extras yet" body='Create a group like "Pizza extras" and add options like "Extra Cheese +£1.00"' />
       )}
 
       {modifierGroups.map(group => {
         const opts = modifierOptions.filter(o => o.group_id === group.id).sort((a, b) => a.sort_order - b.sort_order)
-        const assignedCats = categories.filter(c => categoryModGroups.some(cmg => cmg.category_id === c.id && cmg.group_id === group.id))
+        const assignedCats = categories.filter(c => localCatMGs.some(cmg => cmg.category_id === c.id && cmg.group_id === group.id))
         const isOpen = expandedGroup === group.id
+        const isRenaming = renamingGroupId === group.id
+
         return (
           <Card key={group.id}>
-            <div className="flex items-center gap-3 p-4 cursor-pointer" onClick={() => setExpandedGroup(isOpen ? null : group.id)}>
-              <div className="flex-1">
-                <p className="font-black text-slate-900">{group.name}</p>
+            {/* ── Collapsed header — chevron is the only toggle ── */}
+            <div
+              className="flex items-center gap-3 p-4 cursor-pointer select-none"
+              onClick={() => !isRenaming && setExpandedGroup(isOpen ? null : group.id)}
+            >
+              <div className="flex-1 min-w-0">
+                {!isOpen && <p className="font-black text-slate-900">{group.name}</p>}
                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                   <span className="text-slate-400 text-xs">{opts.length} option{opts.length !== 1 ? 's' : ''}</span>
-                  {group.is_required && <Badge label="Required" colour="orange" />}
                   {assignedCats.map(c => <Badge key={c.id} label={c.name} colour="green" />)}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={e => { e.stopPropagation(); setEditingGroup(group) }} className="text-slate-400 hover:text-orange-600 text-xs font-bold px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors">Edit</button>
-                <span className="text-slate-400 text-xs">{isOpen ? '▲' : '▼'}</span>
-              </div>
+              <span className="text-slate-400 text-xs flex-shrink-0">{isOpen ? '▲' : '▼'}</span>
             </div>
 
             {isOpen && (
-              <div className="border-t border-slate-100 p-4 space-y-4">
-                {/* Options */}
+              <div className="border-t border-slate-100 p-4 space-y-5">
+
+                {/* ── Expanded header: Rename + Delete ── */}
+                <div className="flex items-center justify-between gap-3 -mt-1">
+                  {isRenaming ? (
+                    <input
+                      autoFocus
+                      value={renameValue}
+                      onChange={e => setRenameValue(e.target.value)}
+                      onBlur={() => saveRename(group)}
+                      onKeyDown={e => { if (e.key === 'Enter') saveRename(group); if (e.key === 'Escape') setRenamingGroupId(null) }}
+                      className="flex-1 border border-orange-400 rounded-lg px-3 py-1.5 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                      disabled={savingRename}
+                      onClick={e => e.stopPropagation()}
+                    />
+                  ) : (
+                    <p className="font-black text-slate-900 text-base truncate flex-1">{group.name}</p>
+                  )}
+                  <div className="flex items-center gap-1 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                    {!isRenaming && (
+                      <button
+                        onClick={() => startRename(group)}
+                        className="text-xs text-slate-500 hover:text-orange-600 font-bold px-2 py-1 rounded-lg hover:bg-orange-50 transition-colors"
+                      >
+                        Rename
+                      </button>
+                    )}
+                    <button
+                      onClick={() => deleteGroup(group)}
+                      className="text-slate-400 hover:text-red-500 px-1.5 py-1 rounded-lg hover:bg-red-50 transition-colors text-sm"
+                      title="Delete group"
+                    >
+                      🗑
+                    </button>
+                  </div>
+                </div>
+
+                {/* ── Options ── */}
                 <div>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Options</p>
                   {opts.map(opt => (
@@ -1562,55 +1892,62 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                       <button onClick={async () => { const gid = opt.group_id; await api('delete_modifier_option', { id: opt.id }); await reload(); setExpandedGroup(gid); showToast('Option removed') }} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>
                     </div>
                   ))}
-                  <button onClick={() => setEditingOption({ group_id: group.id, type: 'add', price_adjustment: 0, sort_order: opts.length })}
-                    className="text-xs text-orange-600 font-bold hover:text-orange-700 mt-1">+ Add option</button>
+                  <button
+                    onClick={() => setEditingOption({ group_id: group.id, type: 'add', price_adjustment: 0, sort_order: opts.length })}
+                    className="text-xs text-orange-600 font-bold hover:text-orange-700 mt-1"
+                  >
+                    + Add option
+                  </button>
                 </div>
 
-                {/* Category assignments */}
-                <div>
+                {/* ── Category assignment pills — optimistic, no reload ── */}
+                <div onClick={e => e.stopPropagation()}>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Assign to categories</p>
                   <div className="flex flex-wrap gap-2">
                     {categories.map(cat => {
-                      const assigned = categoryModGroups.some(cmg => cmg.category_id === cat.id && cmg.group_id === group.id)
+                      const assigned = localCatMGs.some(cmg => cmg.category_id === cat.id && cmg.group_id === group.id)
                       return (
-                        <button key={cat.id} onClick={() => toggleCatAssign(cat.id, group.id, assigned)}
-                          className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all active:scale-95 ${assigned ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'}`}>
+                        <button
+                          key={cat.id}
+                          onClick={() => toggleCatAssign(cat.id, group.id, assigned)}
+                          className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all active:scale-95 ${assigned ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'}`}
+                        >
                           {assigned ? '✓ ' : ''}{cat.name}
                         </button>
                       )
                     })}
                   </div>
                 </div>
+
               </div>
             )}
           </Card>
         )
       })}
 
-      {/* Edit Group Modal */}
-      {editingGroup && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
+      </div>{/* end space-y-4 group list */}
+
+      {/* New group modal — name only */}
+      {showNewGroup && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <h3 className="font-black text-slate-900 mb-4">{editingGroup.id ? 'Edit group' : 'New modifier group'}</h3>
-            <div className="space-y-3">
-              <Input label="Group name" required value={editingGroup.name || ''} onChange={v => setEditingGroup(p => ({...p!, name: v}))} placeholder='e.g. Pizza extras' />
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                <div>
-                  <p className="text-sm font-bold text-slate-700">Required</p>
-                  <p className="text-xs text-slate-400">Customer must make a selection</p>
-                </div>
-                <Toggle on={!!editingGroup.is_required} onToggle={() => setEditingGroup(p => ({...p!, is_required: !p!.is_required}))} />
-              </div>
-            </div>
+            <h3 className="font-black text-slate-900 mb-4">New custom extra</h3>
+            <Input
+              label="Group name"
+              required
+              value={newGroupName}
+              onChange={v => setNewGroupName(v)}
+              placeholder='e.g. Pizza extras'
+            />
             <div className="flex gap-2 mt-4">
-              <Btn label="Cancel" colour="slate" onClick={() => setEditingGroup(null)} />
-              <Btn label={saving ? 'Saving...' : 'Save'} loading={saving} onClick={saveGroup} />
+              <Btn label="Cancel" colour="slate" onClick={() => { setShowNewGroup(false); setNewGroupName('') }} />
+              <Btn label={savingGroup ? 'Saving...' : 'Save'} loading={savingGroup} onClick={createGroup} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Edit Option Modal */}
+      {/* Edit Option Modal — unchanged */}
       {editingOption && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => {}}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
@@ -1624,7 +1961,6 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                     <option value="add">Add</option>
                     <option value="remove">Remove</option>
-                    <option value="swap">Swap</option>
                   </select>
                 </div>
                 <Input label="Price adjustment (£)" type="number" value={editingOption.price_adjustment ?? 0} onChange={v => setEditingOption(p => ({...p!, price_adjustment: parseFloat(v) || 0}))} placeholder="0.00" hint="0 = free" />
@@ -1632,11 +1968,12 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
             </div>
             <div className="flex gap-2 mt-4">
               <Btn label="Cancel" colour="slate" onClick={() => setEditingOption(null)} />
-              <Btn label={saving ? 'Saving...' : 'Save'} loading={saving} onClick={saveOption} />
+              <Btn label={savingOption ? 'Saving...' : 'Save'} loading={savingOption} onClick={saveOption} />
             </div>
           </div>
         </div>
       )}
+
     </div>
   )
 }
@@ -2599,12 +2936,12 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [renameVanName, setRenameVanName] = useState('')
   const [showAutoPauseInfo, setShowAutoPauseInfo] = useState<string | null>(null)
   const [deletingVan, setDeletingVan] = useState<Van | null>(null)
-  const [deleteVanConfirm, setDeleteVanConfirm] = useState('')
   const [showVanBillingModal, setShowVanBillingModal] = useState(false)
   const [showVanUpgradeModal, setShowVanUpgradeModal] = useState(false)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [generatingQR, setGeneratingQR] = useState(false)
   const [copiedOrderLink, setCopiedOrderLink] = useState(false)
+  const [qrCodeStyle, setQrCodeStyle] = useState<'standard' | 'branded'>(truck.qr_code_style ?? 'standard')
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
@@ -2624,9 +2961,10 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     setGeneratingQR(true)
     try {
       const { generateQRCodePNG } = await import('@/lib/generateQRCode')
+      const showBrandedQr = can('branded_qr_code') && qrCodeStyle === 'branded'
       const dataUrl = await generateQRCodePNG({
         url: orderUrl,
-        logoUrl: truck.logo_storage_path
+        logoUrl: showBrandedQr && truck.logo_storage_path
           ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
           : null,
         truckName: truck.name,
@@ -2728,13 +3066,12 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   }
 
   const confirmDeleteVan = async () => {
-    if (!deletingVan || deleteVanConfirm !== deletingVan.name) return
+    if (!deletingVan) return
     try {
       await api('delete_van', { vanId: deletingVan.id })
       setVans(prev => prev.filter(v => v.id !== deletingVan.id))
       setDeletingVan(null)
-      setDeleteVanConfirm('')
-      showToast('Truck deleted')
+      showToast(`${deletingVan.name} removed`)
     } catch (e: any) { showToast(e.message, 'error') }
   }
 
@@ -2938,6 +3275,76 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             {copiedOrderLink ? '✓ Copied' : 'Copy'}
           </button>
         </div>
+        {/* QR code style selector */}
+        <div className="mb-4 space-y-2">
+          <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
+          {/* Standard — available to all tiers */}
+          <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+            <input
+              type="radio"
+              name="qr_style"
+              value="standard"
+              checked={qrCodeStyle === 'standard'}
+              onChange={() => {
+                setQrCodeStyle('standard')
+                setQrDataUrl(null)
+                saveSetting('qr_code_style', 'standard')
+              }}
+              className="accent-orange-600"
+            />
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Standard QR code</p>
+            </div>
+          </label>
+
+          {/* Branded — Pro/Max only */}
+          {can('branded_qr_code') ? (
+            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+              <input
+                type="radio"
+                name="qr_style"
+                value="branded"
+                checked={qrCodeStyle === 'branded'}
+                onChange={() => {
+                  setQrCodeStyle('branded')
+                  setQrDataUrl(null)
+                  saveSetting('qr_code_style', 'branded')
+                }}
+                className="accent-orange-600"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
+                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+              </div>
+              {truck.logo_storage_path && (
+                <img
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`}
+                  alt="Logo preview"
+                  className="w-8 h-8 rounded-md object-contain border border-slate-100 shrink-0"
+                />
+              )}
+              {!truck.logo_storage_path && (
+                <span className="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-medium shrink-0">No logo</span>
+              )}
+            </label>
+          ) : (
+            <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 opacity-50 cursor-not-allowed">
+              <input type="radio" disabled className="accent-orange-600" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
+                <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
+              </div>
+              <FeatureGate
+                feature="branded_qr_code"
+                plan={truck.plan}
+                overrides={truck.feature_overrides}
+                trialExpiresAt={truck.trial_expires_at}
+                showUpgrade={true}
+              />
+            </div>
+          )}
+        </div>
+
         {qrDataUrl ? (
           <div className="flex flex-col items-center gap-4">
             <img
@@ -3320,44 +3727,40 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         )}
       </Card>
 
-      {/* Delete van confirmation modal */}
+      {/* Remove van confirmation modal */}
       {deletingVan && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Delete {deletingVan.name}?</h3>
+              <h3 className="text-lg font-semibold text-slate-900">Remove {deletingVan.name}?</h3>
               <p className="text-sm text-slate-500 mt-2">
-                This will remove {deletingVan.name} from all future events.
-                Past orders won't be affected. Staff assigned only to this
-                van will need their access updated.
+                This van will be removed from your account and will no longer
+                appear on your dashboard or in future events.
               </p>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                Type the truck name to confirm
-              </label>
-              <input
-                type="text"
-                value={deleteVanConfirm}
-                onChange={e => setDeleteVanConfirm(e.target.value)}
-                placeholder={deletingVan.name}
-                autoFocus
-                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
-              />
+              <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 space-y-1.5">
+                <p className="text-xs text-slate-600">
+                  <span className="font-semibold">✓ Preserved:</span> All historical orders, sales data, and reports are kept permanently.
+                </p>
+                <p className="text-xs text-slate-600">
+                  <span className="font-semibold">✓ Preserved:</span> Past event records linked to this van are unaffected.
+                </p>
+                <p className="text-xs text-red-600">
+                  <span className="font-semibold">✕ Removed:</span> The van&apos;s kitchen screen link and settings will be deactivated.
+                </p>
+              </div>
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => { setDeletingVan(null); setDeleteVanConfirm('') }}
+                onClick={() => setDeletingVan(null)}
                 className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm hover:bg-slate-50"
               >
-                Cancel
+                Keep van
               </button>
               <button
                 onClick={confirmDeleteVan}
-                disabled={deleteVanConfirm !== deletingVan.name}
-                className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-red-700"
+                className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-red-700"
               >
-                Delete truck
+                Remove van
               </button>
             </div>
           </div>
