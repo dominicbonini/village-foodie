@@ -15,6 +15,7 @@ export interface MenuItem {
   description?: string
   available?: boolean
   stock_remaining?: number | null
+  default_stock?: number | null
   image?: string | null
   photo_url?: string | null
   allergens?: string[]

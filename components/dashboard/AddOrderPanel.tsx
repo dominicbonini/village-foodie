@@ -160,7 +160,11 @@ export function AddOrderPanel({
     }
   }, [manualItems, appliedDeals, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes, truckMenu])
 
-  // ASAP slot adjusted for the new order's prep time — keeps dropdown and sub-label in sync
+  // ASAP slot calculation — see Engineering Manual s.6
+  // queueByCat sourced from /api/slots response (canonical, includes modified orders)
+  // Both dropdown and sub-label derive from calcQueueAwareReadySecs — single formula
+  // adjustedAsapSlot = first slot at or after eventStart + queueAware.minsFromNow
+  // Do NOT rebuild queueByCat from orders prop — it misses modified status
   const adjustedAsapSlot = useMemo(() => {
     if (!manualSlots.length) return null
     if (!queueAware.minsFromNow) return manualAsapSlot
