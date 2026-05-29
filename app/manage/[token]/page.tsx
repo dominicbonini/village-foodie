@@ -2173,7 +2173,11 @@ const formatTime = (time: string) => {
   return time.substring(0, 5)
 }
 
-function EventStatusBadge({ status }: { status: TruckEvent['status'] }) {
+function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {
+  const isPast = end_time ? new Date() > new Date(`${event_date}T${end_time}`) : false
+  if (isPast) return (
+    <span className="text-xs font-semibold text-slate-400">Finished</span>
+  )
   if (status === 'unconfirmed') return (
     <span className="flex items-center gap-1.5 text-xs font-semibold text-amber-600">
       <span className="inline-block w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />Unconfirmed
@@ -2468,7 +2472,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               <p className="text-sm font-semibold text-slate-900">
                 {event.venue_name}{event.town ? `, ${event.town}` : ''}
               </p>
-              <EventStatusBadge status={event.status} />
+              <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               {fmtDate(event.event_date)}
@@ -2535,12 +2539,19 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     <div className="flex items-center justify-center py-12"><Spinner /></div>
   )
 
+  const now = new Date()
   const today = new Date(); today.setHours(0, 0, 0, 0)
+  // isPastEvent uses new Date(`${event.event_date}T${event.end_time}`) — local time parse
+  // Do NOT use new Date(event.event_date) — that parses as UTC midnight and breaks
+  // today's date comparison in BST (and any UTC+ timezone)
+  // DB status is never auto-written after event ends — all past detection is client-side
+  const isPastEvent = (e: TruckEvent) =>
+    e.end_time ? now > new Date(`${e.event_date}T${e.end_time}`) : new Date(e.event_date) < today
   const filteredEvents = scheduleFilterTruckId
     ? events.filter(e => e.truck_id === scheduleFilterTruckId)
     : events
-  const upcoming = filteredEvents.filter(e => e.status !== 'cancelled' && new Date(e.event_date) >= today)
-  const past = filteredEvents.filter(e => e.status !== 'cancelled' && new Date(e.event_date) < today)
+  const upcoming = filteredEvents.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
+  const past = filteredEvents.filter(e => e.status !== 'cancelled' && isPastEvent(e))
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
   const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
   const openEvents = upcoming.filter(e => e.status === 'open')

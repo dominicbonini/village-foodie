@@ -3,14 +3,9 @@
 // Reads from truck_events (the authoritative source) so all vans are included.
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
-export const revalidate = 60
+export const revalidate = 0
 
 function toddmmyyyy(isoDate: string): string {
   const [y, m, d] = isoDate.split('-')
@@ -28,8 +23,8 @@ function formatFriendly(isoDate: string): string {
   const suffix = [11, 12, 13].includes(day) ? 'th' : (['st', 'nd', 'rd'][(day % 10) - 1] || 'th')
   const month = date.toLocaleDateString('en-GB', { month: 'long' })
   const base = `${dayName} ${day}${suffix} ${month}`
-  if (check.getTime() === today.getTime()) return `Today — ${base}`
-  if (check.getTime() === tomorrow.getTime()) return `Tomorrow — ${base}`
+  if (check.getTime() === today.getTime()) return `Today · ${base}`
+  if (check.getTime() === tomorrow.getTime()) return `Tomorrow · ${base}`
   return base
 }
 
@@ -41,14 +36,25 @@ export async function GET(req: NextRequest) {
 
   const today = new Date().toISOString().split('T')[0]
 
-  const { data: truck } = await supabase
+  // Try slug first, fall back to ID — same pattern as /api/menu/[truckId]
+  let truckQuery = await supabase
     .from('trucks')
     .select('id, name')
     .eq('slug', truckSlug)
-    .eq('active', true)
     .single()
 
+  if (truckQuery.error || !truckQuery.data) {
+    truckQuery = await supabase
+      .from('trucks')
+      .select('id, name')
+      .eq('id', truckSlug)
+      .single()
+  }
+
+  const truck = truckQuery.data
+
   if (!truck) {
+    console.error(`[events API] truck not found for slug/id: ${truckSlug}`)
     return NextResponse.json({
       truck_slug: truckSlug,
       truck_name: truckSlug,
@@ -57,6 +63,9 @@ export async function GET(req: NextRequest) {
     })
   }
 
+  // TODO: add customer_note to this select and surface it on the customer order page
+  // below the event details card. Saves to truck_events.customer_note.
+  // See session notes May 2026.
   const { data: rows, error } = await supabase
     .from('truck_events')
     .select('event_date, start_time, end_time, venue_name, town, notes')

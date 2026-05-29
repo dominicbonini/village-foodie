@@ -780,6 +780,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return nowMins > endH * 60 + endM
   })()
 
+  const isOpenNow = (() => {
+    if (!event?.date_iso || !event?.start_time || !event?.end_time) return false
+    const now = new Date()
+    const start = new Date(`${event.date_iso}T${event.start_time}`)
+    const end = new Date(`${event.date_iso}T${event.end_time}`)
+    return now >= start && now < end
+  })()
+
   const isOrderingBlocked = isPaused || isEventClosed
 
   return (
@@ -876,14 +884,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {events.length === 1 ? (
                 // Single event
                 <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3.5">
-                  <p className="font-black text-slate-900 text-base leading-tight">
-                    {event?.venue_name}
+                  <p className="font-semibold text-slate-800 text-base leading-tight">
+                    📍 {event?.venue_name}{event?.village ? `, ${event.village}` : ''}
                   </p>
-                  {event?.village && (
-                    <p className="text-orange-700 text-sm font-medium mt-0.5">{event.village}</p>
-                  )}
-                  <p className="text-slate-500 text-sm mt-1.5">
-                    {event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${event.start_time}–${event.end_time}` : ''}
+                  <p className="text-slate-600 text-sm mt-1.5 flex items-center gap-2 flex-wrap">
+                    <span>{event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${event.start_time.slice(0,5)}–${event.end_time.slice(0,5)}` : ''}</span>
+                    {isOpenNow && (
+                      <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Open now
+                      </span>
+                    )}
                   </p>
                 </div>
               ) : (
@@ -903,9 +913,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}</p>
-                            {e.village && <p className={`text-sm font-medium mt-0.5 ${isSelected ? 'text-orange-700' : 'text-slate-500'}`}>{e.village}</p>}
-                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${e.start_time}–${e.end_time}` : ''}</p>
+                            <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
+                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${e.start_time.slice(0,5)}–${e.end_time.slice(0,5)}` : ''}</p>
                           </div>
                           {isSelected && <span className="text-orange-500 text-sm font-black shrink-0 mt-0.5">✓</span>}
                         </div>
@@ -945,7 +954,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           </div>
                           <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
                           <div className="flex flex-wrap gap-1 mt-1">
-                            {slots.map((cat: string) => <span key={cat} className="text-[10px] bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
+                            {slots.map((cat: string, i: number) => <span key={i} className="text-[10px] bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
                           </div>
                         </div>
                         <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>

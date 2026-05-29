@@ -740,19 +740,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             )}
             {/* Event header when open */}
             {activeEvent?.status==='open'&&(
-              <div className="flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200 rounded-xl mb-3 flex-shrink-0">
+              <div className="flex items-center justify-between px-3 py-2.5 bg-orange-50 border border-orange-200 rounded-xl mb-3 flex-shrink-0">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                  <span className="text-sm font-medium text-slate-900 truncate">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
+                  <span className="text-sm font-bold text-orange-900 truncate">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
+                  <span className="text-xs text-orange-600 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button onClick={()=>extendEvent(activeEvent.id,30)}
-                    className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
+                    className="text-xs px-2.5 py-1.5 border border-orange-300 rounded-lg text-orange-700 hover:bg-orange-100">
                     +30 min
                   </button>
                   <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
-                    className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
+                    className="text-xs px-2.5 py-1.5 border border-orange-300 rounded-lg text-orange-700 hover:bg-orange-100">
                     ⋯
                   </button>
                 </div>
@@ -1609,10 +1609,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <button onClick={()=>setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
             <div className="mb-4">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Customer note</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Note for customers</label>
               <input type="text" value={eventNoteInput} onChange={e=>setEventNoteInput(e.target.value)}
-                placeholder="e.g. Park in the main car park"
+                placeholder="e.g. Park in the main car park, look for the orange gazebo"
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"/>
+              <p className="text-xs text-slate-400 mt-1.5">Shown to customers on the order page below your event details.</p>
               <button onClick={()=>saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
