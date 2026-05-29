@@ -1431,8 +1431,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
-          <button onClick={submitOrder}
-            onClick={e => { e.preventDefault(); handleSubmitClick() }}
+          <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
             disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || !phone || (truck?.mode === 'village' && !selectedSlot) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
