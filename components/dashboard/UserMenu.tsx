@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Toggle } from '@/components/dashboard/OrderCard'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 interface UserMenuProps {
   currentUserName: string | null
@@ -36,6 +37,13 @@ export default function UserMenu({
   const [open, setOpen] = useState(false)
   const initial = currentUserName ? currentUserName.charAt(0).toUpperCase() : '?'
   const canManage = userRole === 'owner' || userRole === 'manager'
+  const operatorFirstName = currentUserName ? currentUserName.split(' ')[0] : null
+
+  const handleSignOut = async () => {
+    const supabase = createSupabaseBrowserClient()
+    await supabase.auth.signOut()
+    window.location.href = '/login'
+  }
 
   return (
     <div className="relative">
@@ -69,10 +77,23 @@ export default function UserMenu({
           <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg
                           border border-slate-100 z-50 overflow-hidden">
 
+            {/* Identity block — always at top */}
+            <div className="px-4 py-3 border-b border-slate-100">
+              <p className="text-sm font-semibold text-slate-800 truncate">{truckName || '—'}</p>
+              <p className="text-xs text-slate-400 truncate mt-0.5">{operatorFirstName || currentUserName || '—'}</p>
+            </div>
+
             {/* Screen on — mobile only */}
-            <div className="sm:hidden flex items-center justify-between px-4 py-2 border-b border-slate-100">
-              <span className="text-sm text-slate-700">Screen on</span>
-              <Toggle on={keepScreenOn} onToggle={() => { onToggleScreenOn(); }} />
+            <div className="sm:hidden px-4 py-2 border-b border-slate-100">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-700">Screen on</span>
+                <Toggle on={keepScreenOn} onToggle={() => { onToggleScreenOn(); }} />
+              </div>
+              {typeof navigator !== 'undefined' && !('wakeLock' in navigator) && (
+                <p className="text-xs text-amber-600 mt-1">
+                  Screen lock isn't supported on this browser. Keep the device plugged in and the app in the foreground to prevent the screen dimming.
+                </p>
+              )}
             </div>
 
             {/* Utility actions — mobile only */}
@@ -106,33 +127,30 @@ export default function UserMenu({
               </button>
             </div>
 
-            {/* Info header */}
-            <div className="px-4 py-3 border-b border-slate-100">
-              <p className="text-sm font-semibold text-slate-900 truncate">
-                {currentUserName || 'Unknown'}
-              </p>
-              {truckName && (
-                <p className="text-xs text-slate-400 truncate mt-0.5">{truckName}</p>
-              )}
-            </div>
-
             {/* Manage — owner/manager only */}
             {canManage && (
               <Link
                 href={`/manage/${token}`}
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm
-                           text-slate-700 hover:bg-slate-50"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
               >
                 ⚙️ Manage
               </Link>
             )}
 
+            {/* Orders dashboard — mobile only */}
+            <a
+              href={`/dashboard/${token}`}
+              className="sm:hidden flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 w-full"
+            >
+              ← Orders dashboard
+            </a>
+
             <hr className="border-slate-100" />
 
             {/* Sign out */}
             <button
-              onClick={() => { onSignOut(); setOpen(false) }}
+              onClick={handleSignOut}
               className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
             >
               Sign out

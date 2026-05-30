@@ -273,6 +273,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
               {showUserDropdown && (
                 <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50"
                      onBlur={() => setShowUserDropdown(false)}>
+                  <a
+                    href={`/dashboard/${token}`}
+                    className="sm:hidden flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100 w-full">
+                    ← Orders dashboard
+                  </a>
                   <button
                     onClick={() => { setEditProfileName(currentUserName || ''); setShowProfileModal(true); setShowUserDropdown(false) }}
                     className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
@@ -4122,6 +4127,51 @@ interface RecentEvent { id: string; venue_name: string | null; event_date: strin
 
 function fmtGBP(n: number) { return `£${n.toFixed(2)}` }
 
+type ExplodedItem = {
+  orderId: string; dateStr: string; eventStr: string; timePlaced: string
+  collectionTime: string; customerName: string; orderType: string; orderTotal: number
+  itemLabel: string; qty: number; basePrice: number; modStr: string; noteStr: string; itemTotal: number
+}
+function explodeOrderItems(
+  orders: any[],
+  eventsMap: Record<string, { venue_name: string | null; town: string | null }>
+): ExplodedItem[] {
+  const rows: ExplodedItem[] = []
+  for (const o of orders) {
+    const createdAt = o.created_at ? new Date(o.created_at) : null
+    const dateStr = createdAt
+      ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${createdAt.getFullYear()}`
+      : ''
+    const timePlaced = createdAt
+      ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
+      : ''
+    const ev = eventsMap[o.event_date]
+    const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
+    const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
+    const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
+    const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
+    const dealItemMap: Record<string, string> = {}
+    for (const d of (Array.isArray(o.deals) ? o.deals : []))
+      for (const itemName of Object.values(d.slots || {}))
+        if (itemName && !dealItemMap[itemName as string]) dealItemMap[itemName as string] = d.name
+    for (const item of (Array.isArray(o.items) ? o.items : [])) {
+      const dealName = dealItemMap[item.name]
+      const qty = item.quantity || 1
+      const modSum = (item.modifiers || []).reduce((s: number, m: any) => s + (m.price || 0), 0)
+      rows.push({
+        orderId: o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, orderTotal: o.total || 0,
+        itemLabel: dealName ? `🎁 ${item.name} (${dealName})` : item.name,
+        qty,
+        basePrice: (item.unit_price || 0) - modSum,
+        modStr: (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +£${m.price.toFixed(2)}`).join('; '),
+        noteStr: item.specialInstructions || '',
+        itemTotal: (item.unit_price || 0) * qty,
+      })
+    }
+  }
+  return rows
+}
+
 function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: any) => Promise<any> }) {
   const hasAdvanced = truck
     ? canAccess(truck.plan, 'advanced_reporting', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
@@ -4130,6 +4180,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     const d = new Date(); d.setDate(d.getDate() + offset); return d.toISOString().split('T')[0]
   }
   const [filterMode, setFilterMode] = useState<'date' | 'event'>('date')
+  const [itemView, setItemView] = useState<'orders' | 'items'>('orders')
   const [dateFrom, setDateFrom] = useState(() => isoDate(-7))
   const [dateTo, setDateTo]     = useState(() => isoDate(-1))
   const [reportEventId, setReportEventId] = useState('')
@@ -4216,27 +4267,13 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 
   // ── Report header context ────────────────────────────────────────
   const reportHeader = useMemo(() => {
-    if (!orders.length) return null
-    if (filterMode === 'event') {
-      const ev = recentEvents.find(e => e.id === reportEventId)
-      const dateStr = ev?.event_date
-        ? new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-        : ''
-      return { context: [ev?.venue_name, dateStr].filter(Boolean).join(' · '), isMulti: false }
-    }
-    const eventDates = [...new Set(orders.map((o: any) => o.event_date).filter(Boolean))] as string[]
-    const eventNames = eventDates
-      .map(d => recentEvents.find(e => e.event_date === d)?.venue_name)
-      .filter((n): n is string => !!n)
-    const uniqueNames = [...new Set(eventNames)]
-    if (uniqueNames.length === 1 && eventDates.length === 1) {
-      const dateStr = new Date(eventDates[0] + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-      return { context: `${uniqueNames[0]} · ${dateStr}`, isMulti: false }
-    }
-    const fromStr = new Date(dateFrom + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-    const toStr   = new Date(dateTo   + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-    return { context: `${fromStr} – ${toStr} · ${eventDates.length} event${eventDates.length !== 1 ? 's' : ''}`, isMulti: true }
-  }, [orders, filterMode, reportEventId, recentEvents, dateFrom, dateTo]) // eslint-disable-line react-hooks/exhaustive-deps
+    if (!orders.length || filterMode !== 'event' || !reportEventId) return null
+    const ev = recentEvents.find(e => e.id === reportEventId)
+    const dateStr = ev?.event_date
+      ? new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+      : ''
+    return [ev?.venue_name, dateStr].filter(Boolean).join(' · ')
+  }, [orders, filterMode, reportEventId, recentEvents]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const csvFilename = filterMode === 'date'
     ? `orders-${dateFrom}-to-${dateTo}.csv`
@@ -4279,42 +4316,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const exportItemsCSV = () => {
     if (!orders.length) return
     const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Item name', 'Qty', 'Unit price', 'Modifiers', 'Notes', 'Item total', 'Order total']
-    const rows: string[][] = []
-    for (const o of orders) {
-      const createdAt = o.created_at ? new Date(o.created_at) : null
-      const dateStr = createdAt
-        ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${createdAt.getFullYear()}`
-        : ''
-      const timePlaced = createdAt
-        ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
-        : ''
-      const ev = eventsMap[o.event_date]
-      const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
-      const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
-      const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
-      const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
-      const orderTotal = fmtGBP(o.total || 0)
-      // Map item name → deal name for deal constituent detection
-      const dealItemMap: Record<string, string> = {}
-      for (const d of (Array.isArray(o.deals) ? o.deals : [])) {
-        for (const itemName of Object.values(d.slots || {})) {
-          if (itemName && !dealItemMap[itemName as string]) dealItemMap[itemName as string] = d.name
-        }
-      }
-      const orderFields = [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType]
-      for (const item of (Array.isArray(o.items) ? o.items : [])) {
-        const dealName = dealItemMap[item.name]
-        const itemLabel = dealName ? `🎁 ${item.name} (${dealName})` : item.name
-        const qty = item.quantity || 1
-        const modSum = (item.modifiers || []).reduce((s: number, m: any) => s + (m.price || 0), 0)
-        const basePrice = (item.unit_price || 0) - modSum
-        const modStr = (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +£${m.price.toFixed(2)}`).join('; ')
-        const noteStr = item.specialInstructions || ''
-        const itemTotal = fmtGBP((item.unit_price || 0) * qty)
-        rows.push([...orderFields, itemLabel, String(qty), fmtGBP(basePrice), modStr, noteStr, itemTotal, orderTotal]
-          .map(v => `"${String(v).replace(/"/g, '""')}"`))
-      }
-    }
+    const rows = explodeOrderItems(orders, eventsMap).map(r =>
+      [r.orderId, r.dateStr, r.eventStr, r.timePlaced, r.collectionTime, r.customerName, r.orderType,
+       r.itemLabel, String(r.qty), fmtGBP(r.basePrice), r.modStr, r.noteStr, fmtGBP(r.itemTotal), fmtGBP(r.orderTotal)]
+        .map(v => `"${String(v).replace(/"/g, '""')}"`)
+    )
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -4322,10 +4328,21 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     a.click(); URL.revokeObjectURL(url)
   }
 
+  // Shared column cell classes — used by both Orders and Items views
+  const colId    = 'font-mono text-slate-400 flex-shrink-0 w-10'
+  const colDate  = 'text-slate-400 flex-shrink-0 w-10'
+  const colVenue = 'text-slate-500 flex-shrink-0 w-24 truncate hidden sm:block'
+  const colTime  = 'text-slate-400 flex-shrink-0 w-10'
+  const colType  = (online: boolean) => `flex-shrink-0 w-14 font-medium ${online ? 'text-blue-600' : 'text-slate-500'}`
+  const colCust  = 'text-slate-600 flex-shrink-0 w-16 truncate'
+  const colTotal = 'font-medium text-slate-900 flex-shrink-0'
+  const colMuted = 'text-slate-400 flex-shrink-0'
+
   return (
     <div className="flex flex-col gap-5">
       {/* ── Filter bar ── */}
       <div className="flex flex-col gap-3">
+        {/* Row 1: Filter mode toggle */}
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Filter by</span>
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
@@ -4339,42 +4356,46 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          {filterMode === 'date' ? (
-            <>
-              <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
-                className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
-              <span className="text-sm text-slate-400">to</span>
-              <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
-                className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
-            </>
-          ) : (
-            <select value={reportEventId}
-              onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
-              <option value="">Select an event…</option>
-              {recentEvents.map(ev => {
-                const evDate = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-                return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
-              })}
-            </select>
-          )}
+        {/* Row 2: fixed-width filter controls + action buttons + view toggle + export far-right */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '320px' }}>
+            {filterMode === 'date' ? (
+              <>
+                <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />
+                <span className="text-sm text-slate-400 flex-shrink-0">to</span>
+                <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />
+              </>
+            ) : (
+              <select value={reportEventId}
+                onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
+                className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white w-[320px]">
+                <option value="">Select an event…</option>
+                {recentEvents.map(ev => {
+                  const evDate = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+                  return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
+                })}
+              </select>
+            )}
+          </div>
           <button onClick={() => loadReport()} disabled={loading || (filterMode === 'event' && !reportEventId)}
-            className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50">
+            className="h-10 px-4 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 flex-shrink-0">
             {loading ? 'Loading…' : 'View report'}
           </button>
-          {orders.length > 0 && (
-            <>
-              <button onClick={exportCSV}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
-                ⬇ Export orders CSV
-              </button>
-              <button onClick={exportItemsCSV}
-                className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
-                ⬇ Export items CSV
-              </button>
-            </>
-          )}
+          <button onClick={() => setItemView('orders')}
+            className={`flex-shrink-0 ${orders.length === 0 ? 'invisible ' : ''}${itemView === 'orders' ? 'bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium' : 'border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-sm hover:bg-slate-50'}`}>
+            📋 Orders
+          </button>
+          <button onClick={() => setItemView('items')}
+            className={`flex-shrink-0 ${orders.length === 0 ? 'invisible ' : ''}${itemView === 'items' ? 'bg-slate-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium' : 'border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-sm hover:bg-slate-50'}`}>
+            📦 Items
+          </button>
+          <button onClick={itemView === 'orders' ? exportCSV : exportItemsCSV}
+            disabled={orders.length === 0}
+            className={`ml-auto h-10 px-4 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors flex-shrink-0 ${orders.length === 0 ? 'invisible' : ''}`}>
+            ⬇ Export CSV
+          </button>
         </div>
       </div>
 
@@ -4391,7 +4412,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
           {/* ── Summary line ── */}
           <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
             {reportHeader && (
-              <p className="text-xs text-slate-500 mb-0.5">{reportHeader.context}</p>
+              <p className="text-xs text-slate-500 mb-0.5">{reportHeader}</p>
             )}
             <p className="text-base font-bold text-slate-900">
               {orders.length} order{orders.length !== 1 ? 's' : ''} · {fmtGBP(revenueBreakdown.total)}
@@ -4503,40 +4524,78 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             </>
           )}
 
-          {/* ── Order list ── */}
+          {/* ── Results list ── */}
           <div className="bg-white border border-slate-200 rounded-xl p-4">
-            <p className="text-sm font-semibold text-slate-900 mb-3">Orders</p>
-            <div className="space-y-0.5">
-              {orders.map((o: any) => {
-                const createdAt = o.created_at ? new Date(o.created_at) : null
-                const dateStr = createdAt
-                  ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}`
-                  : ''
-                const timePlaced = createdAt
-                  ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
-                  : ''
-                const ev = eventsMap[o.event_date]
-                const venueName = ev?.venue_name ?? null
-                const venueShort = venueName ? (venueName.length > 18 ? venueName.slice(0, 17) + '…' : venueName) : '—'
-                const orderType = o.customer_email ? 'Online' : 'Walk-up'
-                const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'
-                const itemSummary = (Array.isArray(o.items) ? o.items : [])
-                  .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
-                const isCancelled = o.status === 'cancelled' || o.status === 'rejected'
-                return (
-                  <div key={o.id} className={`flex items-center gap-2 py-2 border-b border-slate-50 last:border-0 text-xs ${isCancelled ? 'opacity-50' : ''}`}>
-                    <span className="font-mono text-slate-400 flex-shrink-0 w-10">#{o.id}</span>
-                    <span className="text-slate-400 flex-shrink-0 w-10">{dateStr}</span>
-                    <span className="text-slate-500 flex-shrink-0 w-24 truncate hidden sm:block">{venueShort}</span>
-                    <span className="text-slate-400 flex-shrink-0 w-10">{timePlaced}</span>
-                    <span className={`flex-shrink-0 w-14 font-medium ${o.customer_email ? 'text-blue-600' : 'text-slate-500'}`}>{orderType}</span>
-                    <span className="text-slate-600 flex-shrink-0 w-16 truncate">{customerLabel}</span>
-                    <span className="text-slate-600 flex-1 truncate min-w-0">{itemSummary}</span>
-                    <span className="font-medium text-slate-900 flex-shrink-0">{fmtGBP(o.total || 0)}</span>
-                  </div>
-                )
-              })}
-            </div>
+            {itemView === 'orders' && (
+              <div className="space-y-0.5">
+                {orders.map((o: any) => {
+                  const createdAt = o.created_at ? new Date(o.created_at) : null
+                  const dateStr = createdAt
+                    ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}`
+                    : ''
+                  const timePlaced = createdAt
+                    ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
+                    : ''
+                  const ev = eventsMap[o.event_date]
+                  const venueName = ev?.venue_name ?? null
+                  const venueShort = venueName ? (venueName.length > 18 ? venueName.slice(0, 17) + '…' : venueName) : '—'
+                  const orderType = o.customer_email ? 'Online' : 'Walk-up'
+                  const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'
+                  const itemSummary = (Array.isArray(o.items) ? o.items : [])
+                    .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
+                  const isCancelled = o.status === 'cancelled' || o.status === 'rejected'
+                  return (
+                    <div key={o.id} className={`flex items-center gap-2 py-2 border-b border-slate-50 last:border-0 text-xs ${isCancelled ? 'opacity-50' : ''}`}>
+                      <span className={colId}>#{o.id}</span>
+                      <span className={colDate}>{dateStr}</span>
+                      <span className={colVenue}>{venueShort}</span>
+                      <span className={colTime}>{timePlaced}</span>
+                      <span className={colType(!!o.customer_email)}>{orderType}</span>
+                      <span className={colCust}>{customerLabel}</span>
+                      <span className="text-slate-600 flex-1 truncate min-w-0">{itemSummary}</span>
+                      <span className={colTotal}>{fmtGBP(o.total || 0)}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {itemView === 'items' && (() => {
+              const rows = explodeOrderItems(orders, eventsMap)
+              return (
+                <div>
+                  {rows.map((r, i) => {
+                    const isNewOrder = i === 0 || rows[i - 1].orderId !== r.orderId
+                    const isOnline = r.orderType === 'Customer online'
+                    const orderTypeShort = isOnline ? 'Online' : 'Walk-up'
+                    const customerLabel = r.customerName === 'Unknown' ? '—' : r.customerName
+                    const venueShort = r.eventStr.length > 18 ? r.eventStr.slice(0, 17) + '…' : r.eventStr
+                    const isDeal = r.itemLabel.startsWith('🎁 ')
+                    const dealMatch = isDeal ? r.itemLabel.match(/^🎁 (.+) \((.+)\)$/) : null
+                    const itemDisplayName = dealMatch ? `🎁 ${dealMatch[1]}` : r.itemLabel
+                    const dealName = dealMatch ? dealMatch[2] : null
+                    return (
+                      <div key={i} className={`flex items-center gap-2 py-2 text-xs ${isNewOrder && i > 0 ? 'border-t border-slate-100' : ''}`}>
+                        <span className="font-mono text-orange-400 flex-shrink-0 w-10">#{r.orderId}</span>
+                        <span className={colDate}>{r.dateStr}</span>
+                        <span className={colVenue}>{venueShort}</span>
+                        <span className={colTime}>{r.timePlaced}</span>
+                        <span className={colType(isOnline)}>{orderTypeShort}</span>
+                        <span className={colCust}>{customerLabel}</span>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-slate-700 truncate block">{itemDisplayName}</span>
+                          {dealName && <span className="text-slate-400 text-[10px] truncate block">{dealName}</span>}
+                        </div>
+                        <span className={`${colMuted} w-6 text-right`}>×{r.qty}</span>
+                        <span className="text-slate-500 flex-shrink-0 w-14 text-right">{fmtGBP(r.basePrice)}</span>
+                        <span className={`${colMuted} w-28 truncate hidden sm:block`}>{r.modStr || <span className="text-slate-300">—</span>}</span>
+                        <span className={`${colTotal} w-14 text-right`}>{fmtGBP(r.itemTotal)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()}
           </div>
 
           {/* ── Pro feature placeholder (Starter only) ── */}
