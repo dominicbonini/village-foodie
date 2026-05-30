@@ -4115,11 +4115,22 @@ interface ReportData {
   dealSavings?: number
   upsellRevenue?: number
   whatsappStats?: { total: number; handled: number; misses: number } | null
+  orders?: Array<any>
 }
 interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
 
+function fmtGBP(n: number) { return `£${n.toFixed(2)}` }
+
 function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: any) => Promise<any> }) {
-  const [reportDate, setReportDate] = useState(new Date().toISOString().split('T')[0])
+  const hasAdvanced = truck
+    ? canAccess(truck.plan, 'advanced_reporting', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+    : false
+  const isoDate = (offset: number) => {
+    const d = new Date(); d.setDate(d.getDate() + offset); return d.toISOString().split('T')[0]
+  }
+  const [filterMode, setFilterMode] = useState<'date' | 'event'>('date')
+  const [dateFrom, setDateFrom] = useState(() => isoDate(-7))
+  const [dateTo, setDateTo]     = useState(() => isoDate(-1))
   const [reportEventId, setReportEventId] = useState('')
   const [reportData, setReportData] = useState<ReportData | null | undefined>(undefined)
   const [reportLoaded, setReportLoaded] = useState(false)
@@ -4132,144 +4143,335 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadReport = async (date = reportDate, eventId = reportEventId) => {
+  useEffect(() => { setReportData(undefined); setReportLoaded(false) }, [filterMode])
+
+  const loadReport = async (from = dateFrom, to = dateTo, eventId = reportEventId, mode = filterMode) => {
     setLoading(true)
     try {
-      const r = await api('get_report', { date, eventId: eventId || undefined })
+      const r = await api('get_report', {
+        dateFrom: mode === 'date' ? from : undefined,
+        dateTo:   mode === 'date' ? to   : undefined,
+        eventId:  mode === 'event' && eventId ? eventId : undefined,
+      })
       setReportData(r.report ?? null)
     } catch { setReportData(null) }
     finally { setLoading(false); setReportLoaded(true) }
   }
 
+  // ── Client-side derived breakdowns ─────────────────────────────
+  const orders: any[] = reportData?.orders ?? []
+
+  const revenueBreakdown = useMemo(() => {
+    // Only count revenue from orders that weren't cancelled/rejected
+    const revenueOrders = orders.filter((o: any) => !['cancelled', 'rejected'].includes(o.status))
+    let dealRev = 0, mods = 0
+    for (const o of revenueOrders) {
+      for (const d of (Array.isArray(o.deals) ? o.deals : [])) dealRev += d.price || 0
+      for (const item of (Array.isArray(o.items) ? o.items : [])) {
+        // unit_price = base_menu_price + sum(mod.price) — modifiers are baked in.
+        // So modifier upcharges = sum(mod.price × qty); base = total − dealRev − mods.
+        const modSum = (item.modifiers || []).reduce((s: number, m: any) => s + (m.price || 0), 0)
+        mods += modSum * (item.quantity || 1)
+      }
+    }
+    const total = revenueOrders.reduce((s: number, o: any) => s + (o.total || 0), 0)
+    const base = total - dealRev - mods
+    return { base, dealRev, mods, total }
+  }, [orders]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const dealBreakdown = useMemo(() => {
+    const map: Record<string, { count: number; revenue: number }> = {}
+    for (const o of orders)
+      for (const d of (Array.isArray(o.deals) ? o.deals : [])) {
+        if (!d.name) continue
+        if (!map[d.name]) map[d.name] = { count: 0, revenue: 0 }
+        map[d.name].count += 1; map[d.name].revenue += d.price || 0
+      }
+    return Object.entries(map).map(([name, v]) => ({ name, ...v })).sort((a, b) => b.count - a.count)
+  }, [orders]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const modifierBreakdown = useMemo(() => {
+    const map: Record<string, { count: number; revenue: number }> = {}
+    for (const o of orders)
+      for (const item of (Array.isArray(o.items) ? o.items : []))
+        for (const m of (item.modifiers || [])) {
+          if (!m.name) continue
+          if (!map[m.name]) map[m.name] = { count: 0, revenue: 0 }
+          map[m.name].count += item.quantity || 1
+          map[m.name].revenue += (m.price || 0) * (item.quantity || 1)
+        }
+    return Object.entries(map).map(([name, v]) => ({ name, ...v })).sort((a, b) => b.revenue - a.revenue)
+  }, [orders]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const customerNotes = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const o of orders)
+      for (const item of (Array.isArray(o.items) ? o.items : [])) {
+        const note = (item.specialInstructions || '').trim()
+        if (note) map[note] = (map[note] || 0) + 1
+      }
+    return Object.entries(map).map(([note, count]) => ({ note, count })).sort((a, b) => b.count - a.count)
+  }, [orders]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Report header context ────────────────────────────────────────
+  const reportHeader = useMemo(() => {
+    if (!orders.length) return null
+    if (filterMode === 'event') {
+      const ev = recentEvents.find(e => e.id === reportEventId)
+      const dateStr = ev?.event_date
+        ? new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+        : ''
+      return { context: [ev?.venue_name, dateStr].filter(Boolean).join(' · '), isMulti: false }
+    }
+    const eventDates = [...new Set(orders.map((o: any) => o.event_date).filter(Boolean))] as string[]
+    const eventNames = eventDates
+      .map(d => recentEvents.find(e => e.event_date === d)?.venue_name)
+      .filter((n): n is string => !!n)
+    const uniqueNames = [...new Set(eventNames)]
+    if (uniqueNames.length === 1 && eventDates.length === 1) {
+      const dateStr = new Date(eventDates[0] + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+      return { context: `${uniqueNames[0]} · ${dateStr}`, isMulti: false }
+    }
+    const fromStr = new Date(dateFrom + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+    const toStr   = new Date(dateTo   + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    return { context: `${fromStr} – ${toStr} · ${eventDates.length} event${eventDates.length !== 1 ? 's' : ''}`, isMulti: true }
+  }, [orders, filterMode, reportEventId, recentEvents, dateFrom, dateTo]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const csvFilename = filterMode === 'date'
+    ? `orders-${dateFrom}-to-${dateTo}.csv`
+    : `orders-event-${reportEventId}.csv`
+
+  const exportCSV = () => {
+    if (!orders.length) return
+    const headers = ['Order ID', 'Customer name', 'Status', 'Collection time', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']
+    const rows = orders.map((o: any) => {
+      const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}x ${i.name}`).join('; ')
+      const dealStr = (Array.isArray(o.deals) ? o.deals : []).map((d: any) => d.name).join('; ')
+      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).map((m: any) => m.name)).join('; ')
+      const noteStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => i.specialInstructions).filter(Boolean).join('; ')
+      return [o.id, o.customer_name || '', o.status || '', o.slot || '', itemStr, dealStr, modStr, noteStr, fmtGBP(o.total || 0)]
+        .map(v => `"${String(v).replace(/"/g, '""')}"`)
+    })
+    const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = csvFilename
+    a.click(); URL.revokeObjectURL(url)
+  }
+
   return (
-    <div className="flex flex-col gap-6">
-      {/* Filters */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <input
-          type="date"
-          value={reportDate}
-          onChange={e => setReportDate(e.target.value)}
-          className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
-        />
-        <select
-          value={reportEventId}
-          onChange={e => setReportEventId(e.target.value)}
-          className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
-        >
-          <option value="">All events</option>
-          {recentEvents.map(event => (
-            <option key={event.id} value={event.id}>
-              {event.venue_name || 'Event'} — {event.event_date}
-            </option>
-          ))}
-        </select>
-        <button
-          onClick={() => loadReport(reportDate, reportEventId)}
-          disabled={loading}
-          className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50"
-        >
-          {loading ? 'Loading…' : 'View report'}
-        </button>
+    <div className="flex flex-col gap-5">
+      {/* ── Filter bar ── */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Filter by</span>
+          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+            <button onClick={() => setFilterMode('date')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'date' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
+              📅 Date range
+            </button>
+            <button onClick={() => setFilterMode('event')}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'event' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
+              📍 Event
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {filterMode === 'date' ? (
+            <>
+              <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+                className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
+              <span className="text-sm text-slate-400">to</span>
+              <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+                className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
+            </>
+          ) : (
+            <select value={reportEventId}
+              onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
+              className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+              <option value="">Select an event…</option>
+              {recentEvents.map(ev => (
+                <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} — {ev.event_date}</option>
+              ))}
+            </select>
+          )}
+          <button onClick={() => loadReport()} disabled={loading || (filterMode === 'event' && !reportEventId)}
+            className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50">
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+          {orders.length > 0 && (
+            <button onClick={exportCSV}
+              className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
+              ⬇ Export CSV
+            </button>
+          )}
+        </div>
       </div>
 
-      {reportData && (
+      {/* ── No data states ── */}
+      {reportData === null && reportLoaded && (
+        <p className="text-sm text-slate-400 text-center py-10">No orders found for this period.</p>
+      )}
+      {filterMode === 'event' && !reportEventId && !reportLoaded && (
+        <p className="text-sm text-slate-400 text-center py-10">Select an event above to view its report.</p>
+      )}
+
+      {orders.length > 0 && (
         <>
-          {/* Summary cards */}
-          {reportData.totalOrders != null && (
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <p className="text-xs text-slate-400">Orders</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">{reportData.totalOrders}</p>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <p className="text-xs text-slate-400">Revenue</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.totalRevenue!.toFixed(2)}</p>
-              </div>
-              <div className="bg-white border border-slate-200 rounded-xl p-4">
-                <p className="text-xs text-slate-400">Avg order</p>
-                <p className="text-2xl font-bold text-slate-900 mt-1">£{reportData.avgOrder!.toFixed(2)}</p>
-              </div>
-            </div>
-          )}
+          {/* ── Summary line ── */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
+            {reportHeader && (
+              <p className="text-xs text-slate-500 mb-0.5">{reportHeader.context}</p>
+            )}
+            <p className="text-base font-bold text-slate-900">
+              {orders.length} order{orders.length !== 1 ? 's' : ''} · {fmtGBP(revenueBreakdown.total)}
+            </p>
+          </div>
 
-          {/* Top items */}
-          {reportData.topItems && reportData.topItems.length > 0 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-slate-900 mb-3">Items sold</p>
-              {reportData.topItems.map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-400 w-4">{i + 1}</span>
-                    <span className="text-sm text-slate-700">{item.name}</span>
-                    <span className="text-xs text-slate-400">×{item.qty}</span>
+          {/* ── Advanced analytics (Pro/Max only) ── */}
+          {hasAdvanced && (
+            <>
+              {/* Revenue breakdown */}
+              <div className="bg-white border border-slate-200 rounded-xl p-4">
+                <p className="text-sm font-semibold text-slate-900 mb-3">Revenue breakdown</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-600">Menu items</span>
+                    <span className="font-medium text-slate-900">{fmtGBP(revenueBreakdown.base)}</span>
                   </div>
-                  <span className="text-sm font-medium text-slate-900">£{item.revenue.toFixed(2)}</span>
+                  {revenueBreakdown.dealRev > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Deal revenue</span>
+                      <span className="font-medium text-slate-900">{fmtGBP(revenueBreakdown.dealRev)}</span>
+                    </div>
+                  )}
+                  {revenueBreakdown.mods > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Modifier upcharges</span>
+                      <span className="font-medium text-slate-900">{fmtGBP(revenueBreakdown.mods)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between text-sm font-semibold border-t border-slate-100 pt-2 mt-1">
+                    <span className="text-slate-900">Total</span>
+                    <span className="text-slate-900">{fmtGBP(revenueBreakdown.total)}</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
 
-          {/* Deals summary */}
-          {(reportData.dealsRedeemed ?? 0) > 0 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-slate-900 mb-3">Deals & discounts</p>
-              <div className="flex items-center justify-between py-2">
-                <span className="text-sm text-slate-600">Deals redeemed</span>
-                <span className="text-sm font-medium text-slate-900">{reportData.dealsRedeemed}</span>
-              </div>
-              <div className="flex items-center justify-between py-2 border-t border-slate-100">
-                <span className="text-sm text-slate-600">Customer savings</span>
-                <span className="text-sm font-medium text-green-600">£{reportData.dealSavings!.toFixed(2)}</span>
-              </div>
-            </div>
-          )}
-
-          {/* WhatsApp auto-replies */}
-          {reportData.whatsappStats && reportData.whatsappStats.total > 0 && (
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-slate-900 mb-3">WhatsApp auto-replies</p>
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                <div className="text-center">
-                  <p className="text-xl font-bold text-slate-900">{reportData.whatsappStats.total}</p>
-                  <p className="text-xs text-slate-400">Messages</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xl font-bold text-slate-900">{reportData.whatsappStats.handled}</p>
-                  <p className="text-xs text-slate-400">Answered</p>
-                </div>
-                <div className="text-center">
-                  <p className={`text-xl font-bold ${reportData.whatsappStats.misses > 0 ? 'text-amber-600' : 'text-green-600'}`}>
-                    {reportData.whatsappStats.misses}
-                  </p>
-                  <p className="text-xs text-slate-400">Possible misses</p>
-                </div>
-              </div>
-              {reportData.whatsappStats.misses > 0 && (
-                <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                  <p className="text-xs text-amber-700">
-                    ⚠️ {reportData.whatsappStats.misses} message{reportData.whatsappStats.misses !== 1 ? 's' : ''} asked about your schedule but we couldn&apos;t find a matching event. Check your events are confirmed with correct dates and towns.
-                  </p>
+              {/* Items sold */}
+              {reportData?.topItems && reportData.topItems.length > 0 && (
+                <div className="bg-white border border-slate-200 rounded-xl p-4">
+                  <p className="text-sm font-semibold text-slate-900 mb-3">Items sold</p>
+                  <div className="space-y-1">
+                    {reportData.topItems.map((item, i) => (
+                      <div key={i} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-xs text-slate-300 w-4 flex-shrink-0">{i + 1}</span>
+                          <span className="text-sm text-slate-700 truncate">{item.name}</span>
+                          <span className="text-xs text-slate-400 flex-shrink-0">×{item.qty}</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-900 ml-3 flex-shrink-0">{fmtGBP(item.revenue)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>
+
+              {/* Deals */}
+              {dealBreakdown.length > 0 && (
+                <div className="bg-white border border-slate-200 rounded-xl p-4">
+                  <p className="text-sm font-semibold text-slate-900 mb-3">Deals</p>
+                  <div className="space-y-1">
+                    {dealBreakdown.map((d, i) => (
+                      <div key={i} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-slate-700">{d.name}</span>
+                          <span className="text-xs text-slate-400">{d.count}×</span>
+                        </div>
+                        <span className="text-sm font-medium text-slate-900">{fmtGBP(d.revenue)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Customisations */}
+              {(modifierBreakdown.length > 0 || customerNotes.length > 0) && (
+                <div className="bg-white border border-slate-200 rounded-xl p-4">
+                  <p className="text-sm font-semibold text-slate-900 mb-3">Customisations</p>
+                  {modifierBreakdown.length > 0 && (
+                    <>
+                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Paid modifiers</p>
+                      <div className="space-y-1 mb-4">
+                        {modifierBreakdown.map((m, i) => (
+                          <div key={i} className="flex items-center justify-between py-1">
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-slate-700">{m.name}</span>
+                              <span className="text-xs text-slate-400">{m.count}×</span>
+                            </div>
+                            <span className="text-sm font-medium text-slate-900">{fmtGBP(m.revenue)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  {customerNotes.length > 0 && (
+                    <>
+                      <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">Customer notes</p>
+                      <div className="space-y-1">
+                        {customerNotes.map((n, i) => (
+                          <div key={i} className="flex items-center justify-between py-1">
+                            <span className="text-sm text-slate-600 italic">"{n.note}"</span>
+                            {n.count > 1 && <span className="text-xs text-slate-400">{n.count}×</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
-          {/* Pro upgrade prompt */}
-          {truck?.plan === 'starter' && reportData.totalOrders != null && (
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
-              <p className="text-sm font-semibold text-slate-700">Want more insights?</p>
-              <p className="text-xs text-slate-500 mt-1">
-                Upgrade to Pro for trend reports, export to CSV, and weekly summaries by email.
+          {/* ── Order list ── */}
+          <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <p className="text-sm font-semibold text-slate-900 mb-3">Orders</p>
+            <div className="space-y-1">
+              {orders.map((o: any) => {
+                const itemSummary = (Array.isArray(o.items) ? o.items : [])
+                  .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
+                return (
+                  <div key={o.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-xs font-mono text-slate-400 flex-shrink-0">#{o.id}</span>
+                      <span className="text-xs text-slate-500 flex-shrink-0">{o.customer_name || 'Walk-up'}</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                        o.status === 'confirmed' || o.status === 'collected' || o.status === 'ready' || o.status === 'cooking' ? 'bg-green-100 text-green-700'
+                        : o.status === 'cancelled' || o.status === 'rejected' ? 'bg-red-100 text-red-600'
+                        : 'bg-slate-100 text-slate-500'
+                      }`}>{o.status}</span>
+                      <span className="text-xs text-slate-600 truncate">{itemSummary}</span>
+                    </div>
+                    <span className="text-sm font-medium text-slate-900 flex-shrink-0">{fmtGBP(o.total || 0)}</span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* ── Pro feature placeholder (Starter only) ── */}
+          {!hasAdvanced && (
+            <div className="rounded-xl border border-slate-200 p-6 opacity-60">
+              <div className="flex items-center justify-between mb-3">
+                <span className="font-semibold text-slate-700">Revenue breakdown & analytics</span>
+                <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pro feature</span>
+              </div>
+              <p className="text-sm text-slate-400">
+                Revenue by category, deal performance, popular customisations, and trends over time. Available on Pro and Max.
               </p>
             </div>
           )}
         </>
-      )}
-
-      {reportData === null && reportLoaded && (
-        <div className="text-center py-12">
-          <p className="text-sm text-slate-400">No orders found for this period.</p>
-        </div>
       )}
     </div>
   )

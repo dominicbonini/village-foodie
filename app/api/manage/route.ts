@@ -789,13 +789,14 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'get_report') {
-    const { date, eventId } = body
+    const { dateFrom, dateTo, eventId } = body
 
     let query = supabase
       .from('orders')
-      .select('id, total, discount_amt, created_at, items, deals, event_date')
+      .select('id, customer_name, status, slot, total, discount_amt, created_at, items, deals, event_date')
       .eq('truck_id', truck.id)
-      .in('status', ['confirmed', 'collected', 'ready', 'cooking'])
+      // No status filter — reports include all orders (confirmed, collected, cancelled, rejected)
+      // Revenue totals use o.total which is 0 or excluded client-side for cancelled/rejected
 
     // If a specific event is selected, resolve its date and filter by event_date
     if (eventId) {
@@ -808,20 +809,24 @@ export async function POST(req: NextRequest) {
       if (ev?.event_date) {
         query = query.eq('event_date', ev.event_date)
       }
-    } else if (date) {
+    } else if (dateFrom && dateTo) {
       query = query
-        .gte('created_at', `${date}T00:00:00`)
-        .lte('created_at', `${date}T23:59:59`)
+        .gte('event_date', dateFrom)
+        .lte('event_date', dateTo)
+    } else if (dateFrom) {
+      query = query.eq('event_date', dateFrom)
     }
 
+    const waFrom = dateFrom ?? new Date().toISOString().split('T')[0]
+    const waTo   = dateTo   ?? waFrom
     const [{ data: orders }, { data: waLogs }] = await Promise.all([
       query,
       supabase
         .from('whatsapp_logs')
         .select('classification, possible_miss')
         .eq('truck_id', truck.id)
-        .gte('created_at', `${date ?? new Date().toISOString().split('T')[0]}T00:00:00`)
-        .lte('created_at', `${date ?? new Date().toISOString().split('T')[0]}T23:59:59`),
+        .gte('created_at', `${waFrom}T00:00:00`)
+        .lte('created_at', `${waTo}T23:59:59`),
     ])
 
     const whatsappStats = waLogs && waLogs.length > 0 ? {
@@ -865,6 +870,7 @@ export async function POST(req: NextRequest) {
         dealSavings,
         upsellRevenue: 0,
         whatsappStats,
+        orders,
       },
     })
   }

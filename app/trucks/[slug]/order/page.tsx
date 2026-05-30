@@ -961,15 +961,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             )}
                           </div>
                           <p className="text-slate-500 text-xs mt-0.5">{bundle.description}</p>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {slots.map((cat: string, i: number) => <span key={i} className="text-[10px] bg-orange-50 text-orange-600 font-bold px-2 py-0.5 rounded-full uppercase">{cat}</span>)}
-                          </div>
                         </div>
                         <p className="font-black text-orange-600 text-lg shrink-0">£{bundle.bundle_price.toFixed(2)}</p>
                       </div>
                       <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
                         className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                        {isOrderingBlocked ? (isEventClosed ? 'Ordering closed' : 'Ordering paused') : applied === 0 ? `Add deal · £${bundle.bundle_price.toFixed(2)}` : '+ Add another deal'}
+                        {isOrderingBlocked ? (isEventClosed ? 'Ordering closed' : 'Ordering paused') : applied === 0 ? 'Add deal' : '+ Add another deal'}
                       </button>
                     </div>
                     {/* Applied deal instances - compact summary */}

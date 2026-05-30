@@ -21,6 +21,7 @@ export type Feature =
   | 'auto_accept'
   | 'instagram_messenger_replies'
   | 'branded_qr_code'
+  | 'advanced_reporting'
   // Max
   | 'ticket_printing'
   | 'multi_device_kds'
@@ -45,6 +46,7 @@ const PRO_FEATURES: Feature[] = [
   'auto_accept',
   'instagram_messenger_replies',
   'branded_qr_code',
+  'advanced_reporting',
 ]
 
 const MAX_FEATURES: Feature[] = [

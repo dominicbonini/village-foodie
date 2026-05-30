@@ -81,6 +81,8 @@ interface AddOrderPanelProps {
   showToast: (msg: string, type?: 'success' | 'error') => void
   onOrderPlaced: () => void
   onOpenEvent?: (eventId: string) => void
+  requestEventPickerOpen?: boolean
+  onEventPickerOpened?: () => void
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -91,6 +93,7 @@ export function AddOrderPanel({
   orders, waitMinutes, token, pin, todayEvent,
   categoryOrder, itemCategoryMap,
   showToast, onOrderPlaced, onOpenEvent,
+  requestEventPickerOpen, onEventPickerOpened,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -230,6 +233,13 @@ export function AddOrderPanel({
   useEffect(() => {
     fetchUpcomingEvents()
   }, [fetchUpcomingEvents])
+
+  useEffect(() => {
+    if (!requestEventPickerOpen) return
+    fetchUpcomingEvents()
+    setShowEventPicker(true)
+    onEventPickerOpened?.()
+  }, [requestEventPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (manualEvent || upcomingEvents.length === 0) return
@@ -651,19 +661,6 @@ export function AddOrderPanel({
         )
       })}
 
-      {availableDeals.length > 0 && (
-        <button
-          onClick={() => {
-            if (availableDeals.length === 1) { setActiveDealBundle(availableDeals[0]); setShowDealsModal(true) }
-            else { setActiveDealBundle(null); setShowDealsModal(true) }
-          }}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mt-2"
-        >
-          <span>🎁</span>
-          <span>{appliedDeals.length > 0 ? '+ Add another deal' : '+ Apply a deal'}</span>
-          {appliedDeals.length > 0 && <span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
-        </button>
-      )}
     </div>
   )
 
@@ -734,24 +731,25 @@ export function AddOrderPanel({
         )
       })}
 
-      {availableDeals.length > 0 && (
-        <button
-          onClick={() => {
-            if (availableDeals.length === 1) { setActiveDealBundle(availableDeals[0]); setShowDealsModal(true) }
-            else { setActiveDealBundle(null); setShowDealsModal(true) }
-          }}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mt-4"
-        >
-          <span>🎁</span>
-          <span>{appliedDeals.length > 0 ? '+ Add another deal' : '+ Apply a deal'}</span>
-          {appliedDeals.length > 0 && <span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
-        </button>
-      )}
     </div>
   )
 
+  const dealsButton = availableDeals.length > 0 ? (
+    <button
+      onClick={() => {
+        if (availableDeals.length === 1) { setActiveDealBundle(availableDeals[0]); setShowDealsModal(true) }
+        else { setActiveDealBundle(null); setShowDealsModal(true) }
+      }}
+      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 transition-colors text-sm font-bold active:scale-[0.99] mb-4"
+    >
+      <span>🎁</span>
+      <span>{appliedDeals.length > 0 ? '+ Add another deal' : '+ Apply a deal'}</span>
+      {appliedDeals.length > 0 && <span className="text-xs text-orange-400 font-normal">({appliedDeals.length} applied)</span>}
+    </button>
+  ) : null
+
   const eventBanner = (
-    <div className="mb-4">
+    <div className="hidden sm:block mb-4">
       {manualEvent ? (
         <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5">
           <div className="flex items-center gap-3">
@@ -809,6 +807,7 @@ export function AddOrderPanel({
         {/* LEFT — scrollable menu */}
         <div className="w-[58%] overflow-y-auto border-r border-slate-200 p-4">
           {eventBanner}
+          {dealsButton}
           {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
         </div>
 
@@ -829,6 +828,7 @@ export function AddOrderPanel({
       {/* ── Phone: single column ── */}
       <div className="md:hidden pb-24">
         {eventBanner}
+        {dealsButton}
         {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
       </div>
 

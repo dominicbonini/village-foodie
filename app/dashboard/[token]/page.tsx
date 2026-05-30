@@ -74,6 +74,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
   const[showEventMenu,setShowEventMenu]=useState(false)
   const[eventNoteInput,setEventNoteInput]=useState('')
+  const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
   const[showCompleted,setShowCompleted]=useState(false)
@@ -691,13 +692,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       </div>
       {/* Mobile slim event bar — shown when event is open, sits between tab bar and content */}
       {activeEvent?.status==='open'&&(
-        <div className="sm:hidden flex items-center justify-between px-3 py-1.5 bg-orange-50 border-b border-orange-200 text-xs">
-          <span className="flex items-center gap-1.5">
+        <div className="sm:hidden flex items-center justify-between px-3 py-2.5 bg-orange-50 border-b border-orange-200">
+          <span className="flex items-center gap-1.5 min-w-0">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
-            <span className="font-medium text-orange-900 truncate max-w-[180px]">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
-            <span className="text-orange-600 flex-shrink-0">{formatTime(activeEvent.start_time)}</span>
+            <span className="text-sm font-medium text-orange-900 truncate max-w-[180px]">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
+            <span className="text-sm text-orange-600 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
           </span>
-          <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}} className="text-orange-400 px-1">···</button>
+          <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}} className="text-orange-400 px-3 py-2 text-base flex-shrink-0">···</button>
         </div>
       )}
 
@@ -1067,6 +1068,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             showToast={showToast}
             onOrderPlaced={()=>{fetchAll();setActiveTab('orders')}}
             onOpenEvent={openEvent}
+            requestEventPickerOpen={pendingOpenEventPicker}
+            onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
           />
         )}
 
@@ -1598,6 +1601,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <h3 className="font-black text-slate-900">{activeEvent.venue_name}</h3>
               <button onClick={()=>setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
+            <button onClick={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}
+              className="w-full text-left py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 border border-slate-100 rounded-xl px-3 mb-4">
+              📅 Change event
+            </button>
             <div className="mb-4">
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Note for customers</label>
               <input type="text" value={eventNoteInput} onChange={e=>setEventNoteInput(e.target.value)}
