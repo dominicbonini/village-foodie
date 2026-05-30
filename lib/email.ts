@@ -93,9 +93,7 @@ export function formatConfirmationEmail(params: {
     return headerRow + subRows
   }).join('')
 
-  const discountRow = params.discountAmt > 0
-    ? `<tr><td style="color:#16a34a;padding:4px 0">Discount</td><td style="text-align:right;color:#16a34a">-£${params.discountAmt.toFixed(2)}</td></tr>`
-    : ''
+  const discountRow = ''
 
   const slotSection = params.slot ? `
     <div style="background:${params.autoAccepted ? '#f0fdf4' : '#fff7ed'};border:1px solid ${params.autoAccepted ? '#bbf7d0' : '#fed7aa'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
@@ -230,7 +228,6 @@ export function formatConfirmationEmail(params: {
       })
       return lines.join('\n')
     }).join('\n') : '',
-    params.discountAmt > 0 ? `Discount: -£${params.discountAmt.toFixed(2)}` : '',
     `Total: £${params.total.toFixed(2)}`,
     params.autoAccepted && params.slot
       ? params.slotChanged && params.requestedSlot

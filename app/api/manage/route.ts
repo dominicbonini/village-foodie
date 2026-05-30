@@ -793,33 +793,41 @@ export async function POST(req: NextRequest) {
 
     let query = supabase
       .from('orders')
-      .select('id, customer_name, status, slot, total, discount_amt, created_at, items, deals, event_date')
+      // customer_email used client-side to infer order type: null = operator-placed, set = customer online
+      // No source/is_manual column exists yet — customer_email IS NULL is the best available signal
+      .select('id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date')
       .eq('truck_id', truck.id)
       // No status filter — reports include all orders (confirmed, collected, cancelled, rejected)
-      // Revenue totals use o.total which is 0 or excluded client-side for cancelled/rejected
+      // Revenue totals exclude cancelled/rejected client-side
 
-    // If a specific event is selected, resolve its date and filter by event_date
+    // Resolve event date filter and build eventsMap for venue name lookup
+    let eventsQuery = supabase
+      .from('truck_events')
+      .select('event_date, venue_name, town')
+      .eq('truck_id', truck.id)
+
     if (eventId) {
       const { data: ev } = await supabase
         .from('truck_events')
-        .select('event_date')
+        .select('event_date, venue_name, town')
         .eq('id', eventId)
         .eq('truck_id', truck.id)
         .single()
       if (ev?.event_date) {
         query = query.eq('event_date', ev.event_date)
+        eventsQuery = eventsQuery.eq('event_date', ev.event_date)
       }
     } else if (dateFrom && dateTo) {
-      query = query
-        .gte('event_date', dateFrom)
-        .lte('event_date', dateTo)
+      query = query.gte('event_date', dateFrom).lte('event_date', dateTo)
+      eventsQuery = eventsQuery.gte('event_date', dateFrom).lte('event_date', dateTo)
     } else if (dateFrom) {
       query = query.eq('event_date', dateFrom)
+      eventsQuery = eventsQuery.eq('event_date', dateFrom)
     }
 
     const waFrom = dateFrom ?? new Date().toISOString().split('T')[0]
     const waTo   = dateTo   ?? waFrom
-    const [{ data: orders }, { data: waLogs }] = await Promise.all([
+    const [{ data: orders }, { data: waLogs }, { data: eventRows }] = await Promise.all([
       query,
       supabase
         .from('whatsapp_logs')
@@ -827,7 +835,14 @@ export async function POST(req: NextRequest) {
         .eq('truck_id', truck.id)
         .gte('created_at', `${waFrom}T00:00:00`)
         .lte('created_at', `${waTo}T23:59:59`),
+      eventsQuery,
     ])
+
+    // Build event_date → {venue_name, town} map for client-side venue lookup
+    const eventsMap: Record<string, { venue_name: string | null; town: string | null }> = {}
+    for (const ev of (eventRows || [])) {
+      if (!eventsMap[ev.event_date]) eventsMap[ev.event_date] = { venue_name: ev.venue_name, town: ev.town }
+    }
 
     const whatsappStats = waLogs && waLogs.length > 0 ? {
       total:   waLogs.length,
@@ -871,6 +886,7 @@ export async function POST(req: NextRequest) {
         upsellRevenue: 0,
         whatsappStats,
         orders,
+        eventsMap,
       },
     })
   }

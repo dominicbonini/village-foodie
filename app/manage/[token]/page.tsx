@@ -4116,6 +4116,7 @@ interface ReportData {
   upsellRevenue?: number
   whatsappStats?: { total: number; handled: number; misses: number } | null
   orders?: Array<any>
+  eventsMap?: Record<string, { venue_name: string | null; town: string | null }>
 }
 interface RecentEvent { id: string; venue_name: string | null; event_date: string; status: string }
 
@@ -4143,7 +4144,6 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => { setReportData(undefined); setReportLoaded(false) }, [filterMode])
 
   const loadReport = async (from = dateFrom, to = dateTo, eventId = reportEventId, mode = filterMode) => {
     setLoading(true)
@@ -4160,6 +4160,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 
   // ── Client-side derived breakdowns ─────────────────────────────
   const orders: any[] = reportData?.orders ?? []
+  const eventsMap: Record<string, { venue_name: string | null; town: string | null }> = reportData?.eventsMap ?? {}
 
   const revenueBreakdown = useMemo(() => {
     // Only count revenue from orders that weren't cancelled/rejected
@@ -4240,22 +4241,84 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const csvFilename = filterMode === 'date'
     ? `orders-${dateFrom}-to-${dateTo}.csv`
     : `orders-event-${reportEventId}.csv`
+  const itemsCsvFilename = filterMode === 'date'
+    ? `items-${dateFrom}-to-${dateTo}.csv`
+    : `items-event-${reportEventId}.csv`
 
   const exportCSV = () => {
     if (!orders.length) return
-    const headers = ['Order ID', 'Customer name', 'Status', 'Collection time', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']
+    const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Items', 'Deals', 'Modifiers', 'Notes', 'Total']
     const rows = orders.map((o: any) => {
-      const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}x ${i.name}`).join('; ')
+      const createdAt = o.created_at ? new Date(o.created_at) : null
+      const dateStr = createdAt
+        ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${createdAt.getFullYear()}`
+        : ''
+      const timePlaced = createdAt
+        ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
+        : ''
+      const ev = eventsMap[o.event_date]
+      const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
+      const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
+      const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
+      // customer_email IS NULL is the best available signal for operator-placed orders (no source column yet)
+      const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
+      const itemStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => `${i.quantity || 1}× ${i.name}`).join('; ')
       const dealStr = (Array.isArray(o.deals) ? o.deals : []).map((d: any) => d.name).join('; ')
-      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).map((m: any) => m.name)).join('; ')
+      const modStr  = (Array.isArray(o.items) ? o.items : []).flatMap((i: any) => (i.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +£${m.price.toFixed(2)}`)).join('; ')
       const noteStr = (Array.isArray(o.items) ? o.items : []).map((i: any) => i.specialInstructions).filter(Boolean).join('; ')
-      return [o.id, o.customer_name || '', o.status || '', o.slot || '', itemStr, dealStr, modStr, noteStr, fmtGBP(o.total || 0)]
+      return [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType, itemStr, dealStr, modStr, noteStr, fmtGBP(o.total || 0)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
     })
     const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
     const blob = new Blob([csv], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a'); a.href = url; a.download = csvFilename
+    a.click(); URL.revokeObjectURL(url)
+  }
+
+  const exportItemsCSV = () => {
+    if (!orders.length) return
+    const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Item name', 'Qty', 'Unit price', 'Modifiers', 'Notes', 'Item total', 'Order total']
+    const rows: string[][] = []
+    for (const o of orders) {
+      const createdAt = o.created_at ? new Date(o.created_at) : null
+      const dateStr = createdAt
+        ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}/${createdAt.getFullYear()}`
+        : ''
+      const timePlaced = createdAt
+        ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
+        : ''
+      const ev = eventsMap[o.event_date]
+      const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
+      const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
+      const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
+      const orderType = o.customer_email ? 'Customer online' : 'Placed by truck'
+      const orderTotal = fmtGBP(o.total || 0)
+      // Map item name → deal name for deal constituent detection
+      const dealItemMap: Record<string, string> = {}
+      for (const d of (Array.isArray(o.deals) ? o.deals : [])) {
+        for (const itemName of Object.values(d.slots || {})) {
+          if (itemName && !dealItemMap[itemName as string]) dealItemMap[itemName as string] = d.name
+        }
+      }
+      const orderFields = [o.id, dateStr, eventStr, timePlaced, collectionTime, customerName, orderType]
+      for (const item of (Array.isArray(o.items) ? o.items : [])) {
+        const dealName = dealItemMap[item.name]
+        const itemLabel = dealName ? `🎁 ${item.name} (${dealName})` : item.name
+        const qty = item.quantity || 1
+        const modSum = (item.modifiers || []).reduce((s: number, m: any) => s + (m.price || 0), 0)
+        const basePrice = (item.unit_price || 0) - modSum
+        const modStr = (item.modifiers || []).filter((m: any) => m.price > 0).map((m: any) => `${m.name} +£${m.price.toFixed(2)}`).join('; ')
+        const noteStr = item.specialInstructions || ''
+        const itemTotal = fmtGBP((item.unit_price || 0) * qty)
+        rows.push([...orderFields, itemLabel, String(qty), fmtGBP(basePrice), modStr, noteStr, itemTotal, orderTotal]
+          .map(v => `"${String(v).replace(/"/g, '""')}"`))
+      }
+    }
+    const csv = [headers.map(h => `"${h}"`), ...rows].map(r => r.join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a'); a.href = url; a.download = itemsCsvFilename
     a.click(); URL.revokeObjectURL(url)
   }
 
@@ -4290,20 +4353,27 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
               className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
               <option value="">Select an event…</option>
-              {recentEvents.map(ev => (
-                <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} — {ev.event_date}</option>
-              ))}
+              {recentEvents.map(ev => {
+                const evDate = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+                return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
+              })}
             </select>
           )}
           <button onClick={() => loadReport()} disabled={loading || (filterMode === 'event' && !reportEventId)}
             className="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50">
-            {loading ? 'Loading…' : 'Refresh'}
+            {loading ? 'Loading…' : 'View report'}
           </button>
           {orders.length > 0 && (
-            <button onClick={exportCSV}
-              className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
-              ⬇ Export CSV
-            </button>
+            <>
+              <button onClick={exportCSV}
+                className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
+                ⬇ Export orders CSV
+              </button>
+              <button onClick={exportItemsCSV}
+                className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
+                ⬇ Export items CSV
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -4436,23 +4506,33 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
           {/* ── Order list ── */}
           <div className="bg-white border border-slate-200 rounded-xl p-4">
             <p className="text-sm font-semibold text-slate-900 mb-3">Orders</p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {orders.map((o: any) => {
+                const createdAt = o.created_at ? new Date(o.created_at) : null
+                const dateStr = createdAt
+                  ? `${String(createdAt.getDate()).padStart(2, '0')}/${String(createdAt.getMonth() + 1).padStart(2, '0')}`
+                  : ''
+                const timePlaced = createdAt
+                  ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
+                  : ''
+                const ev = eventsMap[o.event_date]
+                const venueName = ev?.venue_name ?? null
+                const venueShort = venueName ? (venueName.length > 18 ? venueName.slice(0, 17) + '…' : venueName) : '—'
+                const orderType = o.customer_email ? 'Online' : 'Walk-up'
+                const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'
                 const itemSummary = (Array.isArray(o.items) ? o.items : [])
                   .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
+                const isCancelled = o.status === 'cancelled' || o.status === 'rejected'
                 return (
-                  <div key={o.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-xs font-mono text-slate-400 flex-shrink-0">#{o.id}</span>
-                      <span className="text-xs text-slate-500 flex-shrink-0">{o.customer_name || 'Walk-up'}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 ${
-                        o.status === 'confirmed' || o.status === 'collected' || o.status === 'ready' || o.status === 'cooking' ? 'bg-green-100 text-green-700'
-                        : o.status === 'cancelled' || o.status === 'rejected' ? 'bg-red-100 text-red-600'
-                        : 'bg-slate-100 text-slate-500'
-                      }`}>{o.status}</span>
-                      <span className="text-xs text-slate-600 truncate">{itemSummary}</span>
-                    </div>
-                    <span className="text-sm font-medium text-slate-900 flex-shrink-0">{fmtGBP(o.total || 0)}</span>
+                  <div key={o.id} className={`flex items-center gap-2 py-2 border-b border-slate-50 last:border-0 text-xs ${isCancelled ? 'opacity-50' : ''}`}>
+                    <span className="font-mono text-slate-400 flex-shrink-0 w-10">#{o.id}</span>
+                    <span className="text-slate-400 flex-shrink-0 w-10">{dateStr}</span>
+                    <span className="text-slate-500 flex-shrink-0 w-24 truncate hidden sm:block">{venueShort}</span>
+                    <span className="text-slate-400 flex-shrink-0 w-10">{timePlaced}</span>
+                    <span className={`flex-shrink-0 w-14 font-medium ${o.customer_email ? 'text-blue-600' : 'text-slate-500'}`}>{orderType}</span>
+                    <span className="text-slate-600 flex-shrink-0 w-16 truncate">{customerLabel}</span>
+                    <span className="text-slate-600 flex-1 truncate min-w-0">{itemSummary}</span>
+                    <span className="font-medium text-slate-900 flex-shrink-0">{fmtGBP(o.total || 0)}</span>
                   </div>
                 )
               })}
