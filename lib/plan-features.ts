@@ -79,7 +79,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Auto-accept online orders',                    starter: false, pro: true,           max: true           },
       { name: 'Facebook, Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: true, max: true },
       { name: 'Personalised schedule generator',              starter: false, pro: 'coming_soon',  max: 'coming_soon'  },
-      { name: 'Advanced reporting',                           starter: false, pro: 'coming_soon',  max: 'coming_soon'  },
+      { name: 'Advanced reporting', detail: 'Revenue breakdown, deal performance, popular customisations, and order analytics.', starter: false, pro: true, max: true },
     ],
   },
   {
