@@ -46,8 +46,8 @@ export const TRANSACTION_ROWS: {
     footnote: '2',
     values: {
       starter: 'Pay at Hatch',
-      pro: '0.99% + card processing fee',
-      max: '0.99% + card processing fee',
+      pro: '0.99% + card fee',
+      max: '0.99% + card fee',
     },
   },
 ]

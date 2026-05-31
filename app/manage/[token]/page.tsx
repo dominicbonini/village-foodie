@@ -3936,7 +3936,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1" />
           {(['starter', 'pro', 'max'] as const).map(p => (
-            <div key={p} className={`w-16 sm:w-28 text-center pb-3 border-b-2 ${
+            <div key={p} className={`w-[72px] sm:w-28 text-center pb-3 border-b-2 ${
               isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
             }`}>
               <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
@@ -3954,7 +3954,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <div className="mb-2">
           <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
             <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
-            <div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" />
+            <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
           </div>
           {TRANSACTION_ROWS.map(row => (
             <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
@@ -3965,7 +3965,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 </span>
               </div>
               {(['starter', 'pro', 'max'] as const).map(p => (
-                <div key={p} className={`w-16 sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
+                <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
                   isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
                 }`}>
                   {row.values[p]}
@@ -3982,7 +3982,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
                 {section.title}
               </span>
-              <div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" />
+              <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
             </div>
             {section.rows.map(row => (
               <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
@@ -3996,7 +3996,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {(['starter', 'pro', 'max'] as const).map(p => {
                   const val = row[p]
                   return (
-                    <div key={p} className="w-16 sm:w-28 text-center">
+                    <div key={p} className="w-[72px] sm:w-28 text-center">
                       {val === true && (
                         <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
                       )}
@@ -4004,7 +4004,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                         <span className="text-slate-300 text-sm">—</span>
                       )}
                       {val === 'coming_soon' && (
-                        <span className="text-xs text-slate-400 italic whitespace-nowrap">Coming soon</span>
+                        <>
+                          <span className="sm:hidden text-[10px] text-slate-400 italic leading-tight">Soon</span>
+                          <span className="hidden sm:inline text-xs text-slate-400 italic whitespace-nowrap">Coming soon</span>
+                        </>
                       )}
                     </div>
                   )
