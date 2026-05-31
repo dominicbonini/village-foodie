@@ -75,7 +75,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showEventMenu,setShowEventMenu]=useState(false)
   const[eventNoteInput,setEventNoteInput]=useState('')
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
-  const[showEventBarPicker,setShowEventBarPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
   const[showCompleted,setShowCompleted]=useState(false)
@@ -661,7 +660,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
                 </span>
                 <button
-                  onClick={()=>setShowEventBarPicker(v=>!v)}
+                  onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
                   className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
                   Change
                 </button>
@@ -687,18 +686,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </>
             )}
           </div>
-          {showEventBarPicker&&todayEvents.length>0&&(
-            <div className="absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-700 z-40">
-              <div className="max-w-5xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto">
-                {todayEvents.map(event=>(
-                  <button key={event.id} onClick={()=>{switchEvent(event);setShowEventBarPicker(false)}}
-                    className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${activeEvent?.id===event.id?'bg-white text-slate-900 border-white':'text-slate-300 border-slate-600 hover:border-slate-400 hover:text-white'}`}>
-                    {event.venue_name?.split(',')[0]??'Event'} {formatTime(event.start_time)}{event.status==='open'?' ●':''}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
 
