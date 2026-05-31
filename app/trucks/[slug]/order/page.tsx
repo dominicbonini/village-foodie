@@ -33,7 +33,7 @@ interface Bundle {
   slot_5_category: string | null; slot_6_category: string | null
 }
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
-interface ModifierOption { id: string; name: string; price_adjustment: number }
+interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean }
