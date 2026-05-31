@@ -77,6 +77,12 @@ export default async function VerifyEmailPage({
     await supabase.auth.admin.updateUserById(operator.auth_user_id, {
       email: change.new_email,
     })
+
+    // Update truck_users email if operator also has a crew entry
+    await supabase
+      .from('truck_users')
+      .update({ email: change.new_email })
+      .eq('auth_user_id', operator.auth_user_id)
   }
 
   // Mark verified (preserves audit trail)
