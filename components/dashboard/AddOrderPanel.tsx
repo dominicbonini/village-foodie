@@ -992,13 +992,13 @@ setItemModal({ item, modGroups, editCartKey })
           return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
         }
         return (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center" onClick={() => setShowEventPicker(false)}>
-            <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-sm" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={() => setShowEventPicker(false)}>
+            <div className="bg-white rounded-2xl w-full max-w-sm mx-auto max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
               <div className="px-4 pt-4 pb-3 border-b border-slate-100 flex items-center justify-between">
                 <p className="font-black text-slate-900 text-base">Select event</p>
                 <button onClick={() => setShowEventPicker(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-lg">✕</button>
               </div>
-              <div className="p-3 space-y-2 max-h-72 overflow-y-auto">
+              <div className="p-3 space-y-2">
                 {upcomingEvents.length === 0
                   ? <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>
                   : upcomingEvents.map(ev => {
@@ -1038,7 +1038,7 @@ setItemModal({ item, modGroups, editCartKey })
                 </div>
               )}
 
-              <div className="p-3 border-t border-slate-100 pb-8">
+              <div className="p-3 border-t border-slate-100">
                 <button onClick={() => setShowEventPicker(false)} className="w-full border border-slate-200 rounded-xl py-2.5 text-sm text-slate-600 font-medium hover:bg-slate-50">Done</button>
               </div>
             </div>

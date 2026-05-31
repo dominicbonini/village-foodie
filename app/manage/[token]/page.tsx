@@ -237,8 +237,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
     { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
+  console.log('tabs debug:', { userRole, is_test: truck?.is_test, allTabs: allTabs.map(t => t.id) })
   const tabs = allTabs.filter(t => {
-    if (t.id === 'billing') return userRole === 'owner' && !truck?.is_test
+    if (t.id === 'billing') return userRole === 'owner'
     return t.roles.includes(userRole)
   })
 
@@ -256,7 +257,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         </a>
         <UserMenu
           truckName={truck.name}
-          operatorName={currentUserName}
+          operatorName={currentUserFirstName || currentUserName?.split(' ')[0] || ''}
           token={token}
           showDashboardLink
         />
