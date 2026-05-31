@@ -3,9 +3,9 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo, use } from 'react'
 import { useSearchParams } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { hasFeature } from '@/lib/features'
+import AppHeader from '@/components/shared/AppHeader'
 
 import type {
   Order, Slot, TruckData, TruckMenu, Bundle, MenuItem,
@@ -618,52 +618,37 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   return(
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-slate-900 sticky top-0 z-50 shadow-md">
-        {/* Row 1 — logo · truck name · right actions */}
-        <div className="px-4 py-3">
-          <div className="max-w-5xl mx-auto flex items-center justify-between relative">
-            <Link href="/" className="shrink-0 z-10">
-              <Image src="/logos/village-foodie-logo-v2.png" alt="Village Foodie" width={90} height={27} className="object-contain opacity-70"/>
-            </Link>
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="flex items-center gap-2">
-                {truck?.logo&&<img src={truck.logo} alt={truck?.name||''} className="w-7 h-7 rounded-full object-cover bg-white shadow-sm shrink-0"/>}
-                <div>
-                  <p className="font-black text-sm text-white leading-none">{truck?.name}{vanName?` — ${vanName}`:''}</p>
-                  {truck?.venue_name&&<p className="text-slate-400 text-[11px] mt-0.5">{truck.venue_name}</p>}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 z-10">
-              {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
-              <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
-              {/* Screen toggle — desktop only in row 1; mobile row 2 below */}
-              <button onClick={toggleKeepScreenOn} className="hidden sm:flex items-center gap-2">
-                <span className="text-xs font-medium text-slate-400 select-none">
-                  {keepScreenOn ? 'Screen on' : 'Screen off'}
-                </span>
-                <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
-                </div>
-              </button>
-              <UserMenu
-                truckName={truck?.name||null}
-                operatorName={currentUserName}
-                token={token}
-                showScreenToggle
-                showOrderUtilities
-                showManageLink={userRole==='owner'||userRole==='manager'}
-                keepScreenOn={keepScreenOn}
-                onToggleScreenOn={toggleKeepScreenOn}
-                copiedOrderLink={copiedOrderLink}
-                onCopyOrderLink={handleCopyOrderLink}
-                onShowQR={handleShowQR}
-                onOpenKDS={handleOpenKDS}
-              />
-            </div>
+      <AppHeader
+        truckName={truck?.name ? (vanName ? `${truck.name} — ${vanName}` : truck.name) : null}
+        truckLogoUrl={truck?.logo || null}
+        subtitle={truck?.venue_name || undefined}
+      >
+        {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
+        <button onClick={()=>fetchAll()} className="text-slate-400 hover:text-white text-sm">↻</button>
+        {/* Screen toggle — desktop only; mobile handled via UserMenu */}
+        <button onClick={toggleKeepScreenOn} className="hidden sm:flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-400 select-none">
+            {keepScreenOn ? 'Screen on' : 'Screen off'}
+          </span>
+          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
+            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
           </div>
-        </div>
-      </header>
+        </button>
+        <UserMenu
+          truckName={truck?.name||null}
+          operatorName={currentUserName}
+          token={token}
+          showScreenToggle
+          showOrderUtilities
+          showManageLink={userRole==='owner'||userRole==='manager'}
+          keepScreenOn={keepScreenOn}
+          onToggleScreenOn={toggleKeepScreenOn}
+          copiedOrderLink={copiedOrderLink}
+          onCopyOrderLink={handleCopyOrderLink}
+          onShowQR={handleShowQR}
+          onOpenKDS={handleOpenKDS}
+        />
+      </AppHeader>
 
       {/* Tabs */}
       <div className="bg-slate-800 border-b border-slate-700">

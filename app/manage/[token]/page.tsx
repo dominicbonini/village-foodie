@@ -4,7 +4,6 @@
 
 import { useState, useEffect, useCallback, useMemo, use, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
@@ -15,6 +14,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 import { formatTime } from '@/lib/time-utils'
 import UserMenu from '@/components/dashboard/UserMenu'
+import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded' }
@@ -245,29 +245,25 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="bg-[#0f1923] text-white sticky top-0 z-30 shadow">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {truck.logo_storage_path && (
-              <Image src={imgUrl(truck.logo_storage_path)!} alt="" width={32} height={32} className="rounded-full object-cover w-8 h-8" />
-            )}
-            <div>
-              <p className="font-black text-white text-sm leading-tight">{truck.name}</p>
-              <p className="text-slate-400 text-[10px]">Management console</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <a href={`/dashboard/${token}`} className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">← Orders dashboard</a>
-            <UserMenu
-              truckName={truck.name}
-              operatorName={currentUserName}
-              token={token}
-              showDashboardLink
-            />
-          </div>
-        </div>
-        {/* Tabs */}
-        <div className="max-w-5xl mx-auto px-4 flex gap-1 pb-0 overflow-x-auto">
+      <AppHeader
+        truckName={truck.name}
+        truckLogoUrl={truck.logo_storage_path ? imgUrl(truck.logo_storage_path) : null}
+        subtitle="Management console"
+      >
+        <a href={`/dashboard/${token}`}
+          className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">
+          ← Orders dashboard
+        </a>
+        <UserMenu
+          truckName={truck.name}
+          operatorName={currentUserName}
+          token={token}
+          showDashboardLink
+        />
+      </AppHeader>
+      {/* Tabs */}
+      <div className="bg-slate-900 border-b border-slate-700">
+        <div className="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto">
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
@@ -275,7 +271,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </button>
           ))}
         </div>
-      </header>
+      </div>
 
       <main className="max-w-5xl mx-auto px-4 py-6">
         {/* Mandatory fields banner */}
