@@ -3869,10 +3869,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         {TRANSACTION_ROWS.map(row => (
           <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
             <div className="flex-1 pr-4">
-              <span className="text-sm font-medium text-slate-800 pl-3 sm:pl-0">
+              <div className="text-sm font-medium text-slate-800 pl-3 sm:pl-0">
                 {row.name}
                 {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
-              </span>
+              </div>
             </div>
             {(['starter', 'pro', 'max'] as const).map(p => (
               <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
@@ -3896,10 +3896,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           {section.rows.map(row => (
             <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
               <div className="flex-1 pr-4">
-                <span className="text-sm text-slate-800 pl-3 sm:pl-0">
+                <div className="text-sm text-slate-800 pl-3 sm:pl-0">
                   {row.name}
                   {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
-                </span>
+                </div>
                 {row.detail && <p className="text-xs text-slate-600 mt-0.5">{row.detail}</p>}
               </div>
               {(['starter', 'pro', 'max'] as const).map(p => {
