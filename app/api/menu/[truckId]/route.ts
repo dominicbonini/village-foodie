@@ -15,7 +15,8 @@ export async function GET(
   { params }: { params: Promise<{ truckId: string }> }
 ) {
   const { truckId } = await params
-  
+  const isDashboard = req.nextUrl.searchParams.get('dashboard') === '1'
+
   console.log('[MENU API] Looking up truck:', truckId)
   
   // Try slug first (customer-facing URLs use slug), then fall back to ID
@@ -235,8 +236,13 @@ export async function GET(
     const group = (modifierGroups || []).find(g => g.id === cmg.group_id)
     if (!group || !groupMap[cmg.category_id]) return
     const options = (modifierOptions || [])
-      .filter(o => o.group_id === group.id && o.available !== false)
-      .map(o => ({ id: o.id, name: o.name, price_adjustment: o.price_adjustment ?? 0 }))
+      .filter(o => o.group_id === group.id && (isDashboard || o.available !== false))
+      .map(o => ({
+        id: o.id,
+        name: o.name,
+        price_adjustment: o.price_adjustment ?? 0,
+        ...(isDashboard && { available: o.available !== false }),
+      }))
     groupMap[cmg.category_id].push({ id: group.id, name: group.name, options })
   })
 

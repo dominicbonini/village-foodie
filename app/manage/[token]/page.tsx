@@ -14,6 +14,7 @@ import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 import { formatTime } from '@/lib/time-utils'
+import UserMenu from '@/components/dashboard/UserMenu'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded' }
@@ -129,7 +130,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
-  const [showUserDropdown, setShowUserDropdown] = useState(false)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => setToast({ msg, type })
 
@@ -258,42 +258,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           </div>
           <div className="flex items-center gap-3">
             <a href={`/dashboard/${token}`} className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">← Orders dashboard</a>
-            <div className="relative">
-              <button
-                onClick={() => setShowUserDropdown(v => !v)}
-                className="flex items-center gap-2 focus:outline-none"
-              >
-                <div className="w-7 h-7 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-700">
-                  {currentUserName ? currentUserName.charAt(0).toUpperCase() : '?'}
-                </div>
-                <span className="text-sm text-slate-300 hidden sm:inline">
-                  {currentUserFirstName || (currentUserName || '').split(' ')[0] || currentUserName}
-                </span>
-              </button>
-              {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50"
-                     onBlur={() => setShowUserDropdown(false)}>
-                  <a
-                    href={`/dashboard/${token}`}
-                    className="sm:hidden flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 border-b border-slate-100 w-full">
-                    ← Orders dashboard
-                  </a>
-                  <button
-                    onClick={() => { setEditProfileName(currentUserName || ''); setShowProfileModal(true); setShowUserDropdown(false) }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
-                  >
-                    Edit profile
-                  </button>
-                  <hr className="my-1 border-slate-100" />
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    Sign out
-                  </button>
-                </div>
-              )}
-            </div>
+            <UserMenu
+              truckName={truck.name}
+              operatorName={currentUserName}
+              token={token}
+              showDashboardLink
+            />
           </div>
         </div>
         {/* Tabs */}
@@ -400,10 +370,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         </div>
       )}
 
-      {/* Close dropdown on outside click */}
-      {showUserDropdown && (
-        <div className="fixed inset-0 z-40" onClick={() => setShowUserDropdown(false)} />
-      )}
     </div>
   )
 }
@@ -506,7 +472,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
     } catch (err: any) { showToast(err.message || 'Upload failed', 'error') }
     finally { setUploadingItemPhoto(false) }
   }
-  const [expandedCat, setExpandedCat] = useState<string | null>(categories[0]?.id || null)
+  const [expandedCat, setExpandedCat] = useState<string | null>(null)
   const [allergenText, setAllergenText] = useState('')
   const [allergenUrl, setAllergenUrl] = useState(truck.allergen_info_url || '')
   const [allergenInfoText, setAllergenInfoText] = useState(truck.allergen_info_text || '')
@@ -640,28 +606,39 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
-          <h2 className="font-black text-slate-900 text-lg">Menu</h2>
-          <p className="text-slate-400 text-sm mt-0.5">
-            {categories.length} {categories.length === 1 ? 'category' : 'categories'} · {items.length} items
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {categories.length > 0 && (
-            <div className="flex flex-col items-end gap-0.5">
-              <button onClick={() => setImportStep('upload')}
-                className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
-                ✨ Import with AI
-              </button>
-              <p className="text-xs text-slate-400">photo, PDF or text</p>
+      <div className="mb-2">
+        {/* Row 1: heading + Add category button */}
+        <div className="flex items-start justify-between">
+          <div>
+            {/* Manage page section heading — use font-black text-slate-900 text-lg for all tab headings */}
+            <h2 className="font-black text-slate-900 text-lg">Menu</h2>
+            <p className="text-slate-400 text-sm mt-0.5">
+              {categories.length} {categories.length === 1 ? 'category' : 'categories'} · {items.length} items
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Import with AI — desktop only in this position */}
+            {categories.length > 0 && (
+              <div className="hidden sm:flex flex-col items-end gap-0.5">
+                <button onClick={() => setImportStep('upload')}
+                  className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
+                  ✨ Import with AI
+                </button>
+                <p className="text-xs text-slate-400">photo, PDF or text</p>
+              </div>
+            )}
+            <div className="self-start">
+              <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
             </div>
-          )}
-          <div className="self-start">
-            <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
           </div>
         </div>
+        {/* Row 3 mobile: Import with AI below heading row, no subtitle */}
+        {categories.length > 0 && (
+          <button onClick={() => setImportStep('upload')}
+            className="sm:hidden mt-2 flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors whitespace-nowrap">
+            ✨ Import with AI
+          </button>
+        )}
       </div>
 
       {/* Empty state / Category list */}
@@ -4179,7 +4156,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const isoDate = (offset: number) => {
     const d = new Date(); d.setDate(d.getDate() + offset); return d.toISOString().split('T')[0]
   }
-  const [filterMode, setFilterMode] = useState<'date' | 'event'>('date')
+  const [filterMode, setFilterMode] = useState<'date' | 'event'>(hasAdvanced ? 'date' : 'event')
   const [itemView, setItemView] = useState<'orders' | 'items'>('orders')
   const [dateFrom, setDateFrom] = useState(() => isoDate(-7))
   const [dateTo, setDateTo]     = useState(() => isoDate(-1))
@@ -4191,7 +4168,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 
   useEffect(() => {
     api('get_recent_events').then(r => setRecentEvents(r.events || [])).catch(() => {})
-    loadReport()
+    if (hasAdvanced) loadReport()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -4342,20 +4319,22 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     <div className="flex flex-col gap-5">
       {/* ── Filter bar ── */}
       <div className="flex flex-col gap-3">
-        {/* Row 1: Filter mode toggle */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Filter by</span>
-          <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
-            <button onClick={() => setFilterMode('date')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'date' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
-              📅 Date range
-            </button>
-            <button onClick={() => setFilterMode('event')}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'event' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
-              📍 Event
-            </button>
+        {/* Row 1: Filter mode toggle — Pro/Max only */}
+        {hasAdvanced && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">Filter by</span>
+            <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+              <button onClick={() => setFilterMode('date')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'date' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
+                📅 Date range
+              </button>
+              <button onClick={() => setFilterMode('event')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'event' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}>
+                📍 Event
+              </button>
+            </div>
           </div>
-        </div>
+        )}
         {/* Row 2: fixed-width filter controls + action buttons + view toggle + export far-right */}
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '320px' }}>
@@ -4606,7 +4585,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                 <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-medium">Pro feature</span>
               </div>
               <p className="text-sm text-slate-400">
-                Revenue by category, deal performance, popular customisations, and trends over time. Available on Pro and Max.
+                Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max.
               </p>
             </div>
           )}

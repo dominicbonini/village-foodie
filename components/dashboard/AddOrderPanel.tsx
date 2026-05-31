@@ -10,6 +10,7 @@ import { calcQueueAwareReadySecs } from '@/lib/prep-utils'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
+import { isModifierAvailable } from '@/lib/modifier-utils'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { formatTime } from '@/lib/time-utils'
@@ -278,7 +279,7 @@ export function AddOrderPanel({
 
   const openManualItemModal = (item: MenuItem, modGroups: ModifierGroup[], editCartKey?: string) => {
     const existing = editCartKey ? manualItems.find(i => (i.cartKey || i.name) === editCartKey) : undefined
-    setItemModal({ item, modGroups, editCartKey })
+setItemModal({ item, modGroups, editCartKey })
     setModalMods(existing?.modifiers || [])
     setModalNotes(existing?.specialInstructions || '')
   }
@@ -884,7 +885,7 @@ export function AddOrderPanel({
                   <div key={group.id}>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{group.name}</p>
                     <div className="flex flex-wrap gap-2">
-                      {group.options.map((opt: ModifierOption) => {
+                      {group.options.filter(isModifierAvailable).map((opt: ModifierOption) => {
                         const selected = modalMods.some(m => m.name === opt.name)
                         return (
                           <button key={opt.id} onClick={() => toggleModalMod(opt)}

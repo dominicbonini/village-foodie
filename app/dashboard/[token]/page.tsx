@@ -647,12 +647,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </button>
               <UserMenu
-                currentUserName={currentUserName}
                 truckName={truck?.name||null}
+                operatorName={currentUserName}
                 token={token}
-                userRole={userRole}
-                vanName={vanName}
-                onSignOut={handleSignOut}
+                showScreenToggle
+                showOrderUtilities
+                showManageLink={userRole==='owner'||userRole==='manager'}
                 keepScreenOn={keepScreenOn}
                 onToggleScreenOn={toggleKeepScreenOn}
                 copiedOrderLink={copiedOrderLink}

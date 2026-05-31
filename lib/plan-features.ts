@@ -91,6 +91,15 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Multi-user access',         starter: false, pro: false, max: true           },
       { name: 'Customer-facing display',   starter: false, pro: false, max: 'coming_soon'  },
       { name: 'Event & festival pricing', starter: false, pro: false, max: 'coming_soon'  },
+      // LOYALTY STAMP CARDS — Max only, coming soon
+      // Schema: loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at)
+      // Stamp rule V1: 1 per order (not per item — avoids redemption complexity)
+      // Redemption: operator-side trigger on Add Order + customer-side prompt on online checkout
+      // Stickiness note: once stamps are earned, operator churn drops to near zero
+      // Walk-up flow: phone number lookup in Add Order panel → auto-increment
+      // Online flow: email match on order submit → auto-increment
+      // Do NOT build flexible stamp criteria until V1 is live and operators request it
+      { name: 'Digital loyalty stamp cards', starter: false, pro: false, max: 'coming_soon', detail: 'Automatically reward repeat customers with digital stamp cards. 1 stamp per order, operator-set redemption threshold. Coming soon.' },
     ],
   },
 ]

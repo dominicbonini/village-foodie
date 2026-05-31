@@ -12,6 +12,7 @@ import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
 import { formatTime } from '@/lib/time-utils';
+import { isModifierAvailable } from '@/lib/modifier-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -1481,7 +1482,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <div key={group.id}>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{group.name}</p>
                     <div className="flex flex-wrap gap-2">
-                      {group.options.map(opt => {
+                      {group.options.filter(isModifierAvailable).map(opt => {
                         const selected = modalMods.some(m => m.name === opt.name)
                         return (
                           <button key={opt.id} onClick={() => toggleModalMod(opt)}
