@@ -3153,7 +3153,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
           <div className="space-y-3">
             {/* WhatsApp */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <label className="text-sm text-slate-600 w-24 flex-shrink-0">WhatsApp</label>
               {can('whatsapp_replies') ? (
                 <>
@@ -3166,7 +3166,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                   />
                   <button
                     onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
-                    className="text-xs px-3 py-2 bg-teal-600 text-white font-medium rounded-xl flex-shrink-0"
+                    className="w-full sm:w-auto text-xs px-3 py-2 bg-teal-600 text-white font-medium rounded-xl"
                   >
                     Connect
                   </button>
@@ -3191,7 +3191,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             </div>
 
             {/* Messenger */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <label className="text-sm text-slate-600 w-24 flex-shrink-0">Messenger</label>
               <input
                 type="text"
@@ -3201,14 +3201,14 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               />
               <button
                 disabled
-                className="text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed flex-shrink-0"
+                className="w-full sm:w-auto text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
               >
                 Connect
               </button>
             </div>
 
             {/* Instagram */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <label className="text-sm text-slate-600 w-24 flex-shrink-0">Instagram</label>
               <input
                 type="text"
@@ -3220,14 +3220,14 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               />
               <button
                 disabled
-                className="text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed flex-shrink-0"
+                className="w-full sm:w-auto text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
               >
                 Connect
               </button>
             </div>
 
             {/* Facebook */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
               <label className="text-sm text-slate-600 w-24 flex-shrink-0">Facebook</label>
               <input
                 type="text"
@@ -3239,7 +3239,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               />
               <button
                 disabled
-                className="text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed flex-shrink-0"
+                className="w-full sm:w-auto text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
               >
                 Connect
               </button>
@@ -3871,7 +3871,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               : 'bg-slate-50 border border-slate-200'
           }`}>
             {truck.plan === 'trial' ? (
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                 <div>
                   <p className="text-sm font-bold text-slate-900">
                     Your trial ends {truck.trial_expires_at ? formatDate(truck.trial_expires_at) : 'soon'}
@@ -3880,16 +3880,16 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                     You&apos;re on Max features. Choose a plan before your trial ends to keep access.
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 flex-shrink-0">
+                <div className="flex flex-col gap-2 sm:flex-shrink-0">
                   <button
                     onClick={() => openUpgrade('max')}
-                    className="px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
+                    className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
                   >
                     Upgrade to Max — £49/mo
                   </button>
                   <button
                     onClick={() => openUpgrade('pro')}
-                    className="px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
+                    className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
                   >
                     Choose Pro — £29/mo
                   </button>
@@ -3940,16 +3940,16 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1" />
           {(['starter', 'pro', 'max'] as const).map(p => (
-            <div key={p} className={`w-28 text-center pb-3 border-b-2 ${
+            <div key={p} className={`w-16 sm:w-28 text-center pb-3 border-b-2 ${
               isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
             }`}>
-              <p className={`text-xs font-semibold uppercase tracking-widest ${
+              <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
                 isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
               }`}>{p}</p>
-              <p className={`text-xl font-bold mt-1 ${
+              <p className={`text-base sm:text-xl font-bold mt-1 ${
                 isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
               }`}>{PLAN_PRICES[p]}</p>
-              <p className="text-xs text-slate-400 mt-0.5">per truck / month</p>
+              <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">per truck / month</p>
             </div>
           ))}
         </div>
@@ -3958,7 +3958,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         <div className="mb-2">
           <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
             <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
-            <div className="w-28" /><div className="w-28" /><div className="w-28" />
+            <div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" />
           </div>
           {TRANSACTION_ROWS.map(row => (
             <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
@@ -3969,7 +3969,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 </span>
               </div>
               {(['starter', 'pro', 'max'] as const).map(p => (
-                <div key={p} className={`w-28 text-center text-sm font-semibold leading-snug ${
+                <div key={p} className={`w-16 sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
                   isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
                 }`}>
                   {row.values[p]}
@@ -3986,7 +3986,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
                 {section.title}
               </span>
-              <div className="w-28" /><div className="w-28" /><div className="w-28" />
+              <div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" /><div className="w-16 sm:w-28" />
             </div>
             {section.rows.map(row => (
               <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
@@ -4000,7 +4000,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {(['starter', 'pro', 'max'] as const).map(p => {
                   const val = row[p]
                   return (
-                    <div key={p} className="w-28 text-center">
+                    <div key={p} className="w-16 sm:w-28 text-center">
                       {val === true && (
                         <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
                       )}
@@ -4318,7 +4318,66 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   return (
     <div className="flex flex-col gap-5">
       {/* ── Filter bar ── */}
-      <div className="flex flex-col gap-3">
+      {/* Mobile toolbar — three rows */}
+      <div className="sm:hidden space-y-2">
+        {/* Row 1: filter toggles (Pro/Max) + View report */}
+        <div className="flex items-center gap-2">
+          {hasAdvanced && (
+            <>
+              <button onClick={() => setFilterMode('date')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'date' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                📅 Date range
+              </button>
+              <button onClick={() => setFilterMode('event')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filterMode === 'event' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                📍 Event
+              </button>
+            </>
+          )}
+          <button onClick={() => loadReport()} disabled={loading || (filterMode === 'event' && !reportEventId)}
+            className="ml-auto px-3 py-1.5 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors disabled:opacity-50 whitespace-nowrap">
+            {loading ? 'Loading…' : 'View report'}
+          </button>
+        </div>
+        {/* Row 2: filter inputs */}
+        {filterMode === 'date' ? (
+          <div className="flex items-center gap-2">
+            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
+            <span className="text-sm text-slate-400 flex-shrink-0">to</span>
+            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
+          </div>
+        ) : (
+          <select value={reportEventId}
+            onChange={e => { const id = e.target.value; setReportEventId(id); if (id) loadReport(undefined, undefined, id, 'event') }}
+            className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white">
+            <option value="">Select an event…</option>
+            {recentEvents.map(ev => {
+              const evDate = new Date(ev.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+              return <option key={ev.id} value={ev.id}>{ev.venue_name || 'Event'} · {evDate}</option>
+            })}
+          </select>
+        )}
+        {/* Row 3: results actions */}
+        <div className={`flex items-center gap-2 ${orders.length === 0 ? 'invisible' : ''}`}>
+          <button onClick={() => setItemView('orders')}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium ${itemView === 'orders' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+            📋 Orders
+          </button>
+          <button onClick={() => setItemView('items')}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium ${itemView === 'items' ? 'bg-slate-800 text-white' : 'border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+            📦 Items
+          </button>
+          <button onClick={itemView === 'orders' ? exportCSV : exportItemsCSV}
+            disabled={orders.length === 0}
+            className="ml-auto p-2 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors text-base leading-none">
+            ⬇
+          </button>
+        </div>
+      </div>
+      {/* Desktop toolbar — unchanged single row */}
+      <div className="hidden sm:flex flex-col gap-3">
         {/* Row 1: Filter mode toggle — Pro/Max only */}
         {hasAdvanced && (
           <div className="flex items-center gap-2">
