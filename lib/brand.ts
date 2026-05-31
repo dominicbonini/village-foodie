@@ -21,3 +21,11 @@ export function getBrandFromHost(host: string) {
 export function isHatchGrabHost(host: string): boolean {
   return host.includes('hatchgrab')
 }
+
+// ── Operator surface colour tokens ────────────────────────────────
+// NOT imported into components directly (Tailwind purges dynamic class strings).
+// Use as documentation: when changing operator header colour, update here AND
+// every bg-slate-900 in AppHeader.tsx, tabs bars, and any future operator pages.
+export const HEADER_BG = 'bg-slate-900'   // AppHeader — all operator headers
+export const TABS_BG   = 'bg-slate-900'   // tabs bar below header (must match HEADER_BG)
+export const PAGE_BG   = 'bg-slate-50'    // operator page content area

@@ -261,7 +261,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           showDashboardLink
         />
       </AppHeader>
-      {/* Tabs */}
+      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
       <div className="bg-slate-900 border-b border-slate-700">
         <div className="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto">
           {tabs.map(t => (

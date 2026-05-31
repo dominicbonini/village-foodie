@@ -1,3 +1,7 @@
+// AppHeader — used by ALL operator-facing pages (dashboard, manage, and any future pages).
+// Background: bg-slate-900. Any new operator page must use this component.
+// Tabs bar (if present) must also use bg-slate-900 to match visually.
+// Colour token documented in lib/brand.ts → HEADER_BG.
 'use client'
 
 import Link from 'next/link'
@@ -12,7 +16,7 @@ interface AppHeaderProps {
 
 export default function AppHeader({ truckName, truckLogoUrl, subtitle, children }: AppHeaderProps) {
   return (
-    <header className="bg-slate-900 sticky top-0 z-50 shadow-md">
+    <header className="bg-slate-900 sticky top-0 z-50 shadow-md">{/* HEADER_BG — change here changes all operator headers */}
       <div className="px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between relative">
 
