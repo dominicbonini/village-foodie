@@ -126,7 +126,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [currentUserFirstName, setCurrentUserFirstName] = useState<string | null>(null)
   const [currentUserLastName, setCurrentUserLastName] = useState<string | null>(null)
   const [currentUserPhone, setCurrentUserPhone] = useState<string | null>(null)
-  const [pendingEmailChange, setPendingEmailChange] = useState<{ id: string; new_email: string; requested_at: string; expires_at: string } | null>(null)
+  const [pendingEmailChange, setPendingEmailChange] = useState<{ id: string; new_email: string; requested_at: string; expired_at: string } | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
@@ -237,7 +237,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
     { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
-  console.log('tabs debug:', { userRole, is_test: truck?.is_test, allTabs: allTabs.map(t => t.id) })
   const tabs = allTabs.filter(t => {
     if (t.id === 'billing') return userRole === 'owner'
     return t.roles.includes(userRole)
@@ -4688,7 +4687,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 }
 
 // ── TeamTab ────────────────────────────────────────────────────
-type PendingEmailChange = { id: string; new_email: string; requested_at: string; expires_at: string }
+type PendingEmailChange = { id: string; new_email: string; requested_at: string; expired_at: string }
 
 function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, initialPendingEmailChange, onProfileSaved }: {
   truck: Truck; token: string
@@ -4744,7 +4743,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
             id: emailData.changeId,
             new_email: ownProfileEmail.trim(),
             requested_at: new Date().toISOString(),
-            expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+            expired_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
           })
           showToast('Verification email sent')
         } else {

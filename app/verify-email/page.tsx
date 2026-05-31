@@ -16,7 +16,7 @@ export default async function VerifyEmailPage({
 
   const { data: change } = await supabase
     .from('operator_email_changes')
-    .select('id, operator_id, new_email, expires_at, verified_at')
+    .select('id, operator_id, new_email, expired_at, verified_at')
     .eq('token', token)
     .maybeSingle()
 
@@ -46,7 +46,7 @@ export default async function VerifyEmailPage({
     )
   }
 
-  if (new Date(change.expires_at) < new Date()) {
+  if (new Date(change.expired_at) < new Date()) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">

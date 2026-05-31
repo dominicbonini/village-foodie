@@ -31,19 +31,32 @@ export async function GET(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
 
-  // Determine the calling user's role for this truck
+  // Determine the calling user's role for this truck.
+  // Operator identity takes priority — if the calling user owns this truck,
+  // they are always 'owner' regardless of any truck_users crew entry.
   let userRole: 'owner' | 'manager' | 'staff' = 'owner'
   try {
     const supabaseAuth = await createSupabaseServerClient()
     const { data: { user } } = await supabaseAuth.auth.getUser()
     if (user) {
-      const { data: truckUser } = await supabase
-        .from('truck_users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .eq('truck_id', truck.id)
-        .single()
-      if (truckUser?.role) userRole = truckUser.role as 'owner' | 'manager' | 'staff'
+      const isOperator = truck.operator_id
+        ? (await supabase
+            .from('operators')
+            .select('id')
+            .eq('auth_user_id', user.id)
+            .eq('id', truck.operator_id)
+            .maybeSingle()
+          ).data !== null
+        : false
+      if (!isOperator) {
+        const { data: truckUser } = await supabase
+          .from('truck_users')
+          .select('role')
+          .eq('auth_user_id', user.id)
+          .eq('truck_id', truck.id)
+          .single()
+        if (truckUser?.role) userRole = truckUser.role as 'owner' | 'manager' | 'staff'
+      }
     }
   } catch { /* if auth check fails, default to owner */ }
 
