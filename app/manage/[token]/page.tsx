@@ -3837,36 +3837,146 @@ function BillingTab({ truck }: { truck: Truck | null }) {
     new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
   const [upgradeTarget, setUpgradeTarget] = useState<'pro' | 'max'>('max')
+  const [showMatrix, setShowMatrix] = useState(false)
   const openUpgrade = (target: 'pro' | 'max') => { setUpgradeTarget(target); setShowUpgradeModal(true) }
+  const plan = truck.plan
+
+  const matrixContent = (
+    <>
+      {/* Plan columns header with prices */}
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex-1" />
+        {(['starter', 'pro', 'max'] as const).map(p => (
+          <div key={p} className={`w-[72px] sm:w-28 text-center pb-3 border-b-2 ${
+            isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
+          }`}>
+            <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
+              isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
+            }`}>{p}</p>
+            <p className={`text-base sm:text-xl font-bold mt-1 ${
+              isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
+            }`}>{PLAN_PRICES[p]}</p>
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">per truck / month</p>
+          </div>
+        ))}
+      </div>
+      {/* Transaction fees */}
+      <div className="mb-2">
+        <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
+          <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
+          <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
+        </div>
+        {TRANSACTION_ROWS.map(row => (
+          <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
+            <div className="flex-1 pr-4">
+              <span className="text-sm font-medium text-slate-800 pl-3 sm:pl-0">
+                {row.name}
+                {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
+              </span>
+            </div>
+            {(['starter', 'pro', 'max'] as const).map(p => (
+              <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
+                isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
+              }`}>
+                {row.values[p]}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {/* Feature sections */}
+      {FEATURE_SECTIONS.map(section => (
+        <div key={section.title} className="mb-2">
+          <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
+            <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
+              {section.title}
+            </span>
+            <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
+          </div>
+          {section.rows.map(row => (
+            <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
+              <div className="flex-1 pr-4">
+                <span className="text-sm text-slate-800 pl-3 sm:pl-0">
+                  {row.name}
+                  {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
+                </span>
+                {row.detail && <p className="text-xs text-slate-600 mt-0.5">{row.detail}</p>}
+              </div>
+              {(['starter', 'pro', 'max'] as const).map(p => {
+                const val = row[p]
+                return (
+                  <div key={p} className="w-[72px] sm:w-28 text-center">
+                    {val === true && (
+                      <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
+                    )}
+                    {val === false && (
+                      <span className="text-slate-300 text-sm">—</span>
+                    )}
+                    {val === 'coming_soon' && (
+                      <span className="text-xs text-slate-400 italic leading-tight">Coming soon</span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+      ))}
+    </>
+  )
+
+  const footnotesContent = (
+    <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
+      {FOOTNOTES.map(f => (
+        <p key={f.number} className="text-xs text-slate-700">
+          <sup>{f.number}</sup> {f.text}
+        </p>
+      ))}
+    </div>
+  )
+
+  const billingCard = (
+    <div className="bg-white border border-slate-200 rounded-2xl p-6">
+      <p className="text-sm font-semibold text-slate-900 mb-4">Billing & payments</p>
+      <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-start gap-3">
+        <span className="text-amber-500 flex-shrink-0 mt-0.5">⚙️</span>
+        <div>
+          <p className="text-sm font-medium text-amber-800">Payment setup coming soon</p>
+          <p className="text-xs text-amber-700 mt-0.5">
+            We&apos;re setting up our payment system. During early access, billing is handled manually.
+            We&apos;ll contact you when automated billing is ready.
+          </p>
+        </div>
+      </div>
+      <div className="mt-4 pt-4 border-t border-slate-100">
+        <p className="text-xs text-slate-400">
+          {truck.name} · {PLAN_META[currentPlan]?.name ?? currentPlan} plan{truck.trial_expires_at ? ' (trial)' : ''}
+        </p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="max-w-2xl flex flex-col gap-6">
-      {/* Current plan card */}
-      <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
 
-        {/* Plan info */}
-        <div className="mb-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Current plan</p>
-          <p className="text-2xl font-bold text-slate-900 mt-1">
-            {PLAN_META[currentPlan]?.name ?? currentPlan}
-          </p>
-          <p className="text-sm text-slate-700 mt-0.5">{PLAN_PRICES[currentPlan]}</p>
-          <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
-          {truck.trial_expires_at && (
-            <p className="text-xs text-amber-600 mt-1">
-              Trial ends {formatDate(truck.trial_expires_at)}
-            </p>
-          )}
-        </div>
-
-        {/* Plan switch CTA — TODO: wire to Stripe billing when payments are integrated */}
-        {(truck.plan === 'trial' || truck.plan === 'max') && (
-          <div className={`rounded-xl p-4 mb-6 ${
-            truck.plan === 'trial'
-              ? 'bg-orange-50 border border-orange-200'
-              : 'bg-slate-50 border border-slate-200'
-          }`}>
-            {truck.plan === 'trial' ? (
+      {/* TRIAL: payment capture is urgent — show ABOVE the matrix */}
+      {plan === 'trial' && (
+        <>
+          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
+            <div className="mb-4">
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Current plan</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">
+                {PLAN_META[currentPlan]?.name ?? currentPlan}
+              </p>
+              <p className="text-sm text-slate-700 mt-0.5">{PLAN_PRICES[currentPlan]}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
+              {truck.trial_expires_at && (
+                <p className="text-xs text-amber-600 mt-1">
+                  Trial ends {formatDate(truck.trial_expires_at)}
+                </p>
+              )}
+            </div>
+            <div className="rounded-xl p-4 bg-orange-50 border border-orange-200">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                 <div>
                   <p className="text-sm font-bold text-slate-900">
@@ -3891,158 +4001,84 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                   </button>
                 </div>
               </div>
-            ) : (
-              <p className="text-sm text-slate-600 text-center">You&apos;re on the highest plan ✓</p>
-            )}
-          </div>
-        )}
-
-        {truck.plan === 'starter' && (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6">
-            <p className="text-sm font-bold text-slate-900 mb-3">Upgrade your plan</p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => openUpgrade('pro')}
-                className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
-              >
-                Pro — £29/mo
-              </button>
-              <button
-                onClick={() => openUpgrade('max')}
-                className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
-              >
-                Max — £49/mo
-              </button>
             </div>
           </div>
-        )}
-
-        {truck.plan === 'pro' && (
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-bold text-slate-900">Unlock Max features</p>
-              <p className="text-xs text-slate-500 mt-0.5">WhatsApp, kitchen printing, multi-device sync</p>
-            </div>
-            <button
-              onClick={() => openUpgrade('max')}
-              className="px-4 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors flex-shrink-0"
-            >
-              Upgrade to Max — £49/mo
-            </button>
-          </div>
-        )}
-
-        {/* Plan columns header with prices */}
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex-1" />
-          {(['starter', 'pro', 'max'] as const).map(p => (
-            <div key={p} className={`w-[72px] sm:w-28 text-center pb-3 border-b-2 ${
-              isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
-            }`}>
-              <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
-                isCurrent(p) ? 'text-orange-500' : 'text-slate-400'
-              }`}>{p}</p>
-              <p className={`text-base sm:text-xl font-bold mt-1 ${
-                isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
-              }`}>{PLAN_PRICES[p]}</p>
-              <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">per truck / month</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Transaction fees — value display */}
-        <div className="mb-2">
-          <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
-            <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
-            <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
-          </div>
-          {TRANSACTION_ROWS.map(row => (
-            <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
-              <div className="flex-1 pr-4">
-                <span className="text-sm font-medium text-slate-800">
-                  {row.name}
-                  {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
-                </span>
-              </div>
-              {(['starter', 'pro', 'max'] as const).map(p => (
-                <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
-                  isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
-                }`}>
-                  {row.values[p]}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* Feature sections — checkmark display */}
-        {FEATURE_SECTIONS.map(section => (
-          <div key={section.title} className="mb-2">
-            <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
-              <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
-                {section.title}
-              </span>
-              <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
-            </div>
-            {section.rows.map(row => (
-              <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
-                <div className="flex-1 pr-4">
-                  <span className="text-sm text-slate-800">
-                    {row.name}
-                    {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
-                  </span>
-                  {row.detail && <p className="text-xs text-slate-600 mt-0.5">{row.detail}</p>}
-                </div>
-                {(['starter', 'pro', 'max'] as const).map(p => {
-                  const val = row[p]
-                  return (
-                    <div key={p} className="w-[72px] sm:w-28 text-center">
-                      {val === true && (
-                        <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
-                      )}
-                      {val === false && (
-                        <span className="text-slate-300 text-sm">—</span>
-                      )}
-                      {val === 'coming_soon' && (
-                        <span className="text-xs text-slate-400 italic leading-tight">Coming soon</span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            ))}
-          </div>
-        ))}
-
-        {/* Footnotes */}
-        <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
-          {FOOTNOTES.map(f => (
-            <p key={f.number} className="text-xs text-slate-700">
-              <sup>{f.number}</sup> {f.text}
-            </p>
-          ))}
-        </div>
-      </div>
-
-      {/* Billing section */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <p className="text-sm font-semibold text-slate-900 mb-4">Billing & payments</p>
-        <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 flex items-start gap-3">
-          <span className="text-amber-500 flex-shrink-0 mt-0.5">⚙️</span>
-          <div>
-            <p className="text-sm font-medium text-amber-800">Payment setup coming soon</p>
-            <p className="text-xs text-amber-700 mt-0.5">
-              We&apos;re setting up our payment system. During early access, billing is handled manually.
-              We&apos;ll contact you when automated billing is ready.
-            </p>
-          </div>
-        </div>
-        <div className="mt-4 pt-4 border-t border-slate-100">
-          <p className="text-xs text-slate-400">
-            {truck.name} · {PLAN_META[currentPlan]?.name ?? currentPlan} plan{truck.trial_expires_at ? ' (trial)' : ''}
+          <p className="text-xs text-amber-600 font-medium -mt-3">
+            ⏱ Set up payment before your trial ends to keep access
           </p>
-        </div>
-      </div>
+          {billingCard}
+          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
+            {matrixContent}
+            {footnotesContent}
+          </div>
+        </>
+      )}
+
+      {/* STARTER: upgrade prompt + payment ready below */}
+      {plan === 'starter' && (
+        <>
+          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
+            <div className="mb-4">
+              <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">Current plan</p>
+              <p className="text-2xl font-bold text-slate-900 mt-1">
+                {PLAN_META[currentPlan]?.name ?? currentPlan}
+              </p>
+              <p className="text-sm text-slate-700 mt-0.5">{PLAN_PRICES[currentPlan]}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <p className="text-sm font-bold text-slate-900 mb-3">Upgrade your plan</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => openUpgrade('pro')}
+                  className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
+                >
+                  Pro — £29/mo
+                </button>
+                <button
+                  onClick={() => openUpgrade('max')}
+                  className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
+                >
+                  Max — £49/mo
+                </button>
+              </div>
+            </div>
+          </div>
+          {billingCard}
+          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
+            {matrixContent}
+            {footnotesContent}
+          </div>
+        </>
+      )}
+
+      {/* PRO / MAX: already paying — minimal friction */}
+      {(plan === 'pro' || plan === 'max') && (
+        <>
+          <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
+            <div className="mb-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Current plan</p>
+              <p className="text-2xl font-black text-slate-900">
+                {plan === 'pro' ? 'Pro' : 'Max'}
+              </p>
+              <p className="text-sm text-slate-500 mt-0.5">
+                £{plan === 'pro' ? '29' : '49'}/mo per truck · renews automatically
+              </p>
+            </div>
+            <div className="mb-6">
+              <button
+                onClick={() => setShowMatrix(!showMatrix)}
+                className="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1"
+              >
+                {showMatrix ? '▲ Hide' : '▼ Compare all plans'}
+              </button>
+              {showMatrix && matrixContent}
+            </div>
+            {footnotesContent}
+          </div>
+          {billingCard}
+        </>
+      )}
 
       {/* Upgrade interest modal */}
       {showUpgradeModal && (
