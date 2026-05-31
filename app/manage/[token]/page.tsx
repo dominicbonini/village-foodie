@@ -3149,8 +3149,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
           <div className="space-y-3">
             {/* WhatsApp */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <label className="text-sm text-slate-600 w-24 flex-shrink-0">WhatsApp</label>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-slate-600 w-20 flex-shrink-0">WhatsApp</label>
               {can('whatsapp_replies') ? (
                 <>
                   <input
@@ -3158,11 +3158,11 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                     value={whatsappSender}
                     onChange={e => setWhatsappSender(e.target.value)}
                     placeholder="+447700900000"
-                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
                   <button
                     onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
-                    className="w-full sm:w-auto text-xs px-3 py-2 bg-teal-600 text-white font-medium rounded-xl"
+                    className="flex-shrink-0 text-xs px-2.5 py-1.5 bg-teal-600 text-white font-medium rounded-xl"
                   >
                     Connect
                   </button>
@@ -3173,7 +3173,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                     type="tel"
                     disabled
                     placeholder="+447700900000"
-                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+                    className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
                   />
                   <FeatureGate
                     feature="whatsapp_replies"
@@ -3187,55 +3187,55 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             </div>
 
             {/* Messenger */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <label className="text-sm text-slate-600 w-24 flex-shrink-0">Messenger</label>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-slate-600 w-20 flex-shrink-0">Messenger</label>
               <input
                 type="text"
                 disabled
                 placeholder="Coming soon"
-                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
               />
               <button
                 disabled
-                className="w-full sm:w-auto text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
+                className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
               >
                 Connect
               </button>
             </div>
 
             {/* Instagram */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <label className="text-sm text-slate-600 w-24 flex-shrink-0">Instagram</label>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-slate-600 w-20 flex-shrink-0">Instagram</label>
               <input
                 type="text"
                 value={form.social_instagram || ''}
                 onChange={e => setForm(p => ({...p, social_instagram: e.target.value}))}
                 onBlur={() => saveSetting('social_instagram', form.social_instagram || '')}
                 placeholder="@youraccount"
-                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
               <button
                 disabled
-                className="w-full sm:w-auto text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
+                className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
               >
                 Connect
               </button>
             </div>
 
             {/* Facebook */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-              <label className="text-sm text-slate-600 w-24 flex-shrink-0">Facebook</label>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-slate-600 w-20 flex-shrink-0">Facebook</label>
               <input
                 type="text"
                 value={form.social_facebook || ''}
                 onChange={e => setForm(p => ({...p, social_facebook: e.target.value}))}
                 onBlur={() => saveSetting('social_facebook', form.social_facebook || '')}
                 placeholder="facebook.com/yourtruck"
-                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
               <button
                 disabled
-                className="w-full sm:w-auto text-xs px-3 py-2 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
+                className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
               >
                 Connect
               </button>
@@ -3842,7 +3842,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   return (
     <div className="max-w-2xl flex flex-col gap-6">
       {/* Current plan card */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
+      <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
 
         {/* Plan info */}
         <div className="mb-4">
@@ -4004,10 +4004,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                         <span className="text-slate-300 text-sm">—</span>
                       )}
                       {val === 'coming_soon' && (
-                        <>
-                          <span className="sm:hidden text-[10px] text-slate-400 italic leading-tight">Soon</span>
-                          <span className="hidden sm:inline text-xs text-slate-400 italic whitespace-nowrap">Coming soon</span>
-                        </>
+                        <span className="text-xs text-slate-400 italic leading-tight">Coming soon</span>
                       )}
                     </div>
                   )

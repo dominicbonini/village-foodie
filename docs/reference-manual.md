@@ -321,6 +321,24 @@ ASAP is calculated from `event.start_time`, not `new Date()`. A customer pre-ord
 
 Single formula everywhere — `calcQueueAwareReadySecs`. The `queueByCat` input comes from the `/api/slots` API (which includes `modified` status orders) — never rebuild it from the orders prop. Dropdown and sub-label must always agree.
 
+### ASAP base time rule (V4 fix)
+
+The ASAP ready time is:
+
+```
+t = max(now + totalSecs, eventStart)
+```
+
+NOT:
+
+```
+t = eventStart + totalSecs  ← WRONG — causes pre-event orders to show prep time added on top of event start
+```
+
+When an operator places an order well before the event (e.g. 85 min before), prep time completes before the event starts. The event start is the floor, not the base. If prep completes after event start (e.g. order placed 2 min before, 7 min prep), the prep time naturally wins.
+
+Implemented in: `components/dashboard/AddOrderPanel.tsx` (`t = new Date(Math.max(Date.now() + totalSecs * 1000, base.getTime()))`).
+
 ### Time rounding and display
 
 - Customer-facing ASAP rounds to NEAREST 5 minutes.

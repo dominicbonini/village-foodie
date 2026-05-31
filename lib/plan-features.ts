@@ -79,7 +79,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Auto-accept online orders',                    starter: false, pro: true,           max: true           },
       { name: 'Facebook, Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: true, max: true },
       { name: 'Personalised schedule generator',              starter: false, pro: 'coming_soon',  max: 'coming_soon'  },
-      { name: 'Advanced reporting', detail: 'Revenue breakdown, deal performance, popular customisations, and order analytics.', starter: false, pro: true, max: true },
+      { name: 'Advanced reporting', starter: false, pro: true, max: true },
     ],
   },
   {
@@ -99,7 +99,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // Walk-up flow: phone number lookup in Add Order panel → auto-increment
       // Online flow: email match on order submit → auto-increment
       // Do NOT build flexible stamp criteria until V1 is live and operators request it
-      { name: 'Digital loyalty stamp cards', starter: false, pro: false, max: 'coming_soon', detail: 'Automatically reward repeat customers with digital stamp cards. 1 stamp per order, operator-set redemption threshold. Coming soon.' },
+      { name: 'Digital loyalty stamp cards', starter: false, pro: false, max: 'coming_soon' },
     ],
   },
 ]

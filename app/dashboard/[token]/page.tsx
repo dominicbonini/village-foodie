@@ -75,6 +75,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showEventMenu,setShowEventMenu]=useState(false)
   const[eventNoteInput,setEventNoteInput]=useState('')
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
+  const[showEventBarPicker,setShowEventBarPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
   const[showCompleted,setShowCompleted]=useState(false)
@@ -650,6 +651,57 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         />
       </AppHeader>
 
+      {/* Event bar — Orders and Add Order tabs only */}
+      {(activeTab==='orders'||activeTab==='add')&&(
+        <div className="bg-slate-800 border-b border-slate-700 relative">
+          <div className="max-w-5xl mx-auto px-4 py-2 flex items-center gap-2">
+            {activeEvent?(
+              <>
+                <span className="text-white text-sm font-medium truncate flex-1 min-w-0">
+                  📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
+                </span>
+                <button
+                  onClick={()=>setShowEventBarPicker(v=>!v)}
+                  className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
+                  Change
+                </button>
+                {paused?(
+                  <span className="text-xs font-medium text-amber-400 flex-shrink-0">⏸ Paused</span>
+                ):activeEvent.status==='open'?(
+                  <span className="text-xs font-medium text-green-400 flex-shrink-0">● Open</span>
+                ):(
+                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">Closed</span>
+                )}
+                <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
+                  className="text-slate-400 hover:text-white flex-shrink-0 text-base leading-none px-1">
+                  ···
+                </button>
+              </>
+            ):(
+              <>
+                <span className="text-slate-400 text-sm flex-1">No event selected</span>
+                <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
+                  className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
+                  Select event
+                </button>
+              </>
+            )}
+          </div>
+          {showEventBarPicker&&todayEvents.length>0&&(
+            <div className="absolute top-full left-0 right-0 bg-slate-900 border-b border-slate-700 z-40">
+              <div className="max-w-5xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto">
+                {todayEvents.map(event=>(
+                  <button key={event.id} onClick={()=>{switchEvent(event);setShowEventBarPicker(false)}}
+                    className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${activeEvent?.id===event.id?'bg-white text-slate-900 border-white':'text-slate-300 border-slate-600 hover:border-slate-400 hover:text-white'}`}>
+                    {event.venue_name?.split(',')[0]??'Event'} {formatTime(event.start_time)}{event.status==='open'?' ●':''}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
       <div className="bg-slate-900 border-b border-slate-700">
         {/* Nav tabs row */}
@@ -675,65 +727,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           </div>
         </div>
       </div>
-      {/* Mobile slim event bar — shown when event is open, sits between tab bar and content */}
-      {activeEvent?.status==='open'&&(
-        <div className="sm:hidden flex items-center justify-between px-3 py-2.5 bg-orange-50 border-b border-orange-200">
-          <span className="flex items-center gap-1.5 min-w-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
-            <span className="text-sm font-medium text-orange-900 truncate max-w-[180px]">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
-            <span className="text-sm text-orange-600 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
-          </span>
-          <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}} className="text-orange-400 px-3 py-2 text-base flex-shrink-0">···</button>
-        </div>
-      )}
 
       <main className="max-w-5xl mx-auto px-4 py-4 pb-20">
 
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
           <div>
-            {/* Multi-event switcher */}
-            {todayEvents.length>1&&(
-              <div className="flex gap-2 pb-3 overflow-x-auto">
-                {todayEvents.map(event=>(
-                  <button key={event.id} onClick={()=>switchEvent(event)}
-                    className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-full border font-medium transition-colors ${(activeEvent?.id===event.id)?'bg-slate-900 text-white border-slate-900':'bg-white text-slate-600 border-slate-200'}`}>
-                    {event.venue_name.split(',')[0]} {formatTime(event.start_time)}{event.status==='open'?' ●':''}
-                  </button>
-                ))}
-              </div>
-            )}
-            {/* Open for orders banner */}
-            {activeEvent?.status==='confirmed'&&!activeEvent.auto_open&&(
-              <div className="bg-white border-2 border-teal-500 rounded-2xl p-6 mb-4 text-center">
-                <div className="text-base font-semibold text-slate-900 mb-0.5">📍 {fmtVenue(activeEvent.venue_name, activeEvent.town)}</div>
-                <div className="text-sm text-slate-400 mb-4">Today · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</div>
-                <button onClick={()=>openEvent(activeEvent.id)}
-                  className="w-full bg-teal-600 text-white font-bold py-4 rounded-xl text-lg hover:bg-teal-700 active:scale-[0.98] transition-all">
-                  Open for orders
-                </button>
-              </div>
-            )}
-            {/* Event header when open — desktop only; mobile uses slim bar above tab content */}
-            {activeEvent?.status==='open'&&(
-              <div className="hidden sm:flex items-center justify-between px-3 py-2.5 bg-orange-50 border border-orange-200 rounded-xl mb-3 flex-shrink-0">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
-                  <span className="text-sm font-bold text-orange-900 truncate">{fmtVenue(activeEvent.venue_name, activeEvent.town)}</span>
-                  <span className="text-xs text-orange-600 flex-shrink-0">{formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}</span>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={()=>extendEvent(activeEvent.id,30)}
-                    className="text-xs px-2.5 py-1.5 border border-orange-300 rounded-lg text-orange-700 hover:bg-orange-100">
-                    +30 min
-                  </button>
-                  <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
-                    className="text-xs px-2.5 py-1.5 border border-orange-300 rounded-lg text-orange-700 hover:bg-orange-100">
-                    ⋯
-                  </button>
-                </div>
-              </div>
-            )}
             {/* Prep time banner */}
             {showPrepTimeBanner&&(
               <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
@@ -1055,6 +1054,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             onOpenEvent={openEvent}
             requestEventPickerOpen={pendingOpenEventPicker}
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
+            controlledEvent={activeEvent}
+            onEventChange={(id)=>setSelectedEventId(id)}
           />
         )}
 
@@ -1586,6 +1587,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <h3 className="font-black text-slate-900">{activeEvent.venue_name}</h3>
               <button onClick={()=>setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
+            {activeEvent.status==='confirmed'&&!activeEvent.auto_open&&(
+              <button onClick={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
+                className="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl hover:bg-teal-700 text-sm mb-3">
+                Open for orders
+              </button>
+            )}
             <button onClick={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}
               className="w-full text-left py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 border border-slate-100 rounded-xl px-3 mb-4">
               📅 Change event

@@ -84,6 +84,8 @@ interface AddOrderPanelProps {
   onOpenEvent?: (eventId: string) => void
   requestEventPickerOpen?: boolean
   onEventPickerOpened?: () => void
+  onEventChange?: (eventId: string) => void
+  controlledEvent?: EventRecord | null
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -95,6 +97,7 @@ export function AddOrderPanel({
   categoryOrder, itemCategoryMap,
   showToast, onOrderPlaced, onOpenEvent,
   requestEventPickerOpen, onEventPickerOpened,
+  onEventChange, controlledEvent,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -153,10 +156,14 @@ export function AddOrderPanel({
     })
     const totalSecs = calcQueueAwareReadySecs(newByCat, apiQueueByCat, categoryConfigs, waitMinutes * 60 + 120)
     if (totalSecs === 0) return { readyTime: '', minsFromNow: 0 }
-    // Base: event start time if pre-event, now if live — getAsapBaseTime handles both
+    // ASAP base: max(now + prep, eventStart) — NOT eventStart + prep.
+    // Pre-event orders must not add prep time on top of event start.
+    // See manual Section 6: ASAP base time rule.
     const base = getAsapBaseTime(manualEvent)
-    const t = new Date(base.getTime())
-    t.setSeconds(t.getSeconds() + totalSecs)
+    const t = new Date(Math.max(
+      Date.now() + totalSecs * 1000,
+      base.getTime(),
+    ))
     return {
       readyTime: `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`,
       minsFromNow: Math.max(0, Math.ceil((t.getTime() - Date.now()) / 60000)),
@@ -241,6 +248,15 @@ export function AddOrderPanel({
     setShowEventPicker(true)
     onEventPickerOpened?.()
   }, [requestEventPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync manualEvent when the dashboard changes the active event via the event bar
+  useEffect(() => {
+    if (!controlledEvent) return
+    if (controlledEvent.id === manualEvent?.id) return
+    setManualEvent(controlledEvent)
+    fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time)
+    setManualSlot('')
+  }, [controlledEvent?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (manualEvent || upcomingEvents.length === 0) return
@@ -989,7 +1005,7 @@ setItemModal({ item, modGroups, editCartKey })
                     const isSelected = manualEvent?.id === ev.id
                     const isFuture = ev.event_date > todayIso
                     return (
-                      <button key={ev.id} onClick={() => { setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time); setManualSlot('') }}
+                      <button key={ev.id} onClick={() => { setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time); setManualSlot(''); onEventChange?.(ev.id) }}
                         className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>
