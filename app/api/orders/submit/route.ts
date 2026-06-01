@@ -627,6 +627,7 @@ export async function POST(req: NextRequest) {
       allowCancellation:      truck.allow_customer_cancellation ?? true,
       cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
       baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+      truckSlug:              truck.slug ?? undefined,
     })
 
     try {

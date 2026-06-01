@@ -41,6 +41,7 @@ export function formatConfirmationEmail(params: {
   allowCancellation?: boolean
   cancellationCutoffMins?: number
   baseUrl?: string
+  truckSlug?: string
 }): { subject: string; html: string; text: string } {
   const subject = params.autoAccepted
     ? `Order #${params.orderId} confirmed`
@@ -150,7 +151,7 @@ export function formatConfirmationEmail(params: {
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0">
       <p style="margin:0;font-size:12px;color:#94a3b8">
         Need to cancel?
-        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderId}/manage" style="color:#ea580c;margin-left:4px">Cancel your order</a>
+        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderId}/manage${params.truckSlug ? `?truck=${params.truckSlug}` : ''}" style="color:#ea580c;margin-left:4px">Cancel your order</a>
         (up to ${params.cancellationCutoffMins ?? 30} minutes before your pickup time)
       </p>
     </div>` : ''
