@@ -71,6 +71,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[extraWaitStartedAt,setExtraWaitStartedAt]=useState<string|null>(null)
   const[waitTick,setWaitTick]=useState(0)
   const[todayEvents,setTodayEvents]=useState<TruckEvent[]>([])
+  const[upcomingEvents,setUpcomingEvents]=useState<TruckEvent[]>([])
   const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
   const[showEventMenu,setShowEventMenu]=useState(false)
   const[eventNoteInput,setEventNoteInput]=useState('')
@@ -204,6 +205,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         const todayStr=new Date().toISOString().split('T')[0]
         const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
         setTodayEvents(fetched)
+        setUpcomingEvents(eventsData.events??[])
         const currentTime=new Date().toTimeString().slice(0,5)
         const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
         for(const ev of stale){
@@ -215,6 +217,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[token,pin,fetchMenu,fetchStock])
 
   useEffect(()=>{fetchAll()},[fetchAll])
+
+  useEffect(()=>{
+    if(selectedEventId||!upcomingEvents.length) return
+    const now=new Date()
+    const todayStr=now.toISOString().split('T')[0]
+    // Priority 1: currently open event (started, not ended)
+    const openEvent=upcomingEvents.find(e=>{
+      if(e.event_date!==todayStr||!e.start_time||!e.end_time) return false
+      return now>=new Date(`${e.event_date}T${e.start_time}`)&&now<=new Date(`${e.event_date}T${e.end_time}`)
+    })
+    if(openEvent){setSelectedEventId(openEvent.id);return}
+    // Priority 2: upcoming event today (not started yet)
+    const upcomingToday=upcomingEvents.find(e=>{
+      if(e.event_date!==todayStr||!e.start_time) return false
+      return now<new Date(`${e.event_date}T${e.start_time}`)
+    })
+    if(upcomingToday){setSelectedEventId(upcomingToday.id);return}
+    // Priority 3: next upcoming event (any date)
+    const nextEvent=[...upcomingEvents]
+      .filter(e=>e.start_time&&new Date(`${e.event_date}T${e.start_time}`)>now)
+      .sort((a,b)=>new Date(`${a.event_date}T${a.start_time}`).getTime()-new Date(`${b.event_date}T${b.start_time}`).getTime())[0]
+    if(nextEvent) setSelectedEventId(nextEvent.id)
+  },[upcomingEvents,selectedEventId])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
   useEffect(()=>{
     fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name)}).catch(()=>null)

@@ -134,15 +134,16 @@ export async function POST(req: NextRequest) {
     // Best-effort notification — once per truck per batch
     if (!notifiedTruckIds.has(truckId)) {
       notifiedTruckIds.add(truckId)
-      supabase
-        .from('trucks')
-        .select('contact_email, name, dashboard_token')
-        .eq('id', truckId)
-        .single()
-        .then(({ data: truck }) => {
+      ;(async () => {
+        try {
+          const { data: truck } = await supabase
+            .from('trucks')
+            .select('contact_email, name, dashboard_token')
+            .eq('id', truckId)
+            .single()
           if (!truck?.contact_email) return
           const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`
-          sendConfirmationEmail({
+          await sendConfirmationEmail({
             to: truck.contact_email,
             subject: `New events to confirm — ${truck.name}`,
             html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
@@ -157,9 +158,11 @@ export async function POST(req: NextRequest) {
             </div>`,
             text: `New events found for ${truck.name}. Review and confirm them at: ${manageUrl}`,
             truckName: truck.name,
-          }).catch(err => console.error('[inbound-schedule] notification email failed:', err))
-        })
-        .catch(err => console.error('[inbound-schedule] truck lookup for notification failed:', err))
+          })
+        } catch (err) {
+          console.error('[inbound-schedule] notification failed:', err)
+        }
+      })()
     }
   }
 
