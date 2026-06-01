@@ -772,7 +772,7 @@ export async function POST(req: NextRequest) {
       </div>
     `
 
-    await fetch('https://api.brevo.com/v3/smtp/email', {
+    const inviteBrevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
         'accept': 'application/json',
@@ -787,6 +787,12 @@ export async function POST(req: NextRequest) {
         htmlContent: html,
       }),
     })
+
+    if (!inviteBrevoRes.ok) {
+      const brevoError = await inviteBrevoRes.text()
+      console.error('[team-invite] Brevo send failed:', inviteBrevoRes.status, brevoError)
+      // Member row is created — don't roll back. Operator can resend manually.
+    }
 
     return NextResponse.json({ ok: true, memberId: newMember.id })
   }

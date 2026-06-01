@@ -14,11 +14,13 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showResetSuccess, setShowResetSuccess] = useState(message === 'password_reset')
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setShowResetSuccess(false)
 
     const supabase = createSupabaseBrowserClient()
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -26,8 +28,10 @@ function LoginForm() {
       password,
     })
 
+    console.log('login attempt:', { email, error: error?.message, userId: data?.user?.id })
+
     if (error) {
-      setError('Incorrect email or password. Please try again.')
+      setError(error.message || 'Incorrect email or password. Please try again.')
       setLoading(false)
       return
     }
@@ -64,7 +68,7 @@ function LoginForm() {
           </p>
         </div>
 
-        {message === 'password_reset' && (
+        {showResetSuccess && (
           <div className="bg-orange-50 border border-orange-200 rounded-xl
                           px-4 py-3 text-sm text-orange-700 text-center">
             Password updated successfully. Please sign in.
@@ -81,7 +85,7 @@ function LoginForm() {
             <input
               type="email"
               value={email}
-              onChange={e => setEmail(e.target.value)}
+              onChange={e => { setEmail(e.target.value); setShowResetSuccess(false) }}
               placeholder="you@example.com"
               required
               autoComplete="email"
@@ -99,7 +103,7 @@ function LoginForm() {
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={e => { setPassword(e.target.value); setShowResetSuccess(false) }}
               placeholder="••••••••"
               required
               autoComplete="current-password"
