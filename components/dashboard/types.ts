@@ -60,6 +60,7 @@ export interface TruckData {
   venue_name: string | null
   logo: string | null
   dashboard_token: string
+  slug?: string | null
   paused?: boolean
   auto_accept?: boolean
   kds_mode: boolean

@@ -35,9 +35,9 @@ export async function POST(req: NextRequest) {
   const { secret, truckId, discoveryTruckId, ...updates } = body
   if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  // Discovery truck update (visibility only)
+  // Discovery truck update (visibility + hatchgrab link)
   if (discoveryTruckId) {
-    const allowed = ['visibility']
+    const allowed = ['visibility', 'hatchgrab_truck_id']
     const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => allowed.includes(k)))
     const { error } = await supabase.from('discovery_trucks').update(safe).eq('id', discoveryTruckId)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })

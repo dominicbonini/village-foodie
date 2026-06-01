@@ -264,6 +264,7 @@ export async function GET(req: NextRequest) {
         : null,
       qr_code_style: (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
       truck_emoji:   truck.truck_emoji ?? null,
+      slug:          truck.slug ?? null,
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

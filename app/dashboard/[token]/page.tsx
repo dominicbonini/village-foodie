@@ -291,7 +291,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const handleCopyOrderLink=async()=>{
     try{
-      const orderUrl=`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck?.dashboard_token}`
+      const orderUrl=truck?.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck?.dashboard_token}`
       await navigator.clipboard.writeText(orderUrl)
       setCopiedOrderLink(true)
       setTimeout(()=>setCopiedOrderLink(false),2000)
@@ -304,7 +304,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!truck) return
     try{
       const{generateQRWithLogo}=await import('@/lib/generateQRCode')
-      const orderUrl=`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
+      const orderUrl=truck.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
       const showBrandedQr=hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded'
       setQrFullscreenDataUrl(await generateQRWithLogo(orderUrl,showBrandedQr?truck.logo:null))
     }catch(err){

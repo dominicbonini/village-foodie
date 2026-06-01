@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { sendConfirmationEmail } from '@/lib/email'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+function normName(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, '')
+}
 
 const INBOUND_SECRET = process.env.INBOUND_SCHEDULE_SECRET
 
@@ -55,5 +60,109 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, inserted: rows.length })
+  // ── Bridge: promote events to truck_events for linked HatchGrab trucks ──
+  // Fetch all discovery_trucks that have a hatchgrab_truck_id once, then match locally
+  const { data: linkedTrucks } = await supabase
+    .from('discovery_trucks')
+    .select('hatchgrab_truck_id, name')
+    .not('hatchgrab_truck_id', 'is', null)
+
+  let bridgedCount = 0
+  const notifiedTruckIds = new Set<string>()
+
+  for (const row of rows) {
+    if (!row.truck_name) continue
+
+    // Normalised match: exact, or one name contains the other
+    const normIncoming = normName(row.truck_name)
+    const matched = (linkedTrucks || []).find(t => {
+      const normDb = normName(t.name)
+      return normDb === normIncoming ||
+        normDb.includes(normIncoming) ||
+        normIncoming.includes(normDb)
+    })
+    if (!matched?.hatchgrab_truck_id) continue
+    const truckId = matched.hatchgrab_truck_id
+
+    // Dedup: skip if a truck_events row already exists for this truck + date
+    // Scope by venue_name if present, otherwise date-only
+    let dedupQuery = supabase
+      .from('truck_events')
+      .select('id')
+      .eq('truck_id', truckId)
+      .eq('event_date', row.event_date!)
+    if (row.venue_name) {
+      dedupQuery = dedupQuery.ilike('venue_name', row.venue_name)
+    }
+    const { data: existing } = await dedupQuery.maybeSingle()
+    if (existing) continue
+
+    // Look up venue coordinates
+    let latitude: number | null = null
+    let longitude: number | null = null
+    if (row.venue_name) {
+      const { data: venue } = await supabase
+        .from('venues')
+        .select('latitude, longitude')
+        .ilike('name', row.venue_name)
+        .maybeSingle()
+      if (venue) {
+        latitude = venue.latitude
+        longitude = venue.longitude
+      }
+    }
+
+    const { error: insertErr } = await supabase.from('truck_events').insert({
+      truck_id:   truckId,
+      venue_name: row.venue_name || null,
+      town:       row.village || null,
+      event_date: row.event_date,
+      start_time: row.start_time || null,
+      end_time:   row.end_time || null,
+      notes:      row.event_notes || null,
+      status:     'unconfirmed',
+      source:     'scraper',
+      latitude,
+      longitude,
+    })
+    if (insertErr) {
+      console.error('[inbound-schedule] bridge insert failed:', insertErr.message)
+      continue
+    }
+    bridgedCount++
+
+    // Best-effort notification — once per truck per batch
+    if (!notifiedTruckIds.has(truckId)) {
+      notifiedTruckIds.add(truckId)
+      supabase
+        .from('trucks')
+        .select('contact_email, name, dashboard_token')
+        .eq('id', truckId)
+        .single()
+        .then(({ data: truck }) => {
+          if (!truck?.contact_email) return
+          const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`
+          sendConfirmationEmail({
+            to: truck.contact_email,
+            subject: `New events to confirm — ${truck.name}`,
+            html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
+              <p>Hi there,</p>
+              <p>New events have been found for <strong>${truck.name}</strong> and are waiting for your confirmation.</p>
+              <p style="margin:24px 0">
+                <a href="${manageUrl}" style="background:#ea580c;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">
+                  Review &amp; confirm events →
+                </a>
+              </p>
+              <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
+            </div>`,
+            text: `New events found for ${truck.name}. Review and confirm them at: ${manageUrl}`,
+            truckName: truck.name,
+          }).catch(err => console.error('[inbound-schedule] notification email failed:', err))
+        })
+        .catch(err => console.error('[inbound-schedule] truck lookup for notification failed:', err))
+    }
+  }
+
+  console.log(`[inbound-schedule] wrote ${rows.length} discovery rows, bridged ${bridgedCount} to truck_events`)
+  return NextResponse.json({ ok: true, inserted: rows.length, bridged: bridgedCount })
 }

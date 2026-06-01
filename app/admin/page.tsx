@@ -94,6 +94,24 @@ export default function AdminPage() {
     finally { setSaving(null) }
   }
 
+  const linkDiscoveryTruck = async (discoveryTruckId: string, hatchgrabTruckId: string | null) => {
+    setSaving(discoveryTruckId)
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret, discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setDiscoveryTrucks(prev => prev.map(t =>
+        t.id === discoveryTruckId ? { ...t, hatchgrab_truck_id: hatchgrabTruckId } : t
+      ))
+      showToast(hatchgrabTruckId ? 'Linked' : 'Unlinked')
+    } catch (e: any) { alert(e.message) }
+    finally { setSaving(null) }
+  }
+
   const update = async (truckId: string, updates: Record<string, any>) => {
     setSaving(truckId)
     try {
@@ -374,14 +392,30 @@ export default function AdminPage() {
                     <div key={truck.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-slate-900 text-sm truncate">{truck.name}</p>
-                        {truck.hatchgrab_truck_id && (
-                          <p className="text-[10px] text-teal-600 font-bold mt-0.5">HatchGrab operator</p>
+                        {truck.hatchgrab_truck_id ? (
+                          <p className="text-[10px] text-teal-600 font-bold mt-0.5">
+                            → {trucks.find(t => t.id === truck.hatchgrab_truck_id)?.name || truck.hatchgrab_truck_id}
+                          </p>
+                        ) : (
+                          <p className="text-[10px] text-slate-400 mt-0.5">Not linked</p>
                         )}
                         {(truck.exclude_reason || '').toLowerCase().includes('y') && (
                           <p className="text-[10px] text-red-500 font-bold mt-0.5">Excluded</p>
                         )}
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
+                        {/* HatchGrab truck link */}
+                        <select
+                          value={truck.hatchgrab_truck_id || ''}
+                          onChange={e => linkDiscoveryTruck(truck.id, e.target.value || null)}
+                          disabled={saving === truck.id}
+                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 max-w-[140px]"
+                        >
+                          <option value="">— Link HG truck —</option>
+                          {trucks.map(t => (
+                            <option key={t.id} value={t.id}>{t.name}</option>
+                          ))}
+                        </select>
                         <select
                           value={truck.visibility || 'public'}
                           onChange={e => updateDiscovery(truck.id, e.target.value)}
