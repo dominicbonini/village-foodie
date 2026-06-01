@@ -4714,6 +4714,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
   const [ownProfileEmail, setOwnProfileEmail] = useState('')
   const [pendingEmailChange, setPendingEmailChange] = useState<PendingEmailChange | null>(initialPendingEmailChange)
   const [resendingVerification, setResendingVerification] = useState(false)
+  const [cancellingEmailChange, setCancellingEmailChange] = useState(false)
   const [savingOwnProfile, setSavingOwnProfile] = useState(false)
 
   const saveOwnProfile = async () => {
@@ -4779,6 +4780,29 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
       }
     } finally {
       setResendingVerification(false)
+    }
+  }
+
+  const handleCancelEmailChange = async () => {
+    if (!pendingEmailChange) return
+    setCancellingEmailChange(true)
+    try {
+      const res = await fetch('/api/auth/cancel-email-change', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ changeId: pendingEmailChange.id }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        setPendingEmailChange(null)
+        showToast('Email change cancelled')
+      } else {
+        showToast(data.error || 'Failed to cancel', 'error')
+      }
+    } catch {
+      showToast('Failed to cancel', 'error')
+    } finally {
+      setCancellingEmailChange(false)
     }
   }
 
@@ -4912,13 +4936,22 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
                 Verification sent to <strong>{pendingEmailChange.new_email}</strong>. Check your inbox.
               </p>
             </div>
-            <button
-              onClick={() => handleResendVerification(pendingEmailChange.id)}
-              disabled={resendingVerification}
-              className="text-xs text-amber-700 font-semibold underline flex-shrink-0 disabled:opacity-50"
-            >
-              {resendingVerification ? 'Sending...' : 'Resend'}
-            </button>
+            <div className="flex flex-col items-end gap-1 flex-shrink-0">
+              <button
+                onClick={() => handleResendVerification(pendingEmailChange.id)}
+                disabled={resendingVerification || cancellingEmailChange}
+                className="text-xs text-amber-700 font-semibold underline disabled:opacity-50"
+              >
+                {resendingVerification ? 'Sending...' : 'Resend'}
+              </button>
+              <button
+                onClick={handleCancelEmailChange}
+                disabled={cancellingEmailChange || resendingVerification}
+                className="text-xs text-slate-500 underline disabled:opacity-50"
+              >
+                {cancellingEmailChange ? 'Cancelling...' : 'Cancel'}
+              </button>
+            </div>
           </div>
         )}
 
@@ -4964,9 +4997,35 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
                 type="email"
                 value={ownProfileEmail}
                 onChange={e => setOwnProfileEmail(e.target.value)}
-                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white"
+                disabled={!!pendingEmailChange}
+                className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm bg-white disabled:bg-slate-50 disabled:text-slate-400"
               />
-              {ownProfileEmail !== currentUserEmail && (
+              {pendingEmailChange ? (
+                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs font-semibold text-amber-800">⏳ Awaiting verification</p>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      Verification sent to <strong>{pendingEmailChange.new_email}</strong>. Check your inbox.
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <button
+                      onClick={() => handleResendVerification(pendingEmailChange.id)}
+                      disabled={resendingVerification || cancellingEmailChange}
+                      className="text-xs text-amber-700 font-semibold underline disabled:opacity-50"
+                    >
+                      {resendingVerification ? 'Sending...' : 'Resend'}
+                    </button>
+                    <button
+                      onClick={handleCancelEmailChange}
+                      disabled={cancellingEmailChange || resendingVerification}
+                      className="text-xs text-slate-500 underline disabled:opacity-50"
+                    >
+                      {cancellingEmailChange ? 'Cancelling...' : 'Cancel'}
+                    </button>
+                  </div>
+                </div>
+              ) : ownProfileEmail !== currentUserEmail && (
                 <p className="text-xs text-amber-600 mt-1">
                   A verification link will be sent to this address. Your current email remains active until verified.
                 </p>
