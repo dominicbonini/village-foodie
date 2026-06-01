@@ -849,6 +849,8 @@ Truck name bold (`text-slate-800 font-semibold`), operator first name muted belo
 
 - Stage C full offline; customer-facing display (Max); advanced reporting visualisations; festival pricing.
 - WhatsApp "Recent messages" review panel; event cleanup job (delete events > 90 days).
+- Rename `slot_capacity.max_orders` → `max_batches` (DB migration + call-site update in `lib/slot-capacity.ts` and `lib/slot-bookings.ts`). Low urgency — naming is confusing but behaviour is correct.
+- Consider adding `is_instant boolean` to `menu_categories` as a first-class alternative to relying on `prep_secs = 0`. Would allow explicit UI labelling ("Instant — won't affect kitchen capacity") and decouple the capacity exclusion logic from the prep time value.
 
 ### Open questions
 

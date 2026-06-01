@@ -791,6 +791,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                       onChange={e => setEditingCat(p => ({...p!, prep_secs: parseInt(e.target.value) * 60 || 0}))}
                       onBlur={() => saveCat()}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                    <p className="text-xs text-slate-400 mt-1">Set to 0 for instant items (drinks, dips). These won&apos;t count toward kitchen capacity.</p>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
@@ -890,6 +891,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                   <input type="number" min="0" max="60" placeholder="0 = instant" value={editingCat.prep_secs ? Math.round(editingCat.prep_secs / 60) : ""}
                     onChange={e => setEditingCat(p => ({...p!, prep_secs: parseInt(e.target.value) * 60 || 0}))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                  <p className="text-xs text-slate-400 mt-1">Set to 0 for instant items (drinks, dips). These won&apos;t count toward kitchen capacity.</p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
@@ -3634,7 +3636,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 <div>
                   <p className="text-slate-800">Kitchen capacity</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Maximum cooked items per 5-minute window. Drinks and instant items don&apos;t count. Leave blank for no limit.
+                    Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit.
                   </p>
                 </div>
                 <select
