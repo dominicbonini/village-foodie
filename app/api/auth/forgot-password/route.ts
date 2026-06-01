@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
-import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
+import { HATCHGRAB_SENDER } from '@/lib/email-config'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,8 +53,6 @@ export async function POST(req: NextRequest) {
 
   const html = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <img src="${HATCHGRAB_LOGO_URL}"
-           width="180" style="margin-bottom:24px;display:block;"/>
       <h2 style="color:#0f172a;margin:0 0 16px;">Reset your password</h2>
       <p>We received a request to reset the password for your HatchGrab account.</p>
       <p>Click the button below to choose a new password. This link expires in 1 hour.</p>
@@ -75,7 +73,7 @@ export async function POST(req: NextRequest) {
     </div>
   `
 
-  await fetch('https://api.brevo.com/v3/smtp/email', {
+  const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
       'accept': 'application/json',
@@ -90,6 +88,14 @@ export async function POST(req: NextRequest) {
       htmlContent: html,
     }),
   })
+
+  if (!brevoRes.ok) {
+    const brevoError = await brevoRes.text()
+    console.error('[forgot-password] Brevo send failed:', brevoRes.status, brevoError)
+    // Clean up the token — email not sent, user can't use it, don't block retries
+    await supabase.from('password_reset_tokens').delete().eq('token', token)
+    return NextResponse.json({ error: 'Failed to send reset email' }, { status: 500 })
+  }
 
   return NextResponse.json({ ok: true })
 }
