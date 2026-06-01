@@ -220,6 +220,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   useEffect(()=>{
     if(selectedEventId||!upcomingEvents.length) return
+    console.log('[auto-select] running, upcomingEvents:', upcomingEvents.length)
     const now=new Date()
     const todayStr=now.toISOString().split('T')[0]
     // Priority 1: currently open event (started, not ended)
@@ -227,18 +228,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(e.event_date!==todayStr||!e.start_time||!e.end_time) return false
       return now>=new Date(`${e.event_date}T${e.start_time}`)&&now<=new Date(`${e.event_date}T${e.end_time}`)
     })
-    if(openEvent){setSelectedEventId(openEvent.id);return}
+    if(openEvent){console.log('[auto-select] priority 1 open:',openEvent.id);setSelectedEventId(openEvent.id);return}
     // Priority 2: upcoming event today (not started yet)
     const upcomingToday=upcomingEvents.find(e=>{
       if(e.event_date!==todayStr||!e.start_time) return false
       return now<new Date(`${e.event_date}T${e.start_time}`)
     })
-    if(upcomingToday){setSelectedEventId(upcomingToday.id);return}
+    if(upcomingToday){console.log('[auto-select] priority 2 today:',upcomingToday.id);setSelectedEventId(upcomingToday.id);return}
     // Priority 3: next upcoming event (any date)
     const nextEvent=[...upcomingEvents]
       .filter(e=>e.start_time&&new Date(`${e.event_date}T${e.start_time}`)>now)
       .sort((a,b)=>new Date(`${a.event_date}T${a.start_time}`).getTime()-new Date(`${b.event_date}T${b.start_time}`).getTime())[0]
-    if(nextEvent) setSelectedEventId(nextEvent.id)
+    if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}
   },[upcomingEvents,selectedEventId])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
   useEffect(()=>{
@@ -509,11 +510,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const openEvent=async(eventId:string)=>{
+    const wasClosedEvent=upcomingEvents.find(e=>e.id===eventId)?.status==='closed'
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
-      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
-      showToast('Open for orders')
+      const opened=new Date().toISOString()
+      setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
+      setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
+      showToast(wasClosedEvent?'Event restarted':'Event started')
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
@@ -605,7 +609,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   )
 
   const activeEvent:TruckEvent|null=selectedEventId
-    ?todayEvents.find(e=>e.id===selectedEventId)??null
+    ?upcomingEvents.find(e=>e.id===selectedEventId)??null
     :(todayEvents.find(e=>e.status==='open')
       ??todayEvents.find(e=>e.status==='confirmed')
       ??todayEvents[0]
@@ -718,9 +722,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 {paused?(
                   <span className="text-xs font-medium text-amber-400 flex-shrink-0">⏸ Paused</span>
                 ):activeEvent.status==='open'?(
-                  <span className="text-xs font-medium text-green-400 flex-shrink-0">● Open</span>
+                  <span className="text-xs font-medium text-green-400 flex-shrink-0">● Live</span>
                 ):(
-                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">Closed</span>
+                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">● Closed</span>
                 )}
                 <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
                   className="text-slate-400 hover:text-white flex-shrink-0 text-base leading-none px-1">
@@ -1602,7 +1606,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent.status==='confirmed'&&!activeEvent.auto_open&&(
               <button onClick={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
                 className="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl hover:bg-teal-700 text-sm mb-3">
-                Open for orders
+                Start Event
               </button>
             )}
             <button onClick={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}

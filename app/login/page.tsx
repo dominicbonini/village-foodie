@@ -29,8 +29,6 @@ function LoginForm() {
       password,
     })
 
-    console.log('login attempt:', { email, error: error?.message, userId: data?.user?.id })
-
     if (error) {
       setError(error.message || 'Incorrect email or password. Please try again.')
       setLoading(false)

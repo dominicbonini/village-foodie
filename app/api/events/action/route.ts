@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       .update({ status: 'open', opened_at: now })
       .eq('id', eventId)
       .eq('truck_id', truck.id)
-      .in('status', ['confirmed']) // can only open a confirmed event
+      .in('status', ['confirmed', 'closed']) // can open a confirmed or reopen a closed event
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ ok: true })

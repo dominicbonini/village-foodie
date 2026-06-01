@@ -30,6 +30,7 @@ export function formatConfirmationEmail(params: {
   total: number
   notes: string | null
   autoAccepted?: boolean
+  slotAdjustedFrom?: string | null
   // Truck contact & venue info
   venueName?: string | null
   preferredContactMethod?: string | null
@@ -97,13 +98,15 @@ export function formatConfirmationEmail(params: {
   const discountRow = ''
 
   const slotSection = params.slot ? `
-    <div style="background:${params.autoAccepted ? '#f0fdf4' : '#fff7ed'};border:1px solid ${params.autoAccepted ? '#bbf7d0' : '#fed7aa'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
-      <p style="margin:0;color:${params.autoAccepted ? '#166534' : '#92400e'}">
-        ${params.autoAccepted
-          ? params.slotChanged && (params.requestedSlot ?? params.slot)
-            ? `<strong style="font-size:16px">Sorry, your ${params.requestedSlot ?? params.slot} slot was taken.</strong><br><span style="font-size:13px">Your order will be ready at <strong>${params.slot}</strong>.</span>`
-            : `<strong style="font-size:17px">Collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">See you at the hatch!</span>`
-          : `<strong style="font-size:16px">Preferred collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">We'll confirm your collection time when we accept your order.</span>`
+    <div style="background:${params.slotAdjustedFrom || !params.autoAccepted ? '#fff7ed' : '#f0fdf4'};border:1px solid ${params.slotAdjustedFrom || !params.autoAccepted ? '#fed7aa' : '#bbf7d0'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
+      <p style="margin:0;color:${params.slotAdjustedFrom || !params.autoAccepted ? '#92400e' : '#166534'}">
+        ${params.slotAdjustedFrom
+          ? `<strong style="font-size:16px">Your collection time has been updated</strong><br><span style="font-size:17px;font-weight:800">${params.slot}</span><br><span style="font-size:13px;opacity:0.85">Previously: ${params.slotAdjustedFrom}</span>`
+          : params.autoAccepted
+            ? params.slotChanged && (params.requestedSlot ?? params.slot)
+              ? `<strong style="font-size:16px">Sorry, your ${params.requestedSlot ?? params.slot} slot was taken.</strong><br><span style="font-size:13px">Your order will be ready at <strong>${params.slot}</strong>.</span>`
+              : `<strong style="font-size:17px">Collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">See you at the hatch!</span>`
+            : `<strong style="font-size:16px">Preferred collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">We'll confirm your collection time when we accept your order.</span>`
         }
       </p>
     </div>` : ''
@@ -230,11 +233,13 @@ export function formatConfirmationEmail(params: {
       return lines.join('\n')
     }).join('\n') : '',
     `Total: £${params.total.toFixed(2)}`,
-    params.autoAccepted && params.slot
-      ? params.slotChanged && params.requestedSlot
-        ? `Sorry, your ${params.requestedSlot} slot was taken. Your order will be ready at ${params.slot}.`
-        : `Collection time: ${params.slot}. See you at the hatch!`
-      : params.slot ? `Preferred collection: ${params.slot} — we'll confirm when we accept your order.` : '',
+    params.slotAdjustedFrom && params.slot
+      ? `Collection time updated to ${params.slot} (was ${params.slotAdjustedFrom}).`
+      : params.autoAccepted && params.slot
+        ? params.slotChanged && params.requestedSlot
+          ? `Sorry, your ${params.requestedSlot} slot was taken. Your order will be ready at ${params.slot}.`
+          : `Collection time: ${params.slot}. See you at the hatch!`
+        : params.slot ? `Preferred collection: ${params.slot} — we'll confirm when we accept your order.` : '',
     params.notes ? `Notes: ${params.notes}` : '',
     '',
     'Pay at the truck on collection.',

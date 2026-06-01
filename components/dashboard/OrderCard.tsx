@@ -102,6 +102,7 @@ export function OrderCard({
 }) {
   const [expanded, setExpanded] = useState(true)
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
+  const [showContact, setShowContact] = useState(false)
 
   // Build slot datetime once — null for slotless (walk-up) orders
   const slotDt = order.slot && order.event_date
@@ -311,6 +312,13 @@ export function OrderCard({
           </div>
           <div className="flex items-center gap-1 mt-0.5">
             <span className="text-xs text-slate-600 truncate">{order.customer_name}</span>
+            {(order.customer_email || order.customer_phone) && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
+                className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors">
+                Contact
+              </button>
+            )}
             {allStruck && <span className="text-green-700 font-black text-xs ml-1">✓</span>}
           </div>
         </div>
@@ -332,6 +340,13 @@ export function OrderCard({
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
                 <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
+                {(order.customer_email || order.customer_phone) && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
+                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors">
+                    Contact
+                  </button>
+                )}
                 <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
               </div>
             </>
@@ -341,6 +356,13 @@ export function OrderCard({
               <span className="text-3xl font-bold">#{order.id}</span>
               <div className="flex items-center gap-2 font-medium text-sm">
                 <span className="opacity-80 truncate max-w-[120px]">{order.customer_name}</span>
+                {(order.customer_email || order.customer_phone) && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
+                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors font-normal">
+                    Contact
+                  </button>
+                )}
                 {order.slot && <span className="opacity-70">{order.slot}</span>}
                 {offsetLabel !== null && <span className="opacity-50">· {offsetLabel}</span>}
                 <span className="font-bold">£{Number(order.total).toFixed(2)}</span>
@@ -350,6 +372,21 @@ export function OrderCard({
             </div>
           )}
         </button>
+      )}
+
+      {showContact && (
+        <div className="px-4 py-2 bg-white border-t border-slate-100 text-xs space-y-0.5">
+          {order.customer_email && (
+            <a href={`mailto:${order.customer_email}`} className="block text-orange-500 hover:text-orange-600">
+              ✉ {order.customer_email}
+            </a>
+          )}
+          {order.customer_phone && (
+            <a href={`tel:${order.customer_phone}`} className="block text-orange-500 hover:text-orange-600">
+              📱 {order.customer_phone}
+            </a>
+          )}
+        </div>
       )}
 
       {expanded && (

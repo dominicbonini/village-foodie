@@ -56,24 +56,37 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId)
       if (order.customer_email) {
-      {
-          const confirmedItemRows = order.items.map((i: any) =>
-            `<tr><td style="padding:4px 0;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:4px 0">£${(parseFloat(i.unit_price)*parseInt(i.quantity)).toFixed(2)}</td></tr>`
-          ).join('')
-          await notifyCustomer(order.customer_email, `Order #${orderId} confirmed`, `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2 style="color:#16a34a">Your order is confirmed ✓</h2>
-            <p><strong>${truck.name}</strong> has confirmed your order #${orderId}.</p>
-            ${order.slot ? `<p style="font-size:16px"><strong>⏰ Collection time: ${order.slot}</strong></p>` : ''}
-            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
-              ${confirmedItemRows}
-              <tr style="border-top:2px solid #e2e8f0">
-                <td style="padding-top:8px;font-weight:800">Total</td>
-                <td style="text-align:right;padding-top:8px;font-weight:800">£${Number(order.total).toFixed(2)}</td>
-              </tr>
-            </table>
-            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
-          </body>`, truck.name)
-        }
+        const { data: eventRow } = await supabase
+          .from('truck_events')
+          .select('venue_name')
+          .eq('truck_id', truck.id)
+          .eq('event_date', order.event_date)
+          .neq('status', 'cancelled')
+          .maybeSingle()
+        const { subject, html, text } = formatConfirmationEmail({
+          orderId: order.id,
+          customerName: order.customer_name,
+          truckName: truck.name,
+          items: order.items || [],
+          deals: order.deals || [],
+          slot: order.slot ?? null,
+          discountAmt: order.discount_amt ?? 0,
+          total: Number(order.total),
+          notes: order.notes ?? null,
+          autoAccepted: true,
+          venueName: eventRow?.venue_name ?? null,
+          preferredContactMethod: truck.preferred_contact_method ?? null,
+          contactPhone: truck.contact_phone ?? null,
+          whatsappSender: truck.whatsapp_sender ?? null,
+          socialFacebook: truck.social_facebook ?? null,
+          socialInstagram: truck.social_instagram ?? null,
+          contactEmail: truck.contact_email ?? null,
+          allowCancellation: truck.allow_customer_cancellation ?? true,
+          cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
+          baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+          truckSlug: truck.slug ?? undefined,
+        })
+        await sendConfirmationEmail({ to: order.customer_email, subject, html, text, senderName: truck.name })
       }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }
@@ -551,7 +564,7 @@ export async function POST(req: NextRequest) {
     if (action?.startsWith('adjust_slot_+')) {
       const mins = parseInt(action.replace('adjust_slot_+', ''))
       if (!orderId || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
-      const { data: ord } = await supabase.from('orders').select('slot,event_date,customer_email,customer_name').eq('id', orderId).single()
+      const { data: ord } = await supabase.from('orders').select('slot,event_date,customer_email,customer_name,items,deals,total,notes,discount_amt').eq('id', orderId).single()
       if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
@@ -569,17 +582,44 @@ export async function POST(req: NextRequest) {
       await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('id', orderId)
       // Notify customer of time change
       if (ord.customer_email) {
-        await notifyCustomer(ord.customer_email,
-          `Your collection time has changed`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Collection time updated</h2>
-            <p>Hi ${ord.customer_name}, your order #${orderId} from <strong>${truck.name}</strong> has been confirmed with an adjusted collection time.</p>
-            <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:12px;margin:12px 0">
-              <p style="margin:0;color:#92400e;font-weight:700;font-size:16px">New collection time: ${newSlot}</p>
-              <p style="margin:4px 0 0;color:#92400e;font-size:13px">Original time was ${ord.slot} — adjusted by ${mins} minutes</p>
-            </div>
-            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
-          </body>`, truck.name)
+        const { data: slotEventRow } = await supabase
+          .from('truck_events')
+          .select('venue_name')
+          .eq('truck_id', truck.id)
+          .eq('event_date', ord.event_date)
+          .neq('status', 'cancelled')
+          .maybeSingle()
+        const { html, text } = formatConfirmationEmail({
+          orderId,
+          customerName: ord.customer_name,
+          truckName: truck.name,
+          items: ord.items || [],
+          deals: ord.deals || [],
+          slot: newSlot,
+          slotAdjustedFrom: ord.slot,
+          discountAmt: ord.discount_amt ?? 0,
+          total: Number(ord.total),
+          notes: ord.notes ?? null,
+          autoAccepted: true,
+          venueName: slotEventRow?.venue_name ?? null,
+          preferredContactMethod: truck.preferred_contact_method ?? null,
+          contactPhone: truck.contact_phone ?? null,
+          whatsappSender: truck.whatsapp_sender ?? null,
+          socialFacebook: truck.social_facebook ?? null,
+          socialInstagram: truck.social_instagram ?? null,
+          contactEmail: truck.contact_email ?? null,
+          allowCancellation: truck.allow_customer_cancellation ?? true,
+          cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
+          baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+          truckSlug: truck.slug ?? undefined,
+        })
+        await sendConfirmationEmail({
+          to: ord.customer_email,
+          subject: `Your order #${orderId} has been updated`,
+          html,
+          text,
+          senderName: truck.name,
+        })
       }
       return NextResponse.json({ success: true, newSlot })
     }

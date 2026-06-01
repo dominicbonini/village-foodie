@@ -211,7 +211,7 @@ export function AddOrderPanel({
       const data = await res.json()
       if (!data.events?.length) return
       const mapped: EventRecord[] = data.events
-        .filter((ev: any) => ev.status === 'confirmed' || ev.status === 'open')
+        .filter((ev: any) => ['confirmed', 'open', 'closed'].includes(ev.status))
         .map((ev: any) => ({
           id: ev.id,
           event_date: ev.event_date,
@@ -249,7 +249,7 @@ export function AddOrderPanel({
     onEventPickerOpened?.()
   }, [requestEventPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync manualEvent when the dashboard changes the active event via the event bar
+  // Sync manualEvent when the dashboard switches to a different event
   useEffect(() => {
     if (!controlledEvent) return
     if (controlledEvent.id === manualEvent?.id) return
@@ -257,6 +257,14 @@ export function AddOrderPanel({
     fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time)
     setManualSlot('')
   }, [controlledEvent?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync status-only changes on the same event (e.g. after open/close)
+  useEffect(() => {
+    if (!controlledEvent) return
+    if (controlledEvent.id !== manualEvent?.id) return
+    if (controlledEvent.status === manualEvent?.status) return
+    setManualEvent(prev => prev ? { ...prev, status: controlledEvent.status } : controlledEvent)
+  }, [controlledEvent?.status]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (manualEvent || upcomingEvents.length === 0) return
@@ -765,7 +773,7 @@ setItemModal({ item, modGroups, editCartKey })
     </button>
   ) : null
 
-  const eventBanner = (
+  const eventBanner = manualEvent?.status !== 'open' ? (
     <div className="hidden sm:block mb-4">
       {manualEvent ? (
         <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5">
@@ -789,11 +797,11 @@ setItemModal({ item, modGroups, editCartKey })
               Change
             </button>
           </div>
-          {manualEvent.status === 'confirmed' && onOpenEvent && (
+          {(manualEvent.status === 'confirmed' || manualEvent.status === 'closed') && onOpenEvent && (
             <button
               onClick={() => onOpenEvent(manualEvent.id)}
               className="mt-2 w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-teal-700 active:scale-[0.98] transition-all">
-              Open for orders
+              {manualEvent.status === 'closed' ? 'Restart Event' : 'Start Event'}
             </button>
           )}
         </div>
@@ -812,7 +820,7 @@ setItemModal({ item, modGroups, editCartKey })
         </div>
       )}
     </div>
-  )
+  ) : null
 
   // ── render ────────────────────────────────────────────────────────────────
 
@@ -1009,7 +1017,9 @@ setItemModal({ item, modGroups, editCartKey })
                         className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>
-                          {isFuture && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
+                          {ev.status === 'closed' && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">● Closed</span>}
+                          {ev.status === 'open' && <span className="text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 rounded px-1.5 py-0.5 flex-shrink-0">● Live</span>}
+                          {isFuture && ev.status !== 'closed' && ev.status !== 'open' && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
                         </div>
                         {(ev.venue_name || ev.town) && <p className="text-xs text-slate-500 mt-0.5">{fmtVenue(ev.venue_name, ev.town)}</p>}
                         {isSelected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
