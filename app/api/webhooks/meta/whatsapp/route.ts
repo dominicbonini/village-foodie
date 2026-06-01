@@ -9,6 +9,13 @@ export async function GET(req: NextRequest) {
   const token     = searchParams.get('hub.verify_token')
   const challenge = searchParams.get('hub.challenge')
 
+  console.log('[webhook/meta-whatsapp] verify attempt:', {
+    mode,
+    token,
+    envToken: process.env.META_WEBHOOK_VERIFY_TOKEN,
+    match: token === VERIFY_TOKEN,
+  })
+
   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
     console.log('[webhook/meta-whatsapp] verified')
     return new NextResponse(challenge, { status: 200 })
