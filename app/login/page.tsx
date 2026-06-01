@@ -15,6 +15,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showResetSuccess, setShowResetSuccess] = useState(message === 'password_reset')
+  const showEmailChanged = message === 'email_changed'
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,6 +73,13 @@ function LoginForm() {
           <div className="bg-orange-50 border border-orange-200 rounded-xl
                           px-4 py-3 text-sm text-orange-700 text-center">
             Password updated successfully. Please sign in.
+          </div>
+        )}
+
+        {showEmailChanged && (
+          <div className="bg-orange-50 border border-orange-200 rounded-xl
+                          px-4 py-3 text-sm text-orange-700 text-center">
+            Email address updated. Please sign in with your new email address.
           </div>
         )}
 

@@ -1,10 +1,24 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
+import VerifyEmailSuccess from './VerifyEmailSuccess'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
+
+function ErrorUI({ message }: { message: string }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
+      <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
+        <div className="text-4xl mb-4">❌</div>
+        <p className="text-lg font-semibold text-slate-900">Verification failed</p>
+        <p className="text-sm text-slate-500 mt-2">{message}</p>
+        <a href="/login" className="mt-4 inline-block text-orange-600 underline text-sm">Go to login</a>
+      </div>
+    </div>
+  )
+}
 
 export default async function VerifyEmailPage({
   searchParams,
@@ -16,7 +30,7 @@ export default async function VerifyEmailPage({
 
   const { data: change } = await supabase
     .from('operator_email_changes')
-    .select('id, operator_id, new_email, expired_at, verified_at')
+    .select('id, operator_id, old_email, new_email, expired_at, verified_at')
     .eq('token', token)
     .maybeSingle()
 
@@ -59,51 +73,67 @@ export default async function VerifyEmailPage({
     )
   }
 
-  // Get auth_user_id before updating email
   const { data: operator } = await supabase
     .from('operators')
     .select('auth_user_id')
     .eq('id', change.operator_id)
     .single()
 
-  // Update operator email
-  await supabase
+  if (!operator?.auth_user_id) {
+    return <ErrorUI message="Account not found. Please contact support." />
+  }
+
+  // Pre-flight: block if another auth user already owns the new email
+  const { data: { users } } = await supabase.auth.admin.listUsers()
+  const conflict = users?.find(
+    u => u.email === change.new_email && u.id !== operator.auth_user_id
+  )
+  if (conflict) {
+    return (
+      <ErrorUI message="This email address is already associated with another account. Please use a different email address." />
+    )
+  }
+
+  // 1. Update operators.email
+  const { error: opError } = await supabase
     .from('operators')
     .update({ email: change.new_email })
     .eq('id', change.operator_id)
 
-  // Update Supabase Auth email
-  if (operator?.auth_user_id) {
-    await supabase.auth.admin.updateUserById(operator.auth_user_id, {
-      email: change.new_email,
-    })
-
-    // Update truck_users email if operator also has a crew entry
-    await supabase
-      .from('truck_users')
-      .update({ email: change.new_email })
-      .eq('auth_user_id', operator.auth_user_id)
+  if (opError) {
+    console.error('[verify-email] operators update failed:', opError)
+    return <ErrorUI message="Failed to update email. Please try again." />
   }
 
-  // Mark verified (preserves audit trail)
+  // 2. Update auth.users.email
+  const { error: authError } = await supabase.auth.admin.updateUserById(
+    operator.auth_user_id,
+    { email: change.new_email }
+  )
+
+  if (authError) {
+    console.error('[verify-email] auth update failed:', authError)
+    await supabase
+      .from('operators')
+      .update({ email: change.old_email })
+      .eq('id', change.operator_id)
+    return <ErrorUI message="Failed to update login credentials. Your email has not been changed." />
+  }
+
+  // 3. Update truck_users.email (non-critical)
+  const { error: tuError } = await supabase
+    .from('truck_users')
+    .update({ email: change.new_email })
+    .eq('auth_user_id', operator.auth_user_id)
+  if (tuError) {
+    console.error('[verify-email] truck_users update failed:', tuError)
+  }
+
+  // 4. Mark verified_at
   await supabase
     .from('operator_email_changes')
     .update({ verified_at: new Date().toISOString() })
     .eq('id', change.id)
 
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50">
-      <div className="text-center bg-white rounded-2xl p-8 shadow-sm max-w-sm w-full">
-        <div className="text-4xl mb-4">✅</div>
-        <p className="text-lg font-semibold text-slate-900">Email address updated</p>
-        <p className="text-sm text-slate-500 mt-2">Your email has been changed to {change.new_email}.</p>
-        <a
-          href="/login"
-          className="mt-6 inline-block bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-xl text-sm"
-        >
-          Go to login
-        </a>
-      </div>
-    </div>
-  )
+  return <VerifyEmailSuccess newEmail={change.new_email} />
 }

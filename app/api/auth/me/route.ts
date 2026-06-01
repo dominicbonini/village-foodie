@@ -22,7 +22,7 @@ export async function GET() {
   if (operator) {
     return NextResponse.json({
       name: operator.name || operator.email || null,
-      email: user.email || null,
+      email: operator.email || null,
       first_name: operator.first_name || null,
       last_name: operator.last_name || null,
       phone: operator.phone || null,
