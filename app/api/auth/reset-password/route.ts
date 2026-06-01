@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
   const { data: operator } = await supabase
     .from('operators')
-    .select('auth_user_id')
+    .select('id, email, auth_user_id')
     .eq('id', resetToken.operator_id)
     .single()
 
@@ -62,6 +62,12 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     )
   }
+
+  console.log('[reset-password] updating auth user:', {
+    auth_user_id: operator.auth_user_id,
+    operator_email: operator.email,
+    operator_id: operator.id,
+  })
 
   const { error: updateError } = await supabase.auth.admin.updateUserById(
     operator.auth_user_id,
