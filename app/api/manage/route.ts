@@ -35,10 +35,12 @@ export async function GET(req: NextRequest) {
   // Operator identity takes priority — if the calling user owns this truck,
   // they are always 'owner' regardless of any truck_users crew entry.
   let userRole: 'owner' | 'manager' | 'staff' = 'owner'
+  let currentUserId: string | null = null
   try {
     const supabaseAuth = await createSupabaseServerClient()
     const { data: { user } } = await supabaseAuth.auth.getUser()
     if (user) {
+      currentUserId = user.id
       const isOperator = truck.operator_id
         ? (await supabase
             .from('operators')
@@ -130,6 +132,7 @@ export async function GET(req: NextRequest) {
     codes: codes || [],
     events: events || [],
     userRole,
+    currentUserId,
     operatorTrucks: operatorTrucks || [],
     pendingEmailChange: pendingEmailChange || null,
   })
@@ -144,28 +147,45 @@ export async function POST(req: NextRequest) {
   const truck = await getTruck(token)
   if (!truck) return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
 
-  // ── Staff permission gate ─────────────────────────────────
-  const writeActions = [
-    'upsert_event', 'upsert_item', 'upsert_category', 'delete_item', 'delete_category',
+  // ── Resolve requesting user's role and ID ────────────────
+  let requestingUserRole: 'owner' | 'manager' | 'staff' = 'owner'
+  let requestingUserId: string | null = null
+  try {
+    const supabaseAuth = await createSupabaseServerClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    if (user) {
+      requestingUserId = user.id
+      const isOperator = truck.operator_id
+        ? (await supabase
+            .from('operators')
+            .select('id')
+            .eq('auth_user_id', user.id)
+            .eq('id', truck.operator_id)
+            .maybeSingle()
+          ).data !== null
+        : false
+      if (!isOperator) {
+        const { data: truckUser } = await supabase
+          .from('truck_users')
+          .select('role')
+          .eq('auth_user_id', user.id)
+          .eq('truck_id', truck.id)
+          .single()
+        if (truckUser?.role) requestingUserRole = truckUser.role as 'owner' | 'manager' | 'staff'
+      }
+    }
+  } catch {}
+
+  // Staff gate for all write actions except update_member (staff can edit themselves)
+  const staffBlockedActions = [
+    'upsert_event', 'upsert_item', 'upsert_category', 'delete_item', 'delete_category', 'bulk_delete_items',
     'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
     'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
     'upsert_upsell_rule', 'delete_upsell_rule',
   ]
-  if (writeActions.includes(action)) {
-    const supabaseAuth = await createSupabaseServerClient()
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (user) {
-      const { data: truckUser } = await supabase
-        .from('truck_users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .eq('truck_id', truck.id)
-        .single()
-      if (truckUser?.role === 'staff') {
-        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
-      }
-    }
+  if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
+    return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
   }
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
@@ -192,6 +212,16 @@ export async function POST(req: NextRequest) {
   if (action === 'delete_category') {
     const { id } = body
     await supabase.from('menu_categories').update({ is_active: false }).eq('id', id).eq('truck_id', truck.id)
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'bulk_delete_items') {
+    const { category_id } = body
+    await supabase
+      .from('menu_items_db')
+      .update({ is_active: false })
+      .eq('category_id', category_id)
+      .eq('truck_id', truck.id)
     return NextResponse.json({ success: true })
   }
 
@@ -451,13 +481,14 @@ export async function POST(req: NextRequest) {
 
   // ── SETTINGS ──────────────────────────────────────────────
   if (action === 'update_settings') {
-    const { name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept, logo_storage_path, website, allergen_info_url, allergen_info_text } = body
+    const { name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept, logo_storage_path, website, allergen_info_url, allergen_info_text, truck_emoji } = body
     const { data, error } = await supabase.from('trucks').update({
       name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept,
       ...(logo_storage_path !== undefined ? { logo_storage_path } : {}),
       ...(website !== undefined ? { website } : {}),
       ...(allergen_info_url !== undefined ? { allergen_info_url } : {}),
       ...(allergen_info_text !== undefined ? { allergen_info_text } : {}),
+      ...(truck_emoji !== undefined ? { truck_emoji } : {}),
     }).eq('id', truck.id).select().single()
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
     return NextResponse.json({ truck: data })
@@ -488,7 +519,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from('truck_users')
       .select(`
-        id, email, name, role, accepted_at,
+        id, email, name, role, accepted_at, auth_user_id,
         truck_user_vans (
           van_id,
           truck_vans ( name )
@@ -503,6 +534,7 @@ export async function POST(req: NextRequest) {
       name: m.name,
       role: m.role,
       accepted_at: m.accepted_at,
+      auth_user_id: m.auth_user_id,
       van_names: (m.truck_user_vans || []).map((tuv: any) => tuv.truck_vans?.name).filter(Boolean),
     }))
     return NextResponse.json({ members })
@@ -526,6 +558,28 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'update_member') {
+    if (requestingUserRole === 'staff') {
+      const { data: selfRow } = await supabase
+        .from('truck_users')
+        .select('id')
+        .eq('auth_user_id', requestingUserId!)
+        .eq('truck_id', truck.id)
+        .single()
+      if (!selfRow || selfRow.id !== body.memberId) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      }
+    }
+    if (requestingUserRole === 'manager') {
+      const { data: target } = await supabase
+        .from('truck_users')
+        .select('role')
+        .eq('id', body.memberId)
+        .single()
+      if (target?.role !== 'staff') {
+        return NextResponse.json({ error: 'Managers can only edit staff members' }, { status: 403 })
+      }
+    }
+
     const { memberId, name, role, van_ids } = body
     const { error } = await supabase
       .from('truck_users')
@@ -630,6 +684,13 @@ export async function POST(req: NextRequest) {
 
   // ── STAFF INVITE (full: auth user + email) ───────────────────
   if (action === 'invite_team_member') {
+    if (!['owner', 'manager'].includes(requestingUserRole)) {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    }
+    if (requestingUserRole === 'manager' && ['owner', 'manager'].includes(body.role || 'staff')) {
+      return NextResponse.json({ error: 'Managers can only invite staff' }, { status: 403 })
+    }
+
     const { email, name, role, vanIds } = body
 
     if (!email) {
@@ -798,6 +859,20 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'remove_team_member') {
+    if (requestingUserRole === 'staff') {
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+    }
+    if (requestingUserRole === 'manager') {
+      const { data: target } = await supabase
+        .from('truck_users')
+        .select('role')
+        .eq('id', body.memberId)
+        .single()
+      if (target?.role !== 'staff') {
+        return NextResponse.json({ error: 'Managers can only remove staff members' }, { status: 403 })
+      }
+    }
+
     const { memberId } = body
     await supabase
       .from('truck_users')

@@ -281,7 +281,7 @@ export function OrderCard({
     // solo mode (default) — preserve isPub behaviour for backwards compat
     if (['confirmed', 'modified'].includes(order.status)) {
       return isPub
-        ? <Btn label="🍕 Ready" colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
+        ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
         : <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
     }
     if (order.status === 'ready') {

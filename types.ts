@@ -30,4 +30,5 @@ export interface VillageEvent {
   orderUrl?: string;
   acceptedMethods?: string;
   orderInfo?: string;   // Keeping this for backwards compatibility
+  source?: 'operator' | 'discovery';
 }

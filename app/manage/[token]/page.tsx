@@ -17,7 +17,7 @@ import UserMenu from '@/components/dashboard/UserMenu'
 import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded' }
+interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -25,7 +25,7 @@ interface ModifierOption { id: string; group_id: string; name: string; price_adj
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
 interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; kitchen_capacity: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
-interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; van_names?: string[] }
+interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
 type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'billing'
 type UserRole = 'owner' | 'manager' | 'staff'
@@ -63,11 +63,11 @@ function Btn({ label, colour = 'orange', size = 'md', loading = false, disabled 
     </button>
   )
 }
-function Input({ label, value, onChange, type = 'text', placeholder, required, hint, error }: { label: string; value: string | number; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean; hint?: string; error?: string }) {
+function Input({ label, value, onChange, onBlur, type = 'text', placeholder, required, hint, error }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; placeholder?: string; required?: boolean; hint?: string; error?: string }) {
   return (
     <div>
       <label className="block text-xs font-bold text-slate-600 mb-1">{label}{required && <span className="text-red-400 ml-0.5">*</span>}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
         className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${error ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
       {hint && <p className="text-slate-400 text-xs mt-0.5">{hint}</p>}
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
@@ -105,11 +105,55 @@ function EmptyState({ icon, title, body }: { icon: string; title: string; body: 
   )
 }
 
+const FOOD_EMOJI_CATEGORIES = [
+  {
+    label: 'Street food & fast food',
+    emojis: ['🍕', '🍔', '🌮', '🌯', '🥙', '🌭', '🥪', '🍟', '🧆', '🫔', '🥡'],
+  },
+  {
+    label: 'Meat & protein',
+    emojis: ['🥩', '🍖', '🍗', '🥓', '🍳', '🥚', '🧀'],
+  },
+  {
+    label: 'Fish & seafood',
+    emojis: ['🐟', '🦐', '🦞', '🦀', '🦑', '🦪', '🍤'],
+  },
+  {
+    label: 'World cuisine',
+    emojis: ['🍜', '🍝', '🍛', '🍲', '🥘', '🫕', '🍱', '🍣', '🥟', '🍙', '🍚', '🍥', '🥮', '🍢', '🍡'],
+  },
+  {
+    label: 'Bread & breakfast',
+    emojis: ['🍞', '🥐', '🥖', '🫓', '🥨', '🥯', '🧇', '🥞', '🧈'],
+  },
+  {
+    label: 'Sweet & dessert',
+    emojis: ['🍰', '🎂', '🧁', '🍩', '🍪', '🍫', '🍬', '🍭', '🍮', '🍦', '🍨', '🍧', '🥧', '🍿'],
+  },
+  {
+    label: 'Fruit & veg',
+    emojis: ['🥗', '🌽', '🥦', '🥕', '🍅', '🫛', '🥬', '🥔', '🍠', '🧄', '🧅', '🍄', '🫒', '🥑', '🌶️', '🥜'],
+  },
+  {
+    label: 'Drinks',
+    emojis: ['☕', '🍵', '🫖', '🧃', '🥤', '🧋', '🥛', '🍺', '🥂', '🍷', '🥃', '🍹', '🧉', '🍾'],
+  },
+  {
+    label: 'Utensils & dining',
+    emojis: ['🍽️', '🍴', '🥢', '🥄', '🔪', '🫙', '🧂'],
+  },
+  {
+    label: 'Truck & vibe',
+    emojis: ['🚚', '🔥', '⭐', '✨', '🏆', '👨‍🍳', '🧑‍🍳', '🎪'],
+  },
+]
+
 // ── Main page ──────────────────────────────────────────────────
 export default function ManagePage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = use(params)
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
+  const [showTrialReminder, setShowTrialReminder] = useState(false)
   const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
@@ -126,6 +170,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [currentUserFirstName, setCurrentUserFirstName] = useState<string | null>(null)
   const [currentUserLastName, setCurrentUserLastName] = useState<string | null>(null)
   const [currentUserPhone, setCurrentUserPhone] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [pendingEmailChange, setPendingEmailChange] = useState<{ id: string; new_email: string; requested_at: string; expired_at: string } | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
@@ -141,6 +186,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       if (!res.ok) throw new Error(data.error)
       setTruck(data.truck)
       setUserRole(data.userRole || 'owner')
+      setCurrentUserId(data.currentUserId || null)
       setCategories(data.categories)
       setItems(data.items)
       setModifierGroups(data.modifierGroups)
@@ -161,6 +207,23 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     const allTabIds: Tab[] = ['menu', 'modifiers', 'deals', 'reports', 'schedule', 'team', 'settings', 'billing']
     if (tabParam && allTabIds.includes(tabParam)) setActiveTab(tabParam)
   }, [])
+
+  // Trial accounts default to billing tab on every page load
+  useEffect(() => {
+    if (truck?.plan === 'trial') setActiveTab('billing')
+  }, [truck?.id])
+
+  // Daily trial reminder popup — shown once per day via localStorage
+  useEffect(() => {
+    if (truck?.plan !== 'trial') return
+    const key = 'hg_trial_reminder_shown'
+    const lastShown = localStorage.getItem(key)
+    const today = new Date().toDateString()
+    if (lastShown !== today) {
+      setShowTrialReminder(true)
+      localStorage.setItem(key, today)
+    }
+  }, [truck?.plan])
 
   // Staff have no business on the manage page — send them to the dashboard
   useEffect(() => {
@@ -228,7 +291,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   )
 
   const allTabs: { id: Tab; label: string; icon: string; roles: UserRole[] }[] = [
-    { id: 'menu',      label: 'Menu',      icon: '🍕', roles: ['owner', 'manager'] },
+    { id: 'menu',      label: 'Menu',      icon: truck?.truck_emoji || '🍕', roles: ['owner', 'manager'] },
     { id: 'schedule',  label: 'Schedule',  icon: '📅', roles: ['owner', 'manager'] },
     { id: 'deals',     label: 'Deals',     icon: '🎁', roles: ['owner', 'manager'] },
     { id: 'modifiers', label: 'Extras & Upsells', icon: '⚡', roles: ['owner', 'manager'] },
@@ -262,7 +325,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         />
       </AppHeader>
       {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
-      <div className="bg-slate-900 border-b border-slate-700">
+      <div className="bg-slate-900 border-b border-slate-700 sticky top-[51px] z-40 overflow-x-auto">
         <div className="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto">
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
@@ -306,6 +369,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           currentUserFirstName={currentUserFirstName}
           currentUserLastName={currentUserLastName}
           currentUserPhone={currentUserPhone}
+          currentUserId={currentUserId}
+          userRole={userRole}
           initialPendingEmailChange={pendingEmailChange}
           onProfileSaved={(firstName, lastName, phone) => {
             const fullName = `${firstName} ${lastName}`.trim()
@@ -320,6 +385,46 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       </main>
 
       {toast && <Toast msg={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
+
+      {/* Trial reminder popup — shown once per day */}
+      {showTrialReminder && truck && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl relative">
+            <button
+              onClick={() => setShowTrialReminder(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg leading-none">
+              ✕
+            </button>
+            <div className="text-center mb-4">
+              <div className="text-3xl mb-2">🎉</div>
+              <h2 className="text-xl font-black text-slate-900">You&apos;re on a free trial</h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Trial ends <span className="font-semibold text-orange-500">
+                  {truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at) : 'soon'}
+                </span>
+              </p>
+            </div>
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-4 text-center">
+              <p className="text-sm font-semibold text-orange-800">
+                Full Max features + Pay at Hatch ordering — completely free*
+              </p>
+              <p className="text-sm text-orange-700 mt-1">
+                You won&apos;t be charged anything until your trial ends on{' '}
+                <strong>{truck.trial_expires_at ? formatTrialEndDate(truck.trial_expires_at) : 'soon'}</strong>.
+                Choose your plan before then — if you don&apos;t, access will revert to the free Starter tier and some features will stop working.
+              </p>
+              <p className="text-xs text-orange-500 mt-2">
+                *Standard card processing fees apply on online orders
+              </p>
+            </div>
+            <button
+              onClick={() => { setShowTrialReminder(false); setActiveTab('billing') }}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-xl transition-colors">
+              Upgrade here →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Edit profile modal */}
       {showProfileModal && (
@@ -575,6 +680,23 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
     }
   }
 
+  const handleDeleteCategory = async (cat: Category) => {
+    const catItemCount = localItems.filter(i => i.category_id === cat.id).length
+    const confirmMsg = catItemCount > 0
+      ? `Delete "${cat.name}"? This will also delete ${catItemCount} item${catItemCount === 1 ? '' : 's'} in this category. This cannot be undone.`
+      : `Delete "${cat.name}"? This cannot be undone.`
+    if (!window.confirm(confirmMsg)) return
+    try {
+      if (catItemCount > 0) {
+        await api('bulk_delete_items', { category_id: cat.id })
+      }
+      await api('delete_category', { id: cat.id })
+      reload()
+    } catch (e: any) {
+      showToast(e.message, 'error')
+    }
+  }
+
   const toggleItem = async (item: Item) => {
     const newAvail = !item.is_available
     setLocalItems(prev => prev.map(i => i.id === item.id ? { ...i, is_available: newAvail } : i))
@@ -750,6 +872,13 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                 </div>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat) }}
+                  className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                  title="Delete category"
+                >
+                  🗑
+                </button>
                 <span className="text-slate-400 text-xs select-none">{isOpen ? '▲' : '▼'}</span>
               </div>
             </div>
@@ -2907,8 +3036,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [form, setForm] = useState({ ...truck })
-  const [saving, setSaving] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false)
   const [crewMode, setCrewMode] = useState<'solo' | 'full'>(truck.crew_mode ?? 'solo')
   const [kdsMode, setKdsMode] = useState<boolean>(truck.kds_mode ?? false)
   const [displayMode, setDisplayMode] = useState<'list' | 'grid'>((truck as any).display_mode ?? 'list')
@@ -3000,19 +3129,18 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     }
   }
 
+  const saveFormField = async (overrides?: Record<string, unknown>) => {
+    try {
+      await api('update_settings', { ...form, ...overrides })
+    } catch (e: any) {
+      showToast(e.message, 'error')
+    }
+  }
+
   const handleDisplayModeChange = async (value: 'list' | 'grid') => {
     setDisplayMode(value)
     try { await api('update_truck', { data: { display_mode: value } }) }
     catch (err: any) { showToast(err.message, 'error') }
-  }
-
-  const save = async () => {
-    setSaving(true)
-    try {
-      await api('update_settings', { ...form, website: (form as any).website })
-      reload()
-    } catch (e: any) { showToast(e.message, 'error') }
-    finally { setSaving(false) }
   }
 
   const uploadLogo = async (file: File) => {
@@ -3108,13 +3236,28 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       {/* Truck details */}
       <Card className="p-4 space-y-3">
         <p className="font-bold text-slate-900">Truck details</p>
-        <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} />
+        <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} onBlur={() => saveFormField()} />
         <div>
           <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
-          <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} placeholder="Tell customers about your food..."
+          <textarea value={form.description || ''} onChange={e => setForm(p => ({...p, description: e.target.value}))} onBlur={() => saveFormField()} placeholder="Tell customers about your food..."
             className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" rows={3} />
         </div>
-        <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} placeholder="e.g. Italian, Thai, Burgers" />
+        <Input label="Cuisine type" required value={form.cuisine_type || ''} onChange={v => setForm(p => ({...p, cuisine_type: v}))} onBlur={() => saveFormField()} placeholder="e.g. Italian, Thai, Burgers" />
+
+        {/* Menu icon */}
+        <div className="mt-1">
+          <label className="text-xs font-bold uppercase tracking-widest text-slate-500 block mb-2">
+            Menu icon
+          </label>
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{form.truck_emoji || '🍕'}</span>
+            <button
+              onClick={() => setShowEmojiPicker(true)}
+              className="text-sm text-orange-500 hover:text-orange-600 font-medium underline underline-offset-2">
+              Change emoji
+            </button>
+          </div>
+        </div>
       </Card>
 
       {/* Business contact */}
@@ -3123,8 +3266,8 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           <p className="font-bold text-slate-900">Business contact</p>
           <p className="text-xs text-slate-400 mt-0.5">Shown to customers on order confirmations. For your personal account details, go to Team → My profile.</p>
         </div>
-        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} placeholder="hello@yourtruck.com" />
-        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} placeholder="07700 900123" />
+        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" />
+        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={() => saveFormField()} placeholder="07700 900123" />
       </Card>
 
       {/* Online presence & social */}
@@ -3138,7 +3281,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             type="text"
             value={(form as any).website || ''}
             onChange={e => setForm(p => ({...p, website: e.target.value}))}
-            onBlur={() => saveSetting('website', (form as any).website || '')}
+            onBlur={() => saveFormField()}
             placeholder="https://yourtruck.co.uk"
             className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
@@ -3212,7 +3355,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 type="text"
                 value={form.social_instagram || ''}
                 onChange={e => setForm(p => ({...p, social_instagram: e.target.value}))}
-                onBlur={() => saveSetting('social_instagram', form.social_instagram || '')}
+                onBlur={() => saveFormField()}
                 placeholder="@youraccount"
                 className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
@@ -3231,7 +3374,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                 type="text"
                 value={form.social_facebook || ''}
                 onChange={e => setForm(p => ({...p, social_facebook: e.target.value}))}
-                onBlur={() => saveSetting('social_facebook', form.social_facebook || '')}
+                onBlur={() => saveFormField()}
                 placeholder="facebook.com/yourtruck"
                 className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
@@ -3379,7 +3522,11 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             <p className="text-sm font-bold text-slate-700">Auto-accept orders</p>
             <p className="text-xs text-slate-400">Incoming web orders are confirmed immediately</p>
           </div>
-          <Toggle on={!!form.auto_accept} onToggle={() => setForm(p => ({...p, auto_accept: !p.auto_accept}))} />
+          <Toggle on={!!form.auto_accept} onToggle={() => {
+            const next = !form.auto_accept
+            setForm(p => ({...p, auto_accept: next}))
+            saveFormField({ auto_accept: next })
+          }} />
         </div>
         {form.auto_accept && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
@@ -3533,11 +3680,6 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             <div className="flex items-center justify-between py-3 border-b border-slate-200 mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-base font-bold text-slate-900">{van.name}</span>
-                {van.auto_pause_on_offline && (
-                  <span className="text-xs px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-100 rounded-full">
-                    Protected
-                  </span>
-                )}
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -3818,13 +3960,56 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         </div>
       )}
 
-      <div className="flex gap-3">
-        <Btn label={saving ? 'Saving...' : 'Save settings'} loading={saving} onClick={save} />
-        <a href={`/dashboard/${token}`} className="text-sm text-slate-400 hover:text-slate-600 font-bold py-2">← Back to dashboard</a>
-      </div>
+      <p className="text-xs text-slate-400 text-center pb-2">Changes save automatically</p>
+
+      {/* Emoji picker popup */}
+      {showEmojiPicker && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm shadow-xl flex flex-col max-h-[80vh]">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+              <h3 className="font-bold text-slate-900">Choose your icon</h3>
+              <button
+                onClick={() => setShowEmojiPicker(false)}
+                className="text-slate-400 hover:text-slate-600 text-lg leading-none">
+                ✕
+              </button>
+            </div>
+            <div className="overflow-y-auto p-4 space-y-4">
+              {FOOD_EMOJI_CATEGORIES.map(({ label, emojis }) => (
+                <div key={label}>
+                  <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
+                    {label}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {emojis.map(emoji => (
+                      <button
+                        key={emoji}
+                        onClick={() => {
+                          setForm(f => ({ ...f, truck_emoji: emoji }))
+                          saveFormField({ truck_emoji: emoji })
+                          setShowEmojiPicker(false)
+                        }}
+                        className={`text-2xl p-1.5 rounded-lg transition-colors ${
+                          form.truck_emoji === emoji
+                            ? 'bg-orange-100 ring-2 ring-orange-400'
+                            : 'hover:bg-slate-100'
+                        }`}>
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
+
+const formatTrialEndDate = (dateStr: string) =>
+  new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 
 // ── BillingTab ──────────────────────────────────────────────────
 // TODO: Replace upgrade modal with Stripe Checkout/Customer Portal when Stripe Connect billing is implemented
@@ -4004,6 +4189,18 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 </div>
               </div>
             </div>
+            {truck.trial_expires_at && (
+              <>
+                <p className="text-xs text-center text-slate-500 mt-3">
+                  🔒 You won&apos;t be charged anything until your trial ends on{' '}
+                  {formatTrialEndDate(truck.trial_expires_at)}.
+                  Automated billing activates at the end of your trial — cancel anytime before then at no cost.
+                </p>
+                <p className="text-xs text-center text-slate-400 mt-1">
+                  *Standard card processing fees apply on online orders
+                </p>
+              </>
+            )}
           </div>
           <p className="text-xs text-amber-600 font-medium -mt-3">
             ⏱ Set up payment before your trial ends to keep access
@@ -4691,10 +4888,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 // ── TeamTab ────────────────────────────────────────────────────
 type PendingEmailChange = { id: string; new_email: string; requested_at: string; expired_at: string }
 
-function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, initialPendingEmailChange, onProfileSaved }: {
+function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, currentUserId, userRole, initialPendingEmailChange, onProfileSaved }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   currentUserEmail: string | null; currentUserFirstName: string | null; currentUserLastName: string | null; currentUserPhone: string | null
+  currentUserId: string | null; userRole: 'owner' | 'manager' | 'staff'
   initialPendingEmailChange: PendingEmailChange | null
   onProfileSaved: (firstName: string, lastName: string, phone: string | null) => void
 }) {
@@ -4886,6 +5084,28 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
     }
   }
 
+  const canEdit = (member: TeamMember) => {
+    if (userRole === 'owner') return true
+    if (userRole === 'manager') return member.role === 'staff'
+    if (userRole === 'staff') return member.auth_user_id === currentUserId
+    return false
+  }
+
+  const canRemove = (member: TeamMember) => {
+    if (userRole === 'owner') return true
+    if (userRole === 'manager') return member.role === 'staff'
+    return false
+  }
+
+  const visibleMembers = teamMembers.filter(member => {
+    if (userRole === 'owner' || userRole === 'manager') return true
+    return member.auth_user_id === currentUserId
+  })
+
+  const invitableRoles: Array<'owner' | 'manager' | 'staff'> = userRole === 'owner'
+    ? ['manager', 'staff']
+    : ['staff']
+
   return (
     <div className="flex flex-col gap-4 max-w-lg">
       <div className="flex items-center justify-between">
@@ -4895,12 +5115,14 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
             Invite staff to access the order screen and take orders
           </p>
         </div>
-        <button
-          onClick={openInviteModal}
-          className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
-        >
-          + Invite member
-        </button>
+        {userRole !== 'staff' && (
+          <button
+            onClick={openInviteModal}
+            className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700"
+          >
+            + Invite member
+          </button>
+        )}
       </div>
 
       <Card className="p-4">
@@ -5055,7 +5277,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
         )}
 
         {/* Team member rows */}
-        {teamMembers.map(member => (
+        {visibleMembers.map(member => (
           <div key={member.id} className="flex items-center justify-between py-2.5 border-b border-slate-100 last:border-0">
             <div>
               <p className="text-sm font-medium text-slate-900">
@@ -5071,23 +5293,27 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
               </p>
             </div>
             <div className="flex gap-2">
-              <button
-                onClick={() => editMember(member)}
-                className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => removeMember(member.id)}
-                className="text-xs px-2.5 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
-              >
-                Remove
-              </button>
+              {canEdit(member) && (
+                <button
+                  onClick={() => editMember(member)}
+                  className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+                >
+                  Edit
+                </button>
+              )}
+              {canRemove(member) && (
+                <button
+                  onClick={() => removeMember(member.id)}
+                  className="text-xs px-2.5 py-1.5 border border-red-200 text-red-600 rounded-lg hover:bg-red-50"
+                >
+                  Remove
+                </button>
+              )}
             </div>
           </div>
         ))}
 
-        {teamMembers.length === 0 && (
+        {visibleMembers.length === 0 && (
           <p className="text-xs text-slate-400 py-3 text-center">No team members yet</p>
         )}
       </Card>
@@ -5131,9 +5357,15 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
                 onChange={e => setInviteRole(e.target.value as 'owner' | 'manager' | 'staff')}
                 className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm"
               >
-                <option value="staff">Staff — Take orders and manage the kitchen</option>
-                <option value="manager">Manager — Full access including menu and settings</option>
-                <option value="owner">Owner — Full access including team and billing</option>
+                {invitableRoles.includes('staff') && (
+                  <option value="staff">Staff — Take orders and manage the kitchen</option>
+                )}
+                {invitableRoles.includes('manager') && (
+                  <option value="manager">Manager — Full access including menu and settings</option>
+                )}
+                {invitableRoles.includes('owner') && (
+                  <option value="owner">Owner — Full access including team and billing</option>
+                )}
               </select>
             </div>
 

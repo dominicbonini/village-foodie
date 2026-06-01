@@ -202,7 +202,7 @@ export async function GET(req: NextRequest) {
           name,
           cuisine_type,
           logo_storage_path,
-          dashboard_token,
+          slug,
           is_test,
           active
         )
@@ -243,7 +243,7 @@ export async function GET(req: NextRequest) {
             venuePhoto: null,
             type: truck?.cuisine_type || '',
             phoneNumber: null,
-            orderUrl: truck?.dashboard_token ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}` : null,
+            orderUrl: truck?.slug ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order` : null,
             acceptedMethods: null,
             websiteUrl: null,
             menuUrl: null,

@@ -28,7 +28,7 @@ export const PLAN_DESCRIPTIONS: Record<Plan, string> = {
   starter: 'Weekend traders & walk-up pitches',
   pro: 'Busy trucks scaling pre-orders',
   max: 'High-volume operations & festivals',
-  trial: 'Full Max features during trial',
+  trial: 'All features included — Max tier + Pay at Hatch ordering',
 }
 
 export const TRANSACTION_ROWS: {

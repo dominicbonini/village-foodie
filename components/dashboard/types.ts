@@ -71,6 +71,7 @@ export interface TruckData {
   feature_overrides: Record<string, boolean> | null
   is_test?: boolean
   qr_code_style?: 'standard' | 'branded'
+  truck_emoji?: string
 }
 
 export interface MenuItem {

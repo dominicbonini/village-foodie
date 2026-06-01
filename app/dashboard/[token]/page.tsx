@@ -651,7 +651,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       </AppHeader>
 
       {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
-      <div className="bg-slate-900 border-b border-slate-700">
+      <div className="bg-slate-900 border-b border-slate-700 sticky top-[51px] z-40 overflow-x-auto">
         {/* Nav tabs row */}
         <div className="px-4">
           <div className="max-w-5xl mx-auto flex items-center">
@@ -678,7 +678,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {/* Event bar — Orders and Add Order tabs only */}
       {(activeTab==='orders'||activeTab==='add')&&(
-        <div className="bg-slate-800 border-b border-slate-700 relative">
+        <div className="bg-slate-800 border-b border-slate-700 sticky top-[95px] z-30 relative">
           <div className="max-w-5xl mx-auto px-4 py-2 flex items-center gap-2">
             {activeEvent?(
               <>
@@ -1011,7 +1011,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             )}
             {pendingOrders.length===0&&confirmedOrders.length===0&&(
               <div className="text-center py-16">
-                <p className="text-4xl mb-3">🍕</p>
+                <p className="text-4xl mb-3">{truck?.truck_emoji || '🍕'}</p>
                 <p className="text-slate-500 font-medium">{orders.length===0?'No orders yet today':'All orders complete!'}</p>
                 <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
               </div>
