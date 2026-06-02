@@ -2694,13 +2694,21 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               ))}
             </select>
           )}
-          <Btn label="📤 Import schedule" colour="ghost" onClick={() => setShowImportModal(true)} />
-          <Btn label="+ Add event" onClick={() => {
-            const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
-            setFormErrors({})
-            setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: operatorTrucks.length === 1 ? operatorTrucks[0].id : '' })
-            setAddMode('manual'); setExtractedEvents([])
-          }} />
+          <div className="flex flex-col items-end gap-0.5">
+            <button onClick={() => setShowImportModal(true)}
+              className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
+              ✨ Import schedule
+            </button>
+            <p className="text-xs text-slate-400">photo, PDF or text</p>
+          </div>
+          <div className="self-start">
+            <Btn label="+ Add event" onClick={() => {
+              const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
+              setFormErrors({})
+              setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: operatorTrucks.length === 1 ? operatorTrucks[0].id : '' })
+              setAddMode('manual'); setExtractedEvents([])
+            }} />
+          </div>
         </div>
       </div>
 
