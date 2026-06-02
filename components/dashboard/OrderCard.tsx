@@ -341,11 +341,14 @@ export function OrderCard({
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
                 <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
                 {(order.customer_email || order.customer_phone) && (
-                  <button
+                  <span
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
-                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors">
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowContact(v => !v) } }}
+                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors cursor-pointer">
                     Contact
-                  </button>
+                  </span>
                 )}
                 <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
               </div>
@@ -357,11 +360,14 @@ export function OrderCard({
               <div className="flex items-center gap-2 font-medium text-sm">
                 <span className="opacity-80 truncate max-w-[120px]">{order.customer_name}</span>
                 {(order.customer_email || order.customer_phone) && (
-                  <button
+                  <span
+                    role="button"
+                    tabIndex={0}
                     onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
-                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors font-normal">
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowContact(v => !v) } }}
+                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors font-normal cursor-pointer">
                     Contact
-                  </button>
+                  </span>
                 )}
                 {order.slot && <span className="opacity-70">{order.slot}</span>}
                 {offsetLabel !== null && <span className="opacity-50">· {offsetLabel}</span>}

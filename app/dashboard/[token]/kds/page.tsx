@@ -295,7 +295,7 @@ export default function KdsPage() {
     const res = await fetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, pin, action: 'set_paused', paused_until }),
+      body: JSON.stringify({ token, pin, action: 'set_paused', paused_until, vanId: vanId || undefined }),
     })
     const data = await res.json()
     if (data?.queued) {
@@ -303,7 +303,7 @@ export default function KdsPage() {
       return
     }
     fetchAllRef.current()
-  }, [token, pin, pausedUntil])
+  }, [token, pin, pausedUntil, vanId])
 
   const handleSetWait = useCallback(async (mins: number) => {
     setExtraWaitMins(mins)
@@ -346,7 +346,7 @@ export default function KdsPage() {
       if (data?.queued) { setPendingSyncCount(c => c + 1); return }
       if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
-      showKdsToast('Open for orders')
+      showKdsToast('Event started')
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
@@ -580,16 +580,18 @@ export default function KdsPage() {
         </div>
 
         {/* Pause — both views */}
-        <button
-          onClick={togglePause}
-          className={`text-xs px-3 py-1.5 rounded-md border font-medium ${
-            isPaused
-              ? 'bg-red-50 text-red-700 border-red-200'
-              : 'bg-white text-slate-600 border-slate-200'
-          }`}
-        >
-          {isPaused ? 'Paused — tap to resume' : 'Pause orders'}
-        </button>
+        {activeEvent?.status === 'open' && (
+          <button
+            onClick={togglePause}
+            className={`text-xs px-3 py-1.5 rounded-md border font-medium ${
+              isPaused
+                ? 'bg-red-50 text-red-700 border-red-200'
+                : 'bg-white text-slate-600 border-slate-200'
+            }`}
+          >
+            {isPaused ? 'Paused — tap to resume' : 'Pause orders'}
+          </button>
+        )}
 
         {/* Link to cook screen — window view + full crew mode only */}
         {activeView === 'window' && truck.crew_mode === 'full' && (
@@ -671,14 +673,14 @@ export default function KdsPage() {
         </div>
       )}
 
-      {/* ── Open for orders banner ── */}
+      {/* ── Start Event banner ── */}
       {activeEvent?.status === 'confirmed' && !activeEvent.auto_open && (
         <div className="bg-white border-2 border-teal-500 m-3 rounded-2xl p-5 text-center flex-shrink-0">
           <div className="text-base font-semibold text-slate-900 mb-1">📍 {activeEvent.venue_name}</div>
           <div className="text-sm text-slate-500 mb-3">Today · {activeEvent.start_time}–{activeEvent.end_time}</div>
           <button onClick={() => openEvent(activeEvent.id)}
             className="w-full bg-teal-600 text-white font-bold py-3 rounded-xl text-base hover:bg-teal-700 active:scale-[0.98] transition-all">
-            Open for orders
+            Start Event
           </button>
         </div>
       )}

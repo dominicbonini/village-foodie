@@ -640,8 +640,12 @@ export async function POST(req: NextRequest) {
 
     // ── set_paused ───────────────────────────────────────────────────────────
     if (action === 'set_paused') {
-      const { paused_until } = body // ISO timestamp or null (null = resume)
-      await supabase.from('trucks').update({ paused_until: paused_until ?? null }).eq('id', truck.id)
+      const { paused_until, vanId } = body
+      if (vanId) {
+        await supabase.from('truck_vans').update({ paused_until: paused_until ?? null }).eq('id', vanId).eq('truck_id', truck.id)
+      } else {
+        await supabase.from('trucks').update({ paused_until: paused_until ?? null }).eq('id', truck.id)
+      }
       return NextResponse.json({ success: true })
     }
 

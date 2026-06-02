@@ -2333,6 +2333,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   const [extractedEvents, setExtractedEvents] = useState<any[]>([])
   const [savingExtracted, setSavingExtracted] = useState(false)
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
+  const [showImportModal, setShowImportModal] = useState(false)
 
   const loadEvents = useCallback(async () => {
     setLoadingEvents(true)
@@ -2422,6 +2423,13 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     setUploadText('')
   }
 
+  const closeImportModal = () => {
+    setShowImportModal(false)
+    setUploadFile(null)
+    setUploadText('')
+    setExtractedEvents([])
+  }
+
   const saveEdit = async () => {
     if (!editingEvent) return
     const errors = validateEventForm(editingEvent)
@@ -2491,6 +2499,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
       const count = extractedEvents.length
       await loadEvents()
       closeAddModal()
+      setShowImportModal(false)
       showToast(`${count} event${count !== 1 ? 's' : ''} saved`)
     } catch (e: any) { showToast(e.message || 'Failed to save events', 'error') }
     finally { setSavingExtracted(false) }
@@ -2682,6 +2691,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               ))}
             </select>
           )}
+          <Btn label="📤 Import schedule" colour="ghost" onClick={() => setShowImportModal(true)} />
           <Btn label="+ Add event" onClick={() => {
             const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
             setFormErrors({})
@@ -2739,7 +2749,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
           <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-black text-slate-900 mb-4">
-              {editingEvent.id ? 'Edit event' : 'Add event'}
+              {editingEvent.id ? 'Edit event' : addMode === 'upload' ? 'Import schedule' : 'Add event'}
             </h3>
 
             {/* Recent events quick-copy — new events only */}
@@ -2942,7 +2952,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     ))}
                     <div className="flex gap-3">
                       <button
-                        onClick={() => setExtractedEvents([])}
+                        onClick={() => { setExtractedEvents([]); setUploadFile(null); setUploadText('') }}
                         className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm"
                       >
                         Try again
@@ -2963,6 +2973,87 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-sm sm:max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="font-black text-slate-900 mb-4">Import schedule</h3>
+            <div className="flex flex-col gap-4">
+              <p className="text-sm text-slate-500">
+                Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
+                Our AI will extract your events for you to review.
+              </p>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Upload image or PDF
+                </label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={e => setUploadFile(e.target.files?.[0] || null)}
+                  className="mt-1 w-full text-sm text-slate-600"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Or paste schedule text
+                </label>
+                <textarea
+                  value={uploadText}
+                  onChange={e => setUploadText(e.target.value)}
+                  placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+                  rows={4}
+                  className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                />
+              </div>
+
+              <button
+                onClick={processUpload}
+                disabled={(!uploadFile && !uploadText) || uploadProcessing}
+                className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+              >
+                {uploadProcessing ? 'Analysing...' : 'Extract events with AI'}
+              </button>
+
+              {extractedEvents.length > 0 && (
+                <div className="flex flex-col gap-3">
+                  <p className="text-sm font-semibold text-slate-900">
+                    We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
+                  </p>
+                  {extractedEvents.map((ev, i) => (
+                    <div key={i} className="border border-slate-200 rounded-xl p-3 text-sm">
+                      <p className="font-medium">{ev.venue_name}</p>
+                      <p className="text-slate-500">{ev.event_date} · {ev.start_time}–{ev.end_time}</p>
+                      <p className="text-slate-500">{ev.town}{ev.postcode ? `, ${ev.postcode}` : ''}</p>
+                    </div>
+                  ))}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => { setExtractedEvents([]); setUploadFile(null); setUploadText('') }}
+                      className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm"
+                    >
+                      Try again
+                    </button>
+                    <button
+                      onClick={saveExtractedEvents}
+                      disabled={savingExtracted}
+                      className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40"
+                    >
+                      {savingExtracted ? 'Saving...' : 'Save all events'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <button onClick={closeImportModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -3063,9 +3154,12 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
   }, [])
 
-  const orderUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
+  const orderUrl = truck.slug
+    ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`
+    : null
 
   const handleCopyOrderLink = async () => {
+    if (!orderUrl) return
     try {
       await navigator.clipboard.writeText(orderUrl)
       setCopiedOrderLink(true)
@@ -3074,6 +3168,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   }
 
   const handleGenerateQR = async () => {
+    if (!orderUrl) return
     setGeneratingQR(true)
     try {
       const { generateQRCodePNG } = await import('@/lib/generateQRCode')
@@ -3396,15 +3491,19 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           Print or display this code so customers can scan and pre-order.
           Place it at your hatch, on your van, or share it online.
         </p>
-        <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-4">
-          <p className="text-sm text-slate-600 flex-1 truncate font-mono">{orderUrl}</p>
-          <button
-            onClick={handleCopyOrderLink}
-            className="text-xs text-orange-600 font-semibold flex-shrink-0 hover:text-orange-700"
-          >
-            {copiedOrderLink ? '✓ Copied' : 'Copy'}
-          </button>
-        </div>
+        {orderUrl ? (
+          <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 mb-4">
+            <p className="text-sm text-slate-600 flex-1 truncate font-mono">{orderUrl}</p>
+            <button
+              onClick={handleCopyOrderLink}
+              className="text-xs text-orange-600 font-semibold flex-shrink-0 hover:text-orange-700"
+            >
+              {copiedOrderLink ? '✓ Copied' : 'Copy'}
+            </button>
+          </div>
+        ) : (
+          <p className="text-sm text-slate-400 mb-4">No order URL — slug not set</p>
+        )}
         {/* QR code style selector */}
         <div className="mb-4 space-y-2">
           <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
@@ -3475,7 +3574,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           )}
         </div>
 
-        {qrDataUrl ? (
+        {orderUrl && (qrDataUrl ? (
           <div className="flex flex-col items-center gap-4">
             <img
               src={qrDataUrl}
@@ -3511,7 +3610,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           >
             {generatingQR ? 'Generating...' : 'Generate QR code'}
           </button>
-        )}
+        ))}
       </Card>
 
       {/* Orders */}

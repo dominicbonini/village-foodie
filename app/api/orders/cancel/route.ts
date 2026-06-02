@@ -29,6 +29,9 @@ export async function POST(req: NextRequest) {
           name,
           allow_customer_cancellation,
           cancellation_cutoff_mins
+        ),
+        truck_events!event_id (
+          end_time
         )
       `)
       .eq('id', orderId)
@@ -57,18 +60,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Check cutoff window — order.slot is "HH:MM", order.event_date is "YYYY-MM-DD"
-    if (order.slot && order.event_date && truck?.cancellation_cutoff_mins) {
-      const slotTime = new Date(`${order.event_date}T${order.slot}`)
-      const cutoffTime = new Date(
-        slotTime.getTime() - truck.cancellation_cutoff_mins * 60 * 1000
-      )
-      if (new Date() > cutoffTime) {
-        return NextResponse.json(
-          {
-            error: `Cancellations must be made at least ${truck.cancellation_cutoff_mins} minutes before your pickup time`,
-          },
-          { status: 409 }
-        )
+    if (truck?.cancellation_cutoff_mins && order.event_date) {
+      const event = (order as any).truck_events
+      const effectiveSlot = order.slot || event?.end_time || null
+      if (effectiveSlot) {
+        const slotTime = new Date(`${order.event_date}T${effectiveSlot}`)
+        const cutoffTime = new Date(slotTime.getTime() - truck.cancellation_cutoff_mins * 60 * 1000)
+        if (new Date() > cutoffTime) {
+          return NextResponse.json(
+            { error: `Orders can no longer be cancelled within ${truck.cancellation_cutoff_mins} minutes of collection` },
+            { status: 409 }
+          )
+        }
       }
     }
 

@@ -77,8 +77,8 @@ export async function POST(req: NextRequest) {
       truckId:         truck.id,
       customerMessage: body,
       events:          events ?? [],
-      scheduleUrl:     `${hgUrl}/order/${truck.dashboard_token}`,
-      orderUrl:        `${hgUrl}/order/${truck.dashboard_token}`,
+      scheduleUrl:     truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
+      orderUrl:        truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
     })
 
     console.log('[WA webhook] classification:', classification, 'reply:', reply)

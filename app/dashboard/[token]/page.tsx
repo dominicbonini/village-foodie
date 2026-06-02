@@ -316,8 +316,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const handleCopyOrderLink=async()=>{
+    const orderUrl=truck?.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:null
+    if(!orderUrl){showToast('Order URL not available — slug not set','error');return}
     try{
-      const orderUrl=truck?.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck?.dashboard_token}`
       await navigator.clipboard.writeText(orderUrl)
       setCopiedOrderLink(true)
       setTimeout(()=>setCopiedOrderLink(false),2000)
@@ -325,12 +326,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const handleShowQR=async()=>{
+    const orderUrl=truck?.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:null
+    if(!orderUrl){showToast('Order URL not available — slug not set','error');return}
     setShowQRFullscreen(true)
     if(qrFullscreenDataUrl) return
     if(!truck) return
     try{
       const{generateQRWithLogo}=await import('@/lib/generateQRCode')
-      const orderUrl=truck.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/order/${truck.dashboard_token}`
       const showBrandedQr=hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded'
       setQrFullscreenDataUrl(await generateQRWithLogo(orderUrl,showBrandedQr?truck.logo:null))
     }catch(err){
@@ -771,7 +773,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             <div className="flex gap-2 mb-3">
-              <button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null})});setPausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>
+              {activeEvent?.status==='open'&&<button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,vanId:activeEvent?.van_id})});setPausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>}
               {waitMinutes>0?(
                 <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0})});setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className="flex-1 py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200">
                   ⏱ +{waitMinutes}m active · Tap to clear
@@ -1285,9 +1287,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <p className="text-slate-500 text-sm text-center mb-4">Customers can still browse the menu but won't be able to order.</p>
             <div className="space-y-2 mb-4">
               {[{label:'10 minutes',mins:10},{label:'20 minutes',mins:20},{label:'30 minutes',mins:30}].map(({label,mins})=>(
-                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
+                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,vanId:activeEvent?.van_id})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
               ))}
-              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
+              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,vanId:activeEvent?.van_id})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
             </div>
             <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
           </div>

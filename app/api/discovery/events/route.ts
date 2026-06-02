@@ -262,8 +262,7 @@ export async function GET(req: NextRequest) {
     // Fall through with empty array — existing discovery events unaffected
   }
 
-  // Operator events are HatchGrab-native — only include on HG, never on VF
-  const visibleOperatorEvents = isHG ? mappedOperatorEvents : []
+  const visibleOperatorEvents = mappedOperatorEvents
 
   // ── Dedup: operator version wins ──────────────────────────────
   const operatorKeys = new Set(

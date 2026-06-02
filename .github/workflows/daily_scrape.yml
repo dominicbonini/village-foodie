@@ -25,7 +25,9 @@ jobs:
       run: npm install
 
     - name: Install Puppeteer Chrome
-      run: npx puppeteer browsers install chrome
+      run: |
+        rm -rf ~/.cache/puppeteer/chrome
+        npx puppeteer browsers install chrome
 
     - name: Run Scraper
       env:
