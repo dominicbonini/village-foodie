@@ -667,9 +667,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(aSlot!==bSlot) return aSlot-bSlot
     return a.id.localeCompare(b.id)
   }
-  // Scope orders to the selected event: match by event_id if present, fall back to event_date for older orders
+  // Scope orders to the selected event by event_id only — no event_date fallback to avoid
+  // same-day multi-event bleed (two events on the same date would both match the fallback)
   const eventOrders=activeEvent
-    ?orders.filter(o=>o.event_id?o.event_id===activeEvent.id:o.event_date===activeEvent.event_date)
+    ?orders.filter(o=>o.event_id===activeEvent.id)
     :orders
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   const confirmedOrders=eventOrders.filter(o=>['confirmed','modified'].includes(o.status)).sort(sortByTimeThenId)
