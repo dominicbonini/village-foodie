@@ -667,9 +667,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(aSlot!==bSlot) return aSlot-bSlot
     return a.id.localeCompare(b.id)
   }
-  const pendingOrders=orders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
-  const confirmedOrders=orders.filter(o=>['confirmed','modified'].includes(o.status)).sort(sortByTimeThenId)
-  const otherOrders=orders.filter(o=>!['pending','confirmed','modified'].includes(o.status))
+  // Scope orders to the selected event: match by event_id if present, fall back to event_date for older orders
+  const eventOrders=activeEvent
+    ?orders.filter(o=>o.event_id?o.event_id===activeEvent.id:o.event_date===activeEvent.event_date)
+    :orders
+  const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
+  const confirmedOrders=eventOrders.filter(o=>['confirmed','modified'].includes(o.status)).sort(sortByTimeThenId)
+  const otherOrders=eventOrders.filter(o=>!['pending','confirmed','modified'].includes(o.status))
   const cancelledCount=otherOrders.filter(o=>o.status==='cancelled').length
   const menuGroups = truckMenu ? Object.fromEntries(groupByCategory(truckMenu.items, truckMenu.categories?.map(c => c.name))) : {}
   const editItemsSubtotal=editItems.reduce((s,i)=>s+i.unit_price*i.quantity,0)
@@ -728,7 +732,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* Nav tabs row */}
         <div className="px-4">
           <div className="max-w-5xl mx-auto flex items-center">
-            {([['orders',(()=>{const c=activeEvent?orders.filter(o=>['pending','confirmed'].includes(o.status)).length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
+            {([['orders',(()=>{const c=activeEvent?eventOrders.filter(o=>['pending','confirmed'].includes(o.status)).length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
             {/* Utility actions — desktop only */}
@@ -860,7 +864,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             {(pendingOrders.length>0||confirmedOrders.length>0)&&(()=>{
-              const allActive=orders.filter(o=>['pending','confirmed','modified'].includes(o.status))
+              const allActive=eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status))
               const counts=getAllDayCounts(allActive)
               const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1])
               if(!entries.length)return null
@@ -942,7 +946,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               })
 
               // Also include slotless confirmed orders in current batch
-              orders.filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
+              eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
 
               // Build current prep map
               // Build ordered list of units in insertion order across orders, then by item position

@@ -1,516 +1,1339 @@
-# HatchGrab Engineering Reference Manual · V6
+HatchGrab Engineering Reference Manual · V6
 
 **HatchGrab**
+
 Engineering Reference Manual
+
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.0** · June 2026
+**Version 6.0**
+
+June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
----
+# Changelog
 
-## Changelog
+## V6.0 — June 2026 (this session)
 
-### V6.0 — June 2026 (this session)
-
-Pre-trial polish session. Fixes scraper workflow, completes admin auth, adds tester plan, rebuilds schedule UX, and hardens multi-van pause isolation. Key changes relative to V5:
+Pre-trial polish session. Confirms and hardens the multi-van pause isolation, completes the platform admin model with session-based auth, adds the Tester plan, builds the operator schedule-import flow, rebuilds the Schedule tab UX, fixes the scraper workflow, and clears a batch of dashboard event-scoping and contrast issues ahead of the first trial truck. Key changes relative to V5:
 
 - **Coding tool clarified** — Claude within Cursor is the coding tool. All implementation instructions are written as Cursor prompts. Audits can be sent to Cursor directly for a summary response rather than grep + paste back.
-- **Tester plan** — fifth plan value alongside starter/trial/pro/max. Full Max feature set. Billing tab hidden. Trial popup suppressed. Lifetime discount tracked via `trucks.lifetime_discount_pct` and `trucks.lifetime_discount_note`. `PLAN_ORDER` is now `['starter', 'trial', 'tester', 'pro', 'max']`.
-- **Trial column in billing tab** — visible when `plan === 'trial'` and `trial_expires_at` is in the future. Disappears automatically on expiry regardless of plan change. Trial shows Pay at Hatch for online orders (not 0.99% + card fee).
-- **Admin session auth** — `operators.is_admin` boolean replaces `ADMIN_SECRET` password prompt. Admin page auto-authenticates via Supabase session on mount. `ADMIN_SECRET` retained as emergency fallback only — to be removed at launch.
-- **Admin page rebuilt** — two tabs: Trucks (searchable/filterable list with inline plan badge, trial days, lifetime discount badge, dashboard link) and Features (full plan matrix from `FEATURE_SECTIONS`). Truck edit modal with plan selector, trial controls, discount fields, feature overrides, create operator account.
-- **Admin role as 4th permission level** — owner/manager/staff/admin. `is_admin` on `operators` table, not `truck_users`. UserMenu shows 🔐 Admin link when `isAdmin` prop is true.
-- **Manual pause isolation fixed** — `set_paused` action now writes to `truck_vans.paused_until` scoped to the active event's `van_id`, not `trucks.paused_until`. Operator UI reload state still reads from `trucks.paused_until` — backlog fix needed.
-- **Offline protection per-event override** — `truck_events.offline_protection_override` (nullable boolean). `null` = use van default. Dashboard toggle reads van default and allows event-level override. Menu API respects event override first. Warning shown when disabled for a specific event.
-- **Kitchen capacity in dashboard** — van-level `kitchen_capacity` shown and editable in Menu & Stock tab when an active event is selected. Options now 1–20 items (was sparse: 3/5/8/10/15/20). Both manage page and dashboard use identical options.
-- **Dashboard event scoping** — Orders tab shows empty state when no event selected. Add Order confirm button disabled with "Select an event to confirm" when no event selected. Basket persists on event change. Menu & Stock sold counts show 0 when no event selected. Auto-accept and kitchen capacity only show when event is active.
-- **Inline category prep/batch editing** — Edit accordion removed from Menu & Stock. Prep time (minutes + 0s/30s seconds select) and batch size (blank = no limit, placeholder ∞) now inline on category header row. Save on blur/change.
-- **Auto-accept copy corrected** — "Full slots are still rejected" was wrong. Now reads: "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity."
-- **ASAP cancellation cutoff** — falls back to `event end_time` for ASAP orders (no explicit slot). Post-trial consideration: store `ready_time` on order row for tighter control.
-- **Affected order count on cancel** — `openEventCancelModal` now fetches real affected order count via `/api/events/affected-orders` before showing the modal. Was hardcoded to 0.
-- **Schedule tab rebuilt** — date-anchored card layout: large orange day number left column, venue + time + status right, actions far right, deals collapsed into `<details>` summary showing deal names. Town deduplicated from venue display if already present in venue name. Postcode on its own muted line.
-- **Import schedule feature** — `📤 Import schedule` button on Schedule tab header. Separate modal with drag-and-drop file upload (reuses `useDragDrop` hook), paste text, "Process schedule" button. Extracted events show interactive review: checkbox per event (all pre-selected), inline edit with venue suggestions dropdown, selective save ("Save N events"). New API route `/api/manage/process-schedule` calls Gemini directly. Events confirmed immediately as `source: 'operator_upload'`. Truck is always the logged-in operator's truck — Gemini is not asked for truck names.
-- **Cancel event order count** — modal now shows real affected order count fetched from `/api/events/affected-orders`.
-- **Past event cards** — deals section hidden, Edit and Cancel buttons hidden, Copy retained. Cancelled events show "Cancelled" badge not "Finished".
-- **QR/order URL DRY fix** — `dashboard_token` fallback removed from all customer-facing URL constructions. Single pattern: `truck.slug ? /trucks/${slug}/order : null`. Slug missing = visible error, never silent token exposure.
-- **`isHG` gate removed** — confirmed `truck_events` now surface on both Village Foodie and HatchGrab discovery maps unconditionally.
-- **Feature labels** — `FEATURE_SECTIONS` in `lib/plan-features.ts` is single source of truth for feature rows, human-readable labels, order, and coming-soon status. `PLAN_FOOTNOTES` exported and used by both admin Features tab and operator Billing tab. "Facebook, Messenger & Instagram auto-replies" renamed to "Messenger & Instagram auto-replies".
-- **Heartbeat architecture documented** — single `last_heartbeat_at` per van row, 15s ping from both KDS and dashboard, 30s stale threshold, 2h auto-pause duration, receipt clears `online_paused_until`. All-or-nothing offline detection works by design.
-- **Scraper workflow** — Node 20 (not 24), `rm -rf ~/.cache/puppeteer/chrome` before install, no `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`. Gemini quota resolved by upgrading to paid plan.
-- **`is_test` scope confirmed** — `is_test` has exactly ONE effect: filtering test trucks from the public discovery map. Never gates operator features.
 
-### V5.0 — June 2026
+- **Tester plan** — a fifth plan value alongside starter/trial/pro/max. Full Max feature set, Pay-at-Hatch online orders, billing tab hidden, trial-conversion popup suppressed. Lifetime subscription discount tracked on trucks.lifetime_discount_pct (integer) and trucks.lifetime_discount_note (text). PLAN_ORDER is now ['starter', 'trial', 'tester', 'pro', 'max'].
 
-Pre-trial polish-and-plumbing session. Shared AppHeader, sticky layout, event lifecycle controls (Start/Restart/Close), scraper bridge, operator email rebuild, customer cancel page, settings auto-save, team role enforcement, discovery map security, geocoding fallback, iOS auto-zoom fix, Meta social webhook scaffolding.
+- **Trial column in billing tab** — when plan is trial and the trial is unexpired, a Trial column is shown first in the billing matrix (label TRIAL / Free trial / until {date}). It highlights as current and disappears automatically on expiry. Trial and Tester online orders show Pay at Hatch, not 0.99% + card fee.
 
-### V4.0 — May 2026
+- **Admin session auth** — operators.is_admin boolean. The admin page auto-authenticates via a Supabase session check on mount (GET /api/admin?section=check_admin); the ADMIN_SECRET password prompt is retained only as an emergency fallback and is slated for removal at launch. A loadWithSecret(s) helper avoids the async-state race that showed "0 trucks" on load.
 
-Hardening pass. Consolidated utilities, auth and wake lock fixes, Reports tab, single dropdown component pattern.
+- **Admin role as 4th permission level** — owner/manager/staff (truck roles) plus a platform-level admin on operators.is_admin. UserMenu shows a 🔐 Admin link when isAdmin is true. /api/auth/me returns is_admin.
 
-### V3.0 — May 2026
+- **Admin page rebuilt** — uses the shared AppHeader and slate-900 tabs; two tabs, Trucks and Features. Features tab renders from FEATURE_SECTIONS (single source of truth) with section headers, footnotes, and the tester column. Truck edit modal: plan selector, trial controls, lifetime discount fields, feature overrides, create-operator, dashboard link.
 
-Operator account model, staff access, email verification, deals-on-events system, WhatsApp logging.
+- **Manual pause isolation fixed** — the set_paused action now writes to truck_vans.paused_until scoped to the active event's van_id (falling back to trucks.paused_until only when there is no van). The pause button is gated on activeEvent?.status === 'open'. Operator UI reload state still reads trucks.paused_until — backlog fix noted.
 
-### V2.0 — May 2026
+- **Offline protection per-event override** — truck_events.offline_protection_override (nullable boolean): null = use van default (auto_pause_on_offline), true/false = explicit per-event override set from the dashboard Menu & Stock tab. The menu API checks the event override before the van default. The dashboard warns that disabling is for this event only.
 
-Starter permanently free. Trial as distinct plan tier. Capacitor native wrapper designated pre-trial deliverable.
+- **Kitchen capacity in the dashboard** — the active van's kitchen_capacity is shown and editable in the dashboard Menu & Stock tab when an event is selected; it is a global van setting. Options are now No limit then 1–20 items on both the dashboard and the manage page (was a sparse 3/5/8/10/15/20).
 
-### V1.0 — Earlier sessions
+- **Dashboard event scoping** — with no event selected: the Orders tab shows a prominent amber "No event selected" box and the tab count reads 0; Add Order shows the same amber box and disables Confirm with "Select an event to confirm" (basket persists on event change); Menu & Stock sold counts read 0. Auto-accept, kitchen capacity, and offline protection cards render only when an event is active. Auto-accept moved to the top of Menu & Stock.
 
-Initial documentation of lib/ structure, order calculation rules, customer page UX, prep time logic, pricing strategy.
+- **Inline category prep/batch editing** — the Edit accordion was removed from the dashboard Menu & Stock category header. Prep time (minutes input + 0s/30s seconds select) and batch size (blank = no limit, placeholder ∞, "no limit" label when null) are now inline on the category header and save on blur/change.
 
----
+- **Auto-accept copy corrected** — the old "Full slots are still rejected" was wrong. Copy now reads: "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity." See Section 5 for the verified behaviour.
 
-## 1. Purpose of this document
+- **ASAP cancellation cutoff** — for ASAP orders (no explicit slot) the cancellation cutoff falls back to the event end_time. The cancel route joins truck_events!event_id (end_time); effectiveSlot = order.slot ?? event.end_time ?? null; if neither is available the check is skipped.
 
-This manual exists to prevent regressions. Every coding session loses context. Without a written record of how features work, why decisions were made, and what rules must not be broken, the codebase drifts.
+- **Affected order count on cancel** — openEventCancelModal now fetches the real affected order count from /api/events/affected-orders (counts pending + confirmed orders for the event) before showing the modal. It was hardcoded to 0.
+
+- **Schedule tab rebuilt** — date-anchored card: a large orange day number in a left column (day name / number / month), a thin divider, venue + town with an inline status badge, the time prominent, postcode on its own muted line, and Copy / Edit / Cancel right-aligned. The town is dropped from the venue line when already present in the venue name. Deals are collapsed into a `<details>` summary that shows the active deal names. Past events show Copy only (Edit and Cancel hidden) and no deals section; cancelled past events show a "Cancelled" badge, not "Finished".
+
+- **Import schedule feature** — a 📤/✨ Import schedule button on the Schedule tab header (styled to match the Menu tab's "Import with AI": sparkle icon, "photo, PDF or text" subtitle). Opens a dedicated modal with a drag-and-drop upload zone (the shared useDragDrop hook from lib/useDragDrop.ts), paste-text input, and a "Process schedule" button. New API route app/api/manage/process-schedule/route.ts calls Gemini (gemini-2.5-flash-lite) and extracts six fields only — event_date, start_time, end_time, venue_name, town, postcode — and never a truck name (the truck is always the logged-in operator). Extracted events show an interactive review: a checkbox per event (all pre-selected), inline edit with the venue-suggestions dropdown, drag-and-drop reordering, and a "Save N events" selective save. Events save via upsert_event as status confirmed, source operator_upload, geocoded through the existing path, and surface on both maps via the existing read path.
+
+- **QR / order-URL DRY fix** — the dashboard_token fallback was removed from every customer-facing order-URL construction. The single pattern is truck.slug ? /trucks/${slug}/order : null; a missing slug surfaces a visible error rather than silently exposing the token. Fixed in the manage page, dashboard, discovery events API, and WhatsApp webhook.
+
+- **isHG gate removed** — the discovery/events route no longer restricts operator truck_events to HatchGrab; confirmed/open truck_events now surface on both the Village Foodie and HatchGrab maps unconditionally (the V5 "operator events HatchGrab-only" rule was temporary for testing).
+
+- **Feature labels and footnotes** — FEATURE_SECTIONS in lib/plan-features.ts is the single source of truth for feature rows, human-readable labels, section grouping, and coming-soon status; coming-soon rows are ordered last in the data itself (not at render time). "Facebook, Messenger & Instagram auto-replies" renamed to "Messenger & Instagram auto-replies". PLAN_FOOTNOTES is exported and rendered by both the admin Features tab and the operator Billing tab.
+
+- **Heartbeat architecture documented** — a single last_heartbeat_at per truck_vans row, a 15s ping from both the KDS and the dashboard, a 30s stale threshold, a 2h auto-pause that clears online_paused_until on the next live receipt. All-or-nothing offline detection works by design — the last device still pinging keeps the van live.
+
+- **Scraper workflow** — the GitHub Actions daily_scrape workflow runs on Node 22 (Node 20 lacked native WebSocket for @supabase/realtime-js; Node 24 forced the actions deprecation and Puppeteer Chrome issues). Chrome installs via npx puppeteer browsers install chrome (cache cleared first). Gemini quota resolved by upgrading to a paid plan.
+
+- **is_test scope reconfirmed** — is_test has exactly one effect: filtering test trucks from the public discovery map. It never gates an operator feature (carried forward from V5).
+
+## V5.0 — June 2026
+
+Pre-trial polish-and-plumbing session. Establishes the shared operator header and sticky layout, finishes the event lifecycle (auto-select, Start/Restart, recoverable close), bridges scraped and emailed events into the operator schedule, rebuilds the operator emails on the shared formatter, and clears a batch of auth, security, and mobile issues ahead of the first trial truck. Key changes relative to V4:
+
+- **Shared AppHeader + brand colours** — new components/shared/AppHeader.tsx (Village Foodie logo left, truck logo centre, right slot via children) used by ALL operator pages, and lib/brand.ts holding HEADER_BG / PAGE_BG / TABS_BG (all slate-900). Resolved the header/tabs colour mismatch.
+
+- **Sticky header, tabs, and event bar** — AppHeader sticky top-0 (51px tall), tabs sticky below it, dashboard event bar sticky below the tabs. The operator never loses the header or event context while scrolling.
+
+- **Dashboard event bar** — a slim bar below the tabs (Orders and Add Order tabs only) showing venue, times, status, Change, and a ··· menu. Bi-directional event sync with the Add Order panel via controlledEvent / onEventChange.
+
+- **Auto-event selection on dashboard load** — the dashboard now auto-selects the best event (open today, else upcoming today, else next upcoming any date) once on load, never overriding a manual choice. activeEvent reads from the full upcomingEvents list, not just today.
+
+- **Start Event / Restart Event wording** — replaced "Open for orders" / "Go live" throughout the dashboard, event bar, and ··· menu. Status labels are now ● Live / ⏸ Paused / ● Closed.
+
+- **Closed events are recoverable** — closing an event sets status 'closed' (only an open event can be closed); the picker now shows closed events with a badge and a Restart Event button, and the server open action accepts confirmed OR closed. An accidental close is no longer permanent.
+
+- **ASAP base-time rule clarified** — the Add Order panel computes ASAP as max(now + prep, eventStart), never eventStart + prep. Prep time is not added on top of a future event start.
+
+- **Scraper → HatchGrab bridge** — inbound-schedule now promotes events to truck_events (status unconfirmed, source scraper) for trucks linked via discovery_trucks.hatchgrab_truck_id. All event sources (scraper, email, manual) now flow to one place; the truck confirms.
+
+- **Operator email rebuild** — operator-confirm and slot-change emails now use the shared formatConfirmationEmail (was two bespoke inline HTML emails missing modifiers, deals, venue, cancel link, and HatchGrab branding). Added slotAdjustedFrom param.
+
+- **Customer cancel page** — /order/[id]/manage with /api/orders/cancel and /api/orders/[id]. Cancel URL carries ?truck=[slug] to avoid per-truck order-ID collisions.
+
+- **Settings auto-save** — the Settings tab Save button is gone; text fields save on blur, toggles and dropdowns on change, via saveFormField().
+
+- **Truck emoji** — trucks.truck_emoji column (default 🍕) with a categorised picker in Settings; used as the Menu tab icon.
+
+- **Team role enforcement** — owner edits everyone, manager edits/invites staff only, staff edits only self; enforced server-side in the manage API and client-side via canEdit/canRemove/invitableRoles.
+
+- **Delete category** — a 🗑 control on the category header soft-deletes the category and its items (bulk_delete_items), with an item-count confirmation. bulk_delete_items is staff-blocked.
+
+- **is_test scope corrected** — is_test now ONLY filters test trucks from the public discovery map. It must never gate operator-facing features; the erroneous Billing-tab guard was removed.
+
+- **Auth hardening** — password-reset and email-change flows now check Brevo sends and roll back on failure; email change does a pre-flight duplicate check and forces sign-out on completion; a cancel-pending-change flow was added. Login debug logging removed.
+
+- **Discovery map security** — dashboard_token removed from all public API responses; the customer order URL is /trucks/[slug]/order; operator events are HatchGrab-only and never shown on the public Village Foodie map. *(Note: the HatchGrab-only restriction was temporary and was lifted in V6 — see Section 15.)*
+
+- **Geocoding fallback** — manual events geocode via Gemini with an api.postcodes.io postcode fallback; the operator is warned on failure and a Fix button re-geocodes events with null coordinates.
+
+- **Slug + emoji columns** — trucks gained slug (unique, populated from name) and truck_emoji.
+
+- **Order card contact button** — a Contact control next to the customer name reveals email (mailto:) and phone (tel:) inline; hidden for walk-ups with no details.
+
+- **iOS auto-zoom fix** — viewport set to device-width / initial-scale 1, and inputs locked to 16px on mobile so Safari no longer zooms on focus.
+
+- **Meta social webhooks scaffolded** — verification + placeholder endpoints at /api/webhooks/meta/whatsapp, /messenger, and /instagram. The existing Twilio handler at /api/webhooks/whatsapp must not be overwritten.
+
+## V4.0 — May 2026
+
+Hardening pass between V3 and trial. Consolidates utilities, fixes auth and wake lock bugs, builds out the Reports tab with tier-gated analytics, and establishes the single dropdown component pattern. Key changes relative to V3:
+
+- **New shared utilities** — lib/time-utils.ts (formatTime, canonical time display) and lib/modifier-utils.ts (isModifierAvailable, used across customer and operator surfaces).
+
+- **lib/order-utils.ts is server-only** and must never be imported in client components — it references SUPABASE_SERVICE_ROLE_KEY.
+
+- **Sign-out fixed** — was clearing in-memory auth only, leaving the SSR session cookie intact and silently re-authenticating users. Now uses createSupabaseBrowserClient() from @supabase/ssr with a hard redirect to /login.
+
+- **Wake lock fixed** — browser auto-releases on page-hidden events; now re-acquires on visibility return and on the lock's release event. Older Safari shows a compatibility warning.
+
+- **UserMenu consolidated** — was dashboard-only, now used on the manage page too. Single dropdown component everywhere with prop-driven sections. No inline dropdowns anywhere.
+
+- **OrderLineItem shared component** — used by operator order cards, Add Order panel, and customer order confirmation. Variant prop controls operator vs customer rendering.
+
+- **Menu API ?dashboard=1 flag** — dashboard surfaces see all modifier options with their available field; customers see only available options with the field stripped. Fixes the stock toggle's stale-state bug and the operator's previously-filtered modifier list.
+
+- **Reports tab built** — date-range filter (Pro+), event filter (all tiers), orders/items toggle, CSV export (all tiers), revenue breakdown (Pro+). Pro placeholder card sells the locked features.
+
+- **Modifier availability rule** — unavailable modifiers are HIDDEN everywhere (customer and operator), unlike main items which show "Sold out" crossed. Modifiers appear contextually in popups so hiding is cleaner UX.
+
+- **Tab rename** — "Modifiers" became "Extras & Upsells" (icon ⚡ unchanged). Restructured into Upsells + Custom Extras sections.
+
+- **Loyalty stamp cards** added to pricing matrix as Max coming-soon. V1 spec frozen in code comments — do not build until instructed.
+
+- **Grace period banner** replaces hard block — events ended >30 min no longer disable the Confirm order button; a passive amber banner reminds the operator instead.
+
+- **All menu categories collapsed by default** on Manage page open.
+
+- **Menu tab mobile header** restructured into three rows for clarity at 375px.
+
+## V3.0 — May 2026
+
+Major update following an extended build session. Adds operator account model, staff access, email verification, the deals-on-events system, WhatsApp logging, and numerous UX and naming decisions. Key changes relative to V2:
+
+- **Email provider is now Brevo**, not Resend. All transactional email (order confirmations, staff invites, email verification, ready notifications) sends via Brevo.
+
+- **HatchGrab email domain** — hello@hatchgrab.com is the operator-facing sender. Set via NEXT_PUBLIC_SUPPORT_EMAIL. Do NOT fall back to villagefoodie.co.uk. DNS propagating as of end of session; HatchGrab emails fail until complete.
+
+- **Trial is 3 months** for Pro/Max early signups (was 1 month default in V2). Trial maps to MAX features plus Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details.
+
+- **Personal vs business contact split** — operators table now has first_name, last_name, phone. Personal profile edited in Team tab. Business contact (shown to customers) stays in Settings, renamed "Business contact".
+
+- **Email change flow** — operator_email_changes table, verification link via Brevo, pending banner with resend, duplicate check against auth.users (covers operators and staff).
+
+- **Staff access (Phase 3) is now LIVE** — truck_users with owner/manager/staff roles, truck_user_vans for per-vehicle access, invite flow, dashboard access via truck_users membership.
+
+- **Manual events auto-confirm** — events created in the manage page are always confirmed immediately. Only scraped events (inbound-schedule API) stay unconfirmed. No confirmation popup.
+
+- **Auto open/close moved to truck-level** Order settings (was per-event).
+
+- **Kitchen capacity moved to per-vehicle settings** (was on the event form). Counts cooked items only; drinks/instant items excluded.
+
+- **Deals-on-events system** — apply_to_new_events default plus per-event override via event_deals, with stock-aware auto-hide on the customer order page.
+
+- **WhatsApp interaction logging** — whatsapp_logs table, possible_miss flag, surfaced in Reports tab. Classifier and schedule prompts hardened with explicit TODAY/TOMORROW labels and day-of-week mapping.
+
+- **Naming convention** — UI uses "truck" for physical vehicles (was "van"/"vehicle"); DB tables stay truck_vans / truck_user_vans. User-defined names are operator data and never auto-changed.
+
+- **Billing tab** — full pricing matrix lives inside Manage (owner-only) with single source of truth lib/plan-features.ts. Old /account page deleted.
+
+- **ASAP slot calculation is event-date aware** — future events compute ASAP from event start time, not now. Fixed UTC midnight date-parse bug.
+
+- **QR code and order link surfaced in dashboard header**; fullscreen QR composites the logo into the centre with error-correction H.
+
+## V2.0 — May 2026
+
+Merged the earlier engineering-decisions document into a single reference. Starter became permanently free (was £19/mo). Trial became a distinct plan tier. Capacitor native wrapper designated a pre-trial deliverable. Three-stage offline progression documented. Cook screen made Max-only; Instagram/Messenger confirmed Pro; WhatsApp confirmed Max. Per-truck feature_overrides added. KDS view/layout modes and urgency logic documented.
+
+## V1.0 — Earlier sessions
+
+Initial documentation of lib/ structure, order calculation rules, customer page UX, prep time logic, pricing strategy, and forward-looking multi-truck and iPad app architecture.
+
+# 1. Purpose of this document
+
+This manual exists to prevent regressions. Every coding session loses context. Without a written record of how features work, why decisions were made, and what rules must not be broken, the codebase drifts. Patterns get duplicated. Conventions get abandoned. Bugs get reintroduced.
 
 Read this before every coding session. Update it after every meaningful change. When a coding chat is uncertain about how a feature should behave, the answer is in here.
 
+## How to use this manual
+
+- Before adding any new feature, search this manual for related rules.
+
+- When auditing existing code for DRY compliance, this manual defines what should be shared.
+
+- When making a UX decision, check whether the rule already exists here.
+
+- When a feature seems to contradict this manual, the manual wins. Either update the code or update the manual — never let them disagree silently.
+
 > **CRITICAL** — If a coding session produces code that violates rules in this manual, that is a regression. Either the rule changes (with explicit agreement) or the code changes. The two must never diverge.
 
----
+# 2. Architecture overview
 
-## 2. Architecture overview
+## Platform identity
 
-### Platform identity
+HatchGrab is the operator-facing brand for the ordering platform. Village Foodie is the consumer-facing discovery brand. The two share infrastructure but are separate products in the user's mind:
 
 - **Village Foodie** — the discovery map, weekly newsletter, and "find food trucks near me" experience. Customer-facing. villagefoodie.co.uk.
+
 - **HatchGrab** — the iPad KDS, operator dashboard, menu management, order flow, and billing. Truck-facing. hatchgrab.com.
 
 When in doubt about naming: customer-facing surfaces use Village Foodie branding; operator-facing surfaces use HatchGrab branding.
 
-### Tech stack
+## Tech stack
 
 - **Frontend** — Next.js with TypeScript, Tailwind CSS, deployed to Vercel.
-- **Database** — Supabase (PostgreSQL). Project ref `ffphgwonshgxamtvefcv`. Token-based access for operator surfaces, Supabase Auth for operator/staff logins.
-- **Realtime** — Supabase realtime channels (`postgres_changes`) for KDS queue updates, with 60s polling fallback.
-- **Email** — Brevo for all transactional email. Operator-facing sender is `hello@hatchgrab.com` via `NEXT_PUBLIC_SUPPORT_EMAIL`. Do NOT fall back to villagefoodie.co.uk.
-- **Native wrapper** — Capacitor around the existing Next.js app. App ID `com.hatchgrab.app`, points to `https://www.hatchgrab.com`.
-- **Scraper** — Google Apps Script (not in repo) processes Drive screenshots and vendor emails via Gemini, mirrors events to Supabase via `/api/inbound-schedule`. Node 20 on GitHub Actions. Subject to 6-minute Apps Script execution limit — needs a time guard.
 
-### Key surfaces
+- **Database** — Supabase (PostgreSQL). Project ref ffphgwonshgxamtvefcv. Token-based access for operator surfaces, Supabase Auth for operator/staff logins.
 
-- **Discovery map (`/`)** — Village Foodie public site. No login.
-- **Customer order page (`/trucks/[slug]/order`)** — canonical customer-facing order URL. Never use `dashboard_token` in a public-facing URL.
-- **Truck dashboard (`/dashboard/[token]`)** — operator order management. Uses shared `AppHeader`. Tabs: Orders, + Add order, Menu & Stock.
-- **iPad KDS (`/kds/[kds_token]`)** — kitchen display system, per vehicle.
-- **Manage page (`/manage/[token]`)** — operator settings. Uses shared `AppHeader`. Tabs: Menu, Schedule, Deals, Extras & Upsells, Reports, Team, Settings, Billing.
-- **Admin console (`/admin`)** — platform admin. Session auth via `operators.is_admin`. `ADMIN_SECRET` emergency fallback.
-- **Verify email (`/verify-email`)** — completes operator email change via token. Not auth-gated.
+- **Realtime** — Supabase realtime channels (postgres_changes) for KDS queue updates, with 60s polling fallback.
 
----
+- **Email** — Brevo for all transactional email (changed from Resend in V3).
 
-## 3. DRY — Don't Repeat Yourself
+- **Native wrapper** — Capacitor around the existing Next.js app. App ID com.hatchgrab.app, points to https://www.hatchgrab.com. Native modules only for hardware (printer) and OS features (background notifications, offline detection, screen wake).
 
-> **THE RULE** — If the same logic, value, or pattern appears in two places, it belongs in one place. Audit before adding. Extract before duplicating.
+- **Scraper** — Google Apps Script (not in repo) processes Drive screenshots and vendor emails via Gemini, mirrors events to Supabase via /api/inbound-schedule. A separate GitHub Actions web scraper runs daily on Node 22 (see Section 24). Subject to the 6-minute Apps Script execution limit — needs a time guard.
 
-### Development process (V6)
+## Key surfaces
 
-> **RULE** — Claude within Cursor is the coding tool. All implementation instructions are written as Cursor prompts. Audits can be sent to Cursor directly for a summary response — do not require grep + paste back for every audit.
+- **Discovery map (/)** — Village Foodie public site, map of trucks and events. No login.
 
-### Shared operator header — AppHeader
+- **Customer order page (/trucks/[slug]/order)** — pre-orders or pay-at-hatch orders. No login. This is the canonical customer-facing order URL. Online card pre-orders are a Pro/Max feature; Starter is Pay-at-Hatch only.
 
-`components/shared/AppHeader.tsx` is used by the dashboard, manage page, admin page, and any future operator surface. Layout: Village Foodie logo left, truck logo and name centred, right slot via `children`. `bg-slate-900 sticky top-0 z-50`.
+- **Truck dashboard (/dashboard/[token])** — operator order management. Token + auth. Tabs: Orders, + Add order, Menu & Stock. Uses the shared AppHeader (see Section 3): Village Foodie logo left, truck logo and name centre, avatar dropdown right carrying identity, screen-on toggle, order link, QR code, kitchen screen, Manage, and Sign out. Below the tabs, a slim event bar (Orders and Add Order tabs only) shows the active event with a Change button and a ··· menu. Header, tabs, and event bar are all sticky.
 
-Colour constants in `lib/brand.ts`: `HEADER_BG`, `PAGE_BG`, `TABS_BG` (all `slate-900`).
+- **iPad KDS (/kds/[kds_token])** — kitchen display system, per vehicle. Opened from the dashboard header.
 
-**Sticky layout contract:**
-- AppHeader: `sticky top-0 z-50` — 51px tall
-- Tabs bar: `sticky top-[51px] z-40`
-- Dashboard event bar (Orders + Add Order tabs only): `sticky top-[95px] z-30`
+- **Manage page (/manage/[token])** — operator settings, menu, schedule, team, billing. Tabs (in order): Menu, Schedule, Deals, Extras & Upsells, Reports, Team, Settings, Billing.
 
-Any new operator page must reuse `AppHeader` and `slate-900` tabs — never re-derive inline.
+- **Admin console (/admin)** — platform admin for trucks, plans, trials, feature overrides, and discovery-truck linking. Session auth via operators.is_admin (ADMIN_SECRET emergency fallback). Uses the shared AppHeader and slate-900 tabs. Reads plan data from the shared source of truth. See Section 12.
+
+- **Verify email (/verify-email)** — public page that completes an operator email change via token. Not auth-gated.
+
+# 3. DRY — Don't Repeat Yourself
+
+DRY is the most important architectural principle in this codebase. Every audit before every feature must check for DRY violations. The cost of duplication compounds — every duplicate is a future bug.
+
+> **THE RULE** — If the same logic, value, or pattern appears in two places, it belongs in one place. Audit before adding. Extract before duplicating. Use props before re-deriving.
+
+## Where logic lives
 
 ### Shared calculation libraries — lib/
 
-- `lib/order-calculations.ts` — order totals, deal pricing, discount application
-- `lib/basket-utils.ts` — basket add/remove, deal cleanup, grouping by category
-- `lib/deal-utils.ts` — bundle slot category extraction, deal original price calculation
-- `lib/slot-utils.ts` — ASAP slot selection (event-date aware), future-time validation
-- `lib/slot-bookings.ts` — production slot operations, `normaliseOrderLines`
-- `lib/slot-capacity.ts` — `canFitInProductionSlot`
-- `lib/prep-utils.ts` — prep time, category configs, queue-aware ready time, `buildCatConfigs`
-- `lib/plan-features.ts` — **SINGLE SOURCE OF TRUTH** for plan pricing, feature matrix (`FEATURE_SECTIONS`), footnotes (`PLAN_FOOTNOTES`), plan prices, descriptions. Imported by both the Billing tab and the admin console.
-- `lib/features.ts` / `lib/useFeatures.ts` — plan tier feature map and `canAccess()`/`useFeatures()` for gating
-- `lib/whatsapp-classifier.ts` — message classification and schedule-response prompt building
-- `lib/time-utils.ts` — canonical time formatter. `formatTime(t)` strips seconds. **Never inline `t.slice(0,5)` or write a parallel implementation.**
-- `lib/modifier-utils.ts` — `isModifierAvailable(opt)`. Used everywhere modifier options are filtered.
-- `lib/order-utils.ts` — **SERVER-ONLY**. Imports `SUPABASE_SERVICE_ROLE_KEY` — never import in client components.
-- `lib/brand.ts` — `HEADER_BG`, `PAGE_BG`, `TABS_BG` colour constants.
+All business calculations live in lib/. These are the only places these calculations should be implemented:
 
-### Customer order URL — single pattern (V6)
+- **lib/order-calculations.ts** — order totals, deal pricing, discount application.
 
-> **RULE** — `truck.slug ? /trucks/${slug}/order : null` everywhere. `dashboard_token` must never appear in a customer-facing or public API response. Slug missing = visible error, never silent token fallback. Applied in: manage page, dashboard, discovery events API, WhatsApp webhook.
+- **lib/basket-utils.ts** — basket add/remove, deal cleanup, grouping by category.
+
+- **lib/deal-utils.ts** — bundle slot category extraction, deal original price calculation.
+
+- **lib/slot-utils.ts** — ASAP slot selection (event-date aware as of V3), future-time validation.
+
+- **lib/slot-bookings.ts** — production slot operations, normaliseOrderLines.
+
+- **lib/slot-capacity.ts** — canFitInProductionSlot.
+
+- **lib/prep-utils.ts** — prep time, category configs, queue-aware ready time, buildCatConfigs.
+
+- **lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console. (V6: PLAN_FOOTNOTES is now exported and consumed by both surfaces; coming-soon rows are ordered last in the data itself.)
+
+- **lib/features.ts / lib/useFeatures.ts** — plan tier feature map, PLAN_ORDER, PLAN_META, and canAccess()/useFeatures() for gating.
+
+- **lib/whatsapp-classifier.ts** — message classification and schedule-response prompt building.
+
+- **lib/time-utils.ts** (V4) — canonical time formatter. formatTime(t) strips seconds from HH:MM:SS to HH:MM. This is the only implementation. Never inline t.slice(0,5) or write a parallel formatter.
+
+- **lib/modifier-utils.ts** (V4) — client-safe modifier helpers. isModifierAvailable(opt) returns opt.available !== false. Used to filter modifier options in both the customer page and the operator Add Order panel. undefined and null mean available — backward-compatible against rows where the column wasn't set.
+
+- **lib/order-utils.ts** — **server-only**. Exports nextOrderId(truckId). Imports SUPABASE_SERVICE_ROLE_KEY — importing this in a client component will fail the build. Client-safe utilities go in their own files (e.g. modifier-utils.ts), never co-located here.
+
+- **lib/useDragDrop.ts** (V6) — the shared drag-and-drop hook. useDragDrop(onFileDrop, acceptedTypes) encapsulates isDragging plus a dragCounter ref (prevents flicker when dragging over child elements) and returns { isDragging, dragProps }. dragProps spreads onto a label. Used by the Menu "Import with AI" upload zone, the Schedule "Import schedule" upload zone, and the extracted-events reorder list. Never re-implement drag handlers inline.
+
+### Display helpers — components/dashboard/helpers.ts
+
+Display-only helpers that handle visual concerns (header colour, ticket age state) may live with the components they serve: getCombinedUrgency, getAgeState, getHeaderStyle, getTicketAge. These translate state into display properties — they contain no business logic.
+
+> **RULE** — Business calculations live in lib/. Display-only helpers may live with the components they serve. When unsure whether something is business logic or display logic, put it in lib/.
+
+### Type definitions
+
+Shared types and constants such as CatConfig and DEFAULT_CAT_CONFIG live in lib/prep-utils.ts. components/dashboard/types.ts re-exports them. Defining types in two places caused TypeScript export conflicts.
+
+## What must be shared
+
+### Category ordering and grouping
+
+Menu category sort order is set in the Manage page and applied consistently everywhere items display: KDS window view, KDS cook view, Add Order panel, customer order page, and the TO MAKE all-day count bar. Fetched once in /api/dashboard and passed down as props (categoryOrder, itemCategoryMap). Never re-derived in components.
+
+### Order creation logic
+
+Two valid paths create an order: Manual (operator via Add Order; lands confirmed) and Customer (self-order via /trucks/[slug]/order; lands pending, auto-confirm if truck.auto_accept). Intentional divergences exist (status default, auto_accept, server-side total validation, notifications) and must NOT be consolidated. But these utilities MUST be shared: buildCatConfigs, normaliseOrderLines, nextOrderId, canFitInProductionSlot, calculateOrderTotal.
+
+### OrderCard component
+
+There is ONE OrderCard component for all order ticket rendering. It accepts a viewMode prop (solo / window / cook) and branches internally. Never create WindowOrderCard/CookOrderCard, never duplicate render logic, never have a layout page build its own ticket display. The KDS page is a thin layout wrapper that composes OrderCard.
+
+### Single dropdown component (V4)
+
+components/dashboard/UserMenu.tsx is the single avatar dropdown used by every operator-facing page. Sections render based on boolean prop flags (showScreenToggle, showOrderUtilities, showManageLink, showDashboardLink). The dropdown order is canonical and never changes:
+
+- Identity block (truck name bold, operator first name muted) — always.
+
+- Screen on toggle — mobile only, if showScreenToggle.
+
+- Order link / QR code / Kitchen screen — mobile only, if showOrderUtilities.
+
+- 🔐 Admin — if the operator is_admin (V6).
+
+- ⚙️ Manage — if showManageLink.
+
+- ← Orders dashboard — mobile only, if showDashboardLink.
+
+- Sign out (red) — always.
+
+No inline dropdowns anywhere. Any future page (admin, KDS settings) must use UserMenu with appropriate flag props.
+
+### Shared operator header — AppHeader (V5)
+
+components/shared/AppHeader.tsx is the single operator-facing page header, used by the dashboard, the manage page, the admin page (V6), and any future operator surface. Layout: Village Foodie logo left (links to /), the truck logo and name centred, and a right-hand slot supplied via children (typically the UserMenu avatar dropdown). It is bg-slate-900 and sticky top-0 z-50. Pages must not build their own inline header — this was an inline duplication across the dashboard and manage pages before V5. On the admin page, which has no truck context, AppHeader is used with truckName={null} and truckLogoUrl={null}.
+
+Colour constants live in lib/brand.ts: HEADER_BG, PAGE_BG, and TABS_BG, all slate-900. The perceived header/tabs mismatch fixed in V5 was caused by the tabs bar being slate-800 while the header was slate-900; both now reference the shared constant.
+
+Sticky layout contract: AppHeader is sticky top-0 z-50 (measured 51px tall). The tabs bar is sticky top-[51px] z-40. On the dashboard, the event bar is sticky top-[95px] z-30 and shows on the Orders and Add Order tabs only. On the manage page the tabs are sticky top-[51px] z-40. Any new operator page must reuse AppHeader and slate-900 tabs rather than re-deriving these values.
+
+### Single order-line renderer (V4)
+
+components/dashboard/OrderLineItem.tsx renders a priced line item across all surfaces. Variant prop (operator | customer) controls rendering: operator variant shows total only; customer variant shows base price, individual modifier upcharges as sub-rows, and a total footer with border-top. Props include nameSuffix for the Edit/Customise button slot and rightSlot for the price editor.
+
+### Shared column class constants (V4)
+
+When rendering multi-column list views (Reports Orders/Items, future surfaces), shared Tailwind class constants must be defined once at the top of the component. Both Orders and Items views in the Reports tab use these — never inline the same Tailwind string twice. See Section 19 (Reports tab) for the canonical set.
 
 ### Feature gating
 
-All feature access goes through `canAccess()` from `lib/features.ts`. **Forbidden:** `if (plan === 'pro')`, hardcoded feature lists outside `lib/features.ts`.
+All feature access goes through canAccess() from lib/features.ts — the single source of truth handling per-truck overrides, trial expiry, and plan tier resolution in the correct order. Forbidden: if (plan === "pro"), if (truck.plan !== "starter"), or hardcoded feature lists outside lib/features.ts.
+
+### canAccess vs hasFeature (V4)
+
+lib/features.ts exports two checks with distinct purposes:
+
+- **canAccess(plan, feature, featureOverrides, trialExpiresAt)** — use this for ALL UI gates. Respects per-truck overrides and trial expiry.
+
+- **hasFeature(plan, feature)** — plan-only check, no overrides. Use only where override/trial logic is irrelevant.
+
+When in doubt, use canAccess().
 
 ### Plan pricing and feature matrix
 
-`lib/plan-features.ts` is the single source of truth. `FEATURE_SECTIONS` defines human-readable labels, section grouping, and coming-soon values for all three base plan columns. Trial and Tester always get the same values as Max. `PLAN_FOOTNOTES` is exported and rendered by both the admin Features tab and the operator Billing tab.
+lib/plan-features.ts is the single source of truth for the pricing matrix, feature sections, footnotes, plan prices, and descriptions. Both the Billing tab and the admin console import it. Never hardcode pricing or feature rows in a component.
 
-### DRY audit before every feature
+FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Online sales & automation, and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows are ordered last within their section in the data itself, so both the admin Features tab and the billing matrix render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.
 
-1. Search the codebase for related logic.
-2. Identify whether the new feature extends an existing pattern.
-3. Paste existing structure for review before writing new code.
-4. Extraction is the default; duplication requires explicit justification.
+### Development process — Claude within Cursor (V6)
 
----
+> **RULE** — Claude within Cursor is the coding tool. The planning chat writes Cursor-ready prompts; it does not edit files directly. Audits can be sent to Cursor for a summary response rather than always requiring grep output to be pasted back.
 
-## 4. Plan tiers and feature gating
+## DRY audit before every feature
 
-### Five plans
+- Search the codebase for related logic that already exists.
 
-- **Starter (Free)** — Walk-up orders, KDS, dashboard, menu, deals, sold-out toggle, stock countdown, Pay-at-Hatch online ordering. 0% platform fee.
-- **Pro (£29/mo)** — Everything in Starter, plus online payments (Stripe Connect), advance pre-ordering, time slot selection, smart batch pacing, auto-accept, advanced reporting, branded QR code, Messenger & Instagram auto-replies, offline sync protection. 0.99% platform fee plus card processing.
+- Identify whether the new feature should extend an existing pattern or create a new one.
+
+- Paste the existing structure for review before writing new code.
+
+- Make extraction the default; duplication requires explicit justification.
+
+# 4. Plan tiers and feature gating
+
+## Five plans
+
+- **Starter (Free)** — Walk-up orders, KDS, dashboard, menu, deals, sold-out toggle, stock countdown, and Pay-at-Hatch online ordering. 0% platform fee. No online card pre-orders.
+
+- **Pro (£29/mo)** — Everything in Starter, plus online payments (Stripe Connect), advance pre-ordering, time slot selection, smart batch pacing, auto-accept, advanced reporting, branded QR code, Messenger/Instagram auto-replies, offline sync protection, dynamic fee splitting. 0.99% platform fee plus card processing on online orders.
+
 - **Max (£49/mo)** — Everything in Pro, plus unlimited WhatsApp auto-replies, kitchen ticket printing, multi-device kitchen sync, multi-user access, customer-facing display (coming soon), festival pricing (coming soon), digital loyalty stamp cards (coming soon).
-- **Trial** — All Max features plus Pay-at-Hatch online ordering. Default 3 months. Expires to Starter. No payment details required at signup.
-- **Tester (V6)** — All Max features. Billing tab hidden. Trial conversion popup suppressed. Lifetime subscription discount tracked on `trucks.lifetime_discount_pct` (integer, e.g. 50 = 50% off) and `trucks.lifetime_discount_note`. 0.99% transaction fee applies at standard rate. Can convert to paid plan.
 
-### `PLAN_ORDER`
+- **Trial** — All MAX features, PLUS Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details at signup. Default 3 months for hand-picked Pro/Max early signups. Expires automatically to Starter.
 
-```typescript
-['starter', 'trial', 'tester', 'pro', 'max']
-```
+- **Tester (V6)** — All MAX features plus Pay-at-Hatch online ordering. The billing tab is hidden and the trial-conversion popup is suppressed. A lifetime subscription discount is tracked on trucks.lifetime_discount_pct (integer, e.g. 50 = 50% off) and trucks.lifetime_discount_note (text). Intended for hand-picked pre-launch testers who keep a permanent discount; can later convert to a paid plan.
 
-### Transaction fees
+## PLAN_ORDER (V6)
 
-| Plan | Walk-up orders | Online orders |
-|---|---|---|
-| Starter | 0% | Pay at Hatch |
-| Trial | 0% | Pay at Hatch |
-| Tester | 0% | Pay at Hatch |
-| Pro | 0% | 0.99% + card fee |
-| Max | 0% | 0.99% + card fee |
+PLAN_ORDER in lib/features.ts is ['starter', 'trial', 'tester', 'pro', 'max']. PLAN_META holds each plan's display name; PLAN_PRICES and PLAN_DESCRIPTIONS live in lib/plan-features.ts (tester price label "Lifetime", tester description "Pre-launch tester — full feature access, lifetime discount").
 
-### Feature gating rules
+## Pricing matrix
 
-- Resolution order in `canAccess()`: per-truck override → trial expiry check → plan tier.
-- Per-truck overrides stored in `trucks.feature_overrides` (JSONB), edited in admin.
-- Trial expiry checked against `trucks.trial_expires_at`; expired trials silently drop to Starter.
-- UI uses `useFeatures(truck)`; non-React code uses `canAccess()` directly.
+| **Feature** | **Starter (Free)** | **Pro (£29)** | **Max (£49)** |
+| --- | --- | --- | --- |
+| **Best for** | Weekend traders & walk-up pitches | Busy trucks scaling pre-orders | High-volume operations & festivals |
+| **Walk-up orders — platform fee** | 0% | 0% | 0% |
+| **Online orders — platform fee** | Pay at Hatch | 0.99% + card fee | 0.99% + card fee |
+| **Discovery map listing** | ✓ | ✓ | ✓ |
+| **Universal web dashboard** | ✓ | ✓ | ✓ |
+| **iPad kitchen app** | ✓ | ✓ | ✓ |
+| **QR code menu & ordering** | ✓ | ✓ | ✓ |
+| **Meal deals & upsells** | ✓ | ✓ | ✓ |
+| **Walk-up order processing** | ✓ | ✓ | ✓ |
+| **Online ordering — Pay at Hatch** | ✓ | — | — |
+| **Instant sold-out toggle** | ✓ | ✓ | ✓ |
+| **Automated stock countdown** | ✓ | ✓ | ✓ |
+| **Offline sync protection** | — | ✓ | ✓ |
+| **Online payments (Stripe Connect)** | — | ✓ | ✓ |
+| **Advance pre-ordering** | — | ✓ | ✓ |
+| **Customer time slot selection** | — | ✓ | ✓ |
+| **Smart batch pacing** | — | ✓ | ✓ |
+| **Auto-accept online orders** | — | ✓ | ✓ |
+| **Advanced reporting (date range, breakdowns)** | — | ✓ | ✓ |
+| **Branded QR code** | — | ✓ | ✓ |
+| **Messenger & Instagram auto-replies** | — | ✓ | ✓ |
+| **Unlimited WhatsApp auto-replies** | — | — | ✓ |
+| **Kitchen ticket printing** | — | — | ✓ |
+| **Multi-device kitchen sync** | — | — | ✓ |
+| **Multi-user access** | — | — | ✓ |
+| **Digital loyalty stamp cards** | — | — | Coming soon |
+| **Customer-facing display** | — | — | Coming soon |
+| **Event & festival pricing** | — | — | Coming soon |
 
-### Billing tab
+Trial and Tester columns (rendered in the admin Features tab and, for Trial, in the operator Billing tab) take the same feature values as Max, with Pay-at-Hatch online ordering and a 0% walk-up fee. Their online-order fee shows Pay at Hatch, not 0.99% + card fee.
 
-- Owner-only tab. Hidden when `truck.plan === 'tester'`.
-- Trial column visible when `plan === 'trial'` AND `trial_expires_at > now`. Disappears automatically on expiry.
-- Trial column sits first (before Starter), labelled "TRIAL / Free trial / until {date}".
-- Upgrade buttons open email-to-upgrade modal until Stripe Connect is built.
+Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders use the truck's own card terminal — HatchGrab charges 0%, terminal provider fees apply. (2) Online payments via Stripe Connect: 0.99% platform fee plus Stripe card processing ~1.5% + 20p in the UK. (3) Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer, neither supplied. (4) iPad not supplied; the kitchen app runs on any modern tablet browser, Apple iPad recommended. (5) Auto-replies require a Business account on each platform and respond with schedule and order link only.
 
-### Billing tab layout by plan
+## Pricing rationale
 
-- **Trial / Starter** — upgrade card first, then full pricing matrix, then billing & payments.
-- **Pro / Max** — quiet current-plan summary first, then collapsible "Compare all plans" (collapsed by default), then billing & payments.
+- Starter free reduces signup friction — trucks try the platform before committing.
 
-### `is_test` scope
+- £29 Pro sits below the £30 psychological threshold.
 
-> **RULE** — `is_test` has exactly ONE effect: filtering test trucks from the public discovery map (Village Foodie). It must NEVER gate an operator-facing feature. Test accounts see the full operator product including Billing tab.
+- £20 gap between Pro and Max is deliberately small to encourage upgrades.
 
-### No premium badges on customer surfaces
+- All platform fees on online orders apply on top of card processing (~1.5% + 20p with Stripe).
 
-> **CRITICAL RULE** — Customers must NEVER see "Premium" badges, upsell language, or any indication that features are gated behind subscription tiers.
+- Walk-up orders have 0% platform fee on all tiers.
 
----
+## Feature gating rules
 
-## 5. Order management
+- Static feature map lives in lib/features.ts; pricing/matrix in lib/plan-features.ts.
 
-### Order lifecycle
+- Resolution order in canAccess(): per-truck override → trial expiry check → plan tier.
 
-- `pending` — customer placed, not yet confirmed. Only set by customer path when `truck.auto_accept` is false.
-- `confirmed` — accepted into queue. Default for manual orders.
-- `cooking` — optional intermediate state.
-- `ready` — food prepared. Customer notified by email.
-- `collected` — customer collected. Disappears from active views.
-- `cancelled / rejected` — will not be fulfilled.
+- Per-truck overrides stored in trucks.feature_overrides (JSONB), edited in admin.
 
-### Walk-up vs customer orders
+- Trial expiry checked against trucks.trial_expires_at; expired trials silently drop to Starter.
 
-> **CRITICAL DISTINCTION** — Walk-up orders and customer orders are two different flows. They must not be merged.
+- UI uses useFeatures(truck); non-React code uses canAccess() directly.
 
-**Walk-up (manual) orders:** Created by operator via Add Order panel. Auto-confirms immediately. Button label: "Confirm order".
+- Gating happens both UI-side (hide buttons, upgrade prompts) and API-side (reject forbidden features).
 
-**Customer self-orders:** Created via `/trucks/[slug]/order`. Server-side total validation. Lands pending; auto-confirms only if `truck.auto_accept` and slot capacity allows. Button label: "Place order". Phone field is optional — no asterisk, no submit guard.
+- WhatsApp auto-replies are MAX only (cost-incurring). Instagram/Messenger are Pro.
 
-### Auto-accept slot behaviour (V6)
+### FeatureValue type (V4)
 
-Auto-accept does NOT simply confirm or reject. The behaviour is:
-- Requested slot has capacity → confirm at requested slot
-- Requested slot full, later slot available → bump to next available slot and confirm
-- All slots full → leave as pending (operator action needed)
-- No slot requested → confirm immediately
+The FeatureValue type in lib/plan-features.ts is boolean | 'coming_soon'. Set the plan column to 'coming_soon' directly — the Billing tab renders this as a "Coming soon" badge automatically. No separate flag is needed.
 
-> **RULE** — Auto-accept description copy: "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity."
+## Billing tab
 
-### Dashboard event scoping (V6)
+- Billing lives inside the Manage page as an owner-only tab. Removed the standalone /account page.
 
-- **Orders tab** — shows empty amber warning when no event selected. Order count in tab label shows 0 when no event selected.
-- **Add Order** — items can be added freely. Confirm button is disabled with "Select an event to confirm" when no event selected. Basket persists on event change.
-- **Menu & Stock** — sold counts show 0 when no event selected. Auto-accept, kitchen capacity, and offline protection cards only render when `activeEvent` is set.
+- Visible to all operators including trial AND test accounts. (Corrected in V5: the Billing tab was previously hidden for is_test = true, which was wrong. is_test now has exactly one effect — filtering test trucks from the public discovery map. See Section 4, is_test scope, and Section 16.)
 
-### Pause and extra wait
+- **Hidden for Tester plan (V6)** — the billing tab is hidden when truck.plan === 'tester' (the tab visibility guard is userRole === 'owner' && truck?.plan !== 'tester'), and the trial popup / default-to-billing behaviour is suppressed for testers.
 
-- **Pause orders** — writes to `truck_vans.paused_until` scoped to the active event's `van_id`. Never writes to `trucks.paused_until`. Pause button only visible when `activeEvent?.status === 'open'`.
-- **Extra wait** — global delay, 10-minute increments.
-- Both show persistent banners on KDS and dashboard while active. Same API calls, no duplication.
+- Trial maps to the MAX column; header shows "Free trial (Max features)" with trial end date.
 
-> **BACKLOG** — Operator UI reload reads pause state from `trucks.paused_until` — needs updating to read from `truck_vans.paused_until` for the active event's van.
+- Transaction fees show actual values (0%, 0.99% + card fee, Pay at Hatch), not checkmarks.
 
----
+- Upgrade buttons open an email-to-upgrade modal until Stripe Connect billing is built.
 
-## 6. Prep time and queue logic
+### Trial column in the billing matrix (V6)
 
-**FORMULA:** `totalQty = queueByCat[cat] + newByCat[cat]; finalBatch = ceil(totalQty / batchSize); prepSecs = finalBatch × prepSecsPerBatch`
+When the truck is on an active trial — trialActive = plan === 'trial' && trial_expires_at !== null && new Date(trial_expires_at) > new Date() — a Trial column is prepended to the billing matrix (billingPlans = trialActive ? ['trial','starter','pro','max'] : ['starter','pro','max']). The column header shows TRIAL / Free trial / until {DD MMM YYYY}; isCurrent is simply p === truck.plan so the orange "current" highlight lands on Trial while on trial and on Starter once it expires (and the column disappears). Trial cells: walk-up 0%, online orders Pay at Hatch, all features same as Max.
 
-`calcQueueAwareReadySecs` in `lib/prep-utils.ts` is the **only implementation**.
+### Billing tab layout by plan (V5)
+
+The Billing tab restructures itself by the truck's plan so the right thing is foremost:
+
+- **Trial / Starter** — upgrade card first, then billing & payments, then the full pricing matrix. The whole matrix is visible because these operators are deciding what to buy.
+
+- **Pro / Max** — a quiet current-plan summary, then a collapsible "Compare all plans" section (collapsed by default), then billing & payments. Paying operators don't need the sales matrix in their face.
+
+### Trial conversion prompts (V5)
+
+When plan is trial, the Manage page defaults to the Billing tab on load (this fires after any ?tab= URL param so it takes priority). A once-per-day reminder popup (guarded by a localStorage flag plus a date check, key hg_trial_reminder_shown) shows the trial end date with an X to dismiss and an "Upgrade here" action that switches to Billing. Trial copy frames the value as full Max features plus Pay-at-Hatch, free until the trial ends, reverting to Starter if not upgraded. (V6: this default-to-billing and the popup are suppressed for the Tester plan.)
+
+### is_test scope (V5)
+
+> **RULE** — is_test has exactly ONE effect: filtering test trucks out of the public discovery map (Village Foodie). It must NEVER gate an operator-facing feature. Test accounts (including the Test Kitchen truck) see the full operator product, Billing tab included. A V4-era guard that hid Billing for is_test accounts was a bug and was removed in V5.
+
+## Loyalty stamp cards (Max, coming soon) — V4
+
+The V1 spec is frozen in code comments above the matrix row in lib/plan-features.ts. Schema is loyalty_cards(id, truck_id, customer_email, customer_phone, stamps_earned, stamps_redeemed, created_at, last_stamp_at). V1 rule: 1 stamp per order — not per item, to avoid categorisation complexity. Walk-up flow uses phone lookup in the Add Order panel; online flow matches on email at submit. Redemption requires both an operator-side trigger in Add Order and a customer-side prompt at online checkout.
+
+> **RULE** — Do NOT build flexible stamp criteria until V1 is live and operators request it.
+
+Strategic note: once stamps are earned, operator churn drops to near zero — customers won't want to lose their progress. This is the primary stickiness argument for the Max tier.
+
+## Branded QR code (Pro+) — V4
+
+trucks.qr_code_style column ('standard'|'branded' default 'standard') controls whether the public QR composites the truck logo into the centre. Logo compositing uses error-correction level H. Manage page selector greys the Pro badge for Starter trucks. The Pro feature row in lib/plan-features.ts is "Branded QR code (logo in centre)".
+
+## No premium badges on customer surfaces
+
+> **CRITICAL RULE** — Customers must NEVER see "Premium" badges, upsell language, or any indication that features are gated behind subscription tiers. Premium features are silently enabled or disabled per truck. This protects the customer experience and the truck's relationship with their customers.
+
+# 5. Order management
+
+## Order lifecycle
+
+- **pending** — customer placed order, not yet confirmed. Only set by the customer path when truck.auto_accept is false.
+
+- **confirmed** — accepted into the queue. Default for manual orders. Set by auto_accept for customer orders.
+
+- **cooking** — optional intermediate state used in kdsMode for two-step prep tracking.
+
+- **ready** — food prepared, waiting for collection. Customer notified by email automatically.
+
+- **collected** — customer collected and paid. Disappears from active views; appears in Done strip.
+
+- **cancelled / rejected** — will not be fulfilled. Removed from active views.
+
+## Walk-up vs customer orders
+
+> **CRITICAL DISTINCTION** — Walk-up orders and customer orders are two different flows with intentionally different behaviour. They must not be merged.
+
+### Walk-up (manual) orders
+
+- Created by operator via Add Order panel. Submits to /api/dashboard/action with action="manual".
+
+- Customer name optional; defaults to "Walk-up" if blank. Email and phone behind a "+ Add email / phone" toggle.
+
+- Auto-confirms immediately — the operator is present and knows queue state.
+
+- Button label: "Confirm order". No modifier popup on item tap; items add instantly at base price. Modifiers added by tapping the cart line.
+
+- Decrements stock on success (separate API call after the manual action).
+
+### Customer self-orders
+
+- Created via /trucks/[slug]/order. Submits to /api/orders/submit.
+
+- Customer name required; email collected for confirmation; phone optional (no asterisk, no submit guard).
+
+- Server-side total validation against DB prices (untrusted client).
+
+- Lands pending; auto-confirms only if truck.auto_accept and slot capacity allows.
+
+- Button label: "Place order". Modifier popup on item tap drives accuracy and upsells.
+
+- Sends truck notification (WhatsApp on Max, else email).
+
+## Auto-accept logic
+
+Only customer-path orders are subject to auto_accept. Manual orders bypass auto_accept and always confirm. The precise behaviour of resolveAutoAcceptSlot() (V6 — verified against the code):
+
+- **Slot has capacity** → confirm at the requested slot (slotChanged: false).
+
+- **Requested slot full, a later slot has capacity** → bump forward to the first later slot with capacity and confirm (slotChanged: true; the order's slot column is updated).
+
+- **All slots full** → the order is left pending (canConfirm: false); it is not rejected and not confirmed; the operator handles it manually. The customer still receives a "pending" confirmation email (autoAccepted = false).
+
+- **No slot requested** → confirm immediately.
+
+- **Unrecognised slot** (not in the times list) → short-circuits to confirm with no slot change.
+
+When auto_accept is false the customer path skips this block entirely, but the slot-capacity check at submission still runs: a full production window returns a 409 and the order is never created; otherwise it inserts as pending.
+
+> **RULE (V6)** — Auto-accept description copy in the dashboard: "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity." The earlier "Full slots are still rejected" was inaccurate and must not return.
+
+## Dashboard event scoping (V6)
+
+With no event selected on the dashboard, every event-scoped surface degrades gracefully:
+
+- **Orders tab** — the whole tab body is gated on activeEvent; with none selected it shows a prominent amber "No event selected — select an event to view orders" box with a Select event button (opens the event picker). The Orders tab label count reads 0 regardless of how many orders are loaded.
+
+- **Add Order** — items can still be added to the basket, but the Confirm button is disabled (disabled={loading || !hasItems || !manualEvent}) with the label "Select an event to confirm". A prominent amber "No event selected" box with a Select event button sits at the top. Basket items persist when the event changes (the controlled-event sync only updates manualEvent and re-fetches slots; it never clears manualItems) — operators frequently realise mid-build they picked the wrong event.
+
+- **Menu & Stock** — both catOrdered and itemOrdered return 0 when there is no active event, so no cross-event totals bleed into the stock view. Auto-accept, kitchen capacity, and offline protection cards render only when an event is active.
+
+- **Auto-accept** toggle sits at the top of the Menu & Stock tab (moved from the bottom).
+
+## Pause and extra wait
+
+- **Pause orders:** stops customer ordering for the active event's vehicle until resumed. Confirmation dialog before activating; none to unpause.
+
+- **Extra wait:** global delay on all collection estimates, 10-minute increments, no confirmation.
+
+- Both show a persistent banner on KDS and dashboard while active.
+
+- Both controls live in the KDS header AND mobile dashboard — same API calls, no duplication.
+
+### Manual pause is van-scoped (V6)
+
+> **RULE** — The set_paused action writes to truck_vans.paused_until scoped to the active event's van_id, NOT trucks.paused_until. The menu API read path already resolves van-level manual pause correctly; before V6 the writer targeted trucks.paused_until, which paused every van under a multi-van operator. When there is no van_id on the active event, it falls back to trucks.paused_until. The pause button is gated on activeEvent?.status === 'open' on both the dashboard and the KDS page, and vanId is included in the payload.
+
+> **BACKLOG** — The operator UI reload still reads pause state from trucks.paused_until rather than truck_vans.paused_until for the active event's van. Update before scaling multi-van operators.
+
+# 6. Prep time and queue logic
+
+## Queue-aware ready time formula
+
+> **FORMULA** — totalQty = queueByCat[cat] + newByCat[cat]; finalBatch = ceil(totalQty / batchSize); prepSecs = finalBatch × prepSecsPerBatch
+
+This is the same logic used by the live truck dashboard and the customer pre-order page. calcQueueAwareReadySecs in lib/prep-utils.ts is the only implementation.
+
+## Batch logic
+
+New items are placed AFTER the existing queue. If batch 2 has space, new items slot into batch 2 and finish alongside it. If batch 2 is full, they spill into batch 3. Kitchens do not restart a partially-filled batch for a new order.
+
+## Categories cook in parallel
+
+When an order contains multiple categories (pizza + sides), ready time is the MAX across categories, not the sum. Pizza taking 8 minutes and sides taking 2 minutes are ready together at 8 minutes.
+
+## Buffer application
+
+- Truck dashboard passes waitMinutes × 60 + 120 (manual wait override + 2 min handoff buffer).
+
+- Customer pre-order page passes 0 (no buffer — the event has not started yet).
+
+## Customer page is a pre-order context
+
+The customer page calculates ASAP from event.start_time, not new Date(). A customer pre-ordering at 10am for a 17:00 event sees ASAP = 17:00 + prep, not now + prep. Fundamentally different from the dashboard which calculates from now.
+
+## ASAP is event-date aware
+
+getAsapSlot in lib/slot-utils.ts takes an optional eventDate. For a future-date event it returns the first available slot regardless of current time. For today's event it uses current time as the floor (event start if not yet open, else now). This fixed a bug where a future event showed the current time as ASAP. Also fixed a UTC-midnight parse bug — build dates with new Date(y, mo-1, d, h, m) (local), never new Date('YYYY-MM-DD') then setHours.
+
+## ASAP queue-aware calculation (V4)
+
+The ASAP slot calculation must use a single formula everywhere. calcQueueAwareReadySecs in lib/prep-utils.ts is the only implementation. The queueByCat input comes from the /api/slots API (which includes "modified" status orders) — never rebuild it from the orders prop on the dashboard. The dropdown and the sub-label below the slot picker must always agree; they did not in V3 because two different formulas were in play (one bespoke pre-event Path A using (totalBatches-1) × prepSecs, the other the shared queue-aware function). Both paths now use calcQueueAwareReadySecs, with adjustedAsapSlot picking the first slot at/after eventStart + queueAware.minsFromNow.
 
 ### ASAP base time — never add prep on top of event start (V5)
 
-**FORMULA:** `ASAP base = max(now + totalSecs, eventStart).` Never `eventStart + totalSecs`.
+> **FORMULA** — ASAP base = max(now + totalSecs, eventStart). Never eventStart + totalSecs.
 
-### ASAP cancellation cutoff (V6)
+In the Add Order panel (components/dashboard/AddOrderPanel.tsx), the ASAP collection time is the later of (now + prep) and the event start — not the event start with prep added on top. For an event that has not started yet, ASAP is simply the event start (prep runs during the lead time); for an event already underway, ASAP is now + prep. The earlier bug added prep on top of a future event start, pushing ASAP needlessly late. This complements the event-date-aware getAsapSlot rule above — that rule chooses the right floor (event start vs now); this rule governs how prep combines with that floor.
 
-For ASAP orders (null slot), the cancellation cutoff falls back to `event end_time`. The cancel route joins `truck_events!event_id (end_time)`. Effective slot = `order.slot ?? event.end_time ?? null`. If neither is available, the check is skipped.
+## ASAP cancellation cutoff (V6)
 
-> **POST-TRIAL CONSIDERATION** — Store `ready_time` on the order row at submit time for tighter ASAP cancellation control.
+For ASAP orders (null slot), the cancellation cutoff falls back to the event end_time. /api/orders/cancel joins truck_events!event_id (end_time) and computes effectiveSlot = order.slot ?? event.end_time ?? null; if neither is available the cutoff check is skipped. This fixed ASAP orders being uncancellable (or wrongly cancellable) because they carried no slot to measure the cutoff against.
 
-### Time display
+> **POST-TRIAL CONSIDERATION** — Store a ready_time on the order row at submit time so the cancellation cutoff has an exact target rather than falling back to the event end time.
 
-All times display as `HH:MM` — seconds stripped via `formatTime()` from `lib/time-utils.ts`. **Never inline `t.slice(0,5)`.**
+## Time rounding and display
 
-### UTC parse bug prevention
+- Customer-facing ASAP rounds to NEAREST 5 minutes. 17:06 → 17:05, 17:08 → 17:10.
 
-Always use `new Date(\`${date}T${time}\`)` for local-time parse. **Never** `new Date('YYYY-MM-DD')` then `setHours`.
+- Truck dashboard shows exact ready times — the operator needs precision.
 
----
+- ASAP button shows "Around 17:10" — clearer than a tilde.
 
-## 7. Customer order page UX
+- Times display as HH:MM throughout — seconds are stripped via the shared **formatTime** helper in lib/time-utils.ts. This is the canonical formatter. Never inline t.slice(0,5) or write a parallel implementation. Excluded from refactor: toTimeString().slice(0,5) for current-time logic, array slice ops, server-side classifier data.
 
-### Collection time default
+## Slots API contract
 
-ASAP is auto-selected by default. ASAP and Choose Time are mutually exclusive.
+The slots API (/api/slots/[truckId]) returns the slots list with availability flags, queueByCat, and catConfigs so the customer page can do queue-aware ASAP client-side. Even with no collection_times configured, catConfigs and queueByCat are still returned; only the slots array is empty.
 
-### Phone optional
+## prep_secs and batch_size defaults
 
-Phone is never required. Submit guard checks name and email only.
+In the menu API, prep_secs and batch_size return null when unset, NOT 0 (0 ?? 240 evaluates to 0). Consumers use || 0 for the "instant items" interpretation (drinks, dips) and fall back to DEFAULT_CAT_CONFIG when truly missing.
 
-### Footer and layout
+> **NOTE (V6)** — A null batch_size means "no limit" and renders as a blank input with an ∞ placeholder and a "no limit" label, not as 1. Watch for legacy rows storing a sentinel like 999 — clean these to null.
 
-- Footer `padding-bottom` uses `iOS safe-area-inset-bottom`.
+# 7. Customer order page UX
+
+## Collection time default
+
+On the customer order page, ASAP is auto-selected by default (asapChosen initialises to true). The customer never sees an unselected state requiring action. ASAP and Choose Time remain mutually exclusive — selecting one clears the other.
+
+## ASAP button visual states
+
+- Deselected, available: white background, slate border, orange ASAP text and time.
+
+- Selected: solid orange background, white text.
+
+- Unavailable: greyed out, "Unavailable" label.
+
+## Choose Time visual states
+
+- Deselected, premium enabled: white background, dropdown showing "Choose time".
+
+- Selected: solid orange background showing the chosen time.
+
+- Free tier: greyed out with "ASAP only" subtitle, NO premium badge.
+
+## Time selection premium flag
+
+trucks.time_selection_enabled controls whether Choose Time is functional. Default true; set false for free-tier trucks. Supports tiered pricing without code changes.
+
+## Slot auto-clear on basket change
+
+If the customer picks a specific time then adds items that push ASAP past it, the chosen time auto-clears and must be reselected. The Choose Time dropdown only shows slots at or after the calculated ASAP.
+
+## Event lookup pattern (V4)
+
+The events API at /api/menu/[truckId]/events (and any truck-scoped API) must support both slug and UUID lookups. Customer URLs use slug (/trucks/[slug]/order); dashboard surfaces use UUID. Try slug first, fall back to UUID. This was the root cause of a "No upcoming events" bug where the customer order page used UUID lookup against a slug param. The pattern is documented in Section 12 as a general API rule but applies here specifically.
+
+## Past events filtered (V4)
+
+Future-dated events with end times already passed must not appear in the customer event picker. isPastEvent uses local-time parse:
+
+new Date('${event_date}T${end_time}') < new Date()
+
+Never new Date('YYYY-MM-DD') then setHours — that parses as UTC midnight and breaks in BST (and any non-UTC timezone). The same rule applies on the Schedule tab in the manage page, where past events show a grey "Finished" badge regardless of database status (which is never auto-written to past), except cancelled events which show "Cancelled" (V6).
+
+## Phone optional (V4)
+
+Phone is collected but never required for customer self-orders. The submit guard checks name and email only. The phone field has no asterisk. Email is required for the order confirmation; phone enables SMS notifications when configured but is otherwise discretionary.
+
+## Item notes (specialInstructions) — V4
+
+Categories have an allow_notes boolean (default false). When enabled:
+
+- Items with no modifiers and allow_notes=true show a "+ Add note" affordance on the basket line (no forced popup).
+
+- Items with modifiers AND allow_notes=true show the note field at the bottom of the modifier popup.
+
+- The operator Add Order panel ALWAYS shows the note field regardless of category setting — operators may need to record information for any item.
+
+- The field name is specialInstructions end-to-end (orders.items[i].specialInstructions). Canonical.
+
+- Use the shared ItemNoteInput component (compact + default variants).
+
+## Event card display (V4)
+
+Improved typography on the event card at the top of the customer order page: 📍 prefix on venue (font-semibold text-slate-800), date/time muted (text-slate-600 text-sm), "● Open now" inline green badge when current time is between event start and end. Single separator style throughout.
+
+## Footer and layout
+
+- Footer padding-bottom uses iOS safe-area-inset-bottom for home indicator clearance.
+
+- Dynamic footer height via ResizeObserver sets main content padding.
+
 - No discount code input on the customer page.
-- Categories in drag-and-drop sort order.
 
----
+- Categories group in the truck's drag-and-drop sort order, not alphabetical.
 
-## 8. Deal management
+## No server roundtrip on basket change
 
-### Stock-aware auto-hide
+ASAP is calculated entirely client-side from category configs and queue data in the initial slots API call. No debounced re-fetch on basket change — mobile coverage is unreliable, client-side is instant.
 
-> **RULE** — A deal is shown on the customer order page only if active for the event AND every slot category has at least one available item. Hidden from customers automatically; shown to operator with "currently hidden" warning.
+## Category name lowercase consistency
 
-### How deals render on tickets
+All category lookups use lowercase keys. The slots API lowercases itemCatMap values; the customer page lowercases menuItem.category before lookup. Prevents "Pizza" failing to match "pizza".
 
-**Window view:** Deal as single priced line "🎁 Lunch Deal £12.00". Constituent items indented. Standalone items above deals block.
+# 8. Deal management
 
-**Cook view:** No deal labels, no prices. All items merged into category groups.
+## What is a deal
 
----
+A deal is a bundle grouping multiple menu items into a single purchase at a discounted price. Example: Lunch Deal — one pizza + one dip + one drink for £12. Stored in bundles_db with up to six category slots.
 
-## 9. Kitchen Display System (KDS) rules
+## Deals on events
 
-### View modes
+- Each deal has apply_to_new_events (default true). When true, the deal auto-applies to new events; when false, it is selected manually per event.
 
-- `solo` — mobile/web dashboard. Compact, all controls.
-- `window` — iPad KDS window mode. Full detail, prices, Mark paid & done.
-- `cook` — iPad KDS cook mode. No prices, larger tap targets, Ready button. Max-only.
+- Per-event control via the event_deals table (event_id, bundle_id, active, overridden). The per-event active flag overrides the bundle default.
 
-### Event lifecycle wording (V5)
+- In the Deal create/edit modal, the operator chooses "Apply to all future events automatically" or "Select manually per event". The deal card shows an "Auto-apply" or "Manual" badge.
 
-- **Start Event** — opens a confirmed event. Toast: "Event started". Status: ● Live.
-- **Restart Event** — reopens a closed event. Toast: "Event restarted".
-- **Close** — sets `status: 'closed'`. Only an open event can be closed.
+- In the Schedule tab, each event card shows deal toggles with name, price, and a stock warning indicator. As of V6 these toggles live inside a collapsed `<details>` summary on the rebuilt event card (see Section 15).
 
-Closing an event is recoverable — closed events appear in the picker with a Restart Event button. The server `open` action accepts `status: confirmed OR closed`.
+## Stock-aware auto-hide
 
-### Allergy and notes
+> **RULE** — A deal is shown on the customer order page only if it is active for the event AND every slot category has at least one available item (is_available = true and stock_count null or > 0). If any slot has no available item, the deal is hidden from customers automatically but still shown to the operator with a "currently hidden" warning.
 
-Cook view shows notes — **allergy information must never be hidden from the cook.**
+The menu API supports an ?operator=true param: operators receive all deals with a stock_warning field; customers receive only available deals. The Deals tab shows an amber "Currently hidden" banner when a deal is suppressed by stock.
 
----
+## How deals render on tickets
 
-## 10. Add Order panel
+### Window view (and solo)
 
-### Layout
+- Deal renders as a SINGLE priced line: "🎁 Lunch Deal £12.00".
 
-- **iPad (md:+)** — split screen. Menu left, cart right.
-- **Phone (below md:)** — single column list. Sticky bottom bar with "Review order →".
+- Constituent items indented below, no individual base prices.
 
-### Fast-tap rules
+- Modifier upcharges still shown on constituent items.
 
-- Tapping an item adds immediately at base price. No popup.
-- This is the Square/Toast POS pattern.
+- Standalone items render in category groups ABOVE the deals block. The deals block is its own section, not distributed into category groups.
 
-### Event bar
+### Cook view
 
-The active event shows in the sticky event bar below the tabs. The in-panel event box shows only while `status !== 'open'`. Once live, the sticky bar is the sole event display.
+- No deal labels, no yellow border, no prices.
 
-### Grace period banner (V4)
+- All items (deal and standalone) merged into category groups and sorted. The cook cares only about what to make.
 
-Orders for an event whose end time has passed >30 min show a passive amber banner. The Confirm order button is NOT disabled.
+## Deal pricing and removal
 
----
+- Deal price is the total for the bundle regardless of constituent base prices. Modifiers still add at their individual upcharge.
 
-## 11. Native app and offline architecture
+- Order total = sum(standalone × prices) + sum(deal prices) + sum(modifier upcharges). Server re-validates against DB prices on the customer path.
 
-> **DECISION** — A native wrapper using Capacitor must be built BEFORE any trial begins.
+- AppliedDeal.itemsTakenFromBasket tracks which basket items the deal consumed. On removal only those items are removed; fresh USE_EXISTING items added for the deal are not deleted.
 
-### Heartbeat architecture (V6)
+- cleanupDealsForItem in lib/basket-utils.ts is generic over <T extends Deal> to preserve AppliedDeal fields when filtering.
 
-- One `last_heartbeat_at` column per `truck_vans` row — no per-device granularity.
-- Both KDS page and main dashboard fire `POST /api/heartbeat` every 15 seconds, passing `{ token, vanId }`.
-- Heartbeat monitor edge function checks `last_heartbeat_at < now - 30s` and sets `online_paused_until = now + 2h`.
-- A live heartbeat receipt clears `online_paused_until` back to null.
-- **All-or-nothing offline detection works by design** — whichever device pings most recently overwrites `last_heartbeat_at`. As long as any one device is online and pinging, the van stays live. Only when ALL devices stop pinging does the van go stale.
+## Quantity expansion in DealsModal (V4)
 
-### Three-stage offline progression
+When a basket contains multiple units of the same item, deal slot assignment must operate on units, not lines. DealsModal flat-maps expandedBasketOpts by quantity, giving each unit a unique key ${cartKey}::unit{n}. stripUnit() is the helper at the boundary so callers receive the original cart key unchanged. takenByOtherSlots tracks full unit keys to prevent the same unit being assigned to two slots.
 
-- **Stage A (pre-trial)** — Read-only offline cache. New orders blocked offline.
-- **Stage B (post-trial)** — Walk-up orders offline with device-generated IDs.
-- **Stage C (future)** — Full offline with reconciliation.
+The DealsModal is shared between the operator Add Order panel and the customer order page — fixing this once fixes both surfaces. The previous bug: 2× BBQ Chicken Pizza in basket plus a 2-pizza deal only showed the item once in the slot picker.
 
----
+## Inline price editing on deal headers (V4)
 
-## 12. Authentication and access
+Operators can override the deal price on the order card by editing the deal header price directly. The price input must:
 
-### Sign-out (V4)
+- Have [appearance:textfield] so spinner arrows are hidden.
 
-Must use `createSupabaseBrowserClient()` from `@supabase/ssr` followed by hard redirect to `/login`.
+- Use the same font-bold text-slate-900 text-lg weight as standalone item names.
 
-### Four permission levels (V6)
+- Save on blur or Enter; revert on Escape.
 
-1. **Staff** — redirected to KDS on login, cannot access Manage page.
-2. **Manager** — all Manage tabs except Billing. Can edit/invite staff only.
-3. **Owner** — full access including Billing.
-4. **Admin (platform-level)** — `operators.is_admin = true`. Sees 🔐 Admin link in UserMenu. Auto-authenticates on `/admin` via session check. Not attached to any specific truck.
+# 9. Kitchen Display System (KDS) rules
 
-> **RULE** — Admin is a platform role on `operators`, not a truck role on `truck_users`. Do not attach admin accounts to trucks.
+## Access
 
-### Admin page auth (V6)
+The KDS opens from the dashboard header "Kitchen screen" button. Single-vehicle trucks open directly to /kds/[kds_token]; multi-vehicle trucks get a vehicle picker first. Opens in a new tab so the dashboard stays available alongside it.
 
-On mount, `/admin` calls `GET /api/admin?section=check_admin`. If `is_admin: true` on the session operator, the secret is returned and data loads automatically. `ADMIN_SECRET` password input remains as emergency fallback.
+## View modes
 
-> **BACKLOG** — Remove `ADMIN_SECRET` at public launch.
+- **solo** — mobile/web dashboard view. Compact, expand/collapse, all controls.
 
-### Email change verification
+- **window** — iPad KDS window mode. Full ticket detail, prices visible, Mark paid & done.
 
-Writes to `operator_email_changes`, sends Brevo verification link to NEW address. Pending banner in Team tab with Resend + Cancel. Pre-flight duplicate check against `auth.users`. Forces sign-out on completion.
+- **cook** — iPad KDS cook mode. No prices, no deal labels, larger tap targets, Ready button.
 
-### Slug or UUID resolution
+## Layout modes
 
-APIs accept both slug and UUID. Try slug first, fall back to UUID. Apply to any new truck-scoped API.
+Independent of view mode: list (single column, counter-top) and grid (multi-column auto-fill, mounted displays). All four combinations work independently. The in-header switcher toggles them without going to settings. (These layout controls live on the dashboard/KDS directly, not in van settings.)
 
----
+## Header design
 
-## 13. Operator and multi-truck model
+- Order number large and bold; customer name and slot time secondary on the same line.
 
-> **RULE** — When an operator has ONE truck, the truck name and selector are never shown. All multi-truck UI is gated on `operatorTrucks.length > 1`.
+- Price inline on window view, hidden on cook view.
 
-- `operators` — `first_name`, `last_name`, `phone`, `email`, `auth_user_id`, `is_admin`.
-- `trucks.operator_id` — nullable FK. One operator can own multiple trucks.
-- Personal details (name, phone, login email) — Team tab. Never shown to customers.
-- Business contact (email, phone shown to customers) — Settings.
+- Long names truncated; slot time always visible.
 
----
+- Header background driven by urgency; text always readable (dark on light tints, white on solid green for ready).
 
-## 14. Vehicles (trucks under a brand)
+## Urgency colour logic
 
-> **NAMING** — UI calls physical vehicles "trucks". DB tables remain `truck_vans` / `truck_user_vans`. User-defined names are operator data and must never be auto-changed.
+getCombinedUrgency(slotTime, createdAt, status): ready = solid green top border (overrides all); cooking = amber; otherwise take the MORE urgent of slot-relative and age-based urgency (new <5min, ok 5-15, warn 15-30, late 30+). An order 25 minutes old with a slot an hour away is still amber — the operator must see what is neglected.
 
-### Per-vehicle settings
+## Card and price layout
 
-- `auto_pause_on_offline` — pause online orders if this device goes offline.
-- `show_cooking_step` — adds Cooking step on this vehicle's KDS.
-- `kitchen_capacity` — max COOKED items per 5-minute window; drinks/instant items excluded. Options: No limit, 1–20 items. Editable from both manage page Settings and dashboard Menu & Stock tab (when event active).
-- `display_layout` and `split_screen` — NOT in van settings; set from dashboard/KDS directly.
+- Grid mode uses items-stretch for equal row heights; action buttons use mt-auto to sit at the bottom.
 
----
+- "Mark paid & done" uses dark slate (not green/teal) to differentiate from the green ready state.
 
-## 15. Events and venues
+- Prices right-align to the same column edge using tabular-nums and a fixed-width price column; item name takes remaining space.
 
-> **RULE** — Events created manually in the Manage page auto-confirm immediately (`source='manual'`, `status='confirmed'`). Only scraped/uploaded events arrive as unconfirmed.
+## Category grouping and counts
 
-### All event sources flow to truck_events
+- Section header: text-xs font-bold uppercase tracking-widest; rule extends right; first:mt-0 on first category.
 
-Every event source — scraper, vendor email, manual entry, operator upload — ends up in `truck_events`. The truck confirms before orders are accepted. Manual entries by the operator auto-confirm; inbound sources arrive unconfirmed.
+- Items within a category sorted alphabetically as a secondary sort; unknown categories fall into "Other" at the bottom.
 
-### Import schedule feature (V6)
+- TO MAKE all-day count bar aggregates base items across all in-flight orders (excludes modifiers), updating in real time.
 
-- `📤 Import schedule` button on Schedule tab header, next to `+ Add event`.
-- Separate modal from Add event modal. Uses drag-and-drop file upload (reuses `useDragDrop` hook from `lib/useDragDrop.ts`), paste text, "Process schedule" button.
-- New API route: `app/api/manage/process-schedule/route.ts`. Verifies token, calls `gemini-2.5-flash-lite`, extracts 6 fields only: `event_date`, `start_time`, `end_time`, `venue_name`, `town`, `postcode`. **No truck name extraction** — truck is always the logged-in operator's truck.
-- Extracted events show interactive review: checkbox per event (all pre-selected), inline edit with venue suggestions dropdown, selective save ("Save N events").
-- Events saved via `upsert_event` → `status: 'confirmed'`, `source: 'operator_upload'`. Surfaces on both maps via existing `discovery/events` read path.
+## Allergy and notes
 
-### Event lifecycle controls
+- Item special instructions shown italic below the item line.
 
-- **Start Event** — opens confirmed event. Toast: "Event started". Status: ● Live (green).
-- **Restart Event** — reopens closed event. Toast: "Event restarted".
-- **Close** — sets `status: 'closed'`. Recoverable — closed events appear in picker with Restart Event button.
+- Order-level notes shown as a separate red block at the bottom, always visible, never truncated.
 
-### Offline protection per-event override (V6)
+- Cook view shows notes too — allergy information must never be hidden from the cook.
 
-`truck_events.offline_protection_override` (nullable boolean). `null` = use van's `auto_pause_on_offline`. `true`/`false` = explicit event override set from dashboard Menu & Stock tab. Menu API checks event override before van default. Warning shown in dashboard when protection is disabled for a specific event: "⚠️ Disabled for this event only. To disable for all events, go to Settings in the Manage page."
+### Customer contact on the order card (V5)
 
-### Cancel event (V6)
+OrderCard shows a Contact control inline next to the customer name when the order has an email or phone. Tapping it reveals the email (mailto:) and phone (tel:) inline below the name; tapping again collapses. It renders on all view modes (solo, window, cook) — a cook may need to call a customer about an allergy or a missing item — and is hidden entirely for walk-up orders with no contact details. The control is a compact inline button, not a full expandable section, to keep the card from growing. customer_email and customer_phone must be included in the dashboard orders query and the Order type for this to populate.
 
-`openEventCancelModal` fetches real affected order count from `/api/events/affected-orders` before showing the modal. Was hardcoded to 0. Cancellation sets all `pending` and `confirmed` orders to `cancelled` and emails affected customers.
+## Per-vehicle KDS settings
 
-### Schedule tab layout (V6)
+show_cooking_step lives per vehicle (truck_vans). It adds a "Cooking" step between confirmed and done — useful when a vehicle has separate cook and window staff. Different vehicles can have different settings.
 
-Date-anchored card layout:
-- Large orange day number in left column with day name and month
-- Venue name + town (town omitted if already in venue name) + status badge
-- Time prominent (`text-sm font-semibold`), postcode on its own muted line below
-- Actions (Copy, Edit, Cancel) right-aligned
-- Deals collapsed into `<details>` summary showing deal names — expands on tap
-- Past events: Copy only, deals section hidden, Edit and Cancel hidden
-- Cancelled past events show "Cancelled" badge, not "Finished"
+## Inline stock and category editing in the dashboard (V6)
 
-### Geocoding
+The dashboard Menu & Stock tab edits category prep and batch inline on the category header — there is no Edit accordion. Prep time is a minutes input plus a 0s/30s seconds select; batch size is a number input that is blank when null (placeholder ∞) with a "no limit" label, and saves null when cleared. updateCategoryField saves on blur (prep) or change (seconds select, batch), hitting the same update_category endpoint the manage page uses. The category rename, allow-notes toggle, and full category settings remain on the Manage page only.
 
-Manual events geocode via Gemini from venue name + town + postcode at save time, with `api.postcodes.io` fallback. Event still saves if geocoding fails; operator warned with toast; Fix button re-geocodes events with null coordinates.
+# 10. Add Order panel
 
-### Discovery map
+## Purpose
 
-`discovery/events` route queries both `discovery_events` and `truck_events` (status `confirmed` or `open`), merges at read time, deduplicates by `truck-date-venue` key (operator version wins). `truck_events` now surface on both Village Foodie and HatchGrab maps — the `isHG` gate was removed in V5.
+For operators to manually enter orders — walk-ups at the hatch and phone/Facebook pre-orders. Used frequently throughout service; must be fast.
 
----
+## Layout
 
-## 16. Database schema essentials
+- **iPad (md: and above)** — split screen. Menu left, live cart and submit right. No scrolling for typical orders.
 
-### Core tables
+- **Phone (below md:)** — single column LIST layout with a + button per item that expands to inline − qty + controls. Sticky bottom bar shows total £X.XX and item count with a "Review order →" button opening a bottom sheet for name, slot, and confirm.
 
-- `trucks` — `plan` (starter/pro/max/trial/tester), `trial_expires_at`, `feature_overrides` (JSONB), `is_test`, `slug`, `truck_emoji`, `time_selection_enabled`, `qr_code_style`, `lifetime_discount_pct`, `lifetime_discount_note`.
-- `operators` — `first_name`, `last_name`, `phone`, `email`, `auth_user_id`, `is_admin`.
-- `truck_vans` — `auto_pause_on_offline`, `show_cooking_step`, `kitchen_capacity`, `kds_token`, `last_heartbeat_at`, `online_paused_until`, `paused_until`.
-- `truck_users` — `role` (owner/manager/staff), `invited_at`, `accepted_at`.
-- `truck_user_vans` — staff ↔ vehicle access.
-- `operator_email_changes` — email change audit.
-- `menu_categories` — `sort_order`, `allow_notes`, `prep_secs`, `batch_size`.
-- `menu_items_db` — `is_available`, `stock_count`, `prep_secs`, `batch_size`.
-- `modifier_options` — `available` boolean. `false` = hidden everywhere.
-- `bundles_db` — deals. `bundle_price`, `slot_1..6_category`, `apply_to_new_events`.
-- `event_deals` — per-event deal activation.
-- `truck_events` — `event_date`, `start/end_time`, `venue_name`, `status`, `source`, `van_id`, `offline_protection_override` (nullable boolean, V6).
-- `orders` — `items` (JSONB), `slot`, `event_id`, `van_id`.
-- `whatsapp_logs` — `message_in`, `classification`, `events_found`, `possible_miss`.
-- `discovery_trucks` — `hatchgrab_truck_id` (FK → `trucks.id`) links discovery truck to HatchGrab account.
+The desktop grid and mobile list serve genuinely different use cases (known menu vs browsing) and are intentionally not unified — DRY applies to logic and data, not always to UI when contexts differ.
 
-### Migrations (as of June 2026)
+## Fast-tap rules
+
+- Tapping an item adds it immediately at base price — no popup, no confirmation, no upsell.
+
+- Tapping the same item increments quantity. Modifiers added by tapping the cart line.
+
+- This is the Square/Toast POS pattern — operators do not have time for popups mid-transaction.
+
+## Event selection
+
+- The event selector lists all upcoming confirmed events, not just today's — operators take phone pre-orders for future events.
+
+- Auto-selects today's event if there is exactly one.
+
+- Selecting a future event shows an amber warning with the date. Selecting today's not-yet-open event shows a blue info note. ASAP is computed from the selected event's date/time.
+
+- **With no event selected (V6):** a prominent amber "No event selected" box with a Select event button shows at the top of the panel; items can still be added but Confirm is disabled with "Select an event to confirm". Basket persists across event changes (see Section 5).
+
+### Event bar and in-panel event box (V5)
+
+The active event is shown in the sticky event bar below the tabs (see Section 9-A / dashboard surface). The Add Order panel keeps its own event box ONLY while the event is not yet live — that box carries the Start Event action. Once the event status is open, the in-panel box is hidden (manualEvent?.status !== 'open') and the sticky header bar is the single source of event context. This prevents the event details showing twice.
+
+Event selection is bi-directional: the dashboard owns selectedEventId as the single source of truth and passes the resolved event into the panel via controlledEvent, with onEventChange flowing changes back up. The Change button in the event bar opens the existing event picker modal (it does not use a separate inline dropdown). Selecting a closed event surfaces a Restart Event action; see Section 15.
+
+### Auto-event selection on dashboard load (V5)
+
+The dashboard auto-selects the most relevant event once on load so the operator never lands on a "No event selected" state. Priority: (1) an event happening now today (started, not ended); (2) an upcoming event today not yet started; (3) the next upcoming event on any future date. A guard ensures this runs only once and never overrides a manual selection. activeEvent resolves from the full upcomingEvents list, not just today's events — otherwise a future selected event reads back as undefined and the bar wrongly shows "No event selected". Opening an event also updates upcomingEvents so the Start Event control disappears immediately without a refresh.
+
+## Customer details and slot
+
+- Name optional, defaults to "Walk-up". Email/phone behind a collapsible toggle, hidden by default.
+
+- Slot defaults to ASAP; operator can override to a future slot. Full slots are still selectable with a warning.
+
+## Confirm order button
+
+- Label "Confirm order" (not "Place order"). Shows price suffix when items present.
+
+- Disabled until at least one item/deal AND an event is selected (V6). Submits to /api/dashboard/action with action="manual". On success: toast, reset, switch to Orders tab.
+
+## Grace period banner (V4)
+
+Orders for an event whose end time has passed by more than 30 minutes show a passive amber banner above the form:
+
+*⚠ This event has ended — you're adding an order after close. Make sure you've selected the right event.*
+
+The Confirm order button is NOT disabled. Operators frequently take orders after the official end time and the previous hard-block created friction without preventing genuine mistakes. No per-order acknowledgement is required.
+
+Customer-side grace filtering is unchanged — events ended >30 min are filtered out of the customer event picker.
+
+## Modifier rendering inside customise modal
+
+The customise modal in the Add Order panel calls /api/menu/[truckId] with ?dashboard=1, so it receives all modifier options with their available field intact. Options where available === false are then HIDDEN by the client via isModifierAvailable from lib/modifier-utils.ts — same rule as the customer page. Operators set the stock; they know what they turned off; no "unavailable" label is needed. See Section 17 for the API rules and the menu modifier availability rule.
+
+## Cart summary visual hierarchy (V4)
+
+Deal header rows use the same font-bold text-slate-900 text-lg weight as standalone item names — the deal is a first-class line item, not a sub-heading. Inline price editing on deal headers (operators can override the deal price). Spinner arrows removed from price inputs via [appearance:textfield]. The "Items subtotal" row was removed (it was a confusing partial). All cart line rendering goes through OrderLineItem with variant="operator".
+
+## Kitchen capacity and offline protection in the dashboard (V6)
+
+When an event is selected, the Menu & Stock tab shows (in order, at the top) Auto-accept, Kitchen capacity, and Offline protection cards:
+
+- **Kitchen capacity** — reads and writes the active van's kitchen_capacity (truck_vans). It is a global van setting; changing it affects all events for that van, and the card warns as much. Options: No limit, then 1–20 items (matching the manage page).
+
+- **Offline protection** — reads the van's auto_pause_on_offline as the default and the event's offline_protection_override; the toggle writes the per-event override (see Section 15). When disabled, the card warns it is for this event only and that disabling for all events is done in the Manage page.
+
+# 11. Native app and offline architecture
+
+## Why native is needed
+
+Food trucks operate in villages with patchy 4G. A web-only KDS that loses connection during service is a critical failure. Offline reliability is non-negotiable.
+
+> **DECISION** — A native wrapper using Capacitor must be built BEFORE any trial begins. This is non-negotiable for the operational reliability of trucks in low-coverage areas.
+
+## Capacitor wrapper, not React Native rebuild
+
+The native app is a Capacitor wrapper (com.hatchgrab.app) around the existing Next.js app, pointing at https://www.hatchgrab.com. Native code only for: offline detection, local order storage, background sound on new orders, screen wake, and Bluetooth printer (Max, post-trial). The Next.js UI is reused unchanged — no separate native KDS UI, no duplicated OrderCard.
+
+## Three-stage offline progression
+
+### Stage A — Read-only offline cache (V1 pre-trial)
+
+- Active orders cached to the iPad while online; shown while offline.
+
+- Cook can see, mark ready, mark done — actions queued locally and synced on reconnect.
+
+- New orders cannot be created while offline. Pause banner appears automatically. Solves the "blank screen during outage" failure.
+
+### Stage B — Walk-up orders while offline (post-trial)
+
+- Operator adds walk-ups offline with device-generated IDs; server assigns display IDs and resolves conflicts on reconnect. Online customer orders still blocked offline.
+
+### Stage C — Full offline with reconciliation (future)
+
+- Device UUIDs throughout, display IDs at sync time; slot capacity reconciliation; multi-device conflict resolution (Max). Operator notified when synced orders exceed capacity.
+
+## Trial scope
+
+Trial begins with Stage A only, in villages with reliable coverage. Stages B and C are post-trial once real outage patterns are understood.
+
+## Per-vehicle offline protection
+
+truck_vans.auto_pause_on_offline pauses online orders for that vehicle if its kitchen device goes offline. Per vehicle — each can be set independently. A "Protected" badge shows on the vehicle in settings when enabled. As of V6 an individual event can override the van default via truck_events.offline_protection_override, set from the dashboard (Section 15).
+
+## Heartbeat architecture (V6)
+
+- One last_heartbeat_at column per truck_vans row — there is no per-device heartbeat table.
+
+- Both the KDS page and the main dashboard fire a heartbeat every 15 seconds, passing { token, vanId }.
+
+- The heartbeat monitor treats last_heartbeat_at older than 30 seconds as stale and, for vans with auto_pause_on_offline (or an event override) on, sets online_paused_until = now + 2h.
+
+- A live heartbeat receipt clears online_paused_until back to null.
+
+- **All-or-nothing offline detection is by design** — whichever device pings most recently overwrites last_heartbeat_at, so as long as any one device on the van is online and pinging, the van stays live. Only when ALL devices stop pinging does the van go stale and auto-pause. Single-device setups behave exactly as expected; multi-device setups don't pause just because one of several iPads drops out.
+
+## Wake lock and screen-on (V4)
+
+The dashboard is the operator's live order view during service. If the screen dims and locks, the operator misses new orders. The "Screen on" toggle in the avatar dropdown requests the Wake Lock API.
+
+### Implementation rules
+
+The Wake Lock API auto-releases the lock on any page-hidden event (tab switch, app backgrounding, screen dim, OS-level interruption). A naive wakeLock.request('screen') call fails permanently after the first focus loss. lib/native/keepAwake.ts must implement:
+
+- **Release listener on the lock** — re-requests immediately if the page is visible and intent is still on.
+
+- **visibilitychange listener** — added once via a sentinel flag; re-requests on page becoming visible if the lock was lost.
+
+- **Intent tracking** — a module-level keepAwakeEnabled flag persists across auto-releases so re-acquisition only happens when the operator still wants it.
+
+- **Double-lock guard** — if (!webLock) in keepAwake() prevents calling request() while a lock is already held.
+
+enableKeepAwake and disableKeepAwake are legacy aliases retained for KDS page compatibility. Do not remove.
+
+### Browser compatibility
+
+navigator.wakeLock is supported in Chrome (mobile and desktop) since v84, Firefox Android since 72, Samsung Internet since 14, and Safari (iOS and macOS) from 16.4 (March 2023). Firefox desktop does not support it. Older Safari silently no-ops.
+
+When 'wakeLock' in navigator is false, show an inline amber warning under the toggle:
+
+*Screen lock isn't supported on this browser. Keep the device plugged in and the app in the foreground to prevent the screen dimming.*
+
+# 12. Authentication and access
+
+## Operator and staff accounts
+
+- Operators authenticate via Supabase Auth (email/password). The operators table holds account-level data; auth_user_id links to the auth user.
+
+- Staff are invited via the Team tab and stored in truck_users (role: owner/manager/staff). An invite creates an auth user and a truck_users row; accepting the invite (setting a password) sets accepted_at and links auth_user_id.
+
+- Dashboard access is granted if the user is the truck owner OR a truck_users member of that truck. The owner check runs first; if not owner, truck_users membership is checked. An orphaned operators record (created during a staff invite) must not block the truck_users check.
+
+- Staff are redirected to their vehicle KDS on login and cannot access the Manage page. The Manage link is hidden from staff in the dashboard dropdown; manage tabs are role-gated (Billing owner-only).
+
+## Four permission levels (V6)
+
+There are four distinct levels of access:
+
+1. **Staff** — redirected to their vehicle KDS on login; cannot access the Manage page.
+
+2. **Manager** — all Manage tabs except Billing; can edit/invite staff only.
+
+3. **Owner** — full access to their truck including Billing.
+
+4. **Admin (platform-level)** — operators.is_admin = true. A platform role, not a truck role; it is NOT stored in truck_users and admin accounts are not attached to any truck. The UserMenu shows a 🔐 Admin link when is_admin is true, and /api/auth/me returns is_admin.
+
+> **RULE** — Admin is a platform role on operators (is_admin), never a truck role on truck_users. Do not attach admin accounts to trucks to grant admin.
+
+## Sign-out implementation (V4)
+
+> **CRITICAL** — Sign-out must use createSupabaseBrowserClient() from lib/supabase-browser.ts (which wraps createBrowserClient from @supabase/ssr), followed by a hard redirect via window.location.href = '/login'.
+
+The plain createClient from @supabase/supabase-js only clears in-memory auth state — the SSR session cookie persists and the middleware re-authenticates the user on the next page load, making sign-out silently fail. This was the root cause of a long-standing sign-out bug fixed in V4.
+
+A hard redirect (not router.push) ensures all client-side state is cleared before the next page loads. The sign-out handler lives inside the UserMenu component — pages do not pass an onSignOut prop. The dashboard page's handleSignOut is effectively unused for the avatar dropdown but still exists in the file.
+
+## Token-based surfaces
+
+- Each truck has a long random dashboard_token in the URL; KDS uses per-vehicle kds_token.
+
+- Customer order URLs use the truck slug (/trucks/[slug]/order). Slug must be unique and URL-safe.
+
+## Email change verification
+
+- Changing an operator email writes a row to operator_email_changes (old_email, new_email, token, expires_at) and sends a Brevo verification link to the NEW address. The old email stays active until verified.
+
+- A pending banner with a Resend action shows in the Team tab until verified; state persists across reloads (loaded from the API).
+
+- Duplicate check is against auth.users (covers operators and staff), not just operators.
+
+- Brevo send is checked — a failed send returns an error and cleans up the pending row rather than silently reporting success.
+
+### Login identity: which email is the credential (V5)
+
+> **RULE** — auth.users.email is the login credential (what the operator types to sign in). operators.email is the display / contact email shown in the app and used for account correspondence. They are kept in sync on email change, but conceptually distinct. /api/auth/me returns operator.email, not the auth user email.
+
+Ghost auth user pattern: a duplicate row in auth.users (e.g. one created during an earlier staff invite or a half-completed change) will collide with an email change and make the two emails appear to desync. The email-change flow now does a pre-flight duplicate check against auth.users (covering operators and staff) before writing, and rolls back all writes on any failure. On successful verification it forces a sign-out and redirects to /login?message=email_changed so the session always reflects the new credential.
+
+### Auth flow hardening (V5)
+
+- **Password reset** — the Brevo send is now checked; a failed send returns an error and cleans up the token rather than reporting success. The broken logo reference was removed and the confirmation message genericised ("If an account exists…").
+
+- **Email change** — pre-flight duplicate check, error handling with rollback on every write, forced sign-out on completion, and a cancel-pending-change action with Resend / Cancel controls in the Team tab (the field is locked while a change is pending).
+
+- **Login page** — temporary debug logging that recorded submitted email addresses was removed. The reset-success notice clears on keystroke or submit, and the page surfaces Supabase's actual error message.
+
+## Admin console (V6)
+
+The admin page (/admin) authenticates via the operator's Supabase session, not a password prompt:
+
+- On mount, the page calls GET /api/admin?section=check_admin. If the session operator has is_admin = true, the endpoint returns the admin secret (via a secretRef) and the page auto-loads with no password entry.
+
+- A loadWithSecret(s: string) helper takes the secret as a parameter rather than reading React state, avoiding the async-state race that previously showed "0 trucks" on first load. load() is a thin wrapper calling loadWithSecret(secret); the check_admin effect calls loadWithSecret(data.secret) directly.
+
+- A checkingSession state shows a brief loading spinner while the session is verified; the password form only appears if the session check fails. This prevents the password form flashing for legitimate admins.
+
+- The single ADMIN_SECRET env var remains ONLY as an emergency fallback in the API. It is held in React state and re-sent per request, with no session/cookie persistence beyond the current tab.
+
+- The page uses the shared AppHeader (truckName / truckLogoUrl null) and slate-900 sticky tabs (px-4, overflow-x-auto, border-slate-700), with two tabs: 🍕 Trucks and 📋 Features. The Trucks tab lists trucks with plan, trial days, lifetime-discount badge, and a dashboard link, plus a truck edit modal (plan, trial, lifetime discount, feature overrides, create-operator). The Features tab renders from FEATURE_SECTIONS with section headers, the tester column, PLAN_FOOTNOTES, and a static transaction-fees block. The Discovery-trucks linking UI lives under the Trucks tab.
+
+> **BACKLOG** — Remove ADMIN_SECRET entirely at public launch; session-based is_admin is the only path needed.
+
+## Slug or UUID resolution pattern
+
+APIs that accept truck identifiers must handle both slug (customer-side) and UUID (dashboard-side). This was the root cause of multiple "truck not found" bugs. Support both lookups from day one for any new truck-scoped API.
+
+## Known gaps (before public launch)
+
+- Rate limiting on auth attempts.
+
+- Admin secret is a single shared value — being retired in favour of is_admin session auth (V6); remove at launch.
+
+# 13. Operator and multi-truck model
+
+## Operators own trucks
+
+- **operators** — account holder. Columns: id, name, first_name, last_name, email (unique, login), phone, auth_user_id, is_admin (V6), billing fields, stripe_customer_id.
+
+- **trucks.operator_id** is a nullable FK to operators.id. One operator can own multiple trucks (brands operate under one login).
+
+## Single vs multi-truck UI
+
+> **RULE** — When an operator has ONE truck, the truck name and truck selector are never shown — it is implied. When an operator has multiple trucks, the truck selector appears in the event form and the truck name appears on event cards. All multi-truck UI is gated on operatorTrucks.length > 1.
+
+- A second truck under the same brand is auto-named "[Brand] 2" by default and can be renamed. Adding additional trucks is already built; selecting a truck when adding an event becomes mandatory once more than one exists.
+
+- What stays at truck level: menu, categories, items, orders, events, schedules, stock, dashboard_token.
+
+- What is operator level: billing/subscription, login credentials, business name and personal contact details.
+
+## Personal vs business contact
+
+- Personal/account-holder details (first name, last name, phone, login email) live on operators and are edited in Team tab → owner row → Edit. Private, never shown to customers, used for account management and billing/KYC.
+
+- Business contact (email, phone shown to customers on order confirmations) lives on the truck and is edited in Settings under "Business contact".
+
+- For Stripe Connect KYC later, first_name/last_name/phone are captured now; full verification (DOB, address, ID, bank) is handled by Stripe at onboarding, not stored in our system.
+
+# 14. Vehicles (trucks under a brand)
+
+## Concept and naming
+
+> **NAMING** — The platform UI calls a physical vehicle a "truck". The underlying DB tables remain truck_vans and truck_user_vans (internal only). User-defined vehicle names (e.g. "Van1", "Main Truck") are operator data and must never be auto-changed. A "truck" brand record is a row in the trucks table; a "vehicle" under it is a row in truck_vans.
+
+Settings section is "Your trucks" with "+ Add truck". Each vehicle card shows its user-defined name (bold), a "Protected" badge when offline protection is on, and Rename/Delete actions.
+
+## Per-vehicle settings
+
+- **auto_pause_on_offline** (boolean) — pause online orders for this vehicle if its device goes offline. An individual event can override this via truck_events.offline_protection_override (V6).
+
+- **show_cooking_step** (boolean) — adds the Cooking step on this vehicle's KDS.
+
+- **kitchen_capacity** (integer, nullable) — max COOKED items per 5-minute window; drinks/instant items do not count; blank = no limit. Options are No limit then 1–20 items (V6 — was a sparse 3/5/8/10/15/20). Editable from both the manage page Settings and, when an event is active, the dashboard Menu & Stock tab; both surfaces use identical options. It remains a global van setting.
+
+- **display_layout and split_screen** columns exist in the DB but are NOT exposed in van settings — they are set from the dashboard/KDS directly.
+
+## Kitchen capacity wiring
+
+When an event is created or confirmed with a vehicle assigned, slot_capacity rows are written automatically using that vehicle's kitchen_capacity. No vehicle assigned, or no capacity set, means no limit.
+
+## Staff vehicle access
+
+truck_user_vans links staff to specific vehicles. Leaving a staff member's vehicle access empty grants access to all trucks. Staff see only their assigned vehicle's orders.
+
+# 15. Events and venues
+
+## Concept
+
+An event is a truck appearing at a venue on a date and time. The discovery map shows current and upcoming events. Each confirmed event has its own ordering page if pre-orders are enabled.
+
+## Event confirmation
+
+> **RULE** — Events created manually in the Manage page auto-confirm immediately (source='manual', status='confirmed'). There is no confirmation popup. Only scraped/uploaded events (inbound via /api/inbound-schedule, or via the operator schedule import) arrive as unconfirmed and require explicit confirmation — except operator schedule imports, which the operator is reviewing and which therefore save as confirmed (see Import schedule below). The Confirm button on an unconfirmed event confirms instantly using the truck's auto-open/close defaults.
+
+Unconfirmed events show on the discovery map with the order button DISABLED and "Awaiting truck confirmation". Only confirmed events accept orders — this shields customers and the platform from bot errors.
+
+### All event sources flow to truck_events — the scraper bridge (V5)
+
+> **RULE** — Every event source — the web/Apps Script scraper, vendor emails to schedule@villagefoodie.co.uk, and manual entry — ends up in truck_events as an event for a linked truck. The truck confirms inbound (scraper/email) events before they can take orders; manual entries and operator schedule imports are confirmed on save.
+
+Bridge mechanics in /api/inbound-schedule: after the usual write to discovery_events, the endpoint normalises the incoming truck name and matches it against discovery_trucks rows that have a hatchgrab_truck_id set. On a match it inserts a truck_events row with status 'unconfirmed' and source 'scraper', after a dedup check on truck_id + event_date + venue_name (so re-scrapes and manual duplicates don't pile up). Venue coordinates are looked up from the venues table where available. A best-effort notification email is sent once per truck per batch (fire-and-forget — it must never block ingestion). Trucks with no hatchgrab_truck_id are unaffected: their events stay in discovery_events only, exactly as before.
+
+Linking is a one-time admin step per truck: the admin console shows a "Link HG truck" dropdown on each discovery truck row, which sets discovery_trucks.hatchgrab_truck_id. Until a truck is linked, nothing bridges — this is the intended gate during onboarding.
+
+### Import schedule (operator upload) — V6
+
+Operators can bulk-import their own schedule from a screenshot, photo, PDF, or pasted text:
+
+- A 📤/✨ Import schedule button sits on the Schedule tab header beside + Add event, styled to match the Menu tab's "Import with AI" (sparkle icon, "photo, PDF or text" subtitle). It opens a dedicated modal — separate from the Add event modal — with a drag-and-drop upload zone (the shared useDragDrop hook), a paste-text area, and a "Process schedule" button.
+
+- The route app/api/manage/process-schedule/route.ts verifies the dashboard token, calls Gemini (gemini-2.5-flash-lite), strips any markdown fences, and returns { events: [...] } with six fields only per event: event_date (DD/MM/YYYY), start_time, end_time (HH:MM, empty string if none — never "00:00"), venue_name, town, postcode (or empty string). It performs no DB writes, no dedup, and crucially is NOT asked for a truck name — the truck is always the logged-in operator's truck. This prevents the importer creating or mismatching trucks.
+
+- Extracted events render an interactive review list: a checkbox per event (all pre-selected, tracked in a Set), inline edit per event with the venue-suggestions dropdown (selecting a recent venue auto-fills town/postcode/times), drag-and-drop reordering (useDragDrop), and a "Save N events" button that saves only the selected, edited events.
+
+- saveExtractedEvents geocodes via the existing geocodeLocation path and writes via upsert_event with status 'confirmed' and source 'operator_upload'. Imported events surface on both maps via the existing discovery/events read path. The same interactive review UI is shared with the Add event modal's upload mode (one set of state covers both).
+
+### Geocoding and the Fix button (V5)
+
+Manual events geocode via Gemini from venue name + town + postcode at save time, with an api.postcodes.io fallback when the postcode is present (free, UK-only, no key). The event still saves if geocoding fails, but the operator is warned with a toast, and events with null coordinates show a Fix button in the Schedule tab that re-runs geocoding (update_event_coords action). Always build dates with local-time parse, never new Date('YYYY-MM-DD'), per Section 7.
+
+## Auto open/close (truck-level)
+
+trucks.default_auto_open and default_auto_close live in Settings → Order settings, not per-event. Events open for online orders at start time and stop at end time per these defaults.
+
+### Event lifecycle controls — Start, Restart, Close (V5)
+
+Operators control whether an event is taking orders through the event bar and the in-panel box. Wording and status, canonical:
+
+- **Start Event** — opens a confirmed event for orders (replaces the old "Open for orders" / "Go live"). Success toast: "Event started". Status becomes ● Live (green).
+
+- **Restart Event** — reopens a closed event. Success toast: "Event restarted".
+
+- **Close** — sets status 'closed'; only an event currently 'open' can be closed. Status shows ● Closed (slate). Pausing shows ⏸ Paused (amber).
+
+> **RULE** — Closing an event must be recoverable. A closed event still appears in the event picker (filter allows confirmed, open, AND closed) with a Closed badge and a Restart Event button, and the server open action accepts status confirmed OR closed. An accidental early close must never strand the operator with no way back. Cancelled events remain excluded from the picker.
+
+On the dashboard, the in-panel event box (with the Start Event button) shows only while status is not open; once live, the sticky event bar is the sole event display (see Section 10).
+
+## Cancelling an event (V6)
+
+The Cancel action on an event card opens a confirmation modal with an optional reason dropdown and an optional message-to-customers field. On confirm, the event status is set to cancelled and all pending and confirmed orders for that event are set to cancelled; each affected customer with an email receives a cancellation email via Brevo (including the reason and note when provided), and the email acknowledges payment status where the order was paid. Refunds are NOT yet automated — cancellation does not trigger a Stripe refund; this is manual for now (backlog).
+
+> **RULE** — openEventCancelModal fetches the real affected order count from /api/events/affected-orders (counts pending + confirmed orders for the event, token-verified) before showing the modal. It must never be hardcoded to 0, which previously misled the operator into thinking no orders were affected.
+
+## Add/Edit event form
+
+- Date is blank on open; start/end times pre-fill from the most recent event. Mandatory fields: date, venue name, start time, end time (and truck when multi-truck). Missing fields highlight red with inline errors.
+
+- Venue name is a combobox — selecting a recent venue auto-fills town, postcode, address, and typical times. A "Copy a recent event" row offers one-click duplication (date and notes blank, venue/times/vehicle carried over).
+
+- A Copy button also appears on each event card in the Schedule list (retained on past events too — see below).
+
+- Modal is responsive — wider with a two-column field layout on desktop, single column on mobile.
+
+## Event card display (Schedule tab, rebuilt V6)
+
+The Schedule tab uses a date-anchored card layout:
+
+- A left column with the day name (slate), a large orange day number (font-black text-orange-600), and the month (slate); no border on the column (pl-2 spacing kept); a thin slate divider separates it from the content.
+
+- Venue name + town with an inline status badge. The town is omitted from the line when it already appears in the venue name (e.g. "The Royal Oak WARBOYS, WARBOYS" renders as "The Royal Oak WARBOYS").
+
+- The time is prominent (text-sm font-semibold); the postcode sits on its own muted line below (no longer duplicated inline on the time line or repeated as a separate town+postcode line).
+
+- Actions right-aligned: Copy, Edit, Cancel for active/upcoming events.
+
+- Deals are collapsed into a `<details>` summary showing the active deal names (e.g. "1 deal active · Dinner 2 pizzas for £15"), expanding to the per-event deal toggles with stock warnings.
+
+- **Past events** show Copy only (Edit and Cancel hidden) and no deals section. **Cancelled** events (past or otherwise) show a "Cancelled" badge rather than "Finished"; other past events show "Finished". Uses the same local-time parse rule as the customer page (Section 7).
+
+- All times display HH:MM (seconds stripped via formatTime). Cancellation confirmation shows the formatted date and time, e.g. "Wed 27 May · 18:00–20:00".
+
+### Offline protection override on the event (V6)
+
+truck_events.offline_protection_override (nullable boolean): null = use the van's auto_pause_on_offline default; true/false = an explicit per-event override set from the dashboard Menu & Stock tab (Section 10/11). The menu API checks the event override first and falls back to the van default. The dashboard toggle warns that disabling protection applies to this event only, and that disabling for all events is done via the Manage page (van settings). Rationale: a truck staff member should be able to turn protection off for one event without overriding the owner/manager's van-wide setting.
+
+## Multiple events handling
+
+- Distinct order queues per event; optional distinct menus/slot configs per event; clear operator navigation between events.
+
+## Discovery map visibility (V6)
+
+As of V6 the temporary "operator events are HatchGrab-only" restriction is lifted. The discovery/events route reads both discovery_events and truck_events (status confirmed or open), merges at read time, and deduplicates by a truck-date-venue key with the operator version winning. Confirmed/open truck_events surface on BOTH the Village Foodie and HatchGrab maps (the isHG gate that previously returned operator events only to HatchGrab was removed — visibleOperatorEvents is now always the mapped operator events). isHG is still used elsewhere for the visibility allowlist.
+
+# 16. Database schema essentials
+
+## Core tables
+
+- **trucks** — one row per truck/brand. Holds plan (starter/pro/max/trial/tester), settings, dashboard_token, operator_id, default_auto_open/close, is_test, qr_code_style (V4), slug (V5, unique, URL-safe, populated from name — used by the customer order URL /trucks/[slug]/order), truck_emoji (V5, default 🍕 — used as the Menu tab icon and chosen via the Settings emoji picker), lifetime_discount_pct (V6, integer nullable) and lifetime_discount_note (V6, text nullable) for the Tester plan, paused_until.
+
+- **operators** — account holder. first_name, last_name, phone, email, auth_user_id, is_admin (V6, boolean default false), billing.
+
+- **truck_vans** — vehicles under a truck. auto_pause_on_offline, show_cooking_step, kitchen_capacity, display_layout, split_screen, kds_token, name, active, last_heartbeat_at, online_paused_until, paused_until.
+
+- **truck_users** — staff. role (owner/manager/staff), email, name, auth_user_id, invited_at, accepted_at.
+
+- **truck_user_vans** — staff ↔ vehicle access junction.
+
+- **operator_email_changes** — email change audit. old_email, new_email, token, requested_at, verified_at, expires_at.
+
+- **menu_categories** — categories per truck with sort_order (source of truth for display order). allow_notes boolean (V4) for per-category item-note availability. prep_secs, batch_size (nullable — null means no batch limit).
+
+- **menu_items_db** — items per truck; is_available, stock_count, allergens, dietary_info, prep_secs, batch_size.
+
+- **modifier_options** — modifier choices. available boolean (V4) — defaults true; sentinel column for visibility. See Section 17 modifier rules.
+
+- **bundles_db** — deals: bundle_price, original_price, slot_1..6_category, apply_to_new_events, is_available, start/end_time.
+
+- **event_deals** — per-event deal activation: event_id, bundle_id, active, overridden.
+
+- **truck_events** — events: event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6, nullable boolean — null = use van default), latitude/longitude (geocoded).
+
+- **orders** — items (JSONB), deals (JSONB), status, paid_at, collected_at, event_id, van_id, slot. orders.items[i].specialInstructions for item notes (V4).
+
+- **collection_times / slot_capacity** — fixed slot definitions and per-slot capacity rows.
+
+- **whatsapp_logs** — message_in, classification, events_found, response_sent, possible_miss, customer_number, created_at.
+
+- **kds_sessions** — active KDS device sessions for multi-device enforcement.
+
+- **discovery_trucks / discovery_events** — scraped discovery data; visibility column controls public/HG exposure. discovery_trucks.hatchgrab_truck_id (FK to trucks.id, on delete set null) links a discovery truck to its HatchGrab account; this is what the scraper-to-truck_events bridge matches on (Section 15 / Section 17). Set via the admin console "Link HG truck" dropdown.
+
+- **loyalty_cards (planned)** — V4 spec frozen in lib/plan-features.ts comments. Do not build until instructed.
+
+## Key columns of note
+
+- trucks.plan (starter/pro/max/trial/tester), trial_expires_at, feature_overrides (JSONB), is_test, time_selection_enabled, preferred_contact_method, allow_customer_cancellation, cancellation_cutoff_mins, qr_code_style, lifetime_discount_pct, lifetime_discount_note.
+
+- Mirror writes from the scraper land via /api/inbound-schedule; the scraper currently dual-writes to Google Sheets and Supabase (Sheets still the config store — migration to Supabase-only is pre-paying-operator work).
+
+## Migrations (as of June 2026)
 
 ```
 20260518_production_slot_usage.sql
@@ -537,211 +1360,481 @@ Manual events geocode via Gemini from venue name + town + postcode at save time,
 20260602_tester_plan_discount.sql
 ```
 
----
+## Realtime
 
-## 17. Menu API behaviour
+- orders — INSERT/UPDATE/DELETE subscribed. trucks — UPDATE only (pause/wait). UI updates within ~1s; 60s polling fallback.
 
-- Slug or ID lookup — try slug first, fall back to UUID.
-- No active filter — pausing controlled by dashboard pause state.
-- `?dashboard=1` flag — returns all modifier options with `available` field; customers see only available options.
-- Modifier availability: `opt.available !== false`. Unavailable modifiers are HIDDEN everywhere — unlike main items which show "Sold out".
+# 17. Menu API behaviour
 
----
+- Slug or ID lookup — /api/menu/[truckId] and /api/orders/submit accept slug or UUID. Try slug first (customer URLs), fall back to ID; resolvedTruckId used for subsequent queries.
 
-## 18. Customer communications and email
+- No active filter on menu lookup — if the truck exists, the menu returns. Pausing is controlled by dashboard pause state, not the active flag.
 
-### Order confirmation email
+- Category data — returns name, prep_secs (nullable), batch_size (nullable), allow_notes (V4) for client-side ASAP and note-input gating.
 
-- **On submit (pending):** subject "Order #X received", heading "Order received!"
-- **On confirm:** subject "Order #X confirmed", heading "Order confirmed!"
-- Both use `formatConfirmationEmail` + `sendConfirmationEmail`. Includes items with modifiers, deals, venue, contact method, cancel link, HatchGrab branding.
-- `slotAdjustedFrom` param: shows amber "Your collection time has been updated" box when slot changed.
+- Deal stock filtering — customers receive only available deals; ?operator=true returns all deals with stock_warning. Logo URL is derived for the dashboard from logo_storage_path (deriveLogo) in every setTruck path to avoid flicker.
+
+## Dashboard flag (?dashboard=1) — V4
+
+/api/menu/[truckId] accepts a ?dashboard=1 query parameter that changes modifier option behaviour:
+
+- **Without flag (customer-facing)** — modifier options with available === false are filtered out entirely. The available field is not included in the response.
+
+- **With flag (dashboard/operator)** — all modifier options are returned regardless of availability. Each option includes available: o.available !== false so the dashboard stock toggle can read back the persisted state.
+
+The dashboard's fetchMenu must append ?dashboard=1&nocache=${Date.now()}. Customer-facing calls must not.
+
+This fixed two coexisting bugs in V3: (1) the dashboard stock toggle showed stale ON state after refetch because available was stripped from the response and undefined !== false evaluates to true; (2) the operator's Add Order panel was filtering out unavailable modifier options because it called the same endpoint as customers without the flag.
+
+## Modifier availability rule (V4)
+
+> **RULE** — Unavailable modifiers are HIDDEN everywhere — customer page AND operator Add Order panel. This differs from main items which show "Sold out" crossed out.
+
+The reasoning: main items appear in a menu that customers browse; seeing a sold-out item conveys useful information. Modifier options appear contextually inside a popup after the customer has committed to an item; showing an unavailable modifier creates confusion. Operators turning off a modifier already know what they did — no visual indicator is needed in the Add Order panel either.
+
+The filter is opt.available !== false. Shared util: isModifierAvailable in lib/modifier-utils.ts. Applied in:
+
+- components/dashboard/AddOrderPanel.tsx (customise modal).
+
+- app/trucks/[slug]/order/page.tsx (customer modifier popup).
+
+## Item availability resolution
+
+Item availability uses item_overrides as the override path and menu_items_db.is_available as the base:
+
+const isAvailable = override != null ? (override.available !== false) && (stockRemaining === null || stockRemaining > 0) : i.is_available !== false
+
+Stock exhaustion counts as unavailable. Override availability takes precedence over the base column.
+
+## Offline protection in the menu API (V6)
+
+When resolving whether to apply online_paused_until for a customer order, the menu API checks the event's offline_protection_override first and falls back to the van's auto_pause_on_offline. Effective rule: offlineProtectionEnabled = eventRow.offline_protection_override (if not null/undefined) else van.auto_pause_on_offline. The pause is only applied when offlineProtectionEnabled is true.
+
+# 18. Customer communications and email
+
+## Provider
+
+> **V3** — Email sends via Brevo (changed from Resend). Operator-facing sender is hello@hatchgrab.com via NEXT_PUBLIC_SUPPORT_EMAIL. Do NOT fall back to villagefoodie.co.uk. The hatchgrab.com domain was added to Brevo at end of session; HatchGrab emails fail until DNS (SPF/DKIM) propagates.
+
+## Order ready email
+
+- Fires only when status changes to "ready"; only if order.customer_email is set (notifyCustomer also guards empty email).
+
+- Subject "Your order is ready"; body includes order number and truck name; sent with truck branding.
+
+## Order confirmation email (V4 updates)
+
+- Includes venue, contact method, and a cancel link to /order/[id]/manage?truck=[slug]. The customer cancel page is built as of V5 (see Customer cancel page below).
+
+- **No "Discount" line** — the V4 rewrite removed the discount line for deal-driven savings. It was confusing customers because the maths didn't reconcile cleanly. Deals now render as: deal name with bundle price → indented modifier upcharges below → Total. The maths visibly reconciles without a separate discount line.
+
+- **On submit (pending)** the customer receives an "Order #X received" email; **on confirm** an "Order #X confirmed" email. Both go through formatConfirmationEmail + sendConfirmationEmail.
+
+## Truck notification
+
+- Sent on customer self-order (not manual). WhatsApp on Max, else email. Includes order summary and dashboard confirm link.
+
+## Transactional email integrity
+
+- All Brevo sends must check the response and surface failures rather than reporting success silently. Failed verification sends clean up their pending DB row.
+
+### Operator-confirm and slot-change emails use the shared formatter (V5)
+
+> **RULE** — The operator-confirm email (pending → confirmed) and the slot-change email both go through formatConfirmationEmail + sendConfirmationEmail. The two bespoke inline HTML emails that previously handled these — missing modifiers, deals, venue, cancel link, and using Village Foodie instead of HatchGrab branding — were removed. This is a DRY fix (Section 3).
+
+formatConfirmationEmail gained a slotAdjustedFrom param: when set, the email shows an amber "Your collection time has been updated to HH:MM (previously HH:MM)" box and the plain-text fallback mirrors it. The slot-change email passes the original slot as slotAdjustedFrom and the new slot as slot, with the subject "Your order #X has been updated". Both emails inherit the correct "Powered by HatchGrab" branding automatically. The local notifyCustomer() helper is no longer used for confirm or adjust_slot (it remains for reject, cancel, ready, and edit).
 
 ### Customer cancel page (V5)
 
-`app/order/[id]/manage/page.tsx`. Cancel URL: `/order/[id]/manage?truck=[slug]`. Verifies `allow_customer_cancellation`, order status (`pending` or `confirmed`), and cutoff window before cancelling.
+The customer-facing cancel page lives at app/order/[id]/manage/page.tsx and loads the order, shows items and status, and offers Cancel subject to cutoff rules. /api/orders/cancel verifies trucks.allow_customer_cancellation, that the order is pending or confirmed, and the cutoff window (computed from the order slot and event date), then removes the order from its production slot and sends a cancellation email. /api/orders/[id] (GET) resolves ?truck=[slug] to a truck_id and filters by it. The ?truck slug in the cancel URL is what makes it collision-safe: order IDs are sequential per-truck, so the slug disambiguates which truck's order #N is meant. As of V6 the cutoff for ASAP orders (no slot) falls back to the event end_time (Section 6).
 
-### Cancellation cutoff (V6)
+# 19. Reports tab (V4)
 
-`effectiveSlot = order.slot ?? event.end_time ?? null`. If neither available, check is skipped. ASAP orders can cancel up to `cancellation_cutoff_mins` before event end time.
+The Reports tab is the operator's reconciliation and analytics surface in the Manage page. Built in V4 with tier-gated functionality — Starter gets the operational minimum, Pro and Max get analytical insights.
 
----
+## Tier gating
 
-## 19. Reports tab (V4)
+- **Starter** — Event filter only. filterMode is forced to 'event' on mount; the Date range toggle is hidden entirely. No auto-load on mount — the operator must select an event. CSV export available. Order list and Items view available.
 
-### Tier gating
+- **Pro / Max / Trial / Tester** — Full filter toggle (Date range and Event), revenue breakdown, items sold ranking, deal performance, hourly sales patterns (planned), event ROI comparison (planned).
 
-- **Starter** — Event filter only, CSV export.
-- **Pro / Max / Trial / Tester** — Full filter toggle, revenue breakdown, items ranking, deal performance.
+Date-range gating uses canAccess('advanced_reporting', ...). advanced_reporting is in PRO_FEATURES which spreads into MAX_FEATURES and TRIAL_FEATURES (and the Tester feature set, which mirrors Max).
 
-> **RULE** — Use `invisible` (not `hidden`) for toolbar elements when conditionally shown. Reserves space, prevents layout shift.
+## Why CSV export is not Pro-locked
 
----
+Square's free tier offers CSV export, so locking it on Starter would put us below the competition on a key practical feature. The right tier line is
 
-## 20. Social media and WhatsApp auto-replies
+*raw data = Starter, analysed insights = Pro*
 
-### Three-bucket classification
+CSV is raw data; revenue breakdowns and rankings are insights. CSV export is therefore available on all tiers including Starter.
 
-- `SPECIFIC_QUERY` → auto-respond with matching event(s).
-- `GENERAL_QUERY` → auto-respond with order link.
-- `IGNORE` → no response.
+## Toolbar layout
 
-### Tier mapping
+Single row, fixed positioning:
 
-Messenger & Instagram: Pro. WhatsApp: Max only (per-message cost).
+[filter controls — 320px min-width] [View report] [📋 Orders] [📦 Items] → ml-auto → [⬇ Export CSV]
+
+- Filter container has minWidth: 320px and flex-shrink-0 so the row never shifts when switching between Date and Event modes.
+
+- Event dropdown has w-[320px] to fill the container.
+
+> **RULE** — Use invisible (CSS visibility:hidden), not hidden (display:none), on Export CSV and the Orders/Items toggle when no results are loaded. This reserves space and prevents layout shift in fixed toolbars.
+
+## Items view
+
+Same columns as Orders view for spreadsheet consistency:
+
+#OrderID Date Event Time Type Customer Item name ×Qty Unit price Modifiers Item total
+
+- Order ID repeats on every item row from the same order.
+
+- border-t border-slate-100 between different orders, not between items within the same order.
+
+- Deal items prefixed 🎁 with the deal name as smaller muted text on a second line.
+
+- "Modifiers" column uses text-slate-300 for the dash when none — lighter than other muted text.
+
+## Shared column class constants
+
+Defined once at the top of the Reports component; both Orders and Items views import them. Never inline the same Tailwind string twice.
+
+```
+const colId    = 'font-mono text-slate-400 flex-shrink-0 w-10'
+const colDate  = 'text-slate-400 flex-shrink-0 w-10'
+const colVenue = 'text-slate-500 flex-shrink-0 w-24 truncate hidden sm:block'
+const colTime  = 'text-slate-400 flex-shrink-0 w-10'
+const colType  = (online) => `flex-shrink-0 w-14 font-medium ${online ? 'text-blue-600' : 'text-slate-500'}`
+const colCust  = 'text-slate-600 flex-shrink-0 w-16 truncate'
+const colTotal = 'font-medium text-slate-900 flex-shrink-0'
+const colMuted = 'text-slate-400 flex-shrink-0'
+```
+
+## Order type heuristic
+
+customer_email IS NULL → 'Placed by truck' (walk-up); else 'Customer online'. This is a heuristic — the long-term fix is an orders.source column. TODO comments are in app/api/orders/submit/route.ts and app/api/dashboard/action/route.ts. Do not introduce more callers of this heuristic; migrate when the column is added.
+
+## Revenue calculation
+
+- Status filter excludes 'cancelled' and 'rejected' from totals. Cancelled orders still appear in the list with opacity-50 so the operator can see them.
+
+- Revenue breakdown (Pro) is positive-framed: Base items + Deal revenue + Modifier upcharges. No "Discount" line — confusing to operators (same reasoning as the customer email change).
+
+## Pro placeholder card (Starter view)
+
+Shown to Starter users where the breakdown analytics would appear:
+
+*Date range reporting, revenue breakdown, deal performance, items sold ranking, hourly sales patterns, and event ROI comparison. Available on Pro and Max.*
+
+# 20. Social media and WhatsApp auto-replies
+
+## Three-bucket classification
+
+- **SPECIFIC_QUERY** — schedule/location/date/availability → auto-respond with matching event(s).
+
+- **GENERAL_QUERY** — menu/prices/ordering → auto-respond with the order link.
+
+- **IGNORE** — spam/gibberish → no response.
+
+## Event lookup
+
+- WhatsApp handler queries truck_events for the truck (resolved by whatsapp_sender), confirmed/open/unconfirmed, from today forward.
+
+- Be generous — any message mentioning tomorrow/tonight/a weekday/this week/weekend/a village should classify as SPECIFIC_QUERY.
+
+- Don't rely on the LLM to infer dates: inject an explicit DATE REFERENCE mapping (Today/Tomorrow/weekday = exact YYYY-MM-DD) and label events (TODAY)/(TOMORROW)/(IN 2 DAYS). Include town so location queries match.
+
+- If the asked-about day has nothing but there are nearby upcoming events, mention them ("Nothing tomorrow but we're in Wickhambrook on Friday").
+
+## Interaction logging
+
+- Every interaction logs to whatsapp_logs (message_in, classification, events_found, response_sent, possible_miss). Logging is fire-and-forget — it must never break the response.
+
+- possible_miss = SPECIFIC_QUERY with events_found = 0 — a likely wrong answer to review.
+
+- Reports tab surfaces totals, answered, and possible misses (amber when > 0). This is the foundation for a future truck-facing "Recent messages" review panel with flagging.
+
+## Platform compliance and tone
+
+- Build on official Meta Graph API (not scrapers); stay within the 24-hour window; customer initiates. Rate limits are irrelevant at food-truck scale.
+
+- Full villagefoodie.co.uk / hatchgrab.com URLs — no shorteners (Meta deboosts them).
+
+- Responses sound like the owner typed them — warm, casual, truck name and emoji where appropriate. A confidence threshold routes uncertain messages to review rather than auto-responding.
+
+- Tier mapping: Instagram and Messenger are Pro; WhatsApp is Max only (per-message cost).
 
 ### Meta webhook endpoints (V5, scaffolded)
 
-- `/api/webhooks/meta/whatsapp` — Meta WhatsApp (NOT Twilio)
-- `/api/webhooks/messenger`
-- `/api/webhooks/instagram`
+Verification + placeholder webhook endpoints are in place for the three Meta channels: /api/webhooks/meta/whatsapp, /api/webhooks/messenger, and /api/webhooks/instagram. Each handles the GET verification challenge (returns the raw hub.challenge string) and a POST that currently only logs and returns 200 (the classifier wiring is a TODO). They must always return 200 to Meta. The shared verify token is META_WEBHOOK_VERIFY_TOKEN (Vercel env).
 
-> **RULE** — The existing Twilio WhatsApp handler at `/api/webhooks/whatsapp` must NOT be overwritten.
+> **RULE** — The Meta WhatsApp webhook lives at /api/webhooks/meta/whatsapp. The existing Twilio WhatsApp handler at /api/webhooks/whatsapp must NOT be overwritten — they are different integrations. Consolidating Twilio vs Meta Cloud API is a pre-trial backlog decision.
 
----
+Build order is Messenger → Instagram → WhatsApp. Phase 1 (webhook product setup) is done; Phase 2 (OAuth connect flows, token storage, send API, classifier wiring) is deferred. The Meta app sits under the Village Foodie portfolio — the separate HatchGrab portfolio is advertising-restricted, which does not affect messaging APIs; migration later is one-click with no code change. App review will need privacy-policy and terms pages.
 
-## 21. Competitive positioning
+# 21. Competitive positioning
 
-### Hatches Up cost model
+## Hatches Up cost model
 
-4.5% + 20p all-in on online orders; 1.5% + 10p in-person. No subscription.
+Hatches Up charges 4.5% + 20p all-in on online orders (includes card processing) and 1.5% + 10p for in-person. No subscription fee. Their public positioning is vague on reporting features, but at their volume they almost certainly have date-range filtering, item breakdowns, and CSV export — assume their Starter-equivalent is feature-comparable on raw data access.
 
-> **RULE** — Honest framing: "Hatches Up is 4.5% all in. We are £29/month plus 0.99% plus card processing. Above ~£1,750/month online orders we are cheaper, and you get features they do not have."
+## Real differentiators
 
-Migration pitch: "Currently on Hatches Up? Switch and get 3 months free on any tier."
+- Offline protection (auto-pause on signal loss); smart queue-aware pacing; social/WhatsApp auto-responses; ticket printing (Max); multi-device sync (Max); time slot selection; auto-accept; village-specific hyperlocal discovery.
 
----
+- Digital loyalty stamp cards (Max, coming soon) — the stickiness lever once stamps are earned, churn drops to near zero.
 
-## 22. Development process
+## Honest comparison rule
 
-> **OPERATOR PREFERENCE** — When presenting any code or file, the file path must appear immediately above it as `path/to/file.tsx` in bold inline code. Never make Dominic scroll up to find which file to update.
+> **RULE** — When pitching against Hatches Up, be transparent about all costs. Do not lead with a misleading "4.5% vs 0.99%". Honest framing: "Hatches Up is 4.5% all in. We are £29/month plus 0.99% plus card processing. Above ~£1,750/month online orders we are cheaper, and you get features they do not have."
 
-### Two-chat pattern (V6)
+- Discovery is a supporting argument, not the lead, until the subscriber base reaches scale. Lead with features; price closes.
 
-- **Planning chat (Claude)** — strategy, UX, architecture, instruction writing. Does NOT write code. **Claude within Cursor is the coding tool.**
-- **Coding chat (Cursor/Claude)** — implementation, file edits, smoke tests. Does NOT make strategic decisions.
-- **Audits** — can be sent to Cursor directly for a summary response. Do not require grep + paste back for every audit.
+- Migration pitch: "Currently on Hatches Up? Switch and get 3 months free on any tier."
 
-### Smoke tests
+# 22. Development process
 
-Every change includes a smoke test: action to perform, expected behaviour, edge cases. Nothing is "done" without an operator-confirmed smoke test.
+> **OPERATOR PREFERENCE** — When presenting any code or file, the file path must appear immediately above it as path/to/file.tsx in bold inline code. Never make Dominic scroll up to find which file to update.
 
-### SQL migrations
+## Two-chat pattern
 
-Run in Supabase SQL editor; confirm clean before deploying. Use idempotent (`if not exists`) migrations.
+- **Planning chat (Claude)** — strategy, UX, architecture, instruction writing. Does NOT write code. Claude within Cursor is the coding tool (V6); the planning chat writes Cursor-ready prompts.
 
----
+- **Coding chat (Claude within Cursor)** — implementation, file edits, smoke tests. Does NOT make strategic decisions.
 
-## 23. Mobile UX patterns
+- Instructions flow planning → coding; audit reports flow coding → planning. Audits can be sent to Cursor for a summary response rather than always pasting grep output back (V6).
 
-### Preventing iOS Safari auto-zoom
+## Audit before build
 
-> **RULE** — Inputs, selects, and textareas must be at least `16px` on mobile. `app/globals.css` locks these to `16px` below 640px breakpoint.
+- Read relevant files and paste excerpts; identify duplications/conflicts; confirm DRY; only then implement.
 
-### All categories collapsed by default
+## Smoke tests
 
-`expandedCat` initialises to `null` on Manage page open.
+- Every change includes a smoke test: the action to perform, expected behaviour, and edge cases. Nothing is "done" without an operator-confirmed smoke test.
 
-> **RULE** — Use `invisible` (CSS `visibility: hidden`), not `hidden`, for layout-reserved toolbar elements. Reserves space, prevents layout shift.
+## Context limit handling
 
----
+- When a chat hits its limit, open a fresh one, re-prime with file paths and the task, reference this manual, and never assume the new chat knows prior decisions. Image limits in long chats are a sign to split work to the coding chat or start fresh.
 
-## 24. Scraper workflow (V6)
+## SQL migrations
 
-GitHub Actions workflow `.github/workflows/daily_scrape.yml`:
-- **Node 20** (not 24) — Puppeteer 24.x compatibility
-- **No `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`** — removed
-- **Chrome install:** `rm -rf ~/.cache/puppeteer/chrome` then `npx puppeteer browsers install chrome`
-- **No custom `PUPPETEER_CACHE_DIR`** — uses default path
-- Gemini quota resolved by upgrading to paid plan
-- Apps Script 6-minute execution limit — time guard needed
+- Run migrations in the Supabase SQL editor; confirm clean before deploying. Use "Claude"-authored, idempotent (if not exists) migrations where possible.
 
----
+# 23. Mobile UX patterns (V4)
 
-## 25. Testing and dev environment
+Operator-facing mobile patterns established across the dashboard and manage pages. Apply consistently — any new operator-facing page must match these patterns.
 
-### Dev setup
+## Dashboard avatar dropdown
 
-- `localhost:3000` for local testing.
-- Test Kitchen: `dashboard_token test-abc123def456`, `id test-truck`, `slug test-kitchen`, `is_test true`.
+The mobile dashboard avatar dropdown contains everything the operator needs without leaving the page. Five header rows on the dashboard were reduced to three: top branding row, tab row, and a slim mobile event bar (sm:hidden) showing "● venue · time · ···" with a modal for +30 min, Close early, and Cancel event. The dropdown order is canonical (see Section 3, Single dropdown component).
+
+## Manage page avatar dropdown
+
+Uses the same UserMenu component with showDashboardLink=true. The mobile-only "← Orders dashboard" link is included; on desktop it is wrapped in sm:hidden because the page header already has it (avoiding duplication). The chevron is always visible on the avatar.
+
+## Menu tab header (mobile)
+
+Three rows for clarity at 375px:
+
+- Row 1: "Menu" heading left + "+ Add category" orange button right.
+
+- Row 2: "N categories · N items" muted subtext.
+
+- Row 3: "✨ Import with AI" outline button (full single line, whitespace-nowrap, no subtitle).
+
+Desktop is unchanged — Import AI lives in the right column alongside Add category with the "photo, PDF or text" subtitle visible. Subtitle is hidden sm:block. The Schedule tab's "✨ Import schedule" button mirrors this styling (V6).
+
+## All categories collapsed by default
+
+On Manage page open, all menu categories initialise collapsed (expandedCat = null). The previous default (first category auto-expanded) was disorienting on a page with multiple categories. Operators tap to expand whichever they want to edit.
+
+## invisible vs hidden for layout-reserved elements
+
+> **RULE** — When a button or control is conditionally shown but its absence would cause layout shift in a fixed toolbar, use invisible (CSS visibility: hidden) which reserves space, not hidden (which removes the element). Applied in the Reports toolbar for the Export CSV button and Orders/Items toggle when no results are loaded.
+
+## Identity block in dropdowns
+
+Truck name bold (text-slate-800 font-semibold), operator first name muted below (text-slate-400). First name is derived from currentUserName.split(' ')[0]. Van name is NOT included — it was confusing and added no value. Truck name + operator first name is sufficient.
+
+### Preventing iOS Safari auto-zoom (V5)
+
+> **RULE** — Inputs, selects, and textareas must be at least 16px on mobile. iOS Safari zooms the viewport whenever a focused field has font-size below 16px. globals.css locks these controls to 16px below the 640px breakpoint and reverts to inherit at ≥640px so desktop is untouched.
+
+The viewport is set in app/layout.tsx as width=device-width, initialScale=1 — deliberately WITHOUT maximumScale or userScalable:false, which would break accessibility pinch-zoom. The 16px-input rule is the correct fix for the focus-zoom annoyance (especially on the customer order page); viewport scale locking is not.
+
+### Text prominence floor (V6 sweep)
+
+A dashboard contrast sweep bumped muted UI text up to the contrast floor: slate-700 body, slate-500 secondary, slate-400 decorative only; orange reserved for current-plan/active highlights. Genuinely decorative or intentionally-muted lines (the refresh timestamp, "tap to close", the closed badge, "No event selected" event-bar label, the "Done" stat label) stay muted. Apply the floor to any new operator surface.
+
+# 24. Scraper workflow (V6)
+
+The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrape.yml (separate from the Apps Script screenshot/email processor):
+
+- **Node 22.** Node 20 lacks native WebSocket support, which @supabase/realtime-js requires (the scraper creates a Supabase client) — it threw "Node.js 20 detected without native WebSocket support". Node 24 forced the actions/checkout and actions/setup-node deprecation path and reintroduced Puppeteer Chrome issues. Node 22 has native WebSocket AND is compatible with Puppeteer 24.x.
+
+- **Chrome install** via npx puppeteer browsers install chrome (with the cache cleared first: rm -rf ~/.cache/puppeteer/chrome) so a cached node_modules layer without the actual Chrome binary doesn't break the run.
+
+- **No FORCE_JAVASCRIPT_ACTIONS_TO_NODE24** env var — removed.
+
+- Schedule: cron '0 6 * * *' plus workflow_dispatch for manual runs. Secrets: SPREADSHEET_ID, GEMINI_API_KEY, GOOGLE_SHEETS_CREDENTIALS, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
+
+- **Gemini quota** — the free tier capped gemini-2.5-flash-lite at ~20 calls/day; the project is now on a paid Gemini plan so quota is no longer the limiter.
+
+- The Apps Script processor remains subject to the 6-minute execution limit — a time guard is still needed (backlog).
+
+> **NOTE** — actions/checkout@v4 and actions/setup-node@v4 emit a Node 20 deprecation warning; from 16 June 2026 GitHub forces Node 24 for the action runtime itself. Bump the action versions when that lands; it is independent of the workflow's own node-version: '22'.
+
+# 25. Testing and dev environment
+
+## Dev setup
+
+- localhost:3000 for local testing. Test Kitchen test truck (dashboard_token test-abc123def456, id test-truck, slug test-kitchen, is_test true).
+
 - iPad Air simulator for KDS; Safari responsive mode at tablet sizes; phone widths 375/414px.
 
-### Pre-trial checklist
+## Pre-trial checklist
 
 - Capacitor wrapper built; Stage A offline working reliably.
-- Auth hardening (rate limiting, admin secret).
+
+- All known bugs fixed (target zero at trial start).
+
+- Sheets-to-DB migration complete or safe parallel-run.
+
+- Auth hardening (rate limiting; admin secret being retired for is_admin session auth).
+
+- Event confirmation flow live (done).
+
+- End-to-end smoke test of all flows: customer order, walk-up, ready notification, mark paid & done (verified in V4).
+
 - Brevo hatchgrab.com domain verified and propagated.
-- End-to-end smoke test: place order → KDS → confirmation email → cancel page from email link → mark ready notification → mark paid & done.
-- QR code and dashboard order link resolve to `/trucks/[slug]/order`.
-- Scraper bridge verified: linked truck's inbound event creates unconfirmed `truck_events` row.
-- API keys in Script Properties (not hardcoded).
+
+- Production deploy to Vercel with production Supabase; real iPad testing with simulated connectivity drops.
+
 - Wake lock confirmed working under iOS 16.4+ and Chrome Android.
-- `offline_protection_override` migration run in Supabase.
-- `lifetime_discount_pct` and `lifetime_discount_note` migration run.
-- `is_admin` migration run; admin operator account set.
 
-### Contextual reminders
+- End-to-end customer order flow verified: place order → appears on dashboard/KDS → confirmation email → cancel page from email link → mark ready notification → mark paid & done. (Still to run live this session.)
 
-- UI text contrast floor on white: `slate-700` body, `slate-500` secondary, `slate-400` decorative only; orange for active highlights.
-- Watch for `new Date('YYYY-MM-DD')` UTC bugs — always use `new Date(\`${date}T${time}\`)`.
-- Watch for `next/image` shadowing the global `Image` constructor — use `document.createElement('img')`.
-- Always strip seconds via `formatTime()` — never inline `t.slice(0,5)`.
-- ASAP base time is `max(now + prep, eventStart)` — never add prep on top of a future event start.
-- Customer order URL is `/trucks/[slug]/order`. Never return `dashboard_token` in a public API response.
-- New operator pages reuse `AppHeader` and `slate-900` tabs (`lib/brand.ts`).
-- `is_test` never gates operator features — discovery map only.
-- `dashboard_token` must never appear in customer-facing or public API responses.
+- QR code and dashboard order link resolve to /trucks/[slug]/order (slug column populated for every truck; dashboard_token fallback removed in V6).
 
----
+- Scraper bridge verified: a linked truck's inbound event creates an unconfirmed truck_events row and shows in its Schedule tab; an unlinked truck stays discovery-only.
 
-## 26. Open backlog (June 2026)
+- Scraper GitHub Actions workflow passes on Node 22 (Chrome install + Supabase realtime both clean).
 
-### Critical — before trial
+- API keys rotated out of the Apps Script and into Script Properties.
 
-- Capacitor native wrapper; Stage A offline cache; offline detection banner; background sound.
+- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql. Admin operator account set (operators.is_admin = true).
+
+## Contextual reminders
+
+- UI text contrast floor on white: slate-700 body, slate-500 secondary, slate-400 decorative only; orange reserved for current-plan/active highlights.
+
+- Watch for new Date('YYYY-MM-DD') UTC bugs and for next/image shadowing the global Image constructor (use document.createElement('img')).
+
+- Always strip seconds via formatTime — never inline t.slice(0,5) or write a parallel implementation.
+
+- ASAP base time is max(now + prep, eventStart) — never add prep on top of a future event start (Section 6).
+
+- Customer order URL is /trucks/[slug]/order. Never use the dashboard_token in a customer-facing or public URL, and never return dashboard_token in a public API response (Section 12 / Section 2).
+
+- New operator pages reuse AppHeader and slate-900 tabs (lib/brand.ts) — no inline page headers (Section 3).
+
+- is_test never gates operator features — it filters the public discovery map only (Section 4).
+
+- Manual pause writes to truck_vans.paused_until for the active event's van, not trucks.paused_until (Section 5).
+
+- A null batch_size means "no limit" — render blank with an ∞ placeholder, never a sentinel like 999 (Section 6).
+
+# 26. Open backlog (June 2026)
+
+## Critical — before trial
+
+- Capacitor native wrapper; Stage A offline cache; offline detection banner; background sound; screen wake.
+
 - Auth hardening (rate limiting).
-- Google Sheets → DB migration.
-- Discovery map VF vs HG visibility test.
+
+- Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store).
+
+- Full end-to-end order flow test (place order → KDS → confirmation email → cancel → ready → paid & done) — run live.
+
+- Reports tab data verification across multiple events.
+
+- Discovery map VF vs HG visibility test (operator events now show on both maps as of V6).
+
 - Heartbeat/auto-pause end-to-end test.
-- Apps Script 6-minute timeout time guard.
+
+- Apps Script screenshot processor 6-minute timeout — add time guard; Gemini billing on Google Cloud (paid plan now active).
+
 - Brevo hatchgrab.com DNS propagation.
-- `orders.source` column migration — replaces `customer_email IS NULL` heuristic.
-- Link each trial truck's `discovery_trucks` row to its HatchGrab truck (`hatchgrab_truck_id`) via admin console.
-- Confirm scraper GitHub Actions Node 20 workflow passes cleanly.
 
-### Important — before public launch
+- Link each trial truck's discovery_trucks row to its HatchGrab truck (hatchgrab_truck_id) via the admin console, so scraped/emailed events bridge into the operator schedule.
 
-- Stripe Connect integration.
-- Multi-device session enforcement.
-- Remove `ADMIN_SECRET` — session auth is the only path needed.
-- Operator UI pause state reload — read from `truck_vans.paused_until` for active event's van, not `trucks.paused_until`.
-- `orders.ready_time` column — store calculated collection time at submit for tighter ASAP cancellation control post-trial.
-- Schedule tab map panel — lat/long already stored on `truck_events`; show event locations on a map alongside the schedule list on desktop.
-- `password_reset_tokens` cleanup job.
-- `slot_capacity.max_orders` → `max_batches` rename.
-- Loyalty stamp cards V1 (Max only) — when instructed.
-- Companies House registration for HatchGrab.
-- Privacy policy + terms pages.
-- Twilio WhatsApp vs Meta Cloud API consolidation.
+- Confirm the scraper GitHub Actions Node 22 workflow passes cleanly on a manual run.
 
-### Later
+- orders.source column migration — replaces the customer_email IS NULL heuristic for order type in Reports. TODO comments in app/api/orders/submit/route.ts and app/api/dashboard/action/route.ts.
 
-- Stage C full offline; customer-facing display (Max); advanced reporting visualisations; festival pricing.
-- WhatsApp "Recent messages" review panel; event cleanup job (delete events > 90 days).
+- truck_events.customer_note surfacing on the customer order page below event details (column saves, API select needs adding, render needed).
 
-### Open questions
+## Important — before public launch
 
-- AI DM classifier confidence threshold.
-- iPad printer model (Star Micronics vs Epson).
-- Truck-level vs operator-level billing in Phase 2.
-- Loyalty redemption UX design.
+- Stripe Connect integration (upgrade buttons currently email support).
 
----
+- Refunds process — event cancellation cancels orders and emails customers but does not yet refund; customer menu imports for onboarding at scale.
 
-## 27. Closing note
+- Multi-device session enforcement (kds_sessions exists, logic pending).
+
+- Stage B offline; proper post-trial login (email/password or magic link — partially in place).
+
+- Remove ADMIN_SECRET — session-based is_admin is the only path needed (V6).
+
+- Operator UI pause-state reload — read from truck_vans.paused_until for the active event's van, not trucks.paused_until (V6).
+
+- orders.ready_time column — store the calculated collection time at submit for tighter ASAP cancellation control post-trial (V6).
+
+- Schedule tab map panel — latitude/longitude are already stored on truck_events; show event locations on a desktop map alongside the schedule list (like the discovery page's right-side map) (V6).
+
+- FAQ / help page; HatchGrab logo asset at public/logos/hatchgrab-logo.png.
+
+- QR-with-logo scan test. (Dashboard order link and QR use /trucks/[slug]/order; final scan test still outstanding.)
+
+- Allergen onboarding flow: prompt operator per-category allow_notes toggle at signup.
+
+- Loyalty stamp cards V1 build (Max only): schema migration, walk-up phone lookup, online email match, redemption flow — when instructed.
+
+- Branded QR code implementation: trucks.qr_code_style column, logo compositing in centre, manage page selector.
+
+- password_reset_tokens cleanup job — tokens are marked used_at but never deleted; add a periodic purge.
+
+- slot_capacity.max_orders → max_batches rename — the column counts batches, not orders; the name misleads.
+
+- is_instant boolean on menu_categories — consideration, to make zero-prep items (drinks, dips) explicit rather than inferred from prep_secs.
+
+- Twilio WhatsApp vs Meta Cloud API consolidation — decide before trial which path is canonical; the Twilio handler at /api/webhooks/whatsapp and the Meta handler at /api/webhooks/meta/whatsapp currently coexist.
+
+- Companies House registration for HatchGrab — recommended ahead of taking payments and Meta app review.
+
+- Privacy policy + terms pages — required for Meta app review and for launch.
+
+## Later
+
+- Stage C full offline; customer-facing display (Max); advanced reporting visualisations (hourly velocity chart, event ROI comparison); festival pricing; personalised schedule generator.
+
+- Truck-facing WhatsApp "Recent messages" review panel with flagging; event cleanup job (delete events > 90 days).
+
+## Open questions
+
+- AI DM classifier confidence threshold (set from real performance).
+
+- iPad printer model (Star Micronics vs Epson) — affects Capacitor native module.
+
+- Truck-level vs operator-level billing in Phase 2 — schema supports either.
+
+- Loyalty redemption UX: operator-side trigger placement in Add Order panel; customer-side prompt design at online checkout.
+
+# 27. Closing note
 
 This manual is living documentation. Update it whenever a new rule is established, a feature behaviour is decided, a DRY violation is identified and fixed, a plan tier feature changes, or a coding convention shifts.
 
 When in doubt about how something should work: check here first. If the answer is not here, work out the right answer, document it here, then implement.
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
+
+HatchGrab Engineering Reference Manual · V6 · 1

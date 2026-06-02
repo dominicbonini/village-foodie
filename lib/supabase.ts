@@ -33,6 +33,7 @@ export interface Order {
   order_type: 'collection' | 'table'
   table_ref: string | null
   event_date: string
+  event_id?: string | null
   items: OrderItem[]
   extras: { name: string; price: number }[] | null
   bundle: string | null
