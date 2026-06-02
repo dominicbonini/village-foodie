@@ -1,9 +1,9 @@
 // app/admin/page.tsx
 // Village Foodie admin panel — manage truck plans, trials, and feature overrides
-// Protected by ADMIN_SECRET env variable
+// Protected by Supabase session: operators.is_admin = true required
 
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
 import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import AppHeader from '@/components/shared/AppHeader'
@@ -54,7 +54,6 @@ const PLAN_BADGE: Record<Plan, string> = {
 }
 
 export default function AdminPage() {
-  const secretRef = useRef('')
   const [checkingSession, setCheckingSession] = useState(true)
   const [denied, setDenied] = useState(false)
   const [operatorName, setOperatorName] = useState<string | null>(null)
@@ -83,13 +82,12 @@ export default function AdminPage() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
-  const loadWithSecret = async (s: string) => {
-    secretRef.current = s
+  const load = async () => {
     setLoading(true)
     try {
       const [res, discRes] = await Promise.all([
-        fetch(`/api/admin?secret=${s}`),
-        fetch(`/api/admin?secret=${s}&section=discovery`),
+        fetch('/api/admin'),
+        fetch('/api/admin?section=discovery'),
       ])
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -99,7 +97,7 @@ export default function AdminPage() {
         setDiscoveryTrucks(discData.discoveryTrucks || [])
       }
       setCheckingSession(false)
-    } catch (e: any) { alert(e.message || 'Auth failed') }
+    } catch (e: any) { alert(e.message || 'Failed to load') }
     finally { setLoading(false) }
   }
 
@@ -107,8 +105,8 @@ export default function AdminPage() {
     fetch('/api/admin?section=check_admin')
       .then(r => r.json())
       .then(d => {
-        if (d.isAdmin && d.secret) {
-          loadWithSecret(d.secret)
+        if (d.isAdmin) {
+          load()
           fetch('/api/auth/me').then(r => r.json()).then(me => {
             setOperatorName(me.first_name || me.name || null)
           }).catch(() => null)
@@ -117,15 +115,13 @@ export default function AdminPage() {
       .catch(() => { setCheckingSession(false); setDenied(true) })
   }, [])
 
-  const load = async () => { await loadWithSecret(secretRef.current) }
-
   const update = async (truckId: string, updates: Record<string, any>) => {
     setSaving(truckId)
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: secretRef.current, truckId, ...updates }),
+        body: JSON.stringify({ truckId, ...updates }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -141,7 +137,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: secretRef.current, discoveryTruckId, visibility }),
+        body: JSON.stringify({ discoveryTruckId, visibility }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -159,7 +155,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: secretRef.current, discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
+        body: JSON.stringify({ discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -191,7 +187,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: secretRef.current, truckId: editingTruck.id, ...modalEdits }),
+        body: JSON.stringify({ truckId: editingTruck.id, ...modalEdits }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -216,7 +212,7 @@ export default function AdminPage() {
     const res = await fetch('/api/admin/create-operator', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: secretRef.current, truckId: createModalTruck.id, email: createEmail }),
+      body: JSON.stringify({ truckId: createModalTruck.id, email: createEmail }),
     })
     const data = await res.json()
     setCreateLoading(false)

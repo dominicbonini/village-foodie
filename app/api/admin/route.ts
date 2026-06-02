@@ -6,28 +6,27 @@ import { PLAN_META, type Plan } from '@/lib/features'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
-function checkAuth(secret: string) {
-  return secret === process.env.ADMIN_SECRET
+async function verifyAdmin(): Promise<boolean> {
+  const supabaseAuth = await createSupabaseServerClient()
+  const { data: { user } } = await supabaseAuth.auth.getUser()
+  if (!user) return false
+  const { data: operator } = await supabase
+    .from('operators')
+    .select('is_admin')
+    .eq('auth_user_id', user.id)
+    .single()
+  return !!operator?.is_admin
 }
 
 export async function GET(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get('secret') || ''
   const section = req.nextUrl.searchParams.get('section')
 
   if (section === 'check_admin') {
-    const supabaseAuth = await createSupabaseServerClient()
-    const { data: { user } } = await supabaseAuth.auth.getUser()
-    if (!user) return NextResponse.json({ isAdmin: false })
-    const { data: operator } = await supabase
-      .from('operators')
-      .select('is_admin')
-      .eq('auth_user_id', user.id)
-      .single()
-    if (!operator?.is_admin) return NextResponse.json({ isAdmin: false })
-    return NextResponse.json({ isAdmin: true, secret: process.env.ADMIN_SECRET })
+    const isAdmin = await verifyAdmin()
+    return NextResponse.json({ isAdmin })
   }
 
-  if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!await verifyAdmin()) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   if (section === 'discovery') {
     const { data: discoveryTrucks } = await supabase
@@ -45,30 +44,24 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (!await verifyAdmin()) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
   const body = await req.json()
-  const { secret, truckId, discoveryTruckId, ...updates } = body
-  if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  const { truckId, discoveryTruckId, ...updates } = body
 
-  // Discovery truck update (visibility + hatchgrab link)
   if (discoveryTruckId) {
-    const allowed = ['visibility', 'hatchgrab_truck_id']
-    const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => allowed.includes(k)))
-    const { error } = await supabase.from('discovery_trucks').update(safe).eq('id', discoveryTruckId)
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-    return NextResponse.json({ success: true })
-  }
-
-  // Operator truck update
-  if (updates.plan) {
-    const validPlans = Object.keys(PLAN_META) as Plan[]
-    if (!validPlans.includes(updates.plan)) {
-      return NextResponse.json({ error: `Invalid plan: ${updates.plan}` }, { status: 400 })
+    const { visibility, hatchgrab_truck_id } = updates
+    if (hatchgrab_truck_id !== undefined) {
+      await supabase.from('discovery_trucks').update({ hatchgrab_truck_id }).eq('id', discoveryTruckId)
+      return NextResponse.json({ ok: true })
     }
+    await supabase.from('discovery_trucks').update({ visibility }).eq('id', discoveryTruckId)
+    return NextResponse.json({ ok: true })
   }
 
-  const allowed = ['plan', 'active', 'auto_accept', 'onboarded_at', 'trial_expires_at', 'feature_overrides', 'is_test', 'lifetime_discount_pct', 'lifetime_discount_note']
-  const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => allowed.includes(k)))
-  const { error } = await supabase.from('trucks').update(safe).eq('id', truckId)
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
-  return NextResponse.json({ success: true })
+  if (!truckId) return NextResponse.json({ error: 'Missing truckId' }, { status: 400 })
+
+  const { error } = await supabase.from('trucks').update(updates).eq('id', truckId)
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ ok: true })
 }

@@ -890,14 +890,14 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
             {isOpen && editingCat?.id === cat.id && (
               <div className="border-t border-orange-100 bg-orange-50/40 px-4 py-3 space-y-2">
                 {/* Row 1: Name + Allow notes toggle */}
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <input
                     type="text"
                     value={editingCat.name || ''}
                     onChange={e => setEditingCat(p => ({...p!, name: e.target.value}))}
                     onBlur={() => saveCat()}
                     placeholder="Category name"
-                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                    className="flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
                   />
                   <div className="shrink-0">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -915,7 +915,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                   </div>
                 </div>
                 {/* Row 2: Prep time + Batch size + Default stock */}
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Prep time (mins)</label>
                     <input type="number" min="0" max="60" placeholder="0 = instant"
@@ -2631,7 +2631,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
             {/* Venue + time + status */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-sm font-bold text-slate-900 truncate">
+                <p className="text-sm font-bold text-slate-900">
                   {venueDisplay}
                 </p>
                 <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
@@ -2654,13 +2654,25 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
             {/* Actions — right aligned */}
             <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
               {event.status === 'unconfirmed' && (
-                <Btn label="Confirm" size="sm" colour="green" onClick={() => handleConfirmEvent(event.id)} />
+                <button onClick={() => handleConfirmEvent(event.id)} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
+                  <span className="sm:hidden">✓</span>
+                  <span className="hidden sm:inline">Confirm</span>
+                </button>
               )}
-              <Btn label="Copy" size="sm" colour="ghost" onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} />
+              <button onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                <span className="sm:hidden">⧉</span>
+                <span className="hidden sm:inline">Copy</span>
+              </button>
               {!isPast && (
                 <>
-                  <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
-                  <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
+                  <button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    <span className="sm:hidden">✏</span>
+                    <span className="hidden sm:inline">Edit</span>
+                  </button>
+                  <button onClick={() => openEventCancelModal(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">
+                    <span className="sm:hidden">✕</span>
+                    <span className="hidden sm:inline">Cancel</span>
+                  </button>
                 </>
               )}
             </div>
@@ -2679,9 +2691,9 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               : `${activeDeals.length} deal${activeDeals.length !== 1 ? 's' : ''} active · ${dealNames}${hiddenDeals.length > 0 ? ` · ${hiddenDeals.length} hidden` : ''}`
 
             return (
-              <details className="mt-2 border-t border-slate-50 pt-2">
+              <details className="mt-2 border-t border-slate-50 pt-2 group">
                 <summary className="text-xs text-slate-400 cursor-pointer select-none hover:text-slate-600 list-none flex items-center gap-1">
-                  <span className="text-slate-300">▶</span>
+                  <span className="transition-transform group-open:rotate-90 inline-block text-slate-300">▶</span>
                   <span>{dealLabel}</span>
                 </summary>
                 <div className="mt-2 space-y-1">
@@ -2784,6 +2796,13 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         <EmptyState icon="🗓️" title="No upcoming events" body="Events scraped from your social media and booking calendar will appear here for you to confirm" />
       )}
 
+      {openEvents.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Open now</p>
+          {openEvents.map(renderEvent)}
+        </div>
+      )}
+
       {unconfirmedEvents.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Needs confirmation</p>
@@ -2798,13 +2817,6 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         </div>
       )}
 
-      {openEvents.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Open now</p>
-          {openEvents.map(renderEvent)}
-        </div>
-      )}
-
       {otherUpcoming.length > 0 && (
         <div className="space-y-2">{otherUpcoming.map(renderEvent)}</div>
       )}
@@ -2815,8 +2827,8 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
             onClick={() => setShowPast(p => !p)}
             className="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
           >
-            <span>{showPast ? '▲' : '▼'}</span>
-            Past events ({past.length})
+            <span className={`transition-transform inline-block ${showPast ? 'rotate-90' : ''}`}>▶</span>
+            <span>Past events ({past.length})</span>
           </button>
           {showPast && (
             <div className="mt-3 space-y-2">{past.map(renderEvent)}</div>
@@ -2826,7 +2838,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
 
       {editingEvent && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-black text-slate-900 mb-4">
               {editingEvent.id ? 'Edit event' : addMode === 'upload' ? 'Import schedule' : 'Add event'}
             </h3>

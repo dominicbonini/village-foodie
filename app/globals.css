@@ -48,3 +48,7 @@ textarea {
     font-size: inherit !important;
   }
 }
+
+details[open] > summary .details-arrow {
+  transform: rotate(90deg);
+}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 
 const supabase = createClient(
@@ -15,11 +16,13 @@ function generateTempPassword(): string {
 }
 
 export async function POST(req: NextRequest) {
-  const { secret, truckId, email } = await req.json()
+  const supabaseAuth = await createSupabaseServerClient()
+  const { data: { user } } = await supabaseAuth.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  const { data: caller } = await supabase.from('operators').select('is_admin').eq('auth_user_id', user.id).single()
+  if (!caller?.is_admin) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
-  if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-  }
+  const { truckId, email } = await req.json()
 
   // Fetch truck name for welcome email
   const { data: truckData } = await supabase
