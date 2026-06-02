@@ -694,7 +694,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
         await api('bulk_delete_items', { category_id: cat.id })
       }
       await api('delete_category', { id: cat.id })
-      reload()
+      await reload()
     } catch (e: any) {
       showToast(e.message, 'error')
     }
@@ -882,7 +882,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                 >
                   🗑
                 </button>
-                <span className="text-slate-400 text-xs select-none">{isOpen ? '▲' : '▼'}</span>
+                <span className={`transition-transform inline-block text-slate-400 text-xs select-none ${isOpen ? 'rotate-90' : ''}`}>▶</span>
               </div>
             </div>
 
@@ -1952,7 +1952,7 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                   {assignedCats.map(c => <Badge key={c.id} label={c.name} colour="green" />)}
                 </div>
               </div>
-              <span className="text-slate-400 text-xs flex-shrink-0">{isOpen ? '▲' : '▼'}</span>
+              <span className={`transition-transform inline-block text-slate-400 text-xs flex-shrink-0 ${isOpen ? 'rotate-90' : ''}`}>▶</span>
             </div>
 
             {isOpen && (
@@ -2971,12 +2971,14 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     onChange={v => { setEditingEvent(p => ({...p!, event_date: v})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
                     error={formErrors.event_date} />
                 </div>
-                <Input label="Start time" required type="time" value={editingEvent.start_time}
-                  onChange={v => { setEditingEvent(p => ({...p!, start_time: v})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
-                  error={formErrors.start_time} />
-                <Input label="End time" required type="time" value={editingEvent.end_time}
-                  onChange={v => { setEditingEvent(p => ({...p!, end_time: v})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
-                  error={formErrors.end_time} />
+                <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Input label="Start time" required type="time" value={editingEvent.start_time}
+                    onChange={v => { setEditingEvent(p => ({...p!, start_time: v})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
+                    error={formErrors.start_time} />
+                  <Input label="End time" required type="time" value={editingEvent.end_time}
+                    onChange={v => { setEditingEvent(p => ({...p!, end_time: v})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
+                    error={formErrors.end_time} />
+                </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
