@@ -2283,6 +2283,9 @@ async function geocodeLocation(
 }
 function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent['status']; event_date: string; end_time: string }) {
   const isPast = end_time ? new Date() > new Date(`${event_date}T${end_time}`) : false
+  if (status === 'cancelled') return (
+    <span className="text-xs font-semibold text-slate-400">Cancelled</span>
+  )
   if (isPast) return (
     <span className="text-xs font-semibold text-slate-400">Finished</span>
   )
@@ -2532,10 +2535,15 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     finally { setSaving(false) }
   }
 
-  const openEventCancelModal = (event: TruckEvent) => {
+  const openEventCancelModal = async (event: TruckEvent) => {
     setCancellingEvent(event)
     setAffectedOrderCount(0)
     setShowEventCancelModal(true)
+    try {
+      const res = await fetch(`/api/events/affected-orders?eventId=${event.id}&token=${token}`)
+      const data = await res.json()
+      if (res.ok) setAffectedOrderCount(data.count ?? 0)
+    } catch { /* silently fail — modal still works, count just shows 0 */ }
   }
 
   const confirmCancelEvent = async () => {
@@ -2605,12 +2613,16 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
               <Btn label="Confirm" size="sm" colour="green" onClick={() => handleConfirmEvent(event.id)} />
             )}
             <Btn label="Copy" size="sm" colour="ghost" onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} />
-            <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
-            <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
+            {!isPastEvent(event) && event.status !== 'cancelled' && (
+              <>
+                <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
+                <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
+              </>
+            )}
           </div>
         </div>
 
-        {bundles.length > 0 && (
+        {bundles.length > 0 && !isPastEvent(event) && event.status !== 'cancelled' && (
           <div className="px-4 pb-3 border-t border-slate-100 mt-0">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 pt-3">
               Deals for this event
@@ -2668,7 +2680,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     ? events.filter(e => e.truck_id === scheduleFilterTruckId)
     : events
   const upcoming = filteredEvents.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
-  const past = filteredEvents.filter(e => e.status !== 'cancelled' && isPastEvent(e))
+  const past = filteredEvents.filter(e => isPastEvent(e) || e.status === 'cancelled')
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
   const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
   const openEvents = upcoming.filter(e => e.status === 'open')
