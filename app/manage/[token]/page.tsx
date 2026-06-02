@@ -17,7 +17,7 @@ import UserMenu from '@/components/dashboard/UserMenu'
 import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -211,7 +211,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   // Trial accounts default to billing tab on every page load
   useEffect(() => {
-    if (truck?.plan === 'trial' && truck?.plan !== 'tester') setActiveTab('billing')
+    if (truck?.plan === 'trial') setActiveTab('billing')
   }, [truck?.id])
 
   // Daily trial reminder popup — shown once per day via localStorage
@@ -4120,8 +4120,14 @@ const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hello@villagefoo
 function BillingTab({ truck }: { truck: Truck | null }) {
   if (!truck) return null
   const currentPlan = truck.plan
-  const isCurrent = (p: 'starter' | 'pro' | 'max') =>
-    p === currentPlan || (currentPlan === 'trial' && p === 'max')
+  const trialActive = truck.plan === 'trial' &&
+    truck.trial_expires_at !== null &&
+    new Date(truck.trial_expires_at) > new Date()
+  const billingPlans: readonly ('trial' | 'starter' | 'pro' | 'max')[] = trialActive
+    ? (['trial', 'starter', 'pro', 'max'] as const)
+    : (['starter', 'pro', 'max'] as const)
+  const isCurrent = (p: 'trial' | 'starter' | 'pro' | 'max') =>
+    p === truck.plan
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
@@ -4135,7 +4141,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       {/* Plan columns header with prices */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1" />
-        {(['starter', 'pro', 'max'] as const).map(p => (
+        {billingPlans.map(p => (
           <div key={p} className={`w-[72px] sm:w-28 text-center pb-3 border-b-2 ${
             isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
           }`}>
@@ -4145,7 +4151,11 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <p className={`text-base sm:text-xl font-bold mt-1 ${
               isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
             }`}>{PLAN_PRICES[p]}</p>
-            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">per truck / month</p>
+            <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
+              {p === 'trial' && truck.trial_expires_at
+                ? `until ${formatDate(truck.trial_expires_at)}`
+                : 'per truck / month'}
+            </p>
           </div>
         ))}
       </div>
@@ -4153,7 +4163,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       <div className="mb-2">
         <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
           <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
-          <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
+          {trialActive && <div className="w-[72px] sm:w-28" />}<div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
         </div>
         {TRANSACTION_ROWS.map(row => (
           <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
@@ -4163,11 +4173,11 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {row.footnote && <sup className="text-slate-500 text-[10px] ml-0.5">{row.footnote}</sup>}
               </div>
             </div>
-            {(['starter', 'pro', 'max'] as const).map(p => (
+            {billingPlans.map(p => (
               <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
                 isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
               }`}>
-                {row.values[p]}
+                {p === 'trial' ? row.values.starter : row.values[p as 'starter' | 'pro' | 'max']}
               </div>
             ))}
           </div>
@@ -4180,7 +4190,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
               {section.title}
             </span>
-            <div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
+            {trialActive && <div className="w-[72px] sm:w-28" />}<div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
           </div>
           {section.rows.map(row => (
             <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
@@ -4191,8 +4201,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 </div>
                 {row.detail && <p className="text-xs text-slate-600 mt-0.5">{row.detail}</p>}
               </div>
-              {(['starter', 'pro', 'max'] as const).map(p => {
-                const val = row[p]
+              {billingPlans.map(p => {
+                const val = p === 'trial'
+                  ? (row.name === 'Online ordering — Pay at Hatch' ? true : row.max)
+                  : row[p as 'starter' | 'pro' | 'max']
                 return (
                   <div key={p} className="w-[72px] sm:w-28 text-center">
                     {val === true && (

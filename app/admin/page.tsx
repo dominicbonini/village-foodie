@@ -3,9 +3,11 @@
 // Protected by ADMIN_SECRET env variable
 
 'use client'
-import { useState, useEffect } from 'react'
-import { PLAN_META, PLAN_FEATURES, type Plan, type Feature } from '@/lib/features'
-import { PLAN_PRICES } from '@/lib/plan-features'
+import { useState, useEffect, useRef } from 'react'
+import { PLAN_META, type Plan, type Feature } from '@/lib/features'
+import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
+import AppHeader from '@/components/shared/AppHeader'
+import UserMenu from '@/components/dashboard/UserMenu'
 
 interface AdminTruck {
   id: string
@@ -52,8 +54,10 @@ const PLAN_BADGE: Record<Plan, string> = {
 }
 
 export default function AdminPage() {
-  const [secret, setSecret] = useState('')
-  const [authed, setAuthed] = useState(false)
+  const secretRef = useRef('')
+  const [checkingSession, setCheckingSession] = useState(true)
+  const [denied, setDenied] = useState(false)
+  const [operatorName, setOperatorName] = useState<string | null>(null)
   const [trucks, setTrucks] = useState<AdminTruck[]>([])
   const [discoveryTrucks, setDiscoveryTrucks] = useState<DiscoveryTruck[]>([])
   const [loading, setLoading] = useState(false)
@@ -79,38 +83,13 @@ export default function AdminPage() {
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
-  useEffect(() => {
-    fetch('/api/admin?section=check_admin')
-      .then(r => r.json())
-      .then(d => {
-        if (d.isAdmin && d.secret) {
-          setSecret(d.secret)
-          // load() is called after secret is set — use the returned secret directly
-          setLoading(true)
-          Promise.all([
-            fetch(`/api/admin?secret=${d.secret}`),
-            fetch(`/api/admin?secret=${d.secret}&section=discovery`),
-          ]).then(async ([res, discRes]) => {
-            const data = await res.json()
-            if (!res.ok) return
-            setTrucks(data.trucks)
-            if (discRes.ok) {
-              const discData = await discRes.json()
-              setDiscoveryTrucks(discData.discoveryTrucks || [])
-            }
-            setAuthed(true)
-          }).finally(() => setLoading(false))
-        }
-      })
-      .catch(() => null)
-  }, [])
-
-  const load = async () => {
+  const loadWithSecret = async (s: string) => {
+    secretRef.current = s
     setLoading(true)
     try {
       const [res, discRes] = await Promise.all([
-        fetch(`/api/admin?secret=${secret}`),
-        fetch(`/api/admin?secret=${secret}&section=discovery`),
+        fetch(`/api/admin?secret=${s}`),
+        fetch(`/api/admin?secret=${s}&section=discovery`),
       ])
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -119,10 +98,26 @@ export default function AdminPage() {
         const discData = await discRes.json()
         setDiscoveryTrucks(discData.discoveryTrucks || [])
       }
-      setAuthed(true)
+      setCheckingSession(false)
     } catch (e: any) { alert(e.message || 'Auth failed') }
     finally { setLoading(false) }
   }
+
+  useEffect(() => {
+    fetch('/api/admin?section=check_admin')
+      .then(r => r.json())
+      .then(d => {
+        if (d.isAdmin && d.secret) {
+          loadWithSecret(d.secret)
+          fetch('/api/auth/me').then(r => r.json()).then(me => {
+            setOperatorName(me.first_name || me.name || null)
+          }).catch(() => null)
+        } else { setCheckingSession(false); setDenied(true) }
+      })
+      .catch(() => { setCheckingSession(false); setDenied(true) })
+  }, [])
+
+  const load = async () => { await loadWithSecret(secretRef.current) }
 
   const update = async (truckId: string, updates: Record<string, any>) => {
     setSaving(truckId)
@@ -130,7 +125,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret, truckId, ...updates }),
+        body: JSON.stringify({ secret: secretRef.current, truckId, ...updates }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -146,7 +141,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret, discoveryTruckId, visibility }),
+        body: JSON.stringify({ secret: secretRef.current, discoveryTruckId, visibility }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -164,7 +159,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret, discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
+        body: JSON.stringify({ secret: secretRef.current, discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -196,7 +191,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret, truckId: editingTruck.id, ...modalEdits }),
+        body: JSON.stringify({ secret: secretRef.current, truckId: editingTruck.id, ...modalEdits }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -221,7 +216,7 @@ export default function AdminPage() {
     const res = await fetch('/api/admin/create-operator', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret, truckId: createModalTruck.id, email: createEmail }),
+      body: JSON.stringify({ secret: secretRef.current, truckId: createModalTruck.id, email: createEmail }),
     })
     const data = await res.json()
     setCreateLoading(false)
@@ -241,16 +236,23 @@ export default function AdminPage() {
     setModalEdits(prev => ({ ...prev, plan: 'trial', trial_expires_at: expires.toISOString() }))
   }
 
-  if (!authed) return (
+  if (checkingSession) return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-      <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl">
-        <h1 className="font-black text-slate-900 text-xl mb-6">🔐 Admin</h1>
-        <input type="password" placeholder="Admin secret" value={secret} onChange={e => setSecret(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && load()}
-          className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400" />
-        <button onClick={load} disabled={loading}
-          className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 disabled:opacity-50">
-          {loading ? 'Loading...' : 'Sign in'}
+      <div className="text-slate-400 text-sm animate-pulse">Loading...</div>
+    </div>
+  )
+
+  if (denied) return (
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
+        <div className="text-3xl mb-3">🔐</div>
+        <h1 className="font-black text-slate-900 text-lg mb-2">Access denied</h1>
+        <p className="text-sm text-slate-500 mb-6">Your account does not have admin access.</p>
+        <button
+          onClick={async () => { const { createSupabaseBrowserClient } = await import('@/lib/supabase/client'); await createSupabaseBrowserClient().auth.signOut(); window.location.href = '/login' }}
+          className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-slate-700"
+        >
+          Sign out
         </button>
       </div>
     </div>
@@ -271,26 +273,29 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
-        <div>
-          <h1 className="font-black text-lg">Village Foodie Admin</h1>
-          <p className="text-slate-400 text-xs">{trucks.length} trucks</p>
-        </div>
-        <button onClick={load} className="text-slate-400 hover:text-white text-sm font-bold">↻ Refresh</button>
-      </header>
+      <AppHeader truckName="Admin" truckLogoUrl={null} subtitle="Platform admin">
+        <UserMenu
+          truckName={null}
+          operatorName={operatorName}
+          token=""
+          isAdmin={false}
+        />
+      </AppHeader>
 
       {/* Tab bar */}
-      <div className="bg-white border-b border-slate-200 px-6">
-        <div className="flex gap-2 py-3 max-w-6xl mx-auto">
-          {(['trucks', 'features'] as const).map(id => (
+      <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
+        <div className="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto">
+          {(['trucks', 'features'] as const).map(tab => (
             <button
-              key={id}
-              onClick={() => setAdminTab(id)}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${
-                adminTab === id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              key={tab}
+              onClick={() => setAdminTab(tab)}
+              className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${
+                adminTab === tab
+                  ? 'border-orange-500 text-white'
+                  : 'border-transparent text-slate-400 hover:text-white'
               }`}
             >
-              {id === 'trucks' ? '🚛 Trucks' : '📋 Features'}
+              <span>{tab === 'trucks' ? '🚚' : '📋'}</span>{tab === 'trucks' ? 'Trucks' : 'Features'}
             </button>
           ))}
         </div>
@@ -300,36 +305,81 @@ export default function AdminPage() {
 
         {/* Features tab */}
         {adminTab === 'features' && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-4 overflow-x-auto">
-            <p className="font-black text-slate-900 mb-3">Plan features</p>
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
             <table className="text-xs w-full">
               <thead>
-                <tr className="text-left">
-                  <th className="pr-4 pb-2 text-slate-500 font-bold">Feature</th>
+                <tr className="text-left border-b border-slate-100">
+                  <th className="px-4 py-3 text-slate-500 font-bold">Feature</th>
                   {PLAN_ORDER.map(p => (
-                    <th key={p} className="px-3 pb-2 text-slate-500 font-bold">
-                      {PLAN_META[p].name}
-                      <span className="block text-[10px] font-normal text-slate-400">{PLAN_PRICES[p]}</span>
+                    <th key={p} className="px-3 py-3 text-slate-500 font-bold text-center">
+                      <span className="block">{PLAN_META[p].name}</span>
+                      <span className="block text-[10px] font-normal text-slate-400">
+                        {p === 'tester' ? 'Lifetime discount' : PLAN_PRICES[p]}
+                      </span>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {(Array.from(PLAN_FEATURES.max) as Feature[]).map(feature => (
-                  <tr key={feature} className="border-t border-slate-50">
-                    <td className="pr-4 py-1.5 text-slate-700 font-medium">{feature}</td>
-                    {PLAN_ORDER.map(p => (
-                      <td key={p} className="px-3 py-1.5 text-center">
-                        {PLAN_FEATURES[p].has(feature)
-                          ? <span className="text-green-500 font-black">✓</span>
-                          : <span className="text-slate-200">—</span>
-                        }
+                {/* Transaction fees */}
+                <tr className="bg-slate-50">
+                  <td colSpan={PLAN_ORDER.length + 1} className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wide border-t border-slate-100">
+                    Transaction fees
+                  </td>
+                </tr>
+                <tr className="border-t border-slate-100">
+                  <td className="px-4 py-2 text-slate-700">Walk-up orders</td>
+                  {PLAN_ORDER.map(p => (
+                    <td key={p} className="px-3 py-2 text-center text-slate-600 font-medium">0%</td>
+                  ))}
+                </tr>
+                <tr className="border-t border-slate-100">
+                  <td className="px-4 py-2 text-slate-700">Online orders</td>
+                  {PLAN_ORDER.map(p => (
+                    <td key={p} className="px-3 py-2 text-center text-slate-600 font-medium">
+                      {(p === 'starter' || p === 'trial' || p === 'tester') ? 'Pay at Hatch' : '0.99% + card fee'}
+                    </td>
+                  ))}
+                </tr>
+                {/* Feature sections from FEATURE_SECTIONS */}
+                {FEATURE_SECTIONS.flatMap(section => [
+                  <tr key={`section-${section.title}`} className="bg-slate-50">
+                    <td colSpan={PLAN_ORDER.length + 1} className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wide border-t border-slate-100">
+                      {section.title}
+                    </td>
+                  </tr>,
+                  ...section.rows.map(row => (
+                    <tr key={`row-${row.name}`} className="border-t border-slate-100">
+                      <td className="px-4 py-2 text-slate-700">
+                        {row.name}
+                        {row.footnote && <sup className="text-slate-400 ml-0.5">{row.footnote}</sup>}
                       </td>
-                    ))}
-                  </tr>
-                ))}
+                      {PLAN_ORDER.map(p => {
+                        const isPayAtHatch = row.name === 'Online ordering — Pay at Hatch'
+                        const val = p === 'starter' ? row.starter
+                          : (p === 'trial' || p === 'tester') && isPayAtHatch ? true
+                          : p === 'pro' ? row.pro
+                          : row.max
+                        return (
+                          <td key={p} className="px-3 py-2 text-center">
+                            {val === true && <span className="text-green-500 font-black">✓</span>}
+                            {val === false && <span className="text-slate-200">—</span>}
+                            {val === 'coming_soon' && <span className="text-[10px] text-slate-400 italic">Coming soon</span>}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  )),
+                ])}
               </tbody>
             </table>
+            <div className="px-4 py-4 border-t border-slate-100 flex flex-col gap-1.5">
+              {FOOTNOTES.map(f => (
+                <p key={f.number} className="text-xs text-slate-500">
+                  <sup>{f.number}</sup> {f.text}
+                </p>
+              ))}
+            </div>
           </div>
         )}
 
@@ -412,76 +462,76 @@ export default function AdminPage() {
                 )
               })}
             </div>
+
+            {/* Discovery trucks */}
+            <div className="mt-8">
+              <button
+                onClick={() => setShowDiscovery(v => !v)}
+                className="flex items-center gap-2 font-black text-slate-700 text-lg mb-4 hover:text-slate-900"
+              >
+                {showDiscovery ? '▼' : '▶'} Discovery trucks ({discoveryTrucks.length})
+              </button>
+              {showDiscovery && (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Filter by name…"
+                    value={discoveryFilter}
+                    onChange={e => setDiscoveryFilter(e.target.value)}
+                    className="mb-3 w-full max-w-sm border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                  <div className="space-y-2">
+                    {discoveryTrucks
+                      .filter(t => !discoveryFilter || t.name.toLowerCase().includes(discoveryFilter.toLowerCase()))
+                      .map(truck => (
+                        <div key={truck.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-slate-900 text-sm truncate">{truck.name}</p>
+                            {truck.hatchgrab_truck_id ? (
+                              <p className="text-[10px] text-teal-600 font-bold mt-0.5">
+                                → {trucks.find(t => t.id === truck.hatchgrab_truck_id)?.name || truck.hatchgrab_truck_id}
+                              </p>
+                            ) : (
+                              <p className="text-[10px] text-slate-400 mt-0.5">Not linked</p>
+                            )}
+                            {(truck.exclude_reason || '').toLowerCase().includes('y') && (
+                              <p className="text-[10px] text-red-500 font-bold mt-0.5">Excluded</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <select
+                              value={truck.hatchgrab_truck_id || ''}
+                              onChange={e => linkDiscoveryTruck(truck.id, e.target.value || null)}
+                              disabled={saving === truck.id}
+                              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 max-w-[140px]"
+                            >
+                              <option value="">— Link HG truck —</option>
+                              {trucks.map(t => (
+                                <option key={t.id} value={t.id}>{t.name}</option>
+                              ))}
+                            </select>
+                            <select
+                              value={truck.visibility || 'public'}
+                              onChange={e => updateDiscovery(truck.id, e.target.value)}
+                              disabled={saving === truck.id}
+                              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            >
+                              <option value="public">Public (VF + HG)</option>
+                              <option value="hg_only">HG only</option>
+                              <option value="hidden">Hidden</option>
+                            </select>
+                            {saving === truck.id && (
+                              <span className="text-xs text-slate-400 animate-pulse">Saving…</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         )}
-
-        {/* Discovery trucks — always visible below tab content */}
-        <div className="mt-8">
-          <button
-            onClick={() => setShowDiscovery(v => !v)}
-            className="flex items-center gap-2 font-black text-slate-700 text-lg mb-4 hover:text-slate-900"
-          >
-            {showDiscovery ? '▼' : '▶'} Discovery trucks ({discoveryTrucks.length})
-          </button>
-          {showDiscovery && (
-            <>
-              <input
-                type="text"
-                placeholder="Filter by name…"
-                value={discoveryFilter}
-                onChange={e => setDiscoveryFilter(e.target.value)}
-                className="mb-3 w-full max-w-sm border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-              />
-              <div className="space-y-2">
-                {discoveryTrucks
-                  .filter(t => !discoveryFilter || t.name.toLowerCase().includes(discoveryFilter.toLowerCase()))
-                  .map(truck => (
-                    <div key={truck.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-slate-900 text-sm truncate">{truck.name}</p>
-                        {truck.hatchgrab_truck_id ? (
-                          <p className="text-[10px] text-teal-600 font-bold mt-0.5">
-                            → {trucks.find(t => t.id === truck.hatchgrab_truck_id)?.name || truck.hatchgrab_truck_id}
-                          </p>
-                        ) : (
-                          <p className="text-[10px] text-slate-400 mt-0.5">Not linked</p>
-                        )}
-                        {(truck.exclude_reason || '').toLowerCase().includes('y') && (
-                          <p className="text-[10px] text-red-500 font-bold mt-0.5">Excluded</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <select
-                          value={truck.hatchgrab_truck_id || ''}
-                          onChange={e => linkDiscoveryTruck(truck.id, e.target.value || null)}
-                          disabled={saving === truck.id}
-                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 max-w-[140px]"
-                        >
-                          <option value="">— Link HG truck —</option>
-                          {trucks.map(t => (
-                            <option key={t.id} value={t.id}>{t.name}</option>
-                          ))}
-                        </select>
-                        <select
-                          value={truck.visibility || 'public'}
-                          onChange={e => updateDiscovery(truck.id, e.target.value)}
-                          disabled={saving === truck.id}
-                          className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-                        >
-                          <option value="public">Public (VF + HG)</option>
-                          <option value="hg_only">HG only</option>
-                          <option value="hidden">Hidden</option>
-                        </select>
-                        {saving === truck.id && (
-                          <span className="text-xs text-slate-400 animate-pulse">Saving…</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </>
-          )}
-        </div>
 
       </div>
 

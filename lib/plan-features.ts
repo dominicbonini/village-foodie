@@ -78,10 +78,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Customer time slot selection',                 starter: false, pro: true,           max: true           },
       { name: 'Smart Slot Management',                        starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    starter: false, pro: true,           max: true           },
-      { name: 'Facebook, Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: true, max: true },
-      { name: 'Personalised schedule generator',              starter: false, pro: 'coming_soon',  max: 'coming_soon'  },
+      { name: 'Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: true, max: true },
       { name: 'Branded QR code', footnote: '6', starter: false, pro: true,  max: true  },
       { name: 'Advanced reporting', starter: false, pro: true, max: true },
+      { name: 'Personalised schedule generator',              starter: false, pro: 'coming_soon',  max: 'coming_soon'  },
     ],
   },
   {

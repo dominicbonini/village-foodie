@@ -12,8 +12,6 @@ function checkAuth(secret: string) {
 
 export async function GET(req: NextRequest) {
   const secret = req.nextUrl.searchParams.get('secret') || ''
-  if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
-
   const section = req.nextUrl.searchParams.get('section')
 
   if (section === 'check_admin') {
@@ -28,6 +26,8 @@ export async function GET(req: NextRequest) {
     if (!operator?.is_admin) return NextResponse.json({ isAdmin: false })
     return NextResponse.json({ isAdmin: true, secret: process.env.ADMIN_SECRET })
   }
+
+  if (!checkAuth(secret)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   if (section === 'discovery') {
     const { data: discoveryTrucks } = await supabase
