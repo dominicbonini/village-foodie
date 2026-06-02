@@ -69,6 +69,7 @@ export async function GET(
       .from('menu_items_db')
       .select('*, default_stock, menu_categories!category_id(name)')
       .eq('truck_id', truck.id)
+      .eq('is_active', true)
       .order('name'),
 
     supabase
