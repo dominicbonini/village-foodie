@@ -378,6 +378,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     setEventOfflineOverride(value)
     await supabaseBrowser.from('truck_events').update({offline_protection_override:value}).eq('id',activeEvent.id)
+    if(!value) showToast('Offline protection disabled for this event. To disable for all events, go to Settings in the Manage page.')
   }
 
   const saveKitchenCapacity=async(value:number|null)=>{
@@ -754,8 +755,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       </div>
 
-      {/* Event bar — Orders and Add Order tabs only */}
-      {(activeTab==='orders'||activeTab==='add')&&(
+      {/* Event bar — Orders, Add Order, and Menu & Stock tabs */}
+      {(activeTab==='orders'||activeTab==='add'||activeTab==='stock')&&(
         <div className="bg-slate-800 border-b border-slate-700 sticky top-[95px] z-30 relative">
           <div className="max-w-5xl mx-auto px-4 py-2 flex items-center gap-2">
             {activeEvent?(
@@ -1146,7 +1147,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-black text-slate-900 text-sm">Auto-accept orders</p>
+                  <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
                   <p className="text-slate-500 text-xs mt-0.5">Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
@@ -1164,8 +1165,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                  <p className="text-sm text-slate-500">Max cooked items per 5-minute window. Drinks and instant items excluded.</p>
-                  <p className="text-xs text-amber-600 font-medium mt-1">⚠️ This is a global van setting — affects all events for this van.</p>
+                  <p className="text-sm text-slate-500">Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit.</p>
                 </div>
                 <select
                   value={kitchenCapacity??''}
@@ -1182,11 +1182,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Offline protection</p>
-                  {effectiveOfflineProtection?(
-                    <p className="text-xs text-slate-500 mt-0.5">Pauses online orders if this device goes offline.</p>
-                  ):(
-                    <p className="text-xs text-amber-600 font-medium mt-0.5">⚠️ Disabled for this event only. To disable for all events, go to Settings in the Manage page.</p>
-                  )}
+                  <p className="text-xs text-slate-500 mt-0.5">Pauses online orders if this device goes offline.</p>
                   <p className="text-xs text-slate-400 mt-0.5">
                     {eventOfflineOverride!==null
                       ?'Using event override — van default is '+(vanAutoPause?'on':'off')
@@ -1211,7 +1207,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <p className="text-xs font-bold text-slate-800 uppercase tracking-wide mb-1">Stock & availability</p>
+              <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Stock & availability</p>
               <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
               {truckMenu?(
                 <div className="space-y-5">
@@ -1224,10 +1220,58 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     const catObj=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())
                     return(
                       <div key={cat}>
-                        <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
-                          <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                        {/* Mobile: two lines. Desktop: one line via hidden sm:flex */}
+                        <div className="mb-2 pb-2 border-b border-slate-100">
+                          {/* Line 1 (mobile) / full row (desktop) */}
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                            {/* Prep + Batch: hidden on mobile, shown on sm+ */}
+                            {catObj&&(
+                              <div className="hidden sm:flex items-center gap-2 text-sm">
+                                <div className="flex items-center gap-1">
+                                  <span className="text-slate-500 text-sm">Prep</span>
+                                  <input type="number" min={0} placeholder="0"
+                                    value={Math.floor((catObj.prep_secs??0)/60)}
+                                    onChange={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:v*60+secs30}:c)}:prev)}}
+                                    onBlur={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;updateCategoryField(catObj.id??'','prep_secs',v*60+secs30)}}
+                                    className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                                  <span className="text-slate-500 text-sm">m</span>
+                                  <select
+                                    value={(catObj.prep_secs??0)%60>=30?30:0}
+                                    onChange={e=>{const mins=Math.floor((catObj.prep_secs??0)/60);const s30=parseInt(e.target.value);setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:mins*60+s30}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',mins*60+s30)}}
+                                    className="border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                    <option value={0}>0s</option>
+                                    <option value={30}>30s</option>
+                                  </select>
+                                </div>
+                                <div className="flex flex-col items-center gap-0.5">
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-slate-500 text-sm">Batch</span>
+                                    <input type="number" min={1} placeholder="∞"
+                                      value={(!catObj.batch_size||catObj.batch_size===0)?'':catObj.batch_size}
+                                      onChange={e=>{const v=e.target.value===''||e.target.value==='0'?undefined:parseInt(e.target.value)||undefined;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
+                                      onBlur={e=>{const val=e.target.value===''||e.target.value==='0'?null:parseInt(e.target.value);updateCategoryField(catObj.id??'','batch_size',val)}}
+                                      className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                              {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
+                              {catOrdered>0&&<span className="text-xs text-slate-600">{catOrdered} sold</span>}
+                              <div className="flex flex-col items-center gap-0.5">
+                                <input type="number" min="0" placeholder="∞" value={catCount??''}
+                                  onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
+                                  className={`w-16 border rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
+                                  title={isCatDefault?'Default stock — save to override':'Category stock'}/>
+                                {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
+                              </div>
+                              <span className="text-slate-600 font-medium text-xs">total</span>
+                            </div>
+                          </div>
+                          {/* Line 2: Prep + Batch — mobile only */}
                           {catObj&&(
-                            <div className="flex items-center gap-2 text-sm">
+                            <div className="flex sm:hidden items-center gap-3 mt-1.5 text-sm">
                               <div className="flex items-center gap-1">
                                 <span className="text-slate-500 text-sm">Prep</span>
                                 <input type="number" min={0} placeholder="0"
@@ -1248,27 +1292,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                 <div className="flex items-center gap-1">
                                   <span className="text-slate-500 text-sm">Batch</span>
                                   <input type="number" min={1} placeholder="∞"
-                                    value={catObj.batch_size??''}
-                                    onChange={e=>{const v=e.target.value===''?undefined:parseInt(e.target.value)||1;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
-                                    onBlur={e=>{const v=e.target.value===''?null:parseInt(e.target.value)||1;updateCategoryField(catObj.id??'','batch_size',v as number)}}
+                                    value={(!catObj.batch_size||catObj.batch_size===0)?'':catObj.batch_size}
+                                    onChange={e=>{const v=e.target.value===''||e.target.value==='0'?undefined:parseInt(e.target.value)||undefined;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
+                                    onBlur={e=>{const val=e.target.value===''||e.target.value==='0'?null:parseInt(e.target.value);updateCategoryField(catObj.id??'','batch_size',val)}}
                                     className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                                 </div>
-                                {catObj.batch_size===null&&<span className="text-xs text-slate-400">no limit</span>}
                               </div>
                             </div>
                           )}
-                          <div className="flex items-center gap-2">
-                            {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
-                            {catOrdered>0&&<span className="text-xs text-slate-600">{catOrdered} sold</span>}
-                            <div className="flex flex-col items-center gap-0.5">
-                              <input type="number" min="0" placeholder="∞" value={catCount??''}
-                                onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
-                                className={`w-16 border rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
-                                title={isCatDefault?'Default stock — save to override':'Category stock'}/>
-                              {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
-                            </div>
-                            <span className="text-slate-600 font-medium text-xs">total</span>
-                          </div>
                         </div>
 
                         <div className="space-y-1.5 ml-2">

@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
     { data: codes },
     { data: events },
   ] = await Promise.all([
-    supabase.from('menu_categories').select('*').eq('truck_id', truck.id).order('sort_order'),
+    supabase.from('menu_categories').select('*').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
     supabase.from('menu_items_db').select('*').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
     supabase.from('modifier_groups').select('*').eq('truck_id', truck.id),
     supabase.from('modifier_options').select('*').in('group_id',

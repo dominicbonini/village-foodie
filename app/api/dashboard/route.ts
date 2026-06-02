@@ -168,6 +168,7 @@ export async function GET(req: NextRequest) {
       .from('menu_categories')
       .select('id, name, prep_secs, batch_size, sort_order')
       .eq('truck_id', truck.id)
+      .eq('is_active', true)
       .order('sort_order', { ascending: true }),
     supabase
       .from('menu_items_db')

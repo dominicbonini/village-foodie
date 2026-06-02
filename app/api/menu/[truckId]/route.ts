@@ -61,6 +61,7 @@ export async function GET(
       .from('menu_categories')
       .select('*')
       .eq('truck_id', truck.id)
+      .eq('is_active', true)
       .order('sort_order', { ascending: true })
       .order('name'),
 

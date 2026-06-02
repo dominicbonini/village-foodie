@@ -2967,17 +2967,27 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                   <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
                 </div>
                 <div className="sm:col-span-2">
-                  <Input label="Date" required type="date" value={editingEvent.event_date}
-                    onChange={v => { setEditingEvent(p => ({...p!, event_date: v})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
-                    error={formErrors.event_date} />
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Date<span className="text-red-400 ml-0.5">*</span></label>
+                  <input type="date" value={editingEvent.event_date}
+                    onChange={e => { setEditingEvent(p => ({...p!, event_date: e.target.value})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
+                    className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
+                  {formErrors.event_date && <p className="text-xs text-red-500 mt-1">{formErrors.event_date}</p>}
                 </div>
-                <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Input label="Start time" required type="time" value={editingEvent.start_time}
-                    onChange={v => { setEditingEvent(p => ({...p!, start_time: v})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
-                    error={formErrors.start_time} />
-                  <Input label="End time" required type="time" value={editingEvent.end_time}
-                    onChange={v => { setEditingEvent(p => ({...p!, end_time: v})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
-                    error={formErrors.end_time} />
+                <div className="sm:col-span-2 grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
+                    <input type="time" step="300" value={editingEvent.start_time}
+                      onChange={e => { setEditingEvent(p => ({...p!, start_time: e.target.value})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
+                    {formErrors.start_time && <p className="text-xs text-red-500 mt-1">{formErrors.start_time}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-600 mb-1">End time<span className="text-red-400 ml-0.5">*</span></label>
+                    <input type="time" step="300" value={editingEvent.end_time}
+                      onChange={e => { setEditingEvent(p => ({...p!, end_time: e.target.value})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
+                    {formErrors.end_time && <p className="text-xs text-red-500 mt-1">{formErrors.end_time}</p>}
+                  </div>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
@@ -3465,7 +3475,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
       {/* Logo */}
       <Card className="p-4">
-        <p className="font-bold text-slate-900 mb-3">Logo</p>
+        <p className="text-base font-bold text-slate-800 mb-3">Logo</p>
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
             {form.logo_storage_path
@@ -3485,7 +3495,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
       {/* Truck details */}
       <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Truck details</p>
+        <p className="text-base font-bold text-slate-800">Truck details</p>
         <Input label="Truck name" required value={form.name} onChange={v => setForm(p => ({...p, name: v}))} onBlur={() => saveFormField()} />
         <div>
           <label className="block text-xs font-bold text-slate-600 mb-1">Description</label>
@@ -3513,7 +3523,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       {/* Business contact */}
       <Card className="p-4 space-y-3">
         <div>
-          <p className="font-bold text-slate-900">Business contact</p>
+          <p className="text-base font-bold text-slate-800">Business contact</p>
           <p className="text-xs text-slate-400 mt-0.5">Shown to customers on order confirmations. For your personal account details, go to Team → My profile.</p>
         </div>
         <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" />
@@ -3522,7 +3532,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
       {/* Online presence & social */}
       <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Online presence &amp; social</p>
+        <p className="text-base font-bold text-slate-800">Online presence &amp; social</p>
 
         {/* Website */}
         <div className="flex items-center gap-3">
@@ -3641,7 +3651,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
       {/* QR Code */}
       <Card className="p-4">
-        <p className="font-bold text-slate-900 mb-1">Order QR code</p>
+        <p className="text-base font-bold text-slate-800 mb-1">Order QR code</p>
         <p className="text-xs text-slate-500 mb-4">
           Print or display this code so customers can scan and pre-order.
           Place it at your hatch, on your van, or share it online.
@@ -3770,17 +3780,22 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
       {/* Orders */}
       <Card className="p-4 space-y-3">
-        <p className="font-bold text-slate-900">Order settings</p>
+        <p className="text-base font-bold text-slate-800">Order settings</p>
         <div className="flex items-center justify-between py-1">
           <div>
-            <p className="text-sm font-bold text-slate-700">Auto-accept orders</p>
+            <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
             <p className="text-xs text-slate-400">Incoming web orders are confirmed immediately</p>
           </div>
-          <Toggle on={!!form.auto_accept} onToggle={() => {
-            const next = !form.auto_accept
-            setForm(p => ({...p, auto_accept: next}))
-            saveFormField({ auto_accept: next })
-          }} />
+          <button
+            onClick={() => {
+              const next = !form.auto_accept
+              setForm(p => ({...p, auto_accept: next}))
+              saveFormField({ auto_accept: next })
+            }}
+            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${form.auto_accept ? 'bg-teal-500' : 'bg-slate-300'}`}
+          >
+            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${form.auto_accept ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
         </div>
         {form.auto_accept && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
@@ -3790,7 +3805,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
         <div className="flex items-center justify-between py-3 border-t border-slate-100">
           <div>
-            <p className="text-sm font-medium text-slate-800">Open for orders automatically</p>
+            <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
             <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
           </div>
           <button
@@ -3811,7 +3826,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
 
         <div className="flex items-center justify-between py-3 border-t border-slate-100">
           <div>
-            <p className="text-sm font-medium text-slate-800">Close for orders automatically</p>
+            <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
             <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
           </div>
           <button
@@ -3834,7 +3849,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       {/* Customer contact */}
       <Card className="p-4 space-y-3">
         <div>
-          <p className="font-bold text-slate-900">Customer contact</p>
+          <p className="text-base font-bold text-slate-800">Customer contact</p>
           <p className="text-xs text-slate-500 mt-0.5">
             How customers should contact you about their order. This appears on their confirmation email.
           </p>
@@ -3916,7 +3931,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Your trucks</p>
+            <p className="text-base font-bold text-slate-800">Your trucks</p>
             <p className="text-xs text-slate-500 mt-0.5">
               Manage your trucks. Each has its own order screen and settings.
             </p>
@@ -3962,7 +3977,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   <p className={`text-sm font-semibold ${
-                    van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-600'
+                    van.auto_pause_on_offline ? 'text-teal-800' : 'text-slate-800'
                   }`}>
                     Offline order protection
                   </p>
@@ -4004,12 +4019,12 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
             </div>
             {/* Van-specific display settings */}
             <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-3">
-              <p className="text-xs text-slate-400 mt-3 mb-2">Display settings</p>
+              <p className="text-sm font-semibold text-slate-800 mt-3 mb-2">Display settings</p>
 
               {/* Show cooking step */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm text-slate-800">Show cooking step</p>
+                  <p className="text-sm font-semibold text-slate-800">Show cooking step</p>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Adds a "Cooking" step between confirmed and done.
                     Useful when your cook and window person use separate screens.
@@ -4030,7 +4045,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               {/* Kitchen capacity */}
               <div className="flex items-center justify-between gap-3 mt-3">
                 <div>
-                  <p className="text-slate-800">Kitchen capacity</p>
+                  <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
                   <p className="text-xs text-slate-500 mt-0.5">
                     Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit.
                   </p>
