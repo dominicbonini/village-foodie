@@ -78,6 +78,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
+  const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
+  const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
+  const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
   const[undoPrep,setUndoPrep]=useState<{name:string;qty:number}|null>(null)
@@ -242,6 +245,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .sort((a,b)=>new Date(`${a.event_date}T${a.start_time}`).getTime()-new Date(`${b.event_date}T${b.start_time}`).getTime())[0]
     if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}
   },[upcomingEvents,selectedEventId])
+  useEffect(()=>{
+    const event=selectedEventId?upcomingEvents.find(e=>e.id===selectedEventId)??null:null
+    if(!event?.van_id){setVanAutoPause(false);setEventOfflineOverride(null);setKitchenCapacity(null);return}
+    supabaseBrowser.from('truck_vans').select('auto_pause_on_offline, kitchen_capacity').eq('id',event.van_id).single()
+      .then(({data})=>{if(data){setVanAutoPause(data.auto_pause_on_offline??false);setKitchenCapacity(data.kitchen_capacity??null)}})
+    supabaseBrowser.from('truck_events').select('offline_protection_override').eq('id',event.id).single()
+      .then(({data})=>{setEventOfflineOverride(data?.offline_protection_override??null)})
+  },[selectedEventId,upcomingEvents])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
   useEffect(()=>{
     fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name);if(d.is_admin)setIsAdmin(true)}).catch(()=>null)
@@ -363,6 +374,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingAutoAccept(false)}
   }
 
+  const toggleOfflineProtection=async(value:boolean)=>{
+    if(!activeEvent)return
+    setEventOfflineOverride(value)
+    await supabaseBrowser.from('truck_events').update({offline_protection_override:value}).eq('id',activeEvent.id)
+  }
+
+  const saveKitchenCapacity=async(value:number|null)=>{
+    if(!activeEvent?.van_id)return
+    setKitchenCapacity(value)
+    await supabaseBrowser.from('truck_vans').update({kitchen_capacity:value}).eq('id',activeEvent.van_id)
+  }
+
   const applyKeepScreenOn=async(value:boolean)=>{
     setKeepScreenOn(value)
     if(value){await keepAwake()}else{await allowSleep()}
@@ -423,6 +446,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       showToast('Category saved')
     }catch{showToast('Failed to save category','error')}
     finally{setSavingCat(false)}
+  }
+
+  const updateCategoryField=async(catId:string,field:'prep_secs'|'batch_size',value:number|null)=>{
+    if(!truck)return
+    const catData=truckMenu?.categories?.find(c=>c.id===catId)
+    if(!catData)return
+    const key=catData.name.toLowerCase()
+    const allowNotes=categoryAllowNotes[key]??false
+    const prepSecs=field==='prep_secs'?(value??0):(catData.prep_secs??0)
+    const batchSize=field==='batch_size'?value:(catData.batch_size??null)
+    try{
+      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'update_category',categoryId:catId,
+          name:catData.name,prep_secs:prepSecs,batch_size:batchSize,allow_notes:allowNotes})})
+      setCategoryConfigs(prev=>({...prev,[key]:{secs:prepSecs,batch:batchSize??1}}))
+    }catch{}
   }
 
   const doAction=async(action:string,orderId:string)=>{
@@ -603,7 +642,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
         <div className="text-4xl mb-4">🔒</div>
         <h2 className="text-white font-black text-xl mb-2">Enter PIN</h2>
-        <p className="text-slate-400 text-sm mb-6">4-digit dashboard PIN</p>
+        <p className="text-slate-500 text-sm mb-6">4-digit dashboard PIN</p>
         <input type="number" maxLength={4} value={pinInput} onChange={e=>setPinInput(e.target.value.slice(0,4))} onKeyDown={e=>e.key==='Enter'&&submitPin()} placeholder="• • • •" className="w-full text-center text-2xl font-black tracking-widest bg-slate-700 text-white rounded-xl px-4 py-3 mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600"/>
         {pinError&&<p className="text-red-400 text-sm mb-3">{pinError}</p>}
         <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700">Unlock</button>
@@ -618,6 +657,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       ??todayEvents[0]
       ??null)
   const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
+  const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
   // Sort by collection time (soonest first), then by order ID (oldest first)
   // Orders without slot get high sort value so they appear after timed orders
@@ -659,7 +699,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
         {/* Screen toggle — desktop only; mobile handled via UserMenu */}
         <button onClick={toggleKeepScreenOn} className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-400 select-none">
+          <span className="text-xs font-medium text-slate-500 select-none">
             {keepScreenOn ? 'Screen on' : 'Screen off'}
           </span>
           <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
@@ -688,19 +728,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* Nav tabs row */}
         <div className="px-4">
           <div className="max-w-5xl mx-auto flex items-center">
-            {([['orders',`Orders${orders.filter(o=>['pending','confirmed'].includes(o.status)).length>0?` (${orders.filter(o=>['pending','confirmed'].includes(o.status)).length})`:''}`],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
+            {([['orders',(()=>{const c=activeEvent?orders.filter(o=>['pending','confirmed'].includes(o.status)).length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
             {/* Utility actions — desktop only */}
             <div className="ml-auto hidden sm:flex items-center">
-              <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
+              <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap">
                 {copiedOrderLink ? '✓ Copied' : 'Order link'}
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
               </button>
-              <button onClick={handleShowQR} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors whitespace-nowrap">
+              <button onClick={handleShowQR} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap">
                 QR code
               </button>
-              <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors whitespace-nowrap">
+              <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 hover:text-white transition-colors whitespace-nowrap">
                 Kitchen screen
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
               </button>
@@ -753,7 +793,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
           <div>
-            {/* Prep time banner */}
+            {!activeEvent?(
+              <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-500">⚠️</span>
+                  <p className="text-sm font-medium text-amber-800">No event selected — select an event to view orders</p>
+                </div>
+                <button onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
+                  className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
+                  Select event
+                </button>
+              </div>
+            ):(
+              <>
+              {/* Prep time banner */}
             {showPrepTimeBanner&&(
               <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
                 <span className="text-orange-500 text-lg flex-shrink-0">⚙️</span>
@@ -813,7 +866,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               if(!entries.length)return null
               return(
                 <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 mb-3 flex items-center gap-2 overflow-x-auto">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-wide shrink-0">To make</span>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-wide shrink-0">To make</span>
                   <div className="flex gap-1.5 flex-wrap">
                     {entries.map(([name,qty])=>(
                       <span key={name} className="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full whitespace-nowrap">{qty}× {name}</span>
@@ -1025,7 +1078,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <div className="flex items-center gap-2">
                           <span className="font-black text-slate-700 text-sm">#{o.id}</span>
                           <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${STATUS[o.status]?.bg||'bg-slate-100'} ${STATUS[o.status]?.text||'text-slate-500'}`}>{STATUS[o.status]?.label||o.status}</span>
-                          {o.slot&&<span className="text-xs text-slate-400">🕐 {o.slot}</span>}
+                          {o.slot&&<span className="text-xs text-slate-700">🕐 {o.slot}</span>}
                         </div>
                         <p className="text-slate-500 text-xs mt-0.5 truncate">{o.customer_name} · {o.items.map(i=>`${i.quantity}× ${i.name}`).join(', ')}</p>
                         {o.notes&&<p className="text-orange-500 text-xs truncate">📝 {o.notes}</p>}
@@ -1038,7 +1091,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       </div>
                     </div>
                   ))}
-                  {otherOrders.length>5&&<p className="text-xs text-slate-400 text-center pt-1">+{otherOrders.length-5} more</p>}
+                  {otherOrders.length>5&&<p className="text-xs text-slate-700 text-center pt-1">+{otherOrders.length-5} more</p>}
                 </div>
               </div>
             )}
@@ -1048,6 +1101,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <p className="text-slate-500 font-medium">{orders.length===0?'No orders yet today':'All orders complete!'}</p>
                 <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
               </div>
+            )}
+              </>
             )}
           </div>
         )}
@@ -1084,25 +1139,122 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {activeTab==='stock'&&(
           <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <p className="text-xs font-black text-slate-500 uppercase tracking-wide mb-1">Stock & availability</p>
-              <p className="text-slate-400 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-black text-slate-900 text-sm">Auto-accept orders</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity.</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)}/>
+                </div>
+              </div>
+              {autoAccept&&(
+                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
+                  ⚠ Orders will be confirmed immediately — review regularly to avoid over-commitment
+                </div>
+              )}
+            </div>
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+                  <p className="text-sm text-slate-500">Max cooked items per 5-minute window. Drinks and instant items excluded.</p>
+                  <p className="text-xs text-amber-600 font-medium mt-1">⚠️ This is a global van setting — affects all events for this van.</p>
+                </div>
+                <select
+                  value={kitchenCapacity??''}
+                  onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
+                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0">
+                  <option value="">No limit</option>
+                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Offline protection</p>
+                  {effectiveOfflineProtection?(
+                    <p className="text-xs text-slate-500 mt-0.5">Pauses online orders if this device goes offline.</p>
+                  ):(
+                    <p className="text-xs text-amber-600 font-medium mt-0.5">⚠️ Disabled for this event only. To disable for all events, go to Settings in the Manage page.</p>
+                  )}
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {eventOfflineOverride!==null
+                      ?'Using event override — van default is '+(vanAutoPause?'on':'off')
+                      :'Using van default setting'}
+                  </p>
+                  {eventOfflineOverride!==null&&(
+                    <button
+                      onClick={()=>{
+                        setEventOfflineOverride(null)
+                        supabaseBrowser.from('truck_events').update({offline_protection_override:null}).eq('id',activeEvent.id)
+                      }}
+                      className="text-xs text-slate-400 hover:text-slate-600 mt-1">
+                      Reset to van default
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={()=>toggleOfflineProtection(!effectiveOfflineProtection)}
+                  className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${effectiveOfflineProtection?'bg-teal-500':'bg-slate-300'}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${effectiveOfflineProtection?'translate-x-5':'translate-x-1'}`}/>
+                </button>
+              </div>
+            )}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <p className="text-xs font-bold text-slate-800 uppercase tracking-wide mb-1">Stock & availability</p>
+              <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
               {truckMenu?(
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
                     const catStock=categoryStocks.find(s=>s.category===cat)
                     const catDefStock=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())?.default_stock??null
-                    const catCount=catStock?.stock_count??catDefStock??null; const catOrdered=catStock?.orders_count??0
+                    const catCount=catStock?.stock_count??catDefStock??null; const catOrdered=activeEvent?(catStock?.orders_count??0):0
                     const isCatDefault=catStock?.stock_count==null&&catDefStock!=null
                     const catRem=catCount!==null?catCount-catOrdered:null
                     const catObj=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())
-                    const isEditingThis=editingCatId===catObj?.id&&editCatForm!==null
                     return(
                       <div key={cat}>
                         <div className="flex items-center gap-2 mb-2 pb-2 border-b border-slate-100">
                           <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                          {catObj&&(
+                            <div className="flex items-center gap-2 text-sm">
+                              <div className="flex items-center gap-1">
+                                <span className="text-slate-500 text-sm">Prep</span>
+                                <input type="number" min={0} placeholder="0"
+                                  value={Math.floor((catObj.prep_secs??0)/60)}
+                                  onChange={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:v*60+secs30}:c)}:prev)}}
+                                  onBlur={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;updateCategoryField(catObj.id??'','prep_secs',v*60+secs30)}}
+                                  className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                                <span className="text-slate-500 text-sm">m</span>
+                                <select
+                                  value={(catObj.prep_secs??0)%60>=30?30:0}
+                                  onChange={e=>{const mins=Math.floor((catObj.prep_secs??0)/60);const s30=parseInt(e.target.value);setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:mins*60+s30}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',mins*60+s30)}}
+                                  className="border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                  <option value={0}>0s</option>
+                                  <option value={30}>30s</option>
+                                </select>
+                              </div>
+                              <div className="flex flex-col items-center gap-0.5">
+                                <div className="flex items-center gap-1">
+                                  <span className="text-slate-500 text-sm">Batch</span>
+                                  <input type="number" min={1} placeholder="∞"
+                                    value={catObj.batch_size??''}
+                                    onChange={e=>{const v=e.target.value===''?null:parseInt(e.target.value)||1;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
+                                    onBlur={e=>{const v=e.target.value===''?null:parseInt(e.target.value)||1;updateCategoryField(catObj.id??'','batch_size',v as number)}}
+                                    className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                                </div>
+                                {catObj.batch_size===null&&<span className="text-xs text-slate-400">no limit</span>}
+                              </div>
+                            </div>
+                          )}
                           <div className="flex items-center gap-2">
-                            {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-400'}`}>{catRem} left</span>}
-                            {catOrdered>0&&<span className="text-xs text-slate-400">{catOrdered} sold</span>}
+                            {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
+                            {catOrdered>0&&<span className="text-xs text-slate-600">{catOrdered} sold</span>}
                             <div className="flex flex-col items-center gap-0.5">
                               <input type="number" min="0" placeholder="∞" value={catCount??''}
                                 onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
@@ -1110,72 +1262,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                 title={isCatDefault?'Default stock — save to override':'Category stock'}/>
                               {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
                             </div>
-                            <span className="text-slate-400 text-xs">total</span>
-                            {catObj&&(
-                              <button onClick={()=>isEditingThis?(setEditingCatId(null),setEditCatForm(null)):openCatEdit(catObj.id??'',cat)}
-                                className={`text-[10px] font-bold px-2 py-1 rounded-md border transition-colors ${isEditingThis?'border-orange-400 text-orange-600 bg-orange-50':'border-slate-200 text-slate-400 hover:text-orange-600 hover:border-orange-300'}`}>
-                                {isEditingThis?'✕':'Edit'}
-                              </button>
-                            )}
+                            <span className="text-slate-600 font-medium text-xs">total</span>
                           </div>
                         </div>
-
-                        {/* Inline category edit accordion */}
-                        {isEditingThis&&editCatForm&&(
-                          <div className="mb-3 bg-orange-50 border border-orange-200 rounded-xl p-3 space-y-3">
-                            {/* Row 1: Name */}
-                            <div>
-                              <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide block mb-1">Category name</label>
-                              <input type="text" value={editCatForm.name}
-                                onChange={e=>setEditCatForm(prev=>prev?{...prev,name:e.target.value}:prev)}
-                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"/>
-                            </div>
-                            {/* Row 2: Prep time + Batch */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide block mb-1">Prep time</label>
-                                <div className="flex gap-1.5">
-                                  <select value={editCatForm.prepMins}
-                                    onChange={e=>setEditCatForm(prev=>prev?{...prev,prepMins:parseInt(e.target.value)}:prev)}
-                                    className="flex-1 border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                                    {[0,1,2,3,4,5,6,7,8,9,10,12,15,20].map(m=><option key={m} value={m}>{m}m</option>)}
-                                  </select>
-                                  <select value={editCatForm.prepSecs30}
-                                    onChange={e=>setEditCatForm(prev=>prev?{...prev,prepSecs30:parseInt(e.target.value)}:prev)}
-                                    className="w-14 border border-slate-200 rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                                    <option value={0}>0s</option>
-                                    <option value={30}>30s</option>
-                                  </select>
-                                </div>
-                              </div>
-                              <div>
-                                <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide block mb-1">Batch size</label>
-                                <input type="number" min="1" max="20" value={editCatForm.batch}
-                                  onChange={e=>setEditCatForm(prev=>prev?{...prev,batch:parseInt(e.target.value)||1}:prev)}
-                                  className="w-full border border-orange-200 rounded-lg px-3 py-2 text-xs font-bold text-center focus:outline-none focus:ring-2 focus:ring-orange-400 bg-orange-50"/>
-                              </div>
-                            </div>
-                            {/* Row 3: Allow notes */}
-                            <div className="flex items-center justify-between py-0.5">
-                              <div>
-                                <p className="text-xs font-bold text-slate-700">Allow custom notes</p>
-                                <p className="text-[10px] text-slate-400">Customers can add special instructions for this category</p>
-                              </div>
-                              <Toggle on={editCatForm.allowNotes} onToggle={()=>setEditCatForm(prev=>prev?{...prev,allowNotes:!prev.allowNotes}:prev)}/>
-                            </div>
-                            {/* Row 4: Actions */}
-                            <div className="flex gap-2 pt-0.5">
-                              <button onClick={()=>{setEditingCatId(null);setEditCatForm(null)}}
-                                className="flex-1 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50">
-                                Cancel
-                              </button>
-                              <button onClick={saveCatEdit} disabled={savingCat||!editCatForm.name.trim()}
-                                className="flex-1 py-2 text-sm font-bold text-white bg-orange-600 rounded-xl hover:bg-orange-700 disabled:opacity-40">
-                                {savingCat?'Saving…':'Save'}
-                              </button>
-                            </div>
-                          </div>
-                        )}
 
                         <div className="space-y-1.5 ml-2">
                           {items.map(item=>{
@@ -1184,7 +1273,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             const isAvailable = stock ? (stock.available ?? true) : (item.available ?? true)
                             // stock_count: explicit override wins; then fall back to item's default_stock as starting value
                             const itemCount=stock?.stock_count ?? item.default_stock ?? null
-                            const itemOrdered=stock?.orders_count??0
+                            const itemOrdered=activeEvent?(stock?.orders_count??0):0
                             const itemRem=itemCount!==null?itemCount-itemOrdered:null
                             const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
                             const isDefault=stock?.stock_count==null&&item.default_stock!=null
@@ -1192,11 +1281,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                               <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}</p>
+                                    <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}<span className="text-slate-600 font-normal ml-1.5">£{item.price.toFixed(2)}</span></p>
                                     {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
                                     {isAvailable&&effectiveRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${effectiveRem<=3?'text-red-600 bg-red-100':effectiveRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{effectiveRem} left</span>}
                                   </div>
-                                  {itemOrdered>0&&<p className="text-xs text-slate-400 mt-0.5">{itemOrdered} ordered</p>}
+                                  {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} ordered</p>}
                                 </div>
                                 <div className="flex flex-col items-center gap-0.5">
                                   <input type="number" min="0" placeholder="–" value={itemCount??''}
@@ -1216,18 +1305,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           if(allOpts.length===0)return null
                           return(
                             <div className="mt-2 ml-2">
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Modifier options</p>
+                              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wide mb-1.5">Modifier options</p>
                               <div className="space-y-1">
                                 {catMods.map(grp=>(
                                   <div key={grp.id}>
-                                    {catMods.length>1&&<p className="text-[10px] font-medium text-slate-400 mb-0.5 pl-1">{grp.name}</p>}
+                                    {catMods.length>1&&<p className="text-[10px] font-medium text-slate-600 mb-0.5 pl-1">{grp.name}</p>}
                                     {(grp.options??[]).map(opt=>{
                                       const isOptOn=opt.available!==false
                                       return(
                                         <div key={opt.id} className={`flex items-center gap-2 p-2 rounded-xl border ${!isOptOn?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                           <div className="flex-1 min-w-0">
-                                            <p className={`text-sm font-medium ${!isOptOn?'text-red-500':'text-slate-700'}`}>{opt.name}</p>
-                                            {opt.price_adjustment!==0&&<p className="text-xs text-slate-400">{opt.price_adjustment>0?`+£${opt.price_adjustment.toFixed(2)}`:`-£${Math.abs(opt.price_adjustment).toFixed(2)}`}</p>}
+                                            <p className={`text-sm font-medium ${!isOptOn?'text-red-500':'text-slate-700'}`}>{opt.name}{opt.price_adjustment!==0&&<span className="text-xs text-slate-600 font-normal ml-1.5">{opt.price_adjustment>0?`+£${opt.price_adjustment.toFixed(2)}`:`-£${Math.abs(opt.price_adjustment).toFixed(2)}`}</span>}</p>
                                           </div>
                                           {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">OFF</span>}
                                           <Toggle on={isOptOn} onToggle={()=>updateModifierOptionAvailable(opt.id,!isOptOn)}/>
@@ -1248,25 +1336,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
             {truckMenu&&Object.keys(menuGroups).length>0&&(
             <div className="space-y-4">
-            {/* Auto-accept toggle */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-black text-slate-900 text-sm">Auto-accept orders</p>
-                  <p className="text-slate-400 text-xs mt-0.5">Orders confirm automatically when a slot has capacity. Full slots are still rejected.</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0 ml-3">
-                  {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)}/>
-                </div>
-              </div>
-              {autoAccept&&(
-                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
-                  ⚠ Orders will be confirmed immediately — review regularly to avoid over-commitment
-                </div>
-              )}
-            </div>
-
             <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1 mt-4">
               <p className="font-bold text-slate-700">How it works</p>
               <p>• Orange input: total for this category (e.g. 100 pizzas tonight)</p>
@@ -1326,7 +1395,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {vans.map(van=>(
               <button key={van.id} onClick={()=>{window.open(`/kds/${van.kds_token}`,'_blank');setShowKDSPicker(false)}} className="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 hover:border-orange-300 hover:bg-orange-50 text-left transition-colors flex items-center justify-between">
                 {van.name}
-                <span className="text-xs text-slate-400">Kitchen screen →</span>
+                <span className="text-xs text-slate-600">Kitchen screen →</span>
               </button>
             ))}
             <button onClick={()=>setShowKDSPicker(false)} className="text-sm text-slate-400 hover:text-slate-600 pt-1">Cancel</button>
@@ -1416,7 +1485,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           <button key={item.name} onClick={()=>openEditItemModal(item)}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-bold transition-all ${totalInEdit>0?'bg-orange-600 border-orange-600 text-white':'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300'}`}>
                             {totalInEdit>0&&<span className="text-orange-200">{totalInEdit}×</span>}
-                            {item.name}<span className={totalInEdit>0?'text-orange-200':'text-slate-400'}> £{item.price.toFixed(2)}</span>
+                            {item.name}<span className={totalInEdit>0?'text-orange-200':'text-slate-600'}> £{item.price.toFixed(2)}</span>
                           </button>
                         )
                       })}
@@ -1442,9 +1511,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       <span className="text-slate-500 text-xs w-12 text-right">£{(item.unit_price*item.quantity).toFixed(2)}</span>
                     </div>
                     {(item.modifiers||[]).map(m=>(
-                      <p key={m.name} className="text-xs text-slate-400 pl-3 leading-tight">+ {m.name}{m.price>0?` +£${m.price.toFixed(2)}`:''}</p>
+                      <p key={m.name} className="text-xs text-slate-600 pl-3 leading-tight">+ {m.name}{m.price>0?` +£${m.price.toFixed(2)}`:''}</p>
                     ))}
-                    {item.specialInstructions&&<p className="text-xs text-slate-400 italic pl-3 leading-tight">📝 {item.specialInstructions}</p>}
+                    {item.specialInstructions&&<p className="text-xs text-slate-600 italic pl-3 leading-tight">📝 {item.specialInstructions}</p>}
                   </div>
                 ))}
                 {/* Deals — removable */}
@@ -1464,8 +1533,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             if(!mods.length&&!note)return null
                             return(
                               <div key={cat} className="pl-3">
-                                {mods.map(m=><p key={m.name} className="text-xs text-slate-400 leading-tight">↳ {itemName}: + {m.name}{m.price>0?` +£${m.price.toFixed(2)}`:''}</p>)}
-                                {note&&<p className="text-xs text-slate-400 italic leading-tight">↳ {itemName}: 📝 {note}</p>}
+                                {mods.map(m=><p key={m.name} className="text-xs text-slate-600 leading-tight">↳ {itemName}: + {m.name}{m.price>0?` +£${m.price.toFixed(2)}`:''}</p>)}
+                                {note&&<p className="text-xs text-slate-600 italic leading-tight">↳ {itemName}: 📝 {note}</p>}
                               </div>
                             )
                           })}
@@ -1480,8 +1549,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 })}
                 <div className="pt-2 border-t border-slate-200 space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-400">Original</span>
-                    <span className="text-slate-400">£{Number(editingOrder.total).toFixed(2)}</span>
+                    <span className="text-slate-600">Original</span>
+                    <span className="text-slate-600">£{Number(editingOrder.total).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold">
                     <span className="text-slate-600">New total</span>
@@ -1563,7 +1632,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="flex justify-between items-center mb-3">
               <div>
                 <p className="font-black text-slate-900">{editItemModal.item.name}</p>
-                <p className="text-sm text-slate-400">£{editItemModal.item.price.toFixed(2)}{editModalMods.reduce((s,m)=>s+m.price,0)>0?` + £${editModalMods.reduce((s,m)=>s+m.price,0).toFixed(2)}`:''}</p>
+                <p className="text-sm text-slate-600">£{editItemModal.item.price.toFixed(2)}{editModalMods.reduce((s,m)=>s+m.price,0)>0?` + £${editModalMods.reduce((s,m)=>s+m.price,0).toFixed(2)}`:''}</p>
               </div>
               <button onClick={closeEditItemModal} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
@@ -1622,7 +1691,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <input type="text" value={eventNoteInput} onChange={e=>setEventNoteInput(e.target.value)}
                 placeholder="e.g. Park in the main car park, look for the orange gazebo"
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"/>
-              <p className="text-xs text-slate-400 mt-1.5">Shown to customers on the order page below your event details.</p>
+              <p className="text-xs text-slate-500 mt-1.5">Shown to customers on the order page below your event details.</p>
               <button onClick={()=>saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
@@ -1648,7 +1717,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             }
           </div>
           <p className="text-lg font-bold text-slate-900 mt-4">{truck?.name}</p>
-          <p className="text-xs text-slate-400 mt-1">Powered by <span className="font-semibold text-orange-600">HatchGrab</span></p>
+          <p className="text-xs text-slate-500 mt-1">Powered by <span className="font-semibold text-orange-600">HatchGrab</span></p>
           <p className="text-xs text-slate-300 mt-4">Tap anywhere to close</p>
         </div>
       )}

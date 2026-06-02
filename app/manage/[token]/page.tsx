@@ -2337,9 +2337,16 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   const [uploadText, setUploadText] = useState('')
   const [uploadProcessing, setUploadProcessing] = useState(false)
   const [extractedEvents, setExtractedEvents] = useState<any[]>([])
+  const [editedEvents, setEditedEvents] = useState<any[]>([])
+  const [selectedEvents, setSelectedEvents] = useState<Set<number>>(new Set())
+  const [editingEventIdx, setEditingEventIdx] = useState<number | null>(null)
   const [savingExtracted, setSavingExtracted] = useState(false)
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
+  const { isDragging: isScheduleDragging, dragProps: scheduleDragProps } = useDragDrop(
+    (file) => setUploadFile(file),
+    ['image/*', '.pdf']
+  )
 
   const loadEvents = useCallback(async () => {
     setLoadingEvents(true)
@@ -2425,6 +2432,9 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     setEditingEvent(null)
     setFormErrors({})
     setExtractedEvents([])
+    setEditedEvents([])
+    setSelectedEvents(new Set())
+    setEditingEventIdx(null)
     setUploadFile(null)
     setUploadText('')
   }
@@ -2434,6 +2444,9 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     setUploadFile(null)
     setUploadText('')
     setExtractedEvents([])
+    setEditedEvents([])
+    setSelectedEvents(new Set())
+    setEditingEventIdx(null)
   }
 
   const saveEdit = async () => {
@@ -2467,14 +2480,18 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     fd.append('token', token)
     const res = await fetch('/api/manage/process-schedule', { method: 'POST', body: fd })
     const data = await res.json()
-    setExtractedEvents(data.events || [])
+    const evs = data.events || []
+    setExtractedEvents(evs)
+    setEditedEvents(evs)
+    setSelectedEvents(new Set(evs.map((_: any, i: number) => i)))
     setUploadProcessing(false)
   }
 
-  const saveExtractedEvents = async () => {
+  const saveExtractedEvents = async (eventsToSave?: any[]) => {
+    const toSave = eventsToSave ?? extractedEvents
     setSavingExtracted(true)
     try {
-      for (const ev of extractedEvents) {
+      for (const ev of toSave) {
         const parts = (ev.event_date || '').split('/')
         const isoDate = parts.length === 3
           ? `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
@@ -2502,7 +2519,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
           truck_id: editingEvent?.truck_id || truck.id,
         })
       }
-      const count = extractedEvents.length
+      const count = toSave.length
       await loadEvents()
       closeAddModal()
       setShowImportModal(false)
@@ -2584,78 +2601,117 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   }
 
   const renderEvent = (event: TruckEvent) => {
+    const isPast = isPastEvent(event) || event.status === 'cancelled'
+    const dateObj = new Date(event.event_date + 'T00:00:00')
+    const dayName = dateObj.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase()
+    const dayNum = dateObj.getDate()
+    const month = dateObj.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()
+
+    const townAlreadyInVenue = event.town
+      ? event.venue_name?.toLowerCase().includes(event.town.toLowerCase())
+      : false
+    const venueDisplay = event.venue_name + (!townAlreadyInVenue && event.town ? `, ${event.town}` : '')
+
     return (
       <Card key={event.id}>
-        <div className="px-4 py-3 flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            {operatorTrucks.length > 1 && (
-              <p className="text-xs font-semibold text-orange-600 mb-0.5">
-                {operatorTrucks.find(t => t.id === event.truck_id)?.name ?? truck.name}
-              </p>
-            )}
-            <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm font-semibold text-slate-900">
-                {event.venue_name}{event.town ? `, ${event.town}` : ''}
-              </p>
-              <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
+        <div className="px-4 py-3">
+          {/* Main row: date | venue | status | actions */}
+          <div className="flex items-start gap-4">
+
+            {/* Date column — fixed width, calendar-style */}
+            <div className="flex flex-col items-center justify-center w-12 flex-shrink-0 text-center pl-2">
+              <span className="text-[10px] font-bold text-slate-400 leading-none">{dayName}</span>
+              <span className="text-2xl font-black text-orange-600 leading-tight">{dayNum}</span>
+              <span className="text-[10px] font-bold text-slate-400 leading-none">{month}</span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {fmtDate(event.event_date)}
-              {event.start_time && event.end_time && ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
-              {event.postcode && ` · ${event.postcode}`}
-              {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
-            </p>
-            {event.address && <p className="text-xs text-slate-400 mt-0.5 truncate">{event.address}</p>}
-            {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
-          </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            {event.status === 'unconfirmed' && (
-              <Btn label="Confirm" size="sm" colour="green" onClick={() => handleConfirmEvent(event.id)} />
-            )}
-            <Btn label="Copy" size="sm" colour="ghost" onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} />
-            {!isPastEvent(event) && event.status !== 'cancelled' && (
-              <>
-                <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
-                <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
-              </>
-            )}
-          </div>
-        </div>
 
-        {bundles.length > 0 && !isPastEvent(event) && event.status !== 'cancelled' && (
-          <div className="px-4 pb-3 border-t border-slate-100 mt-0">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 pt-3">
-              Deals for this event
-            </p>
-            {bundles.map(bundle => {
+            {/* Divider */}
+            <div className="w-px bg-slate-100 self-stretch flex-shrink-0" />
+
+            {/* Venue + time + status */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-sm font-bold text-slate-900 truncate">
+                  {venueDisplay}
+                </p>
+                <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
+              </div>
+              <p className="text-sm font-semibold text-slate-700 mt-0.5">
+                {event.start_time && event.end_time && `${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
+                {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
+                {operatorTrucks.length > 1 && (
+                  <span className="ml-1 text-orange-600 font-semibold">
+                    {operatorTrucks.find(t => t.id === event.truck_id)?.name ?? truck.name}
+                  </span>
+                )}
+              </p>
+              {event.postcode && (
+                <p className="text-xs text-slate-400 mt-0.5">{event.postcode}</p>
+              )}
+              {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
+            </div>
+
+            {/* Actions — right aligned */}
+            <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
+              {event.status === 'unconfirmed' && (
+                <Btn label="Confirm" size="sm" colour="green" onClick={() => handleConfirmEvent(event.id)} />
+              )}
+              <Btn label="Copy" size="sm" colour="ghost" onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} />
+              {!isPast && (
+                <>
+                  <Btn label="Edit" size="sm" colour="ghost" onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} />
+                  <Btn label="Cancel" size="sm" colour="red" onClick={() => openEventCancelModal(event)} />
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Deals — collapsed by default, expand on tap */}
+          {!isPast && bundles.length > 0 && (() => {
+            const activeDeals = bundles.filter(bundle => {
               const eventDeal = event.event_deals?.find(d => d.bundle_id === bundle.id)
-              const isActive = eventDeal ? eventDeal.active : bundle.apply_to_new_events
-              return (
-                <div key={bundle.id} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-slate-800 truncate">{bundle.name}</span>
-                      <span className="text-xs text-slate-400 flex-shrink-0">£{bundle.bundle_price.toFixed(2)}</span>
-                      {bundle.stock_warning && (
-                        <span className="text-xs text-amber-600 flex-shrink-0">⚠️ Stock</span>
-                      )}
-                    </div>
-                    {bundle.stock_warning && (
-                      <p className="text-xs text-amber-600 mt-0.5">Hidden — {bundle.stock_warning}</p>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => handleEventDealToggle(event.id, bundle.id, !isActive)}
-                    className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ml-3 ${isActive ? 'bg-teal-500' : 'bg-slate-300'}`}
-                  >
-                    <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-1'}`} />
-                  </button>
-                </div>
-              )
-            })}
-          </div>
-        )}
+              return eventDeal ? eventDeal.active : bundle.apply_to_new_events
+            })
+            const hiddenDeals = activeDeals.filter(b => b.stock_warning)
+            const dealNames = activeDeals.map(b => b.name).join(' · ')
+            const dealLabel = activeDeals.length === 0
+              ? 'No deals active'
+              : `${activeDeals.length} deal${activeDeals.length !== 1 ? 's' : ''} active · ${dealNames}${hiddenDeals.length > 0 ? ` · ${hiddenDeals.length} hidden` : ''}`
 
+            return (
+              <details className="mt-2 border-t border-slate-50 pt-2">
+                <summary className="text-xs text-slate-400 cursor-pointer select-none hover:text-slate-600 list-none flex items-center gap-1">
+                  <span className="text-slate-300">▶</span>
+                  <span>{dealLabel}</span>
+                </summary>
+                <div className="mt-2 space-y-1">
+                  {bundles.map(bundle => {
+                    const eventDeal = event.event_deals?.find(d => d.bundle_id === bundle.id)
+                    const isActive = eventDeal ? eventDeal.active : bundle.apply_to_new_events
+                    return (
+                      <div key={bundle.id} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-slate-700 truncate">{bundle.name}</span>
+                            <span className="text-xs text-slate-400">£{bundle.bundle_price.toFixed(2)}</span>
+                            {bundle.stock_warning && <span className="text-xs text-amber-600">⚠️ Stock</span>}
+                          </div>
+                          {bundle.stock_warning && <p className="text-xs text-amber-600 mt-0.5">Hidden — {bundle.stock_warning}</p>}
+                        </div>
+                        <button
+                          onClick={() => handleEventDealToggle(event.id, bundle.id, !isActive)}
+                          className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ml-3 ${isActive ? 'bg-teal-500' : 'bg-slate-300'}`}
+                        >
+                          <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-1'}`} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              </details>
+            )
+          })()}
+        </div>
       </Card>
     )
   }
@@ -2928,17 +2984,19 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                   Our AI will extract your events for you to review.
                 </p>
 
-                <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Upload image or PDF
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*,.pdf"
-                    onChange={e => setUploadFile(e.target.files?.[0] || null)}
-                    className="mt-1 w-full text-sm text-slate-600"
-                  />
-                </div>
+                <label
+                  {...scheduleDragProps}
+                  className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+                >
+                  <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
+                  <span className="text-sm text-slate-500 text-center">
+                    {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
+                  </span>
+                  {!isScheduleDragging && !uploadFile && (
+                    <span className="text-xs text-slate-400">Image or PDF</span>
+                  )}
+                  <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+                </label>
 
                 <div>
                   <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -2958,7 +3016,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                   disabled={(!uploadFile && !uploadText) || uploadProcessing}
                   className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
                 >
-                  {uploadProcessing ? 'Analysing...' : 'Extract events with AI'}
+                  {uploadProcessing ? 'Analysing...' : 'Process schedule'}
                 </button>
 
                 {extractedEvents.length > 0 && (
@@ -2967,25 +3025,54 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                       We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
                     </p>
                     {extractedEvents.map((ev, i) => (
-                      <div key={i} className="border border-slate-200 rounded-xl p-3 text-sm">
-                        <p className="font-medium">{ev.venue_name}</p>
-                        <p className="text-slate-500">{ev.event_date} · {ev.start_time}–{ev.end_time}</p>
-                        <p className="text-slate-500">{ev.town}{ev.postcode ? `, ${ev.postcode}` : ''}</p>
+                      <div key={i} className={`border rounded-xl p-3 text-sm transition-colors ${selectedEvents.has(i) ? 'border-orange-300 bg-orange-50/30' : 'border-slate-200 bg-white opacity-50'}`}>
+                        <div className="flex items-start gap-3">
+                          <input type="checkbox" checked={selectedEvents.has(i)} onChange={e => { const next = new Set(selectedEvents); e.target.checked ? next.add(i) : next.delete(i); setSelectedEvents(next) }} className="mt-0.5 w-4 h-4 accent-orange-500 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            {editingEventIdx === i ? (
+                              <div className="grid grid-cols-1 gap-2">
+                                <div className="relative">
+                                  <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                  {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
+                                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
+                                      {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
+                                        <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
+                                          <p className="font-medium text-slate-800">{venue.venue_name}</p>
+                                          <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Town" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                  <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                </div>
+                                <div className="grid grid-cols-3 gap-2">
+                                  <input type="date" value={(() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                  <input type="time" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                  <input type="time" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                </div>
+                                <button onClick={() => setEditingEventIdx(null)} className="text-sm text-orange-600 font-medium text-left">Done editing</button>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-center justify-between">
+                                  <p className="font-medium text-slate-800">{editedEvents[i]?.venue_name || ev.venue_name}</p>
+                                  <button onClick={() => setEditingEventIdx(i)} className="text-xs text-slate-500 hover:text-orange-600 font-medium ml-2 flex-shrink-0">Edit</button>
+                                </div>
+                                <p className="text-slate-500 text-xs mt-0.5">{editedEvents[i]?.event_date || ev.event_date} · {editedEvents[i]?.start_time || ev.start_time}–{editedEvents[i]?.end_time || ev.end_time}</p>
+                                <p className="text-slate-500 text-xs">{[editedEvents[i]?.town, editedEvents[i]?.postcode].filter(Boolean).join(', ')}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     ))}
                     <div className="flex gap-3">
-                      <button
-                        onClick={() => { setExtractedEvents([]); setUploadFile(null); setUploadText('') }}
-                        className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm"
-                      >
-                        Try again
-                      </button>
-                      <button
-                        onClick={saveExtractedEvents}
-                        disabled={savingExtracted}
-                        className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40"
-                      >
-                        {savingExtracted ? 'Saving...' : 'Save all events'}
+                      <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
+                      <button onClick={() => saveExtractedEvents(Array.from(selectedEvents).map(i => editedEvents[i]))} disabled={savingExtracted || selectedEvents.size === 0} className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40">
+                        {savingExtracted ? 'Saving...' : `Save ${selectedEvents.size} event${selectedEvents.size !== 1 ? 's' : ''}`}
                       </button>
                     </div>
                   </div>
@@ -3010,17 +3097,19 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                 Our AI will extract your events for you to review.
               </p>
 
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Upload image or PDF
-                </label>
-                <input
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={e => setUploadFile(e.target.files?.[0] || null)}
-                  className="mt-1 w-full text-sm text-slate-600"
-                />
-              </div>
+              <label
+                {...scheduleDragProps}
+                className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+              >
+                <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
+                <span className="text-sm text-slate-500 text-center">
+                  {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
+                </span>
+                {!isScheduleDragging && !uploadFile && (
+                  <span className="text-xs text-slate-400">Image or PDF</span>
+                )}
+                <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+              </label>
 
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
@@ -3040,7 +3129,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                 disabled={(!uploadFile && !uploadText) || uploadProcessing}
                 className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
               >
-                {uploadProcessing ? 'Analysing...' : 'Extract events with AI'}
+                {uploadProcessing ? 'Analysing...' : 'Process schedule'}
               </button>
 
               {extractedEvents.length > 0 && (
@@ -3049,25 +3138,54 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
                   </p>
                   {extractedEvents.map((ev, i) => (
-                    <div key={i} className="border border-slate-200 rounded-xl p-3 text-sm">
-                      <p className="font-medium">{ev.venue_name}</p>
-                      <p className="text-slate-500">{ev.event_date} · {ev.start_time}–{ev.end_time}</p>
-                      <p className="text-slate-500">{ev.town}{ev.postcode ? `, ${ev.postcode}` : ''}</p>
+                    <div key={i} className={`border rounded-xl p-3 text-sm transition-colors ${selectedEvents.has(i) ? 'border-orange-300 bg-orange-50/30' : 'border-slate-200 bg-white opacity-50'}`}>
+                      <div className="flex items-start gap-3">
+                        <input type="checkbox" checked={selectedEvents.has(i)} onChange={e => { const next = new Set(selectedEvents); e.target.checked ? next.add(i) : next.delete(i); setSelectedEvents(next) }} className="mt-0.5 w-4 h-4 accent-orange-500 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          {editingEventIdx === i ? (
+                            <div className="grid grid-cols-1 gap-2">
+                              <div className="relative">
+                                <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
+                                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
+                                    {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
+                                      <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
+                                        <p className="font-medium text-slate-800">{venue.venue_name}</p>
+                                        <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Town" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                              </div>
+                              <div className="grid grid-cols-3 gap-2">
+                                <input type="date" value={(() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                <input type="time" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                                <input type="time" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                              </div>
+                              <button onClick={() => setEditingEventIdx(null)} className="text-sm text-orange-600 font-medium text-left">Done editing</button>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex items-center justify-between">
+                                <p className="font-medium text-slate-800">{editedEvents[i]?.venue_name || ev.venue_name}</p>
+                                <button onClick={() => setEditingEventIdx(i)} className="text-xs text-slate-500 hover:text-orange-600 font-medium ml-2 flex-shrink-0">Edit</button>
+                              </div>
+                              <p className="text-slate-500 text-xs mt-0.5">{editedEvents[i]?.event_date || ev.event_date} · {editedEvents[i]?.start_time || ev.start_time}–{editedEvents[i]?.end_time || ev.end_time}</p>
+                              <p className="text-slate-500 text-xs">{[editedEvents[i]?.town, editedEvents[i]?.postcode].filter(Boolean).join(', ')}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
                   <div className="flex gap-3">
-                    <button
-                      onClick={() => { setExtractedEvents([]); setUploadFile(null); setUploadText('') }}
-                      className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm"
-                    >
-                      Try again
-                    </button>
-                    <button
-                      onClick={saveExtractedEvents}
-                      disabled={savingExtracted}
-                      className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40"
-                    >
-                      {savingExtracted ? 'Saving...' : 'Save all events'}
+                    <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
+                    <button onClick={() => saveExtractedEvents(Array.from(selectedEvents).map(i => editedEvents[i]))} disabled={savingExtracted || selectedEvents.size === 0} className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40">
+                      {savingExtracted ? 'Saving...' : `Save ${selectedEvents.size} event${selectedEvents.size !== 1 ? 's' : ''}`}
                     </button>
                   </div>
                 </div>
@@ -3913,12 +4031,9 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
                   className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-32"
                 >
                   <option value="">No limit</option>
-                  <option value="3">3 items</option>
-                  <option value="5">5 items</option>
-                  <option value="8">8 items</option>
-                  <option value="10">10 items</option>
-                  <option value="15">15 items</option>
-                  <option value="20">20 items</option>
+                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                  ))}
                 </select>
               </div>
 

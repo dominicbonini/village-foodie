@@ -209,17 +209,30 @@ export async function GET(
       .single()
 
     if (eventVan?.van_id) {
-      const { data: van } = await supabase
-        .from('truck_vans')
-        .select('paused_until, online_paused_until')
-        .eq('id', eventVan.van_id)
-        .single()
+      const [{ data: van }, { data: eventOverrideRow }] = await Promise.all([
+        supabase
+          .from('truck_vans')
+          .select('paused_until, online_paused_until, auto_pause_on_offline')
+          .eq('id', eventVan.van_id)
+          .single(),
+        supabase
+          .from('truck_events')
+          .select('offline_protection_override')
+          .eq('id', effectiveEventId)
+          .single(),
+      ])
 
       if (van) {
+        const offlineProtectionEnabled =
+          eventOverrideRow?.offline_protection_override !== null &&
+          eventOverrideRow?.offline_protection_override !== undefined
+            ? eventOverrideRow.offline_protection_override
+            : (van.auto_pause_on_offline ?? false)
+
         const manualPaused = van.paused_until
           ? new Date(van.paused_until) > new Date()
           : false
-        const offlinePaused = van.online_paused_until
+        const offlinePaused = offlineProtectionEnabled && van.online_paused_until
           ? new Date(van.online_paused_until) > new Date()
           : false
 
