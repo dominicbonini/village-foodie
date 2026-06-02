@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const { data: truck } = await supabase
       .from('trucks')
       .select(`
-        id, name, dashboard_token,
+        id, name, slug, dashboard_token,
         whatsapp_sender, whatsapp,
         plan, feature_overrides, trial_expires_at
       `)

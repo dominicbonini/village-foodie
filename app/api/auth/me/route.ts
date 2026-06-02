@@ -15,7 +15,7 @@ export async function GET() {
 
   const { data: operator } = await supabase
     .from('operators')
-    .select('name, email, first_name, last_name, phone')
+    .select('name, email, first_name, last_name, phone, is_admin')
     .eq('auth_user_id', user.id)
     .single()
 
@@ -26,6 +26,7 @@ export async function GET() {
       first_name: operator.first_name || null,
       last_name: operator.last_name || null,
       phone: operator.phone || null,
+      is_admin: operator.is_admin ?? false,
     })
   }
 
@@ -36,8 +37,8 @@ export async function GET() {
     .single()
 
   if (truckUser) {
-    return NextResponse.json({ name: truckUser.name || truckUser.email || null, email: user.email || null, first_name: null, last_name: null, phone: null })
+    return NextResponse.json({ name: truckUser.name || truckUser.email || null, email: user.email || null, first_name: null, last_name: null, phone: null, is_admin: false })
   }
 
-  return NextResponse.json({ name: user.email || null, email: user.email || null, first_name: null, last_name: null, phone: null })
+  return NextResponse.json({ name: user.email || null, email: user.email || null, first_name: null, last_name: null, phone: null, is_admin: false })
 }

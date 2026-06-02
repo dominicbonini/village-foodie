@@ -92,6 +92,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
   const[currentUserFirstName,setCurrentUserFirstName]=useState<string|null>(null)
   const[currentUserEmail,setCurrentUserEmail]=useState<string|null>(null)
+  const[isAdmin,setIsAdmin]=useState(false)
   const[userRole,setUserRole]=useState<'owner'|'manager'|'staff'|null>(null)
   const[showScreenOffWarning,setShowScreenOffWarning]=useState(false)
   const[vansWithAutoPause,setVansWithAutoPause]=useState<string[]>([])
@@ -243,7 +244,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[upcomingEvents,selectedEventId])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
   useEffect(()=>{
-    fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name)}).catch(()=>null)
+    fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name);if(d.is_admin)setIsAdmin(true)}).catch(()=>null)
   },[])
   useEffect(()=>{
     if(!truck?.id)return
@@ -672,6 +673,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           showScreenToggle
           showOrderUtilities
           showManageLink={userRole==='owner'||userRole==='manager'}
+          isAdmin={isAdmin}
           keepScreenOn={keepScreenOn}
           onToggleScreenOn={toggleKeepScreenOn}
           copiedOrderLink={copiedOrderLink}

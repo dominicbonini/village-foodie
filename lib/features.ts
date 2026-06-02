@@ -1,4 +1,4 @@
-export type Plan = 'starter' | 'pro' | 'max' | 'trial'
+export type Plan = 'starter' | 'pro' | 'max' | 'trial' | 'tester'
 
 export type Feature =
   // Core — all plans
@@ -76,6 +76,7 @@ export const PLAN_FEATURES: Record<Plan, Set<Feature>> = {
   pro: new Set(PRO_FEATURES),
   max: new Set(MAX_FEATURES),
   trial: new Set(TRIAL_FEATURES),
+  tester: new Set(MAX_FEATURES),
 }
 
 // Base check — plan tier only, no overrides
@@ -139,6 +140,11 @@ export const PLAN_META: Record<Plan, {
     name: 'Trial',
     price: 'Free trial',
     description: 'Pro features, time-limited',
+  },
+  tester: {
+    name: 'Tester',
+    price: '',
+    description: 'Pre-launch tester — full feature access',
   },
 }
 

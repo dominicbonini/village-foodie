@@ -170,6 +170,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [currentUserFirstName, setCurrentUserFirstName] = useState<string | null>(null)
   const [currentUserLastName, setCurrentUserLastName] = useState<string | null>(null)
   const [currentUserPhone, setCurrentUserPhone] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
   const [pendingEmailChange, setPendingEmailChange] = useState<{ id: string; new_email: string; requested_at: string; expired_at: string } | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
@@ -210,7 +211,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   // Trial accounts default to billing tab on every page load
   useEffect(() => {
-    if (truck?.plan === 'trial') setActiveTab('billing')
+    if (truck?.plan === 'trial' && truck?.plan !== 'tester') setActiveTab('billing')
   }, [truck?.id])
 
   // Daily trial reminder popup — shown once per day via localStorage
@@ -237,6 +238,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setCurrentUserFirstName(d.first_name ?? null)
       setCurrentUserLastName(d.last_name ?? null)
       setCurrentUserPhone(d.phone ?? null)
+      if (d.is_admin) setIsAdmin(true)
     }).catch(() => null)
   }, [])
 
@@ -301,7 +303,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
   const tabs = allTabs.filter(t => {
-    if (t.id === 'billing') return userRole === 'owner'
+    if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'
     return t.roles.includes(userRole)
   })
 
@@ -322,6 +324,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           operatorName={currentUserFirstName || currentUserName?.split(' ')[0] || ''}
           token={token}
           showDashboardLink
+          isAdmin={isAdmin}
         />
       </AppHeader>
       {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}

@@ -1,6 +1,7 @@
 // app/api/admin/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { PLAN_META, type Plan } from '@/lib/features'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
@@ -15,6 +16,19 @@ export async function GET(req: NextRequest) {
 
   const section = req.nextUrl.searchParams.get('section')
 
+  if (section === 'check_admin') {
+    const supabaseAuth = await createSupabaseServerClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    if (!user) return NextResponse.json({ isAdmin: false })
+    const { data: operator } = await supabase
+      .from('operators')
+      .select('is_admin')
+      .eq('auth_user_id', user.id)
+      .single()
+    if (!operator?.is_admin) return NextResponse.json({ isAdmin: false })
+    return NextResponse.json({ isAdmin: true, secret: process.env.ADMIN_SECRET })
+  }
+
   if (section === 'discovery') {
     const { data: discoveryTrucks } = await supabase
       .from('discovery_trucks')
@@ -25,7 +39,7 @@ export async function GET(req: NextRequest) {
 
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,is_test')
+    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,is_test,lifetime_discount_pct,lifetime_discount_note')
     .order('name')
   return NextResponse.json({ trucks: trucks || [] })
 }
@@ -52,7 +66,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const allowed = ['plan', 'active', 'auto_accept', 'onboarded_at', 'trial_expires_at', 'feature_overrides', 'is_test']
+  const allowed = ['plan', 'active', 'auto_accept', 'onboarded_at', 'trial_expires_at', 'feature_overrides', 'is_test', 'lifetime_discount_pct', 'lifetime_discount_note']
   const safe = Object.fromEntries(Object.entries(updates).filter(([k]) => allowed.includes(k)))
   const { error } = await supabase.from('trucks').update(safe).eq('id', truckId)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })

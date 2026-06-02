@@ -14,6 +14,7 @@ interface UserMenuProps {
   showOrderUtilities?: boolean  // dashboard only (Order link, QR, Kitchen)
   showManageLink?: boolean      // dashboard only
   showDashboardLink?: boolean   // manage page only
+  isAdmin?: boolean
   // Screen toggle
   keepScreenOn?: boolean
   onToggleScreenOn?: () => void
@@ -32,6 +33,7 @@ export default function UserMenu({
   showOrderUtilities,
   showManageLink,
   showDashboardLink,
+  isAdmin,
   keepScreenOn = false,
   onToggleScreenOn,
   copiedOrderLink,
@@ -153,6 +155,16 @@ export default function UserMenu({
               >
                 ← Orders dashboard
               </a>
+            )}
+
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+              >
+                🔐 Admin
+              </Link>
             )}
 
             <hr className="border-slate-100" />
