@@ -1244,7 +1244,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   <span className="text-slate-500 text-sm">Batch</span>
                                   <input type="number" min={1} placeholder="∞"
                                     value={catObj.batch_size??''}
-                                    onChange={e=>{const v=e.target.value===''?null:parseInt(e.target.value)||1;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
+                                    onChange={e=>{const v=e.target.value===''?undefined:parseInt(e.target.value)||1;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
                                     onBlur={e=>{const v=e.target.value===''?null:parseInt(e.target.value)||1;updateCategoryField(catObj.id??'','batch_size',v as number)}}
                                     className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                                 </div>
