@@ -48,9 +48,54 @@ export async function POST(req: NextRequest) {
     }))
     .filter(r => r.event_date && r.truck_name)
 
+  // Fetch lookup tables once for ID resolution
+  const [{ data: allDiscoveryTrucks }, { data: allVenues }] = await Promise.all([
+    supabase.from('discovery_trucks').select('id, name'),
+    supabase.from('venues').select('id, name, village'),
+  ])
+
+  // Enrich each row with resolved IDs before upserting
+  const enrichedRows = rows.map(row => {
+    // Match discovery_truck_id
+    let discoveryTruckId: string | null = null
+    if (allDiscoveryTrucks) {
+      const normIncoming = normName(row.truck_name)
+      const match = allDiscoveryTrucks.find(t => {
+        const normDb = normName(t.name)
+        return normDb === normIncoming || normDb.includes(normIncoming) || normIncoming.includes(normDb)
+      })
+      if (match) discoveryTruckId = match.id
+    }
+
+    // Match venue_id
+    let venueId: string | null = null
+    if (allVenues && row.venue_name) {
+      const normVenue = normName(row.venue_name)
+      const normVillage = normName(row.village || '')
+      const match = allVenues.find(v => {
+        const nameMatch = normName(v.name) === normVenue ||
+                          normName(v.name).includes(normVenue) ||
+                          normVenue.includes(normName(v.name))
+        const villageMatch = !normVillage ||
+                             normName(v.village || '') === normVillage ||
+                             normName(v.village || '').includes(normVillage) ||
+                             normVillage.includes(normName(v.village || ''))
+        return nameMatch && villageMatch
+      })
+      if (match) venueId = match.id
+    }
+
+    return {
+      ...row,
+      visibility: 'public',
+      discovery_truck_id: discoveryTruckId,
+      venue_id: venueId,
+    }
+  })
+
   const { error } = await supabase
     .from('discovery_events')
-    .upsert(rows, {
+    .upsert(enrichedRows, {
       onConflict: 'event_date,truck_name,venue_name',
       ignoreDuplicates: false
     })
