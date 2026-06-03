@@ -737,29 +737,19 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
               {categories.length} {categories.length === 1 ? 'category' : 'categories'} · {items.length} items
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Import with AI — desktop only in this position */}
-            {categories.length > 0 && (
-              <div className="hidden sm:flex flex-col items-end gap-0.5">
-                <button onClick={() => setImportStep('upload')}
-                  className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
-                  ✨ Import with AI
-                </button>
-                <p className="text-xs text-slate-400">photo, PDF or text</p>
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            <div className="flex flex-col items-end gap-0.5">
+              <button onClick={() => setImportStep('upload')}
+                className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
+                ✨ Import menu
+              </button>
+              <p className="text-xs text-slate-400">photo, PDF or text</p>
+            </div>
             <div className="self-start">
               <Btn label="+ Add category" onClick={() => setEditingCat({ prep_secs: 0, batch_size: 0, allow_notes: false } as any)} />
             </div>
           </div>
         </div>
-        {/* Row 3 mobile: Import with AI below heading row, no subtitle */}
-        {categories.length > 0 && (
-          <button onClick={() => setImportStep('upload')}
-            className="sm:hidden mt-2 flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors whitespace-nowrap">
-            ✨ Import with AI
-          </button>
-        )}
       </div>
 
       {/* Empty state / Category list */}
@@ -1723,8 +1713,8 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
     <Card className="p-4">
       {adding && (
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-3 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">When customer adds…</label>
               <select value={newTrigger} onChange={e => setNewTrigger(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
@@ -1732,7 +1722,7 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
                 {catNames.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
-            <div>
+            <div className="flex-1">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wide block mb-1">Suggest items from…</label>
               <select value={newSuggest} onChange={e => setNewSuggest(e.target.value)}
                 className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
@@ -2838,7 +2828,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
 
       {editingEvent && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <h3 className="font-black text-slate-900 mb-4">
               {editingEvent.id ? 'Edit event' : addMode === 'upload' ? 'Import schedule' : 'Add event'}
             </h3>
@@ -2973,7 +2963,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
                   {formErrors.event_date && <p className="text-xs text-red-500 mt-1">{formErrors.event_date}</p>}
                 </div>
-                <div className="sm:col-span-2 grid grid-cols-2 gap-3">
+                <div className="sm:col-span-2 grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
                     <input type="time" step="300" value={editingEvent.start_time}

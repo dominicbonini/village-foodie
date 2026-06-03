@@ -715,7 +715,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <span className="text-xs font-medium text-slate-500 select-none">
             {keepScreenOn ? 'Screen on' : 'Screen off'}
           </span>
-          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-teal-500' : 'bg-slate-600'}`}>
+          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-green-500' : 'bg-slate-300'}`}>
             <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
           </div>
         </button>
@@ -1201,11 +1201,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     </button>
                   )}
                 </div>
-                <button
-                  onClick={()=>toggleOfflineProtection(!effectiveOfflineProtection)}
-                  className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${effectiveOfflineProtection?'bg-teal-500':'bg-slate-300'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${effectiveOfflineProtection?'translate-x-5':'translate-x-1'}`}/>
-                </button>
+                <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
               </div>
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
