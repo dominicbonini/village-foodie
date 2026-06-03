@@ -376,9 +376,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
+    if(value===true){
+      const confirmed=window.confirm('Offline protection enabled.\n\nTo keep orders flowing, your screen must stay on. If this device loses connection, online orders will pause automatically.\n\nMake sure Screen On is enabled.')
+      if(!confirmed)return
+      if(!keepScreenOn)applyKeepScreenOn(true)
+    }else{
+      const confirmed=window.confirm('Disable offline protection for this event?\n\nIf this device loses connection, online orders will continue — customers may place orders you cannot see. Only disable if you have a reliable connection.')
+      if(!confirmed)return
+    }
     setEventOfflineOverride(value)
     await supabaseBrowser.from('truck_events').update({offline_protection_override:value}).eq('id',activeEvent.id)
-    if(!value) showToast('Offline protection disabled for this event. To disable for all events, go to Settings in the Manage page.')
   }
 
   const saveKitchenCapacity=async(value:number|null)=>{
@@ -887,7 +894,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               const BUFFER_SECS=120
 
               // Get all active orders with slots, sorted by slot time
-              const slottedOrders=orders
+              const slottedOrders=eventOrders
                 .filter(o=>['pending','confirmed','modified'].includes(o.status)&&o.slot)
                 .sort((a,b)=>a.slot!.localeCompare(b.slot!))
 
@@ -1155,11 +1162,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)}/>
                 </div>
               </div>
-              {autoAccept&&(
-                <div className="mt-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-700">
-                  ⚠ Orders will be confirmed immediately — review regularly to avoid over-commitment
-                </div>
-              )}
             </div>
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
