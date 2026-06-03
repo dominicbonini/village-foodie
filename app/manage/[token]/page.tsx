@@ -838,11 +838,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
             {/* Category header */}
             <div
               className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
-              onClick={(e) => {
-                if (!(e.target as HTMLElement).closest('button')) {
-                  handleExpandCat(isOpen ? null : cat.id)
-                }
-              }}>
+              onClick={() => handleExpandCat(isOpen ? null : cat.id)}>
               <div className="text-slate-600 hover:text-slate-900 cursor-grab active:cursor-grabbing text-xl font-bold select-none" title="Drag to reorder" draggable={false}>
                 ⋮⋮
               </div>
@@ -864,14 +860,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                   {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat) }}
-                  className="text-slate-400 hover:text-red-500 transition-colors p-1"
-                  title="Delete category"
-                >
-                  🗑
-                </button>
+              <div className="flex items-center shrink-0">
                 <span className={`transition-transform inline-block text-slate-400 text-xs select-none ${isOpen ? 'rotate-90' : ''}`}>▶</span>
               </div>
             </div>
@@ -992,6 +981,14 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
 
                 <div className="px-4 py-3">
                   <Btn label="+ Add item" size="sm" colour="ghost" onClick={() => setEditingItem({ category_id: cat.id, is_available: true, price: 0 })} />
+                </div>
+                <div className="px-4 pb-4">
+                  <button
+                    onClick={() => handleDeleteCategory(cat)}
+                    className="mt-4 text-sm text-red-500 hover:text-red-700 flex items-center gap-1"
+                  >
+                    🗑 Delete category
+                  </button>
                 </div>
               </div>
             )}
@@ -2415,6 +2412,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     if (!form.start_time) errors.start_time = 'Start time is required'
     if (!form.end_time) errors.end_time = 'End time is required'
     if (operatorTrucks.length > 1 && !form.truck_id) errors.truck_id = 'Please select a truck'
+    if (vans.length > 1 && !form.van_id) errors.van_id = 'Please select a truck'
     return errors
   }
 
@@ -2897,22 +2895,19 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     {formErrors.truck_id && <p className="text-xs text-red-500 mt-1">{formErrors.truck_id}</p>}
                   </div>
                 )}
-                {vans.length > 1 && (
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Van</label>
-                    <select
-                      value={editingEvent.van_id || ''}
-                      onChange={e => setEditingEvent(p => ({ ...p!, van_id: e.target.value || null }))}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
-                    >
-                      <option value="">Not specified</option>
-                      {vans.map(van => (
-                        <option key={van.id} value={van.id}>{van.name}</option>
-                      ))}
-                    </select>
-                    <p className="text-xs text-slate-400 mt-1">Assign this event to a specific van for separate order screens.</p>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Date<span className="text-red-400 ml-0.5">*</span></label>
+                  <div className="relative">
+                    <div onClick={() => { const el = document.getElementById('date-input-event') as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`w-full border rounded-xl px-3 py-2 text-sm cursor-pointer flex items-center justify-between bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
+                      <span className={editingEvent.event_date ? 'text-slate-900 font-medium' : 'text-slate-400'}>
+                        {editingEvent.event_date ? (() => { const p = editingEvent.event_date.split('-'); if (p.length !== 3) return editingEvent.event_date; const d = new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2])); const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const day = d.getDate(); const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]; return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}` })() : 'Select date'}
+                      </span>
+                      <span className="text-slate-400 text-xs">📅</span>
+                    </div>
+                    <input id="date-input-event" type="date" value={editingEvent.event_date} onChange={e => { setEditingEvent(p => ({...p!, event_date: e.target.value})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
                   </div>
-                )}
+                  {formErrors.event_date && <p className="text-xs text-red-500 mt-1">{formErrors.event_date}</p>}
+                </div>
                 <div className="sm:col-span-2 relative">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Venue name <span className="text-red-400">*</span></label>
                   <input
@@ -2956,21 +2951,14 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                 </div>
                 <div>
                   <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
-                  <p className="text-xs text-slate-400 mt-1">Used for WhatsApp auto-replies and discovery map</p>
                 </div>
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Date<span className="text-red-400 ml-0.5">*</span></label>
-                  <input type="date" value={editingEvent.event_date}
-                    onChange={e => { setEditingEvent(p => ({...p!, event_date: e.target.value})); if (formErrors.event_date) setFormErrors(p => ({...p, event_date: ''})) }}
-                    className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.event_date ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
-                  {formErrors.event_date && <p className="text-xs text-red-500 mt-1">{formErrors.event_date}</p>}
-                </div>
                 <div className="sm:col-span-2 grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
                     <input type="time" step="300" value={editingEvent.start_time}
                       onChange={e => { setEditingEvent(p => ({...p!, start_time: e.target.value})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
+                      onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
                     {formErrors.start_time && <p className="text-xs text-red-500 mt-1">{formErrors.start_time}</p>}
                   </div>
@@ -2978,10 +2966,27 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                     <label className="block text-xs font-bold text-slate-600 mb-1">End time<span className="text-red-400 ml-0.5">*</span></label>
                     <input type="time" step="300" value={editingEvent.end_time}
                       onChange={e => { setEditingEvent(p => ({...p!, end_time: e.target.value})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
+                      onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }}
                       className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
                     {formErrors.end_time && <p className="text-xs text-red-500 mt-1">{formErrors.end_time}</p>}
                   </div>
                 </div>
+                {vans.length > 1 && (
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck <span className="text-red-500">*</span></label>
+                    <select
+                      value={editingEvent.van_id || ''}
+                      onChange={e => { setEditingEvent(p => ({ ...p!, van_id: e.target.value || null })); if (formErrors.van_id) setFormErrors(p => ({ ...p, van_id: '' })) }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.van_id ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
+                    >
+                      <option value="">Select a truck</option>
+                      {vans.map(van => (
+                        <option key={van.id} value={van.id}>{van.name}</option>
+                      ))}
+                    </select>
+                    {formErrors.van_id && <p className="text-xs text-red-500 mt-1">{formErrors.van_id}</p>}
+                  </div>
+                )}
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Notes</label>
                   <textarea value={editingEvent.notes} onChange={e => setEditingEvent(p => ({...p!, notes: e.target.value}))} placeholder="e.g. Park in the main car park" rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none" />
@@ -2996,102 +3001,143 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
             {/* Upload mode — new events only */}
             {!editingEvent.id && addMode === 'upload' && (
               <div className="flex flex-col gap-4">
-                <p className="text-sm text-slate-500">
-                  Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
-                  Our AI will extract your events for you to review.
-                </p>
+                {extractedEvents.length === 0 && (
+                  <>
+                    <p className="text-sm text-slate-500">
+                      Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
+                      Our AI will extract your events for you to review.
+                    </p>
 
-                <label
-                  {...scheduleDragProps}
-                  className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
-                >
-                  <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
-                  <span className="text-sm text-slate-500 text-center">
-                    {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
-                  </span>
-                  {!isScheduleDragging && !uploadFile && (
-                    <span className="text-xs text-slate-400">Image or PDF</span>
-                  )}
-                  <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
-                </label>
+                    <label
+                      {...scheduleDragProps}
+                      className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+                    >
+                      <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
+                      <span className="text-sm text-slate-500 text-center">
+                        {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
+                      </span>
+                      {!isScheduleDragging && !uploadFile && (
+                        <span className="text-xs text-slate-400">Image or PDF</span>
+                      )}
+                      <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+                    </label>
 
-                <div>
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    Or paste schedule text
-                  </label>
-                  <textarea
-                    value={uploadText}
-                    onChange={e => setUploadText(e.target.value)}
-                    placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
-                    rows={4}
-                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  />
-                </div>
+                    <div>
+                      <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                        Or paste schedule text
+                      </label>
+                      <textarea
+                        value={uploadText}
+                        onChange={e => setUploadText(e.target.value)}
+                        placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+                        rows={4}
+                        className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                      />
+                    </div>
 
-                <button
-                  onClick={processUpload}
-                  disabled={(!uploadFile && !uploadText) || uploadProcessing}
-                  className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
-                >
-                  {uploadProcessing ? 'Analysing...' : 'Process schedule'}
-                </button>
+                    <button
+                      onClick={processUpload}
+                      disabled={(!uploadFile && !uploadText) || uploadProcessing}
+                      className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+                    >
+                      {uploadProcessing ? 'Analysing...' : 'Process schedule'}
+                    </button>
+                  </>
+                )}
 
                 {extractedEvents.length > 0 && (
                   <div className="flex flex-col gap-3">
                     <p className="text-sm font-semibold text-slate-900">
                       We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
                     </p>
-                    {extractedEvents.map((ev, i) => (
-                      <div key={i} className={`border rounded-xl p-3 text-sm transition-colors ${selectedEvents.has(i) ? 'border-orange-300 bg-orange-50/30' : 'border-slate-200 bg-white opacity-50'}`}>
-                        <div className="flex items-start gap-3">
-                          <input type="checkbox" checked={selectedEvents.has(i)} onChange={e => { const next = new Set(selectedEvents); e.target.checked ? next.add(i) : next.delete(i); setSelectedEvents(next) }} className="mt-0.5 w-4 h-4 accent-orange-500 flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            {editingEventIdx === i ? (
-                              <div className="grid grid-cols-1 gap-2">
-                                <div className="relative">
-                                  <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                  {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
-                                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
-                                      {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
-                                        <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
-                                          <p className="font-medium text-slate-800">{venue.venue_name}</p>
-                                          <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
-                                        </button>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Town" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                  <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                </div>
-                                <div className="grid grid-cols-3 gap-2">
-                                  <input type="date" value={(() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                  <input type="time" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                  <input type="time" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                </div>
-                                <button onClick={() => setEditingEventIdx(null)} className="text-sm text-orange-600 font-medium text-left">Done editing</button>
+                    {(() => {
+                      const eventsNeedingAttention = editedEvents.filter(ev =>
+                        !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
+                      ).length
+                      return eventsNeedingAttention > 0 ? (
+                        <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+                          <span className="text-orange-600">⚠️</span>
+                          <span className="text-sm text-orange-700 font-medium">
+                            {eventsNeedingAttention} event{eventsNeedingAttention > 1 ? 's need' : ' needs'} attention before saving
+                          </span>
+                        </div>
+                      ) : null
+                    })()}
+                    {extractedEvents.map((ev, i) => {
+                      const isMissingStart = !editedEvents[i]?.start_time
+                      const isMissingEnd = !editedEvents[i]?.end_time
+                      const isMissingVan = vans.length > 1 && !editedEvents[i]?.van_id
+                      const dateVal = (() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()
+                      const friendlyDate = (() => { const s = editedEvents[i]?.event_date || ''; const p = s.split('/'); if (p.length !== 3) return s; const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])); const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const day = d.getDate(); const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]; return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}` })()
+                      return (
+                        <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-3">
+                          {/* Date */}
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">Date</p>
+                            <div className="relative">
+                              <div onClick={() => { const el = document.getElementById(`date-input-${i}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between">
+                                <span className={editedEvents[i]?.event_date ? 'text-base text-slate-800 font-medium' : 'text-base text-slate-400'}>{friendlyDate || 'Select date'}</span>
+                                <span className="text-slate-400 text-xs">📅</span>
                               </div>
-                            ) : (
-                              <div>
-                                <div className="flex items-center justify-between">
-                                  <p className="font-medium text-slate-800">{editedEvents[i]?.venue_name || ev.venue_name}</p>
-                                  <button onClick={() => setEditingEventIdx(i)} className="text-xs text-slate-500 hover:text-orange-600 font-medium ml-2 flex-shrink-0">Edit</button>
-                                </div>
-                                <p className="text-slate-500 text-xs mt-0.5">{editedEvents[i]?.event_date || ev.event_date} · {editedEvents[i]?.start_time || ev.start_time}–{editedEvents[i]?.end_time || ev.end_time}</p>
-                                <p className="text-slate-500 text-xs">{[editedEvents[i]?.town, editedEvents[i]?.postcode].filter(Boolean).join(', ')}</p>
+                              <input id={`date-input-${i}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
+                            </div>
+                          </div>
+                          {/* Venue name */}
+                          <div className="relative">
+                            <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                            {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
+                              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
+                                {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
+                                  <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
+                                    <p className="font-medium text-slate-800">{venue.venue_name}</p>
+                                    <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
+                                  </button>
+                                ))}
                               </div>
                             )}
                           </div>
+                          {/* Area + Postcode */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Area" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                            <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                          </div>
+                          {/* Start + End time */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <p className={`text-xs mb-1 ${isMissingStart ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingStart ? '⚠ Start time required' : 'Start time'}</p>
+                              <input type="time" step="300" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingStart ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
+                            </div>
+                            <div>
+                              <p className={`text-xs mb-1 ${isMissingEnd ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingEnd ? '⚠ End time required' : 'End time'}</p>
+                              <input type="time" step="300" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingEnd ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
+                            </div>
+                          </div>
+                          {/* Van selector — multi-van only */}
+                          {vans.length > 1 && (
+                            <div>
+                              <p className={`text-xs mb-1 ${isMissingVan ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingVan ? '⚠ Select a truck' : 'Truck'}</p>
+                              <select value={editedEvents[i]?.van_id || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], van_id: e.target.value || null }; setEditedEvents(next) }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isMissingVan ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`}>
+                                <option value="">Select a truck</option>
+                                {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
+                              </select>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))}
-                    <div className="flex gap-3">
-                      <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
-                      <button onClick={() => saveExtractedEvents(Array.from(selectedEvents).map(i => editedEvents[i]))} disabled={savingExtracted || selectedEvents.size === 0} className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40">
-                        {savingExtracted ? 'Saving...' : `Save ${selectedEvents.size} event${selectedEvents.size !== 1 ? 's' : ''}`}
-                      </button>
-                    </div>
+                      )
+                    })}
+                    {(() => {
+                      const hasIncomplete = editedEvents.some(ev =>
+                        !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
+                      )
+                      return (
+                        <div className="flex gap-3">
+                          <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
+                          <button onClick={() => saveExtractedEvents(editedEvents)} disabled={savingExtracted || hasIncomplete} className={`flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm ${hasIncomplete ? 'opacity-50 cursor-not-allowed' : 'disabled:opacity-40'}`}>
+                            {savingExtracted ? 'Saving...' : `Save ${editedEvents.length} event${editedEvents.length !== 1 ? 's' : ''}`}
+                          </button>
+                        </div>
+                      )
+                    })()}
                   </div>
                 )}
 
@@ -3109,102 +3155,143 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
           <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-sm sm:max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="font-black text-slate-900 mb-4">Import schedule</h3>
             <div className="flex flex-col gap-4">
-              <p className="text-sm text-slate-500">
-                Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
-                Our AI will extract your events for you to review.
-              </p>
+              {extractedEvents.length === 0 && (
+                <>
+                  <p className="text-sm text-slate-500">
+                    Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
+                    Our AI will extract your events for you to review.
+                  </p>
 
-              <label
-                {...scheduleDragProps}
-                className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
-              >
-                <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
-                <span className="text-sm text-slate-500 text-center">
-                  {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
-                </span>
-                {!isScheduleDragging && !uploadFile && (
-                  <span className="text-xs text-slate-400">Image or PDF</span>
-                )}
-                <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
-              </label>
+                  <label
+                    {...scheduleDragProps}
+                    className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+                  >
+                    <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
+                    <span className="text-sm text-slate-500 text-center">
+                      {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
+                    </span>
+                    {!isScheduleDragging && !uploadFile && (
+                      <span className="text-xs text-slate-400">Image or PDF</span>
+                    )}
+                    <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+                  </label>
 
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Or paste schedule text
-                </label>
-                <textarea
-                  value={uploadText}
-                  onChange={e => setUploadText(e.target.value)}
-                  placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
-                  rows={4}
-                  className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Or paste schedule text
+                    </label>
+                    <textarea
+                      value={uploadText}
+                      onChange={e => setUploadText(e.target.value)}
+                      placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+                      rows={4}
+                      className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                  </div>
 
-              <button
-                onClick={processUpload}
-                disabled={(!uploadFile && !uploadText) || uploadProcessing}
-                className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
-              >
-                {uploadProcessing ? 'Analysing...' : 'Process schedule'}
-              </button>
+                  <button
+                    onClick={processUpload}
+                    disabled={(!uploadFile && !uploadText) || uploadProcessing}
+                    className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+                  >
+                    {uploadProcessing ? 'Analysing...' : 'Process schedule'}
+                  </button>
+                </>
+              )}
 
               {extractedEvents.length > 0 && (
                 <div className="flex flex-col gap-3">
                   <p className="text-sm font-semibold text-slate-900">
                     We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
                   </p>
-                  {extractedEvents.map((ev, i) => (
-                    <div key={i} className={`border rounded-xl p-3 text-sm transition-colors ${selectedEvents.has(i) ? 'border-orange-300 bg-orange-50/30' : 'border-slate-200 bg-white opacity-50'}`}>
-                      <div className="flex items-start gap-3">
-                        <input type="checkbox" checked={selectedEvents.has(i)} onChange={e => { const next = new Set(selectedEvents); e.target.checked ? next.add(i) : next.delete(i); setSelectedEvents(next) }} className="mt-0.5 w-4 h-4 accent-orange-500 flex-shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          {editingEventIdx === i ? (
-                            <div className="grid grid-cols-1 gap-2">
-                              <div className="relative">
-                                <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
-                                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
-                                    {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
-                                      <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
-                                        <p className="font-medium text-slate-800">{venue.venue_name}</p>
-                                        <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="grid grid-cols-2 gap-2">
-                                <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Town" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                              </div>
-                              <div className="grid grid-cols-3 gap-2">
-                                <input type="date" value={(() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                <input type="time" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                                <input type="time" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} className="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                              </div>
-                              <button onClick={() => setEditingEventIdx(null)} className="text-sm text-orange-600 font-medium text-left">Done editing</button>
+                  {(() => {
+                    const eventsNeedingAttention = editedEvents.filter(ev =>
+                      !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
+                    ).length
+                    return eventsNeedingAttention > 0 ? (
+                      <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
+                        <span className="text-orange-600">⚠️</span>
+                        <span className="text-sm text-orange-700 font-medium">
+                          {eventsNeedingAttention} event{eventsNeedingAttention > 1 ? 's need' : ' needs'} attention before saving
+                        </span>
+                      </div>
+                    ) : null
+                  })()}
+                  {extractedEvents.map((ev, i) => {
+                    const isMissingStart = !editedEvents[i]?.start_time
+                    const isMissingEnd = !editedEvents[i]?.end_time
+                    const isMissingVan = vans.length > 1 && !editedEvents[i]?.van_id
+                    const dateVal = (() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()
+                    const friendlyDate = (() => { const s = editedEvents[i]?.event_date || ''; const p = s.split('/'); if (p.length !== 3) return s; const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])); const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const day = d.getDate(); const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]; return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}` })()
+                    return (
+                      <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-3">
+                        {/* Date */}
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Date</p>
+                          <div className="relative">
+                            <div onClick={() => { const el = document.getElementById(`date-input-${i}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between">
+                              <span className={editedEvents[i]?.event_date ? 'text-slate-800 font-medium' : 'text-slate-400'}>{friendlyDate || 'Select date'}</span>
+                              <span className="text-slate-400 text-xs">📅</span>
                             </div>
-                          ) : (
-                            <div>
-                              <div className="flex items-center justify-between">
-                                <p className="font-medium text-slate-800">{editedEvents[i]?.venue_name || ev.venue_name}</p>
-                                <button onClick={() => setEditingEventIdx(i)} className="text-xs text-slate-500 hover:text-orange-600 font-medium ml-2 flex-shrink-0">Edit</button>
-                              </div>
-                              <p className="text-slate-500 text-xs mt-0.5">{editedEvents[i]?.event_date || ev.event_date} · {editedEvents[i]?.start_time || ev.start_time}–{editedEvents[i]?.end_time || ev.end_time}</p>
-                              <p className="text-slate-500 text-xs">{[editedEvents[i]?.town, editedEvents[i]?.postcode].filter(Boolean).join(', ')}</p>
+                            <input id={`date-input-${i}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
+                          </div>
+                        </div>
+                        {/* Venue name */}
+                        <div className="relative">
+                          <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                          {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
+                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
+                              {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
+                                <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
+                                  <p className="font-medium text-slate-800">{venue.venue_name}</p>
+                                  <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
+                                </button>
+                              ))}
                             </div>
                           )}
                         </div>
+                        {/* Area + Postcode */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Area" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                          <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                        </div>
+                        {/* Start + End time */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <p className={`text-xs mb-1 ${isMissingStart ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingStart ? '⚠ Start time required' : 'Start time'}</p>
+                            <input type="time" step="300" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingStart ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
+                          </div>
+                          <div>
+                            <p className={`text-xs mb-1 ${isMissingEnd ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingEnd ? '⚠ End time required' : 'End time'}</p>
+                            <input type="time" step="300" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingEnd ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
+                          </div>
+                        </div>
+                        {/* Van selector — multi-van only */}
+                        {vans.length > 1 && (
+                          <div>
+                            <p className={`text-xs mb-1 ${isMissingVan ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingVan ? '⚠ Select a truck' : 'Truck'}</p>
+                            <select value={editedEvents[i]?.van_id || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], van_id: e.target.value || null }; setEditedEvents(next) }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isMissingVan ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`}>
+                              <option value="">Select a truck</option>
+                              {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
+                            </select>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
-                  <div className="flex gap-3">
-                    <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
-                    <button onClick={() => saveExtractedEvents(Array.from(selectedEvents).map(i => editedEvents[i]))} disabled={savingExtracted || selectedEvents.size === 0} className="flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-40">
-                      {savingExtracted ? 'Saving...' : `Save ${selectedEvents.size} event${selectedEvents.size !== 1 ? 's' : ''}`}
-                    </button>
-                  </div>
+                    )
+                  })}
+                  {(() => {
+                    const hasIncomplete = editedEvents.some(ev =>
+                      !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
+                    )
+                    return (
+                      <div className="flex gap-3">
+                        <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
+                        <button onClick={() => saveExtractedEvents(editedEvents)} disabled={savingExtracted || hasIncomplete} className={`flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm ${hasIncomplete ? 'opacity-50 cursor-not-allowed' : 'disabled:opacity-40'}`}>
+                          {savingExtracted ? 'Saving...' : `Save ${editedEvents.length} event${editedEvents.length !== 1 ? 's' : ''}`}
+                        </button>
+                      </div>
+                    )
+                  })()}
                 </div>
               )}
 
@@ -3359,6 +3446,10 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
 
   const handleAddVanClick = () => {
+    const confirmed = window.confirm(
+      "Adding an additional truck will be charged as an add-on to your subscription.\n\nThis will be reflected in your next billing cycle.\n\nDo you want to continue?"
+    )
+    if (!confirmed) return
     const included = INCLUDED_VANS[truck.plan] ?? 1
     const addonPrice = VAN_ADDON_PRICE[truck.plan] ?? 0
     if (vans.length >= included) {
@@ -3463,7 +3554,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   }
 
   return (
-    <div className="space-y-6 max-w-lg">
+    <div className="max-w-2xl mx-auto space-y-6">
       <h2 className="font-black text-slate-900 text-lg">Settings</h2>
 
       {/* Logo */}
@@ -3606,30 +3697,10 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
               <label className="text-sm text-slate-600 w-20 flex-shrink-0">Instagram</label>
               <input
                 type="text"
-                value={form.social_instagram || ''}
-                onChange={e => setForm(p => ({...p, social_instagram: e.target.value}))}
-                onBlur={() => saveFormField()}
-                placeholder="@youraccount"
-                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-              />
-              <button
                 disabled
-                className="flex-shrink-0 text-xs px-2.5 py-1.5 border border-slate-200 text-slate-400 rounded-xl whitespace-nowrap cursor-not-allowed"
-              >
-                Connect
-              </button>
-            </div>
-
-            {/* Facebook */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-slate-600 w-20 flex-shrink-0">Facebook</label>
-              <input
-                type="text"
-                value={form.social_facebook || ''}
-                onChange={e => setForm(p => ({...p, social_facebook: e.target.value}))}
-                onBlur={() => saveFormField()}
-                placeholder="facebook.com/yourtruck"
-                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                value=""
+                placeholder="Coming soon"
+                className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
               />
               <button
                 disabled
@@ -3938,7 +4009,7 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
         </div>
 
         {vans.map(van => (
-          <div key={van.id}>
+          <div key={van.id} className="mt-4 border border-slate-200 rounded-2xl p-4">
             <div className="flex items-center justify-between py-3 border-b border-slate-200 mb-3">
               <div className="flex items-center gap-2">
                 <span className="text-base font-bold text-slate-900">{van.name}</span>
@@ -4415,7 +4486,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   )
 
   return (
-    <div className="max-w-2xl flex flex-col gap-6">
+    <div className="max-w-2xl mx-auto flex flex-col gap-6">
 
       {/* TRIAL: payment capture is urgent — show ABOVE the matrix */}
       {plan === 'trial' && (
@@ -5378,7 +5449,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
     : ['staff']
 
   return (
-    <div className="flex flex-col gap-4 max-w-lg">
+    <div className="flex flex-col gap-4 max-w-lg mx-auto">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-semibold text-slate-900">Team members</p>
