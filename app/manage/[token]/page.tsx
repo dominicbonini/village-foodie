@@ -740,7 +740,7 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
           <div className="flex items-center gap-2">
             <div className="flex flex-col items-end gap-0.5">
               <button onClick={() => setImportStep('upload')}
-                className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
+                className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors whitespace-nowrap">
                 ✨ Import menu
               </button>
               <p className="text-xs text-slate-400">photo, PDF or text</p>
