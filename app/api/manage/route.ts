@@ -505,7 +505,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -983,6 +983,32 @@ export async function POST(req: NextRequest) {
         eventsMap,
       },
     })
+  }
+
+  if (action === 'get_exclusion_terms') {
+    const { data } = await supabase
+      .from('excluded_terms')
+      .select('id, term, created_at')
+      .eq('truck_id', truck.id)
+      .order('created_at', { ascending: false })
+    return NextResponse.json({ terms: data ?? [] })
+  }
+
+  if (action === 'add_exclusion_term') {
+    const { normaliseExclusionTerm } = await import('@/lib/schedule-extract')
+    const normalised = normaliseExclusionTerm(body.term ?? '')
+    if (!normalised) return NextResponse.json({ error: 'Empty term' }, { status: 400 })
+    const { data: upserted } = await supabase.from('excluded_terms').upsert(
+      { truck_id: truck.id, term: normalised },
+      { onConflict: 'truck_id,term' }
+    ).select('id').single()
+    return NextResponse.json({ ok: true, id: upserted?.id ?? null })
+  }
+
+  if (action === 'remove_exclusion_term') {
+    const { id } = body
+    await supabase.from('excluded_terms').delete().eq('id', id).eq('truck_id', truck.id)
+    return NextResponse.json({ ok: true })
   }
 
   if (action === 'get_recent_events') {

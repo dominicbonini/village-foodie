@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import { createHash } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 
 dotenv.config({ path: '.env.local' });
@@ -889,6 +890,325 @@ for (const [index, site] of sitesToScrape.entries()) {
 }
 
 await browser.close();
+
+// ── HatchGrab-linked truck scraping ──────────────────────────────────────────
+
+const HATCHGRAB_API_URL = process.env.HATCHGRAB_API_URL;
+const INBOUND_SECRET = process.env.INBOUND_SCHEDULE_SECRET;
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function shouldRunToday(truck) {
+  const today = new Date().getDay();
+  if (!truck.scraper_learning_complete) return true;
+  if (truck.scraper_update_day === null || truck.scraper_update_day === undefined) return true;
+  const preferred = truck.scraper_update_day;
+  if (today === preferred) return true;
+  if (today === (preferred + 1) % 7) return true;
+  if (today === (preferred + 2) % 7) return true;
+  return false;
+}
+
+function hashEvents(events) {
+  const sorted = [...events]
+    .map(e => `${e.event_date}|${e.venue_name}`)
+    .sort()
+    .join(',');
+  return createHash('md5').update(sorted).digest('hex');
+}
+
+async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ruleUsed) {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+
+  if (!truck.scraper_first_run_at) {
+    await supabase.from('trucks')
+      .update({ scraper_first_run_at: now.toISOString() })
+      .eq('id', truck.id);
+  }
+
+  await supabase.from('scraper_run_log').insert({
+    truck_id: truck.id,
+    run_at: now.toISOString(),
+    day_of_week: dayOfWeek,
+    events_found: eventsFound,
+    events_changed: eventsChanged,
+    rule_used: ruleUsed,
+  });
+
+  const firstRun = truck.scraper_first_run_at ? new Date(truck.scraper_first_run_at) : now;
+  const daysSinceFirst = (now - firstRun) / (1000 * 60 * 60 * 24);
+  if (daysSinceFirst < 30) return;
+
+  const { data: runs } = await supabase
+    .from('scraper_run_log')
+    .select('day_of_week, events_changed')
+    .eq('truck_id', truck.id)
+    .gte('run_at', new Date(now - 90 * 24 * 60 * 60 * 1000).toISOString());
+
+  if (!runs || runs.length < 8) return;
+
+  const changeCounts = Array(7).fill(0);
+  runs.filter(r => r.events_changed).forEach(r => { changeCounts[r.day_of_week]++; });
+
+  const maxChanges = Math.max(...changeCounts);
+  if (maxChanges === 0) return;
+
+  const learnedDay = changeCounts.indexOf(maxChanges);
+  await supabase.from('trucks')
+    .update({ scraper_update_day: learnedDay, scraper_learning_complete: true })
+    .eq('id', truck.id);
+
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  console.log(`   🧠 Learned update day for ${truck.name}: ${dayNames[learnedDay]}`);
+}
+
+async function checkEmptySchedule(supabase, truck) {
+  const today = new Date().toISOString().split('T')[0];
+
+  const { count: futureEvents } = await supabase
+    .from('truck_events')
+    .select('id', { count: 'exact', head: true })
+    .eq('truck_id', truck.id)
+    .gte('event_date', today)
+    .in('status', ['confirmed', 'unconfirmed', 'open']);
+
+  if ((futureEvents || 0) > 0) return;
+
+  if (truck.scraper_last_empty_notify_at) {
+    const daysSinceLast = (Date.now() - new Date(truck.scraper_last_empty_notify_at)) / (1000 * 60 * 60 * 24);
+    if (daysSinceLast < 14) return;
+  }
+
+  const { data: operator } = await supabase
+    .from('operators')
+    .select('email, first_name')
+    .eq('id', truck.operator_id)
+    .single();
+
+  if (!operator?.email || !BREVO_API_KEY) return;
+
+  const manageUrl = `https://www.hatchgrab.com/manage/${truck.dashboard_token}?tab=schedule`;
+  const firstName = operator.first_name || 'there';
+
+  const html = `<div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
+    <p>Hi ${firstName},</p>
+    <p>We checked your schedule but couldn't find any upcoming events listed.</p>
+    <p>If you've got dates coming up, you can add them in two ways:</p>
+    <ul style="color:#475569">
+      <li><strong>Import your schedule</strong> — upload a photo, PDF, or paste your schedule text</li>
+      <li><strong>Add events manually</strong> — add them one at a time</li>
+    </ul>
+    <p style="margin:24px 0">
+      <a href="${manageUrl}" style="background:#ea580c;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">
+        Go to your schedule →
+      </a>
+    </p>
+    <p>If you're taking a break that's completely fine — we'll check again in a couple of weeks.</p>
+    <p style="color:#94a3b8;font-size:12px;margin-top:24px">— The HatchGrab team · hatchgrab.com</p>
+  </div>`;
+
+  // Fire-and-forget — never block scraper on email failure
+  fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: { 'api-key': BREVO_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sender: { name: 'HatchGrab', email: 'hello@hatchgrab.com' },
+      to: [{ email: operator.email }],
+      subject: `No upcoming events showing for ${truck.name}`,
+      htmlContent: html,
+      textContent: `Hi ${firstName},\n\nWe checked your schedule but couldn't find any upcoming events listed.\n\nYou can add events at: ${manageUrl}\n\nIf you're taking a break that's fine — we'll check again in a couple of weeks.\n\n— The HatchGrab team`,
+    }),
+  }).then(async r => {
+    if (!r.ok) console.warn(`[empty-schedule email] Brevo error for ${truck.name}:`, await r.text());
+    else {
+      await supabase.from('trucks')
+        .update({ scraper_last_empty_notify_at: new Date().toISOString() })
+        .eq('id', truck.id);
+      console.log(`   📧 Empty-schedule email sent to ${operator.email}`);
+    }
+  }).catch(err => console.warn(`[empty-schedule email] failed for ${truck.name}:`, err.message));
+}
+
+async function pruneScraperRunLog(supabase) {
+  const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+  const { error } = await supabase.from('scraper_run_log').delete().lt('run_at', cutoff);
+  if (error) console.warn('scraper_run_log prune failed:', error.message);
+  else console.log('✅ scraper_run_log pruned to 90 days');
+}
+
+// ── Per-truck scrape loop ──────────────────────────────────────────────────────
+
+if (HATCHGRAB_API_URL && INBOUND_SECRET) {
+  console.log('\n🏪 Starting HatchGrab-linked truck schedule scraping...');
+
+  const { data: hgTrucks } = await supabase
+    .from('trucks')
+    .select('id, name, schedule_url, scraper_preference, scraper_rule, scraper_last_hash, scraper_learning_complete, scraper_update_day, scraper_first_run_at, scraper_last_empty_notify_at, dashboard_token, operator_id')
+    .in('scraper_preference', ['auto', 'both'])
+    .not('schedule_url', 'is', null);
+
+  if (hgTrucks && hgTrucks.length > 0) {
+    const hgBrowser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors'],
+    });
+
+    const scrapeWithRule = async (url, rule) => {
+      const page = await hgBrowser.newPage();
+      try {
+        await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        await page.goto(url, { timeout: 30000, waitUntil: 'networkidle2' }).catch(() => {});
+        await sleep(3000);
+        return rule === 'scroll_next'
+          ? await performButtonHunt(page)
+          : await performModernScroll(page);
+      } finally {
+        await page.close().catch(() => {});
+      }
+    };
+
+    const isValidEvent = (e) => e.venue_name && e.venue_name.trim().length > 0 && e.event_date;
+    const todayStr = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const currentYear = new Date().getFullYear();
+
+    for (const hgTruck of hgTrucks) {
+      if (!hgTruck.schedule_url) continue;
+
+      // Adaptive scheduling gate
+      if (!shouldRunToday(hgTruck)) {
+        console.log(`\n⏭️  Skipping ${hgTruck.name} — not scheduled for today (learned day: ${hgTruck.scraper_update_day})`);
+        continue;
+      }
+
+      console.log(`\n🔍 HatchGrab truck: ${hgTruck.name} (${hgTruck.schedule_url})`);
+
+      try {
+        let winningText;
+        let winningRule = hgTruck.scraper_rule;
+
+        if (!winningRule) {
+          console.log('   🔄 No stored rule — running dual detection...');
+          const [lazyText, nextText] = await Promise.all([
+            scrapeWithRule(hgTruck.schedule_url, 'scroll_lazy'),
+            scrapeWithRule(hgTruck.schedule_url, 'scroll_next'),
+          ]);
+          const countDates = (t) => (t.match(/\d{1,2}[\/\-]\d{1,2}/g) || []).length;
+          const lazyCount = countDates(lazyText);
+          const nextCount = countDates(nextText);
+          console.log(`   scroll_lazy: ~${lazyCount} date patterns, scroll_next: ~${nextCount}`);
+          if (nextCount > lazyCount) {
+            winningRule = 'scroll_next'; winningText = nextText;
+          } else {
+            winningRule = 'scroll_lazy'; winningText = lazyText;
+          }
+          await supabase.from('trucks').update({ scraper_rule: winningRule }).eq('id', hgTruck.id);
+          console.log(`   ✅ Stored winning rule: ${winningRule}`);
+        } else {
+          console.log(`   📌 Using stored rule: ${winningRule}`);
+          winningText = await scrapeWithRule(hgTruck.schedule_url, winningRule);
+        }
+
+        if (!winningText || winningText.length < 50) {
+          console.log(`   ❌ Empty page for ${hgTruck.name}. Skipping.`);
+          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
+          continue;
+        }
+
+        // Parse events with Gemini
+        const hgPrompt = `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
+You are extracting a food truck's schedule from website text. Extract ONLY future events.
+DATE RULES: Format "DD/MM/YYYY". Always append /${currentYear}. Map day names to exact dates based on today.
+TIME RULES: "HH:MM" 24-hour. "5pm" → "17:00". If unknown, use "".
+VENUE RULES: Extract only the pub/venue name, not the town.
+Return ONLY valid JSON:
+{"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"Postcode or empty"}]}
+
+WEBSITE TEXT:
+${winningText.slice(0, 100000)}`;
+
+        let hgEvents = [];
+        try {
+          // Uses gemini-2.5-flash (not lite) for schedule extraction per the manual spec.
+          // Apps Script paths also use gemini-2.5-flash — update there separately if rotated.
+          const hgResult = await generateContentWithRetry(modelHeavy, hgPrompt);
+          hgEvents = (hgResult?.events || []).filter(isValidEvent);
+        } catch (err) {
+          console.error(`   ❌ AI parse failed for ${hgTruck.name}:`, err.message);
+          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
+          continue;
+        }
+
+        console.log(`   📋 Extracted ${hgEvents.length} events`);
+
+        // Detect schedule change via hash
+        const currentHash = hashEvents(hgEvents);
+        const eventsChanged = hgEvents.length > 0 && currentHash !== hgTruck.scraper_last_hash;
+        if (eventsChanged) {
+          await supabase.from('trucks')
+            .update({ scraper_last_hash: currentHash, scraper_last_changed_at: new Date().toISOString() })
+            .eq('id', hgTruck.id);
+          console.log(`   🔄 Schedule changed (hash: ${currentHash.slice(0, 8)})`);
+        } else if (hgEvents.length > 0) {
+          console.log(`   ✓ Schedule unchanged (hash: ${currentHash.slice(0, 8)})`);
+        }
+
+        // Zero-result recheck: reset rule if truck has had recent events
+        if (hgEvents.length === 0) {
+          const { count } = await supabase
+            .from('truck_events')
+            .select('id', { count: 'exact', head: true })
+            .eq('truck_id', hgTruck.id)
+            .gte('event_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+          if ((count || 0) > 0) {
+            await supabase.from('trucks').update({ scraper_rule: null }).eq('id', hgTruck.id);
+            console.warn(`   ⚠️  Zero events but has recent history — scraper_rule reset for recheck`);
+          }
+          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
+          await checkEmptySchedule(supabase, hgTruck);
+          continue;
+        }
+
+        // POST to inbound-schedule
+        const payload = {
+          secret: INBOUND_SECRET,
+          events: hgEvents.map(e => ({
+            truck_name: hgTruck.name,
+            event_date: e.event_date,
+            start_time: e.start_time || null,
+            end_time: e.end_time || null,
+            venue_name: e.venue_name,
+            village: e.town || null,
+            source: `hg_scraper:${winningRule}`,
+          })),
+        };
+
+        const res = await fetch(`${HATCHGRAB_API_URL}/api/inbound-schedule`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        console.log(`   ✅ Sent to inbound-schedule: ${result.bridged ?? 0} bridged, ${result.inserted ?? 0} discovery`);
+
+        await recordRunAndLearn(supabase, hgTruck, hgEvents.length, eventsChanged, winningRule);
+      } catch (err) {
+        console.error(`   ❌ Error scraping ${hgTruck.name}:`, err.message);
+      }
+    }
+
+    await hgBrowser.close();
+  } else {
+    console.log('   ℹ️  No HatchGrab trucks with auto-scraping enabled.');
+  }
+
+  // Part 5 — prune run log once per daily run
+  await pruneScraperRunLog(supabase);
+
+} else {
+  console.log('\n⚠️  HATCHGRAB_API_URL or INBOUND_SCHEDULE_SECRET not set — skipping HatchGrab truck scraping.');
+}
 
 // --- APPEND NEW TRUCKS ---
 if (newTrucksDetected.size > 0) {

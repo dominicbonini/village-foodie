@@ -129,6 +129,14 @@ export async function POST(req: NextRequest) {
     if (!matched?.hatchgrab_truck_id) continue
     const truckId = matched.hatchgrab_truck_id
 
+    // Preference gate: skip truck_events write for manual-only trucks
+    const { data: truckPref } = await supabase
+      .from('trucks')
+      .select('scraper_preference')
+      .eq('id', truckId)
+      .single()
+    if (truckPref?.scraper_preference === 'manual') continue
+
     // Dedup: skip if a truck_events row already exists for this truck + date
     // Scope by venue_name if present, otherwise date-only
     let dedupQuery = supabase
@@ -176,39 +184,75 @@ export async function POST(req: NextRequest) {
     }
     bridgedCount++
 
-    // Best-effort notification — once per truck per batch
+    // Best-effort notification — once per truck per batch, with event list
     if (!notifiedTruckIds.has(truckId)) {
       notifiedTruckIds.add(truckId)
-      ;(async () => {
-        try {
-          const { data: truck } = await supabase
-            .from('trucks')
-            .select('contact_email, name, dashboard_token')
-            .eq('id', truckId)
-            .single()
-          if (!truck?.contact_email) return
-          const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`
-          await sendConfirmationEmail({
-            to: truck.contact_email,
-            subject: `New events to confirm — ${truck.name}`,
-            html: `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
-              <p>Hi there,</p>
-              <p>New events have been found for <strong>${truck.name}</strong> and are waiting for your confirmation.</p>
-              <p style="margin:24px 0">
-                <a href="${manageUrl}" style="background:#ea580c;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">
-                  Review &amp; confirm events →
-                </a>
-              </p>
-              <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
-            </div>`,
-            text: `New events found for ${truck.name}. Review and confirm them at: ${manageUrl}`,
-            truckName: truck.name,
-          })
-        } catch (err) {
-          console.error('[inbound-schedule] notification failed:', err)
-        }
-      })()
+      // Collect events for this truck for the email (gathered below after loop)
     }
+  }
+
+  // Send one notification email per truck that had new events bridged
+  for (const truckId of notifiedTruckIds) {
+    ;(async () => {
+      try {
+        const { data: truck } = await supabase
+          .from('trucks')
+          .select('contact_email, name, dashboard_token')
+          .eq('id', truckId)
+          .single()
+        if (!truck?.contact_email) return
+
+        // Fetch the new unconfirmed events just written for this truck
+        const { data: newEvents } = await supabase
+          .from('truck_events')
+          .select('event_date, venue_name, town')
+          .eq('truck_id', truckId)
+          .eq('status', 'unconfirmed')
+          .eq('source', 'scraper')
+          .gte('event_date', new Date().toISOString().slice(0, 10))
+          .order('event_date', { ascending: true })
+          .limit(20)
+
+        const n = (newEvents || []).length
+        const manageUrl = `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/manage/${truck.dashboard_token}?tab=schedule`
+
+        const fmtDate = (iso: string) => {
+          const d = new Date(iso + 'T00:00:00')
+          return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+        }
+
+        const eventListHtml = (newEvents || []).map(e =>
+          `<li style="padding:3px 0;color:#475569">${fmtDate(e.event_date)} — ${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}</li>`
+        ).join('')
+
+        const eventListText = (newEvents || []).map(e =>
+          `  - ${fmtDate(e.event_date)} — ${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`
+        ).join('\n')
+
+        await sendConfirmationEmail({
+          to: truck.contact_email,
+          subject: `New events found for ${truck.name} — please review`,
+          html: `<div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
+            <p>Hi there,</p>
+            <p>We found <strong>${n} new event${n !== 1 ? 's' : ''}</strong> on your schedule that need your approval before they appear to customers.</p>
+            <p style="margin:24px 0">
+              <a href="${manageUrl}" style="background:#ea580c;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">
+                Review your schedule →
+              </a>
+            </p>
+            <p style="font-weight:600;margin-bottom:6px">Events found:</p>
+            <ul style="margin:0;padding-left:16px">${eventListHtml}</ul>
+            <p style="margin-top:16px">Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.</p>
+            <p style="color:#94a3b8;font-size:12px;margin-top:24px">— The HatchGrab team · hatchgrab.com</p>
+          </div>`,
+          text: `Hi there,\n\nWe found ${n} new event${n !== 1 ? 's' : ''} on your schedule that need your approval:\n\n${eventListText}\n\nReview them at: ${manageUrl}\n\nOnce you approve them they'll go live on the map.\n\n— The HatchGrab team`,
+          senderName: 'HatchGrab',
+          truckName: truck.name,
+        })
+      } catch (err) {
+        console.error('[inbound-schedule] notification failed:', err)
+      }
+    })()
   }
 
   console.log(`[inbound-schedule] wrote ${rows.length} discovery rows, bridged ${bridgedCount} to truck_events`)

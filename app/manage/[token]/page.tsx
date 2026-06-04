@@ -2,7 +2,7 @@
 // app/manage/[token]/page.tsx
 // Truck management page — menu, modifiers, deals, schedule, settings
 
-import { useState, useEffect, useCallback, useMemo, use, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
@@ -13,11 +13,12 @@ import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 import { formatTime } from '@/lib/time-utils'
+import { isExcluded } from '@/lib/schedule-extract'
 import UserMenu from '@/components/dashboard/UserMenu'
 import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -153,6 +154,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const { token } = use(params)
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
+  const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
   const [showTrialReminder, setShowTrialReminder] = useState(false)
   const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
@@ -282,7 +284,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-      <div className="text-center"><Spinner /><p className="text-slate-400 text-sm mt-3">Loading management console...</p></div>
+      <div className="flex flex-col items-center gap-3"><Spinner /><p className="text-slate-400 text-sm">Loading management console...</p></div>
     </div>
   )
 
@@ -366,7 +368,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        {activeTab === 'schedule'  && <ScheduleTab  truck={truck} token={token} bundles={bundles} categories={categories} operatorTrucks={operatorTrucks} api={api} reload={load} showToast={showToast} />}
+        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} operatorTrucks={operatorTrucks} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -383,7 +385,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
       </main>
 
@@ -2300,10 +2302,32 @@ function EventStatusBadge({ status, event_date, end_time }: { status: TruckEvent
 
 type EditingEvent = { id?: string; venue_name: string; town: string; postcode: string; address: string; event_date: string; start_time: string; end_time: string; notes: string; truck_id?: string; van_id?: string | null }
 
-function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, reload, showToast }: {
-  truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
+const SCHEDULE_TIME_OPTIONS = Array.from({ length: 33 }, (_, i) => {
+  const totalMins = 7 * 60 + i * 30
+  const h = Math.floor(totalMins / 60).toString().padStart(2, '0')
+  const m = (totalMins % 60).toString().padStart(2, '0')
+  return `${h}:${m}`
+})
+
+function applyStartTimeChange(newStart: string, currentEnd: string): { start_time: string; end_time: string } {
+  if (!newStart) return { start_time: '', end_time: currentEnd }
+  if (!currentEnd) {
+    const [h, m] = newStart.split(':').map(Number)
+    const clamped = Math.min(h * 60 + m + 180, 23 * 60)
+    const autoEnd = `${Math.floor(clamped / 60).toString().padStart(2, '0')}:${(clamped % 60).toString().padStart(2, '0')}`
+    return { start_time: newStart, end_time: autoEnd }
+  }
+  if (currentEnd <= newStart) return { start_time: newStart, end_time: '' }
+  return { start_time: newStart, end_time: currentEnd }
+}
+
+function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTrucks, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify }: {
+  isActive: boolean; truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
   operatorTrucks: { id: string; name: string; dashboard_token: string }[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
+  onSwitchTab: (tab: Tab) => void
+  pendingVerifyEvents?: any[] | null
+  onClearPendingVerify?: () => void
 }) {
   const [events, setEvents] = useState<TruckEvent[]>([])
   const [loadingEvents, setLoadingEvents] = useState(true)
@@ -2315,6 +2339,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   const [eventCancelNote, setEventCancelNote] = useState('')
   const [affectedOrderCount, setAffectedOrderCount] = useState(0)
   const [editingEvent, setEditingEvent] = useState<EditingEvent | null>(null)
+  const [editingEventConfirmOnSave, setEditingEventConfirmOnSave] = useState(false)
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [editSaving, setEditSaving] = useState(false)
   const [vans, setVans] = useState<{ id: string; name: string }[]>([])
@@ -2327,9 +2352,14 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   const [editedEvents, setEditedEvents] = useState<any[]>([])
   const [selectedEvents, setSelectedEvents] = useState<Set<number>>(new Set())
   const [editingEventIdx, setEditingEventIdx] = useState<number | null>(null)
+  const [expandedEventIds, setExpandedEventIds] = useState<Set<string>>(new Set())
+  const [focusedEventIds, setFocusedEventIds] = useState<Set<string>>(new Set())
   const [savingExtracted, setSavingExtracted] = useState(false)
+  const [exclusionTerms, setExclusionTerms] = useState<string[]>([])
+  const [exclusionList, setExclusionList] = useState<{ id: string; term: string }[]>([])
   const [showVenueSuggestions, setShowVenueSuggestions] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
+  const [importModalTitle, setImportModalTitle] = useState('Import schedule')
   const { isDragging: isScheduleDragging, dragProps: scheduleDragProps } = useDragDrop(
     (file) => setUploadFile(file),
     ['image/*', '.pdf']
@@ -2346,8 +2376,42 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     finally { setLoadingEvents(false) }
   }, [token])
 
-  useEffect(() => { loadEvents() }, [loadEvents])
-  useEffect(() => { api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {}) }, [])
+  useEffect(() => { if (isActive) loadEvents() }, [isActive, loadEvents])
+  useEffect(() => { if (isActive) api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {}) }, [isActive])
+  useEffect(() => {
+    if (!isActive) return
+    api('get_exclusion_terms').then(r => {
+      const list = (r.terms || []) as { id: string; term: string }[]
+      setExclusionList(list)
+      setExclusionTerms(list.map((t: { id: string; term: string }) => t.term))
+    }).catch(() => {})
+  }, [isActive])
+
+  useEffect(() => {
+    if (!pendingVerifyEvents?.length) return
+    const _seedToday = new Date().toISOString().split('T')[0]
+    const evs = pendingVerifyEvents.map((e: any, i: number) => {
+      const _p = (e.event_date || '').split('/')
+      const _iso = _p.length === 3 ? `${_p[2]}-${_p[1].padStart(2,'0')}-${_p[0].padStart(2,'0')}` : ''
+      return {
+        ...e,
+        id: `ev-${i}-${Date.now()}`,
+        selected: !(_iso && _iso < _seedToday),
+        _missingDate: !e.event_date,
+        _missingVenue: !e.venue_name,
+        _missingTime: !e.start_time || !e.end_time,
+        _originalDate: e.event_date,
+      }
+    })
+    setExtractedEvents(evs)
+    setEditedEvents(evs)
+    setSelectedEvents(new Set(evs.map((_: any, i: number) => i)))
+    setExpandedEventIds(new Set())
+    setFocusedEventIds(new Set(evs.filter((e: any) => e._missingDate || e._missingVenue || e._missingTime).map((e: any) => e.id)))
+    setImportModalTitle('Events found on your website')
+    setShowImportModal(true)
+    onClearPendingVerify?.()
+  }, [pendingVerifyEvents])
 
   const recentEvents = useMemo(() => {
     const seen = new Set<string>()
@@ -2418,23 +2482,29 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
 
   const closeAddModal = () => {
     setEditingEvent(null)
+    setEditingEventConfirmOnSave(false)
     setFormErrors({})
     setExtractedEvents([])
     setEditedEvents([])
     setSelectedEvents(new Set())
     setEditingEventIdx(null)
+    setExpandedEventIds(new Set())
+    setFocusedEventIds(new Set())
     setUploadFile(null)
     setUploadText('')
   }
 
   const closeImportModal = () => {
     setShowImportModal(false)
+    setImportModalTitle('Import schedule')
     setUploadFile(null)
     setUploadText('')
     setExtractedEvents([])
     setEditedEvents([])
     setSelectedEvents(new Set())
     setEditingEventIdx(null)
+    setExpandedEventIds(new Set())
+    setFocusedEventIds(new Set())
   }
 
   const saveEdit = async () => {
@@ -2453,7 +2523,12 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         console.warn('Geocoding returned null for event:', editingEvent.venue_name, editingEvent.postcode)
       }
       await api('upsert_event', { ...editingEvent, latitude: lat, longitude: lng })
-      showToast(editingEvent.id ? 'Event updated' : 'Event added')
+      if (editingEventConfirmOnSave && editingEvent.id) {
+        await handleConfirmEvent(editingEvent.id)
+        setEditingEventConfirmOnSave(false)
+      } else {
+        showToast(editingEvent.id ? 'Event updated' : 'Event added')
+      }
       closeAddModal()
       await loadEvents()
     } catch (e: any) { showToast(e.message, 'error') }
@@ -2468,10 +2543,26 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     fd.append('token', token)
     const res = await fetch('/api/manage/process-schedule', { method: 'POST', body: fd })
     const data = await res.json()
-    const evs = data.events || []
+    const raw = data.events || []
+    const _seedToday = new Date().toISOString().split('T')[0]
+    const evs = raw.map((e: any, i: number) => {
+      const _p = (e.event_date || '').split('/')
+      const _iso = _p.length === 3 ? `${_p[2]}-${_p[1].padStart(2,'0')}-${_p[0].padStart(2,'0')}` : ''
+      return {
+        ...e,
+        id: `ev-${i}-${Date.now()}`,
+        selected: !(_iso && _iso < _seedToday),
+        _missingDate: !e.event_date,
+        _missingVenue: !e.venue_name,
+        _missingTime: !e.start_time || !e.end_time,
+        _originalDate: e.event_date,
+      }
+    })
     setExtractedEvents(evs)
     setEditedEvents(evs)
     setSelectedEvents(new Set(evs.map((_: any, i: number) => i)))
+    setExpandedEventIds(new Set())
+    setFocusedEventIds(new Set(evs.filter((e: any) => e._missingDate || e._missingVenue || e._missingTime).map((e: any) => e.id)))
     setUploadProcessing(false)
   }
 
@@ -2497,7 +2588,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
           venue_name: ev.venue_name || '',
           town: ev.town || '',
           postcode: ev.postcode || '',
-          address: [ev.town, ev.postcode].filter(Boolean).join(', '),
+          address: ev.address || '',
           event_date: isoDate,
           start_time: ev.start_time || '',
           end_time: ev.end_time || '',
@@ -2538,6 +2629,35 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
       showToast('Event confirmed')
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
+  }
+
+  const [pendingRejectId, setPendingRejectId] = useState<string | null>(null)
+
+  const doRejectEvent = async (eventId: string) => {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/events/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, action: 'cancel', eventId, payload: { auto_open: false, auto_close: false } }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setEvents(prev => prev.filter(e => e.id !== eventId))
+      showToast('Event rejected')
+    } catch (e: any) { showToast(e.message, 'error') }
+    finally { setSaving(false); setPendingRejectId(null) }
+  }
+
+  const handleRejectScrapedEvent = async (eventId: string, venueName: string, withExclusion: boolean) => {
+    if (withExclusion) {
+      try {
+        const res = await api('add_exclusion_term', { term: venueName })
+        setExclusionList(prev => [...prev, { id: res.id ?? '', term: venueName }])
+        setExclusionTerms(prev => [...prev, venueName])
+      } catch { /* continue */ }
+    }
+    await doRejectEvent(eventId)
   }
 
   const openEventCancelModal = async (event: TruckEvent) => {
@@ -2720,7 +2840,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
     ? venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editingEvent.venue_name.toLowerCase()))
     : venueSuggestions
 
-  if (loadingEvents) return (
+  if (loadingEvents && isActive) return (
     <div className="flex items-center justify-center py-12"><Spinner /></div>
   )
 
@@ -2738,11 +2858,536 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
   const upcoming = filteredEvents.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
   const past = filteredEvents.filter(e => isPastEvent(e) || e.status === 'cancelled')
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
+  const scraperUnconfirmed = unconfirmedEvents.filter(e => e.source === 'scraper')
+  const operatorUnconfirmed = unconfirmedEvents.filter(e => e.source !== 'scraper')
   const confirmedEvents = upcoming.filter(e => e.status === 'confirmed')
   const openEvents = upcoming.filter(e => e.status === 'open')
   const otherUpcoming = upcoming.filter(e => !['unconfirmed', 'confirmed', 'open'].includes(e.status))
 
+  const renderScheduleReview = (onCancel: () => void) => {
+    const isEv = (e: any) => !e.event_date || !e.venue_name || !e.start_time
+    const needsAttention = (e: any) => !e.event_date || !e.venue_name || !e.start_time || !e.end_time
+
+    const todayStr = new Date().toISOString().split('T')[0]
+    const parseDDMMYYYY = (s: string): string => {
+      if (!s) return ''
+      const [d, m, y] = s.split('/')
+      if (!d || !m || !y) return ''
+      return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`
+    }
+    const sortByDate = (evs: any[]) => [...evs].sort((a, b) => {
+      const ia = parseDDMMYYYY(a.event_date), ib = parseDDMMYYYY(b.event_date)
+      if (!ia) return 1; if (!ib) return -1
+      return ia.localeCompare(ib)
+    })
+
+    const includedEvents = editedEvents.filter(ev => !isExcluded(ev.venue_name || '', exclusionTerms))
+    const excludedEvents = editedEvents.filter(ev => isExcluded(ev.venue_name || '', exclusionTerms))
+
+    const futureIncluded = includedEvents.filter(ev => {
+      const iso = parseDDMMYYYY(ev._originalDate ?? ev.event_date)
+      return !iso || iso >= todayStr
+    })
+    const historicalIncluded = includedEvents.filter(ev => {
+      const iso = parseDDMMYYYY(ev._originalDate ?? ev.event_date)
+      return iso && iso < todayStr
+    })
+    const sortedFuture = sortByDate(futureIncluded)
+    const sortedHistorical = sortByDate(historicalIncluded)
+
+    const selectedEvts = includedEvents.filter(e => e.selected)
+    const incompleteSelected = selectedEvts.filter(isEv)
+    const attentionSelected = selectedEvts.filter(needsAttention)
+    const saveCount = selectedEvts.filter(e => !isEv(e)).length
+    const canSave = incompleteSelected.length === 0 && saveCount > 0
+
+    const updateEvent = (id: string, patch: any) => {
+      setEditedEvents(prev => prev.map(e => {
+        if (e.id !== id) return e
+        if ('event_date' in patch) {
+          const iso = parseDDMMYYYY(patch.event_date)
+          const updated = { ...e, ...patch }
+          if (iso && iso >= todayStr) updated.selected = true
+          else if (iso && iso < todayStr) updated.selected = false
+          return updated
+        }
+        if ('start_time' in patch) {
+          const { start_time, end_time } = applyStartTimeChange(patch.start_time, e.end_time)
+          return { ...e, ...patch, start_time, end_time }
+        }
+        return { ...e, ...patch }
+      }))
+    }
+    const toggleSelected = (id: string) =>
+      setEditedEvents(prev => prev.map(e => e.id === id ? { ...e, selected: !e.selected } : e))
+    const setPendingDelete = (id: string, value: boolean) =>
+      setEditedEvents(prev => prev.map(e => e.id === id ? { ...e, _pendingDelete: value } : e))
+    const removeEvent = (id: string) =>
+      setEditedEvents(prev => prev.filter(e => e.id !== id))
+    const handleDeleteWithExclusion = async (ev: any) => {
+      try {
+        const res = await api('add_exclusion_term', { term: ev.venue_name })
+        setExclusionList(prev => [...prev, { id: res.id ?? '', term: ev.venue_name }])
+        setExclusionTerms(prev => [...prev, ev.venue_name])
+        removeEvent(ev.id)
+        showToast('Removed and excluded from future imports')
+      } catch { removeEvent(ev.id) }
+    }
+    const handleDeleteOnly = (ev: any) => removeEvent(ev.id)
+    const handleAddBack = async (ev: any) => {
+      const match = exclusionList.find(t => t.term === ev.venue_name || isExcluded(ev.venue_name, [t.term]))
+      if (match?.id) {
+        try { await api('remove_exclusion_term', { id: match.id }) } catch { /* continue */ }
+      }
+      if (match?.term) {
+        setExclusionTerms(prev => prev.filter(t => t !== match.term))
+        setExclusionList(prev => prev.filter(t => t.term !== match.term))
+      }
+      showToast('Added back — exclusion removed')
+    }
+    const expandToEdit = (id: string) =>
+      setExpandedEventIds(prev => { const n = new Set(prev); n.add(id); return n })
+
+    const getFriendlyDate = (ev: any) => {
+      const p = (ev.event_date || '').split('/')
+      if (p.length !== 3) return ev.event_date || ''
+      const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0]))
+      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+      const day = d.getDate()
+      const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]
+      return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}`
+    }
+    const getDateVal = (ev: any) => {
+      const p = (ev.event_date || '').split('/')
+      return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : ev.event_date || ''
+    }
+    const getMissingLabel = (ev: any) => {
+      if (!ev.event_date) return 'Add date'
+      if (!ev.venue_name) return 'Add venue'
+      if (!ev.start_time) return 'Add start time'
+      if (!ev.end_time) return 'Add end time'
+      return ''
+    }
+
+    const TrashBtn = ({ id }: { id: string }) => (
+      <button type="button" onClick={() => setPendingDelete(id, true)} className="text-slate-400 hover:text-red-600" aria-label="Remove">
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </button>
+    )
+    const Checkbox = ({ id, checked, disabled }: { id: string; checked: boolean; disabled?: boolean }) => (
+      <button type="button" onClick={disabled ? undefined : () => toggleSelected(id)} className={`w-[18px] h-[18px] rounded border-2 flex-shrink-0 flex items-center justify-center ${checked ? 'bg-orange-600 border-orange-600' : 'border-slate-300 bg-white'} ${disabled ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`} aria-label={checked ? 'Deselect' : 'Select'}>
+        {checked && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+      </button>
+    )
+
+    return (
+      <div className="flex flex-col gap-3">
+        {attentionSelected.length > 0 && (
+          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <span className="text-amber-600">⚠</span>
+            <span className="text-sm text-amber-700 font-medium">
+              {attentionSelected.length} event{attentionSelected.length !== 1 ? 's' : ''} need{attentionSelected.length === 1 ? 's' : ''} attention before saving
+            </span>
+          </div>
+        )}
+
+        {/* Mobile cards */}
+        <div className="md:hidden flex flex-col gap-2">
+          {(() => {
+            const renderMobileCard = (ev: any, isHistorical: boolean) => {
+            const canEdit = ev.selected || isHistorical
+            const rowAmber = !ev.event_date || !ev.venue_name || !ev.start_time || !ev.end_time
+            const stateC = expandedEventIds.has(ev.id)
+            const stateB = focusedEventIds.has(ev.id) && !stateC
+            const dateLabel = getFriendlyDate(ev)
+            const timeLabel = ev.start_time
+              ? `${formatTime(ev.start_time)}${ev.end_time ? `–${formatTime(ev.end_time)}` : ''}`
+              : null
+            const dateVal = getDateVal(ev)
+
+            const fieldCls = (amber: boolean) => `bg-white border rounded-lg px-3 py-2.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-orange-400 ${amber ? 'border-amber-400 bg-amber-50' : 'border-slate-200'}`
+            const endTimeOptions = ev.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > ev.start_time) : SCHEDULE_TIME_OPTIONS
+            const timePair = (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={`text-xs font-medium mb-1 block ${!ev.start_time ? 'text-amber-600' : 'text-slate-500'}`}>Start time</label>
+                  <select value={ev.start_time || ''} onChange={e => updateEvent(ev.id, { start_time: e.target.value })} className={fieldCls(!ev.start_time)}>
+                    <option value="">— : —</option>
+                    {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={`text-xs font-medium mb-1 block ${!ev.end_time ? 'text-amber-600' : 'text-slate-500'}`}>End time</label>
+                  <select value={ev.end_time || ''} onChange={e => updateEvent(ev.id, { end_time: e.target.value })} className={fieldCls(!ev.end_time)}>
+                    <option value="">— : —</option>
+                    {endTimeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+              </div>
+            )
+
+            return (
+              <div key={ev.id}
+                className={`border border-slate-200 overflow-hidden ${stateB ? 'border-l-[3px] border-l-amber-400' : ''} ${!ev.selected && !isHistorical ? 'opacity-40' : ''} ${isHistorical ? 'opacity-70' : ''}`}
+                style={{ borderRadius: stateB ? '0 10px 10px 0' : '10px' }}>
+
+                {/* Summary — always visible */}
+                <div className="flex items-start gap-2 p-3">
+                  <Checkbox id={ev.id} checked={ev.selected} disabled={isHistorical && !ev.selected} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-semibold leading-snug ${!ev.start_time || !ev.event_date ? 'text-amber-600' : 'text-slate-900'}`}>
+                          {ev.event_date ? dateLabel : 'No date'}{timeLabel ? ` · ${timeLabel}` : ' · time missing'}
+                        </p>
+                        <p className="text-sm text-slate-900 break-words">{ev.venue_name || <span className="text-amber-600">Add venue</span>}</p>
+                        {(ev.town || ev.postcode) && <p className="text-xs text-slate-500">{[ev.town, ev.postcode].filter(Boolean).join(' · ')}</p>}
+                      </div>
+                      <div className="flex items-center flex-shrink-0 pt-0.5">
+                        {/* Edit in State A and State B — not in State C */}
+                        {!stateC && (
+                          <>
+                            <button type="button" disabled={!canEdit} onClick={() => expandToEdit(ev.id)} className={`text-xs font-medium text-slate-600 border border-slate-200 rounded px-2.5 py-1 leading-5 ${!canEdit ? 'pointer-events-none opacity-40' : 'hover:bg-slate-50'}`}>
+                              Edit
+                            </button>
+                            <span className="mx-3 text-slate-200 select-none">|</span>
+                          </>
+                        )}
+                        <TrashBtn id={ev.id} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* State B — only the fields that were missing on load (snapshotted flags) */}
+                {stateB && canEdit && (
+                  <div className="border-t border-slate-100 px-3 pb-3 pt-2 space-y-3">
+                    {ev._missingDate && (
+                      <div className="relative">
+                        <label className={`text-xs font-medium mb-1 block ${!ev.event_date ? 'text-amber-600' : 'text-slate-500'}`}>Date</label>
+                        <div onClick={() => { const el = document.getElementById(`m-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`w-full border rounded-lg px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between ${!ev.event_date ? 'border-amber-400 bg-amber-50' : 'border-slate-200 bg-white'}`}>
+                          <span className={ev.event_date ? 'text-slate-800 font-medium' : 'text-amber-600'}>{dateLabel || 'Select date'}</span>
+                          <span className="text-slate-400 text-xs">📅</span>
+                        </div>
+                        <input id={`m-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
+                      </div>
+                    )}
+                    {ev._missingVenue && (
+                      <div>
+                        <label className={`text-xs font-medium mb-1 block ${!ev.venue_name ? 'text-amber-600' : 'text-slate-500'}`}>Venue</label>
+                        <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={fieldCls(!ev.venue_name)} />
+                      </div>
+                    )}
+                    {ev._missingTime && timePair}
+                    {vans.length > 1 && !ev.van_id && (
+                      <div>
+                        <label className={`text-xs font-medium mb-1 block ${!ev.van_id ? 'text-amber-600' : 'text-slate-500'}`}>Van</label>
+                        <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={fieldCls(!ev.van_id)}>
+                          <option value="">Select a van</option>
+                          {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* State C — all fields, no Done button */}
+                {stateC && canEdit && (
+                  <div className="border-t border-slate-100 px-3 pb-3 pt-2 space-y-3">
+                    <div className="relative">
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">Date</label>
+                      <div onClick={() => { const el = document.getElementById(`m-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className="w-full border border-slate-200 bg-white rounded-lg px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between">
+                        <span className={ev.event_date ? 'text-slate-800 font-medium' : 'text-slate-400'}>{dateLabel || 'Select date'}</span>
+                        <span className="text-slate-400 text-xs">📅</span>
+                      </div>
+                      <input id={`m-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">Venue</label>
+                      <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={fieldCls(!ev.venue_name)} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">Area</label>
+                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={fieldCls(false)} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-slate-500 mb-1 block">Postcode</label>
+                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="Postcode" className={`${fieldCls(false)} uppercase`} />
+                    </div>
+                    {timePair}
+                    {vans.length > 1 && (
+                      <div>
+                        <label className="text-xs font-medium text-slate-500 mb-1 block">Van</label>
+                        <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={fieldCls(false)}>
+                          <option value="">Select a van</option>
+                          {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                )}
+              {/* Pending-delete confirmation */}
+              {ev._pendingDelete && (
+                <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 text-sm text-slate-600">
+                  <p className="font-medium mb-2">Exclude &ldquo;{ev.venue_name}&rdquo; from future imports?</p>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => handleDeleteWithExclusion(ev)} className="text-xs font-medium px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">
+                      Yes, exclude
+                    </button>
+                    <button type="button" onClick={() => handleDeleteOnly(ev)} className="text-xs font-medium px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50">
+                      Just remove this one
+                    </button>
+                    <button type="button" onClick={() => setPendingDelete(ev.id, false)} className="text-xs text-slate-400 px-2 py-1.5 hover:text-slate-600 ml-auto">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+              </div>
+            )
+            } // end renderMobileCard
+
+            return (
+              <>
+                {sortedFuture.map(ev => renderMobileCard(ev, false))}
+                {sortedHistorical.length > 0 && (
+                  <div className="mt-2">
+                    <div className="px-1 mb-1.5">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Past dates — update to save</p>
+                      <p className="text-xs text-slate-400 mt-0.5">These events have already passed. Update the date to a future date to include them.</p>
+                    </div>
+                    {sortedHistorical.map(ev => renderMobileCard(ev, true))}
+                  </div>
+                )}
+              </>
+            )
+          })()}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full" style={{ tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: '32px' }} />
+              <col style={{ width: '130px' }} />
+              <col style={{ width: '220px' }} />
+              <col style={{ width: '150px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '100px' }} />
+              {vans.length > 1 && <col style={{ width: '120px' }} />}
+              <col style={{ width: '36px' }} />
+            </colgroup>
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th className="pb-2" />
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Date</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Venue</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Area</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Postcode</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Start</th>
+                <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">End</th>
+                {vans.length > 1 && <th className="text-xs font-medium text-slate-500 text-left px-1.5 pb-2">Van</th>}
+                <th className="pb-2" />
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const renderDesktopRow = (ev: any, isHistorical: boolean) => {
+                const incomplete = isEv(ev)
+                const rowAmber = !ev.event_date || !ev.venue_name || !ev.start_time || !ev.end_time
+                const missingDate = !ev.event_date
+                const missingVenue = !ev.venue_name
+                const missingStart = !ev.start_time
+                const missingEnd = !ev.end_time
+                const dateVal = getDateVal(ev)
+                const dateLabel = getFriendlyDate(ev)
+                const ci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'}`
+                const endTimeOptions = ev.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > ev.start_time) : SCHEDULE_TIME_OPTIONS
+                return (
+                  <Fragment key={ev.id}>
+                  <tr className={`${rowAmber ? 'bg-amber-50' : isHistorical ? 'bg-slate-50' : 'bg-white'} ${!ev.selected && !isHistorical ? 'opacity-35' : ''} ${isHistorical ? 'opacity-70' : ''}`}>
+                    <td className="px-2 py-1 align-middle">
+                      <Checkbox id={ev.id} checked={ev.selected} disabled={isHistorical && !ev.selected} />
+                    </td>
+                    <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                      <div className="relative">
+                        <div onClick={() => { const el = document.getElementById(`d-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`text-sm px-1.5 cursor-pointer flex items-center ${missingDate ? 'text-amber-600 bg-amber-50 border-b border-amber-400' : 'text-slate-900 hover:bg-slate-50 border-b border-b-slate-200 hover:border-b-slate-400'}`} style={{ minHeight: '48px' }}>
+                          {dateLabel || <span className="italic text-xs text-amber-400">Add date</span>}
+                        </div>
+                        <input id={`d-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
+                      </div>
+                    </td>
+                    <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                      <input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={ci(missingVenue)} style={{ minHeight: '48px' }} />
+                    </td>
+                    <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                      <input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={ci(false)} style={{ minHeight: '48px' }} />
+                    </td>
+                    <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                      <input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="CB22 5EJ" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} />
+                    </td>
+                    <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                      <select value={ev.start_time || ''} onChange={e => updateEvent(ev.id, { start_time: e.target.value })} className={ci(missingStart)} style={{ minHeight: '48px' }}>
+                        <option value="">—:—</option>
+                        {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </td>
+                    <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                      <select value={ev.end_time || ''} onChange={e => updateEvent(ev.id, { end_time: e.target.value })} className={ci(missingEnd)} style={{ minHeight: '48px' }}>
+                        <option value="">—:—</option>
+                        {endTimeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </td>
+                    {vans.length > 1 && (
+                      <td className="px-0 py-0 align-middle" style={{ pointerEvents: isHistorical || ev.selected ? 'auto' : 'none' }}>
+                        <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={`${ci(false)} bg-transparent`} style={{ minHeight: '48px' }}>
+                          <option value="">Select</option>
+                          {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
+                        </select>
+                      </td>
+                    )}
+                    <td className="px-2 py-1 align-middle text-center">
+                      <TrashBtn id={ev.id} />
+                    </td>
+                  </tr>
+                  {ev._pendingDelete ? (
+                    <tr>
+                      <td colSpan={vans.length > 1 ? 9 : 8} className="px-3 py-2 bg-slate-50 border-t border-slate-100 text-sm text-slate-600">
+                        <span className="font-medium mr-3">Exclude &ldquo;{ev.venue_name}&rdquo; from future imports?</span>
+                        <button type="button" onClick={() => handleDeleteWithExclusion(ev)} className="text-xs font-medium px-2.5 py-1 bg-slate-800 text-white rounded-lg hover:bg-slate-900 mr-2">Yes, exclude</button>
+                        <button type="button" onClick={() => handleDeleteOnly(ev)} className="text-xs font-medium px-2.5 py-1 border border-slate-200 rounded-lg hover:bg-white mr-2">Just remove</button>
+                        <button type="button" onClick={() => setPendingDelete(ev.id, false)} className="text-xs text-slate-400 hover:text-slate-600">Cancel</button>
+                      </td>
+                    </tr>
+                  ) : null}
+                  </Fragment>
+                )
+                } // end renderDesktopRow
+                return sortedFuture.map(ev => renderDesktopRow(ev, false))
+              })()}
+            </tbody>
+            {sortedHistorical.length > 0 && (
+              <>
+                <tbody>
+                  <tr>
+                    <td colSpan={vans.length > 1 ? 9 : 8} className="pt-4 pb-1 px-1.5">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">Past dates — update to save</p>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody>
+                  {sortedHistorical.map(ev => (() => {
+                    const incomplete = isEv(ev)
+                    const rowAmber = !ev.event_date || !ev.venue_name || !ev.start_time || !ev.end_time
+                    const missingDate = !ev.event_date
+                    const missingVenue = !ev.venue_name
+                    const missingStart = !ev.start_time
+                    const missingEnd = !ev.end_time
+                    const dateVal = getDateVal(ev)
+                    const dateLabel = getFriendlyDate(ev)
+                    const ci = (missing: boolean) => `bg-transparent border-b text-sm text-slate-900 px-1.5 py-2 w-full rounded-none focus:outline-none ${missing ? 'border-b-amber-400 bg-amber-50' : 'border-b-slate-200 hover:border-b-slate-400 hover:bg-slate-50 focus:border-b-orange-500 focus:bg-slate-50 focus:rounded'}`
+                    const endTimeOptions = ev.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > ev.start_time) : SCHEDULE_TIME_OPTIONS
+                    return (
+                      <Fragment key={ev.id}>
+                      <tr className={`bg-slate-50 opacity-70`}>
+                        <td className="px-2 py-1 align-middle">
+                          <Checkbox id={ev.id} checked={ev.selected} disabled={!ev.selected} />
+                        </td>
+                        <td className="px-0 py-0 align-middle">
+                          <div className="relative">
+                            <div onClick={() => { const el = document.getElementById(`d-date-${ev.id}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className={`text-sm px-1.5 cursor-pointer flex items-center ${missingDate ? 'text-amber-600 bg-amber-50 border-b border-amber-400' : 'text-slate-900 hover:bg-slate-50 border-b border-b-slate-200 hover:border-b-slate-400'}`} style={{ minHeight: '48px' }}>
+                              {dateLabel || <span className="italic text-xs text-amber-400">Add date</span>}
+                            </div>
+                            <input id={`d-date-${ev.id}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); updateEvent(ev.id, { event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
+                          </div>
+                        </td>
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.venue_name || ''} onChange={e => updateEvent(ev.id, { venue_name: e.target.value })} placeholder="Venue name" className={ci(missingVenue)} style={{ minHeight: '48px' }} /></td>
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.town || ''} onChange={e => updateEvent(ev.id, { town: e.target.value })} placeholder="Area" className={ci(false)} style={{ minHeight: '48px' }} /></td>
+                        <td className="px-0 py-0 align-middle"><input type="text" value={ev.postcode || ''} onChange={e => updateEvent(ev.id, { postcode: e.target.value.toUpperCase() })} placeholder="CB22 5EJ" className={`${ci(false)} uppercase`} style={{ minHeight: '48px' }} /></td>
+                        <td className="px-0 py-0 align-middle">
+                          <select value={ev.start_time || ''} onChange={e => updateEvent(ev.id, { start_time: e.target.value })} className={ci(missingStart)} style={{ minHeight: '48px' }}>
+                            <option value="">—:—</option>
+                            {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </td>
+                        <td className="px-0 py-0 align-middle">
+                          <select value={ev.end_time || ''} onChange={e => updateEvent(ev.id, { end_time: e.target.value })} className={ci(missingEnd)} style={{ minHeight: '48px' }}>
+                            <option value="">—:—</option>
+                            {endTimeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+                          </select>
+                        </td>
+                        {vans.length > 1 && (
+                          <td className="px-0 py-0 align-middle">
+                            <select value={ev.van_id || ''} onChange={e => updateEvent(ev.id, { van_id: e.target.value || undefined })} className={`${ci(false)} bg-transparent`} style={{ minHeight: '48px' }}>
+                              <option value="">Select</option>
+                              {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
+                            </select>
+                          </td>
+                        )}
+                        <td className="px-2 py-1 align-middle text-center">
+                          <TrashBtn id={ev.id} />
+                        </td>
+                      </tr>
+                      </Fragment>
+                    )
+                  })())}
+                </tbody>
+              </>
+            )}
+          </table>
+        </div>
+
+        {/* Footer */}
+        {/* Excluded events — collapsed by default */}
+        {excludedEvents.length > 0 && (
+          <details className="border border-slate-200 rounded-xl overflow-hidden">
+            <summary className="px-4 py-3 text-sm font-medium text-slate-500 cursor-pointer select-none list-none flex items-center justify-between hover:bg-slate-50">
+              <span>{excludedEvents.length} excluded — previously flagged as not an event</span>
+              <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            </summary>
+            <div className="divide-y divide-slate-100">
+              {excludedEvents.map(ev => (
+                <div key={ev.id} className="flex items-center gap-3 px-4 py-3 bg-slate-50">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-slate-500 line-through">{ev.venue_name}</p>
+                    <p className="text-xs text-slate-400">{ev.event_date}{ev.town ? ` · ${ev.town}` : ''}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleAddBack(ev)}
+                    className="shrink-0 text-xs font-medium text-orange-600 hover:text-orange-700 px-3 py-1.5 border border-orange-200 rounded-lg hover:bg-orange-50 whitespace-nowrap"
+                  >
+                    Add back
+                  </button>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
+
+        <div className="flex flex-col-reverse gap-2 pt-1 md:flex-row md:justify-end">
+          <button type="button" onClick={onCancel} className="w-full md:w-auto border border-slate-200 text-slate-600 py-2.5 px-4 rounded-xl text-sm">Cancel</button>
+          {canSave ? (
+            <button type="button" onClick={() => saveExtractedEvents(selectedEvts.filter(e => !isEv(e)))} disabled={savingExtracted} className="w-full md:w-auto bg-orange-600 text-white font-medium py-2.5 px-4 rounded-xl text-sm disabled:opacity-40">
+              {savingExtracted ? 'Saving...' : `Save ${saveCount} event${saveCount !== 1 ? 's' : ''}`}
+            </button>
+          ) : (
+            <button type="button" disabled className="w-full md:w-auto bg-slate-100 text-slate-400 font-medium py-2.5 px-4 rounded-xl text-sm cursor-not-allowed">
+              Fix {incompleteSelected.length} event{incompleteSelected.length !== 1 ? 's' : ''} first
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   return (
+    <>
+    {isActive && (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
@@ -2780,6 +3425,18 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         </div>
       </div>
 
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-slate-500">
+          {truck.scraper_preference === 'auto' || truck.scraper_preference === 'both'
+            ? 'Finding events automatically from your website'
+            : "You're managing your schedule manually"}
+          {' · '}
+          <button onClick={() => onSwitchTab('settings')} className="text-orange-600 hover:underline font-medium">
+            Change in Settings
+          </button>
+        </p>
+      </div>
+
       {upcoming.length === 0 && (
         <EmptyState icon="🗓️" title="No upcoming events" body="Events scraped from your social media and booking calendar will appear here for you to confirm" />
       )}
@@ -2791,10 +3448,83 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         </div>
       )}
 
-      {unconfirmedEvents.length > 0 && (
+      {scraperUnconfirmed.length > 0 && (
+        <div className="space-y-2">
+          <div className="mb-1">
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Needs your approval</p>
+            <p className="text-sm text-slate-600 mt-0.5">
+              We found {scraperUnconfirmed.length} event{scraperUnconfirmed.length !== 1 ? 's' : ''} from your website — review and approve before they go live.
+            </p>
+          </div>
+          {scraperUnconfirmed.map(event => {
+            const isPast = isPastEvent(event)
+            return (
+              <div key={event.id} className="border-l-4 border-l-amber-400 bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                {renderEvent(event)}
+                <div className="flex gap-2 px-4 pb-3 pt-0">
+                  <button
+                    onClick={() => handleConfirmEvent(event.id)}
+                    className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-1.5 hover:bg-green-50"
+                  >
+                    Approve
+                  </button>
+                  {!isPast && (
+                    <button
+                      onClick={() => {
+                        setEditingEventConfirmOnSave(true)
+                        setFormErrors({})
+                        setEditingEvent({
+                          id: event.id,
+                          venue_name: event.venue_name,
+                          town: event.town || '',
+                          postcode: event.postcode || '',
+                          address: event.address || '',
+                          event_date: event.event_date,
+                          start_time: event.start_time ? event.start_time.substring(0, 5) : '',
+                          end_time: event.end_time ? event.end_time.substring(0, 5) : '',
+                          notes: event.notes || '',
+                          truck_id: event.truck_id || truck.id,
+                          van_id: event.van_id || null,
+                        })
+                      }}
+                      className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-1.5 hover:bg-slate-50"
+                    >
+                      Edit &amp; Approve
+                    </button>
+                  )}
+                  {pendingRejectId !== event.id && (
+                    <button
+                      onClick={() => setPendingRejectId(event.id)}
+                      className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-1.5 hover:bg-red-50 ml-auto"
+                    >
+                      Reject
+                    </button>
+                  )}
+                </div>
+                {pendingRejectId === event.id && (
+                  <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 text-sm text-slate-600">
+                    <p className="font-medium mb-2">Remove this event?</p>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, true)} className="text-xs font-medium px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">
+                        Yes, exclude similar
+                      </button>
+                      <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, false)} className="text-xs font-medium px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white">
+                        Just remove this one
+                      </button>
+                      <button type="button" onClick={() => setPendingRejectId(null)} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5 ml-auto">Cancel</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {operatorUnconfirmed.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Needs confirmation</p>
-          {unconfirmedEvents.map(renderEvent)}
+          {operatorUnconfirmed.map(renderEvent)}
         </div>
       )}
 
@@ -2826,7 +3556,7 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
 
       {editingEvent && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center lg:items-start lg:pt-8 justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full max-w-sm sm:max-w-lg lg:max-w-2xl shadow-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <div className={`bg-white rounded-2xl p-5 sm:p-6 pb-8 sm:pb-8 w-full shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y ${extractedEvents.length > 0 ? 'md:max-w-[980px]' : 'max-w-sm sm:max-w-lg lg:max-w-2xl overflow-x-hidden'}`}>
             <h3 className="font-black text-slate-900 mb-4">
               {editingEvent.id ? 'Edit event' : addMode === 'upload' ? 'Import schedule' : 'Add event'}
             </h3>
@@ -2950,24 +3680,32 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                   <Input label="Full address (optional)" value={editingEvent.address} onChange={v => setEditingEvent(p => ({...p!, address: v}))} placeholder="e.g. 123 High St, Wickhambrook" />
                 </div>
                 <div>
-                  <Input label="Village / Town" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
+                  <Input label="Area (village, town or city)" value={editingEvent.town} onChange={v => setEditingEvent(p => ({...p!, town: v}))} placeholder="e.g. Wickhambrook" />
                 </div>
                 <Input label="Postcode" value={editingEvent.postcode} onChange={v => setEditingEvent(p => ({...p!, postcode: v}))} placeholder="e.g. CB8 8PD" />
                 <div className="sm:col-span-2 grid grid-cols-2 gap-2">
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Start time<span className="text-red-400 ml-0.5">*</span></label>
-                    <input type="time" step="300" value={editingEvent.start_time}
-                      onChange={e => { setEditingEvent(p => ({...p!, start_time: e.target.value})); if (formErrors.start_time) setFormErrors(p => ({...p, start_time: ''})) }}
-                      onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }}
-                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
+                    <select value={editingEvent.start_time}
+                      onChange={e => {
+                        const { start_time, end_time } = applyStartTimeChange(e.target.value, editingEvent.end_time)
+                        setEditingEvent(p => ({ ...p!, start_time, end_time }))
+                        if (formErrors.start_time) setFormErrors(p => ({ ...p, start_time: '' }))
+                      }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.start_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
+                      <option value="">Select</option>
+                      {SCHEDULE_TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
                     {formErrors.start_time && <p className="text-xs text-red-500 mt-1">{formErrors.start_time}</p>}
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">End time<span className="text-red-400 ml-0.5">*</span></label>
-                    <input type="time" step="300" value={editingEvent.end_time}
-                      onChange={e => { setEditingEvent(p => ({...p!, end_time: e.target.value})); if (formErrors.end_time) setFormErrors(p => ({...p, end_time: ''})) }}
-                      onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }}
-                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
+                    <select value={editingEvent.end_time}
+                      onChange={e => { setEditingEvent(p => ({ ...p!, end_time: e.target.value })); if (formErrors.end_time) setFormErrors(p => ({ ...p, end_time: '' })) }}
+                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.end_time ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}>
+                      <option value="">Select</option>
+                      {(editingEvent.start_time ? SCHEDULE_TIME_OPTIONS.filter(t => t > editingEvent.start_time) : SCHEDULE_TIME_OPTIONS).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
                     {formErrors.end_time && <p className="text-xs text-red-500 mt-1">{formErrors.end_time}</p>}
                   </div>
                 </div>
@@ -3045,260 +3783,15 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
                   </>
                 )}
 
-                {extractedEvents.length > 0 && (
-                  <div className="flex flex-col gap-3">
-                    <p className="text-sm font-semibold text-slate-900">
-                      We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
-                    </p>
-                    {(() => {
-                      const eventsNeedingAttention = editedEvents.filter(ev =>
-                        !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
-                      ).length
-                      return eventsNeedingAttention > 0 ? (
-                        <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
-                          <span className="text-orange-600">⚠️</span>
-                          <span className="text-sm text-orange-700 font-medium">
-                            {eventsNeedingAttention} event{eventsNeedingAttention > 1 ? 's need' : ' needs'} attention before saving
-                          </span>
-                        </div>
-                      ) : null
-                    })()}
-                    {extractedEvents.map((ev, i) => {
-                      const isMissingStart = !editedEvents[i]?.start_time
-                      const isMissingEnd = !editedEvents[i]?.end_time
-                      const isMissingVan = vans.length > 1 && !editedEvents[i]?.van_id
-                      const dateVal = (() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()
-                      const friendlyDate = (() => { const s = editedEvents[i]?.event_date || ''; const p = s.split('/'); if (p.length !== 3) return s; const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])); const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const day = d.getDate(); const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]; return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}` })()
-                      return (
-                        <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-3">
-                          {/* Date */}
-                          <div>
-                            <p className="text-xs text-slate-500 mb-1">Date</p>
-                            <div className="relative">
-                              <div onClick={() => { const el = document.getElementById(`date-input-${i}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between">
-                                <span className={editedEvents[i]?.event_date ? 'text-base text-slate-800 font-medium' : 'text-base text-slate-400'}>{friendlyDate || 'Select date'}</span>
-                                <span className="text-slate-400 text-xs">📅</span>
-                              </div>
-                              <input id={`date-input-${i}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
-                            </div>
-                          </div>
-                          {/* Venue name */}
-                          <div className="relative">
-                            <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                            {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
-                              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
-                                {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
-                                  <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
-                                    <p className="font-medium text-slate-800">{venue.venue_name}</p>
-                                    <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
-                                  </button>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          {/* Area + Postcode */}
-                          <div className="grid grid-cols-2 gap-2">
-                            <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Area" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                            <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                          </div>
-                          {/* Start + End time */}
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <p className={`text-xs mb-1 ${isMissingStart ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingStart ? '⚠ Start time required' : 'Start time'}</p>
-                              <input type="time" step="300" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingStart ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
-                            </div>
-                            <div>
-                              <p className={`text-xs mb-1 ${isMissingEnd ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingEnd ? '⚠ End time required' : 'End time'}</p>
-                              <input type="time" step="300" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingEnd ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
-                            </div>
-                          </div>
-                          {/* Van selector — multi-van only */}
-                          {vans.length > 1 && (
-                            <div>
-                              <p className={`text-xs mb-1 ${isMissingVan ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingVan ? '⚠ Select a truck' : 'Truck'}</p>
-                              <select value={editedEvents[i]?.van_id || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], van_id: e.target.value || null }; setEditedEvents(next) }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isMissingVan ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`}>
-                                <option value="">Select a truck</option>
-                                {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
-                              </select>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                    {(() => {
-                      const hasIncomplete = editedEvents.some(ev =>
-                        !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
-                      )
-                      return (
-                        <div className="flex gap-3">
-                          <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
-                          <button onClick={() => saveExtractedEvents(editedEvents)} disabled={savingExtracted || hasIncomplete} className={`flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm ${hasIncomplete ? 'opacity-50 cursor-not-allowed' : 'disabled:opacity-40'}`}>
-                            {savingExtracted ? 'Saving...' : `Save ${editedEvents.length} event${editedEvents.length !== 1 ? 's' : ''}`}
-                          </button>
-                        </div>
-                      )
-                    })()}
-                  </div>
-                )}
+                {extractedEvents.length > 0 && renderScheduleReview(closeAddModal)}
 
-                <button onClick={closeAddModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
-                  Cancel
-                </button>
+                {extractedEvents.length === 0 && (
+                  <button onClick={closeAddModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
+                    Cancel
+                  </button>
+                )}
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {showImportModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-sm sm:max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 className="font-black text-slate-900 mb-4">Import schedule</h3>
-            <div className="flex flex-col gap-4">
-              {extractedEvents.length === 0 && (
-                <>
-                  <p className="text-sm text-slate-500">
-                    Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
-                    Our AI will extract your events for you to review.
-                  </p>
-
-                  <label
-                    {...scheduleDragProps}
-                    className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
-                  >
-                    <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
-                    <span className="text-sm text-slate-500 text-center">
-                      {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
-                    </span>
-                    {!isScheduleDragging && !uploadFile && (
-                      <span className="text-xs text-slate-400">Image or PDF</span>
-                    )}
-                    <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
-                  </label>
-
-                  <div>
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                      Or paste schedule text
-                    </label>
-                    <textarea
-                      value={uploadText}
-                      onChange={e => setUploadText(e.target.value)}
-                      placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
-                      rows={4}
-                      className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                    />
-                  </div>
-
-                  <button
-                    onClick={processUpload}
-                    disabled={(!uploadFile && !uploadText) || uploadProcessing}
-                    className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
-                  >
-                    {uploadProcessing ? 'Analysing...' : 'Process schedule'}
-                  </button>
-                </>
-              )}
-
-              {extractedEvents.length > 0 && (
-                <div className="flex flex-col gap-3">
-                  <p className="text-sm font-semibold text-slate-900">
-                    We found {extractedEvents.length} event{extractedEvents.length !== 1 ? 's' : ''} — does this look right?
-                  </p>
-                  {(() => {
-                    const eventsNeedingAttention = editedEvents.filter(ev =>
-                      !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
-                    ).length
-                    return eventsNeedingAttention > 0 ? (
-                      <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
-                        <span className="text-orange-600">⚠️</span>
-                        <span className="text-sm text-orange-700 font-medium">
-                          {eventsNeedingAttention} event{eventsNeedingAttention > 1 ? 's need' : ' needs'} attention before saving
-                        </span>
-                      </div>
-                    ) : null
-                  })()}
-                  {extractedEvents.map((ev, i) => {
-                    const isMissingStart = !editedEvents[i]?.start_time
-                    const isMissingEnd = !editedEvents[i]?.end_time
-                    const isMissingVan = vans.length > 1 && !editedEvents[i]?.van_id
-                    const dateVal = (() => { const p = (editedEvents[i]?.event_date || '').split('/'); return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : editedEvents[i]?.event_date || '' })()
-                    const friendlyDate = (() => { const s = editedEvents[i]?.event_date || ''; const p = s.split('/'); if (p.length !== 3) return s; const d = new Date(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])); const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; const day = d.getDate(); const nth = (day > 3 && day < 21) ? 'th' : ['th','st','nd','rd','th','th','th','th','th','th'][day % 10]; return `${days[d.getDay()]} ${day}${nth} ${months[d.getMonth()]}` })()
-                    return (
-                      <div key={i} className="border border-slate-200 rounded-2xl p-4 space-y-3">
-                        {/* Date */}
-                        <div>
-                          <p className="text-xs text-slate-500 mb-1">Date</p>
-                          <div className="relative">
-                            <div onClick={() => { const el = document.getElementById(`date-input-${i}`) as HTMLInputElement | null; el?.showPicker?.() || el?.click() }} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm cursor-pointer flex items-center justify-between">
-                              <span className={editedEvents[i]?.event_date ? 'text-slate-800 font-medium' : 'text-slate-400'}>{friendlyDate || 'Select date'}</span>
-                              <span className="text-slate-400 text-xs">📅</span>
-                            </div>
-                            <input id={`date-input-${i}`} type="date" value={dateVal} onChange={e => { const d = e.target.value.split('-'); const next = [...editedEvents]; next[i] = { ...next[i], event_date: d.length === 3 ? `${d[2]}/${d[1]}/${d[0]}` : e.target.value }; setEditedEvents(next) }} className="absolute opacity-0 top-0 left-0 w-full h-full cursor-pointer" />
-                          </div>
-                        </div>
-                        {/* Venue name */}
-                        <div className="relative">
-                          <input type="text" value={editedEvents[i]?.venue_name || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: e.target.value }; setEditedEvents(next) }} placeholder="Venue name" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                          {editedEvents[i]?.venue_name && venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-20 max-h-40 overflow-y-auto">
-                              {venueSuggestions.filter(v => v.venue_name.toLowerCase().includes(editedEvents[i].venue_name.toLowerCase())).map((venue, vi) => (
-                                <button key={vi} type="button" onClick={() => { const next = [...editedEvents]; next[i] = { ...next[i], venue_name: venue.venue_name, town: venue.town || next[i].town, postcode: venue.postcode || next[i].postcode, start_time: venue.start_time?.substring(0, 5) || next[i].start_time, end_time: venue.end_time?.substring(0, 5) || next[i].end_time }; setEditedEvents(next) }} className="w-full text-left px-3 py-2 hover:bg-slate-50 border-b border-slate-100 last:border-0 text-sm">
-                                  <p className="font-medium text-slate-800">{venue.venue_name}</p>
-                                  <p className="text-xs text-slate-400">{[venue.town, venue.postcode].filter(Boolean).join(' · ')}</p>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                        {/* Area + Postcode */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <input type="text" value={editedEvents[i]?.town || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], town: e.target.value }; setEditedEvents(next) }} placeholder="Area" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                          <input type="text" value={editedEvents[i]?.postcode || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], postcode: e.target.value }; setEditedEvents(next) }} placeholder="Postcode" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                        </div>
-                        {/* Start + End time */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <p className={`text-xs mb-1 ${isMissingStart ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingStart ? '⚠ Start time required' : 'Start time'}</p>
-                            <input type="time" step="300" value={editedEvents[i]?.start_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], start_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingStart ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
-                          </div>
-                          <div>
-                            <p className={`text-xs mb-1 ${isMissingEnd ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingEnd ? '⚠ End time required' : 'End time'}</p>
-                            <input type="time" step="300" value={editedEvents[i]?.end_time || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], end_time: e.target.value }; setEditedEvents(next) }} onClick={e => { try { (e.currentTarget as HTMLInputElement).showPicker() } catch {} }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${isMissingEnd ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`} />
-                          </div>
-                        </div>
-                        {/* Van selector — multi-van only */}
-                        {vans.length > 1 && (
-                          <div>
-                            <p className={`text-xs mb-1 ${isMissingVan ? 'text-orange-500' : 'text-slate-500'}`}>{isMissingVan ? '⚠ Select a truck' : 'Truck'}</p>
-                            <select value={editedEvents[i]?.van_id || ''} onChange={e => { const next = [...editedEvents]; next[i] = { ...next[i], van_id: e.target.value || null }; setEditedEvents(next) }} className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isMissingVan ? 'border-orange-400 bg-orange-50' : 'border-slate-200'}`}>
-                              <option value="">Select a truck</option>
-                              {vans.map(van => <option key={van.id} value={van.id}>{van.name}</option>)}
-                            </select>
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                  {(() => {
-                    const hasIncomplete = editedEvents.some(ev =>
-                      !ev.start_time || !ev.end_time || (vans.length > 1 && !ev.van_id)
-                    )
-                    return (
-                      <div className="flex gap-3">
-                        <button onClick={() => { setExtractedEvents([]); setEditedEvents([]); setSelectedEvents(new Set()); setUploadFile(null); setUploadText('') }} className="flex-1 border border-slate-200 text-slate-600 py-2.5 rounded-xl text-sm">Try again</button>
-                        <button onClick={() => saveExtractedEvents(editedEvents)} disabled={savingExtracted || hasIncomplete} className={`flex-1 bg-orange-600 text-white font-semibold py-2.5 rounded-xl text-sm ${hasIncomplete ? 'opacity-50 cursor-not-allowed' : 'disabled:opacity-40'}`}>
-                          {savingExtracted ? 'Saving...' : `Save ${editedEvents.length} event${editedEvents.length !== 1 ? 's' : ''}`}
-                        </button>
-                      </div>
-                    )
-                  })()}
-                </div>
-              )}
-
-              <button onClick={closeImportModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
-                Cancel
-              </button>
-            </div>
           </div>
         </div>
       )}
@@ -3361,15 +3854,80 @@ function ScheduleTab({ truck, token, bundles, categories, operatorTrucks, api, r
         </div>
       )}
     </div>
+    )}
+    {/* Import modal — rendered outside the isActive gate so it can open from any tab */}
+    {showImportModal && (
+      <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
+        <div className={`bg-white rounded-2xl p-5 sm:p-6 w-full shadow-2xl max-h-[90vh] overflow-y-auto overscroll-contain touch-pan-y ${extractedEvents.length > 0 ? 'md:max-w-[980px]' : 'max-w-sm sm:max-w-lg'}`}>
+          <h3 className="font-black text-slate-900 mb-4">{importModalTitle}</h3>
+          <div className="flex flex-col gap-4">
+            {extractedEvents.length === 0 && (
+              <>
+                <p className="text-sm text-slate-500">
+                  Upload a screenshot, photo, or PDF of your schedule — or paste the text below.
+                  Our AI will extract your events for you to review.
+                </p>
+
+                <label
+                  {...scheduleDragProps}
+                  className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isScheduleDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
+                >
+                  <span className="text-3xl">{isScheduleDragging ? '📂' : uploadFile ? '✅' : '📷'}</span>
+                  <span className="text-sm text-slate-500 text-center">
+                    {isScheduleDragging ? 'Drop your schedule here' : uploadFile ? uploadFile.name : 'Drag and drop or tap to choose'}
+                  </span>
+                  {!isScheduleDragging && !uploadFile && (
+                    <span className="text-xs text-slate-400">Image or PDF</span>
+                  )}
+                  <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setUploadFile(e.target.files?.[0] || null)} />
+                </label>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Or paste schedule text
+                  </label>
+                  <textarea
+                    value={uploadText}
+                    onChange={e => setUploadText(e.target.value)}
+                    placeholder="Paste your schedule here e.g. Saturday 14th June, The Crown, Wickhambrook, 5pm-9pm"
+                    rows={4}
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+
+                <button
+                  onClick={processUpload}
+                  disabled={(!uploadFile && !uploadText) || uploadProcessing}
+                  className="w-full bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+                >
+                  {uploadProcessing ? 'Analysing...' : 'Process schedule'}
+                </button>
+              </>
+            )}
+
+            {extractedEvents.length > 0 && renderScheduleReview(closeImportModal)}
+
+            {extractedEvents.length === 0 && (
+              <button onClick={closeImportModal} className="text-sm text-slate-400 hover:text-slate-600 text-center">
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    )}
+  </>
   )
 }
 
 // ══════════════════════════════════════════════════════════════
 // SETTINGS TAB
 // ══════════════════════════════════════════════════════════════
-function SettingsTab({ truck, token, api, reload, showToast }: {
+function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
+  onVerifySuccess: (events: any[]) => void
+  onSwitchTab: (tab: Tab) => void
 }) {
   const [form, setForm] = useState({ ...truck })
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -3394,10 +3952,60 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
   const [generatingQR, setGeneratingQR] = useState(false)
   const [copiedOrderLink, setCopiedOrderLink] = useState(false)
   const [qrCodeStyle, setQrCodeStyle] = useState<'standard' | 'branded'>(truck.qr_code_style ?? 'standard')
+  const [settingsExclusionList, setSettingsExclusionList] = useState<{ id: string; term: string }[]>([])
+  const [verifying, setVerifying] = useState(false)
+  const [verifyError, setVerifyError] = useState<string | null>(null)
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
+    api('get_exclusion_terms').then(r => setSettingsExclusionList(r.terms || [])).catch(() => {})
   }, [])
+
+  const BLOCKED_DOMAINS = ['facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'instagr.am']
+  const isBlockedDomain = (url: string): boolean => {
+    try {
+      const hostname = new URL(url).hostname.toLowerCase()
+      return BLOCKED_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`))
+    } catch { return false }
+  }
+  const BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can't be scraped automatically."
+
+  const handleVerifyUrl = async () => {
+    const url = (form.schedule_url ?? '').trim()
+    if (!url) return
+    if (isBlockedDomain(url)) {
+      setVerifyError(BLOCKED_DOMAIN_MSG)
+      return
+    }
+    setVerifying(true)
+    setVerifyError(null)
+    try {
+      const res = await fetch('/api/manage/verify-schedule-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, url }),
+      })
+      if (res.status === 502) {
+        setVerifyError("Couldn't reach this website. Check the URL and try again.")
+        return
+      }
+      const data = await res.json()
+      console.log('[verify]', { status: res.status, found: data.found, eventCount: data.events?.length, reason: data.reason, error: data.error })
+      if (!data.found) {
+        setVerifyError(
+          data.reason === 'no_content'
+            ? "We couldn't load this page. Check the URL is correct and publicly accessible."
+            : "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed."
+        )
+        return
+      }
+      onVerifySuccess(data.events)
+    } catch {
+      setVerifyError("Couldn't reach this website. Check the URL and try again.")
+    } finally {
+      setVerifying(false)
+    }
+  }
 
   const orderUrl = truck.slug
     ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`
@@ -3712,6 +4320,119 @@ function SettingsTab({ truck, token, api, reload, showToast }: {
           </div>
         </div>
       </Card>
+
+      {/* Your schedule */}
+      <Card className="p-4 space-y-4">
+        <p className="text-base font-bold text-slate-800">Your schedule</p>
+        <div className="space-y-2">
+          {([
+            { value: 'manual', label: "I'll upload the schedule myself", desc: 'Use the Import schedule button on your Schedule tab to add events.' },
+            { value: 'auto',   label: 'Find my events automatically',    desc: "We'll check your website for new events and email you to approve them before anything goes live. You can still add events manually at any time." },
+          ] as { value: 'auto' | 'manual'; label: string; desc: string }[]).map(opt => {
+            const pref = form.scraper_preference ?? 'manual'
+            const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => {
+                  setForm(p => ({ ...p, scraper_preference: opt.value }))
+                  saveSetting('scraper_preference', opt.value)
+                }}
+                className={`w-full text-left border rounded-xl p-4 transition-colors ${selected ? 'border-orange-500 bg-orange-50' : 'border-slate-200 hover:border-slate-300'}`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${selected ? 'border-orange-500' : 'border-slate-300'}`}>
+                    {selected && <div className="w-2 h-2 rounded-full bg-orange-500" />}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">{opt.label}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </div>
+        {['auto', 'both'].includes(form.scraper_preference ?? 'manual') && (
+          <div className="space-y-1">
+            <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={form.schedule_url ?? ''}
+                onChange={e => { setForm(p => ({ ...p, schedule_url: e.target.value })); setVerifyError(null) }}
+                onBlur={e => {
+                  const val = e.target.value
+                  if (val && isBlockedDomain(val)) {
+                    setVerifyError(BLOCKED_DOMAIN_MSG)
+                  } else {
+                    setVerifyError(null)
+                    saveSetting('schedule_url', val || null)
+                  }
+                }}
+                placeholder="https://yourtruck.co.uk/events"
+                disabled={verifying}
+                className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${verifying ? 'opacity-50 cursor-not-allowed' : ''}`}
+              />
+              <button
+                type="button"
+                onClick={handleVerifyUrl}
+                disabled={!form.schedule_url?.trim() || verifying}
+                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                {verifying
+                  ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking...</>
+                  : 'Verify'}
+              </button>
+            </div>
+            {verifying && (
+              <div className="mt-1 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <svg className="animate-spin h-4 w-4 text-amber-600 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-amber-800">Checking your website...</p>
+                  <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this page open and don't close the tab.</p>
+                </div>
+              </div>
+            )}
+            {!verifying && verifyError && <p className="text-xs text-red-500">{verifyError}</p>}
+            <p className="text-xs text-slate-500">Your website where customers can see your upcoming events — not a Facebook or Instagram page</p>
+          </div>
+        )}
+      </Card>
+
+      {/* Import exclusions */}
+      {settingsExclusionList.length > 0 && (
+        <Card className="p-4 space-y-3">
+          <div>
+            <p className="text-base font-bold text-slate-800">Import exclusions</p>
+            <p className="text-xs text-slate-500 mt-0.5">These terms are automatically filtered out when importing your schedule. Remove any that were added by mistake.</p>
+          </div>
+          <div className="space-y-1.5">
+            {settingsExclusionList.map(item => (
+              <div key={item.id} className="flex items-center justify-between py-2 px-3 bg-slate-50 rounded-lg border border-slate-200">
+                <span className="text-sm text-slate-700">{item.term}</span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (item.id) {
+                      try { await api('remove_exclusion_term', { id: item.id }) } catch { /* continue */ }
+                    }
+                    setSettingsExclusionList(prev => prev.filter(t => t.id !== item.id))
+                  }}
+                  className="text-slate-400 hover:text-red-600 transition-colors ml-3"
+                  aria-label={`Remove exclusion for ${item.term}`}
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* QR Code */}
       <Card className="p-4">

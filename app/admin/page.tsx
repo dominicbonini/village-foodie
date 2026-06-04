@@ -25,6 +25,15 @@ interface AdminTruck {
   is_test: boolean
   lifetime_discount_pct: number | null
   lifetime_discount_note: string | null
+  scraper_preference?: 'auto' | 'manual' | 'both' | null
+  schedule_url?: string | null
+  scraper_rule?: 'scroll_lazy' | 'scroll_next' | null
+  scraper_learning_complete?: boolean
+  scraper_first_run_at?: string | null
+  scraper_update_day?: number | null
+  scraper_last_changed_at?: string | null
+  scraper_last_empty_notify_at?: string | null
+  scraper_last_hash?: string | null
 }
 
 interface DiscoveryTruck {
@@ -674,6 +683,89 @@ export default function AdminPage() {
                 ))}
               </div>
             </details>
+
+            {/* Scraper settings */}
+            <div className="space-y-3 pt-1 border-t border-slate-100">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scraper</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block">Preference</label>
+                  <p className="text-sm text-slate-800">{editingTruck.scraper_preference ?? 'manual'}</p>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block">Schedule URL</label>
+                  {editingTruck.schedule_url
+                    ? <a href={editingTruck.schedule_url} target="_blank" rel="noreferrer" className="text-sm text-orange-600 hover:underline truncate block max-w-[160px]">{editingTruck.schedule_url}</a>
+                    : <p className="text-sm text-slate-400">—</p>
+                  }
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block">Scraper rule override</label>
+                <select
+                  value={modalEdits.scraper_rule ?? editingTruck.scraper_rule ?? ''}
+                  onChange={e => setModalEdits(prev => ({ ...prev, scraper_rule: (e.target.value || null) as 'scroll_lazy' | 'scroll_next' | null }))}
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                >
+                  <option value="">(auto-detect on next run)</option>
+                  <option value="scroll_lazy">scroll_lazy</option>
+                  <option value="scroll_next">scroll_next</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Scraper intelligence — read-only */}
+            {(editingTruck.scraper_preference === 'auto' || editingTruck.scraper_preference === 'both') && (() => {
+              const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+              const relDate = (iso: string | null | undefined) => {
+                if (!iso) return 'Never'
+                const days = Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24))
+                if (days === 0) return 'Today'
+                if (days === 1) return 'Yesterday'
+                return `${days} days ago`
+              }
+              const firstRun = editingTruck.scraper_first_run_at
+              const daysRunning = firstRun
+                ? Math.floor((Date.now() - new Date(firstRun).getTime()) / (1000 * 60 * 60 * 24))
+                : null
+              return (
+                <div className="space-y-2 pt-1 border-t border-slate-100">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Scraper intelligence</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                    <div>
+                      <span className="text-slate-400">Learning phase</span>
+                      <p className="text-slate-800 font-medium mt-0.5">
+                        {editingTruck.scraper_learning_complete
+                          ? 'Complete'
+                          : daysRunning !== null ? `${Math.max(0, 30 - daysRunning)} days remaining` : 'Not started'}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Learned update day</span>
+                      <p className="text-slate-800 font-medium mt-0.5">
+                        {editingTruck.scraper_update_day !== null && editingTruck.scraper_update_day !== undefined
+                          ? DAY_NAMES[editingTruck.scraper_update_day]
+                          : 'Not yet learned'}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Last schedule change</span>
+                      <p className="text-slate-800 font-medium mt-0.5">{relDate(editingTruck.scraper_last_changed_at)}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Last empty-schedule email</span>
+                      <p className="text-slate-800 font-medium mt-0.5">{relDate(editingTruck.scraper_last_empty_notify_at)}</p>
+                    </div>
+                    {editingTruck.scraper_last_hash && (
+                      <div className="col-span-2">
+                        <span className="text-slate-400">Last run hash</span>
+                        <p className="text-slate-800 font-mono mt-0.5">{editingTruck.scraper_last_hash.slice(0, 8)}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Operator account */}
             <div>
