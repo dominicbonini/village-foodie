@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6
+HatchGrab Engineering Reference Manual · V6.1
 
 **HatchGrab**
 
@@ -6,13 +6,47 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.0**
+**Version 6.1**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V6.1 — June 2026 (this session)
+
+Follow-on polish-and-hardening session after V6. Enables Row Level Security across the database, completes the admin auth migration by removing ADMIN_SECRET entirely, fixes the discovery map data pipeline so events plot correctly, rebuilds the operator schedule-import review UX, fixes the soft-delete fetch gap that left deleted categories visible, and clears a long run of dashboard, manage, and settings UI inconsistencies. Adds a new Section 25 documenting the Village Foodie discovery map and scraper data pipeline. Key changes relative to V6:
+
+- **Row Level Security enabled** — RLS is now ON for every table in the public schema. Public-read SELECT policies on discovery_events, discovery_trucks, venues, trucks, truck_events, the menu/modifier/deal/slot tables, and orders (anon read needed for the customer order page and dashboard realtime). Sensitive tables (operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, kds_sessions, etc.) have RLS on with NO anon policy — the service role key used by all API routes bypasses RLS, so the app is unaffected while direct anon access is blocked. See Section 16.
+
+- **ADMIN_SECRET fully removed** — the emergency password fallback flagged for removal in V6 is gone. Admin auth is now solely the session-based operators.is_admin check via verifyAdmin() on every admin route. No password form, no env var, no fallback. See Section 12.
+
+- **Deleted categories/items soft-delete fetch gap fixed** — menu_categories and menu_items_db both carry is_active, but three fetch paths were missing the filter, so soft-deleted categories and their items still appeared in the Add Order panel and Menu & Stock tab. Added .eq('is_active', true) to the menu_categories and menu_items_db queries in app/api/menu/[truckId]/route.ts and the menu_categories query in app/api/dashboard/route.ts. Historical orders are unaffected — orders.items is a JSONB snapshot and never joins these tables. See Section 17.
+
+- **Discovery map data pipeline fixed** — discovery_events rows were being written with null discovery_truck_id and null venue_id, so the map (which JOINs on those IDs for coordinates) could not plot most events. app/api/inbound-schedule/route.ts now fetches all discovery_trucks and venues up front and resolves both IDs via normalised name matching before upserting. Existing null rows were backfilled by SQL. See Section 25.
+
+- **Apps Script API-key recovery** — the Google Apps Script scraper had lost GEMINI_API_KEY, GOOGLE_API_KEY, and BREVO_API_KEY from Script Properties after a Google Cloud account consolidation and key rotation, causing silent failures (geocoding, email, and screenshot processing all broke). All four properties restored and a testAllKeys() helper added. Rule: after any key rotation, update Script Properties AND the separate GitHub Actions secret copy, then run testAllKeys(). See Section 24 and Section 25.
+
+- **Screenshot scraper accuracy** — processFoodTruckScreenshots reverted from gemini-2.5-flash-lite to gemini-2.5-flash (lite caused day-of-week→date errors and mis-extractions). Prompt now injects an explicit 14-day day→date reference, and an invalid-venue filter skips "Closed", "N/A", "TBC", "Unavailable", "Cancelled". Fixed a dbVilNng → dbVilNorm typo in venue matching. See Section 24.
+
+- **Schedule import review rebuilt** — the operator schedule-import review (both the Add-event-modal upload path and the Import-schedule header path) now shows always-expanded inline editable cards instead of a collapsed-with-Edit design. Fields are ordered date → venue → area/postcode → start/end time → van, matching the operator's natural reading order. Missing required fields (time, van) are flagged amber with labels, an attention banner counts incomplete events, and Save is disabled until every event is complete. Date and time use friendly clickable displays ("Wed 3rd Jun", "Select time") backed by native pickers. The Gemini prompt was upgraded to extract-then-enrich: it cleans venue names (strips village/postcode), assembles full UK postcodes from split fragments, and fills missing postcode/town from its own UK venue knowledge. See Section 15.
+
+- **Multi-van event rules** — events must be attached to a van. With one van it is auto-assigned silently; with multiple vans the van selector is required on the Add/Edit event form and the schedule import, blocking save until chosen. A copied event carries its source van_id. Adding a van now shows a billing-confirmation dialog before creation, and each van renders as its own bordered card in Settings → Your trucks. See Section 14 and Section 15.
+
+- **Add/Edit event field order + friendly date** — the Add and Edit event modals now lead with Date, then Venue name, Full address, Area + Postcode, Start/End time, Van, Notes. The date field shows the friendly "Wed 3rd Jun" format via a clickable display over a hidden native date input. Start/End time sit on one row with step="300" (5-minute increments). The address block carries a locale comment for future non-UK formats. See Section 15.
+
+- **Dashboard prep list event scoping** — the "Prep needed now / Coming up" slotted-orders list read from the unfiltered orders array (line 890), so orders from other events bled in. Changed to eventOrders, matching the slotless section. See Section 10.
+
+- **Offline protection UX** — toggling offline protection now uses window.confirm dialogs (enable warns to keep the screen on and force-enables Screen On; disable warns of the impact) instead of a persistent on-screen warning or green toast. Toggle size and colour unified to w-11 h-6 / bg-teal-500 across all dashboard and settings toggles. See Section 11.
+
+- **Settings tab layout** — the Settings tab is a single centred column (max-w-2xl mx-auto) rather than full-bleed or two-column; a two-column experiment was reverted as poorer UX. Full heading hierarchy standardised: section labels text-base font-bold, feature/toggle labels text-sm font-semibold, descriptions text-xs text-slate-500. Auto-accept converted from the Toggle component to an inline button matching the others. See Section 23.
+
+- **Kitchen capacity copy single source** — the dashboard Menu & Stock kitchen-capacity description now matches the Settings copy verbatim: "Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit." The stray "global van setting" warning and the auto-accept "review to avoid over-commitment" warning were removed (auto-accept is programmatically capacity-safe).
+
+- **UI consistency pass** — expand/collapse arrows unified to ▶ + rotate-90 everywhere (schedule deals, past-events, menu categories, modifier groups); category delete moved inside the expanded category view with the whole header row tappable to expand (no more accidental deletes); Menu & Stock category row goes two-line on mobile; the event bar shows on the Menu & Stock tab; the "Import with AI" button is renamed "Import menu" (whitespace-nowrap, laid out to match the Schedule tab); and the Upsells rule dropdowns stack on mobile.
+
+- **process-schedule / scraper DRY gap noted** — app/api/manage/process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemini all implement the same Gemini schedule-extraction logic independently. Prompt improvements must currently be applied to all three. Long-term consolidation into a single shared endpoint is on the backlog. See Section 3 and Section 25.
 
 ## V6.0 — June 2026 (this session)
 
@@ -364,6 +398,18 @@ lib/plan-features.ts is the single source of truth for the pricing matrix, featu
 
 FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Online sales & automation, and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows are ordered last within their section in the data itself, so both the admin Features tab and the billing matrix render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.
 
+### Schedule extraction via Gemini — known DRY gap (V6.1)
+
+Three code paths independently call Gemini to turn unstructured text or an image into structured event rows, and all three carry their own copy of the extraction prompt and parsing logic:
+
+- **app/api/manage/process-schedule/route.ts** — operator imports their own schedule into HatchGrab (truck is always the logged-in operator; no truck name extracted).
+
+- **processFoodTruckScreenshots** (Google Apps Script) — scrapes public schedule screenshots from a Drive folder into the discovery map.
+
+- **analyzeEmailWithGemini** (Google Apps Script) — processes vendor schedule emails into the discovery map.
+
+Until these are consolidated, any prompt improvement (postcode assembly, venue-name cleaning, date mapping, enrichment) must be applied to all three by hand. The V6.1 extract-then-enrich improvements were applied to process-schedule first; the two Apps Script paths carry the screenshot date-mapping and invalid-venue rules but not yet the full enrichment prompt. Long-term: consolidate into a single shared /api/schedule/process endpoint, which also requires migrating the Apps Script processing off Google Sheets (see Section 25).
+
 ### Development process — Claude within Cursor (V6)
 
 > **RULE** — Claude within Cursor is the coding tool. The planning chat writes Cursor-ready prompts; it does not edit files directly. Audits can be sent to Cursor for a summary response rather than always requiring grep output to be pasted back.
@@ -578,6 +624,8 @@ Only customer-path orders are subject to auto_accept. Manual orders bypass auto_
 When auto_accept is false the customer path skips this block entirely, but the slot-capacity check at submission still runs: a full production window returns a 409 and the order is never created; otherwise it inserts as pending.
 
 > **RULE (V6)** — Auto-accept description copy in the dashboard: "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity." The earlier "Full slots are still rejected" was inaccurate and must not return.
+
+> **RULE (V6.1)** — No amber "review regularly to avoid over-commitment" warning under the auto-accept toggle. Auto-accept is programmatically capacity-safe (it never confirms beyond slot capacity — see resolveAutoAcceptSlot above), so the warning was misleading and was removed.
 
 ## Dashboard event scoping (V6)
 
@@ -961,13 +1009,13 @@ The customise modal in the Add Order panel calls /api/menu/[truckId] with ?dashb
 
 Deal header rows use the same font-bold text-slate-900 text-lg weight as standalone item names — the deal is a first-class line item, not a sub-heading. Inline price editing on deal headers (operators can override the deal price). Spinner arrows removed from price inputs via [appearance:textfield]. The "Items subtotal" row was removed (it was a confusing partial). All cart line rendering goes through OrderLineItem with variant="operator".
 
-## Kitchen capacity and offline protection in the dashboard (V6)
+## Kitchen capacity and offline protection in the dashboard (V6, updated V6.1)
 
-When an event is selected, the Menu & Stock tab shows (in order, at the top) Auto-accept, Kitchen capacity, and Offline protection cards:
+The Menu & Stock tab shows the slim event bar at the top (V6.1 — added to this tab so it is consistent with the Orders and Add Order tabs). When an event is selected it then shows (in order) Auto-accept, Kitchen capacity, and Offline protection cards:
 
-- **Kitchen capacity** — reads and writes the active van's kitchen_capacity (truck_vans). It is a global van setting; changing it affects all events for that van, and the card warns as much. Options: No limit, then 1–20 items (matching the manage page).
+- **Kitchen capacity** — reads and writes the active van's kitchen_capacity (truck_vans). Options: No limit, then 1–20 items (matching the manage page). The description is the single canonical copy, identical to the Settings tab: "Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit." (V6.1 — the previous "Max cooked items..." wording and the amber "this is a global van setting" warning were both removed; Settings is the source of truth for this copy.)
 
-- **Offline protection** — reads the van's auto_pause_on_offline as the default and the event's offline_protection_override; the toggle writes the per-event override (see Section 15). When disabled, the card warns it is for this event only and that disabling for all events is done in the Manage page.
+- **Offline protection** — reads the van's auto_pause_on_offline as the default and the event's offline_protection_override; the toggle writes the per-event override (see Section 15). The card description is identical in both on and off states ("Pauses online orders if this device goes offline"), with a secondary line showing whether the event override or van default is in effect. (V6.1 — see the confirm-dialog behaviour in Section 11.)
 
 # 11. Native app and offline architecture
 
@@ -1006,6 +1054,16 @@ Trial begins with Stage A only, in villages with reliable coverage. Stages B and
 ## Per-vehicle offline protection
 
 truck_vans.auto_pause_on_offline pauses online orders for that vehicle if its kitchen device goes offline. Per vehicle — each can be set independently. A "Protected" badge shows on the vehicle in settings when enabled. As of V6 an individual event can override the van default via truck_events.offline_protection_override, set from the dashboard (Section 15).
+
+### Offline protection toggle UX (V6.1)
+
+The dashboard Menu & Stock offline-protection toggle confirms both directions through native window.confirm dialogs rather than a persistent on-screen warning banner or a success toast (both removed):
+
+- **Enabling** — warns that the device must keep the screen on for protection to work, and force-enables Screen On (calls the existing keep-awake function) so the operator cannot enable protection while leaving the screen free to dim.
+
+- **Disabling** — warns that online orders will no longer auto-pause if the device drops offline for this event.
+
+The toggle itself uses the unified control styling shared by every dashboard and settings toggle: w-11 h-6 track, bg-teal-500 when on. No bespoke toggle sizes or colours anywhere.
 
 ## Heartbeat architecture (V6)
 
@@ -1109,21 +1167,19 @@ Ghost auth user pattern: a duplicate row in auth.users (e.g. one created during 
 
 - **Login page** — temporary debug logging that recorded submitted email addresses was removed. The reset-success notice clears on keystroke or submit, and the page surfaces Supabase's actual error message.
 
-## Admin console (V6)
+## Admin console (V6, ADMIN_SECRET removed V6.1)
 
-The admin page (/admin) authenticates via the operator's Supabase session, not a password prompt:
+The admin page (/admin) authenticates solely via the operator's Supabase session. As of V6.1 there is no password prompt, no ADMIN_SECRET env var, and no emergency fallback — the entire secret path documented in V6 has been removed.
 
-- On mount, the page calls GET /api/admin?section=check_admin. If the session operator has is_admin = true, the endpoint returns the admin secret (via a secretRef) and the page auto-loads with no password entry.
+- Every admin API route calls verifyAdmin() server-side, which resolves the caller's Supabase session to an operators row and checks is_admin = true. A request from a non-admin (or unauthenticated) caller is rejected. There is no shared secret to leak, rotate, or fall back to.
 
-- A loadWithSecret(s: string) helper takes the secret as a parameter rather than reading React state, avoiding the async-state race that previously showed "0 trucks" on first load. load() is a thin wrapper calling loadWithSecret(secret); the check_admin effect calls loadWithSecret(data.secret) directly.
+- On mount, the page calls GET /api/admin?section=check_admin. If the session operator is an admin the endpoint returns success and the page loads; otherwise the page shows an "access denied" state. There is no password form to fall back to.
 
-- A checkingSession state shows a brief loading spinner while the session is verified; the password form only appears if the session check fails. This prevents the password form flashing for legitimate admins.
-
-- The single ADMIN_SECRET env var remains ONLY as an emergency fallback in the API. It is held in React state and re-sent per request, with no session/cookie persistence beyond the current tab.
+- A loadWithSecret-style race guard is retained in spirit: the data-loading effect runs only after the session check resolves, avoiding the async-state race that previously showed "0 trucks" on first load. A checkingSession state shows a brief spinner while the session is verified.
 
 - The page uses the shared AppHeader (truckName / truckLogoUrl null) and slate-900 sticky tabs (px-4, overflow-x-auto, border-slate-700), with two tabs: 🍕 Trucks and 📋 Features. The Trucks tab lists trucks with plan, trial days, lifetime-discount badge, and a dashboard link, plus a truck edit modal (plan, trial, lifetime discount, feature overrides, create-operator). The Features tab renders from FEATURE_SECTIONS with section headers, the tester column, PLAN_FOOTNOTES, and a static transaction-fees block. The Discovery-trucks linking UI lives under the Trucks tab.
 
-> **BACKLOG** — Remove ADMIN_SECRET entirely at public launch; session-based is_admin is the only path needed.
+> **RULE (V6.1)** — Admin authorisation is session + operators.is_admin only, enforced by verifyAdmin() on every admin route. Never reintroduce a shared admin password or env-var secret.
 
 ## Slug or UUID resolution pattern
 
@@ -1133,7 +1189,7 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 
 - Rate limiting on auth attempts.
 
-- Admin secret is a single shared value — being retired in favour of is_admin session auth (V6); remove at launch.
+- ~~Admin secret~~ — RESOLVED in V6.1. ADMIN_SECRET has been fully removed; admin auth is session + operators.is_admin via verifyAdmin() only.
 
 # 13. Operator and multi-truck model
 
@@ -1167,7 +1223,9 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 
 > **NAMING** — The platform UI calls a physical vehicle a "truck". The underlying DB tables remain truck_vans and truck_user_vans (internal only). User-defined vehicle names (e.g. "Van1", "Main Truck") are operator data and must never be auto-changed. A "truck" brand record is a row in the trucks table; a "vehicle" under it is a row in truck_vans.
 
-Settings section is "Your trucks" with "+ Add truck". Each vehicle card shows its user-defined name (bold), a "Protected" badge when offline protection is on, and Rename/Delete actions.
+Settings section is "Your trucks" with "+ Add truck". Each vehicle is rendered as its own bordered card (border border-slate-200 rounded-2xl p-4 — V6.1, replacing the flat list rows) showing its user-defined name (bold), a "Protected" badge when offline protection is on, and Rename/Delete actions.
+
+> **RULE (V6.1)** — Adding a truck shows a window.confirm billing-warning dialog before creation, because each additional vehicle may affect the operator's subscription. Creation only proceeds on confirmation.
 
 ## Per-vehicle settings
 
@@ -1207,17 +1265,19 @@ Bridge mechanics in /api/inbound-schedule: after the usual write to discovery_ev
 
 Linking is a one-time admin step per truck: the admin console shows a "Link HG truck" dropdown on each discovery truck row, which sets discovery_trucks.hatchgrab_truck_id. Until a truck is linked, nothing bridges — this is the intended gate during onboarding.
 
-### Import schedule (operator upload) — V6
+### Import schedule (operator upload) — V6, review UX and prompt rebuilt V6.1
 
 Operators can bulk-import their own schedule from a screenshot, photo, PDF, or pasted text:
 
-- A 📤/✨ Import schedule button sits on the Schedule tab header beside + Add event, styled to match the Menu tab's "Import with AI" (sparkle icon, "photo, PDF or text" subtitle). It opens a dedicated modal — separate from the Add event modal — with a drag-and-drop upload zone (the shared useDragDrop hook), a paste-text area, and a "Process schedule" button.
+- A 📤/✨ Import schedule button sits on the Schedule tab header beside + Add event, styled to match the Menu tab's "Import menu" (sparkle icon, "photo, PDF or text" subtitle). It opens a dedicated modal — separate from the Add event modal — with a drag-and-drop upload zone (the shared useDragDrop hook), a paste-text area, and a "Process schedule" button. Once events have been extracted, the upload/paste UI is hidden (gated on extractedEvents.length === 0) so only the review list and action buttons remain.
 
-- The route app/api/manage/process-schedule/route.ts verifies the dashboard token, calls Gemini (gemini-2.5-flash-lite), strips any markdown fences, and returns { events: [...] } with six fields only per event: event_date (DD/MM/YYYY), start_time, end_time (HH:MM, empty string if none — never "00:00"), venue_name, town, postcode (or empty string). It performs no DB writes, no dedup, and crucially is NOT asked for a truck name — the truck is always the logged-in operator's truck. This prevents the importer creating or mismatching trucks.
+- The route app/api/manage/process-schedule/route.ts verifies the dashboard token, calls Gemini, strips any markdown fences, and returns { events: [...] } with six fields only per event: event_date (DD/MM/YYYY), start_time, end_time (HH:MM, empty string if none — never "00:00"), venue_name, town, postcode (or empty string). It performs no DB writes, no dedup, and is NOT asked for a truck name — the truck is always the logged-in operator's truck.
 
-- Extracted events render an interactive review list: a checkbox per event (all pre-selected, tracked in a Set), inline edit per event with the venue-suggestions dropdown (selecting a recent venue auto-fills town/postcode/times), drag-and-drop reordering (useDragDrop), and a "Save N events" button that saves only the selected, edited events.
+- **Extract-then-enrich prompt (V6.1)** — the Gemini prompt is no longer a bare instruction. It is a two-step extract-then-enrich prompt with worked examples that: cleans venue names by stripping any village/town/postcode out of the name ("The Fox Burwell" → venue_name "The Fox", town "Burwell"); assembles full UK postcodes from split fragments (a lone trailing "0BA" is recombined with its preceding outward code, never treated as a town); normalises times ("from 5pm" → start 17:00, blank end); and, in the enrichment step, fills a missing postcode or town from Gemini's own knowledge of the named UK venue (only with high confidence — uncertain fields are left blank). The same improvement must eventually be mirrored to the two Apps Script extraction paths (see Section 3 and Section 25).
 
-- saveExtractedEvents geocodes via the existing geocodeLocation path and writes via upsert_event with status 'confirmed' and source 'operator_upload'. Imported events surface on both maps via the existing discovery/events read path. The same interactive review UI is shared with the Add event modal's upload mode (one set of state covers both).
+- **Review UX (V6.1)** — extracted events render as always-expanded inline editable cards (the previous collapsed/checkbox/Edit and drag-reorder design was removed). Fields are ordered for the operator's natural reading order: **Date → Venue name → Area + Postcode → Start time + End time → Van**. The date shows a friendly clickable display ("Wed 3rd Jun") over a hidden native date input; each time shows a clickable "Select time" / "HH:MM" display over a native type="time" step="300" input (no confusing 12:30 placeholder). Empty required fields (start time, end time, and van when multi-van) are flagged amber with always-present labels, so card height never shifts as warnings appear or clear. An attention banner counts the incomplete events and the Save button is disabled until every event is complete. The "Area" field label covers villages, towns, cities, and city districts.
+
+- saveExtractedEvents geocodes via the existing geocodeLocation path and writes via upsert_event with status 'confirmed' and source 'operator_upload'. Imported events surface on both maps via the existing discovery/events read path. The same review UI is shared with the Add event modal's upload mode (one set of state covers both instances; edits to the review cards must be applied to both).
 
 ### Geocoding and the Fix button (V5)
 
@@ -1249,13 +1309,21 @@ The Cancel action on an event card opens a confirmation modal with an optional r
 
 ## Add/Edit event form
 
-- Date is blank on open; start/end times pre-fill from the most recent event. Mandatory fields: date, venue name, start time, end time (and truck when multi-truck). Missing fields highlight red with inline errors.
+- **Field order (V6.1)** — the form leads with Date, then Venue name, Full address, Area + Postcode, Start/End time, Van, Notes. This matches the operator's natural "when → where → what time → which truck" reading order and is consistent with the schedule-import review cards.
 
-- Venue name is a combobox — selecting a recent venue auto-fills town, postcode, address, and typical times. A "Copy a recent event" row offers one-click duplication (date and notes blank, venue/times/vehicle carried over).
+- Date is blank on open; start/end times pre-fill from the most recent event. Mandatory fields: date, venue name, start time, end time (and van when multi-van — see rule below). Missing fields highlight red with inline errors.
+
+- **Friendly date display (V6.1)** — the date field shows the friendly "Wed 3rd Jun" format via a clickable styled div over a hidden native date input (the same pattern used in the import review cards), rather than a raw DD/MM/YYYY or native control. Start and End time sit on one row with step="300" (5-minute increments) and consistent input styling.
+
+- **Address (V6.1)** — the address block carries a code comment marking it as UK-format so future non-UK locales can adapt it; Area + Postcode sit together below the full address.
+
+- Venue name is a combobox — selecting a recent venue auto-fills town, postcode, address, and typical times. A "Copy a recent event" row offers one-click duplication (date and notes blank, venue/times/van carried over — the source van_id is preserved, V6.1).
 
 - A Copy button also appears on each event card in the Schedule list (retained on past events too — see below).
 
-- Modal is responsive — wider with a two-column field layout on desktop, single column on mobile.
+- Modal is responsive — single column on mobile, wider on desktop.
+
+> **RULE (V6.1)** — Events must be attached to a van. With a single van it is auto-assigned silently and no selector is shown. With two or more vans the van selector is required (red asterisk) on both the Add/Edit form and the schedule import, and save is blocked until a van is chosen. This applies wherever an event is created or edited.
 
 ## Event card display (Schedule tab, rebuilt V6)
 
@@ -1303,9 +1371,9 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 
 - **operator_email_changes** — email change audit. old_email, new_email, token, requested_at, verified_at, expires_at.
 
-- **menu_categories** — categories per truck with sort_order (source of truth for display order). allow_notes boolean (V4) for per-category item-note availability. prep_secs, batch_size (nullable — null means no batch limit).
+- **menu_categories** — categories per truck with sort_order (source of truth for display order). allow_notes boolean (V4) for per-category item-note availability. prep_secs, batch_size (nullable — null means no batch limit). is_active boolean (default true) — soft-delete flag; deleted categories set is_active false and MUST be filtered out on read (V6.1, see Section 17).
 
-- **menu_items_db** — items per truck; is_available, stock_count, allergens, dietary_info, prep_secs, batch_size.
+- **menu_items_db** — items per truck; is_available, stock_count, allergens, dietary_info, prep_secs, batch_size. is_active boolean (default true) — soft-delete flag, filtered on read alongside the category (V6.1).
 
 - **modifier_options** — modifier choices. available boolean (V4) — defaults true; sentinel column for visibility. See Section 17 modifier rules.
 
@@ -1358,11 +1426,25 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 20260602_admin_role.sql
 20260602_event_offline_override.sql
 20260602_tester_plan_discount.sql
+20260603_menu_is_active.sql
+20260603_enable_rls_all_tables.sql
 ```
 
 ## Realtime
 
 - orders — INSERT/UPDATE/DELETE subscribed. trucks — UPDATE only (pause/wait). UI updates within ~1s; 60s polling fallback.
+
+## Row Level Security (V6.1)
+
+RLS is enabled on every table in the public schema (~35 tables). The application is unaffected because all API routes and edge functions use the SUPABASE_SERVICE_ROLE_KEY, which bypasses RLS; the anon key is used only in the browser Supabase clients (lib/supabase-browser.ts, lib/supabase/server.ts, lib/supabase/client.ts) and in a few Server Components that read with the service role. RLS therefore governs only direct anon-key access, closing the Supabase security-advisor warning.
+
+Two policy patterns are used:
+
+- **Public read (anon SELECT allowed, `using (true)`)** — on the tables the customer order page, discovery map, and dashboard realtime read directly with the anon key: discovery_events, discovery_trucks, venues, trucks, truck_events, menu_categories, menu_items_db, modifier_groups, modifier_options, bundles_db, category_modifier_groups, item_modifier_overrides, item_overrides, collection_times, slot_capacity, category_stock, and orders. Writes still go through service-role routes.
+
+- **Service-role only (RLS on, no anon policy)** — anon access fully blocked on the sensitive/internal tables: operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, truck_user_vans, truck_vans, kds_sessions, slot_bookings, production_slot_usage, event_deals, event_price_overrides, upsell_rules, excluded_terms, discount_codes_db, messages, order_counters, referrals.
+
+> **RULE (V6.1)** — New tables must have RLS enabled at creation. Decide deliberately between a public-read policy (only if an anon-key surface genuinely reads it) and no policy (service-role only). Never leave a new table with RLS off. Never expose a sensitive table (anything with personal data, tokens, or billing) to anon.
 
 # 17. Menu API behaviour
 
@@ -1405,6 +1487,16 @@ Item availability uses item_overrides as the override path and menu_items_db.is_
 const isAvailable = override != null ? (override.available !== false) && (stockRemaining === null || stockRemaining > 0) : i.is_available !== false
 
 Stock exhaustion counts as unavailable. Override availability takes precedence over the base column.
+
+## Soft-deleted categories and items must be filtered (V6.1)
+
+> **RULE** — menu_categories and menu_items_db carry an is_active flag (default true). Deleting a category or item sets is_active = false (soft delete) rather than removing the row, so historical orders that snapshot item data stay intact. Every read path that lists current menu data MUST filter `.eq('is_active', true)`. Three queries were missing this filter and leaked deleted categories and items back into the Add Order panel and the Menu & Stock tab; the fix added the filter to:
+
+- app/api/menu/[truckId]/route.ts — the menu_categories query AND the menu_items_db query (the items query was the last gap found).
+
+- app/api/dashboard/route.ts — the menu_categories query.
+
+Historical orders are unaffected: orders.items is a JSONB snapshot taken at order time and never joins menu_categories or menu_items_db, so a past order still shows what was actually sold even after the category is deleted. Any new query that surfaces live menu data must include the is_active filter from the outset.
 
 ## Offline protection in the menu API (V6)
 
@@ -1639,9 +1731,9 @@ Three rows for clarity at 375px:
 
 - Row 2: "N categories · N items" muted subtext.
 
-- Row 3: "✨ Import with AI" outline button (full single line, whitespace-nowrap, no subtitle).
+- Row 3: "✨ Import menu" outline button (full single line, whitespace-nowrap, no subtitle). (V6.1 — renamed from "Import with AI".)
 
-Desktop is unchanged — Import AI lives in the right column alongside Add category with the "photo, PDF or text" subtitle visible. Subtitle is hidden sm:block. The Schedule tab's "✨ Import schedule" button mirrors this styling (V6).
+Desktop is unchanged — Import menu lives in the right column alongside Add category with the "photo, PDF or text" subtitle visible. Subtitle is hidden sm:block. The Schedule tab's "✨ Import schedule" button mirrors this styling (V6).
 
 ## All categories collapsed by default
 
@@ -1660,6 +1752,22 @@ Truck name bold (text-slate-800 font-semibold), operator first name muted below 
 > **RULE** — Inputs, selects, and textareas must be at least 16px on mobile. iOS Safari zooms the viewport whenever a focused field has font-size below 16px. globals.css locks these controls to 16px below the 640px breakpoint and reverts to inherit at ≥640px so desktop is untouched.
 
 The viewport is set in app/layout.tsx as width=device-width, initialScale=1 — deliberately WITHOUT maximumScale or userScalable:false, which would break accessibility pinch-zoom. The 16px-input rule is the correct fix for the focus-zoom annoyance (especially on the customer order page); viewport scale locking is not.
+
+### V6.1 manage-page UX pass
+
+A round of manage-page consistency and mobile fixes:
+
+- **Settings tab is a single centred column** — max-w-2xl mx-auto. A two-column desktop experiment was tried and reverted as worse UX (the eye had to track across unrelated fields). Heading hierarchy was standardised across the whole tab: section labels text-base font-bold text-slate-800, feature/toggle labels text-sm font-semibold text-slate-800, descriptions text-xs text-slate-500. The auto-accept control was converted from the standalone Toggle component to an inline button matching the other toggles.
+
+- **Expand/collapse arrows unified** — every collapsible header (schedule deals, past events, menu categories, modifier/Extras groups) uses the same ▶ glyph rotated 90° when open (rotate-90 transition). No mix of ▶/▼/＋/－ across surfaces.
+
+- **Category delete relocated** — the 🗑 control was removed from the collapsed category header and now lives inside the expanded category view, and the entire collapsed header row is the tap target to expand. This fixes accidental deletes from fat-finger taps on mobile.
+
+- **Category row goes two-line on mobile** — the prep-time and batch-size controls move to a second row on narrow screens (the top row is hidden sm:flex, the duplicated second row is flex sm:hidden) so the category name and actions are not cramped at 375px.
+
+- **Upsells rule dropdowns stack on mobile** — the Extras & Upsells rule selectors are flex-col on mobile and flex-row at sm:+.
+
+- **Mobile schedule actions** — Copy/Edit/Cancel show as icons only below sm: and gain text labels at sm:+.
 
 ### Text prominence floor (V6 sweep)
 
@@ -1683,7 +1791,91 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 
 > **NOTE** — actions/checkout@v4 and actions/setup-node@v4 emit a Node 20 deprecation warning; from 16 June 2026 GitHub forces Node 24 for the action runtime itself. Bump the action versions when that lands; it is independent of the workflow's own node-version: '22'.
 
-# 25. Testing and dev environment
+## Apps Script screenshot processor (recovered V6.1)
+
+The Google Apps Script processFoodTruckScreenshots function reads schedule screenshots from a Drive folder and writes events to the discovery map (full pipeline in Section 25). V6.1 fixes:
+
+- **Model is gemini-2.5-flash, not gemini-2.5-flash-lite.** Lite was cheaper but produced day-of-week→date errors and mis-extractions on dense screenshots. Flash is the required model for this path.
+
+- **14-day date mapping** — the prompt injects an explicit "today + next 13 days → DD/MM/YYYY" reference table before processing, so relative phrases ("this Friday", "Sat") resolve correctly.
+
+- **Invalid-venue filter** — extracted rows whose venue resolves to "Closed", "N/A", "TBC", "Unavailable", or "Cancelled" are skipped, not written.
+
+- **dbVilNorm typo fixed** — a dbVilNng → dbVilNorm typo in the venue-normalisation matching was silently breaking some venue matches.
+
+> **RULE (V6.1) — API key management.** The Apps Script holds four Script Properties: GEMINI_API_KEY, GOOGLE_API_KEY (use the "New Maps Platform API Key" with the full API set enabled), BREVO_API_KEY, and INBOUND_SCHEDULE_SECRET. After ANY key rotation or Google Cloud account change, update the Script Properties AND the separate GitHub Actions repository secret copy of GEMINI_API_KEY, then run testAllKeys() to confirm all four resolve. A silent missing key takes down geocoding, email, and screenshot processing with no error surfaced — this was the root cause of the V6.1 pipeline outage (see Section 25).
+
+# 25. Village Foodie Discovery Map
+
+## Architecture
+
+The Village Foodie public site (villagefoodie.co.uk) is a Next.js app in the same repo as HatchGrab. Its discovery map reads from the discovery_events and discovery_trucks tables in Supabase, with coordinates resolved through venues.
+
+> **CRITICAL** — A discovery event only plots as a map pin if it has BOTH a discovery_truck_id and a venue_id. The map JOINs through venue_id to the venues table for latitude/longitude; an event with a null venue_id (or null discovery_truck_id) has no coordinates and silently fails to appear. This was the root cause of the V6.1 "events not showing on the map" outage — rows were being written with null IDs.
+
+The venues table is the single coordinate store: name, village, latitude, longitude, and an aliases column (a PostgreSQL text array) for fuzzy name matching.
+
+## Data sources
+
+Three independent pipelines write to discovery_events, all of them POSTing to the secret-authenticated /api/inbound-schedule route:
+
+1. **processFoodTruckScreenshots** (Google Apps Script) — processes schedule screenshots saved to the Drive folder SOURCE_FOLDER_ID (see Section 24 for model and prompt rules).
+
+2. **processVendorEmails / analyzeEmailWithGemini** (Google Apps Script) — processes vendor schedule emails (the schedule@villagefoodie.co.uk inbox / "Process Schedule" Gmail label).
+
+3. **GitHub Actions web scraper** — scrapes truck websites and Hatches Up on the daily cron (Section 24).
+
+## inbound-schedule route — ID resolution (V6.1)
+
+As of V6.1 /api/inbound-schedule resolves the foreign keys at insert time rather than storing raw name strings:
+
+1. Fetch all discovery_trucks and all venues up front in a single Promise.all.
+
+2. Normalise the incoming truck_name and venue_name (lower-case, trim, strip punctuation) and match against the fetched rows, including the venue aliases array.
+
+3. Write the matched discovery_truck_id and venue_id onto the upserted discovery_events row, with visibility 'public'.
+
+Earlier versions stored only the raw truck_name and venue_name strings, leaving discovery_truck_id and venue_id null — so most events never plotted. Existing null rows were backfilled with a one-off SQL pass (regexp-normalised name matching) that resolved ~862/881 truck IDs and ~843/881 venue IDs; the small remainder were genuine one-off venues (festivals, private parties) that will not recur.
+
+## Apps Script key rules
+
+See the API-key RULE in Section 24 — four Script Properties (GEMINI_API_KEY, GOOGLE_API_KEY, BREVO_API_KEY, INBOUND_SCHEDULE_SECRET) plus a separate GitHub Actions copy of GEMINI_API_KEY, verified with testAllKeys() after any rotation. INBOUND_SCHEDULE_SECRET is fixed and only changes if regenerated in the Next.js env.
+
+## processFoodTruckScreenshots details
+
+- Model gemini-2.5-flash (not lite); 14-day date-mapping reference injected into the prompt; invalid-venue filter ("Closed", "N/A", "TBC", "Unavailable", "Cancelled").
+
+- Pacer: a 15-second sleep between files to stay under burst rate limits.
+
+- Time guard: exits safely at ~280 seconds (well inside the 6-minute Apps Script execution ceiling).
+
+- On success: events are written to the Google Sheets Events tab, mirrored to Supabase via mirrorEventsToSupabase() (which calls /api/inbound-schedule), and the processed screenshot file is trashed.
+
+## Venue matching and creation
+
+- A new venue is geocoded via the Google Maps API on creation and stored with name, village, latitude, longitude, and an aliases array.
+
+- Aliases drive fuzzy matching — e.g. the alias {"Edwardstone White Horse"} on the canonical venue "The White Horse", Edwardstone lets a differently-worded source row match the right venue rather than creating a duplicate.
+
+- The Google Sheets Venues tab holds aliases in columns N/O/P for the Apps Script's own matching; these are SEPARATE from the Supabase aliases array and must be kept in step (adding a Supabase alias does not update the Sheet, and vice versa).
+
+- backfillMissingVenueCoords() geocodes any venue rows created without coordinates.
+
+> **DATA HYGIENE (V6.1)** — Two recurring issues to watch: (1) the same event arriving from two pipelines with a one-day date offset (e.g. a screenshot vs the website scraper) creates a near-duplicate — dedup on truck + date + venue; (2) duplicate venue rows with slightly different names (e.g. "Edwardstone White Horse" vs "The White Horse, Edwardstone") split a venue's events — merge to the canonical row and add the variant as an alias in BOTH Supabase and the Sheet.
+
+## Visibility
+
+- discovery_events default to visibility = 'public'; there is no status column — every public event shows on the map.
+
+- RLS (V6.1, Section 16): public SELECT policies on discovery_events, discovery_trucks, and venues; writes are service-role only via /api/inbound-schedule.
+
+- is_test on the linked truck still filters test trucks out of the public map (Section 25 / is_test scope, carried from V5).
+
+## Known DRY gap
+
+process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemini all implement the same Gemini schedule-extraction logic independently (Section 3). Prompt improvements must currently be applied to all three by hand. Long-term: consolidate into a single shared /api/schedule/process endpoint, which also requires migrating the Apps Script processing off Google Sheets onto Supabase as the config store.
+
+# 26. Testing and dev environment
 
 ## Dev setup
 
@@ -1699,19 +1891,25 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 
 - Sheets-to-DB migration complete or safe parallel-run.
 
-- Auth hardening (rate limiting; admin secret being retired for is_admin session auth).
+- Auth hardening (rate limiting still open; admin secret RESOLVED V6.1 — ADMIN_SECRET removed, session-based is_admin via verifyAdmin() is the only path).
 
 - Event confirmation flow live (done).
 
 - End-to-end smoke test of all flows: customer order, walk-up, ready notification, mark paid & done (verified in V4).
 
-- Brevo hatchgrab.com domain verified and propagated.
+- Brevo hatchgrab.com domain verified and propagated (SPF + DKIM authenticated — can send from @hatchgrab.com; no inbound mailbox purchased yet, so use a reply-to of an existing address for the trial).
+
+- Row Level Security enabled across all tables (DONE V6.1 — Supabase security-advisor warning cleared; see Section 16).
+
+- Discovery map plotting verified: events resolve discovery_truck_id and venue_id and appear as pins (DONE V6.1 — root-cause null-ID bug fixed and existing rows backfilled; see Section 25).
+
+- Apps Script scraper confirmed working end-to-end after the key recovery (DONE V6.1 — all four Script Properties restored, testAllKeys() passing; see Section 24/25).
 
 - Production deploy to Vercel with production Supabase; real iPad testing with simulated connectivity drops.
 
 - Wake lock confirmed working under iOS 16.4+ and Chrome Android.
 
-- End-to-end customer order flow verified: place order → appears on dashboard/KDS → confirmation email → cancel page from email link → mark ready notification → mark paid & done. (Still to run live this session.)
+- End-to-end customer order flow verified: place order → appears on dashboard/KDS → confirmation email → cancel page from email link → mark ready notification → mark paid & done. (Still to run live.)
 
 - QR code and dashboard order link resolve to /trucks/[slug]/order (slug column populated for every truck; dashboard_token fallback removed in V6).
 
@@ -1719,9 +1917,9 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 
 - Scraper GitHub Actions workflow passes on Node 22 (Chrome install + Supabase realtime both clean).
 
-- API keys rotated out of the Apps Script and into Script Properties.
+- API keys rotated out of the Apps Script and into Script Properties (DONE V6.1).
 
-- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql. Admin operator account set (operators.is_admin = true).
+- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql, 20260603_menu_is_active.sql, 20260603_enable_rls_all_tables.sql. Admin operator account set (operators.is_admin = true).
 
 ## Contextual reminders
 
@@ -1743,7 +1941,7 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 
 - A null batch_size means "no limit" — render blank with an ∞ placeholder, never a sentinel like 999 (Section 6).
 
-# 26. Open backlog (June 2026)
+# 27. Open backlog (June 2026)
 
 ## Critical — before trial
 
@@ -1751,19 +1949,21 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 
 - Auth hardening (rate limiting).
 
-- Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store).
+- Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store). Also the natural home for the Gemini-extraction DRY consolidation (Section 3 / Section 25).
 
 - Full end-to-end order flow test (place order → KDS → confirmation email → cancel → ready → paid & done) — run live.
 
 - Reports tab data verification across multiple events.
 
-- Discovery map VF vs HG visibility test (operator events now show on both maps as of V6).
+- Discovery map VF vs HG visibility test (operator events now show on both maps as of V6; map plotting fixed in V6.1).
 
 - Heartbeat/auto-pause end-to-end test.
 
-- Apps Script screenshot processor 6-minute timeout — add time guard; Gemini billing on Google Cloud (paid plan now active).
+- Apps Script screenshot processor 6-minute timeout — the ~280s time guard is in place; confirm it exits cleanly on a large batch. Gemini billing on Google Cloud (paid plan active).
 
-- Brevo hatchgrab.com DNS propagation.
+- GitHub Actions GEMINI_API_KEY secret — verify the repository-secret copy matches the current Script Properties key after the V6.1 rotation (the two are maintained separately).
+
+- ~~Brevo hatchgrab.com DNS propagation~~ — DONE (V6.1, SPF + DKIM authenticated). Inbound mailbox not yet purchased.
 
 - Link each trial truck's discovery_trucks row to its HatchGrab truck (hatchgrab_truck_id) via the admin console, so scraped/emailed events bridge into the operator schedule.
 
@@ -1772,6 +1972,10 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 - orders.source column migration — replaces the customer_email IS NULL heuristic for order type in Reports. TODO comments in app/api/orders/submit/route.ts and app/api/dashboard/action/route.ts.
 
 - truck_events.customer_note surfacing on the customer order page below event details (column saves, API select needs adding, render needed).
+
+- Add "Edwardstone White Horse" to the Google Sheets Venues tab alias columns N/O/P (the Supabase alias is already set; the Sheet copy is maintained separately — Section 25).
+
+- DRY: consolidate the three Gemini schedule-extraction paths into one shared /api/schedule/process endpoint (Section 3 / Section 25).
 
 ## Important — before public launch
 
@@ -1782,8 +1986,6 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 - Multi-device session enforcement (kds_sessions exists, logic pending).
 
 - Stage B offline; proper post-trial login (email/password or magic link — partially in place).
-
-- Remove ADMIN_SECRET — session-based is_admin is the only path needed (V6).
 
 - Operator UI pause-state reload — read from truck_vans.paused_until for the active event's van, not trucks.paused_until (V6).
 
@@ -1829,7 +2031,7 @@ The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrap
 
 - Loyalty redemption UX: operator-side trigger placement in Add Order panel; customer-side prompt design at online checkout.
 
-# 27. Closing note
+# 28. Closing note
 
 This manual is living documentation. Update it whenever a new rule is established, a feature behaviour is decided, a DRY violation is identified and fixed, a plan tier feature changes, or a coding convention shifts.
 
@@ -1837,4 +2039,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6 · 1
+HatchGrab Engineering Reference Manual · V6.1
