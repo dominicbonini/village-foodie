@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
       : ratelimit
 
     const forwarded = request.headers.get('x-forwarded-for')
-    const ip = forwarded ? forwarded.split(',')[0].trim() : (request.ip ?? '127.0.0.1')
+    const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
 
     const { success, remaining } = await limiter.limit(ip)
 
