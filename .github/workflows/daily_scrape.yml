@@ -26,10 +26,11 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-    - name: Install Chrome
-      run: |
-        rm -rf ~/.cache/puppeteer/chrome
-        npx puppeteer browsers install chrome
+    - name: Clear Puppeteer cache
+      run: rm -rf ~/.cache/puppeteer/chrome
+
+    - name: Install Puppeteer Chrome
+      run: npx puppeteer browsers install chrome
 
     - name: Run Scraper
       env:

@@ -1,0 +1,32 @@
+[dotenv@17.3.1] injecting env (21) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+
+🌐 Scraping: https://hatchesup.co.uk/find-food/?when=7days
+   ℹ️  2 HG trucks + 124 public discovery trucks
+   📄 7406 chars of schedule text
+   🖼️  294 img candidates
+   🔗 200 ordering links found on page
+
+🤖 Extracting schedule events...
+   ✅ 99 events extracted
+
+🔗 Finding order URLs and scraping menus for 62 trucks...
+   🍕 Ling Ling's Steam Kitchen — scraping https://linglingssteamkitchen.hatchesup.app/basket ... ✓ (832 chars) → https://linglingssteamkitchen.hatchesup.app/basket
+   ⏳ Waiting 5 min before next truck... (13:27:14)
+   🍕 Pizza Mondo — scraping https://pizza-mondo.co.uk ... ✓ (3469 chars) → https://pizza-mondo.co.uk
+   ⏳ Waiting 5 min before next truck... (13:32:24)
+   🍕 Steak & Honour — scraping https://steakandhonour.hatchesup.app/basket ... ✓ (1389 chars) → https://steakandhonour.hatchesup.app/basket
+   ⏳ Waiting 5 min before next truck... (13:37:36)
+   🍕 Azahar — scraping https://azahar.hatchesup.app/basket ... ✓ (1949 chars) → https://azahar.hatchesup.app/basket
+   ⏳ Waiting 5 min before next truck... (13:42:51)
+   🍕 Rotisseroll — scraping https://rotisseroll.hatchesup.app/basket ... ✓ (2310 chars) → https://rotisseroll.hatchesup.app/basket
+   ⏳ Waiting 5 min before next truck... (13:48:03)
+   🍕 Buffalo Joe's — scraping https://buffalojoes.hatchesup.app ... ✗ (Connection closed.)
+   ⏳ Waiting 5 min before next truck... (14:53:30)
+   🍕 Pimp My Fish — scraping https://www.pimp-my-fish.co.uk/menu ... ✗ (Connection closed.)
+   ⏳ Waiting 5 min before next truck... (14:58:30)
+   🍕 Kerief Catering Ltd — scraping https://keriefcateringltd.hatchesup.app ... ✗ (Connection closed.)
+   ⏳ Waiting 5 min before next truck... (15:03:31)
+   🍕 Bonnefirebox — scraping https://bonnefirebox.hatchesup.app ... ✗ (Connection closed.)
+   ⏳ Waiting 5 min before next truck... (15:08:33)
+   🍕 The Angry Seagull Fish + Chips — scraping https://theangryseagullfishchips.hatchesup.app ... ✗ (Connection closed.)
+   ⏳ Waiting 5 min before next truck... (15:14:22)
