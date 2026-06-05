@@ -1,5 +1,14 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { ratelimit, strictRatelimit } from '@/lib/ratelimit'
+
+const STRICT_PREFIXES = ['/api/menu', '/api/discovery', '/api/events', '/trucks']
+const EXEMPT_PREFIXES = [
+  '/api/dashboard/action',
+  '/api/orders/submit',
+  '/api/webhooks',
+  '/api/admin',
+]
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -18,6 +27,33 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(
       `https://www.hatchgrab.com${pathname}${request.nextUrl.search}`
     )
+  }
+
+  // ── Rate limiting ─────────────────────────────────────────────────
+  const isRateLimitedPath =
+    pathname.startsWith('/api/') || pathname.startsWith('/trucks/')
+  let rlRemaining: number | null = null
+
+  if (isRateLimitedPath && !EXEMPT_PREFIXES.some(p => pathname.startsWith(p))) {
+    const limiter = STRICT_PREFIXES.some(p => pathname.startsWith(p))
+      ? strictRatelimit
+      : ratelimit
+
+    const forwarded = request.headers.get('x-forwarded-for')
+    const ip = forwarded ? forwarded.split(',')[0].trim() : (request.ip ?? '127.0.0.1')
+
+    const { success, remaining } = await limiter.limit(ip)
+
+    if (!success) {
+      return new Response(JSON.stringify({ error: 'Too many requests' }), {
+        status: 429,
+        headers: {
+          'Content-Type': 'application/json',
+          'Retry-After': '60',
+        },
+      })
+    }
+    rlRemaining = remaining
   }
 
   // ── Supabase auth session ──────────────────────────────────────
@@ -74,6 +110,10 @@ export async function proxy(request: NextRequest) {
   if (pathname === '/login' && user) {
     // Already logged in — redirect to dashboard
     return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  if (rlRemaining !== null) {
+    supabaseResponse.headers.set('X-RateLimit-Remaining', String(rlRemaining))
   }
 
   return supabaseResponse
