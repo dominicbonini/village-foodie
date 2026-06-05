@@ -35,9 +35,8 @@ export async function proxy(request: NextRequest) {
   let rlRemaining: number | null = null
 
   if (isRateLimitedPath && !EXEMPT_PREFIXES.some(p => pathname.startsWith(p))) {
-    const limiter = STRICT_PREFIXES.some(p => pathname.startsWith(p))
-      ? strictRatelimit
-      : ratelimit
+    const isStrict = STRICT_PREFIXES.some(p => pathname.startsWith(p))
+    const limiter = isStrict ? strictRatelimit : ratelimit
 
     const forwarded = request.headers.get('x-forwarded-for')
     const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1'
@@ -49,7 +48,7 @@ export async function proxy(request: NextRequest) {
         status: 429,
         headers: {
           'Content-Type': 'application/json',
-          'Retry-After': '60',
+          'Retry-After': isStrict ? '300' : '60',
         },
       })
     }
