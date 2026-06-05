@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.1
+HatchGrab Engineering Reference Manual · V6.2
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.1**
+**Version 6.2**
 
 June 2026
 
@@ -14,7 +14,37 @@ June 2026
 
 # Changelog
 
-## V6.1 — June 2026 (this session)
+## V6.2 — June 2026 (this session)
+
+Schedule-ingestion session. Rebuilds the operator schedule-import review into a breakpoint-divergent UX (compact mobile cards, always-editable desktop table), adds an operator scraper preference with a self-service "verify my website" flow and an in-app approval queue for scraped events, makes the daily scraper learn each truck's best update day (adaptive scheduling) with hash-based change detection and an empty-schedule nudge email, consolidates the three independent Gemini schedule-extraction prompts behind a shared `lib/schedule-extract.ts` library, adds a per-truck exclusion list so unwanted scraped/imported events can be suppressed, moves the GitHub Actions scraper to Node 24, and fixes a batch of discovery-map venue-matching data errors. Key changes relative to V6.1:
+
+- **Schedule import review rebuilt (breakpoint-divergent)** — the always-expanded card design from V6.1 is superseded. On mobile the review is now compact ~90px summary cards with three states (collapsed / focused / fully expanded): incomplete cards auto-open to a focused state showing only the missing fields, complete cards expand fully via an Edit affordance, and there is no Done button. On desktop the review is an always-editable fixed-layout table with explicit column widths and amber highlighting on incomplete rows. See Section 15.
+
+- **30-minute time dropdowns, shared with the event form** — schedule times are entered through `SCHEDULE_TIME_OPTIONS` `<select>` dropdowns (30-minute increments, 07:00–23:00) instead of native time inputs. Start and end are always paired, the end list is filtered to options after the chosen start, selecting a start auto-populates end at +3h (clamped to 23:00), and moving the start past the end auto-clears the end. `SCHEDULE_TIME_OPTIONS` and `applyStartTimeChange` live at module level and are shared by both the import review and the Add/Edit event form. `process-schedule` discards any event where end ≤ start. See Section 15 and Section 3.
+
+- **Historical events handled in import** — past-dated events extracted from a schedule render in a separate "Past dates — update to save" section below the future events, with the save checkbox disabled and pre-seeded unselected. Editing a past event's date to a future date auto-selects it; an `_originalDate` snapshot keeps the card in the historical section regardless of later date edits. The Save count only includes selected future events. See Section 15.
+
+- **Operator scraper preference + self-service verify** — new `trucks.scraper_preference` (`manual`/`auto`, default `manual`), `trucks.schedule_url`, and `trucks.scraper_rule` (`scroll_lazy`/`scroll_next`). A "Your schedule" section in Settings offers two choices: "I'll upload the schedule myself" (default) or "Find my events automatically", the latter revealing a schedule URL field with an inline Verify button. Verify rejects Facebook/Instagram URLs, runs a self-contained Puppeteer scrape via the new `verify-schedule-url` route, stores the winning scroll rule, and opens the import review with whatever it found. See Section 15.
+
+- **In-app approval queue for scraped events** — scraped, unconfirmed events surface in the Schedule tab under a "Needs your approval" heading with an amber left accent and Approve / Edit & Approve / Reject actions. The scraper-to-`truck_events` bridge is now gated by `scraper_preference`: only `auto` trucks have scraped events bridged and are emailed; `manual` trucks skip the `truck_events` insert entirely (their `discovery_events` are unaffected). See Section 15.
+
+- **Adaptive scraper scheduling** — the daily GitHub Actions scraper now learns each linked truck's best update day. A new `scraper_run_log` table records every run; for the first 30 days a truck is scraped daily, after which `recordRunAndLearn` analyses the 90-day log to find the weekday with the most schedule changes and stores it in `scraper_update_day`, thereafter scraping only on that day and the two days following. Change detection is a hash (MD5 of sorted `event_date|venue_name`) compared against `scraper_last_hash`. An empty-schedule run sends a fire-and-forget nudge to the operator's own email with a 14-day resend guard. `scraper_run_log` is pruned to 90 days every run; `truck_events` and `discovery_events` are never pruned. A `SCRAPE_TRUCK_ID` single-truck mode bypasses the day gate. See Section 24.
+
+- **Gemini schedule-extraction consolidated** — the new `lib/schedule-extract.ts` is the single in-repo home for schedule extraction: `ExtractedEvent`, `INVALID_VENUES`, `buildScheduleExtractionPrompt`, `extractScheduleEvents` (with `callGeminiWithRetry`), and the exclusion helpers `normaliseExclusionTerm`/`isExcluded`. `process-schedule/route.ts` is now a ~40-line auth-and-input wrapper, and `verify-schedule-url` plus the scraper's HatchGrab loop import the same library. The model is `gemini-2.5-flash` everywhere (the lingering flash-lite references are gone). Only the two Google Apps Script paths remain independent. See Section 3.
+
+- **Per-truck exclusion list** — a new `excluded_terms` table lets an operator suppress unwanted venues. Deleting or rejecting an event prompts "exclude similar?"; choosing to exclude stores the normalised venue name. Excluded events are matched by fuzzy substring (`isExcluded`), shown struck-through in a collapsed section, and can be added back (removal is by term, not id). Settings shows the exclusion list with remove controls when non-empty. See Section 15 and Section 16.
+
+- **Always-mounted tab pattern** — tabs that receive cross-tab props (notably the Schedule tab, which the Settings Verify flow drives) are now always mounted with an `isActive` prop; their data-loading effects are guarded with `if (!isActive) return`, and their modals are rendered outside the `isActive` gate so they can be opened from another tab. See Section 22.
+
+- **Import address field fix** — `ExtractedEvent.address` is optional, the extraction prompt is instructed never to put a town or postcode in the address, and the area field is labelled "Area (village, town or city)". See Section 15.
+
+- **Scraper on Node 24** — `.github/workflows/daily_scrape.yml` now runs on Node 24 (the forced actions-runtime deprecation landed and the earlier Puppeteer issues are resolved). See Section 24.
+
+- **Discovery-map venue-matching fixes** — common pub names (The Bell, The Fox, The Bull) were matching the first same-named venue regardless of village. Eight missing venues were added with correct coordinates and aliases, the Five Bells Cavendish alias set was extended, 52 upcoming events were re-pinned, and wrong `venue_id`s were nulled where the correct venue did not yet exist. The unique constraint on `venues` is `name + village`, so upserts must use `onConflict: 'name,village'`. The proper fix — village-aware matching in `inbound-schedule` — is on the backlog. See Section 25 and Section 27.
+
+- **Schema / migration conventions reaffirmed** — `trucks.id` is `text`, not `uuid`, so every FK column referencing `trucks(id)` (including `scraper_run_log.truck_id` and `excluded_terms.truck_id`) must be `text`. New tables ship with RLS enabled and a service-role-only posture. Migrations are applied by hand in the Supabase SQL editor, in order, followed by `notify pgrst, 'reload schema'`. New migrations this session: `20260604_scraper_preference.sql`, `20260604_scraper_adaptive.sql`, `20260604_exclusion_terms.sql`. See Section 16 and Section 22.
+
+## V6.1 — June 2026
 
 Follow-on polish-and-hardening session after V6. Enables Row Level Security across the database, completes the admin auth migration by removing ADMIN_SECRET entirely, fixes the discovery map data pipeline so events plot correctly, rebuilds the operator schedule-import review UX, fixes the soft-delete fetch gap that left deleted categories visible, and clears a long run of dashboard, manage, and settings UI inconsistencies. Adds a new Section 25 documenting the Village Foodie discovery map and scraper data pipeline. Key changes relative to V6:
 
@@ -30,11 +60,11 @@ Follow-on polish-and-hardening session after V6. Enables Row Level Security acro
 
 - **Screenshot scraper accuracy** — processFoodTruckScreenshots reverted from gemini-2.5-flash-lite to gemini-2.5-flash (lite caused day-of-week→date errors and mis-extractions). Prompt now injects an explicit 14-day day→date reference, and an invalid-venue filter skips "Closed", "N/A", "TBC", "Unavailable", "Cancelled". Fixed a dbVilNng → dbVilNorm typo in venue matching. See Section 24.
 
-- **Schedule import review rebuilt** — the operator schedule-import review (both the Add-event-modal upload path and the Import-schedule header path) now shows always-expanded inline editable cards instead of a collapsed-with-Edit design. Fields are ordered date → venue → area/postcode → start/end time → van, matching the operator's natural reading order. Missing required fields (time, van) are flagged amber with labels, an attention banner counts incomplete events, and Save is disabled until every event is complete. Date and time use friendly clickable displays ("Wed 3rd Jun", "Select time") backed by native pickers. The Gemini prompt was upgraded to extract-then-enrich: it cleans venue names (strips village/postcode), assembles full UK postcodes from split fragments, and fills missing postcode/town from its own UK venue knowledge. See Section 15.
+- **Schedule import review rebuilt** — the operator schedule-import review (both the Add-event-modal upload path and the Import-schedule header path) showed always-expanded inline editable cards instead of a collapsed-with-Edit design. Fields are ordered date → venue → area/postcode → start/end time → van, matching the operator's natural reading order. Missing required fields (time, van) are flagged amber with labels, an attention banner counts incomplete events, and Save is disabled until every event is complete. *(Superseded in V6.2 — the always-expanded design was replaced by the breakpoint-divergent review; see Section 15.)*
 
 - **Multi-van event rules** — events must be attached to a van. With one van it is auto-assigned silently; with multiple vans the van selector is required on the Add/Edit event form and the schedule import, blocking save until chosen. A copied event carries its source van_id. Adding a van now shows a billing-confirmation dialog before creation, and each van renders as its own bordered card in Settings → Your trucks. See Section 14 and Section 15.
 
-- **Add/Edit event field order + friendly date** — the Add and Edit event modals now lead with Date, then Venue name, Full address, Area + Postcode, Start/End time, Van, Notes. The date field shows the friendly "Wed 3rd Jun" format via a clickable display over a hidden native date input. Start/End time sit on one row with step="300" (5-minute increments). The address block carries a locale comment for future non-UK formats. See Section 15.
+- **Add/Edit event field order + friendly date** — the Add and Edit event modals now lead with Date, then Venue name, Full address, Area + Postcode, Start/End time, Van, Notes. The date field shows the friendly "Wed 3rd Jun" format via a clickable display over a hidden native date input. *(V6.2 — the Start/End time inputs moved from native step="300" controls to the shared 30-minute dropdowns; see Section 15.)* The address block carries a locale comment for future non-UK formats. See Section 15.
 
 - **Dashboard prep list event scoping** — the "Prep needed now / Coming up" slotted-orders list read from the unfiltered orders array (line 890), so orders from other events bled in. Changed to eventOrders, matching the slotless section. See Section 10.
 
@@ -46,9 +76,9 @@ Follow-on polish-and-hardening session after V6. Enables Row Level Security acro
 
 - **UI consistency pass** — expand/collapse arrows unified to ▶ + rotate-90 everywhere (schedule deals, past-events, menu categories, modifier groups); category delete moved inside the expanded category view with the whole header row tappable to expand (no more accidental deletes); Menu & Stock category row goes two-line on mobile; the event bar shows on the Menu & Stock tab; the "Import with AI" button is renamed "Import menu" (whitespace-nowrap, laid out to match the Schedule tab); and the Upsells rule dropdowns stack on mobile.
 
-- **process-schedule / scraper DRY gap noted** — app/api/manage/process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemini all implement the same Gemini schedule-extraction logic independently. Prompt improvements must currently be applied to all three. Long-term consolidation into a single shared endpoint is on the backlog. See Section 3 and Section 25.
+- **process-schedule / scraper DRY gap noted** — app/api/manage/process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemini all implement the same Gemini schedule-extraction logic independently. Prompt improvements must currently be applied to all three. *(Partly resolved in V6.2 — the in-repo paths now share lib/schedule-extract.ts; only the two Apps Script paths remain independent. See Section 3.)*
 
-## V6.0 — June 2026 (this session)
+## V6.0 — June 2026
 
 Pre-trial polish session. Confirms and hardens the multi-van pause isolation, completes the platform admin model with session-based auth, adds the Tester plan, builds the operator schedule-import flow, rebuilds the Schedule tab UX, fixes the scraper workflow, and clears a batch of dashboard event-scoping and contrast issues ahead of the first trial truck. Key changes relative to V5:
 
@@ -92,7 +122,7 @@ Pre-trial polish session. Confirms and hardens the multi-van pause isolation, co
 
 - **Heartbeat architecture documented** — a single last_heartbeat_at per truck_vans row, a 15s ping from both the KDS and the dashboard, a 30s stale threshold, a 2h auto-pause that clears online_paused_until on the next live receipt. All-or-nothing offline detection works by design — the last device still pinging keeps the van live.
 
-- **Scraper workflow** — the GitHub Actions daily_scrape workflow runs on Node 22 (Node 20 lacked native WebSocket for @supabase/realtime-js; Node 24 forced the actions deprecation and Puppeteer Chrome issues). Chrome installs via npx puppeteer browsers install chrome (cache cleared first). Gemini quota resolved by upgrading to a paid plan.
+- **Scraper workflow** — the GitHub Actions daily_scrape workflow runs on Node 22 (Node 20 lacked native WebSocket for @supabase/realtime-js; Node 24 forced the actions deprecation and Puppeteer Chrome issues). Chrome installs via npx puppeteer browsers install chrome (cache cleared first). Gemini quota resolved by upgrading to a paid plan. *(V6.2 — the workflow moved to Node 24; see Section 24.)*
 
 - **is_test scope reconfirmed** — is_test has exactly one effect: filtering test trucks from the public discovery map. It never gates an operator feature (carried forward from V5).
 
@@ -260,7 +290,7 @@ When in doubt about naming: customer-facing surfaces use Village Foodie branding
 
 - **Native wrapper** — Capacitor around the existing Next.js app. App ID com.hatchgrab.app, points to https://www.hatchgrab.com. Native modules only for hardware (printer) and OS features (background notifications, offline detection, screen wake).
 
-- **Scraper** — Google Apps Script (not in repo) processes Drive screenshots and vendor emails via Gemini, mirrors events to Supabase via /api/inbound-schedule. A separate GitHub Actions web scraper runs daily on Node 22 (see Section 24). Subject to the 6-minute Apps Script execution limit — needs a time guard.
+- **Scraper** — Google Apps Script (not in repo) processes Drive screenshots and vendor emails via Gemini, mirrors events to Supabase via /api/inbound-schedule. A separate GitHub Actions web scraper runs daily on Node 24 (see Section 24). Subject to the 6-minute Apps Script execution limit — needs a time guard.
 
 ## Key surfaces
 
@@ -274,7 +304,7 @@ When in doubt about naming: customer-facing surfaces use Village Foodie branding
 
 - **Manage page (/manage/[token])** — operator settings, menu, schedule, team, billing. Tabs (in order): Menu, Schedule, Deals, Extras & Upsells, Reports, Team, Settings, Billing.
 
-- **Admin console (/admin)** — platform admin for trucks, plans, trials, feature overrides, and discovery-truck linking. Session auth via operators.is_admin (ADMIN_SECRET emergency fallback). Uses the shared AppHeader and slate-900 tabs. Reads plan data from the shared source of truth. See Section 12.
+- **Admin console (/admin)** — platform admin for trucks, plans, trials, feature overrides, and discovery-truck linking. Session auth via operators.is_admin only (verifyAdmin() on every route; no ADMIN_SECRET fallback as of V6.1). Uses the shared AppHeader and slate-900 tabs. Reads plan data from the shared source of truth. See Section 12.
 
 - **Verify email (/verify-email)** — public page that completes an operator email change via token. Not auth-gated.
 
@@ -304,7 +334,7 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/prep-utils.ts** — prep time, category configs, queue-aware ready time, buildCatConfigs.
 
-- **lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console. (V6: PLAN_FOOTNOTES is now exported and consumed by both surfaces; coming-soon rows are ordered last in the data itself.)
+- **lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console.
 
 - **lib/features.ts / lib/useFeatures.ts** — plan tier feature map, PLAN_ORDER, PLAN_META, and canAccess()/useFeatures() for gating.
 
@@ -317,6 +347,20 @@ All business calculations live in lib/. These are the only places these calculat
 - **lib/order-utils.ts** — **server-only**. Exports nextOrderId(truckId). Imports SUPABASE_SERVICE_ROLE_KEY — importing this in a client component will fail the build. Client-safe utilities go in their own files (e.g. modifier-utils.ts), never co-located here.
 
 - **lib/useDragDrop.ts** (V6) — the shared drag-and-drop hook. useDragDrop(onFileDrop, acceptedTypes) encapsulates isDragging plus a dragCounter ref (prevents flicker when dragging over child elements) and returns { isDragging, dragProps }. dragProps spreads onto a label. Used by the Menu "Import with AI" upload zone, the Schedule "Import schedule" upload zone, and the extracted-events reorder list. Never re-implement drag handlers inline.
+
+- **lib/schedule-extract.ts** (V6.2) — the single in-repo home for Gemini schedule extraction and exclusion matching. Exports:
+
+  - **ExtractedEvent** — the extracted-event type (event_date DD/MM/YYYY, start_time, end_time, venue_name, town, postcode, optional address). `address` is optional and must never contain a town or postcode.
+
+  - **INVALID_VENUES** — the skip list ("Closed", "N/A", "TBC", "Unavailable", "Cancelled") applied in both the prompt and post-parse.
+
+  - **buildScheduleExtractionPrompt(inputText)** — assembles the extract-then-enrich prompt, injecting a pre-computed 14-day day→date reference table (the model is never asked to infer today's date), the venue-name-cleaning and postcode-assembly rules, the address rule, and the invalid-venue filter.
+
+  - **extractScheduleEvents(content, options)** — calls Gemini through callGeminiWithRetry (3 attempts, 2-second backoff), strips markdown fences, parses, and post-processes: uppercases the postcode, discards any event where end ≤ start, and drops invalid venues. Model is **gemini-2.5-flash** (never flash-lite).
+
+  - **normaliseExclusionTerm(term)** / **isExcluded(name, terms)** — the exclusion helpers (lowercase, strip punctuation, fuzzy substring inclusion) used by the import review and the scraper.
+
+  In-repo callers: **app/api/manage/process-schedule/route.ts** (now a ~40-line auth-and-input wrapper), **app/api/manage/verify-schedule-url/route.ts**, and the GitHub Actions scraper's HatchGrab loop all import from here. See Section 15 and Section 24.
 
 ### Display helpers — components/dashboard/helpers.ts
 
@@ -398,17 +442,23 @@ lib/plan-features.ts is the single source of truth for the pricing matrix, featu
 
 FEATURE_SECTIONS (V6) is the canonical structure: three sections — Core operations, Online sales & automation, and Max tier — each a list of FeatureRow objects carrying a human-readable label and starter/pro/max values. Trial and Tester always take the same value as Max. Coming-soon rows are ordered last within their section in the data itself, so both the admin Features tab and the billing matrix render them last without any render-time sorting. PLAN_FOOTNOTES is exported and rendered by both surfaces.
 
-### Schedule extraction via Gemini — known DRY gap (V6.1)
+### Schedule extraction via Gemini — mostly consolidated (V6.2)
 
-Three code paths independently call Gemini to turn unstructured text or an image into structured event rows, and all three carry their own copy of the extraction prompt and parsing logic:
+V6.2 closed most of the V6.1 DRY gap. The in-repo paths now share lib/schedule-extract.ts (above):
 
-- **app/api/manage/process-schedule/route.ts** — operator imports their own schedule into HatchGrab (truck is always the logged-in operator; no truck name extracted).
+- **app/api/manage/process-schedule/route.ts** — operator imports their own schedule into HatchGrab. Now a ~40-line wrapper: verify token, read input (text or file), call extractScheduleEvents, return { events }. No prompt or parsing logic of its own.
+
+- **app/api/manage/verify-schedule-url/route.ts** (V6.2) — the self-service "verify my website" route. Self-contained Puppeteer scrape that calls extractScheduleEvents on the scraped content.
+
+- **GitHub Actions scraper, HatchGrab loop** — imports extractScheduleEvents (and uses gemini-2.5-flash, no longer flash-lite).
+
+Two paths remain independent and must still receive prompt improvements by hand:
 
 - **processFoodTruckScreenshots** (Google Apps Script) — scrapes public schedule screenshots from a Drive folder into the discovery map.
 
 - **analyzeEmailWithGemini** (Google Apps Script) — processes vendor schedule emails into the discovery map.
 
-Until these are consolidated, any prompt improvement (postcode assembly, venue-name cleaning, date mapping, enrichment) must be applied to all three by hand. The V6.1 extract-then-enrich improvements were applied to process-schedule first; the two Apps Script paths carry the screenshot date-mapping and invalid-venue rules but not yet the full enrichment prompt. Long-term: consolidate into a single shared /api/schedule/process endpoint, which also requires migrating the Apps Script processing off Google Sheets (see Section 25).
+> **RULE (V6.2)** — Any new in-repo code that extracts events from text, an image, or a scraped page MUST import from lib/schedule-extract.ts. Never re-implement the prompt or the parser in a route. The two Apps Script paths cannot import the library (different runtime); consolidating them requires migrating the Apps Script processing off Google Sheets (see Section 25), and remains on the backlog.
 
 ### Development process — Claude within Cursor (V6)
 
@@ -1257,27 +1307,139 @@ An event is a truck appearing at a venue on a date and time. The discovery map s
 
 Unconfirmed events show on the discovery map with the order button DISABLED and "Awaiting truck confirmation". Only confirmed events accept orders — this shields customers and the platform from bot errors.
 
-### All event sources flow to truck_events — the scraper bridge (V5)
+### All event sources flow to truck_events — the scraper bridge (V5, gated by preference V6.2)
 
-> **RULE** — Every event source — the web/Apps Script scraper, vendor emails to schedule@villagefoodie.co.uk, and manual entry — ends up in truck_events as an event for a linked truck. The truck confirms inbound (scraper/email) events before they can take orders; manual entries and operator schedule imports are confirmed on save.
+> **RULE** — Every event source — the web/Apps Script scraper, vendor emails to schedule@villagefoodie.co.uk, and manual entry — can end up in truck_events as an event for a linked truck. The truck confirms inbound (scraper/email) events before they can take orders; manual entries and operator schedule imports are confirmed on save.
 
 Bridge mechanics in /api/inbound-schedule: after the usual write to discovery_events, the endpoint normalises the incoming truck name and matches it against discovery_trucks rows that have a hatchgrab_truck_id set. On a match it inserts a truck_events row with status 'unconfirmed' and source 'scraper', after a dedup check on truck_id + event_date + venue_name (so re-scrapes and manual duplicates don't pile up). Venue coordinates are looked up from the venues table where available. A best-effort notification email is sent once per truck per batch (fire-and-forget — it must never block ingestion). Trucks with no hatchgrab_truck_id are unaffected: their events stay in discovery_events only, exactly as before.
 
+> **RULE (V6.2) — bridge is gated by scraper_preference.** The bridge into truck_events now also checks trucks.scraper_preference. Only trucks set to 'auto' have their scraped events bridged into truck_events and the operator emailed. A truck set to 'manual' (the default) skips the truck_events insert entirely — it has opted to upload its own schedule, so scraped events would only create noise. The discovery_events write is unaffected in both cases (the public map still shows whatever the scraper found). A legacy value of 'both' is treated as 'auto'.
+
 Linking is a one-time admin step per truck: the admin console shows a "Link HG truck" dropdown on each discovery truck row, which sets discovery_trucks.hatchgrab_truck_id. Until a truck is linked, nothing bridges — this is the intended gate during onboarding.
 
-### Import schedule (operator upload) — V6, review UX and prompt rebuilt V6.1
+## Scraper preference and self-service verify (V6.2)
+
+Operators choose how their schedule reaches HatchGrab. Three new columns on trucks back this:
+
+- **scraper_preference** (text, enum 'manual' | 'auto', default 'manual'; a legacy 'both' is treated as 'auto').
+
+- **schedule_url** (text) — the operator's own schedule/website URL, used by the auto flow and the verify route.
+
+- **scraper_rule** (text, enum 'scroll_lazy' | 'scroll_next') — the scroll strategy that successfully extracted events for this site, learned at verify time and reused by the daily scraper.
+
+### Settings → "Your schedule"
+
+The Settings tab carries a "Your schedule" section with two radio cards:
+
+1. **"I'll upload the schedule myself"** — first and default. The operator imports their schedule by hand (see Import schedule below) and scraped events are not bridged.
+
+2. **"Find my events automatically"** — second; subtitle "You can still add events manually at any time." Selecting it reveals a schedule URL field with an inline **Verify** button.
+
+### Verify flow
+
+The Verify button lets an operator confirm, there and then, that we can read events off their site:
+
+- **Blocked-domain check** — isBlockedDomain (against BLOCKED_DOMAINS) rejects Facebook and Instagram URLs both on blur and again before fetch; a blocked URL is never persisted. Social pages can't be reliably scraped, so the operator is told to use their own website.
+
+- Pressing Verify shows an amber status box: "Checking your website... This can take up to 2 minutes." (Scraping with a headless browser is slow.)
+
+- The request hits **app/api/manage/verify-schedule-url/route.ts** — a self-contained Puppeteer scrape (@sparticuz/chromium + puppeteer-core) that loads the page, runs BOTH scroll rules (scroll_lazy and scroll_next), and calls extractScheduleEvents from lib/schedule-extract.ts on the resulting content. If a rule yields events, the winning scroll rule is stored on trucks.scraper_rule. The route returns { found, events, reason } where reason is 'no_content' (page didn't load / nothing scraped) or 'no_events' (scraped fine, nothing schedule-like found). export const maxDuration = 60.
+
+- On success the import review modal opens **on the Settings tab without switching tabs**, pre-loaded with whatever was found, so the operator reviews and saves exactly as with a manual upload. This is why the Schedule tab is always-mounted with modals outside its isActive gate (Section 22).
+
+### Schedule tab info strip
+
+The Schedule tab carries an info strip at the top showing the truck's current preference (upload-myself vs find-automatically) with a "Change in Settings" link, so the operator always knows which mode they're in.
+
+### Approval queue for scraped events
+
+When a linked, auto-preference truck has scraped, still-unconfirmed events, they surface in the Schedule tab under a **"Needs your approval"** heading, each card with an amber left accent and three actions:
+
+- **Approve** — confirms the event as-is.
+
+- **Edit & Approve** — opens the event in the Add/Edit form (with an editingEventConfirmOnSave flag set) so saving both edits and confirms in one step.
+
+- **Reject** — removes the event and prompts "exclude similar?" exactly like the import delete (see Exclusion list below).
+
+## Import schedule (operator upload) — review UX rebuilt V6.2
 
 Operators can bulk-import their own schedule from a screenshot, photo, PDF, or pasted text:
 
 - A 📤/✨ Import schedule button sits on the Schedule tab header beside + Add event, styled to match the Menu tab's "Import menu" (sparkle icon, "photo, PDF or text" subtitle). It opens a dedicated modal — separate from the Add event modal — with a drag-and-drop upload zone (the shared useDragDrop hook), a paste-text area, and a "Process schedule" button. Once events have been extracted, the upload/paste UI is hidden (gated on extractedEvents.length === 0) so only the review list and action buttons remain.
 
-- The route app/api/manage/process-schedule/route.ts verifies the dashboard token, calls Gemini, strips any markdown fences, and returns { events: [...] } with six fields only per event: event_date (DD/MM/YYYY), start_time, end_time (HH:MM, empty string if none — never "00:00"), venue_name, town, postcode (or empty string). It performs no DB writes, no dedup, and is NOT asked for a truck name — the truck is always the logged-in operator's truck.
+- The route app/api/manage/process-schedule/route.ts verifies the dashboard token, reads the input, calls extractScheduleEvents from lib/schedule-extract.ts (Section 3), and returns { events: [...] } with the ExtractedEvent fields: event_date (DD/MM/YYYY), start_time, end_time (HH:MM, empty string if none — never "00:00"), venue_name, town, postcode (or empty string), and optional address. It performs no DB writes, no dedup, and is NOT asked for a truck name — the truck is always the logged-in operator's truck. As of V6.2 it is a ~40-line wrapper around the shared library, with no prompt or parsing logic of its own.
 
-- **Extract-then-enrich prompt (V6.1)** — the Gemini prompt is no longer a bare instruction. It is a two-step extract-then-enrich prompt with worked examples that: cleans venue names by stripping any village/town/postcode out of the name ("The Fox Burwell" → venue_name "The Fox", town "Burwell"); assembles full UK postcodes from split fragments (a lone trailing "0BA" is recombined with its preceding outward code, never treated as a town); normalises times ("from 5pm" → start 17:00, blank end); and, in the enrichment step, fills a missing postcode or town from Gemini's own knowledge of the named UK venue (only with high confidence — uncertain fields are left blank). The same improvement must eventually be mirrored to the two Apps Script extraction paths (see Section 3 and Section 25).
+### Time entry — 30-minute dropdowns (V6.2)
 
-- **Review UX (V6.1)** — extracted events render as always-expanded inline editable cards (the previous collapsed/checkbox/Edit and drag-reorder design was removed). Fields are ordered for the operator's natural reading order: **Date → Venue name → Area + Postcode → Start time + End time → Van**. The date shows a friendly clickable display ("Wed 3rd Jun") over a hidden native date input; each time shows a clickable "Select time" / "HH:MM" display over a native type="time" step="300" input (no confusing 12:30 placeholder). Empty required fields (start time, end time, and van when multi-van) are flagged amber with always-present labels, so card height never shifts as warnings appear or clear. An attention banner counts the incomplete events and the Save button is disabled until every event is complete. The "Area" field label covers villages, towns, cities, and city districts.
+Schedule times are entered through dropdowns, not native time inputs:
 
-- saveExtractedEvents geocodes via the existing geocodeLocation path and writes via upsert_event with status 'confirmed' and source 'operator_upload'. Imported events surface on both maps via the existing discovery/events read path. The same review UI is shared with the Add event modal's upload mode (one set of state covers both instances; edits to the review cards must be applied to both).
+- **SCHEDULE_TIME_OPTIONS** — a module-level constant of 30-minute increments from 07:00 to 23:00, rendered as `<select>` options. Defined once and shared by the import review AND the Add/Edit event form (the V6.1 native step="300" inputs on the Add/Edit form are superseded).
+
+- Start and end are **always paired**; the end dropdown is filtered to options strictly after the chosen start.
+
+- **applyStartTimeChange** (module-level, shared) — selecting a start auto-populates the end at start + 3h, clamped to 23:00; if the start is moved past the current end, the end is auto-cleared so it can be re-chosen.
+
+- process-schedule (via extractScheduleEvents) discards any event where end ≤ start before it is ever returned.
+
+### Review UX — breakpoint-divergent (V6.2, supersedes V6.1 always-expanded)
+
+The V6.1 "always-expanded inline editable cards" design is replaced by a layout that diverges by breakpoint, because the right interaction differs sharply between a phone and a desktop. Field order on both is **Date → Venue name → Area + Postcode → Start time + End time → Van**.
+
+**Mobile** — compact summary cards (~90px) with three states:
+
+- **collapsed** — a one-glance summary line (date · venue · time).
+
+- **focused** — auto-opened for any incomplete card, showing ONLY the missing fields (driven by per-card _missingDate / _missingVenue / _missingTime flags) so the operator fixes exactly what's wrong and nothing else.
+
+- **fully expanded** — every field editable, opened via an Edit affordance on a complete card.
+
+There is **no Done button** — a card simply collapses back when complete. focusedEventIds and expandedEventIds are sets that are only ever added to, never removed during a session, so a card the operator has opened stays open (it never snaps shut under them as they type).
+
+**Desktop** — an always-editable inline table:
+
+- table-layout: fixed with an explicit colgroup so columns never jump as content changes. Widths: checkbox 32px, date 130px, venue 220px, area 150px, postcode 100px, start time 100px, end time 100px, delete 36px.
+
+- Incomplete rows get an amber row highlight plus amber highlighting on the specific empty required field.
+
+An attention banner counts the incomplete events and the Save button is disabled until every selected event is complete. The "Area" field label is "Area (village, town or city)" and covers villages, towns, cities, and city districts.
+
+### Historical (past-dated) events (V6.2)
+
+A schedule screenshot often includes dates that have already passed. These are handled separately so they can't be silently saved as live events:
+
+- Past-dated extracted events render in their own **"Past dates — update to save"** section below the future events.
+
+- Their save checkbox is **disabled** and they are seeded selected: false.
+
+- Editing a past event's date to a future date **auto-selects** it and enables its checkbox.
+
+- An **_originalDate** snapshot is taken on extraction; the card stays in the historical section regardless of later date edits (so it doesn't jump between sections mid-edit). parseDDMMYYYY and sortByDate are the helpers used to classify and order.
+
+- The Save button count only includes **selected future** events.
+
+### Exclusion list interaction (V6.2)
+
+Deleting an event in the review (or rejecting a scraped event in the approval queue) prompts **"exclude similar?"**:
+
+- **"Yes, exclude"** — adds the normalised venue_name to the truck's excluded_terms via add_exclusion_term, which returns { ok, id }; callers store the returned id for any later remove.
+
+- **"Just remove"** — removes the event from the list without excluding.
+
+Excluded events are shown struck-through inside a collapsed `<details>` section at the bottom of the review, each with an **Add back** button.
+
+- **Add back removes by term, not by id** (handleAddBack) — this is deliberate: an exclusion added earlier in the same session may not have its id to hand, and matching by term is always safe.
+
+- **selectedEvts is derived from includedEvents only** — excluded events are excluded from the saveable set, so an excluded event can never be accidentally saved even if its checkbox state lingers.
+
+See Section 16 for the excluded_terms schema and Section 3 for normaliseExclusionTerm / isExcluded.
+
+### Address field (V6.2)
+
+ExtractedEvent.address is optional. The extraction prompt is explicitly instructed never to put a town or postcode into the address (those belong in town and postcode). This stopped the address field swallowing the area/postcode and leaving them blank in the review.
+
+### Saving
+
+saveExtractedEvents geocodes via the existing geocodeLocation path and writes via upsert_event with status 'confirmed' and source 'operator_upload'. Imported events surface on both maps via the existing discovery/events read path. The same review UI is shared with the Add event modal's upload mode and with the Settings Verify flow — one set of state covers all instances, so edits to the review behaviour must be applied consistently across them.
 
 ### Geocoding and the Fix button (V5)
 
@@ -1313,7 +1475,9 @@ The Cancel action on an event card opens a confirmation modal with an optional r
 
 - Date is blank on open; start/end times pre-fill from the most recent event. Mandatory fields: date, venue name, start time, end time (and van when multi-van — see rule below). Missing fields highlight red with inline errors.
 
-- **Friendly date display (V6.1)** — the date field shows the friendly "Wed 3rd Jun" format via a clickable styled div over a hidden native date input (the same pattern used in the import review cards), rather than a raw DD/MM/YYYY or native control. Start and End time sit on one row with step="300" (5-minute increments) and consistent input styling.
+- **Friendly date display (V6.1)** — the date field shows the friendly "Wed 3rd Jun" format via a clickable styled div over a hidden native date input (the same pattern used in the import review cards), rather than a raw DD/MM/YYYY or native control.
+
+- **Time inputs (V6.2)** — Start and End time use the shared SCHEDULE_TIME_OPTIONS 30-minute dropdowns with applyStartTimeChange behaviour (auto +3h end, end filtered after start), the same as the import review. This supersedes the V6.1 native step="300" time inputs.
 
 - **Address (V6.1)** — the address block carries a code comment marking it as UK-format so future non-UK locales can adapt it; Area + Postcode sit together below the full address.
 
@@ -1341,6 +1505,8 @@ The Schedule tab uses a date-anchored card layout:
 
 - **Past events** show Copy only (Edit and Cancel hidden) and no deals section. **Cancelled** events (past or otherwise) show a "Cancelled" badge rather than "Finished"; other past events show "Finished". Uses the same local-time parse rule as the customer page (Section 7).
 
+- Scraped, still-unconfirmed events for an auto-preference truck appear in the "Needs your approval" section described above rather than as ordinary cards.
+
 - All times display HH:MM (seconds stripped via formatTime). Cancellation confirmation shows the formatted date and time, e.g. "Wed 27 May · 18:00–20:00".
 
 ### Offline protection override on the event (V6)
@@ -1359,7 +1525,21 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 
 ## Core tables
 
-- **trucks** — one row per truck/brand. Holds plan (starter/pro/max/trial/tester), settings, dashboard_token, operator_id, default_auto_open/close, is_test, qr_code_style (V4), slug (V5, unique, URL-safe, populated from name — used by the customer order URL /trucks/[slug]/order), truck_emoji (V5, default 🍕 — used as the Menu tab icon and chosen via the Settings emoji picker), lifetime_discount_pct (V6, integer nullable) and lifetime_discount_note (V6, text nullable) for the Tester plan, paused_until.
+- **trucks** — one row per truck/brand. Holds plan (starter/pro/max/trial/tester), settings, dashboard_token, operator_id, default_auto_open/close, is_test, qr_code_style (V4), slug (V5, unique, URL-safe, populated from name — used by the customer order URL /trucks/[slug]/order), truck_emoji (V5, default 🍕 — used as the Menu tab icon and chosen via the Settings emoji picker), lifetime_discount_pct (V6, integer nullable) and lifetime_discount_note (V6, text nullable) for the Tester plan, paused_until, and the scraper-preference / adaptive-scheduling columns added in V6.2 (see below).
+
+> **RULE (V6.2)** — trucks.id is **text**, not uuid. Every FK column that references trucks(id) must therefore be declared `text`, NOT `uuid` — this includes scraper_run_log.truck_id and excluded_terms.truck_id below. Declaring them uuid will fail the migration (or silently never match). Existing tables already follow this (truck_vans, truck_events, etc.).
+
+### Scraper-preference and adaptive-scheduling columns on trucks (V6.2)
+
+- **scraper_preference** (text, enum 'manual' | 'auto', default 'manual') — whether the operator uploads their schedule themselves or the platform finds events automatically. Governs the scraper bridge (Section 15).
+- **schedule_url** (text, nullable) — the operator's own schedule page, used by the self-service Verify flow and the scraper.
+- **scraper_rule** (text, enum 'scroll_lazy' | 'scroll_next', nullable) — the winning scrape strategy stored after a successful Verify or run.
+- **scraper_last_changed_at** (timestamptz, nullable) — last time the hash of extracted events changed.
+- **scraper_update_day** (smallint 0–6, nullable) — the learned day of week on which this truck's schedule most often changes.
+- **scraper_learning_complete** (boolean, default false) — set true once the 30-day learning window has elapsed and a day has been learned.
+- **scraper_last_empty_notify_at** (timestamptz, nullable) — guards the empty-schedule nudge email to a 14-day resend window.
+- **scraper_first_run_at** (timestamptz, nullable) — anchors the 30-day learning window.
+- **scraper_last_hash** (text, nullable) — MD5 of the sorted event_date|venue_name pairs from the last run, for change detection.
 
 - **operators** — account holder. first_name, last_name, phone, email, auth_user_id, is_admin (V6, boolean default false), billing.
 
@@ -1391,13 +1571,17 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 
 - **kds_sessions** — active KDS device sessions for multi-device enforcement.
 
-- **discovery_trucks / discovery_events** — scraped discovery data; visibility column controls public/HG exposure. discovery_trucks.hatchgrab_truck_id (FK to trucks.id, on delete set null) links a discovery truck to its HatchGrab account; this is what the scraper-to-truck_events bridge matches on (Section 15 / Section 17). Set via the admin console "Link HG truck" dropdown.
+- **discovery_trucks / discovery_events** — scraped discovery data; visibility column controls public/HG exposure. discovery_trucks.hatchgrab_truck_id (FK to trucks.id — text, on delete set null) links a discovery truck to its HatchGrab account; this is what the scraper-to-truck_events bridge matches on (Section 15 / Section 17). Set via the admin console "Link HG truck" dropdown.
+
+- **scraper_run_log (V6.2)** — one row per scraper run per truck for adaptive scheduling (Section 24). Columns: id, truck_id (**text**, FK to trucks.id), run_at (timestamptz), day_of_week (smallint 0–6), events_found (int), events_changed (boolean), rule_used (text). RLS enabled, service-role only (no anon policy). **Pruned to 90 days** by pruneScraperRunLog at the end of every daily workflow — it is the only table that is pruned; truck_events and discovery_events are permanent.
+
+- **excluded_terms (V6.2)** — operator exclusion list for schedule import and scraped-event rejection (Section 15). Columns: id (uuid, default gen_random_uuid()), truck_id (**text**, FK to trucks.id), term (text). Unique constraint on (truck_id, term). RLS enabled, service-role only.
 
 - **loyalty_cards (planned)** — V4 spec frozen in lib/plan-features.ts comments. Do not build until instructed.
 
 ## Key columns of note
 
-- trucks.plan (starter/pro/max/trial/tester), trial_expires_at, feature_overrides (JSONB), is_test, time_selection_enabled, preferred_contact_method, allow_customer_cancellation, cancellation_cutoff_mins, qr_code_style, lifetime_discount_pct, lifetime_discount_note.
+- trucks.plan (starter/pro/max/trial/tester), trial_expires_at, feature_overrides (JSONB), is_test, time_selection_enabled, preferred_contact_method, allow_customer_cancellation, cancellation_cutoff_mins, qr_code_style, lifetime_discount_pct, lifetime_discount_note, scraper_preference, schedule_url, scraper_rule, and the scraper_* adaptive-scheduling columns (V6.2, listed above).
 
 - Mirror writes from the scraper land via /api/inbound-schedule; the scraper currently dual-writes to Google Sheets and Supabase (Sheets still the config store — migration to Supabase-only is pre-paying-operator work).
 
@@ -1428,23 +1612,30 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 20260602_tester_plan_discount.sql
 20260603_menu_is_active.sql
 20260603_enable_rls_all_tables.sql
+20260604_scraper_preference.sql
+20260604_scraper_adaptive.sql
+20260604_exclusion_terms.sql
 ```
+
+### Migration process (V6.2)
+
+> **RULE** — Migrations are applied manually in the Supabase SQL editor, run in filename order, and followed by `notify pgrst, 'reload schema';` so PostgREST picks up the new columns/tables immediately (otherwise the API keeps serving the old schema cache and new columns 404). New tables must have RLS enabled at creation (see Row Level Security below). Use idempotent (`if not exists`) statements where possible.
 
 ## Realtime
 
 - orders — INSERT/UPDATE/DELETE subscribed. trucks — UPDATE only (pause/wait). UI updates within ~1s; 60s polling fallback.
 
-## Row Level Security (V6.1)
+## Row Level Security (V6.1, extended V6.2)
 
-RLS is enabled on every table in the public schema (~35 tables). The application is unaffected because all API routes and edge functions use the SUPABASE_SERVICE_ROLE_KEY, which bypasses RLS; the anon key is used only in the browser Supabase clients (lib/supabase-browser.ts, lib/supabase/server.ts, lib/supabase/client.ts) and in a few Server Components that read with the service role. RLS therefore governs only direct anon-key access, closing the Supabase security-advisor warning.
+RLS is enabled on every table in the public schema. The application is unaffected because all API routes and edge functions use the SUPABASE_SERVICE_ROLE_KEY, which bypasses RLS; the anon key is used only in the browser Supabase clients (lib/supabase-browser.ts, lib/supabase/server.ts, lib/supabase/client.ts) and in a few Server Components that read with the service role. RLS therefore governs only direct anon-key access, closing the Supabase security-advisor warning.
 
 Two policy patterns are used:
 
 - **Public read (anon SELECT allowed, `using (true)`)** — on the tables the customer order page, discovery map, and dashboard realtime read directly with the anon key: discovery_events, discovery_trucks, venues, trucks, truck_events, menu_categories, menu_items_db, modifier_groups, modifier_options, bundles_db, category_modifier_groups, item_modifier_overrides, item_overrides, collection_times, slot_capacity, category_stock, and orders. Writes still go through service-role routes.
 
-- **Service-role only (RLS on, no anon policy)** — anon access fully blocked on the sensitive/internal tables: operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, truck_user_vans, truck_vans, kds_sessions, slot_bookings, production_slot_usage, event_deals, event_price_overrides, upsell_rules, excluded_terms, discount_codes_db, messages, order_counters, referrals.
+- **Service-role only (RLS on, no anon policy)** — anon access fully blocked on the sensitive/internal tables: operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, truck_user_vans, truck_vans, kds_sessions, slot_bookings, production_slot_usage, event_deals, event_price_overrides, upsell_rules, excluded_terms, scraper_run_log, discount_codes_db, messages, order_counters, referrals.
 
-> **RULE (V6.1)** — New tables must have RLS enabled at creation. Decide deliberately between a public-read policy (only if an anon-key surface genuinely reads it) and no policy (service-role only). Never leave a new table with RLS off. Never expose a sensitive table (anything with personal data, tokens, or billing) to anon.
+> **RULE (V6.1, reaffirmed V6.2)** — New tables must have RLS enabled at creation. Decide deliberately between a public-read policy (only if an anon-key surface genuinely reads it) and no policy (service-role only). Both V6.2 tables — excluded_terms and scraper_run_log — are internal and are service-role only. Never leave a new table with RLS off. Never expose a sensitive table (anything with personal data, tokens, or billing) to anon.
 
 # 17. Menu API behaviour
 
@@ -1707,9 +1898,27 @@ Hatches Up charges 4.5% + 20p all-in on online orders (includes card processing)
 
 - When a chat hits its limit, open a fresh one, re-prime with file paths and the task, reference this manual, and never assume the new chat knows prior decisions. Image limits in long chats are a sign to split work to the coding chat or start fresh.
 
-## SQL migrations
+## Always-mounted tab pattern (V6.2)
 
-- Run migrations in the Supabase SQL editor; confirm clean before deploying. Use "Claude"-authored, idempotent (if not exists) migrations where possible.
+> **RULE** — A tab that receives cross-tab props (or that another surface needs to drive — e.g. the Verify flow opening the import modal on the Settings tab, Section 15) must be **always mounted**, not conditionally rendered on `activeTab === '…'`. Conditional mounting destroys the tab's state and effects every time the operator switches away, which breaks cross-tab interactions and re-fires data loads.
+
+The pattern:
+
+- The tab component is always in the tree and takes an `isActive` boolean prop.
+- Data-loading effects inside it are guarded so they only run when active: `useEffect(() => { if (!isActive) return; … }, [isActive, …])`. This keeps the component mounted (state preserved) while still deferring its fetches until it is shown.
+- **Modals are rendered OUTSIDE the `isActive` gate** so they can be opened from another tab. The import/verify modal, for example, is mounted regardless of which tab is visually active, so the Settings-tab Verify button can open it without a tab switch.
+
+This was introduced in V6.2 for the Schedule and Settings tabs (the self-service Verify flow needs the import modal openable from Settings) and is the standard for any new cross-talking tabs.
+
+## Shared schedule-extraction utility (V6.2)
+
+> **RULE** — lib/schedule-extract.ts is the single in-repo home for Gemini schedule extraction (Section 3). Any new route that turns text or an image into structured event rows MUST import buildScheduleExtractionPrompt / extractScheduleEvents (and the exclusion helpers normaliseExclusionTerm / isExcluded) from there — never re-implement the prompt, the retry loop, or the parsing. The only remaining independent copies are the two Google Apps Script paths, which cannot import the TypeScript module until the Sheets→Supabase migration (Section 25 / backlog).
+
+## SQL migrations (V6.2)
+
+- Run migrations in the Supabase SQL editor, in filename order; confirm clean before deploying. Use "Claude"-authored, idempotent (`if not exists`) migrations where possible.
+- **After running, issue `notify pgrst, 'reload schema';`** so PostgREST refreshes its schema cache and the new columns/tables are immediately visible to the API (Section 16).
+- New tables get RLS enabled in the same migration (Section 16, Row Level Security).
 
 # 23. Mobile UX patterns (V4)
 
@@ -1773,27 +1982,64 @@ A round of manage-page consistency and mobile fixes:
 
 A dashboard contrast sweep bumped muted UI text up to the contrast floor: slate-700 body, slate-500 secondary, slate-400 decorative only; orange reserved for current-plan/active highlights. Genuinely decorative or intentionally-muted lines (the refresh timestamp, "tap to close", the closed badge, "No event selected" event-bar label, the "Done" stat label) stay muted. Apply the floor to any new operator surface.
 
-# 24. Scraper workflow (V6)
+# 24. Scraper workflow (V6, updated V6.2)
 
 The web scraper runs as a GitHub Actions workflow, .github/workflows/daily_scrape.yml (separate from the Apps Script screenshot/email processor):
 
-- **Node 22.** Node 20 lacks native WebSocket support, which @supabase/realtime-js requires (the scraper creates a Supabase client) — it threw "Node.js 20 detected without native WebSocket support". Node 24 forced the actions/checkout and actions/setup-node deprecation path and reintroduced Puppeteer Chrome issues. Node 22 has native WebSocket AND is compatible with Puppeteer 24.x.
+- **Node 24 (V6.2).** Earlier versions pinned Node 22 because Node 20 lacked native WebSocket support, which @supabase/realtime-js requires (it threw "Node.js 20 detected without native WebSocket support"), and an earlier attempt at Node 24 had hit the actions/checkout and actions/setup-node deprecation path plus Puppeteer Chrome issues. As of V6.2 the workflow runs on **node-version: '24'**: the forced action-runtime Node 24 migration has effectively landed (see the NOTE below) and the Puppeteer Chrome issues that blocked the earlier bump have been resolved on Puppeteer 24.x. Node 24 has native WebSocket.
 
 - **Chrome install** via npx puppeteer browsers install chrome (with the cache cleared first: rm -rf ~/.cache/puppeteer/chrome) so a cached node_modules layer without the actual Chrome binary doesn't break the run.
 
-- **No FORCE_JAVASCRIPT_ACTIONS_TO_NODE24** env var — removed.
-
 - Schedule: cron '0 6 * * *' plus workflow_dispatch for manual runs. Secrets: SPREADSHEET_ID, GEMINI_API_KEY, GOOGLE_SHEETS_CREDENTIALS, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
 
-- **Gemini quota** — the free tier capped gemini-2.5-flash-lite at ~20 calls/day; the project is now on a paid Gemini plan so quota is no longer the limiter.
+- **Gemini quota** — the free tier capped gemini-2.5-flash-lite at ~20 calls/day; the project is now on a paid Gemini plan so quota is no longer the limiter. The HatchGrab loop and lib/schedule-extract.ts both use gemini-2.5-flash (not lite — see Section 3 / Section 24 Apps Script rules).
 
 - The Apps Script processor remains subject to the 6-minute execution limit — a time guard is still needed (backlog).
 
-> **NOTE** — actions/checkout@v4 and actions/setup-node@v4 emit a Node 20 deprecation warning; from 16 June 2026 GitHub forces Node 24 for the action runtime itself. Bump the action versions when that lands; it is independent of the workflow's own node-version: '22'.
+> **NOTE (updated V6.2)** — actions/checkout@v4 and actions/setup-node@v4 emit a Node 20 deprecation warning, and from 16 June 2026 GitHub forces Node 24 for the action runtime itself. The workflow's own `node-version` is now '24' to match; bump the action major versions (checkout/setup-node) as they release Node-24 builds. The runtime forcing is independent of the `node-version` the workflow installs.
+
+## Adaptive scraper scheduling (V6.2)
+
+The scraper learns each truck's update rhythm so it doesn't hammer every site every day. State lives on the trucks scraper_* columns (Section 16) and in the scraper_run_log table.
+
+### scraper_run_log
+
+One row is appended per truck per run: truck_id (text), run_at, day_of_week (0–6), events_found, events_changed, rule_used. RLS service-role only. **It is pruned to 90 days by pruneScraperRunLog at the end of every daily workflow** — it is the ONLY table pruned. truck_events and discovery_events are permanent reporting records and must never be pruned (Section 27 backlog reiterates this).
+
+### shouldRunToday(truck)
+
+Decides whether a given truck is scraped on today's run:
+
+- **During the learning phase** — the first 30 days from scraper_first_run_at, OR whenever scraper_learning_complete is false / no scraper_update_day has been learned — it returns **true every day** (gather data).
+- **After learning** — it returns true only on the learned scraper_update_day and the **two days following** it (learned day, +1, +2), catching late updates around the day the truck usually changes its schedule.
+
+### recordRunAndLearn
+
+Called after each truck's scrape:
+
+- Inserts the scraper_run_log row for this run.
+- Once 30 days have elapsed since scraper_first_run_at, analyses the **90-day** run history to find the day_of_week with the most runs where events_changed = true, writes it to scraper_update_day, and flips scraper_learning_complete to true.
+
+### Hash-based change detection — hashEvents
+
+Computes an MD5 over the sorted list of `event_date|venue_name` pairs from this run's extracted events. If it differs from scraper_last_hash, events_changed is set true for the log row and scraper_last_changed_at is updated; the new hash is stored in scraper_last_hash. This is what feeds the learning analysis above — "changed" means the schedule content actually moved, not merely that the scraper ran.
+
+### Empty-schedule nudge — checkEmptySchedule
+
+When a run finds zero future events for a truck, a nudge email is sent to the **operator's** email address (not customer-facing), suggesting they upload or check their schedule. A **14-day resend guard** via scraper_last_empty_notify_at prevents repeat nagging. The send is fire-and-forget — it must never block or fail the run. (Seasonal suppression after repeated unanswered nudges is on the backlog, Section 27.)
+
+### Single-truck mode
+
+For targeted testing/operations:
+
+- The **SCRAPE_TRUCK_ID** env var filters hgTrucks to a single truck and **bypasses shouldRunToday** (so the targeted truck always runs regardless of its learned day).
+- workflow_dispatch exposes a **scrape_truck_id** input so a manual run can target one truck from the Actions UI.
+
+> **PENDING DIAGNOSIS (V6.2)** — a recent scraper run took ~23 minutes before failing (normal runs are far shorter). The likely causes are a Gemini rate-limit stall or a hung Puppeteer navigation on a slow/unresponsive site without a hard per-site timeout. Add a per-site navigation timeout and a per-call Gemini timeout, and confirm on the next Node 24 cron run.
 
 ## Apps Script screenshot processor (recovered V6.1)
 
-The Google Apps Script processFoodTruckScreenshots function reads schedule screenshots from a Drive folder and writes events to the discovery map (full pipeline in Section 25). V6.1 fixes:
+The Google Apps Script processFoodTruckScreenshots function reads schedule screenshots from a Drive folder and writes events to the discovery map (full pipeline in Section 25). V6.1 fixes (still current):
 
 - **Model is gemini-2.5-flash, not gemini-2.5-flash-lite.** Lite was cheaper but produced day-of-week→date errors and mis-extractions on dense screenshots. Flash is the required model for this path.
 
@@ -1805,6 +2051,8 @@ The Google Apps Script processFoodTruckScreenshots function reads schedule scree
 
 > **RULE (V6.1) — API key management.** The Apps Script holds four Script Properties: GEMINI_API_KEY, GOOGLE_API_KEY (use the "New Maps Platform API Key" with the full API set enabled), BREVO_API_KEY, and INBOUND_SCHEDULE_SECRET. After ANY key rotation or Google Cloud account change, update the Script Properties AND the separate GitHub Actions repository secret copy of GEMINI_API_KEY, then run testAllKeys() to confirm all four resolve. A silent missing key takes down geocoding, email, and screenshot processing with no error surfaced — this was the root cause of the V6.1 pipeline outage (see Section 25).
 
+> **DRY NOTE (V6.2)** — the in-repo extraction paths (process-schedule, verify-schedule-url, the GitHub Actions HatchGrab loop) now all import from lib/schedule-extract.ts. The two Apps Script paths above (processFoodTruckScreenshots, analyzeEmailWithGemini) remain independent copies and still need prompt changes applied by hand until the Sheets→Supabase migration lets them move in-repo (Section 3 / Section 25 / backlog).
+
 # 25. Village Foodie Discovery Map
 
 ## Architecture
@@ -1814,6 +2062,8 @@ The Village Foodie public site (villagefoodie.co.uk) is a Next.js app in the sam
 > **CRITICAL** — A discovery event only plots as a map pin if it has BOTH a discovery_truck_id and a venue_id. The map JOINs through venue_id to the venues table for latitude/longitude; an event with a null venue_id (or null discovery_truck_id) has no coordinates and silently fails to appear. This was the root cause of the V6.1 "events not showing on the map" outage — rows were being written with null IDs.
 
 The venues table is the single coordinate store: name, village, latitude, longitude, and an aliases column (a PostgreSQL text array) for fuzzy name matching.
+
+> **UNIQUE CONSTRAINT (V6.2)** — the venues uniqueness key is **(name, village)**, not name alone. Two different villages can legitimately have a venue of the same name (The Bell, The Fox, The Plough…), so upserts MUST use `onConflict: 'name,village'`. Using name alone collapses distinct pubs into one row and mis-pins events.
 
 ## Data sources
 
@@ -1837,6 +2087,22 @@ As of V6.1 /api/inbound-schedule resolves the foreign keys at insert time rather
 
 Earlier versions stored only the raw truck_name and venue_name strings, leaving discovery_truck_id and venue_id null — so most events never plotted. Existing null rows were backfilled with a one-off SQL pass (regexp-normalised name matching) that resolved ~862/881 truck IDs and ~843/881 venue IDs; the small remainder were genuine one-off venues (festivals, private parties) that will not recur.
 
+### Venue-matching bug — common pub names (V6.2)
+
+> **KNOWN BUG (on backlog)** — name-only matching mis-pins venues whose names recur across villages. "The Bell", "The Fox", "The Bull", "The Plough", "The Red Lion" etc. match the FIRST same-named venue in the table regardless of which village the event is actually in. The fix is **village-aware matching** in inbound-schedule: match on name **+ village** combined first, and only fall back to name-only when there is no village or no combined match. Until that lands, mis-pins are corrected by hand in SQL (see the V6.2 data fixes below).
+
+### V6.2 venue data fixes (run manually in the SQL editor)
+
+A batch of village-aware corrections was applied directly:
+
+- **Pizzeria Gusto's Saturday event re-pointed** to The Five Bells, Cavendish (id 6e23389e-4d1c-405b-be22-7cc39bbd558f; 52.0876415, 0.6324885), and the Five Bells alias set was extended.
+
+- **Eight venues added** with coordinates and aliases: Market Square Bildeston (52.1075, 0.9081), The Fox Burwell (52.2800, 0.3248), The Bell Bottisham (52.2050, 0.2750), The Bell Great Paxton (52.2606, -0.2282 — the scraper mislabels this "The Bull Pub", so "The Bull Pub Great Paxton" was added as an alias), The Plough Birdbrook (52.0419, 0.4870), The Bell Inn Castle Hedingham (51.9927, 0.6025), The Lion Stoke by Clare (52.0624, 0.5383), and The Red Lion Great Sampford (51.9925, 0.3927).
+
+- **52 events were re-pinned** to the correct venues.
+
+- **Wrong venue_ids were nulled** where the correct venue was not yet in the table — the events still show in the operator's list, they just won't plot on the map until the next scraper run resolves them against the now-present venue.
+
 ## Apps Script key rules
 
 See the API-key RULE in Section 24 — four Script Properties (GEMINI_API_KEY, GOOGLE_API_KEY, BREVO_API_KEY, INBOUND_SCHEDULE_SECRET) plus a separate GitHub Actions copy of GEMINI_API_KEY, verified with testAllKeys() after any rotation. INBOUND_SCHEDULE_SECRET is fixed and only changes if regenerated in the Next.js env.
@@ -1853,7 +2119,7 @@ See the API-key RULE in Section 24 — four Script Properties (GEMINI_API_KEY, G
 
 ## Venue matching and creation
 
-- A new venue is geocoded via the Google Maps API on creation and stored with name, village, latitude, longitude, and an aliases array.
+- A new venue is geocoded via the Google Maps API on creation and stored with name, village, latitude, longitude, and an aliases array. Upserts use onConflict 'name,village' (V6.2).
 
 - Aliases drive fuzzy matching — e.g. the alias {"Edwardstone White Horse"} on the canonical venue "The White Horse", Edwardstone lets a differently-worded source row match the right venue rather than creating a duplicate.
 
@@ -1873,7 +2139,7 @@ See the API-key RULE in Section 24 — four Script Properties (GEMINI_API_KEY, G
 
 ## Known DRY gap
 
-process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemini all implement the same Gemini schedule-extraction logic independently (Section 3). Prompt improvements must currently be applied to all three by hand. Long-term: consolidate into a single shared /api/schedule/process endpoint, which also requires migrating the Apps Script processing off Google Sheets onto Supabase as the config store.
+process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Section 3), but processFoodTruckScreenshots and analyzeEmailWithGemini still implement the same Gemini schedule-extraction logic independently in Apps Script. Prompt improvements must still be applied to those two by hand. Long-term: consolidate fully by migrating the Apps Script processing off Google Sheets onto Supabase as the config store, then move those paths in-repo behind the shared utility.
 
 # 26. Testing and dev environment
 
@@ -1899,9 +2165,9 @@ process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemi
 
 - Brevo hatchgrab.com domain verified and propagated (SPF + DKIM authenticated — can send from @hatchgrab.com; no inbound mailbox purchased yet, so use a reply-to of an existing address for the trial).
 
-- Row Level Security enabled across all tables (DONE V6.1 — Supabase security-advisor warning cleared; see Section 16).
+- Row Level Security enabled across all tables (DONE V6.1 — Supabase security-advisor warning cleared; see Section 16). New V6.2 tables (excluded_terms, scraper_run_log) created with RLS on, service-role only.
 
-- Discovery map plotting verified: events resolve discovery_truck_id and venue_id and appear as pins (DONE V6.1 — root-cause null-ID bug fixed and existing rows backfilled; see Section 25).
+- Discovery map plotting verified: events resolve discovery_truck_id and venue_id and appear as pins (DONE V6.1 — root-cause null-ID bug fixed and existing rows backfilled; see Section 25). Re-verify after the V6.2 venue re-pins — in particular confirm the Pizzeria Gusto Saturday pin at The Five Bells, Cavendish shows correctly.
 
 - Apps Script scraper confirmed working end-to-end after the key recovery (DONE V6.1 — all four Script Properties restored, testAllKeys() passing; see Section 24/25).
 
@@ -1913,13 +2179,13 @@ process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemi
 
 - QR code and dashboard order link resolve to /trucks/[slug]/order (slug column populated for every truck; dashboard_token fallback removed in V6).
 
-- Scraper bridge verified: a linked truck's inbound event creates an unconfirmed truck_events row and shows in its Schedule tab; an unlinked truck stays discovery-only.
+- Scraper bridge verified: a linked truck's inbound event creates an unconfirmed truck_events row and shows in its Schedule tab; an unlinked truck stays discovery-only. As of V6.2 the bridge is gated on scraper_preference (only 'auto' trucks bridge into truck_events; manual trucks stay discovery-only — Section 15).
 
-- Scraper GitHub Actions workflow passes on Node 22 (Chrome install + Supabase realtime both clean).
+- Scraper GitHub Actions workflow passes on **Node 24** (Chrome install + Supabase realtime both clean). Diagnose the ~23-minute run failure (Section 24, pending diagnosis) before relying on the cron.
 
 - API keys rotated out of the Apps Script and into Script Properties (DONE V6.1).
 
-- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql, 20260603_menu_is_active.sql, 20260603_enable_rls_all_tables.sql. Admin operator account set (operators.is_admin = true).
+- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql, 20260603_menu_is_active.sql, 20260603_enable_rls_all_tables.sql, **20260604_scraper_preference.sql, 20260604_scraper_adaptive.sql, 20260604_exclusion_terms.sql** (V6.2 — followed by `notify pgrst, 'reload schema';`). Admin operator account set (operators.is_admin = true).
 
 ## Contextual reminders
 
@@ -1941,6 +2207,14 @@ process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemi
 
 - A null batch_size means "no limit" — render blank with an ∞ placeholder, never a sentinel like 999 (Section 6).
 
+- trucks.id is text, not uuid — any new FK to trucks(id) must be text (Section 16).
+
+- Schedule extraction goes through lib/schedule-extract.ts in-repo — never re-implement the Gemini prompt/retry/parse (Section 3 / Section 22).
+
+- venues uniqueness is (name, village) — upsert with onConflict 'name,village' (Section 25).
+
+- Cross-talking tabs are always-mounted with an isActive prop; modals render outside the isActive gate (Section 22).
+
 # 27. Open backlog (June 2026)
 
 ## Critical — before trial
@@ -1949,25 +2223,23 @@ process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemi
 
 - Auth hardening (rate limiting).
 
-- Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store). Also the natural home for the Gemini-extraction DRY consolidation (Section 3 / Section 25).
+- Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store). Also the natural home for the Gemini-extraction DRY consolidation (Section 3 / Section 25) — once done, the two Apps Script paths can move in-repo behind lib/schedule-extract.ts.
 
 - Full end-to-end order flow test (place order → KDS → confirmation email → cancel → ready → paid & done) — run live.
 
 - Reports tab data verification across multiple events.
 
-- Discovery map VF vs HG visibility test (operator events now show on both maps as of V6; map plotting fixed in V6.1).
+- Discovery map VF vs HG visibility test (operator events now show on both maps as of V6; map plotting fixed in V6.1; V6.2 venue re-pins to re-verify).
 
 - Heartbeat/auto-pause end-to-end test.
+
+- Diagnose the ~23-minute scraper run failure (Section 24) — add per-site navigation and per-Gemini-call timeouts; confirm on the next Node 24 cron run.
 
 - Apps Script screenshot processor 6-minute timeout — the ~280s time guard is in place; confirm it exits cleanly on a large batch. Gemini billing on Google Cloud (paid plan active).
 
 - GitHub Actions GEMINI_API_KEY secret — verify the repository-secret copy matches the current Script Properties key after the V6.1 rotation (the two are maintained separately).
 
-- ~~Brevo hatchgrab.com DNS propagation~~ — DONE (V6.1, SPF + DKIM authenticated). Inbound mailbox not yet purchased.
-
 - Link each trial truck's discovery_trucks row to its HatchGrab truck (hatchgrab_truck_id) via the admin console, so scraped/emailed events bridge into the operator schedule.
-
-- Confirm the scraper GitHub Actions Node 22 workflow passes cleanly on a manual run.
 
 - orders.source column migration — replaces the customer_email IS NULL heuristic for order type in Reports. TODO comments in app/api/orders/submit/route.ts and app/api/dashboard/action/route.ts.
 
@@ -1975,9 +2247,11 @@ process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemi
 
 - Add "Edwardstone White Horse" to the Google Sheets Venues tab alias columns N/O/P (the Supabase alias is already set; the Sheet copy is maintained separately — Section 25).
 
-- DRY: consolidate the three Gemini schedule-extraction paths into one shared /api/schedule/process endpoint (Section 3 / Section 25).
+- DRY: consolidate the remaining Apps Script Gemini schedule-extraction paths into the shared utility / a single shared /api/schedule/process endpoint (Section 3 / Section 25). The in-repo paths are already consolidated into lib/schedule-extract.ts as of V6.2.
 
 ## Important — before public launch
+
+- **Village-aware venue matching in inbound-schedule (V6.2)** — match on venue_name + village combined before falling back to name-only, to stop common pub names ("The Bell", "The Fox", "The Bull") pinning to the wrong village (Section 25). Currently corrected by hand in SQL.
 
 - Stripe Connect integration (upgrade buttons currently email support).
 
@@ -2015,11 +2289,21 @@ process-schedule/route.ts, processFoodTruckScreenshots, and analyzeEmailWithGemi
 
 - Privacy policy + terms pages — required for Meta app review and for launch.
 
+## Adaptive scraping rollout (V6.2)
+
+- **Site viability learning for all tracked trucks** — after N consecutive zero-event runs, mark a discovery truck inactive and drop it to a monthly check. Needs a scraper_status column and a consecutive_empty_runs counter on discovery_trucks.
+
+- **Adaptive update-day scheduling for all discovery_trucks** — roll shouldRunToday / recordRunAndLearn out to the Loop A discovery trucks (not just linked HatchGrab trucks) once the Google Sheets → Supabase migration is complete.
+
+- **Seasonal suppression for empty-schedule nudge emails** — after 3 consecutive empty nudges with no operator response, suppress further nudges until the truck next has a confirmed event. Add a scraper_empty_notify_count column.
+
+- **Do NOT add a 90-day cleanup job for truck_events or discovery_events** — these are permanent reporting records. Only scraper_run_log is pruned (Section 24).
+
 ## Later
 
 - Stage C full offline; customer-facing display (Max); advanced reporting visualisations (hourly velocity chart, event ROI comparison); festival pricing; personalised schedule generator.
 
-- Truck-facing WhatsApp "Recent messages" review panel with flagging; event cleanup job (delete events > 90 days).
+- Truck-facing WhatsApp "Recent messages" review panel with flagging; event cleanup job (note: scraper_run_log only — events are permanent).
 
 ## Open questions
 
@@ -2039,4 +2323,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6.1
+HatchGrab Engineering Reference Manual · V6.2
