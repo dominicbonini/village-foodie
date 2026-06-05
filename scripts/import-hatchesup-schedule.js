@@ -26,9 +26,11 @@ const supabase = createClient(
 
 const argUrl = process.argv.find(a => !a.startsWith('--') && a.startsWith('http'));
 const argLimit = process.argv.find(a => a.startsWith('--limit='));
+const argOffset = process.argv.find(a => a.startsWith('--offset='));
 const argDelay = process.argv.find(a => a.startsWith('--delay='));
 const TARGET_URL = argUrl || 'https://hatchesup.co.uk/find-food/?when=7days';
 const TRUCK_LIMIT = argLimit ? parseInt(argLimit.split('=')[1], 10) : Infinity;
+const TRUCK_OFFSET = argOffset ? parseInt(argOffset.split('=')[1], 10) : 0;
 const TRUCK_DELAY_MS = argDelay ? parseInt(argDelay.split('=')[1], 10) * 1000 : 0;
 const DEBUG = process.argv.includes('--debug');
 const BUCKET = 'truck-media';
@@ -560,9 +562,9 @@ ${scheduleText.slice(0, 150000)}`;
 
   // ── 4. Find order URLs + scrape menus ─────────────────────────────────────
   let truckNames = [...new Set(events.map(e => e.truck_name).filter(Boolean))];
-  if (TRUCK_LIMIT < Infinity) {
-    truckNames = truckNames.slice(0, TRUCK_LIMIT);
-    console.log(`\n⚠️  Limiting to first ${TRUCK_LIMIT} trucks (--limit flag)`);
+  if (TRUCK_OFFSET > 0 || TRUCK_LIMIT < Infinity) {
+    truckNames = truckNames.slice(TRUCK_OFFSET, TRUCK_OFFSET + TRUCK_LIMIT);
+    console.log(`\n⚠️  Processing trucks ${TRUCK_OFFSET + 1}–${TRUCK_OFFSET + truckNames.length} (--offset=${TRUCK_OFFSET} --limit=${TRUCK_LIMIT})`);
   }
   const truckMenuData = new Map(); // truckName → { url, menuText }
 

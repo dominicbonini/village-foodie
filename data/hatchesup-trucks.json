@@ -1,0 +1,294 @@
+{
+  "generatedAt": "2026-06-05T22:59:40.039Z",
+  "source": "https://hatchesup.co.uk/find-food/?when=7days",
+  "trucks": [
+    {
+      "name": "Between Buns Royston",
+      "orderUrl": "https://betweenbunsroyston.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": 2538,
+      "error": null
+    },
+    {
+      "name": "Steak & Honour",
+      "orderUrl": "https://steakandhonour.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Nomadough",
+      "orderUrl": "https://nomadough.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "The Angry Seagull Fish + Chips",
+      "orderUrl": "https://theangryseagullfishchips.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Pimp My Fish",
+      "orderUrl": "https://pimpmyfish.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Your Burger Zone",
+      "orderUrl": "https://yourburgerzone.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Il Peperone Piccante",
+      "orderUrl": "https://ilpeperonepiccante.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "La Biga Pizzeria",
+      "orderUrl": "https://labigapizzeria.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Elder Street Food",
+      "orderUrl": "https://elderstreetfood.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Churros Bar",
+      "orderUrl": "https://churrosbar.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Tamashi Asian Soul Food",
+      "orderUrl": "https://tamashiasiansoulfood.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Pecoro On The Road",
+      "orderUrl": "https://pecoroontheroad.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Fully Loaded Fries",
+      "orderUrl": "https://fullyloadedfries.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Holy Loaded",
+      "orderUrl": "https://holyloaded.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Ovencraft Pizza",
+      "orderUrl": "https://ovencraftpizza.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "All Fired Up Pizza",
+      "orderUrl": "https://allfireduppizza.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "The Bagel Queen",
+      "orderUrl": "https://thebagelqueen.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Cambridge Crepes",
+      "orderUrl": "https://cambridgecrepes.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "The Kentucky Cookout",
+      "orderUrl": "https://thekentuckycookout.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Zaket Potato",
+      "orderUrl": "https://zaketpotato.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Yellow Door Eats",
+      "orderUrl": "https://yellowdooreats.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Al Chile",
+      "orderUrl": "https://alchile.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Saffron Hill Food",
+      "orderUrl": "https://saffronhillfood.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Taste of Cambridge",
+      "orderUrl": "https://tasteofcambridge.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "La Piazza Street Food",
+      "orderUrl": "https://lapiazzastreetfood.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Gurkha Street Food",
+      "orderUrl": "https://gurkhastreetfood.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Peaky Pizzas",
+      "orderUrl": "https://peakypizzas.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Maya Street Food",
+      "orderUrl": "https://mayastreetfood.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Smother Spudders",
+      "orderUrl": "https://smotherspudders.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "So Solid Sando",
+      "orderUrl": "https://sosolidsando.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Dirty Fryer Boys",
+      "orderUrl": "https://dirtyfryerboys.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Bad Boi Burritos",
+      "orderUrl": "https://badboiburritos.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "The Pizza Pod",
+      "orderUrl": "https://thepizzapod.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "The Wood Oven",
+      "orderUrl": "https://thewoodoven.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "The Loaded Mac Shack",
+      "orderUrl": "https://theloadedmacshack.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    },
+    {
+      "name": "Pizzeria Gusto",
+      "orderUrl": "https://pizzeriagusto.hatchesup.app",
+      "processed": false,
+      "processedAt": null,
+      "menuChars": null,
+      "error": null
+    }
+  ]
+}
