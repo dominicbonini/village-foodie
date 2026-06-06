@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       if (order.customer_email) {
         const { data: eventRow } = await supabase
           .from('truck_events')
-          .select('venue_name')
+          .select('venue_name, town, postcode')
           .eq('truck_id', truck.id)
           .eq('event_date', order.event_date)
           .neq('status', 'cancelled')
@@ -75,6 +75,8 @@ export async function POST(req: NextRequest) {
           notes: order.notes ?? null,
           autoAccepted: true,
           venueName: eventRow?.venue_name ?? null,
+          venueTown: eventRow?.town ?? null,
+          venuePostcode: eventRow?.postcode ?? null,
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone: truck.contact_phone ?? null,
           whatsappSender: truck.whatsapp_sender ?? null,
@@ -584,7 +586,7 @@ export async function POST(req: NextRequest) {
       if (ord.customer_email) {
         const { data: slotEventRow } = await supabase
           .from('truck_events')
-          .select('venue_name')
+          .select('venue_name, town, postcode')
           .eq('truck_id', truck.id)
           .eq('event_date', ord.event_date)
           .neq('status', 'cancelled')
@@ -602,6 +604,8 @@ export async function POST(req: NextRequest) {
           notes: ord.notes ?? null,
           autoAccepted: true,
           venueName: slotEventRow?.venue_name ?? null,
+          venueTown: slotEventRow?.town ?? null,
+          venuePostcode: slotEventRow?.postcode ?? null,
           preferredContactMethod: truck.preferred_contact_method ?? null,
           contactPhone: truck.contact_phone ?? null,
           whatsappSender: truck.whatsapp_sender ?? null,

@@ -33,6 +33,8 @@ export function formatConfirmationEmail(params: {
   slotAdjustedFrom?: string | null
   // Truck contact & venue info
   venueName?: string | null
+  venueTown?: string | null
+  venuePostcode?: string | null
   preferredContactMethod?: string | null
   contactPhone?: string | null
   whatsappSender?: string | null
@@ -117,10 +119,12 @@ export function formatConfirmationEmail(params: {
     </div>` : ''
 
   // Collection venue section
-  const collectionSection = params.venueName ? `
+  const venueLocation = [params.venueTown, params.venuePostcode].filter(Boolean).join(' ')
+  const collectionSection = (params.venueName || params.venueTown || params.venuePostcode) ? `
     <div style="margin-top:12px;padding:12px 16px;background:#f8fafc;border-radius:8px">
-      <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Collection</p>
-      <p style="margin:0;font-size:14px;font-weight:700;color:#1e293b">${params.venueName}</p>
+      <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Where to find us</p>
+      ${params.venueName ? `<p style="margin:0;font-size:14px;font-weight:700;color:#1e293b">${params.venueName}</p>` : ''}
+      ${venueLocation ? `<p style="margin:2px 0 0;font-size:13px;color:#64748b">${venueLocation}</p>` : ''}
       ${params.slot ? `<p style="margin:4px 0 0;font-size:14px;color:#475569">Ready at ${params.slot}</p>` : ''}
     </div>` : ''
 
@@ -243,6 +247,25 @@ export function formatConfirmationEmail(params: {
     params.notes ? `Notes: ${params.notes}` : '',
     '',
     'Pay at the truck on collection.',
+    (params.venueName || params.venueTown || params.venuePostcode) ? [
+      'Where to find us:',
+      params.venueName || '',
+      venueLocation,
+    ].filter(Boolean).join('\n') : '',
+    (() => {
+      const method = params.preferredContactMethod
+      if (!method) return ''
+      if (method === 'whatsapp' && params.whatsappSender) {
+        const num = params.whatsappSender.replace(/[^\d+]/g, '')
+        return `Questions? Message us on WhatsApp: ${num}`
+      }
+      if (method === 'email' && params.contactEmail) return `Questions? Email us: ${params.contactEmail}`
+      if (method === 'phone' && params.contactPhone) return `Questions? Call us: ${params.contactPhone}`
+      if (method === 'facebook' && params.socialFacebook) return `Questions? Message us on Facebook: ${params.socialFacebook}`
+      if (method === 'messenger' && params.socialFacebook) return `Questions? Message us on Messenger: https://m.me/${params.socialFacebook.split('/').pop()}`
+      if (method === 'instagram' && params.socialInstagram) return `Questions? DM us on Instagram: https://instagram.com/${params.socialInstagram.replace('@', '')}`
+      return ''
+    })(),
     '',
     'Powered by HatchGrab — hatchgrab.com',
   ].filter(Boolean).join('\n')

@@ -407,7 +407,7 @@ export async function POST(req: NextRequest) {
     const orderEventDate = eventDate ?? new Date().toISOString().split('T')[0]
     const { data: eventRow } = await supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name')
+      .select('id, start_time, end_time, venue_name, town, postcode')
       .eq('truck_id', resolvedTruckId)
       .eq('event_date', orderEventDate)
       .neq('status', 'cancelled')
@@ -618,6 +618,8 @@ export async function POST(req: NextRequest) {
       notes:        notes ?? null,
       autoAccepted,
       venueName:              eventRow?.venue_name ?? null,
+      venueTown:              eventRow?.town ?? null,
+      venuePostcode:          eventRow?.postcode ?? null,
       preferredContactMethod: truck.preferred_contact_method ?? null,
       contactPhone:           truck.contact_phone ?? null,
       whatsappSender:         truck.whatsapp_sender ?? null,
