@@ -16,7 +16,11 @@ export interface SlotAvailabilityRow {
   soft_max: number
   remaining: number
   available: boolean
+  /** Genuinely past clock time only (today: slot ≤ now + 5). */
   is_past: boolean
+  /** Below earliestCollectionMins (queue-aware ready floor) but NOT actually past.
+   *  Kept separate from is_past so the operator UI can show these as overridable. */
+  too_soon: boolean
   /** True for slots after the event end time (grace period for truck only). */
   is_grace: boolean
 }
@@ -51,7 +55,8 @@ export function buildSlotAvailability(params: {
     // No date gate: for future dates the caller passes an event-start-anchored
     // floor (eventStart + queue push) — must apply or the future-event queue is
     // invisible. For today, callers fold nowMins into the floor themselves.
-    const tooSoon = slotMins < earliestCollectionMins
+    // too_soon excludes genuinely-past slots — two distinct states, never conflated.
+    const tooSoon = !isPast && slotMins < earliestCollectionMins
 
     return {
       collection_time: s.collection_time,
@@ -61,7 +66,8 @@ export function buildSlotAvailability(params: {
       soft_max: softMax,
       remaining,
       available: capacityAvailable && !isPast && !tooSoon,
-      is_past: isPast || tooSoon,
+      is_past: isPast,
+      too_soon: tooSoon,
       is_grace: isGrace,
     }
   })

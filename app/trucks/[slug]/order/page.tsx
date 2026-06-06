@@ -1296,14 +1296,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             {availableSlots.length > 0
                               ? availableSlots
                                   .filter(s => {
-                                    if (s.is_past || s.is_grace) return false
+                                    // Customers see ONLY cleanly available slots — no traffic-light,
+                                    // no disabled "Full" entries, no too-soon. The override judgement
+                                    // (squeezing into amber/full slots) is operator-only.
+                                    if (!s.available) return false
                                     // Only show slots at or after the ASAP time
                                     if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
                                     return true
                                   })
                                   .map(slot => (
-                                    <option key={slot.collection_time} value={slot.collection_time} disabled={!slot.available}>
-                                      {slot.collection_time}{!slot.available ? ' · Full' : slot.remaining < 4 ? ` (${slot.remaining} left)` : ''}
+                                    <option key={slot.collection_time} value={slot.collection_time}>
+                                      {slot.collection_time}
                                     </option>
                                   ))
                               : availableHours.flatMap(h =>

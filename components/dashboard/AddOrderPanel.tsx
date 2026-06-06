@@ -7,6 +7,7 @@ import type {
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
+import { getSlotIndicator } from '@/lib/slot-indicator'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
@@ -131,7 +132,7 @@ export function AddOrderPanel({
   const [activeDealBundle, setActiveDealBundle] = useState<Bundle | null>(null)
 
   // ── slot capacity confirmation ──────────────────────────────────────────────
-  const [pendingSlot, setPendingSlot] = useState<{ time: string; remaining: number; isFull: boolean } | null>(null)
+  const [pendingSlot, setPendingSlot] = useState<{ time: string; remaining: number; isFull: boolean; tooSoon?: boolean } | null>(null)
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
@@ -359,13 +360,15 @@ setItemModal({ item, modGroups, editCartKey })
   }
 
   // ── slot change handler ─────────────────────────────────────────────────────
+  // Operator can pick ANY visible slot (manual s.10) — amber/red/too-soon go
+  // through the confirmation modal first.
   const handleSlotChange = (value: string) => {
     if (!value) { setManualSlot(''); return }
     const s = manualSlots.find(sl => sl.collection_time === value)
-    if (s && s.max_orders < 999) {
-      const remaining = Math.max(0, s.max_orders - s.current_orders)
-      const pct = s.current_orders / s.max_orders
-      if (pct >= 0.7) { setPendingSlot({ time: value, remaining, isFull: pct >= 1 }); return }
+    if (s?.too_soon) { setPendingSlot({ time: value, remaining: 0, isFull: false, tooSoon: true }); return }
+    if (s) {
+      const ind = getSlotIndicator(s)
+      if (ind.tone !== 'green') { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red' }); return }
     }
     setManualSlot(value)
   }
@@ -442,14 +445,13 @@ setItemModal({ item, modGroups, editCartKey })
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
         >
           <option value="">⚡ ASAP{adjustedAsapSlot ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
+          {/* Operator sees ALL slots except genuinely-past ones (manual s.10):
+              too-soon and full slots stay visible and overridable via the modal. */}
           {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
-            const unlimited = s.max_orders >= 999
-            const remaining = Math.max(0, s.max_orders - s.current_orders)
-            const pct = unlimited ? 0 : s.current_orders / s.max_orders
-            const ind = pct >= 1 ? '🔴' : pct >= 0.7 ? '🟡' : '🟢'
-            const label = (!unlimited && pct >= 1) ? ' · Full' : (!unlimited && pct >= 0.7) ? ` · ${remaining} left` : ''
-            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind}{label}</option>
+            if (s.too_soon) return <option key={s.collection_time} value={s.collection_time}>⏱ {s.collection_time} · Earlier than ready</option>
+            const ind = getSlotIndicator(s)
+            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` · ${ind.label}` : ''}</option>
           })}
         </select>
       ) : (
@@ -999,9 +1001,11 @@ setItemModal({ item, modGroups, editCartKey })
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <div className="text-center mb-4">
-              <div className="text-3xl mb-2">{pendingSlot.isFull ? '🔴' : '🟡'}</div>
+              <div className="text-3xl mb-2">{pendingSlot.tooSoon ? '⏱' : pendingSlot.isFull ? '🔴' : '🟡'}</div>
               <p className="font-bold text-slate-900 text-base">
-                {pendingSlot.isFull
+                {pendingSlot.tooSoon
+                  ? `This is earlier than the kitchen can have it ready${readyTime ? ` (${readyTime})` : ''}. Use anyway?`
+                  : pendingSlot.isFull
                   ? 'This slot is full. Use anyway?'
                   : `This slot only has ${pendingSlot.remaining} space${pendingSlot.remaining !== 1 ? 's' : ''} left. Use anyway?`}
               </p>

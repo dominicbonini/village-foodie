@@ -50,7 +50,13 @@ export interface Slot {
   max_orders: number
   available: boolean
   is_past?: boolean
+  /** Below the queue-aware ready floor but not actually past — operator-overridable. */
+  too_soon?: boolean
   is_grace?: boolean
+  /** Soft-cap remaining (soft_max − current_orders) from /api/slots. Optional because
+   *  the /api/dashboard slot shape omits it — getSlotIndicator derives a fallback. */
+  remaining?: number
+  soft_max?: number
 }
 
 export type CrewMode = 'solo' | 'full'
