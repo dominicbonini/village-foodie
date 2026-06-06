@@ -69,6 +69,11 @@ export function getAgeState(slotOffset: number): AgeState {
 export function getCombinedUrgency(slotDt: Date | null, createdAt: string): AgeState {
   const slotOffset = slotDt ? getSlotOffset(slotDt) : -999
   const slotState  = getAgeState(slotOffset)
+  // Creation-age urgency is a LIVE-SERVICE signal (unactioned ticket going stale).
+  // It must never fire for pre-orders whose slot is still far away — otherwise an
+  // order for tomorrow turns red 30 min after being placed. When the slot is more
+  // than 60 min out, slot timing alone governs (calm/neutral).
+  if (slotDt && slotOffset < -60) return slotState
   const ageMins    = getTicketAge(createdAt)
   const ageState: AgeState =
     ageMins < 5  ? 'new'  :

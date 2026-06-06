@@ -15,7 +15,7 @@ import type {
 import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
 import {
   getAsapSlot, getCatConfig, catCookSecs,
-  calcMinsFromNow, getCategoryTime, getAllDayCounts
+  calcMinsFromNow, getAllDayCounts
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 
@@ -911,8 +911,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               )
             })()}
             {showPrepList&&(()=>{
-              const now=new Date()
-              const nowMins=now.getHours()*60+now.getMinutes()
+              const todayStr=new Date().toISOString().split('T')[0]
               const BUFFER_SECS=120
 
               // Get all active orders with slots, sorted by slot time
@@ -960,13 +959,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   if(secs>maxSecs)maxSecs=secs
                 })
                 const totalSecs=maxSecs+BUFFER_SECS
+                // Date-aware slot datetime (manual s.7: new Date(y,mo-1,d,h,m), never
+                // time-of-day vs now) — an 11:30 slot TOMORROW must not compare as
+                // 11:30 today, or future-event orders hit "Prep needed now" hours early
                 const [slotH,slotM]=slot.split(':').map(Number)
-                const slotTotalMins=slotH*60+slotM
-                const startMins=slotTotalMins-Math.ceil(totalSecs/60)
-                const minsUntilStart=startMins-nowMins
-                const startH=Math.floor(Math.max(0,startMins)/60)
-                const startM=Math.max(0,startMins)%60
-                const startStr=`${String(startH).padStart(2,'0')}:${String(startM).padStart(2,'0')}`
+                const orderEventDate=slotOrders[0].event_date
+                const slotDt=orderEventDate
+                  ?(()=>{const[y,mo,d]=orderEventDate.split('-').map(Number);return new Date(y,mo-1,d,slotH,slotM,0,0)})()
+                  :(()=>{const t=new Date();t.setHours(slotH,slotM,0,0);return t})()
+                const startDt=new Date(slotDt.getTime()-totalSecs*1000)
+                const minsUntilStart=Math.floor((startDt.getTime()-Date.now())/60000)
+                const startStr=`${String(startDt.getHours()).padStart(2,'0')}:${String(startDt.getMinutes()).padStart(2,'0')}`
 
                 if(minsUntilStart<=2){
                   // Due now or within 2 mins — add to current batch
@@ -976,8 +979,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 }
               })
 
-              // Also include slotless confirmed orders in current batch
-              eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot).forEach(o=>currentBatch.push(o))
+              // Also include slotless confirmed orders in current batch — but never
+              // future-event ones (a slotless pre-order for tomorrow isn't due now)
+              eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot&&(!o.event_date||o.event_date<=todayStr)).forEach(o=>currentBatch.push(o))
 
               // Build current prep map
               // Build ordered list of units in insertion order across orders, then by item position
@@ -997,9 +1001,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 const modLabel=parts.length?` (${parts.join(', ')})`:''
                 for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.id,unitIdx:u,cat,modLabel})
               }))
-              // Split into kitchen vs assembly preserving order
-              const kitchenUnits=allUnits.filter(u=>getCategoryTime(u.cat)>0)
-              const assemblyUnits=allUnits.filter(u=>getCategoryTime(u.cat)===0)
+              // Split into kitchen vs assembly preserving order.
+              // Use DB-loaded categoryConfigs — getCategoryTime always returns 0 since
+              // prep config moved to the DB, which silently put everything in Assembly.
+              const kitchenUnits=allUnits.filter(u=>(categoryConfigs[u.cat.toLowerCase()]?.secs??0)>0)
+              const assemblyUnits=allUnits.filter(u=>(categoryConfigs[u.cat.toLowerCase()]?.secs??0)===0)
 
               return(
                 <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-3">
@@ -1081,7 +1087,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             {b.items.map(item=>`${item.qty}× ${item.label}`).join(', ')}{b.orderNotes.length>0&&` · 📝 ${b.orderNotes.join(' · ')}`}
                           </span>
                           <span className="text-amber-600 font-black ml-2 shrink-0">
-                            Start by {b.startBy} · {b.minsUntil}min
+                            Start by {b.startBy} · {b.minsUntil>=120?`in ${Math.round(b.minsUntil/60)}h`:`${b.minsUntil}min`}
                           </span>
                         </div>
                       ))}

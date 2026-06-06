@@ -104,9 +104,15 @@ export function OrderCard({
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
   const [showContact, setShowContact] = useState(false)
 
-  // Build slot datetime once — null for slotless (walk-up) orders
+  // Build slot datetime once — null for slotless (walk-up) orders.
+  // Manual s.7: construct with new Date(y, mo-1, d, h, m) local time — never
+  // string-parse 'YYYY-MM-DDTHH:MM' (Safari UTC quirks shift the date).
   const slotDt = order.slot && order.event_date
-    ? new Date(`${order.event_date}T${order.slot}:00`)
+    ? (() => {
+        const [y, mo, d] = order.event_date.split('-').map(Number)
+        const [h, m] = order.slot.split(':').map(Number)
+        return new Date(y, mo - 1, d, h, m, 0, 0)
+      })()
     : null
 
   const computeOffset = () => slotDt ? getSlotOffset(slotDt) : -999
