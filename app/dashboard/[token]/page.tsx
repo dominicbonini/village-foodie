@@ -130,6 +130,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
   const fetchAllRef=useRef<()=>void>(()=>{})
+  // Tracks auth across fetchAll closures (authenticated state is stale inside the callback).
+  // Once true, transient fetch failures keep existing state instead of showing the error screen.
+  const authenticatedRef=useRef(false)
+  // Last successfully resolved event — survives transient empty upcomingEvents (e.g. failed refetch)
+  const lastActiveEventRef=useRef<TruckEvent|null>(null)
   const asapSlot=getAsapSlot(slots,(todayEvents.find(e=>e.status==='open')??todayEvents[0])?.event_date)
   const availableDeals = truckMenu?.bundles ?? []
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
@@ -192,7 +197,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const p=new URLSearchParams({token}); if(currentPin) p.set('pin',currentPin)
       const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
-      if(!res.ok){setError(data.error||'Failed to load');setLoading(false);return}
+      // Transient failure after successful auth — keep existing state, never blank the dashboard
+      if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
       setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
@@ -201,23 +207,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
-      setAuthenticated(true); setLastRefresh(new Date())
+      setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
       try{
         const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true`)
-        const eventsData=await eventsRes.json()
-        const todayStr=new Date().toISOString().split('T')[0]
-        const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
-        setTodayEvents(fetched)
-        setUpcomingEvents(eventsData.events??[])
-        const currentTime=new Date().toTimeString().slice(0,5)
-        const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
-        for(const ev of stale){
-          await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
+        // Never replace good event state with data from a failed response (429/500
+        // returns valid JSON without .events, which would silently wipe events)
+        if(!eventsRes.ok){
+          console.warn('[fetchAll] events fetch failed:',eventsRes.status,'— keeping existing events')
+        }else{
+          const eventsData=await eventsRes.json()
+          const todayStr=new Date().toISOString().split('T')[0]
+          const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
+          setTodayEvents(fetched)
+          setUpcomingEvents(eventsData.events??[])
+          const currentTime=new Date().toTimeString().slice(0,5)
+          const stale=fetched.filter((e:TruckEvent)=>e.status==='confirmed'&&e.auto_open===true&&e.start_time<=currentTime)
+          for(const ev of stale){
+            await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId:ev.id,payload:{}})})
+          }
+          if(stale.length>0) setTodayEvents(prev=>prev.map(e=>stale.some((s:TruckEvent)=>s.id===e.id)?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
         }
-        if(stale.length>0) setTodayEvents(prev=>prev.map(e=>stale.some((s:TruckEvent)=>s.id===e.id)?{...e,status:'open' as const,opened_at:new Date().toISOString()}:e))
       }catch{}
-    } catch{setError('Connection error')} finally{setLoading(false)}
+    } catch{if(!authenticatedRef.current)setError('Connection error')} finally{setLoading(false)}
   },[token,pin,fetchMenu,fetchStock])
 
   useEffect(()=>{fetchAll()},[fetchAll])
@@ -357,7 +369,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const p=new URLSearchParams({token,pin:pinInput}); const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
     setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
-    setAuthenticated(true); setRequiresPin(false)
+    setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput)}
   }
 
@@ -658,12 +670,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     </div>
   )
 
-  const activeEvent:TruckEvent|null=selectedEventId
+  const resolvedEvent:TruckEvent|null=selectedEventId
     ?upcomingEvents.find(e=>e.id===selectedEventId)??null
     :(todayEvents.find(e=>e.status==='open')
       ??todayEvents.find(e=>e.status==='confirmed')
       ??todayEvents[0]
       ??null)
+  // Fall back to the last known event when upcomingEvents is transiently empty
+  // (failed refetch) but the selection is still live — never blank the event bar
+  const activeEvent:TruckEvent|null=resolvedEvent
+    ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
+  if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
   const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
   const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 

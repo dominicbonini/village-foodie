@@ -2,12 +2,24 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { ratelimit, strictRatelimit } from '@/lib/ratelimit'
 
-const STRICT_PREFIXES = ['/api/menu', '/api/discovery', '/api/events', '/trucks']
+// Rate limit tiers:
+// STRICT (3/min) — public bulk-scrapeable data only. The schedule/map data
+//   a competitor would harvest. /api/discovery, /api/events (public slug).
+// GENERAL (60/min) — everything else, including the live ordering flow
+//   (/api/menu, /trucks). These share IPs across customers behind one
+//   network (café WiFi, mobile CGNAT) so must NOT be tightly limited.
+// EXEMPT — authenticated operator routes and webhooks. Never rate limited.
+const STRICT_PREFIXES = ['/api/discovery', '/api/events']
 const EXEMPT_PREFIXES = [
   '/api/dashboard/action',
   '/api/orders/submit',
   '/api/webhooks',
   '/api/admin',
+  // Token-authenticated operator routes — caught by the /api/events strict
+  // prefix by accident. Strict tier is for public scraper targets only.
+  '/api/events/manage',
+  '/api/events/action',
+  '/api/events/affected-orders',
 ]
 
 export async function proxy(request: NextRequest) {
@@ -31,7 +43,7 @@ export async function proxy(request: NextRequest) {
 
   // ── Rate limiting ─────────────────────────────────────────────────
   const isRateLimitedPath =
-    pathname.startsWith('/api/') || pathname.startsWith('/trucks/')
+    pathname.startsWith('/api/') || pathname === '/trucks' || pathname.startsWith('/trucks/')
   let rlRemaining: number | null = null
 
   if (isRateLimitedPath && !EXEMPT_PREFIXES.some(p => pathname.startsWith(p))) {
