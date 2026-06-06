@@ -57,11 +57,12 @@
     },
     {
       "name": "Il Peperone Piccante",
-      "orderUrl": "https://ilpeperonepiccante.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://ilpeperonepiccante.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-06T18:06:27.923Z",
+      "menuChars": 1562,
+      "error": null,
+      "itemCount": 17
     },
     {
       "name": "La Biga Pizzeria",
