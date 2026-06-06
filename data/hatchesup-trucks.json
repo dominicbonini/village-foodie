@@ -4,11 +4,12 @@
   "trucks": [
     {
       "name": "Between Buns Royston",
-      "orderUrl": "https://betweenbunsroyston.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
+      "orderUrl": "https://betweenbunsroyston.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-06T07:55:55.549Z",
       "menuChars": 2538,
-      "error": null
+      "error": null,
+      "itemCount": 24
     },
     {
       "name": "Steak & Honour",
