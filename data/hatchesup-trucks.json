@@ -48,11 +48,12 @@
     },
     {
       "name": "Your Burger Zone",
-      "orderUrl": "https://yourburgerzone.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://yourburgerzone.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-06T16:40:05.218Z",
+      "menuChars": 1352,
+      "error": null,
+      "itemCount": 11
     },
     {
       "name": "Il Peperone Piccante",
