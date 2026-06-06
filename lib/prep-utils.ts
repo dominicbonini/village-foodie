@@ -109,6 +109,30 @@ export interface CatConfig {
   }
   
   /**
+   * Queue push past event start, for events that haven't started yet.
+   * Manual s.6: ASAP base is never eventStart + prep — batch 1 is pre-prepped and
+   * ready AT event start. Each subsequent batch lands one prep-cycle later, so the
+   * new order's final batch completes (ceil((queue+new)/batch) - 1) cycles after
+   * start. Empty queue + an order fitting one batch ⇒ 0 (ASAP = event start exactly).
+   * Used by: AddOrderPanel queueAware (client) AND slots API (server) — must agree.
+   */
+  export function calcQueuePushSecs(
+    newByCat: Record<string, number>,
+    queueByCat: Record<string, number>,
+    catConfigs: Record<string, CatConfig>
+  ): number {
+    let maxSecs = 0
+    Object.entries(newByCat).forEach(([cat, newQty]) => {
+      const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
+      if (!cfg.secs) return
+      const totalQty = (queueByCat[cat] || 0) + newQty
+      const secs = (Math.ceil(totalQty / cfg.batch) - 1) * cfg.secs
+      if (secs > maxSecs) maxSecs = secs
+    })
+    return maxSecs
+  }
+
+  /**
    * Fetch and normalise per-category prep configs from the DB for a given truck.
    * Canonical single source — used by both the manual-order and customer-order paths.
    */

@@ -48,7 +48,10 @@ export function buildSlotAvailability(params: {
     const isGrace = eventEndMins !== undefined && slotMins > eventEndMins
     // Grace slots are never considered "past" — truck should always be able to assign them
     const isPast = !isGrace && date === today && slotMins <= nowMins + 5
-    const tooSoon = date === today && slotMins < earliestCollectionMins
+    // No date gate: for future dates the caller passes an event-start-anchored
+    // floor (eventStart + queue push) — must apply or the future-event queue is
+    // invisible. For today, callers fold nowMins into the floor themselves.
+    const tooSoon = slotMins < earliestCollectionMins
 
     return {
       collection_time: s.collection_time,

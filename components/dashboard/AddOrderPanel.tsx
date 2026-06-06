@@ -6,7 +6,7 @@ import type {
   ItemStock, CategoryStock, ModifierGroup, ModifierOption, Order,
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
-import { calcQueueAwareReadySecs } from '@/lib/prep-utils'
+import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
@@ -86,6 +86,9 @@ interface AddOrderPanelProps {
   onEventPickerOpened?: () => void
   onEventChange?: (eventId: string) => void
   controlledEvent?: EventRecord | null
+  /** Always-mounted tab pattern (manual s.22): panel stays mounted, data effects
+   *  only run while the tab is visible. Basket state survives tab switches. */
+  isActive?: boolean
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -98,6 +101,7 @@ export function AddOrderPanel({
   showToast, onOrderPlaced, onOpenEvent,
   requestEventPickerOpen, onEventPickerOpened,
   onEventChange, controlledEvent,
+  isActive = true,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -156,13 +160,19 @@ export function AddOrderPanel({
     })
     const totalSecs = calcQueueAwareReadySecs(newByCat, apiQueueByCat, categoryConfigs, waitMinutes * 60 + 120)
     if (totalSecs === 0) return { readyTime: '', minsFromNow: 0 }
-    // ASAP base: max(now + prep, eventStart) — NOT eventStart + prep.
-    // Pre-event orders must not add prep time on top of event start.
-    // See manual Section 6: ASAP base time rule.
+    // Unified ASAP formula (manual s.6): max(now + totalSecs, eventStart + pushSecs).
+    // - now + totalSecs: live-service term — full prep from now, nothing pre-prepped.
+    // - eventStart + pushSecs: pre-prep term — batch 1 ready AT event start, this
+    //   order's final batch lands (batches-1) cycles later. Empty queue ⇒ push 0 ⇒
+    //   exactly event start (never eventStart + prep, per the manual rule).
+    // Future date: now-term is today, so eventStart+push wins (queue-aware fix).
+    // Today pre-start: continuous crossover, queue-aware, old empty-queue behaviour.
+    // Underway: base=now and totalSecs > pushSecs always, so now+totalSecs wins —
+    // identical to the pre-fix path. No step at the event-start boundary.
     const base = getAsapBaseTime(manualEvent)
     const t = new Date(Math.max(
       Date.now() + totalSecs * 1000,
-      base.getTime(),
+      base.getTime() + calcQueuePushSecs(newByCat, apiQueueByCat, categoryConfigs) * 1000,
     ))
     return {
       readyTime: `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`,
@@ -243,8 +253,9 @@ export function AddOrderPanel({
   }, [truck?.id])
 
   useEffect(() => {
+    if (!isActive) return
     fetchUpcomingEvents()
-  }, [fetchUpcomingEvents])
+  }, [fetchUpcomingEvents, isActive])
 
   useEffect(() => {
     if (!requestEventPickerOpen) return
@@ -254,13 +265,15 @@ export function AddOrderPanel({
   }, [requestEventPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync manualEvent when the dashboard switches to a different event
+  // isActive in deps: re-sync on tab activation if the event changed while hidden
   useEffect(() => {
+    if (!isActive) return
     if (!controlledEvent) return
     if (controlledEvent.id === manualEvent?.id) return
     setManualEvent(controlledEvent)
     fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time)
     setManualSlot('')
-  }, [controlledEvent?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [controlledEvent?.id, isActive]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync status-only changes on the same event (e.g. after open/close)
   useEffect(() => {
@@ -283,10 +296,11 @@ export function AddOrderPanel({
   }, [upcomingEvents])
 
   useEffect(() => {
+    if (!isActive) return
     if (manualEvent?.event_date) {
       fetchManualSlots(manualEvent.event_date, manualEvent.start_time, manualEvent.end_time)
     }
-  }, [manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots])
+  }, [manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots, isActive])
 
   // ── item manipulation ───────────────────────────────────────────────────────
   const addManualItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '') => {
@@ -384,7 +398,7 @@ setItemModal({ item, modGroups, editCartKey })
             total: manualTotal,
             subtotal: manualItemsSubtotal,
             notes: manualNotes || null,
-            event_id: null,
+            event_id: manualEvent?.id || null,
             event_date: manualEvent?.event_date || null,
           },
         }),

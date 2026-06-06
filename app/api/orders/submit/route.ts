@@ -424,6 +424,7 @@ export async function POST(req: NextRequest) {
         slot:           slot ?? null,
         order_type:     'collection',
         event_date:     orderEventDate,
+        event_id:       eventRow?.id ?? null,
         items,
         deals:          deals ?? null,
         discount_code:  discountCode ?? null,
@@ -547,6 +548,7 @@ export async function POST(req: NextRequest) {
             <h2 style="color:#ea580c;margin:0 0 12px">🔔 New order received</h2>
             <p><strong>Order #${orderId}</strong> from <strong>${customerName}</strong></p>
             ${slot ? `<p style="font-size:16px"><strong>⏰ Collection: ${slot}</strong></p>` : '<p>No specific time — ASAP</p>'}
+            ${(eventRow?.venue_name || eventRow?.town) ? `<p>📍 ${[eventRow?.venue_name, eventRow?.town, eventRow?.postcode].filter(Boolean).join(', ')}</p>` : ''}
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
               ${truckItemRows}
@@ -559,7 +561,7 @@ export async function POST(req: NextRequest) {
             ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
             <p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>
           </body>`,
-          text: `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`,
+          text: `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(eventRow?.venue_name || eventRow?.town) ? ' at ' + [eventRow?.venue_name, eventRow?.town].filter(Boolean).join(', ') : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`,
         })
       }
     } catch (err) {

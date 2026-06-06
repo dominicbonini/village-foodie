@@ -328,12 +328,30 @@ export async function POST(req: NextRequest) {
 
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────
     if (action === 'manual') {
-      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal, event_date: passedEventDate } = manualOrder
+      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal, event_date: passedEventDate, event_id: passedEventId } = manualOrder
       const deals = manualOrder.deals ?? null
       if (!items?.length && !deals?.length) {
         return NextResponse.json({ error: 'Items required' }, { status: 400 })
       }
       const eventDate = passedEventDate || new Date().toISOString().split('T')[0]
+      // Resolve event_id: prefer the explicit ID from the panel; fall back to a
+      // truck_id + event_date lookup ONLY when exactly one event matches that date
+      // (same-day multi-event would be ambiguous — leave null and let the display
+      // fallback in the dashboard handle it).
+      let orderEventId: string | null = passedEventId || null
+      if (!orderEventId) {
+        const { data: dateEvents } = await supabase
+          .from('truck_events')
+          .select('id')
+          .eq('truck_id', truck.id)
+          .eq('event_date', eventDate)
+          .neq('status', 'cancelled')
+        if (dateEvents?.length === 1) {
+          orderEventId = dateEvents[0].id
+        } else if ((dateEvents?.length ?? 0) > 1) {
+          console.warn(`[manual] ${dateEvents!.length} events on ${eventDate} for truck ${truck.id} — leaving event_id null`)
+        }
+      }
       let autoConfirm = true
       const manualLines = normaliseOrderLines(items || [])
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
@@ -367,6 +385,7 @@ export async function POST(req: NextRequest) {
         customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
         customer_email: customerEmail || null,
         slot: slot || null, order_type: 'collection', event_date: eventDate,
+        event_id: orderEventId,
         items, deals, discount_code: null,
         subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
         notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
@@ -378,6 +397,14 @@ export async function POST(req: NextRequest) {
       }
 
       if (slot) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
+
+      const { data: manualEventRow } = await supabase
+        .from('truck_events')
+        .select('venue_name, town, postcode')
+        .eq('truck_id', truck.id)
+        .eq('event_date', eventDate)
+        .neq('status', 'cancelled')
+        .maybeSingle()
 
       const manualEmailItems = (items || []).map((i: any) => ({
         name: i.name,
@@ -399,6 +426,19 @@ export async function POST(req: NextRequest) {
           total: passedTotal || total,
           notes: notes || null,
           autoAccepted: true,
+          venueName:              manualEventRow?.venue_name ?? null,
+          venueTown:              manualEventRow?.town ?? null,
+          venuePostcode:          manualEventRow?.postcode ?? null,
+          preferredContactMethod: truck.preferred_contact_method ?? null,
+          contactPhone:           truck.contact_phone ?? null,
+          whatsappSender:         truck.whatsapp_sender ?? null,
+          socialFacebook:         truck.social_facebook ?? null,
+          socialInstagram:        truck.social_instagram ?? null,
+          contactEmail:           truck.contact_email ?? null,
+          allowCancellation:      truck.allow_customer_cancellation ?? true,
+          cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
+          baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+          truckSlug:              truck.slug ?? undefined,
         })
         await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
       }
@@ -415,6 +455,19 @@ export async function POST(req: NextRequest) {
           total: passedTotal || total,
           notes: notes || null,
           autoAccepted: true,
+          venueName:              manualEventRow?.venue_name ?? null,
+          venueTown:              manualEventRow?.town ?? null,
+          venuePostcode:          manualEventRow?.postcode ?? null,
+          preferredContactMethod: truck.preferred_contact_method ?? null,
+          contactPhone:           truck.contact_phone ?? null,
+          whatsappSender:         truck.whatsapp_sender ?? null,
+          socialFacebook:         truck.social_facebook ?? null,
+          socialInstagram:        truck.social_instagram ?? null,
+          contactEmail:           truck.contact_email ?? null,
+          allowCancellation:      truck.allow_customer_cancellation ?? true,
+          cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
+          baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+          truckSlug:              truck.slug ?? undefined,
         })
         await sendConfirmationEmail({
           to: truck.contact_email,

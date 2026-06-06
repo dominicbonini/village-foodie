@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getCatConfig, calcMinReadyMins, type CatConfig } from '@/lib/prep-utils'
+import { getCatConfig, calcMinReadyMins, calcQueuePushSecs, type CatConfig } from '@/lib/prep-utils'
 import { getBatchCountsByCollectionTime } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
@@ -156,13 +156,27 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   // ── Calculate minimum ready time ─────────────────────────────────────────
   const today = new Date().toISOString().split('T')[0]
   const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
-  const minReadyMins = date === today ? calcMinReadyMins(queueByCat, catConfigs) : 0
 
   // Customers cannot book slots before the event start time
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
   const eventStartMins = eventStart ? toMins(eventStart) : 0
   const eventEndMins = eventEnd ? toMins(eventEnd) : undefined
-  const earliestCollectionMins = Math.max(nowMins + minReadyMins + extraWaitMins, eventStartMins)
+  // Unified slot floor (manual s.6), mirrors AddOrderPanel queueAware:
+  //   max(now-anchored live-service term, eventStart + queue push)
+  // - now-term: only meaningful for today (today's clock is meaningless against a
+  //   future date's slot times) — zeroed out for future dates.
+  // - eventStart + push: pre-prep term — batch 1 ready AT event start; phantom
+  //   1 item per queued category = minimal push for the NEXT order. Empty queue
+  //   ⇒ push 0 ⇒ floor = event start exactly.
+  // Same calcQueuePushSecs as the client dropdown — they agree by construction.
+  const queuePushMins = Math.ceil(calcQueuePushSecs(
+    Object.fromEntries(Object.keys(queueByCat).map(c => [c, 1])),
+    queueByCat, catConfigs
+  ) / 60)
+  const earliestCollectionMins = Math.max(
+    date === today ? nowMins + calcMinReadyMins(queueByCat, catConfigs) + extraWaitMins : 0,
+    eventStartMins + queuePushMins,
+  )
 
   // ── Build capacity maps ───────────────────────────────────────────────────
   const capacityMap = Object.fromEntries(

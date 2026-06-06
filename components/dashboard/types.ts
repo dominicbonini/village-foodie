@@ -32,6 +32,7 @@ export interface Order {
   slot: string | null
   event_date: string | null
   event_id: string | null
+  van_id: string | null
   status: OrderStatus
   items: OrderItem[]
   deals: { name: string; price?: number; slots: Record<string, string>; slotModifiers?: Record<string, { name: string; price: number }[]>; slotNotes?: Record<string, string> }[] | null

@@ -692,10 +692,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(aSlot!==bSlot) return aSlot-bSlot
     return a.id.localeCompare(b.id)
   }
-  // Scope orders to the selected event by event_id only — no event_date fallback to avoid
-  // same-day multi-event bleed (two events on the same date would both match the fallback)
+  // Scope orders to the selected event. Primary match: event_id. Fallback for
+  // orders with NULL event_id (pre-backfill rows, ambiguous same-date multi-event
+  // inserts, or any future path that misses event_id): match event_date + van_id.
+  // The van_id check is what prevents same-date multi-event bleed — two events on
+  // one date run on different vans, so date alone would merge their orders.
   const eventOrders=activeEvent
-    ?orders.filter(o=>o.event_id===activeEvent.id)
+    ?orders.filter(o=>o.event_id
+      ?o.event_id===activeEvent.id
+      :o.event_date===activeEvent.event_date&&(o.van_id??null)===(activeEvent.van_id??null))
     :orders
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   const confirmedOrders=eventOrders.filter(o=>['confirmed','modified'].includes(o.status)).sort(sortByTimeThenId)
@@ -1137,9 +1142,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           </div>
         )}
 
-        {/* ADD ORDER TAB */}
-        {activeTab==='add'&&truck&&(
+        {/* ADD ORDER TAB — always mounted (manual s.22): basket state lives inside
+            AddOrderPanel and must survive tab switches. Hidden via CSS, never unmounted. */}
+        {truck&&(
+          <div className={activeTab==='add'?'':'hidden'}>
           <AddOrderPanel
+            isActive={activeTab==='add'}
             truck={truck}
             truckMenu={truckMenu}
             menuGroups={menuGroups}
@@ -1162,6 +1170,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             controlledEvent={activeEvent}
             onEventChange={(id)=>setSelectedEventId(id)}
           />
+          </div>
         )}
 
 

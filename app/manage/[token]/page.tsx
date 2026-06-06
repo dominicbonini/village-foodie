@@ -4640,10 +4640,14 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
           </p>
         </div>
 
+        {['facebook', 'messenger', 'instagram'].includes(preferredContact) && (
+          <p className="text-xs text-slate-500 italic">Your previous contact method is no longer available. Please select a new one.</p>
+        )}
+
         <div className="flex items-center gap-3">
           <label className="text-sm text-slate-600 w-36 flex-shrink-0">Preferred method</label>
           <select
-            value={preferredContact}
+            value={['facebook', 'messenger', 'instagram'].includes(preferredContact) ? '' : preferredContact}
             onChange={async e => {
               const val = e.target.value
               setPreferredContact(val)
@@ -4652,28 +4656,23 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
           >
             <option value="">Not specified</option>
-            <option value="phone">Phone call</option>
-            <option value="whatsapp">WhatsApp</option>
-            <option value="facebook">Facebook Messenger</option>
-            <option value="messenger">Messenger</option>
-            <option value="instagram">Instagram DM</option>
-            <option value="email">Email</option>
+            {(!!form.contact_email?.trim() || preferredContact === 'email') && <option value="email">Email</option>}
+            {(!!form.contact_phone?.trim() || preferredContact === 'phone') && <option value="phone">Phone</option>}
+            {(!!whatsappSender?.trim() || preferredContact === 'whatsapp') && <option value="whatsapp">WhatsApp</option>}
           </select>
         </div>
 
-        {preferredContact === 'phone' && !truck.contact_phone && (
+        {!form.contact_email?.trim() && !form.contact_phone?.trim() && !whatsappSender?.trim() && (
+          <p className="text-xs text-slate-400">Add your email or phone number above to set a contact method for customers.</p>
+        )}
+
+        {preferredContact === 'phone' && !form.contact_phone?.trim() && (
           <p className="text-xs text-amber-600">⚠️ Add your phone number in truck details above</p>
         )}
-        {preferredContact === 'whatsapp' && !truck.whatsapp_sender && (
+        {preferredContact === 'whatsapp' && !whatsappSender?.trim() && (
           <p className="text-xs text-amber-600">⚠️ Add your WhatsApp number in Online presence &amp; social above</p>
         )}
-        {preferredContact === 'facebook' && !truck.social_facebook && (
-          <p className="text-xs text-amber-600">⚠️ Add your Facebook page in Online presence &amp; social above</p>
-        )}
-        {preferredContact === 'instagram' && !truck.social_instagram && (
-          <p className="text-xs text-amber-600">⚠️ Add your Instagram handle in Online presence &amp; social above</p>
-        )}
-        {preferredContact === 'email' && !truck.contact_email && (
+        {preferredContact === 'email' && !form.contact_email?.trim() && (
           <p className="text-xs text-amber-600">⚠️ Add your contact email in truck details above</p>
         )}
 
