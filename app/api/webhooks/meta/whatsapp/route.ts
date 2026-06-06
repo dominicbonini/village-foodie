@@ -58,7 +58,14 @@ export async function POST(req: NextRequest) {
 
     console.log('[webhook/meta-whatsapp] message from:', from, 'text:', text)
 
-    // whatsapp_sender is stored as +digits; Meta sends digits only — match both formats
+    // whatsapp_sender may be stored as +447..., 447..., or 07... (UK local).
+    // Meta always sends digits only (e.g. 447941042253). Build all variants to match any format.
+    const fromVariants = [
+      `+${from}`,
+      from,
+      from.startsWith('44') ? `0${from.slice(2)}` : null,
+    ].filter((v): v is string => v !== null)
+
     const { data: truck } = await supabase
       .from('trucks')
       .select(`
@@ -66,7 +73,7 @@ export async function POST(req: NextRequest) {
         whatsapp_sender, whatsapp,
         plan, feature_overrides, trial_expires_at
       `)
-      .or(`whatsapp_sender.eq.+${from},whatsapp_sender.eq.${from}`)
+      .or(fromVariants.map(v => `whatsapp_sender.eq.${v}`).join(','))
       .eq('active', true)
       .single()
 
