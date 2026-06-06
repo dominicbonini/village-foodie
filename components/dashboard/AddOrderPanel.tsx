@@ -179,14 +179,18 @@ export function AddOrderPanel({
     if (!manualSlots.length) return null
     if (!queueAware.minsFromNow) return manualAsapSlot
     const tMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
-    const neededMins = nowMins + queueAware.minsFromNow
+    // Use readyTime HH:MM as the floor — identical to the "Ready around" label.
+    // nowMins + minsFromNow is wrong for future events: minsFromNow spans overnight
+    // (e.g. 20h) so neededMins overflows past midnight and always picks the last slot.
+    const neededMins = queueAware.readyTime
+      ? tMins(queueAware.readyTime)
+      : new Date().getHours() * 60 + new Date().getMinutes() + queueAware.minsFromNow
     return (
       manualSlots.find(s => !s.is_grace && s.available && tMins(s.collection_time) >= neededMins)
       ?? manualSlots.filter(s => !s.is_grace && s.available).slice(-1)[0]
       ?? manualAsapSlot
     )
-  }, [manualSlots, queueAware.minsFromNow, manualAsapSlot])
+  }, [manualSlots, queueAware, manualAsapSlot])
 
   const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
 
@@ -355,7 +359,7 @@ setItemModal({ item, modGroups, editCartKey })
   // ── submit ──────────────────────────────────────────────────────────────────
   const submitManual = async () => {
     if (!hasItems) return
-    const effectiveSlot = manualSlot || manualAsapSlot?.collection_time || null
+    const effectiveSlot = manualSlot || adjustedAsapSlot?.collection_time || null
     setLoading(true)
     try {
       const res = await fetch('/api/dashboard/action', {
@@ -402,6 +406,9 @@ setItemModal({ item, modGroups, editCartKey })
       }
       resetManual()
       setShowOrderSheet(false)
+      if (manualEvent) {
+        await fetchManualSlots(manualEvent.event_date, manualEvent.start_time, manualEvent.end_time)
+      }
       onOrderPlaced()
     } catch (err: any) {
       showToast(err.message || 'Failed', 'error')

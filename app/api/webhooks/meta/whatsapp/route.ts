@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     const { data: truck } = await supabase
       .from('trucks')
       .select(`
-        id, name, slug,
+        id, name, slug, truck_emoji,
         whatsapp_sender, whatsapp,
         plan, feature_overrides, trial_expires_at
       `)
@@ -99,6 +99,7 @@ export async function POST(req: NextRequest) {
     const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? ''
     const { reply, classification } = await generateWhatsAppReply({
       truckName:       truck.name,
+      truckEmoji:      truck.truck_emoji ?? '',
       truckId:         truck.id,
       customerMessage: text,
       events:          events ?? [],
