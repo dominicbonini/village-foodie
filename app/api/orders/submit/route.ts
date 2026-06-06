@@ -4,7 +4,6 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { sendWhatsApp, logMessage } from '@/lib/twilio'
 import { calculateOrderTotal, validateOrderTotals } from '@/lib/order-calculations'
 import {
   addOrderToProductionSlot,
@@ -515,39 +514,7 @@ export async function POST(req: NextRequest) {
       // Never block the order — stock enforcement is best-effort
     }
 
-    // ── WhatsApp to truck ─────────────────────────────────────────────────────
-    const waMessage = formatWhatsAppOrder({
-      orderId,
-      truckName:    truck.name,
-      customerName,
-      customerPhone,
-      customerEmail,
-      slot:         confirmedSlot ?? slot ?? null,
-      eventDate:    eventDate ?? new Date().toISOString().split('T')[0],
-      items,
-      deals:        deals ?? [],
-      discountCode: discountCode ?? null,
-      discountAmt:  discountAmt ?? 0,
-      total,
-      notes:        notes ?? null,
-    })
-
-    try {
-      await sendWhatsApp(truck.whatsapp, waMessage)
-      await logMessage({
-        orderId,
-        direction: 'outbound',
-        channel:   'whatsapp',
-        from:      process.env.TWILIO_WHATSAPP_NUMBER!,
-        to:        truck.whatsapp,
-        body:      waMessage,
-      })
-    } catch (err) {
-      console.error('WhatsApp send failed:', err)
-      // Do not fail the order — log and continue
-    }
-
-    // ── Email to truck (backup for missed WhatsApp notifications) ───────────
+    // ── Email to truck ────────────────────────────────────────────────────────
     try {
       const truckEmail = truck.contact_email
       if (truckEmail) {
