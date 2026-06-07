@@ -152,11 +152,12 @@
     },
     {
       "name": "Cambridge Crepes",
-      "orderUrl": "https://cambridgecrepes.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://cambridgecrepes.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T18:06:06.941Z",
+      "menuChars": 1746,
+      "error": null,
+      "itemCount": 61
     },
     {
       "name": "The Kentucky Cookout",
