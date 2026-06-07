@@ -161,11 +161,12 @@
     },
     {
       "name": "The Kentucky Cookout",
-      "orderUrl": "https://thekentuckycookout.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thekentuckycookout.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T19:55:38.139Z",
+      "menuChars": 1043,
+      "error": null,
+      "itemCount": 7
     },
     {
       "name": "Zaket Potato",
