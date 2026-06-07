@@ -143,11 +143,12 @@
     },
     {
       "name": "The Bagel Queen",
-      "orderUrl": "https://thebagelqueen.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thebagelqueen.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T16:53:05.505Z",
+      "menuChars": 2352,
+      "error": null,
+      "itemCount": 35
     },
     {
       "name": "Cambridge Crepes",
