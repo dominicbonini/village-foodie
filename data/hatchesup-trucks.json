@@ -92,82 +92,90 @@
     {
       "name": "Tamashi Asian Soul Food",
       "orderUrl": "https://tamashiasiansoulfood.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-07T00:04:44.509Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Pecoro On The Road",
-      "orderUrl": "https://pecoroontheroad.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://pecoroontheroad.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T05:07:49.515Z",
+      "menuChars": 1160,
+      "error": null,
+      "itemCount": 18
     },
     {
       "name": "Fully Loaded Fries",
-      "orderUrl": "https://fullyloadedfries.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://fullyloadedfries.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T08:36:17.644Z",
+      "menuChars": 656,
+      "error": null,
+      "itemCount": 17
     },
     {
       "name": "Holy Loaded",
-      "orderUrl": "https://holyloaded.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://holyloaded.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T11:09:57.785Z",
+      "menuChars": 1127,
+      "error": null,
+      "itemCount": 12
     },
     {
       "name": "Ovencraft Pizza",
-      "orderUrl": "https://ovencraftpizza.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://ovencraftpizza.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T13:03:28.047Z",
+      "menuChars": 702,
+      "error": null,
+      "itemCount": 6
     },
     {
       "name": "All Fired Up Pizza",
       "orderUrl": "https://allfireduppizza.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-07T15:11:15.839Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "The Bagel Queen",
-      "orderUrl": "https://thebagelqueen.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thebagelqueen.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T16:53:05.505Z",
+      "menuChars": 2352,
+      "error": null,
+      "itemCount": 35
     },
     {
       "name": "Cambridge Crepes",
-      "orderUrl": "https://cambridgecrepes.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://cambridgecrepes.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T18:06:06.941Z",
+      "menuChars": 1746,
+      "error": null,
+      "itemCount": 61
     },
     {
       "name": "The Kentucky Cookout",
-      "orderUrl": "https://thekentuckycookout.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thekentuckycookout.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T19:55:38.139Z",
+      "menuChars": 1043,
+      "error": null,
+      "itemCount": 7
     },
     {
       "name": "Zaket Potato",
-      "orderUrl": "https://zaketpotato.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://zaketpotato.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T21:13:55.298Z",
+      "menuChars": 441,
+      "error": null,
+      "itemCount": 10
     },
     {
       "name": "Yellow Door Eats",
