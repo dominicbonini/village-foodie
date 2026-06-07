@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 
 type OrderState = {
   id: string
@@ -20,7 +20,6 @@ type OrderState = {
 
 export default function ManageOrderPage() {
   const { id } = useParams<{ id: string }>()
-  const searchParams = useSearchParams()
   const [order, setOrder] = useState<OrderState | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -28,8 +27,8 @@ export default function ManageOrderPage() {
   const [cancelled, setCancelled] = useState(false)
 
   useEffect(() => {
-    const truckParam = searchParams.get('truck')
-    fetch(`/api/orders/${id}${truckParam ? `?truck=${encodeURIComponent(truckParam)}` : ''}`)
+    // [id] is the order_key UUID — globally unique, no ?truck= needed
+    fetch(`/api/orders/${id}`)
       .then(r => r.json())
       .then(data => {
         if (data.error) setError(data.error)
@@ -45,7 +44,7 @@ export default function ManageOrderPage() {
     const res = await fetch('/api/orders/cancel', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId: id }),
+      body: JSON.stringify({ order_key: id }),
     })
     const data = await res.json()
     if (!res.ok) {

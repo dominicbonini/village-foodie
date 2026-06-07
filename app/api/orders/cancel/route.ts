@@ -14,10 +14,11 @@ const supabase = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    const { orderId } = await req.json()
+    // order_key is the UUID row identity (from the cancel link). Never the display id.
+    const { order_key: orderKey } = await req.json()
 
-    if (!orderId) {
-      return NextResponse.json({ error: 'Order ID required' }, { status: 400 })
+    if (!orderKey) {
+      return NextResponse.json({ error: 'Order key required' }, { status: 400 })
     }
 
     // Fetch order with truck settings
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
           end_time
         )
       `)
-      .eq('id', orderId)
+      .eq('order_key', orderKey)
       .single()
 
     if (orderError || !order) {
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
     const { error: cancelError } = await supabase
       .from('orders')
       .update({ status: 'cancelled', cancellation_reason: 'Customer cancelled' })
-      .eq('id', orderId)
+      .eq('order_key', orderKey)
 
     if (cancelError) {
       return NextResponse.json({ error: 'Failed to cancel order' }, { status: 500 })

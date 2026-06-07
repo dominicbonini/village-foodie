@@ -92,7 +92,7 @@ export function OrderCard({
   truck: TruckData | null
   slots: Slot[]
   actionLoading: string | null
-  onAction: (action: string, orderId: string) => void
+  onAction: (action: string, orderKey: string) => void
   onEdit: (order: Order) => void
   categoryOrder?: string[]
   itemCategoryMap?: Record<string, string>
@@ -151,7 +151,7 @@ export function OrderCard({
     })
   }
 
-  const isLoading = (action: string) => actionLoading === `${action}-${order.id}`
+  const isLoading = (action: string) => actionLoading === `${action}-${order.order_key}`
   const showPrices = viewMode !== 'cook'
 
   type CookLine = { name: string; quantity: number; modifiers?: { name: string; price: number }[]; note?: string; dealName?: string; dealPrice?: number }
@@ -225,8 +225,8 @@ export function OrderCard({
     if (order.status === 'pending') {
       return (
         <>
-          <Btn label="✓ Confirm" colour="green" loading={isLoading('confirm')} onClick={() => onAction('confirm', order.id)} />
-          <Btn label="✗ Reject"  colour="red"   loading={isLoading('reject')}  onClick={() => onAction('reject', order.id)} />
+          <Btn label="✓ Confirm" colour="green" loading={isLoading('confirm')} onClick={() => onAction('confirm', order.order_key)} />
+          <Btn label="✗ Reject"  colour="red"   loading={isLoading('reject')}  onClick={() => onAction('reject', order.order_key)} />
         </>
       )
     }
@@ -235,18 +235,18 @@ export function OrderCard({
       if (['confirmed', 'modified'].includes(order.status)) {
         return kdsMode ? (
           <>
-            <Btn label="Start cooking" colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.id)} />
-            <Btn label="Ready"         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.id)} />
+            <Btn label="Start cooking" colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.order_key)} />
+            <Btn label="Ready"         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.order_key)} />
           </>
         ) : (
-          <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
+          <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
         )
       }
       if (order.status === 'cooking') {
         return (
           <>
             <span className="flex-1 text-amber-700 font-bold text-sm flex items-center">🔥 Cooking…</span>
-            <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
+            <Btn label="Ready" colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
           </>
         )
       }
@@ -256,10 +256,10 @@ export function OrderCard({
     if (viewMode === 'window') {
       if (!kdsMode) {
         if (['confirmed', 'modified'].includes(order.status)) {
-          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
         }
         if (order.status === 'ready') {
-          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
         }
       } else {
         // Cooking gate active
@@ -280,7 +280,7 @@ export function OrderCard({
           )
         }
         if (order.status === 'ready') {
-          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
         }
       }
     }
@@ -288,14 +288,14 @@ export function OrderCard({
     // solo mode (default) — preserve isPub behaviour for backwards compat
     if (['confirmed', 'modified'].includes(order.status)) {
       return isPub
-        ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.id)} />
-        : <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+        ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+        : <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (order.status === 'ready') {
-      return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.id)} />
+      return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (order.status === 'collected') {
-      return <Btn label="↩ Undo" colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.id)} />
+      return <Btn label="↩ Undo" colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.order_key)} />
     }
     return null
   }
@@ -539,7 +539,7 @@ export function OrderCard({
               <span className="text-xs text-slate-400 font-medium shrink-0">Adjust time:</span>
               {[5, 10, 20].map(mins => (
                 <button key={mins}
-                  onClick={() => onAction(`adjust_slot_+${mins}`, order.id)}
+                  onClick={() => onAction(`adjust_slot_+${mins}`, order.order_key)}
                   className="text-xs bg-slate-100 hover:bg-orange-100 hover:text-orange-700 text-slate-600 font-bold px-2 py-1 rounded-lg transition-colors active:scale-95">
                   +{mins}m
                 </button>
@@ -555,7 +555,7 @@ export function OrderCard({
               <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />
             )}
             {viewMode === 'solo' && ['confirmed', 'modified', 'ready'].includes(order.status) && (
-              <Btn label="✕ Cancel" colour="red" loading={isLoading('cancel')} onClick={() => onAction('cancel', order.id)} />
+              <Btn label="✕ Cancel" colour="red" loading={isLoading('cancel')} onClick={() => onAction('cancel', order.order_key)} />
             )}
           </div>
 

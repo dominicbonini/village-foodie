@@ -262,18 +262,18 @@ export default function KdsPage() {
   }
   const confirmScreenOff = async () => { setShowScreenOffWarning(false); await applyKeepScreenOn(false) }
 
-  const handleAction = useCallback(async (action: string, orderId: string) => {
-    setActionLoading(`${action}-${orderId}`)
+  const handleAction = useCallback(async (action: string, orderKey: string) => {
+    setActionLoading(`${action}-${orderKey}`)
     try {
       const res = await fetch('/api/dashboard/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, pin, action, orderId }),
+        body: JSON.stringify({ token, pin, action, order_key: orderKey }),
       })
       const data = await res.json()
       if (data?.queued) {
         setPendingSyncCount(c => c + 1)
-        setPendingSync(prev => new Set(prev).add(orderId))
+        setPendingSync(prev => new Set(prev).add(orderKey))
         setActionLoading(null)
         return
       }
@@ -743,7 +743,7 @@ export default function KdsPage() {
           ) : (
             visibleOrders.map(order => (
               <OrderCard
-                key={order.id}
+                key={order.order_key}
                 order={order}
                 truck={truck}
                 slots={[]}
@@ -754,7 +754,7 @@ export default function KdsPage() {
                 kdsMode={kdsMode}
                 categoryOrder={categoryOrder}
                 itemCategoryMap={itemCategoryMap}
-                pendingSync={pendingSync.has(order.id)}
+                pendingSync={pendingSync.has(order.order_key)}
               />
             ))
           )}
@@ -772,7 +772,7 @@ export default function KdsPage() {
                 Done today · {doneOrders.length}
               </div>
               {doneOrders.map(o => (
-                <div key={o.id} className="flex justify-between items-center py-1 text-xs text-slate-400 border-t border-slate-100">
+                <div key={o.order_key} className="flex justify-between items-center py-1 text-xs text-slate-400 border-t border-slate-100">
                   <span>#{o.id} · {o.customer_name}</span>
                   <span className="text-green-600">✓ paid</span>
                 </div>

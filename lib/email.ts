@@ -19,6 +19,10 @@ export interface EmailDeal {
 
 export function formatConfirmationEmail(params: {
   orderId: string
+  /** UUID row key — used for the cancel link (globally unique, not enumerable).
+   *  Required: the cancel link 404s on a display number, so there is no safe
+   *  fallback. Distinct from orderId, which is the human display number. */
+  orderKey: string
   truckName: string
   customerName: string
   slot: string | null
@@ -158,7 +162,7 @@ export function formatConfirmationEmail(params: {
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0">
       <p style="margin:0;font-size:12px;color:#94a3b8">
         Need to cancel?
-        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderId}/manage${params.truckSlug ? `?truck=${params.truckSlug}` : ''}" style="color:#ea580c;margin-left:4px">Cancel your order</a>
+        <a href="${params.baseUrl || 'https://www.hatchgrab.com'}/order/${params.orderKey}/manage" style="color:#ea580c;margin-left:4px">Cancel your order</a>
         (up to ${params.cancellationCutoffMins ?? 30} minutes before your pickup time)
       </p>
     </div>` : ''

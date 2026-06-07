@@ -132,14 +132,16 @@ export async function POST(req: NextRequest) {
 
     let cancelledOrders = 0
     if (affectedOrders && affectedOrders.length > 0) {
-      const orderIds = affectedOrders.map((o: any) => o.id)
+      // Scope by order_key (UUID) — display id is not unique across events, so
+      // .in('id', ...) would cancel matching display numbers in OTHER events too.
+      const orderKeys = affectedOrders.map((o: any) => o.order_key)
       await supabase
         .from('orders')
         .update({
           status: 'cancelled',
           cancellation_reason: `Event cancelled${fullNote ? ': ' + fullNote : ''}`,
         })
-        .in('id', orderIds)
+        .in('order_key', orderKeys)
 
       cancelledOrders = affectedOrders.length
 

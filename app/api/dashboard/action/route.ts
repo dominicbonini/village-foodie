@@ -45,16 +45,18 @@ async function notifyCustomer(email: string, subject: string, html: string, truc
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { token, pin, action, orderId, manualOrder, itemName, available, editedOrder } = body
+    // order_key (UUID) is the row identity for every order op. orderId is gone as a
+    // lookup key — orders are addressed only by order_key now.
+    const { token, pin, action, order_key: orderKey, manualOrder, itemName, available, editedOrder } = body
 
     const truck = await verifyToken(token, pin)
     if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
     // ── CONFIRM ───────────────────────────────────────────────────────────────
     if (action === 'confirm') {
-      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId)
+      await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey)
       if (order.customer_email) {
         const { data: eventRow } = await supabase
           .from('truck_events')
@@ -65,6 +67,7 @@ export async function POST(req: NextRequest) {
           .maybeSingle()
         const { subject, html, text } = formatConfirmationEmail({
           orderId: order.id,
+          orderKey: order.order_key,
           customerName: order.customer_name,
           truckName: truck.name,
           items: order.items || [],
@@ -95,9 +98,9 @@ export async function POST(req: NextRequest) {
 
     // ── REJECT ────────────────────────────────────────────────────────────────
     if (action === 'reject') {
-      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'rejected' }).eq('id', orderId)
+      await supabase.from('orders').update({ status: 'rejected' }).eq('order_key', orderKey)
       if (order.slot && order.event_date) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
@@ -106,10 +109,10 @@ export async function POST(req: NextRequest) {
         )
       }
       if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Order #${orderId} update`,
+        await notifyCustomer(order.customer_email, `Order #${order.id} update`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Order update</h2>
-            <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${orderId}.</p>
+            <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${order.id}.</p>
             <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
           </body>`, truck.name)
@@ -120,9 +123,9 @@ export async function POST(req: NextRequest) {
     // ── CANCEL ────────────────────────────────────────────────────────────────
     if (action === 'cancel') {
       const { cancellationReason } = body
-      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('id', orderId)
+      await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey)
       if (order.slot && order.event_date) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
@@ -136,7 +139,7 @@ export async function POST(req: NextRequest) {
         await notifyCustomer(order.customer_email, `Your order has been cancelled — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
             <p>Hi ${order.customer_name || 'there'},</p>
-            <p>Your order <strong>#${orderId}</strong> from <strong>${truck.name}</strong> has been cancelled.</p>
+            <p>Your order <strong>#${order.id}</strong> from <strong>${truck.name}</strong> has been cancelled.</p>
             ${reasonLine}
             ${refundLine}
             <p>We're sorry for any inconvenience.</p>
@@ -149,14 +152,14 @@ export async function POST(req: NextRequest) {
 
     // ── READY ─────────────────────────────────────────────────────────────────
     if (action === 'ready') {
-      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'ready' }).eq('id', orderId)
+      await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey)
       if (order.customer_email) {
         await notifyCustomer(order.customer_email, `Your order is ready`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order is ready! 🎉</h2>
-            <p>Order #${orderId} from <strong>${truck.name}</strong> is ready for collection.</p>
+            <p>Order #${order.id} from <strong>${truck.name}</strong> is ready for collection.</p>
             <p>Come and collect now — pay at the truck.</p>
             <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
           </body>`, truck.name)
@@ -166,16 +169,16 @@ export async function POST(req: NextRequest) {
 
     // ── COLLECTED ─────────────────────────────────────────────────────────────
     if (action === 'cooking') {
-      await supabase.from('orders').update({ status: 'cooking' }).eq('id', orderId).eq('truck_id', truck.id)
+      await supabase.from('orders').update({ status: 'cooking' }).eq('order_key', orderKey).eq('truck_id', truck.id)
       return NextResponse.json({ success: true, status: 'cooking' })
     }
 
     if (action === 'collected') {
       const now = new Date().toISOString()
-      const { data: order } = await supabase.from('orders').select('slot, event_date, status').eq('id', orderId).eq('truck_id', truck.id).single()
-      await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now }).eq('id', orderId).eq('truck_id', truck.id)
+      const { data: order } = await supabase.from('orders').select('slot, event_date, status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (order?.slot && order.event_date && ['pending', 'confirmed', 'modified'].includes(order.status)) {
-        const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
+        const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
         if (full.data) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await removeOrderFromProductionSlot(
@@ -189,10 +192,10 @@ export async function POST(req: NextRequest) {
 
     // ── UNDO COLLECTED ────────────────────────────────────────────────────────
     if (action === 'undo_collected') {
-      const { data: order } = await supabase.from('orders').select('slot, event_date').eq('id', orderId).eq('truck_id', truck.id).single()
-      await supabase.from('orders').update({ status: 'confirmed' }).eq('id', orderId).eq('truck_id', truck.id)
+      const { data: order } = await supabase.from('orders').select('slot, event_date').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (order?.slot && order.event_date) {
-        const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
+        const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
         if (full.data) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await addOrderToProductionSlot(
@@ -207,7 +210,7 @@ export async function POST(req: NextRequest) {
     // ── EDIT ORDER ────────────────────────────────────────────────────────────
     if (action === 'edit') {
       const { items, slot, notes, deals: editedDeals } = editedOrder || {}
-      const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).eq('truck_id', truck.id).single()
+      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
 
       const originalItemsSubtotal = (order.items || []).reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
@@ -228,7 +231,7 @@ export async function POST(req: NextRequest) {
         total:    newTotal,
         subtotal: newSubtotal,
         status:   'modified',
-      }).eq('id', orderId)
+      }).eq('order_key', orderKey)
 
       if (order.event_date && (items || slot !== undefined)) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
@@ -270,10 +273,10 @@ export async function POST(req: NextRequest) {
           return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
         }).join('')
         const slotToShow = slot !== undefined ? slot : order.slot
-        await notifyCustomer(order.customer_email, `Order #${orderId} updated`,
+        await notifyCustomer(order.customer_email, `Order #${order.id} updated`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Your order has been updated ✓</h2>
-            <p><strong>${truck.name}</strong> has updated order #${orderId}.</p>
+            <p><strong>${truck.name}</strong> has updated order #${order.id}.</p>
             ${slotToShow ? `<p><strong>Collection time:</strong> ${slotToShow}</p>` : ''}
             <p style="font-size:12px;color:#64748b;margin-bottom:4px">Updated order:</p>
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
@@ -372,15 +375,18 @@ export async function POST(req: NextRequest) {
           slotUnits[productionSlot] || {}, manualLines, itemCatMap, maxBatches, catConfigs
         )) autoConfirm = false
       }
+      // Display number (per-event, restarts at 1) — order_key UUID is set by the
+      // column default. orderEventId may be null (ambiguous/no event) → truck fallback.
       let newOrderId: string
       try {
-        newOrderId = await nextOrderId(truck.id)
+        newOrderId = await nextOrderId(orderEventId, truck.id)
       } catch (err: any) {
         console.error('[manual] order counter failed:', err.message)
         return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
       }
       const total = (items || []).reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
-      const { error: insertErr } = await supabase.from('orders').insert({
+      // .select() returns the default-generated order_key for the cancel link.
+      const { data: manualOrderRow, error: insertErr } = await supabase.from('orders').insert({
         id: newOrderId, truck_id: truck.id,
         customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
         customer_email: customerEmail || null,
@@ -390,11 +396,12 @@ export async function POST(req: NextRequest) {
         subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
         notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
         payment_status: 'unpaid',
-      })
-      if (insertErr) {
-        console.error('[manual] order insert failed:', insertErr.message, insertErr.details, insertErr.hint)
+      }).select('order_key').single()
+      if (insertErr || !manualOrderRow) {
+        console.error('[manual] order insert failed:', insertErr?.message, insertErr?.details, insertErr?.hint)
         return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
       }
+      const manualOrderKey = manualOrderRow.order_key
 
       if (slot) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
 
@@ -417,6 +424,7 @@ export async function POST(req: NextRequest) {
       if (customerEmail) {
         const { subject, html, text } = formatConfirmationEmail({
           orderId: newOrderId,
+          orderKey: manualOrderKey,
           truckName: truck.name,
           customerName,
           slot: slot || null,
@@ -446,6 +454,7 @@ export async function POST(req: NextRequest) {
       if (truck.contact_email) {
         const { subject, html, text } = formatConfirmationEmail({
           orderId: newOrderId,
+          orderKey: manualOrderKey,
           truckName: truck.name,
           customerName: customerName || 'Walk-up',
           slot: slot || null,
@@ -618,14 +627,14 @@ export async function POST(req: NextRequest) {
     // ── adjust_slot ───────────────────────────────────────────────────────────
     if (action?.startsWith('adjust_slot_+')) {
       const mins = parseInt(action.replace('adjust_slot_+', ''))
-      if (!orderId || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
-      const { data: ord } = await supabase.from('orders').select('slot,event_date,customer_email,customer_name,items,deals,total,notes,discount_amt').eq('id', orderId).single()
+      if (!orderKey || isNaN(mins)) return NextResponse.json({ error: 'Invalid' }, { status: 400 })
+      const { data: ord } = await supabase.from('orders').select('id,slot,event_date,customer_email,customer_name,items,deals,total,notes,discount_amt').eq('order_key', orderKey).single()
       if (!ord?.slot) return NextResponse.json({ error: 'No slot' }, { status: 400 })
       const [h, m] = ord.slot.split(':').map(Number)
       const newTotal = h * 60 + m + mins
       const newSlot = `${String(Math.floor(newTotal / 60) % 24).padStart(2, '0')}:${String(newTotal % 60).padStart(2, '0')}`
       if (ord.event_date) {
-        const full = await supabase.from('orders').select('items, deals').eq('id', orderId).single()
+        const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
         if (full.data) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
           await moveSlotBooking(
@@ -634,7 +643,7 @@ export async function POST(req: NextRequest) {
           )
         }
       }
-      await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('id', orderId)
+      await supabase.from('orders').update({ slot: newSlot, status: 'confirmed' }).eq('order_key', orderKey)
       // Notify customer of time change
       if (ord.customer_email) {
         const { data: slotEventRow } = await supabase
@@ -645,7 +654,8 @@ export async function POST(req: NextRequest) {
           .neq('status', 'cancelled')
           .maybeSingle()
         const { html, text } = formatConfirmationEmail({
-          orderId,
+          orderId: ord.id,
+          orderKey,
           customerName: ord.customer_name,
           truckName: truck.name,
           items: ord.items || [],
@@ -672,7 +682,7 @@ export async function POST(req: NextRequest) {
         })
         await sendConfirmationEmail({
           to: ord.customer_email,
-          subject: `Your order #${orderId} has been updated`,
+          subject: `Your order #${ord.id} has been updated`,
           html,
           text,
           senderName: truck.name,

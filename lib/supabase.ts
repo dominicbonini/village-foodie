@@ -25,6 +25,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string
+  order_key: string
   truck_id: string
   customer_name: string
   customer_phone: string | null

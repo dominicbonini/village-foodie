@@ -203,8 +203,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
       setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
       // Clear prep pills for orders no longer active (collected/cancelled)
-      const activeOrderIds=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.id))
-      setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderId=k.split(':')[0];if(activeOrderIds.has(orderId))n.add(k)});return n})
+      const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
+      setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
@@ -484,23 +484,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{}
   }
 
-  const doAction=async(action:string,orderId:string)=>{
-    if(action==='cancel'){const ord=orders.find(o=>o.id===orderId)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
-    setActionLoading(`${action}-${orderId}`)
+  // orderKey is the UUID row identity. Display number comes from the looked-up order.
+  const doAction=async(action:string,orderKey:string)=>{
+    if(action==='cancel'){const ord=orders.find(o=>o.order_key===orderKey)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
+    setActionLoading(`${action}-${orderKey}`)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,orderId})})
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,order_key:orderKey})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
-      showToast(`Order #${orderId} ${labels[action]||action}`)
+      const done=orders.find(o=>o.order_key===orderKey)
+      showToast(`Order #${done?.id??''} ${labels[action]||action}`)
       // Auto-clear prep board on collected (solo operator workflow)
       if(action==='collected'||action==='ready'){
-        const done=orders.find(o=>o.id===orderId)
         if(done){
           // Auto-clear unit pills for this specific order
           setStruckPrep(prev=>{
             const n=new Set(prev)
             done.items.forEach(item=>{
-              for(let u=0;u<item.quantity;u++) n.add(`${orderId}:${item.name}:${u}`)
+              for(let u=0;u<item.quantity;u++) n.add(`${orderKey}:${item.name}:${u}`)
             })
             return n
           })
@@ -540,7 +541,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const submitEdit=async()=>{
     if(!editingOrder)return; setActionLoading(`edit-${editingOrder.id}`)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',orderId:editingOrder.id,editedOrder:{items:editItems.filter(i=>i.quantity>0),deals:editDeals,slot:editSlot||null,notes:editNotes||null}})})
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:editItems.filter(i=>i.quantity>0),deals:editDeals,slot:editSlot||null,notes:editNotes||null}})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       showToast(`Order #${editingOrder.id} updated`); setEditingOrder(null); await fetchAll()
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
@@ -607,12 +608,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const confirmCancelOrder=()=>{
     if(!cancellingOrder) return
-    const id=cancellingOrder.id
+    const orderKey=cancellingOrder.order_key
+    const displayId=cancellingOrder.id
     const fullReason=[cancelReason,cancelNote].filter(Boolean).join(' — ')
     setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')
-    setActionLoading(`cancel-${id}`)
-    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'cancel',orderId:id,cancellationReason:fullReason||null})})
-      .then(r=>r.json()).then(()=>{showToast(`Order #${id} cancelled`);fetchAll()})
+    setActionLoading(`cancel-${orderKey}`)
+    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null})})
+      .then(r=>r.json()).then(()=>{showToast(`Order #${displayId} cancelled`);fetchAll()})
       .catch(()=>showToast('Failed to cancel','error'))
       .finally(()=>setActionLoading(null))
   }
@@ -923,9 +925,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               const currentBatch:typeof slottedOrders=[]
               const upcomingBatches:{id:string;slot:string;startBy:string;minsUntil:number;items:{label:string;qty:number}[];orderNotes:string[]}[]=[]
 
-              // Process each order individually so same-slot orders appear as separate lines
+              // Process each order individually so same-slot orders appear as separate lines.
+              // Keyed by order_key (UUID) — display id isn't unique across events.
               const slotGroups:Record<string,typeof slottedOrders>={}
-              slottedOrders.forEach(o=>{slotGroups[o.id]=[o]})
+              slottedOrders.forEach(o=>{slotGroups[o.order_key]=[o]})
 
               Object.entries(slotGroups).forEach(([orderId,slotOrders])=>{
                 const slot=slotOrders[0].slot!
@@ -999,7 +1002,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 const parts=(item.modifiers||[]).map((m:any)=>m.name)
                 if(item.specialInstructions)parts.push(`📝 ${item.specialInstructions}`)
                 const modLabel=parts.length?` (${parts.join(', ')})`:''
-                for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.id,unitIdx:u,cat,modLabel})
+                for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.order_key,unitIdx:u,cat,modLabel})
               }))
               // Split into kitchen vs assembly preserving order.
               // Use DB-loaded categoryConfigs — getCategoryTime always returns 0 since
@@ -1100,13 +1103,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.id} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {showCompleted&&otherOrders.length>0&&(
@@ -1114,7 +1117,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Completed today</p>
                 <div className="space-y-2">
                   {otherOrders.slice(0,5).map(o=>(
-                    <div key={o.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between">
+                    <div key={o.order_key} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-black text-slate-700 text-sm">#{o.id}</span>
@@ -1127,7 +1130,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       <div className="shrink-0 ml-3 flex items-center gap-2">
                         <span className="font-black text-slate-600 text-sm">£{Number(o.total).toFixed(2)}</span>
                         {o.status==='collected'&&(
-                          <button onClick={()=>doAction('undo_collected',o.id)} className="text-xs text-slate-400 hover:text-orange-600 font-bold transition-colors">↩ Undo</button>
+                          <button onClick={()=>doAction('undo_collected',o.order_key)} className="text-xs text-slate-400 hover:text-orange-600 font-bold transition-colors">↩ Undo</button>
                         )}
                       </div>
                     </div>

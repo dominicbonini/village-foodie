@@ -25,7 +25,10 @@ export const ORDER_STATUS = {
 export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS]
 
 export interface Order {
+  /** Per-event display number ("Order #5"). Human-facing only — never a lookup key. */
   id: string
+  /** UUID row identity. Every lookup, update, React key, action payload. */
+  order_key: string
   customer_name: string
   customer_phone: string | null
   customer_email: string | null

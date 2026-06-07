@@ -10,23 +10,11 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // [id] is the order_key UUID — globally unique, so no truck scoping needed.
+  // id (the display number) stays in the SELECT for the "Order #N" header.
   const { id } = await params
-  const truckSlug = req.nextUrl.searchParams.get('truck')
 
-  // Resolve slug to truck_id for collision-safe lookup.
-  // Order IDs like "0042" are per-truck sequential — the slug scopes the query
-  // to the correct truck so two trucks sharing the same sequential ID don't collide.
-  let truckId: string | null = null
-  if (truckSlug) {
-    const { data: truckRow } = await supabase
-      .from('trucks')
-      .select('id')
-      .eq('slug', truckSlug)
-      .single()
-    truckId = truckRow?.id ?? null
-  }
-
-  let query = supabase
+  const { data: order, error } = await supabase
     .from('orders')
     .select(`
       id,
@@ -44,13 +32,8 @@ export async function GET(
         cancellation_cutoff_mins
       )
     `)
-    .eq('id', id)
-
-  if (truckId) {
-    query = query.eq('truck_id', truckId)
-  }
-
-  const { data: order, error } = await query.single()
+    .eq('order_key', id)
+    .single()
 
   if (error || !order) {
     return NextResponse.json({ error: 'Order not found' }, { status: 404 })

@@ -110,9 +110,11 @@ export async function GET(req: NextRequest) {
     doneOrdersQuery,
   ])
 
+  // Dedupe by order_key (UUID) — id is the per-event display number and is NOT
+  // unique across events, so keying by id would silently drop orders.
   const orderMap = new Map<string, NonNullable<typeof activeOrders>[number]>()
-  ;(activeOrders || []).forEach(o => orderMap.set(o.id, o))
-  ;(doneToday || []).forEach(o => orderMap.set(o.id, o))
+  ;(activeOrders || []).forEach(o => orderMap.set(o.order_key, o))
+  ;(doneToday || []).forEach(o => orderMap.set(o.order_key, o))
   const orders = Array.from(orderMap.values()).sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   )
