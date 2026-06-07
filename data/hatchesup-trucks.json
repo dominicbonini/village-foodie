@@ -126,11 +126,12 @@
     },
     {
       "name": "Ovencraft Pizza",
-      "orderUrl": "https://ovencraftpizza.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://ovencraftpizza.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T13:03:28.047Z",
+      "menuChars": 702,
+      "error": null,
+      "itemCount": 6
     },
     {
       "name": "All Fired Up Pizza",
