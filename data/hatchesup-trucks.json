@@ -108,11 +108,12 @@
     },
     {
       "name": "Fully Loaded Fries",
-      "orderUrl": "https://fullyloadedfries.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://fullyloadedfries.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T08:36:17.644Z",
+      "menuChars": 656,
+      "error": null,
+      "itemCount": 17
     },
     {
       "name": "Holy Loaded",
