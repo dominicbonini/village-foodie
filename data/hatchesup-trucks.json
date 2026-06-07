@@ -136,10 +136,10 @@
     {
       "name": "All Fired Up Pizza",
       "orderUrl": "https://allfireduppizza.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-07T15:11:15.839Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "The Bagel Queen",
