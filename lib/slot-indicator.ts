@@ -30,6 +30,8 @@ export function getSlotIndicator(slot: SlotIndicatorInput): {
   const remaining = slot.remaining ?? Math.max(0, softMax - slot.current_orders)
   const pct = slot.current_orders / slot.max_orders
   if (pct >= 1 || remaining <= 0) return { tone: 'red', emoji: '🔴', label: 'Full', remaining: 0 }
-  if (pct >= 0.7) return { tone: 'amber', emoji: '🟡', label: `${remaining} left`, remaining }
-  return { tone: 'green', emoji: '🟢', label: `${remaining} left`, remaining }
+  // "spaces" = orders the operator can still fit — natural language, not batch jargon.
+  if (pct >= 0.7) return { tone: 'amber', emoji: '🟡', label: `${remaining} space${remaining !== 1 ? 's' : ''}`, remaining }
+  // Green carries no label — available slots stay clean, only amber/red warn.
+  return { tone: 'green', emoji: '🟢', label: '', remaining }
 }

@@ -132,7 +132,7 @@ export function AddOrderPanel({
   const [activeDealBundle, setActiveDealBundle] = useState<Bundle | null>(null)
 
   // ── slot capacity confirmation ──────────────────────────────────────────────
-  const [pendingSlot, setPendingSlot] = useState<{ time: string; remaining: number; isFull: boolean; tooSoon?: boolean } | null>(null)
+  const [pendingSlot, setPendingSlot] = useState<{ time: string; remaining: number; isFull: boolean; tooSoon?: boolean; tone?: 'green' | 'amber' | 'red' } | null>(null)
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
@@ -365,9 +365,11 @@ setItemModal({ item, modGroups, editCartKey })
   const handleSlotChange = (value: string) => {
     if (!value) { setManualSlot(''); return }
     const s = manualSlots.find(sl => sl.collection_time === value)
-    if (s?.too_soon) { setPendingSlot({ time: value, remaining: 0, isFull: false, tooSoon: true }); return }
     if (s) {
       const ind = getSlotIndicator(s)
+      // Too-soon picks always confirm, carrying capacity state so the modal can
+      // show timing + availability in one message
+      if (s.too_soon) { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red', tooSoon: true, tone: ind.tone }); return }
       if (ind.tone !== 'green') { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red' }); return }
     }
     setManualSlot(value)
@@ -446,10 +448,11 @@ setItemModal({ item, modGroups, editCartKey })
         >
           <option value="">⚡ ASAP{adjustedAsapSlot ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
           {/* Operator sees ALL slots except genuinely-past ones (manual s.10):
-              too-soon and full slots stay visible and overridable via the modal. */}
+              too-soon and full slots stay visible and overridable via the modal.
+              Too-soon slots get the same traffic-light as any other — the timing
+              warning lives in the confirmation modal, not the dropdown. */}
           {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
-            if (s.too_soon) return <option key={s.collection_time} value={s.collection_time}>⏱ {s.collection_time} · Earlier than ready</option>
             const ind = getSlotIndicator(s)
             return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` · ${ind.label}` : ''}</option>
           })}
@@ -1004,7 +1007,13 @@ setItemModal({ item, modGroups, editCartKey })
               <div className="text-3xl mb-2">{pendingSlot.tooSoon ? '⏱' : pendingSlot.isFull ? '🔴' : '🟡'}</div>
               <p className="font-bold text-slate-900 text-base">
                 {pendingSlot.tooSoon
-                  ? `This is earlier than the kitchen can have it ready${readyTime ? ` (${readyTime})` : ''}. Use anyway?`
+                  ? `${pendingSlot.time} is before the kitchen's ready time${readyTime ? ` (${readyTime})` : ''}.${
+                      pendingSlot.isFull
+                        ? ' This slot is also full.'
+                        : pendingSlot.tone === 'amber'
+                        ? ` This slot has ${pendingSlot.remaining} space${pendingSlot.remaining !== 1 ? 's' : ''}.`
+                        : ''
+                    } Use anyway?`
                   : pendingSlot.isFull
                   ? 'This slot is full. Use anyway?'
                   : `This slot only has ${pendingSlot.remaining} space${pendingSlot.remaining !== 1 ? 's' : ''} left. Use anyway?`}
