@@ -170,11 +170,12 @@
     },
     {
       "name": "Zaket Potato",
-      "orderUrl": "https://zaketpotato.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://zaketpotato.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-07T21:13:55.298Z",
+      "menuChars": 441,
+      "error": null,
+      "itemCount": 10
     },
     {
       "name": "Yellow Door Eats",
