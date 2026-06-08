@@ -291,7 +291,8 @@ export async function sendConfirmationEmail(params: {
     return
   }
   try {
-    const senderName = params.senderName || params.truckName || 'Village Foodie'
+    const senderName = params.senderName || params.truckName || 'HatchGrab'
+    const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'donotreply@villagefoodie.co.uk'
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: {
@@ -299,7 +300,7 @@ export async function sendConfirmationEmail(params: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        sender:      { name: senderName, email: 'donotreply@villagefoodie.co.uk' },
+        sender:      { name: senderName, email: fromAddress },
         to:          [{ email: params.to }],
         subject:     params.subject,
         htmlContent: params.html,

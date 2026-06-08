@@ -12,6 +12,7 @@ export {
   calcMinsFromNow,
   getCategoryTime,
   DEFAULT_CAT_CONFIG,
+  resolveCollectionTime,
 } from '@/lib/prep-utils'
 
 export type { CatConfig } from '@/lib/prep-utils'

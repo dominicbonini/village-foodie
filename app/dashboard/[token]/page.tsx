@@ -15,7 +15,7 @@ import type {
 import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
 import {
   getAsapSlot, getCatConfig, catCookSecs,
-  calcMinsFromNow, getAllDayCounts
+  calcMinsFromNow, getAllDayCounts, resolveCollectionTime
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 
@@ -686,13 +686,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
   const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
-  // Sort by collection time (soonest first), then by order ID (oldest first)
-  // Orders without slot get high sort value so they appear after timed orders
+  // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
+  // orders resolve to the event-date-aware ASAP base, so they interleave with
+  // timed orders instead of always sorting last. order_key is the stable
+  // tiebreaker only — never the ordering key (Manual s.18a).
   const sortByTimeThenId=(a:Order,b:Order)=>{
-    const aSlot=a.slot?parseInt(a.slot.split(':')[0])*60+parseInt(a.slot.split(':')[1]):99999
-    const bSlot=b.slot?parseInt(b.slot.split(':')[0])*60+parseInt(b.slot.split(':')[1]):99999
-    if(aSlot!==bSlot) return aSlot-bSlot
-    return a.id.localeCompare(b.id)
+    const aDt=resolveCollectionTime(a,activeEvent)?.getTime()??Number.POSITIVE_INFINITY
+    const bDt=resolveCollectionTime(b,activeEvent)?.getTime()??Number.POSITIVE_INFINITY
+    if(aDt!==bDt) return aDt-bDt
+    return a.order_key.localeCompare(b.order_key)
   }
   // Scope orders to the selected event. Primary match: event_id. Fallback for
   // orders with NULL event_id (pre-backfill rows, ambiguous same-date multi-event
@@ -1103,13 +1105,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {showCompleted&&otherOrders.length>0&&(

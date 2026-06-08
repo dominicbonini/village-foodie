@@ -2,9 +2,9 @@
 // components/dashboard/OrderCard.tsx
 
 import { useState, useEffect } from 'react'
-import type { Order, TruckData, Slot } from './types'
+import type { Order, TruckData, Slot, TruckEvent } from './types'
 import { STATUS } from './types'
-import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle } from './helpers'
+import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle, resolveCollectionTime } from './helpers'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -78,6 +78,7 @@ function addMinsToSlot(slot: string, mins: number): string {
 export function OrderCard({
   order,
   truck,
+  event,
   slots,
   actionLoading,
   onAction,
@@ -90,6 +91,7 @@ export function OrderCard({
 }: {
   order: Order
   truck: TruckData | null
+  event?: TruckEvent | null
   slots: Slot[]
   actionLoading: string | null
   onAction: (action: string, orderKey: string) => void
@@ -104,16 +106,19 @@ export function OrderCard({
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
   const [showContact, setShowContact] = useState(false)
 
-  // Build slot datetime once — null for slotless (walk-up) orders.
-  // Manual s.7: construct with new Date(y, mo-1, d, h, m) local time — never
-  // string-parse 'YYYY-MM-DDTHH:MM' (Safari UTC quirks shift the date).
-  const slotDt = order.slot && order.event_date
-    ? (() => {
-        const [y, mo, d] = order.event_date.split('-').map(Number)
-        const [h, m] = order.slot.split(':').map(Number)
-        return new Date(y, mo - 1, d, h, m, 0, 0)
-      })()
-    : null
+  // Resolve the effective collection time via the shared resolver (Manual s.6):
+  // an explicit slot for timed orders, the event-date-aware ASAP base for
+  // null-slot (ASAP/walk-up) orders. Local-time construction lives in the helper
+  // (Manual s.7). slotDt is now non-null for ASAP orders whenever the event is
+  // known, so urgency and the displayed time become date-aware instead of falling
+  // back to ticket age.
+  const slotDt = resolveCollectionTime(order, event ?? null)
+
+  // HH:MM to show on the card — the resolved time, so an ASAP order reads "17:00"
+  // instead of nothing/"658m".
+  const timeLabel = slotDt
+    ? `${String(slotDt.getHours()).padStart(2, '0')}:${String(slotDt.getMinutes()).padStart(2, '0')}`
+    : ''
 
   const computeOffset = () => slotDt ? getSlotOffset(slotDt) : -999
 
@@ -125,7 +130,7 @@ export function OrderCard({
     const id = setInterval(() => setSlotOffset(computeOffset()), 30000)
     return () => clearInterval(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order.slot, order.event_date, viewMode])
+  }, [order.slot, order.event_date, event?.event_date, event?.start_time, viewMode])
 
   const urgencyState = order.status === 'ready'
     ? 'ready'   as const
@@ -312,7 +317,7 @@ export function OrderCard({
           <div className="flex items-baseline justify-between gap-1">
             <span className="text-lg font-bold text-slate-900 truncate">#{order.id}</span>
             <span className="text-xs text-slate-600 flex-shrink-0">
-              {order.slot ?? ''}
+              {timeLabel}
               {offsetLabel ? ` · ${offsetLabel}` : ''}
             </span>
           </div>
@@ -337,7 +342,7 @@ export function OrderCard({
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-bold">#{order.id}</span>
                 <div className="flex items-center gap-2 font-medium text-sm">
-                  {order.slot && <span>{order.slot}</span>}
+                  {timeLabel && <span>{timeLabel}</span>}
                   {offsetLabel !== null && <span className="opacity-70">· {offsetLabel}</span>}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                   <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
@@ -375,7 +380,7 @@ export function OrderCard({
                     Contact
                   </span>
                 )}
-                {order.slot && <span className="opacity-70">{order.slot}</span>}
+                {timeLabel && <span className="opacity-70">{timeLabel}</span>}
                 {offsetLabel !== null && <span className="opacity-50">· {offsetLabel}</span>}
                 <span className="font-bold">£{Number(order.total).toFixed(2)}</span>
                 {allStruck && <span className="font-black text-xs opacity-70">✓</span>}

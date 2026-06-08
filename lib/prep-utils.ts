@@ -169,3 +169,46 @@ export interface CatConfig {
     })
     return Math.ceil(Math.max(120, maxSecs) / 60)
   }
+
+  /**
+   * SINGLE resolver for an order's effective collection time, as a local Date.
+   * Shared by the dashboard order card (display + urgency) and the orders-list sort.
+   *
+   *   - order.slot set  → the explicit slot time (event_date + slot).
+   *   - order.slot null → the event-date-aware ASAP base (Manual s.6):
+   *       • future-date event, or today-but-not-yet-open → event start
+   *       • today underway                              → max(now, event start)
+   *     This mirrors getAsapSlot's today/future branching — same now-floor,
+   *     no forked formula. (Queue-aware prep is applied at NEW-order entry in
+   *     AddOrderPanel via calcQueuePushSecs; the live queue isn't in scope here,
+   *     so the floor is event start, which is what governs before service.)
+   *
+   * All dates built with new Date(y, mo-1, d, h, m) local time (Manual s.7) —
+   * never new Date('YYYY-MM-DD…'), which Safari parses as UTC and shifts the day.
+   *
+   * Returns null only when there is no slot AND no usable event start to anchor to
+   * (callers fall back to ticket age in that case).
+   */
+  export function resolveCollectionTime(
+    order: { slot: string | null; event_date: string | null },
+    event: { event_date: string | null; start_time: string | null } | null,
+  ): Date | null {
+    const toLocal = (dateStr: string, timeStr: string): Date | null => {
+      const [y, mo, d] = dateStr.split('-').map(Number)
+      const [h, m] = timeStr.split(':').map(Number)
+      if ([y, mo, d, h, m].some(n => Number.isNaN(n))) return null
+      return new Date(y, mo - 1, d, h, m, 0, 0)
+    }
+
+    if (order.slot && order.event_date) {
+      return toLocal(order.event_date, order.slot)
+    }
+
+    const evDate = event?.event_date ?? order.event_date
+    if (!evDate || !event?.start_time) return null
+    const eventStart = toLocal(evDate, event.start_time)
+    if (!eventStart) return null
+
+    const now = new Date()
+    return now.getTime() > eventStart.getTime() ? now : eventStart
+  }

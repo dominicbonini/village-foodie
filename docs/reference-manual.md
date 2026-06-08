@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.2
+HatchGrab Engineering Reference Manual · V6.3
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.2**
+**Version 6.3**
 
 June 2026
 
@@ -14,7 +14,35 @@ June 2026
 
 # Changelog
 
-## V6.2 — June 2026 (this session)
+## V6.3 — June 2026 (this session)
+
+Order-numbering rebuild and dashboard-stability session. Replaces the global order primary key (which had taken customer ordering fully down with a duplicate-key collision) with a two-id architecture — `order_key` (uuid row identity) plus a per-event display number that restarts at 1 — closing the collision class permanently and the enumerable-order-id privacy hole as a bonus. Also: introduces layered anti-scraping rate limiting (Upstash Redis + Vercel Edge Middleware) with a strict tiering rule; migrates the WhatsApp integration from Twilio to the Meta Cloud API with a four-bucket classifier; fixes a cascade of order-flow bugs (events disappearing, orders invisible, ASAP slot timing, false prep-now urgency, a kitchen/assembly split that was broken for every truck, basket loss on tab switch); and splits the operator slot traffic-light from the customer slot picker. Key changes relative to V6.2:
+
+- **Per-event order numbering with a uuid row key** — orders now carry `order_key` (uuid, the primary key and the only row identifier used in any WHERE clause, URL, FK, dedupe, or React key) and `id` (a per-event display number, "Order #5", that restarts at 1 each event). The old global PK on `id` alone caused a 23505 duplicate-key outage; the two-id split fixes it permanently and closes the guessable-order-link privacy hole. Per-event counters are atomic. See Section 18a (new) and Section 16.
+
+- **Anti-scraping rate limiting** — Upstash Redis + Vercel Edge Middleware (middleware.ts at the repo root, lib/ratelimit.ts), plus public/robots.txt blocking AI crawlers and X-Robots-Tag headers in vercel.json. A STRICT tier (3/min) covers only public bulk-scrapeable data; a GENERAL tier (60/min) covers everything else; authenticated/ordering routes are EXEMPT. See new Section 28.
+
+- **WhatsApp migrated to Meta Cloud API, four-bucket classifier** — Twilio (which required trucks to surrender their phone number) is replaced by the Meta Cloud API (trucks keep their number). The classifier gained a fourth bucket: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY (with a mandatory safety caveat), IGNORE. Twilio's order-notification send was removed (operators get email anyway); the Twilio webhook is dormant, not deleted. See Section 20.
+
+- **Events disappearing / orders invisible — fixed** — two root causes: a rate-limit regression that wiped the events list on a 429 (fixed by exempting the route and never setting state from a failed fetch), and orders.event_id never being written by any insert path (so the event-scoped order filter always returned empty, which also silently broke event-cancellation emails). Both insert paths now write event_id; the dashboard filter falls back to event_date+van_id; a backfill ran. See Section 5 and Section 15.
+
+- **Unified ASAP formula across client and server** — the Add Order panel and /api/slots now share calcQueuePushSecs in lib/prep-utils.ts so the dropdown and sub-label can never disagree; the future-event ASAP-shows-end-time bug is fixed. See Section 6.
+
+- **Date-aware urgency, 60-minute window** — the order-card urgency blend and the "prep needed now" logic now account for the event date, not just time-of-day, so a future event no longer shows red "prep now" the day before. Age-urgency only blends in when the slot is under 60 minutes away. See Section 9.
+
+- **Kitchen/assembly prep split fixed for every truck** — getCatConfig was returning {secs:0} for all categories after prep moved to the DB, so the kitchen/assembly split was broken platform-wide; it now reads categoryConfigs[cat].secs. See Section 6.
+
+- **Operator slot traffic-light split from the customer picker** — the server conflated too_soon into is_past; too_soon is now its own field (lib/slot-availability.ts). Operators see ALL slots (except genuinely past) with an override modal (lib/slot-indicator.ts, operator-only); customers see only cleanly-available slots, with full/too-soon hidden, not disabled. Interim directional wording shipped (green / "Filling up" / "Full"); the proper items-based capacity display is deferred. See Section 10 and Section 7.
+
+- **Basket persists across tab switches** — AddOrderPanel is now always-mounted with an isActive prop; the basket clears only on placement, never on a tab switch. See Section 10 and Section 22.
+
+- **Email confirmation venue + contact details** — confirmation emails now include the venue (name/town/postcode) in both the customer and truck copies, plus contact details driven by trucks.preferred_contact_method. The cancel link is now /order/{order_key}/manage (uuid, no ?truck= slug needed). See Section 18.
+
+- **Applied-migrations drift found** — two migrations from the 20260529 batch (checkout_upsells → upsell_events, and the whatsapp_logs migration) were never applied to prod, so those tables don't exist and their writes have been failing silently. A migrations reconciliation is on the backlog. See Section 16 and Section 27.
+
+- **New migration** — 20260607_order_key_per_event.sql (order_key uuid PK, per-event + truck-level atomic counters, two partial unique indexes, dropped the Studio-added messages_order_id_fkey). Applied in chunks via the Supabase SQL editor. See Section 16.
+
+## V6.2 — June 2026
 
 Schedule-ingestion session. Rebuilds the operator schedule-import review into a breakpoint-divergent UX (compact mobile cards, always-editable desktop table), adds an operator scraper preference with a self-service "verify my website" flow and an in-app approval queue for scraped events, makes the daily scraper learn each truck's best update day (adaptive scheduling) with hash-based change detection and an empty-schedule nudge email, consolidates the three independent Gemini schedule-extraction prompts behind a shared `lib/schedule-extract.ts` library, adds a per-truck exclusion list so unwanted scraped/imported events can be suppressed, moves the GitHub Actions scraper to Node 24, and fixes a batch of discovery-map venue-matching data errors. Key changes relative to V6.1:
 
@@ -148,7 +176,7 @@ Pre-trial polish-and-plumbing session. Establishes the shared operator header an
 
 - **Operator email rebuild** — operator-confirm and slot-change emails now use the shared formatConfirmationEmail (was two bespoke inline HTML emails missing modifiers, deals, venue, cancel link, and HatchGrab branding). Added slotAdjustedFrom param.
 
-- **Customer cancel page** — /order/[id]/manage with /api/orders/cancel and /api/orders/[id]. Cancel URL carries ?truck=[slug] to avoid per-truck order-ID collisions.
+- **Customer cancel page** — /order/[id]/manage with /api/orders/cancel and /api/orders/[id]. Cancel URL carries ?truck=[slug] to avoid per-truck order-ID collisions. *(Superseded in V6.3 — the cancel link is now /order/{order_key}/manage with no slug; see Section 18 and Section 18a.)*
 
 - **Settings auto-save** — the Settings tab Save button is gone; text fields save on blur, toggles and dropdowns on change, via saveFormField().
 
@@ -172,7 +200,7 @@ Pre-trial polish-and-plumbing session. Establishes the shared operator header an
 
 - **iOS auto-zoom fix** — viewport set to device-width / initial-scale 1, and inputs locked to 16px on mobile so Safari no longer zooms on focus.
 
-- **Meta social webhooks scaffolded** — verification + placeholder endpoints at /api/webhooks/meta/whatsapp, /messenger, and /instagram. The existing Twilio handler at /api/webhooks/whatsapp must not be overwritten.
+- **Meta social webhooks scaffolded** — verification + placeholder endpoints at /api/webhooks/meta/whatsapp, /messenger, and /instagram. The existing Twilio handler at /api/webhooks/whatsapp must not be overwritten. *(V6.3 — the Meta WhatsApp webhook is now fully wired and Twilio is retired to dormant; see Section 20.)*
 
 ## V4.0 — May 2026
 
@@ -288,6 +316,8 @@ When in doubt about naming: customer-facing surfaces use Village Foodie branding
 
 - **Email** — Brevo for all transactional email (changed from Resend in V3).
 
+- **Rate limiting / edge** — Upstash Redis behind Vercel Edge Middleware for anti-scraping protection on public data routes (V6.3, Section 28).
+
 - **Native wrapper** — Capacitor around the existing Next.js app. App ID com.hatchgrab.app, points to https://www.hatchgrab.com. Native modules only for hardware (printer) and OS features (background notifications, offline detection, screen wake).
 
 - **Scraper** — Google Apps Script (not in repo) processes Drive screenshots and vendor emails via Gemini, mirrors events to Supabase via /api/inbound-schedule. A separate GitHub Actions web scraper runs daily on Node 24 (see Section 24). Subject to the 6-minute Apps Script execution limit — needs a time guard.
@@ -332,19 +362,27 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/slot-capacity.ts** — canFitInProductionSlot.
 
-- **lib/prep-utils.ts** — prep time, category configs, queue-aware ready time, buildCatConfigs.
+- **lib/slot-availability.ts** (V6.3) — per-slot availability flags including the too_soon field split out from is_past. See Section 10.
+
+- **lib/slot-indicator.ts** (V6.3) — operator-only slot traffic-light state (green / "Filling up" / "Full"). Never imported by the customer page. See Section 10.
+
+- **lib/prep-utils.ts** — prep time, category configs, queue-aware ready time, buildCatConfigs, and calcQueuePushSecs (V6.3 — the single ASAP queue-push helper shared by client and server, Section 6).
 
 - **lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console.
 
 - **lib/features.ts / lib/useFeatures.ts** — plan tier feature map, PLAN_ORDER, PLAN_META, and canAccess()/useFeatures() for gating.
 
-- **lib/whatsapp-classifier.ts** — message classification and schedule-response prompt building.
+- **lib/whatsapp-classifier.ts** — message classification (four buckets as of V6.3) and schedule-response prompt building.
+
+- **lib/meta-whatsapp.ts** (V6.3) — sendMetaWhatsApp and Meta Cloud API helpers (replaces the Twilio send path). See Section 20.
+
+- **lib/ratelimit.ts** (V6.3) — Upstash Redis rate-limit configuration and tier helpers. See Section 28.
 
 - **lib/time-utils.ts** (V4) — canonical time formatter. formatTime(t) strips seconds from HH:MM:SS to HH:MM. This is the only implementation. Never inline t.slice(0,5) or write a parallel formatter.
 
 - **lib/modifier-utils.ts** (V4) — client-safe modifier helpers. isModifierAvailable(opt) returns opt.available !== false. Used to filter modifier options in both the customer page and the operator Add Order panel. undefined and null mean available — backward-compatible against rows where the column wasn't set.
 
-- **lib/order-utils.ts** — **server-only**. Exports nextOrderId(truckId). Imports SUPABASE_SERVICE_ROLE_KEY — importing this in a client component will fail the build. Client-safe utilities go in their own files (e.g. modifier-utils.ts), never co-located here.
+- **lib/order-utils.ts** — **server-only**. Exports nextOrderId(eventId, truckId) (V6.3 signature — event RPC first, truck RPC fallback, bare-integer display number; Section 18a). Imports SUPABASE_SERVICE_ROLE_KEY — importing this in a client component will fail the build. Client-safe utilities go in their own files (e.g. modifier-utils.ts), never co-located here.
 
 - **lib/useDragDrop.ts** (V6) — the shared drag-and-drop hook. useDragDrop(onFileDrop, acceptedTypes) encapsulates isDragging plus a dragCounter ref (prevents flicker when dragging over child elements) and returns { isDragging, dragProps }. dragProps spreads onto a label. Used by the Menu "Import with AI" upload zone, the Schedule "Import schedule" upload zone, and the extracted-events reorder list. Never re-implement drag handlers inline.
 
@@ -370,7 +408,7 @@ Display-only helpers that handle visual concerns (header colour, ticket age stat
 
 ### Type definitions
 
-Shared types and constants such as CatConfig and DEFAULT_CAT_CONFIG live in lib/prep-utils.ts. components/dashboard/types.ts re-exports them. Defining types in two places caused TypeScript export conflicts.
+Shared types and constants such as CatConfig and DEFAULT_CAT_CONFIG live in lib/prep-utils.ts. components/dashboard/types.ts re-exports them. Defining types in two places caused TypeScript export conflicts. The Order type carries both order_key (uuid) and id (display number) as of V6.3 (Section 18a).
 
 ## What must be shared
 
@@ -380,7 +418,7 @@ Menu category sort order is set in the Manage page and applied consistently ever
 
 ### Order creation logic
 
-Two valid paths create an order: Manual (operator via Add Order; lands confirmed) and Customer (self-order via /trucks/[slug]/order; lands pending, auto-confirm if truck.auto_accept). Intentional divergences exist (status default, auto_accept, server-side total validation, notifications) and must NOT be consolidated. But these utilities MUST be shared: buildCatConfigs, normaliseOrderLines, nextOrderId, canFitInProductionSlot, calculateOrderTotal.
+Two valid paths create an order: Manual (operator via Add Order; lands confirmed) and Customer (self-order via /trucks/[slug]/order; lands pending, auto-confirm if truck.auto_accept). Intentional divergences exist (status default, auto_accept, server-side total validation, notifications) and must NOT be consolidated. But these utilities MUST be shared: buildCatConfigs, normaliseOrderLines, nextOrderId, canFitInProductionSlot, calculateOrderTotal. Both paths MUST write event_id and let order_key default (V6.3, Section 5 / Section 18a).
 
 ### OrderCard component
 
@@ -689,6 +727,12 @@ With no event selected on the dashboard, every event-scoped surface degrades gra
 
 - **Auto-accept** toggle sits at the top of the Menu & Stock tab (moved from the bottom).
 
+### Orders must carry event_id; the dashboard filter is resilient (V6.3)
+
+> **RULE** — Both order insert paths (/api/orders/submit and /api/dashboard/action manual) MUST write event_id on the row. For most of V6.2 neither did, so the event-scoped order filter (o.event_id === activeEvent.id) always returned empty — the dashboard showed "0 orders / All complete" despite orders existing, AND event-cancellation emails silently went to nobody (affected-orders queried by event_id, got 0). Inserts now write event_id (with a single-event-per-date fallback when ambiguous). The dashboard display filter is resilient: event_id is primary, with an event_date + van_id fallback so a legacy null-event_id order still shows. A backfill migration ran against the existing rows.
+
+> **RULE** — Never setState from a failed fetch. A rate-limit 429 on /api/events/manage was wiping upcomingEvents to [] ("events disappearing"). Fetches must check res.ok before setting state, and the last active event is cached in a ref so a transient failure doesn't blank the UI. (The route is also now rate-limit-exempt — see Section 28.)
+
 ## Pause and extra wait
 
 - **Pause orders:** stops customer ordering for the active event's vehicle until resumed. Confirmation dialog before activating; none to unpause.
@@ -745,6 +789,14 @@ The ASAP slot calculation must use a single formula everywhere. calcQueueAwareRe
 
 In the Add Order panel (components/dashboard/AddOrderPanel.tsx), the ASAP collection time is the later of (now + prep) and the event start — not the event start with prep added on top. For an event that has not started yet, ASAP is simply the event start (prep runs during the lead time); for an event already underway, ASAP is now + prep. The earlier bug added prep on top of a future event start, pushing ASAP needlessly late. This complements the event-date-aware getAsapSlot rule above — that rule chooses the right floor (event start vs now); this rule governs how prep combines with that floor.
 
+### Unified ASAP push formula — client and server share one helper (V6.3)
+
+> **RULE** — calcQueuePushSecs in lib/prep-utils.ts is the single implementation of the queue-push seconds, imported by BOTH the Add Order panel (components/dashboard/AddOrderPanel.tsx) and the server /api/slots/[truckId]. They must agree to the second; two separate formulas previously disagreed. The unified rule: t = max(now + totalSecs, eventStart + pushSecs). For a future event with an empty queue this is exactly the event start (no boundary discontinuity); a future event no longer shows the event END time as ASAP (the prior overflow bug for overnight distances, where minsFromNow overflowed and surfaced the end time instead of the start). The math was verified across the no-queue and queued cases for both today and future events.
+
+### Kitchen/assembly category split reads the DB config (V6.3)
+
+> **BUG FIXED** — after category prep times moved to the DB, getCatConfig was returning {secs:0} for ALL categories, so the kitchen-vs-assembly prep split was broken for EVERY truck (everything treated as instant). It now reads categoryConfigs[cat].secs. Any code computing a per-category split must read the resolved DB config, never a hardcoded or zero default.
+
 ## ASAP cancellation cutoff (V6)
 
 For ASAP orders (null slot), the cancellation cutoff falls back to the event end_time. /api/orders/cancel joins truck_events!event_id (end_time) and computes effectiveSlot = order.slot ?? event.end_time ?? null; if neither is available the cutoff check is skipped. This fixed ASAP orders being uncancellable (or wrongly cancellable) because they carried no slot to measure the cutoff against.
@@ -763,7 +815,7 @@ For ASAP orders (null slot), the cancellation cutoff falls back to the event end
 
 ## Slots API contract
 
-The slots API (/api/slots/[truckId]) returns the slots list with availability flags, queueByCat, and catConfigs so the customer page can do queue-aware ASAP client-side. Even with no collection_times configured, catConfigs and queueByCat are still returned; only the slots array is empty.
+The slots API (/api/slots/[truckId]) returns the slots list with availability flags, queueByCat, and catConfigs so the customer page can do queue-aware ASAP client-side. Even with no collection_times configured, catConfigs and queueByCat are still returned; only the slots array is empty. As of V6.3 the availability flags include too_soon as a separate field (Section 10).
 
 ## prep_secs and batch_size defaults
 
@@ -792,6 +844,8 @@ On the customer order page, ASAP is auto-selected by default (asapChosen initial
 - Selected: solid orange background showing the chosen time.
 
 - Free tier: greyed out with "ASAP only" subtitle, NO premium badge.
+
+> **RULE (V6.3)** — the customer slot picker shows only cleanly-available slots. Full and too-soon slots are HIDDEN entirely, never shown disabled or with a traffic-light. The slot traffic-light is an operator-only affordance (Section 10). This keeps internal capacity state off the customer surface, consistent with the no-premium-badges principle (Section 4).
 
 ## Time selection premium flag
 
@@ -951,6 +1005,8 @@ Independent of view mode: list (single column, counter-top) and grid (multi-colu
 
 getCombinedUrgency(slotTime, createdAt, status): ready = solid green top border (overrides all); cooking = amber; otherwise take the MORE urgent of slot-relative and age-based urgency (new <5min, ok 5-15, warn 15-30, late 30+). An order 25 minutes old with a slot an hour away is still amber — the operator must see what is neglected.
 
+> **RULE (V6.3) — urgency is date-aware, age blends only inside 60 minutes.** getCombinedUrgency / the prep-needed-now logic must account for the event DATE, not just time-of-day. Two bugs were fixed: (1) the age-urgency blend fired regardless of how far away the slot was, so a future order went red; it now blends age in only when the slot is under 60 minutes away (components/dashboard/helpers.ts). (2) the "prep needed now" check compared time-of-day while ignoring the date, so a future event showed "prep now" the day before; it is now date-aware per Section 7's local-date parse rule. A future-dated event must NEVER show red "prep needed now" urgency.
+
 ## Card and price layout
 
 - Grid mode uses items-stretch for equal row heights; action buttons use mt-auto to sit at the bottom.
@@ -1033,7 +1089,17 @@ The dashboard auto-selects the most relevant event once on load so the operator 
 
 - Name optional, defaults to "Walk-up". Email/phone behind a collapsible toggle, hidden by default.
 
-- Slot defaults to ASAP; operator can override to a future slot. Full slots are still selectable with a warning.
+- Slot defaults to ASAP; the operator can override to a future slot. The operator sees ALL slots except genuinely past ones — including too-soon and full slots — each with a traffic-light indicator and an override modal (operator-only, lib/slot-indicator.ts). See the slot traffic-light rule below.
+
+### Slot traffic-light — operator-only, customer picker stays clean (V6.3)
+
+> **RULE** — too_soon is its own slot-availability field (lib/slot-availability.ts), no longer conflated into is_past (the server previously merged them, so the operator couldn't see or override a too-soon slot).
+
+- **Operator (dashboard / Add Order)** — sees every slot except genuinely past ones, each with a traffic-light state and an override modal: green (available), amber ("Filling up"), red ("Full"). lib/slot-indicator.ts is operator-only and is never imported by the customer page.
+
+- **Customer order page** — NO traffic-light. Only cleanly-available slots are shown; full and too-soon slots are HIDDEN (not shown-disabled), consistent with the no-internal-state-on-customer-surfaces principle (Section 4 / Section 7).
+
+> **INTERIM (V6.3) — directional wording only.** The amber/red labels are directional ("Filling up" / "Full"), not a precise count. kitchen_capacity counts BATCHES but the UI says "items"; the proper items-based capacity display and the kitchen_capacity semantics fix (decided: ITEMS is the intended meaning) are DEFERRED to a careful session — it touches the slot engine and existing slot_capacity data. Do not ship the precise count until that is done. See Section 27.
 
 ## Confirm order button
 
@@ -1050,6 +1116,10 @@ Orders for an event whose end time has passed by more than 30 minutes show a pas
 The Confirm order button is NOT disabled. Operators frequently take orders after the official end time and the previous hard-block created friction without preventing genuine mistakes. No per-order acknowledgement is required.
 
 Customer-side grace filtering is unchanged — events ended >30 min are filtered out of the customer event picker.
+
+## Basket persists across tab switches (V6.3)
+
+> **RULE** — AddOrderPanel is always-mounted with an isActive prop (the Section 22 pattern), visually hidden when inactive, never unmounted. The basket (manualItems, manualDeal, customerName, manualSlot, manualEvent) survives tab switches and event changes. The basket clears ONLY on successful order placement — never on a tab switch, never on an event change (an operator mid-build who switches to Orders to check the queue must come back to an intact basket).
 
 ## Modifier rendering inside customise modal
 
@@ -1091,7 +1161,7 @@ The native app is a Capacitor wrapper (com.hatchgrab.app) around the existing Ne
 
 ### Stage B — Walk-up orders while offline (post-trial)
 
-- Operator adds walk-ups offline with device-generated IDs; server assigns display IDs and resolves conflicts on reconnect. Online customer orders still blocked offline.
+- Operator adds walk-ups offline with device-generated IDs; server assigns display IDs and resolves conflicts on reconnect. Online customer orders still blocked offline. (V6.3 note: with order_key as a client-generatable uuid and id as a server-assigned per-event display number, this stage is now architecturally cleaner — the device can mint order_key offline and the display number is assigned at sync. See Section 18a.)
 
 ### Stage C — Full offline with reconciliation (future)
 
@@ -1237,7 +1307,7 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 
 ## Known gaps (before public launch)
 
-- Rate limiting on auth attempts.
+- Rate limiting on auth attempts. (Note: V6.3 added anti-scraping rate limiting on public data routes — Section 28 — but auth-attempt throttling specifically is still open.)
 
 - ~~Admin secret~~ — RESOLVED in V6.1. ADMIN_SECRET has been fully removed; admin auth is session + operators.is_admin via verifyAdmin() only.
 
@@ -1283,7 +1353,7 @@ Settings section is "Your trucks" with "+ Add truck". Each vehicle is rendered a
 
 - **show_cooking_step** (boolean) — adds the Cooking step on this vehicle's KDS.
 
-- **kitchen_capacity** (integer, nullable) — max COOKED items per 5-minute window; drinks/instant items do not count; blank = no limit. Options are No limit then 1–20 items (V6 — was a sparse 3/5/8/10/15/20). Editable from both the manage page Settings and, when an event is active, the dashboard Menu & Stock tab; both surfaces use identical options. It remains a global van setting.
+- **kitchen_capacity** (integer, nullable) — max COOKED items per 5-minute window; drinks/instant items do not count; blank = no limit. Options are No limit then 1–20 items (V6 — was a sparse 3/5/8/10/15/20). Editable from both the manage page Settings and, when an event is active, the dashboard Menu & Stock tab; both surfaces use identical options. It remains a global van setting. (V6.3 note: the slot engine currently counts BATCHES against this while the UI calls it "items" — the items-based semantics fix is on the backlog, Section 27.)
 
 - **display_layout and split_screen** columns exist in the DB but are NOT exposed in van settings — they are set from the dashboard/KDS directly.
 
@@ -1469,6 +1539,8 @@ The Cancel action on an event card opens a confirmation modal with an optional r
 
 > **RULE** — openEventCancelModal fetches the real affected order count from /api/events/affected-orders (counts pending + confirmed orders for the event, token-verified) before showing the modal. It must never be hardcoded to 0, which previously misled the operator into thinking no orders were affected.
 
+> **RULE (V6.3)** — Event cancellation queries and bulk-cancels affected orders by event_id, and the bulk cancel updates rows by order_key (`.in('order_key', …)`), NEVER by display id (`.in('id', …)` would cancel the same-numbered order across every other event — Section 18a). Note this depended on orders carrying event_id, which for most of V6.2 they did not — so cancellation emails silently went to nobody until the event_id-on-insert fix (Section 5). Both are now in place.
+
 ## Add/Edit event form
 
 - **Field order (V6.1)** — the form leads with Date, then Venue name, Full address, Area + Postcode, Start/End time, Van, Notes. This matches the operator's natural "when → where → what time → which truck" reading order and is consistent with the schedule-import review cards.
@@ -1515,7 +1587,7 @@ truck_events.offline_protection_override (nullable boolean): null = use the van'
 
 ## Multiple events handling
 
-- Distinct order queues per event; optional distinct menus/slot configs per event; clear operator navigation between events.
+- Distinct order queues per event; optional distinct menus/slot configs per event; clear operator navigation between events. Per-event order numbering (display ids restart at 1 per event) is the V6.3 model — see Section 18a.
 
 ## Discovery map visibility (V6)
 
@@ -1525,9 +1597,9 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 
 ## Core tables
 
-- **trucks** — one row per truck/brand. Holds plan (starter/pro/max/trial/tester), settings, dashboard_token, operator_id, default_auto_open/close, is_test, qr_code_style (V4), slug (V5, unique, URL-safe, populated from name — used by the customer order URL /trucks/[slug]/order), truck_emoji (V5, default 🍕 — used as the Menu tab icon and chosen via the Settings emoji picker), lifetime_discount_pct (V6, integer nullable) and lifetime_discount_note (V6, text nullable) for the Tester plan, paused_until, and the scraper-preference / adaptive-scheduling columns added in V6.2 (see below).
+- **trucks** — one row per truck/brand. Holds plan (starter/pro/max/trial/tester), settings, dashboard_token, operator_id, default_auto_open/close, is_test, qr_code_style (V4), slug (V5, unique, URL-safe, populated from name — used by the customer order URL /trucks/[slug]/order), truck_emoji (V5, default 🍕 — used as the Menu tab icon and chosen via the Settings emoji picker), lifetime_discount_pct (V6, integer nullable) and lifetime_discount_note (V6, text nullable) for the Tester plan, paused_until, order_counter (V6.3, int default 0 — no-event fallback display-number counter, see below), and the scraper-preference / adaptive-scheduling columns added in V6.2 (see below).
 
-> **RULE (V6.2)** — trucks.id is **text**, not uuid. Every FK column that references trucks(id) must therefore be declared `text`, NOT `uuid` — this includes scraper_run_log.truck_id and excluded_terms.truck_id below. Declaring them uuid will fail the migration (or silently never match). Existing tables already follow this (truck_vans, truck_events, etc.).
+> **RULE (V6.2)** — trucks.id is **text**, not uuid. Every FK column that references trucks(id) must therefore be declared `text`, NOT `uuid` — this includes scraper_run_log.truck_id and excluded_terms.truck_id below, and the increment_order_counter(p_truck_id text) signature (V6.3). Declaring them uuid will fail the migration (or silently never match). Existing tables already follow this (truck_vans, truck_events, etc.).
 
 ### Scraper-preference and adaptive-scheduling columns on trucks (V6.2)
 
@@ -1561,13 +1633,13 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 
 - **event_deals** — per-event deal activation: event_id, bundle_id, active, overridden.
 
-- **truck_events** — events: event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6, nullable boolean — null = use van default), latitude/longitude (geocoded).
+- **truck_events** — events: event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6, nullable boolean — null = use van default), latitude/longitude (geocoded), order_counter (V6.3, int default 0 — the per-event display-number counter, incremented atomically by increment_event_order_counter; Section 18a).
 
-- **orders** — items (JSONB), deals (JSONB), status, paid_at, collected_at, event_id, van_id, slot. orders.items[i].specialInstructions for item notes (V4).
+- **orders** — order_key (V6.3, uuid, NOT NULL DEFAULT gen_random_uuid(), PRIMARY KEY — the row identity and the ONLY identifier used in any WHERE clause, URL, FK, dedupe, or React key), id (text — the per-event DISPLAY number, "Order #5", restarts at 1 each event, NEVER a lookup key), items (JSONB), deals (JSONB), status, paid_at, collected_at, event_id, van_id, slot. orders.items[i].specialInstructions for item notes (V4). Two partial unique indexes protect display-number integrity: `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` and `UNIQUE (truck_id, id) WHERE event_id IS NULL`. See Section 18a.
 
 - **collection_times / slot_capacity** — fixed slot definitions and per-slot capacity rows.
 
-- **whatsapp_logs** — message_in, classification, events_found, response_sent, possible_miss, customer_number, created_at.
+- **whatsapp_logs** — message_in, classification, events_found, response_sent, possible_miss, customer_number, created_at. (V6.3 — this table's migration was never applied to prod; it does not exist and its writes fail silently. Run the migration before relying on WhatsApp logging — Section 20 / Section 27.)
 
 - **kds_sessions** — active KDS device sessions for multi-device enforcement.
 
@@ -1577,13 +1649,23 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 
 - **excluded_terms (V6.2)** — operator exclusion list for schedule import and scraped-event rejection (Section 15). Columns: id (uuid, default gen_random_uuid()), truck_id (**text**, FK to trucks.id), term (text). Unique constraint on (truck_id, term). RLS enabled, service-role only.
 
+- **upsell_events (planned/unapplied)** — the 20260529_checkout_upsells migration was never applied to prod, so this table does not exist; the fire-and-forget upsell insert in /api/orders/submit has been failing silently. order_id is plain text (no FK). Reconcile before relying on upsell analytics (V6.3, Section 27). As of V6.3 the insert writes order_key as the order reference (future-proof identity) with a comment noting the table is unprovisioned.
+
 - **loyalty_cards (planned)** — V4 spec frozen in lib/plan-features.ts comments. Do not build until instructed.
 
 ## Key columns of note
 
-- trucks.plan (starter/pro/max/trial/tester), trial_expires_at, feature_overrides (JSONB), is_test, time_selection_enabled, preferred_contact_method, allow_customer_cancellation, cancellation_cutoff_mins, qr_code_style, lifetime_discount_pct, lifetime_discount_note, scraper_preference, schedule_url, scraper_rule, and the scraper_* adaptive-scheduling columns (V6.2, listed above).
+- trucks.plan (starter/pro/max/trial/tester), trial_expires_at, feature_overrides (JSONB), is_test, time_selection_enabled, preferred_contact_method, allow_customer_cancellation, cancellation_cutoff_mins, qr_code_style, lifetime_discount_pct, lifetime_discount_note, order_counter (V6.3, no-event fallback display counter), scraper_preference, schedule_url, scraper_rule, and the scraper_* adaptive-scheduling columns (V6.2, listed above).
 
 - Mirror writes from the scraper land via /api/inbound-schedule; the scraper currently dual-writes to Google Sheets and Supabase (Sheets still the config store — migration to Supabase-only is pre-paying-operator work).
+
+## Order counters and atomic functions (V6.3)
+
+Per Section 18a, display numbers are generated by atomic counters, never by read-max-then-check:
+
+- **truck_events.order_counter** (int, default 0) + **increment_event_order_counter(p_event_id uuid)** → single `UPDATE truck_events SET order_counter = order_counter + 1 WHERE id = p_event_id RETURNING order_counter`. First call returns 1; returns NULL if the event doesn't exist (caller falls back to the truck counter).
+
+- **trucks.order_counter** (int, default 0) + **increment_order_counter(p_truck_id text)** → the no-event fallback. p_truck_id is text because trucks.id is text.
 
 ## Migrations (as of June 2026)
 
@@ -1615,11 +1697,20 @@ As of V6 the temporary "operator events are HatchGrab-only" restriction is lifte
 20260604_scraper_preference.sql
 20260604_scraper_adaptive.sql
 20260604_exclusion_terms.sql
+20260607_order_key_per_event.sql
 ```
 
-### Migration process (V6.2)
+### Migration process (V6.2, extended V6.3)
 
 > **RULE** — Migrations are applied manually in the Supabase SQL editor, run in filename order, and followed by `notify pgrst, 'reload schema';` so PostgREST picks up the new columns/tables immediately (otherwise the API keeps serving the old schema cache and new columns 404). New tables must have RLS enabled at creation (see Row Level Security below). Use idempotent (`if not exists`) statements where possible.
+
+> **NOTE (V6.3)** — A full-file paste into the Supabase SQL editor can silently run nothing (the 20260607 migration appeared to "succeed" while applying zero statements). Run large migrations in clearly separated CHUNKS and verify each (PK definition, column existence, function existence) before moving on. The guarded DO-block PK swap in 20260607 is re-runnable.
+
+> **APPLIED-MIGRATIONS DRIFT (V6.3)** — confirmed that 20260529_checkout_upsells.sql (upsell_events) and the whatsapp_logs migration were never applied to prod — those tables do not exist and their writes fail silently. Reconcile the applied-migrations list against the migration files before trial; assume other migrations from that era may also be missing.
+
+### 20260607_order_key_per_event.sql (V6.3)
+
+The order-numbering rebuild migration, applied in chunks. It: dropped the Studio-added messages_order_id_fkey; added orders.order_key (uuid, NOT NULL DEFAULT gen_random_uuid()); swapped the PK from id to order_key via a guarded DO block; added the two partial unique indexes (event_id,id WHERE event_id NOT NULL; truck_id,id WHERE event_id NULL); added truck_events.order_counter + increment_event_order_counter(uuid); re-declared trucks.order_counter + increment_order_counter(text) defensively; and issued the schema reload. The orders/production_slot_usage/messages tables were wiped (all test data) before the swap, so there was no backfill or counter-seeding. See Section 18a.
 
 ## Realtime
 
@@ -1705,17 +1796,19 @@ When resolving whether to apply online_paused_until for a customer order, the me
 
 - Subject "Your order is ready"; body includes order number and truck name; sent with truck branding.
 
-## Order confirmation email (V4 updates)
+## Order confirmation email (V4 updates, venue/contact V6.3)
 
-- Includes venue, contact method, and a cancel link to /order/[id]/manage?truck=[slug]. The customer cancel page is built as of V5 (see Customer cancel page below).
+- Includes venue, contact method, and a cancel link. **As of V6.3 the cancel link is `/order/{order_key}/manage`** — the order_key uuid, with no `?truck=` slug (the slug is no longer needed to disambiguate, and the link is no longer guessable). The customer cancel page is built as of V5 (see Customer cancel page below).
+
+- **Venue and contact details (V6.3)** — both the customer confirmation and the truck-notification copies now include the venue (name / town / postcode) and contact details. Contact details are driven by trucks.preferred_contact_method so the customer is shown the channel the truck actually wants to be reached on. Previously these were missing from the confirmation.
 
 - **No "Discount" line** — the V4 rewrite removed the discount line for deal-driven savings. It was confusing customers because the maths didn't reconcile cleanly. Deals now render as: deal name with bundle price → indented modifier upcharges below → Total. The maths visibly reconciles without a separate discount line.
 
-- **On submit (pending)** the customer receives an "Order #X received" email; **on confirm** an "Order #X confirmed" email. Both go through formatConfirmationEmail + sendConfirmationEmail.
+- **On submit (pending)** the customer receives an "Order #X received" email; **on confirm** an "Order #X confirmed" email. Both go through formatConfirmationEmail + sendConfirmationEmail. The "#X" is the per-event display id (Section 18a).
 
 ## Truck notification
 
-- Sent on customer self-order (not manual). WhatsApp on Max, else email. Includes order summary and dashboard confirm link.
+- Sent on customer self-order (not manual). WhatsApp on Max, else email. Includes order summary, venue, and dashboard confirm link. (V6.3 — the Twilio WhatsApp order-notification send was removed; the Max WhatsApp path now runs through the Meta Cloud API where wired, otherwise email. See Section 20.)
 
 ## Transactional email integrity
 
@@ -1727,9 +1820,58 @@ When resolving whether to apply online_paused_until for a customer order, the me
 
 formatConfirmationEmail gained a slotAdjustedFrom param: when set, the email shows an amber "Your collection time has been updated to HH:MM (previously HH:MM)" box and the plain-text fallback mirrors it. The slot-change email passes the original slot as slotAdjustedFrom and the new slot as slot, with the subject "Your order #X has been updated". Both emails inherit the correct "Powered by HatchGrab" branding automatically. The local notifyCustomer() helper is no longer used for confirm or adjust_slot (it remains for reject, cancel, ready, and edit).
 
-### Customer cancel page (V5)
+> **RULE (V6.3)** — formatConfirmationEmail takes orderKey as a REQUIRED parameter and builds the cancel link from it (`/order/{order_key}/manage`). The old `?? orderId` fallback was removed — a confirmation email that 404s on cancel because it used a display id is worse than a compile error. tsc passing is the guarantee that all five callers pass order_key.
 
-The customer-facing cancel page lives at app/order/[id]/manage/page.tsx and loads the order, shows items and status, and offers Cancel subject to cutoff rules. /api/orders/cancel verifies trucks.allow_customer_cancellation, that the order is pending or confirmed, and the cutoff window (computed from the order slot and event date), then removes the order from its production slot and sends a cancellation email. /api/orders/[id] (GET) resolves ?truck=[slug] to a truck_id and filters by it. The ?truck slug in the cancel URL is what makes it collision-safe: order IDs are sequential per-truck, so the slug disambiguates which truck's order #N is meant. As of V6 the cutoff for ASAP orders (no slot) falls back to the event end_time (Section 6).
+### Customer cancel page (V5, updated V6.3)
+
+The customer-facing cancel page lives at app/order/[id]/manage/page.tsx and loads the order, shows items and status, and offers Cancel subject to cutoff rules. /api/orders/cancel verifies trucks.allow_customer_cancellation, that the order is pending or confirmed, and the cutoff window (computed from the order slot and event date), then removes the order from its production slot and sends a cancellation email. 
+
+> **V6.3** — the route segment value is now the **order_key uuid**, not the per-truck display id, and `/api/orders/[id]` (GET) + `/api/orders/cancel` resolve by order_key. This supersedes the V5 model where order IDs were sequential per-truck and a `?truck=[slug]` query param disambiguated which truck's "order #N" was meant. order_key is globally unique, so no slug is needed, and the cancel link is no longer enumerable (the old sequential id leaked customer name, items, and total to anyone incrementing the URL number). The display id is never used as a lookup key. As of V6 the cutoff for ASAP orders (no slot) falls back to the event end_time (Section 6).
+
+## 18a. Order numbering — the two-id architecture (V6.3)
+
+> **CRITICAL ARCHITECTURE — do not undo.** Orders carry TWO identifiers with opposite jobs. Conflating them caused the 6 June duplicate-key outage that took customer ordering fully down (Vercel 23505, duplicate key on orders_pkey). A future session must never reintroduce `id` into a WHERE clause, nor collapse the two fields back into one.
+
+### The two identifiers
+
+- **order_key** (uuid, NOT NULL DEFAULT gen_random_uuid()) — the row identity and the PRIMARY KEY. EVERY lookup, update, WHERE clause, URL parameter, foreign-key reference, dashboard dedupe Map key, and React key uses order_key. It is NEVER shown to a human.
+
+- **id** (text) — the DISPLAY number only ("Order #5"). It restarts at 1 for each event. It is rendered to humans (order cards, KDS header, email subjects, toasts) and NEVER appears in a WHERE clause, key, or URL after V6.3.
+
+> **RULE** — `order.id` in a WHERE clause / as a key / in a URL is a bug. `order.order_key` rendered to a human is a bug. A new order fetch must select order_key (use `select('*')` or include it explicitly) so it is available as the key everywhere.
+
+### Why two ids — the original bug
+
+The orders PK was GLOBAL on `id` alone. nextOrderId checked only `eq('truck_id')`, so it generated an id that was free for this truck but already taken by another truck's row, colliding on the global PK. An atomic counter existed (migration 20260529_order_counter) but was never wired. The two-id split fixes the collision class permanently: order_key (uuid) is globally unique row identity; id is only ever a per-scope display number, protected by partial unique indexes rather than a global PK.
+
+### Per-event restart and the atomic counter
+
+Display numbers restart at 1 per event because the operator calls "order 5" at the hatch — a low per-event number is clearer than a truck-lifetime running total. (This supersedes the older per-truck-sequential model that Section 18 described before V6.3.) Numbering is generated by an atomic counter, never by a read-max-then-check (that racy pattern was the original bug):
+
+- truck_events.order_counter (int, default 0) + increment_event_order_counter(p_event_id uuid) — a single `UPDATE … SET order_counter = order_counter + 1 … RETURNING order_counter`. First call returns 1. Returns NULL if the event doesn't exist (e.g. cancelled mid-order) — the caller then falls back to the truck counter.
+
+- trucks.order_counter (int, default 0) + increment_order_counter(p_truck_id text) — the no-event fallback. Note p_truck_id is text because trucks.id is text (Section 16).
+
+- nextOrderId(eventId, truckId) in lib/order-utils.ts calls the event RPC first, falls back to the truck RPC, and returns the bare integer as a string ("5", never "0005"). A single code path generates the number, so the text partial-unique index can never see "5" vs "0005" for one event. The old 10-attempt clash loop is gone; the DB serialises, so there is no client-side retry.
+
+### Display format
+
+Display numbers are bare integers ("5"), not zero-padded ("0005"), everywhere — single code path, single format.
+
+### Uniqueness
+
+Two partial unique indexes protect display-number integrity (the PK is order_key alone):
+- `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` — per-event numbering.
+- `UNIQUE (truck_id, id) WHERE event_id IS NULL` — the no-event fallback sequence.
+
+### Bulk operations and dedupe
+
+- Event cancellation bulk-cancels by order_key (`.in('order_key', …)`), never by id — an id-list `.in('id', …)` would cancel the same-numbered order across every other event (a corruption bug found and fixed in this rebuild — Section 15).
+- The dashboard payload dedupes with `Map.set(o.order_key, o)` — keying by id would silently drop one of two same-numbered orders from different events.
+
+### messages.order_id
+
+messages is a log; messages.order_id stores the display id as plain text with NO foreign key (a Studio-added messages_order_id_fkey was dropped in 20260607 — a log row must never block an order deletion). It is a non-authoritative debugging field, never a lookup key. It is currently written null by every live path (logMessage callers pass no order id, and the Twilio order-notification that once populated it was removed — Section 20).
 
 # 19. Reports tab (V4)
 
@@ -1769,7 +1911,7 @@ Same columns as Orders view for spreadsheet consistency:
 
 #OrderID Date Event Time Type Customer Item name ×Qty Unit price Modifiers Item total
 
-- Order ID repeats on every item row from the same order.
+- Order ID repeats on every item row from the same order. (This is the per-event display id — a human-readable reference for reconciliation, not order_key.)
 
 - border-t border-slate-100 between different orders, not between items within the same order.
 
@@ -1810,13 +1952,19 @@ Shown to Starter users where the breakdown analytics would appear:
 
 # 20. Social media and WhatsApp auto-replies
 
-## Three-bucket classification
+## Four-bucket classification (V6.3)
+
+The classifier (lib/whatsapp-classifier.ts) routes inbound messages into four buckets:
 
 - **SPECIFIC_QUERY** — schedule/location/date/availability → auto-respond with matching event(s).
 
-- **GENERAL_QUERY** — menu/prices/ordering → auto-respond with the order link.
+- **MENU_QUERY** — menu/prices/ordering → auto-respond with a live DB menu summary and the order link.
+
+- **ALLERGEN_QUERY** — allergen/dietary → respond with DB allergen info AND a mandatory safety caveat (never assert an item is safe; direct the customer to confirm with the truck before ordering).
 
 - **IGNORE** — spam/gibberish → no response.
+
+(This replaces the V3 three-bucket model — the prior GENERAL_QUERY bucket is split into MENU_QUERY and ALLERGEN_QUERY so allergen questions always get the safety caveat.)
 
 ## Event lookup
 
@@ -1830,29 +1978,35 @@ Shown to Starter users where the breakdown analytics would appear:
 
 ## Interaction logging
 
-- Every interaction logs to whatsapp_logs (message_in, classification, events_found, response_sent, possible_miss). Logging is fire-and-forget — it must never break the response.
+- Every interaction logs to whatsapp_logs (message_in, classification, events_found, response_sent, possible_miss). Logging is fire-and-forget — it must never break the response. (V6.3 — whatsapp_logs does NOT exist in prod; its migration was never applied, so logging is silently failing. Run the migration before relying on the message-review data — Section 16 / Section 27.)
 
 - possible_miss = SPECIFIC_QUERY with events_found = 0 — a likely wrong answer to review.
 
 - Reports tab surfaces totals, answered, and possible misses (amber when > 0). This is the foundation for a future truck-facing "Recent messages" review panel with flagging.
 
+## Provider — Meta Cloud API (V6.3, replaces Twilio)
+
+> **RULE** — WhatsApp now runs on the Meta Cloud API, not Twilio. Twilio required trucks to surrender their existing phone number; the Meta Cloud API lets them keep it and covers WhatsApp / Messenger / Instagram in one integration (free under ~1000 conversations/month). The live handler is app/api/webhooks/meta/whatsapp/route.ts (GET verify challenge + POST classifier pipeline); the send helper is lib/meta-whatsapp.ts (sendMetaWhatsApp). The Meta app sits under the Village Foodie Meta Business Account (the HatchGrab Facebook page is advertising-restricted; messaging APIs are unaffected; migrate to a HatchGrab Ltd account later — one-click, no code change). Env: META_WHATSAPP_APP_SECRET, META_WHATSAPP_PHONE_NUMBER_ID, META_WHATSAPP_ACCESS_TOKEN (permanent System User token), META_WEBHOOK_VERIFY_TOKEN, META_WHATSAPP_BUSINESS_ACCOUNT_ID.
+
+> **RULE** — The Twilio handler at /api/webhooks/whatsapp is DORMANT, not deleted (kept as a fallback/demo until Meta is fully live). Do not overwrite it. The Twilio order-notification send was removed from /api/orders/submit (operators get the order by email anyway — no per-message cost); formatWhatsAppOrder is now dead code, delete when Twilio is formally retired (Section 27).
+
+> **PENDING (V6.3)** — the four-bucket smoke tests have NOT been run; the lib/whatsapp-classifier.ts service-role-key usage is unconfirmed; and whatsapp_logs does not exist in prod (Section 16), so logging is silently failing. Run the migration and the smoke tests before relying on WhatsApp at trial.
+
 ## Platform compliance and tone
 
-- Build on official Meta Graph API (not scrapers); stay within the 24-hour window; customer initiates. Rate limits are irrelevant at food-truck scale.
+- Build on the official Meta Graph / Cloud API (not scrapers); stay within the 24-hour window; customer initiates. Rate limits are irrelevant at food-truck scale.
 
 - Full villagefoodie.co.uk / hatchgrab.com URLs — no shorteners (Meta deboosts them).
 
-- Responses sound like the owner typed them — warm, casual, truck name and emoji where appropriate. A confidence threshold routes uncertain messages to review rather than auto-responding.
+- Responses sound like the owner typed them — warm, casual, truck name and emoji where appropriate ("Hey! 👋 … — {truckName} {emoji}"). A confidence threshold routes uncertain messages to review rather than auto-responding.
 
 - Tier mapping: Instagram and Messenger are Pro; WhatsApp is Max only (per-message cost).
 
-### Meta webhook endpoints (V5, scaffolded)
+### Meta webhook endpoints (V5 scaffolded, WhatsApp wired V6.3)
 
-Verification + placeholder webhook endpoints are in place for the three Meta channels: /api/webhooks/meta/whatsapp, /api/webhooks/messenger, and /api/webhooks/instagram. Each handles the GET verification challenge (returns the raw hub.challenge string) and a POST that currently only logs and returns 200 (the classifier wiring is a TODO). They must always return 200 to Meta. The shared verify token is META_WEBHOOK_VERIFY_TOKEN (Vercel env).
+Verification + webhook endpoints exist for the three Meta channels: /api/webhooks/meta/whatsapp, /api/webhooks/messenger, and /api/webhooks/instagram. Each handles the GET verification challenge (returns the raw hub.challenge string) and a POST. **As of V6.3 the WhatsApp POST is fully wired** to the four-bucket classifier pipeline and the Meta send helper; Messenger and Instagram POSTs still only log and return 200 (classifier wiring TODO). They must always return 200 to Meta. The shared verify token is META_WEBHOOK_VERIFY_TOKEN (Vercel env).
 
-> **RULE** — The Meta WhatsApp webhook lives at /api/webhooks/meta/whatsapp. The existing Twilio WhatsApp handler at /api/webhooks/whatsapp must NOT be overwritten — they are different integrations. Consolidating Twilio vs Meta Cloud API is a pre-trial backlog decision.
-
-Build order is Messenger → Instagram → WhatsApp. Phase 1 (webhook product setup) is done; Phase 2 (OAuth connect flows, token storage, send API, classifier wiring) is deferred. The Meta app sits under the Village Foodie portfolio — the separate HatchGrab portfolio is advertising-restricted, which does not affect messaging APIs; migration later is one-click with no code change. App review will need privacy-policy and terms pages.
+Build order is Messenger → Instagram → WhatsApp (WhatsApp now done). Messenger/Instagram remain parked: per-truck OAuth Page tokens, token storage (ENCRYPTION_KEY / lib/crypto.ts — AES-256, chosen over Supabase Vault on the free tier), send API, and classifier wiring are deferred. App review will need privacy-policy and terms pages (Section 27).
 
 # 21. Competitive positioning
 
@@ -1894,31 +2048,35 @@ Hatches Up charges 4.5% + 20p all-in on online orders (includes card processing)
 
 - Every change includes a smoke test: the action to perform, expected behaviour, and edge cases. Nothing is "done" without an operator-confirmed smoke test.
 
+> **NOTE (V6.3)** — A passing data-layer / RPC smoke test is NOT the same as an operator-confirmed live test. The order-key rebuild passed 9/9 smoke tests against the live DB and RPCs, but the React keys, toasts, and action buttons were only type-checked and logic-verified — never clicked on a real device. A live iPad click-through is still outstanding and gates the trial (Section 26 / Section 27).
+
 ## Context limit handling
 
 - When a chat hits its limit, open a fresh one, re-prime with file paths and the task, reference this manual, and never assume the new chat knows prior decisions. Image limits in long chats are a sign to split work to the coding chat or start fresh.
 
-## Always-mounted tab pattern (V6.2)
+## Always-mounted tab pattern (V6.2, extended V6.3)
 
-> **RULE** — A tab that receives cross-tab props (or that another surface needs to drive — e.g. the Verify flow opening the import modal on the Settings tab, Section 15) must be **always mounted**, not conditionally rendered on `activeTab === '…'`. Conditional mounting destroys the tab's state and effects every time the operator switches away, which breaks cross-tab interactions and re-fires data loads.
+> **RULE** — A tab or panel that receives cross-tab props (or that another surface needs to drive — e.g. the Verify flow opening the import modal on the Settings tab, Section 15) must be **always mounted**, not conditionally rendered on `activeTab === '…'`. Conditional mounting destroys the component's state and effects every time the operator switches away, which breaks cross-tab interactions, re-fires data loads, and (in the case of the Add Order panel) loses the in-progress basket.
 
 The pattern:
 
-- The tab component is always in the tree and takes an `isActive` boolean prop.
+- The component is always in the tree and takes an `isActive` boolean prop; it is visually hidden when inactive, never unmounted.
 - Data-loading effects inside it are guarded so they only run when active: `useEffect(() => { if (!isActive) return; … }, [isActive, …])`. This keeps the component mounted (state preserved) while still deferring its fetches until it is shown.
 - **Modals are rendered OUTSIDE the `isActive` gate** so they can be opened from another tab. The import/verify modal, for example, is mounted regardless of which tab is visually active, so the Settings-tab Verify button can open it without a tab switch.
 
-This was introduced in V6.2 for the Schedule and Settings tabs (the self-service Verify flow needs the import modal openable from Settings) and is the standard for any new cross-talking tabs.
+Components on this pattern: the **Schedule** and **Settings** tabs (the self-service Verify flow needs the import modal openable from Settings — V6.2) and the **Add Order panel** (so the basket survives a tab switch — V6.3, Section 10). It is the standard for any new cross-talking tab or any panel holding in-progress user input.
 
 ## Shared schedule-extraction utility (V6.2)
 
 > **RULE** — lib/schedule-extract.ts is the single in-repo home for Gemini schedule extraction (Section 3). Any new route that turns text or an image into structured event rows MUST import buildScheduleExtractionPrompt / extractScheduleEvents (and the exclusion helpers normaliseExclusionTerm / isExcluded) from there — never re-implement the prompt, the retry loop, or the parsing. The only remaining independent copies are the two Google Apps Script paths, which cannot import the TypeScript module until the Sheets→Supabase migration (Section 25 / backlog).
 
-## SQL migrations (V6.2)
+## SQL migrations (V6.2, extended V6.3)
 
 - Run migrations in the Supabase SQL editor, in filename order; confirm clean before deploying. Use "Claude"-authored, idempotent (`if not exists`) migrations where possible.
 - **After running, issue `notify pgrst, 'reload schema';`** so PostgREST refreshes its schema cache and the new columns/tables are immediately visible to the API (Section 16).
 - New tables get RLS enabled in the same migration (Section 16, Row Level Security).
+- **Run large migrations in CHUNKS, not as one full-file paste** — a single paste can silently apply nothing (Section 16, the 20260607 note). Verify each chunk (column exists, PK is correct, function exists) before the next.
+- **Keep an applied-vs-file reconciliation** — drift is real (upsell_events and whatsapp_logs were never applied; Section 16 / Section 27).
 
 # 23. Mobile UX patterns (V4)
 
@@ -2157,11 +2315,17 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - Sheets-to-DB migration complete or safe parallel-run.
 
-- Auth hardening (rate limiting still open; admin secret RESOLVED V6.1 — ADMIN_SECRET removed, session-based is_admin via verifyAdmin() is the only path).
+- Auth hardening (auth-attempt rate limiting still open; admin secret RESOLVED V6.1 — ADMIN_SECRET removed, session-based is_admin via verifyAdmin() is the only path). Public-data anti-scraping rate limiting is DONE (V6.3, Section 28).
 
 - Event confirmation flow live (done).
 
-- End-to-end smoke test of all flows: customer order, walk-up, ready notification, mark paid & done (verified in V4).
+- Order flow rebuilt on the order-key two-id model (V6.3, Section 18a) — migration 20260607 applied and verified; 9/9 data-layer/RPC smoke tests passed (per-event #1/#2/#3, restart on new event, two events both #1 with distinct keys, duplicate-#1-same-event rejected 23505, dedupe Map size correct, cross-event cancel isolation, 5 concurrent increments distinct 1–5, UUID lookup, nonexistent-event→truck fallback). **STILL TO DO: full live iPad click-through of the whole order flow on a real device** — React keys, toasts, and action buttons were type-checked and logic-verified only, never clicked. This gates the trial.
+
+- Rate limiting live and correctly tiered (V6.3, Section 28) — STRICT only on /api/discovery and /api/events; ordering/authenticated routes exempt. Verify 429s fire on public routes only and never block ordering behind shared café/CGNAT IPs.
+
+- WhatsApp on Meta Cloud API (V6.3, Section 20) — webhook wired; four-bucket smoke tests and the whatsapp_logs migration still outstanding.
+
+- End-to-end smoke test of all flows: customer order, walk-up, ready notification, mark paid & done (verified in V4; re-run live on the V6.3 order-key build).
 
 - Brevo hatchgrab.com domain verified and propagated (SPF + DKIM authenticated — can send from @hatchgrab.com; no inbound mailbox purchased yet, so use a reply-to of an existing address for the trial).
 
@@ -2175,7 +2339,7 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - Wake lock confirmed working under iOS 16.4+ and Chrome Android.
 
-- End-to-end customer order flow verified: place order → appears on dashboard/KDS → confirmation email → cancel page from email link → mark ready notification → mark paid & done. (Still to run live.)
+- End-to-end customer order flow verified: place order → appears on dashboard/KDS → confirmation email → cancel page from email link (now /order/{order_key}/manage) → mark ready notification → mark paid & done. (Still to run live on V6.3.)
 
 - QR code and dashboard order link resolve to /trucks/[slug]/order (slug column populated for every truck; dashboard_token fallback removed in V6).
 
@@ -2183,11 +2347,27 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - Scraper GitHub Actions workflow passes on **Node 24** (Chrome install + Supabase realtime both clean). Diagnose the ~23-minute run failure (Section 24, pending diagnosis) before relying on the cron.
 
-- API keys rotated out of the Apps Script and into Script Properties (DONE V6.1).
+- API keys rotated out of the Apps Script and into Script Properties (DONE V6.1). Rotate the exposed Upstash Redis REST token (V6.3, Section 28 / Section 27).
 
-- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql, 20260603_menu_is_active.sql, 20260603_enable_rls_all_tables.sql, **20260604_scraper_preference.sql, 20260604_scraper_adaptive.sql, 20260604_exclusion_terms.sql** (V6.2 — followed by `notify pgrst, 'reload schema';`). Admin operator account set (operators.is_admin = true).
+- Migrations run in Supabase: 20260602_admin_role.sql, 20260602_event_offline_override.sql, 20260602_tester_plan_discount.sql, 20260603_menu_is_active.sql, 20260603_enable_rls_all_tables.sql, 20260604_scraper_preference.sql, 20260604_scraper_adaptive.sql, 20260604_exclusion_terms.sql, **20260607_order_key_per_event.sql** (V6.3 — applied in chunks, followed by `notify pgrst, 'reload schema';`). Reconcile the applied-vs-file list — upsell_events and whatsapp_logs were never applied (Section 16). Admin operator account set (operators.is_admin = true).
 
 ## Contextual reminders
+
+- orders has TWO ids: order_key (uuid, identity, every WHERE/key/URL/FK/dedupe) and id (text, per-event display number, restarts at 1, NEVER a lookup key). Never conflate them (Section 18a).
+
+- Order display numbers are bare integers ("5"), generated only by nextOrderId via the atomic event/truck counter — never read-max-then-check (Section 18a).
+
+- STRICT rate limiting is for public bulk-scrapeable data ONLY; ordering and authenticated routes are exempt (Section 28).
+
+- Both order insert paths must write event_id; never setState from a failed fetch (Section 5).
+
+- calcQueuePushSecs is shared by client and server ASAP — never fork it (Section 6).
+
+- Future-dated events never show red "prep now" urgency; age blends in only under 60 minutes (Section 9).
+
+- The slot traffic-light is operator-only; the customer picker shows only clean slots (Section 10 / 7).
+
+- WhatsApp runs on the Meta Cloud API; the Twilio handler is dormant, do not overwrite (Section 20).
 
 - UI text contrast floor on white: slate-700 body, slate-500 secondary, slate-400 decorative only; orange reserved for current-plan/active highlights.
 
@@ -2197,7 +2377,7 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - ASAP base time is max(now + prep, eventStart) — never add prep on top of a future event start (Section 6).
 
-- Customer order URL is /trucks/[slug]/order. Never use the dashboard_token in a customer-facing or public URL, and never return dashboard_token in a public API response (Section 12 / Section 2).
+- Customer order URL is /trucks/[slug]/order; the cancel link is /order/{order_key}/manage. Never use the dashboard_token in a customer-facing or public URL, and never return dashboard_token in a public API response (Section 12 / Section 2).
 
 - New operator pages reuse AppHeader and slate-900 tabs (lib/brand.ts) — no inline page headers (Section 3).
 
@@ -2207,25 +2387,37 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - A null batch_size means "no limit" — render blank with an ∞ placeholder, never a sentinel like 999 (Section 6).
 
-- trucks.id is text, not uuid — any new FK to trucks(id) must be text (Section 16).
+- trucks.id is text, not uuid — any new FK to trucks(id) must be text, including RPC params like increment_order_counter(p_truck_id text) (Section 16).
 
 - Schedule extraction goes through lib/schedule-extract.ts in-repo — never re-implement the Gemini prompt/retry/parse (Section 3 / Section 22).
 
 - venues uniqueness is (name, village) — upsert with onConflict 'name,village' (Section 25).
 
-- Cross-talking tabs are always-mounted with an isActive prop; modals render outside the isActive gate (Section 22).
+- Cross-talking tabs and in-progress-input panels are always-mounted with an isActive prop; modals render outside the isActive gate (Section 22).
+
+- Run large SQL migrations in chunks, not a single full-file paste, and keep an applied-vs-file reconciliation (Section 16 / Section 22).
 
 # 27. Open backlog (June 2026)
 
 ## Critical — before trial
 
+- **LIVE iPad click-through of the entire order flow on a real device (V6.3)** — the single most important pre-trial task. Every V6.3 order-flow fix (per-event numbering, urgency, slots, basket persistence, email venue/contact) stacks on this one path and NONE of it has been exercised end-to-end by a human on a real device; the smoke tests proved the data layer and RPCs only. This gates the trial.
+
 - Capacitor native wrapper; Stage A offline cache; offline detection banner; background sound; screen wake.
 
-- Auth hardening (rate limiting).
+- Auth-attempt rate limiting (public-data anti-scraping rate limiting is done — Section 28).
+
+- **Run the whatsapp_logs migration in prod (V6.3)** — the table does not exist, so logging is silently failing; and confirm the lib/whatsapp-classifier.ts service-role-key usage. Then run the WhatsApp four-bucket smoke tests (Section 20).
+
+- **Applied-migrations reconciliation (V6.3)** — upsell_events (20260529_checkout_upsells) and whatsapp_logs were never applied to prod; audit the full applied-vs-file list, as others from that era may also be missing (Section 16).
+
+- **Rotate the Upstash Redis REST token (V6.3)** — exposed in chat during setup (Section 28).
+
+- **Delete the now-vacuous supabase/migrations/20260607_backfill_order_event_id.sql (V6.3)** — the orders table was wiped, so it backfills nothing; hygiene.
 
 - Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store). Also the natural home for the Gemini-extraction DRY consolidation (Section 3 / Section 25) — once done, the two Apps Script paths can move in-repo behind lib/schedule-extract.ts.
 
-- Full end-to-end order flow test (place order → KDS → confirmation email → cancel → ready → paid & done) — run live.
+- Full end-to-end order flow test (place order → KDS → confirmation email → cancel → ready → paid & done) — run live on the order-key build.
 
 - Reports tab data verification across multiple events.
 
@@ -2253,6 +2445,12 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - **Village-aware venue matching in inbound-schedule (V6.2)** — match on venue_name + village combined before falling back to name-only, to stop common pub names ("The Bell", "The Fox", "The Bull") pinning to the wrong village (Section 25). Currently corrected by hand in SQL.
 
+- **Items-based slot capacity display + kitchen_capacity semantics fix (V6.3, decided: ITEMS)** — replace the interim directional slot wording (Section 10) with a precise count; the slot engine currently counts BATCHES while the UI says "items". This touches the slot engine and existing slot_capacity data, so do it carefully in a dedicated session.
+
+- **Retire the dormant Twilio WhatsApp handler and delete formatWhatsAppOrder dead code (V6.3)** — Meta Cloud API is now canonical (Section 20); the Twilio-vs-Meta consolidation decision is resolved in Meta's favour. Remaining work is the cleanup.
+
+- **Messenger + Instagram per-truck OAuth (parked, V6.3)** — facebook_page_id / instagram_account_id / encrypted-token columns, OAuth callback routes, ENCRYPTION_KEY (AES-256, lib/crypto.ts), send API, and classifier wiring, then Meta app review (needs privacy policy + terms first).
+
 - Stripe Connect integration (upgrade buttons currently email support).
 
 - Refunds process — event cancellation cancels orders and emails customers but does not yet refund; customer menu imports for onboarding at scale.
@@ -2279,11 +2477,9 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - password_reset_tokens cleanup job — tokens are marked used_at but never deleted; add a periodic purge.
 
-- slot_capacity.max_orders → max_batches rename — the column counts batches, not orders; the name misleads.
+- slot_capacity.max_orders → max_batches rename — the column counts batches, not orders; the name misleads. (Related to the items-based capacity fix above.)
 
 - is_instant boolean on menu_categories — consideration, to make zero-prep items (drinks, dips) explicit rather than inferred from prep_secs.
-
-- Twilio WhatsApp vs Meta Cloud API consolidation — decide before trial which path is canonical; the Twilio handler at /api/webhooks/whatsapp and the Meta handler at /api/webhooks/meta/whatsapp currently coexist.
 
 - Companies House registration for HatchGrab — recommended ahead of taking payments and Meta app review.
 
@@ -2315,7 +2511,30 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - Loyalty redemption UX: operator-side trigger placement in Add Order panel; customer-side prompt design at online checkout.
 
-# 28. Closing note
+# 28. Anti-scraping and rate limiting (V6.3)
+
+Layered protection against bulk scraping of the public discovery and event data, without ever throttling real ordering.
+
+## Components
+
+- **lib/ratelimit.ts** — Upstash Redis sliding-window limiters. Redis DB "HatchGrab", London (eu-west-2). Env: UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN (in .env.local and Vercel).
+- **middleware.ts** (repo root) — Vercel Edge Middleware applying the limiter by route tier.
+- **public/robots.txt** — blocks AI crawlers (GPTBot, ClaudeBot, CCBot, etc.).
+- **vercel.json** — X-Robots-Tag headers.
+
+## Tiering — the rule that must not drift
+
+> **RULE** — The STRICT limiter applies ONLY to public, bulk-scrapeable data. It must NEVER touch an authenticated or ordering route — doing so caused two regressions this session (events disappearing on the dashboard when /api/events/manage got a 429; customer ordering blocked behind shared café/CGNAT IPs).
+
+- **STRICT — 3/min** — /api/discovery and /api/events (public slug lookups) ONLY.
+- **GENERAL — 60/min** — everything else, including /api/menu and /trucks (these sit behind shared IPs and must stay generous).
+- **EXEMPT (no limit)** — /api/dashboard/action, /api/orders/submit, /api/webhooks, /api/admin, /api/events/manage, /api/events/action, /api/events/affected-orders, /api/inbound-schedule.
+
+> **RULE** — Any new route handling authenticated operator actions or order placement is EXEMPT by default. Only add a route to STRICT if it serves public bulk-scrapeable data and nothing else.
+
+> **SECURITY NOTE** — the Upstash REST token was pasted in chat during setup; rotate it before trial (Section 27).
+
+# 29. Closing note
 
 This manual is living documentation. Update it whenever a new rule is established, a feature behaviour is decided, a DRY violation is identified and fixed, a plan tier feature changes, or a coding convention shifts.
 
@@ -2323,4 +2542,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6.2
+HatchGrab Engineering Reference Manual · V6.3

@@ -562,9 +562,12 @@ export async function POST(req: NextRequest) {
               </tr>
             </table>
             ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
-            <p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>
+            ${autoAccepted
+              ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
+              : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>`}
           </body>`,
           text: `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(eventRow?.venue_name || eventRow?.town) ? ' at ' + [eventRow?.venue_name, eventRow?.town].filter(Boolean).join(', ') : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`,
+          senderName: 'HatchGrab',
         })
       }
     } catch (err) {
@@ -619,6 +622,7 @@ export async function POST(req: NextRequest) {
           html,
           text,
           truckName: truck.name,
+          senderName: 'HatchGrab',
         })
       } catch (emailErr) {
         console.error('Truck copy email failed:', emailErr)

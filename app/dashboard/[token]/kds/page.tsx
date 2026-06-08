@@ -746,6 +746,7 @@ export default function KdsPage() {
                 key={order.order_key}
                 order={order}
                 truck={truck}
+                event={activeEvent}
                 slots={[]}
                 actionLoading={actionLoading}
                 onAction={handleAction}
