@@ -204,10 +204,10 @@
     {
       "name": "Taste of Cambridge",
       "orderUrl": "https://tasteofcambridge.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T10:03:55.025Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "La Piazza Street Food",
