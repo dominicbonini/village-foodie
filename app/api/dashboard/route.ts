@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
-import { getBatchCountsByCollectionTime } from '@/lib/slot-bookings'
+import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
@@ -129,7 +129,7 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date')
+      .select('id, start_time, end_time, venue_name, event_date, van_id')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -155,16 +155,6 @@ export async function GET(req: NextRequest) {
       ? generateCollectionTimes(todayEvent.start_time, todayEvent.end_time, intervalMins, slotDurationMins, GRACE_MINS)
       : []
 
-  // Get order counts per slot to check capacity
-  const { data: capacities } = await supabase
-    .from('slot_capacity')
-    .select('slot, max_orders')
-    .eq('truck_id', truck.id)
-    .eq('event_date', date)
-
-  const capacityMap = Object.fromEntries(
-    (capacities || []).map(c => [c.slot, c.max_orders])
-  )
   const [{ data: categories }, { data: menuItemsForMap }] = await Promise.all([
     supabase
       .from('menu_categories')
@@ -205,22 +195,33 @@ export async function GET(req: NextRequest) {
     available: boolean
     is_past: boolean
     is_grace: boolean
+    tone?: 'green' | 'amber' | 'red'
   }[] = []
 
   try {
-    const slotCounts = await getBatchCountsByCollectionTime(
-      supabase, truck.id, date, slots || [], catConfigs
-    )
+    // kitchen_capacity from the event's van; production_slot_usage for live units.
+    let kitchenCapacity: number | null = null
+    if (todayEvent?.van_id) {
+      const { data: van } = await supabase
+        .from('truck_vans')
+        .select('kitchen_capacity')
+        .eq('id', todayEvent.van_id)
+        .single()
+      kitchenCapacity = van?.kitchen_capacity ?? null
+    }
+    const productionSlotUnits = await getProductionSlotUnits(supabase, truck.id, date)
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     // For the truck: don't show slots before event start (use eventStartMins as minimum)
     const earliestMins = eventStartMins !== null ? eventStartMins : nowMins
     slotsWithCapacity = buildSlotAvailability({
       times: slots || [],
-      capacityMap,
-      slotCounts,
+      productionSlotUnits,
+      catConfigs,
+      kitchenCapacity,
       date,
       nowMins,
       earliestCollectionMins: earliestMins,
+      eventStartMins: eventStartMins ?? 0,
       eventEndMins: eventEndMins ?? undefined,
     }).map(s => ({
       collection_time: s.collection_time,
@@ -230,6 +231,7 @@ export async function GET(req: NextRequest) {
       available: s.available,
       is_past: s.is_past,
       is_grace: s.is_grace,
+      tone: s.tone,
     }))
   } catch (slotErr) {
     console.error('[dashboard] slot capacity error:', slotErr)
@@ -237,10 +239,11 @@ export async function GET(req: NextRequest) {
       collection_time: s.collection_time,
       production_slot: s.production_slot,
       current_orders: 0,
-      max_orders: capacityMap[s.production_slot] || 999,
+      max_orders: 999,
       available: true,
       is_past: false,
       is_grace: false,
+      tone: 'green' as const,
     }))
   }
 

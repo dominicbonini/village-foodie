@@ -86,8 +86,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to cancel order' }, { status: 500 })
     }
 
-    // Remove from production slot (same pattern as operator cancel)
-    if (order.slot && order.event_date && order.truck_id) {
+    // Remove from production slot (same pattern as operator cancel).
+    // order.slot may be null (ASAP) — resolved to the event-start window so it unbooks.
+    if (order.event_date && order.truck_id) {
       try {
         const itemCatMap = await buildItemCatMap(supabase, order.truck_id)
         await removeOrderFromProductionSlot(

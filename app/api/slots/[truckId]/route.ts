@@ -5,7 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getCatConfig, calcMinReadyMins, calcQueuePushSecs, type CatConfig } from '@/lib/prep-utils'
-import { getBatchCountsByCollectionTime } from '@/lib/slot-bookings'
+import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 
@@ -66,7 +66,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   // Fetch everything in parallel
   const [
     { data: staticTimes },
-    { data: capacities },
     { data: existingOrders },
     { data: categories },
     { data: menuItems },
@@ -77,12 +76,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       .select('collection_time, production_slot')
       .eq('truck_id', truckId)
       .order('collection_time', { ascending: true }),
-
-    supabase
-      .from('slot_capacity')
-      .select('slot, max_orders')
-      .eq('truck_id', truckId)
-      .eq('event_date', date),
 
     supabase
       .from('orders')
@@ -104,7 +97,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     // Today's event for dynamic slot generation
     supabase
       .from('truck_events')
-      .select('start_time, end_time')
+      .select('start_time, end_time, van_id')
       .eq('truck_id', truckId)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -178,21 +171,46 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     eventStartMins + queuePushMins,
   )
 
-  // ── Build capacity maps ───────────────────────────────────────────────────
-  const capacityMap = Object.fromEntries(
-    (capacities || []).map(c => [c.slot, c.max_orders])
-  )
-  const slotCounts = await getBatchCountsByCollectionTime(supabase, truckId, date, times, catConfigs)
+  // ── Live category-aware capacity inputs ───────────────────────────────────
+  // kitchen_capacity comes from the event's van (truck_vans), computed live — the
+  // slot_capacity batch cache is no longer consulted for the decision.
+  let kitchenCapacity: number | null = null
+  if (todayEvent?.van_id) {
+    const { data: van } = await supabase
+      .from('truck_vans')
+      .select('kitchen_capacity')
+      .eq('id', todayEvent.van_id)
+      .single()
+    kitchenCapacity = van?.kitchen_capacity ?? null
+  }
+  const productionSlotUnits = await getProductionSlotUnits(supabase, truckId, date)
 
   const slots = buildSlotAvailability({
     times,
-    capacityMap,
-    slotCounts,
+    productionSlotUnits,
+    catConfigs,
+    kitchenCapacity,
     date,
     nowMins,
     earliestCollectionMins,
+    eventStartMins,
     eventEndMins,
   })
 
-  return NextResponse.json({ slots, queueByCat, catConfigs })
+  // Engine inputs so the operator panel can recompute basket-inclusive tones with
+  // the SAME buildSlotAvailability (one engine — dot, modal, autoConfirm agree).
+  return NextResponse.json({
+    slots,
+    queueByCat,
+    catConfigs,
+    capacityInputs: {
+      productionSlotUnits,
+      kitchenCapacity,
+      eventStartMins,
+      eventEndMins: eventEndMins ?? null,
+      earliestCollectionMins,
+      date,
+      nowMins,
+    },
+  })
 }

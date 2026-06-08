@@ -7,6 +7,8 @@ import type {
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
+import { buildSlotAvailability, type SlotAvailabilityRow } from '@/lib/slot-availability'
+import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
 import { getSlotIndicator } from '@/lib/slot-indicator'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
@@ -119,8 +121,23 @@ export function AddOrderPanel({
   const [manualEvent, setManualEvent] = useState<EventRecord | null>(todayEvent)
   const [manualSlots, setManualSlots] = useState<Slot[]>([])
   const [apiQueueByCat, setApiQueueByCat] = useState<Record<string, number>>({})
+  // Engine inputs from /api/slots so the dot/modal can recompute basket-inclusive
+  // tones with the SAME buildSlotAvailability the server traffic-light uses.
+  const [capacityInputs, setCapacityInputs] = useState<{
+    productionSlotUnits: Record<string, Record<string, number>>
+    kitchenCapacity: number | null
+    eventStartMins: number
+    eventEndMins: number | null
+    earliestCollectionMins: number
+    date: string
+    nowMins: number
+  } | null>(null)
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
+  const [eventsLoading, setEventsLoading] = useState(false)
+  // True once a fetch has SUCCEEDED at least once — so "No events" only shows
+  // after a confirmed-empty load, never on cold start or a failed fetch (S5).
+  const [eventsLoaded, setEventsLoaded] = useState(false)
 
   // ── item modifier modal ─────────────────────────────────────────────────────
   const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[]; editCartKey?: string } | null>(null)
@@ -181,6 +198,50 @@ export function AddOrderPanel({
     }
   }, [manualItems, appliedDeals, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes, truckMenu])
 
+  // In-progress basket as items-by-category (matches the server autoConfirm path,
+  // which counts items via normaliseOrderLines — deals are excluded on both sides;
+  // see flag in the reconciliation notes).
+  const basketByCat = useMemo(() => {
+    const itemCatMap: Record<string, string> = {}
+    ;(truckMenu?.items || []).forEach(i => { itemCatMap[i.name] = (i.category || 'mains').toLowerCase() })
+    return orderItemsToQtyByCat(
+      manualItems.map(i => ({ name: i.name, quantity: i.quantity })),
+      itemCatMap,
+    )
+  }, [manualItems, truckMenu])
+
+  // Per-slot tone WITH the basket folded in, via the same engine as the server
+  // traffic light. Keyed by collection_time. This is what makes the dot, the
+  // override modal, and the autoConfirm gate agree for the same slot + load.
+  const slotEngineRows = useMemo(() => {
+    const m = new Map<string, SlotAvailabilityRow>()
+    if (!capacityInputs || !manualSlots.length) return m
+    const rows = buildSlotAvailability({
+      times: manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
+      productionSlotUnits: capacityInputs.productionSlotUnits || {},
+      catConfigs: categoryConfigs,
+      kitchenCapacity: capacityInputs.kitchenCapacity ?? null,
+      date: capacityInputs.date,
+      nowMins: capacityInputs.nowMins,
+      earliestCollectionMins: capacityInputs.earliestCollectionMins,
+      eventStartMins: capacityInputs.eventStartMins,
+      eventEndMins: capacityInputs.eventEndMins ?? undefined,
+      basketByCat,
+    })
+    rows.forEach(r => m.set(r.collection_time, r))
+    return m
+  }, [capacityInputs, manualSlots, categoryConfigs, basketByCat])
+
+  // Engine row for a slot, with the timing (too_soon) warning folded into the tone
+  // so the dot is never green for a too-soon/over-capacity slot — keeping the dot
+  // and the override modal in lockstep.
+  const slotIndicatorFor = (s: Slot): { row: SlotAvailabilityRow | null; ind: ReturnType<typeof getSlotIndicator> } => {
+    const row = slotEngineRows.get(s.collection_time) ?? null
+    if (!row) return { row: null, ind: getSlotIndicator(s) }
+    const tone = row.too_soon && row.tone === 'green' ? 'amber' : row.tone
+    return { row, ind: getSlotIndicator({ ...row, tone }) }
+  }
+
   // ASAP slot calculation — see Engineering Manual s.6
   // queueByCat sourced from /api/slots response (canonical, includes modified orders)
   // Both dropdown and sub-label derive from calcQueueAwareReadySecs — single formula
@@ -221,10 +282,12 @@ export function AddOrderPanel({
 
   const fetchUpcomingEvents = useCallback(async () => {
     if (!token) return
+    setEventsLoading(true)
     try {
       const res = await fetch(`/api/events/manage?token=${token}&upcoming=true`)
+      if (!res.ok) return // S5: never setState from a failed fetch (e.g. 429)
       const data = await res.json()
-      if (!data.events?.length) return
+      if (!Array.isArray(data.events)) return // malformed body — don't blank the list
       const mapped: EventRecord[] = data.events
         .filter((ev: any) => ['confirmed', 'open', 'closed'].includes(ev.status))
         .map((ev: any) => ({
@@ -236,8 +299,11 @@ export function AddOrderPanel({
           town: ev.town || null,
           status: ev.status,
         }))
+      // Set even when empty: a confirmed 200 with zero events is a legit empty.
       setUpcomingEvents(mapped)
-    } catch { }
+      setEventsLoaded(true)
+    } catch { /* S5: swallow — a failed/aborted fetch must not wipe the list */ }
+    finally { setEventsLoading(false) }
   }, [token])
 
   const fetchManualSlots = useCallback(async (eventDate: string, startTime?: string, endTime?: string) => {
@@ -250,7 +316,8 @@ export function AddOrderPanel({
       const data = await res.json()
       setManualSlots(data.slots || [])
       setApiQueueByCat(data.queueByCat || {})
-    } catch { setManualSlots([]); setApiQueueByCat({}) }
+      setCapacityInputs(data.capacityInputs ?? null)
+    } catch { setManualSlots([]); setApiQueueByCat({}); setCapacityInputs(null) }
   }, [truck?.id])
 
   useEffect(() => {
@@ -258,10 +325,18 @@ export function AddOrderPanel({
     fetchUpcomingEvents()
   }, [fetchUpcomingEvents, isActive])
 
+  // Open the picker reusing the already-loaded events for an INSTANT list. Only
+  // fetch when we have nothing cached (cold start, or a prior failed load) and
+  // aren't already loading — so rapid re-opens never trigger redundant fetches
+  // and never flash an empty list.
+  const openEventPicker = useCallback(() => {
+    if (upcomingEvents.length === 0 && !eventsLoading) fetchUpcomingEvents()
+    setShowEventPicker(true)
+  }, [upcomingEvents.length, eventsLoading, fetchUpcomingEvents])
+
   useEffect(() => {
     if (!requestEventPickerOpen) return
-    fetchUpcomingEvents()
-    setShowEventPicker(true)
+    openEventPicker()
     onEventPickerOpened?.()
   }, [requestEventPickerOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -366,10 +441,12 @@ setItemModal({ item, modGroups, editCartKey })
     if (!value) { setManualSlot(''); return }
     const s = manualSlots.find(sl => sl.collection_time === value)
     if (s) {
-      const ind = getSlotIndicator(s)
+      // Same engine (basket-inclusive) the dot uses → dot and modal always agree.
+      const { row, ind } = slotIndicatorFor(s)
+      const tooSoon = row ? row.too_soon : !!s.too_soon
       // Too-soon picks always confirm, carrying capacity state so the modal can
       // show timing + availability in one message
-      if (s.too_soon) { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red', tooSoon: true, tone: ind.tone }); return }
+      if (tooSoon) { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red', tooSoon: true, tone: ind.tone }); return }
       if (ind.tone !== 'green') { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red' }); return }
     }
     setManualSlot(value)
@@ -453,7 +530,7 @@ setItemModal({ item, modGroups, editCartKey })
               warning lives in the confirmation modal, not the dropdown. */}
           {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
-            const ind = getSlotIndicator(s)
+            const { ind } = slotIndicatorFor(s)
             return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` · ${ind.label}` : ''}</option>
           })}
         </select>
@@ -818,7 +895,7 @@ setItemModal({ item, modGroups, editCartKey })
                 return `${label} · ${formatTime(manualEvent.start_time)}–${formatTime(manualEvent.end_time)}`
               })()}</p>
             </div>
-            <button onClick={() => { fetchUpcomingEvents(); setShowEventPicker(true) }}
+            <button onClick={openEventPicker}
               className="text-xs font-bold text-orange-600 border border-orange-300 rounded-lg px-2.5 py-1 shrink-0 hover:bg-orange-100 active:scale-95">
               Change
             </button>
@@ -837,7 +914,7 @@ setItemModal({ item, modGroups, editCartKey })
             <span className="text-amber-500">⚠️</span>
             <p className="text-sm font-medium text-amber-800">No event selected</p>
           </div>
-          <button onClick={() => { fetchUpcomingEvents(); setShowEventPicker(true) }}
+          <button onClick={openEventPicker}
             className="text-sm font-semibold text-amber-700 border border-amber-300 bg-white rounded-lg px-3 py-1.5 hover:bg-amber-50 whitespace-nowrap">
             Select event
           </button>
@@ -1044,9 +1121,8 @@ setItemModal({ item, modGroups, editCartKey })
                 <button onClick={() => setShowEventPicker(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-lg">✕</button>
               </div>
               <div className="p-3 space-y-2">
-                {upcomingEvents.length === 0
-                  ? <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>
-                  : upcomingEvents.map(ev => {
+                {upcomingEvents.length > 0
+                  ? upcomingEvents.map(ev => {
                     const isSelected = manualEvent?.id === ev.id
                     const isFuture = ev.event_date > todayIso
                     return (
@@ -1062,7 +1138,13 @@ setItemModal({ item, modGroups, editCartKey })
                         {isSelected && <span className="text-[10px] font-black text-orange-600 uppercase tracking-wide">Selected</span>}
                       </button>
                     )
-                  })}
+                  })
+                  : (eventsLoading || !eventsLoaded)
+                    // S5: skeleton while loading OR before any successful load (incl.
+                    // a failed fetch) — never flash "No events" in those states.
+                    ? [0, 1, 2].map(i => <div key={i} className="h-[58px] rounded-xl bg-slate-100 animate-pulse" />)
+                    // Only after a confirmed-empty successful load:
+                    : <p className="text-sm text-slate-400 text-center py-6">No upcoming events found</p>}
               </div>
 
               {/* Warning when a future event is selected */}

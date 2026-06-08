@@ -12,7 +12,8 @@ import {
   normaliseOrderLines,
   deriveProductionSlot,
 } from '@/lib/slot-bookings'
-import { canFitInProductionSlot } from '@/lib/slot-capacity'
+import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
+import { buildSlotAvailability } from '@/lib/slot-availability'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { nextOrderId } from '@/lib/order-utils'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
@@ -101,7 +102,9 @@ export async function POST(req: NextRequest) {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'rejected' }).eq('order_key', orderKey)
-      if (order.slot && order.event_date) {
+      if (order.event_date) {
+        // order.slot may be null (ASAP) — removeOrderFromProductionSlot resolves
+        // it to the same event-start window the booking used, so it unbooks cleanly.
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
           supabase, truck.id, order.event_date, order.slot,
@@ -126,7 +129,8 @@ export async function POST(req: NextRequest) {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey)
-      if (order.slot && order.event_date) {
+      if (order.event_date) {
+        // order.slot may be null (ASAP) — resolved to the event-start window so it unbooks.
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         await removeOrderFromProductionSlot(
           supabase, truck.id, order.event_date, order.slot,
@@ -177,7 +181,13 @@ export async function POST(req: NextRequest) {
       const now = new Date().toISOString()
       const { data: order } = await supabase.from('orders').select('slot, event_date, status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now }).eq('order_key', orderKey).eq('truck_id', truck.id)
-      if (order?.slot && order.event_date && ['pending', 'confirmed', 'modified'].includes(order.status)) {
+      // Gap 1: free kitchen usage on collect. Fire for ANY still-booked prior state
+      // — including cooking/ready, which the old {pending,confirmed,modified} guard
+      // skipped, leaking units forever. Excluding terminal states (cancelled/rejected/
+      // collected) keeps it idempotent: those are already unbooked, and a second
+      // subtract would wrongly remove co-located orders' items from the slot total.
+      const BOOKED_STATES = ['pending', 'confirmed', 'modified', 'cooking', 'ready']
+      if (order?.event_date && BOOKED_STATES.includes(order.status)) {
         const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
         if (full.data) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
@@ -194,7 +204,8 @@ export async function POST(req: NextRequest) {
     if (action === 'undo_collected') {
       const { data: order } = await supabase.from('orders').select('slot, event_date').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
-      if (order?.slot && order.event_date) {
+      if (order?.event_date) {
+        // re-book on undo; order.slot may be null (ASAP) → event-start window
         const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
         if (full.data) {
           const itemCatMap = await buildItemCatMap(supabase, truck.id)
@@ -236,17 +247,17 @@ export async function POST(req: NextRequest) {
       if (order.event_date && (items || slot !== undefined)) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         const oldLines = normaliseOrderLines(order.items || [], order.deals)
+        // TODO(Gap 4): newLines reuses order.deals even when editedDeals changes the
+        // deal — a deal edit can miscount production usage. Left as-is for this pass.
         const newLines = normaliseOrderLines(items || order.items || [], order.deals)
-        if (order.slot) {
-          await removeOrderFromProductionSlot(
-            supabase, truck.id, order.event_date, order.slot, oldLines, itemCatMap
-          )
-        }
-        if (newSlot) {
-          await addOrderToProductionSlot(
-            supabase, truck.id, order.event_date, newSlot, newLines, itemCatMap
-          )
-        }
+        // No slot gate: order.slot / newSlot may be null (ASAP) — both resolve to the
+        // event-start window inside the helpers, so old usage is freed and new re-booked.
+        await removeOrderFromProductionSlot(
+          supabase, truck.id, order.event_date, order.slot, oldLines, itemCatMap
+        )
+        await addOrderToProductionSlot(
+          supabase, truck.id, order.event_date, newSlot, newLines, itemCatMap
+        )
       }
 
       if (order.customer_email) {
@@ -360,20 +371,41 @@ export async function POST(req: NextRequest) {
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
       const catConfigs = await buildCatConfigs(supabase, truck.id)
       if (slot) {
-        const [{ data: timeRow }, slotUnits, { data: capacities }] = await Promise.all([
+        // Same live engine as the operator traffic light (buildSlotAvailability),
+        // with THIS order's basket placed at the slot — so the dot, the override
+        // modal, and this autoConfirm decision all agree. kitchen_capacity comes
+        // live from the event's van; slot_capacity's batch cache is not consulted.
+        const [{ data: timeRow }, slotUnits, { data: evRow }] = await Promise.all([
           supabase.from('collection_times').select('production_slot').eq('truck_id', truck.id).eq('collection_time', slot).maybeSingle(),
           getProductionSlotUnits(supabase, truck.id, eventDate),
-          supabase.from('slot_capacity').select('slot, max_orders').eq('truck_id', truck.id).eq('event_date', eventDate),
+          supabase.from('truck_events').select('start_time, van_id').eq('truck_id', truck.id).eq('event_date', eventDate).neq('status', 'cancelled').order('start_time', { ascending: true }).limit(1).maybeSingle(),
         ])
-        const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
+        let kitchenCapacity: number | null = null
+        if (evRow?.van_id) {
+          const { data: van } = await supabase.from('truck_vans').select('kitchen_capacity').eq('id', evRow.van_id).single()
+          kitchenCapacity = van?.kitchen_capacity ?? null
+        }
         const productionSlot = timeRow?.production_slot ?? deriveProductionSlot(
           slot,
           truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
         )
-        const maxBatches = capacityMap[productionSlot] ?? 999
-        if (!canFitInProductionSlot(
-          slotUnits[productionSlot] || {}, manualLines, itemCatMap, maxBatches, catConfigs
-        )) autoConfirm = false
+        const eventStartMins = evRow?.start_time
+          ? (() => { const [h, m] = String(evRow.start_time).split(':').map(Number); return h * 60 + m })()
+          : 0
+        // autoConfirm is a CAPACITY decision (tone red) — timing/too_soon don't block
+        // it (the operator deliberately places too-soon orders via "Use anyway").
+        const [row] = buildSlotAvailability({
+          times: [{ collection_time: slot, production_slot: productionSlot }],
+          productionSlotUnits: slotUnits,
+          catConfigs,
+          kitchenCapacity,
+          date: '',
+          nowMins: 0,
+          earliestCollectionMins: 0,
+          eventStartMins,
+          basketByCat: orderItemsToQtyByCat(manualLines, itemCatMap),
+        })
+        if (row?.tone === 'red') autoConfirm = false
       }
       // Display number (per-event, restarts at 1) — order_key UUID is set by the
       // column default. orderEventId may be null (ambiguous/no event) → truck fallback.
@@ -403,7 +435,8 @@ export async function POST(req: NextRequest) {
       }
       const manualOrderKey = manualOrderRow.order_key
 
-      if (slot) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
+      // slot may be null (manual ASAP) → booked into event-start window
+      if (eventDate) await addOrderToProductionSlot(supabase, truck.id, eventDate, slot, manualLines, itemCatMap)
 
       const { data: manualEventRow } = await supabase
         .from('truck_events')

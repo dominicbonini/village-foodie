@@ -88,22 +88,40 @@ export interface CatConfig {
    * finalBatch = ceil(totalQty / batchSize)
    * prepSecs = finalBatch x prepSecs
    */
+  /**
+   * Per-category queue-aware ready time, BEFORE the max-collapse. Each entry is
+   * finalBatch * prepSecs for that category (finalBatch = ceil((queue+new)/batch)).
+   * No buffer, no 30s floor — raw batch math only. Instant categories (no prep_secs)
+   * are omitted, exactly as the aggregate version skips them.
+   *
+   * SINGLE SOURCE of the per-category batch math (S3/S6): calcQueueAwareReadySecs
+   * collapses this; the slot-capacity engine reads it per category. Do not
+   * re-derive ceil(qty/batch)*secs anywhere else.
+   */
+  export function calcReadySecsByCat(
+    newByCat: Record<string, number>,
+    queueByCat: Record<string, number>,
+    catConfigs: Record<string, CatConfig>
+  ): Record<string, number> {
+    const byCat: Record<string, number> = {}
+    Object.entries(newByCat).forEach(([cat, newQty]) => {
+      const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
+      if (!cfg.secs) return
+      const totalQty = (queueByCat[cat] || 0) + newQty
+      const finalBatch = Math.ceil(totalQty / cfg.batch)
+      byCat[cat] = finalBatch * cfg.secs
+    })
+    return byCat
+  }
+
   export function calcQueueAwareReadySecs(
     newByCat: Record<string, number>,
     queueByCat: Record<string, number>,
     catConfigs: Record<string, CatConfig>,
     bufferSecs: number = 120
   ): number {
-    let maxSecs = 0
-    Object.entries(newByCat).forEach(([cat, newQty]) => {
-      const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
-      if (!cfg.secs) return
-      const queueQty = queueByCat[cat] || 0
-      const totalQty = queueQty + newQty
-      const finalBatch = Math.ceil(totalQty / cfg.batch)
-      const secs = finalBatch * cfg.secs
-      if (secs > maxSecs) maxSecs = secs
-    })
+    const byCat = calcReadySecsByCat(newByCat, queueByCat, catConfigs)
+    const maxSecs = Object.values(byCat).reduce((m, secs) => (secs > m ? secs : m), 0)
     if (maxSecs === 0) return 0
     return Math.max(30, maxSecs) + bufferSecs
   }
@@ -116,20 +134,35 @@ export interface CatConfig {
    * start. Empty queue + an order fitting one batch ⇒ 0 (ASAP = event start exactly).
    * Used by: AddOrderPanel queueAware (client) AND slots API (server) — must agree.
    */
+  /**
+   * Per-category queue push past event start, BEFORE the max-collapse. Each entry
+   * is (ceil((queue+new)/batch) - 1) * prepSecs — the pre-prep credit (batch 1 ready
+   * AT event start, Manual s.6). Instant categories omitted. SINGLE SOURCE of the
+   * push math (S3/S6): calcQueuePushSecs collapses this, and the slot-capacity
+   * engine's constraint (b) reads it per category. Do not re-derive elsewhere.
+   */
+  export function calcQueuePushSecsByCat(
+    newByCat: Record<string, number>,
+    queueByCat: Record<string, number>,
+    catConfigs: Record<string, CatConfig>
+  ): Record<string, number> {
+    const byCat: Record<string, number> = {}
+    Object.entries(newByCat).forEach(([cat, newQty]) => {
+      const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
+      if (!cfg.secs) return
+      const totalQty = (queueByCat[cat] || 0) + newQty
+      byCat[cat] = (Math.ceil(totalQty / cfg.batch) - 1) * cfg.secs
+    })
+    return byCat
+  }
+
   export function calcQueuePushSecs(
     newByCat: Record<string, number>,
     queueByCat: Record<string, number>,
     catConfigs: Record<string, CatConfig>
   ): number {
-    let maxSecs = 0
-    Object.entries(newByCat).forEach(([cat, newQty]) => {
-      const cfg = catConfigs[cat.toLowerCase()] ?? getCatConfig(cat)
-      if (!cfg.secs) return
-      const totalQty = (queueByCat[cat] || 0) + newQty
-      const secs = (Math.ceil(totalQty / cfg.batch) - 1) * cfg.secs
-      if (secs > maxSecs) maxSecs = secs
-    })
-    return maxSecs
+    const byCat = calcQueuePushSecsByCat(newByCat, queueByCat, catConfigs)
+    return Object.values(byCat).reduce((m, secs) => (secs > m ? secs : m), 0)
   }
 
   /**

@@ -35,6 +35,7 @@ import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/bask
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime } from '@/lib/time-utils'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -81,6 +82,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
   const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
+  const[activeVanName,setActiveVanName]=useState<string|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
   const[undoPrep,setUndoPrep]=useState<{name:string;qty:number}|null>(null)
@@ -259,9 +261,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[upcomingEvents,selectedEventId])
   useEffect(()=>{
     const event=selectedEventId?upcomingEvents.find(e=>e.id===selectedEventId)??null:null
-    if(!event?.van_id){setVanAutoPause(false);setEventOfflineOverride(null);setKitchenCapacity(null);return}
-    supabaseBrowser.from('truck_vans').select('auto_pause_on_offline, kitchen_capacity').eq('id',event.van_id).single()
-      .then(({data})=>{if(data){setVanAutoPause(data.auto_pause_on_offline??false);setKitchenCapacity(data.kitchen_capacity??null)}})
+    if(!event?.van_id){setVanAutoPause(false);setEventOfflineOverride(null);setKitchenCapacity(null);setActiveVanName(null);return}
+    supabaseBrowser.from('truck_vans').select('name, auto_pause_on_offline, kitchen_capacity').eq('id',event.van_id).single()
+      .then(({data})=>{if(data){setVanAutoPause(data.auto_pause_on_offline??false);setKitchenCapacity(data.kitchen_capacity??null);setActiveVanName(data.name??null)}})
     supabaseBrowser.from('truck_events').select('offline_protection_override').eq('id',event.id).single()
       .then(({data})=>{setEventOfflineOverride(data?.offline_protection_override??null)})
   },[selectedEventId,upcomingEvents])
@@ -1201,20 +1203,34 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                  <p className="text-sm text-slate-500">Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit.</p>
+              <div className="p-4 bg-white rounded-2xl border border-slate-100">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+                      {activeEvent.van_id&&activeVanName&&(
+                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-500">{KITCHEN_CAPACITY_DESC}</p>
+                    {!activeEvent.van_id&&(
+                      <p className="text-xs text-amber-600 font-medium mt-1">⚠ Assign a truck to this event before setting kitchen capacity.</p>
+                    )}
+                  </div>
+                  <select
+                    value={kitchenCapacity??''}
+                    disabled={!activeEvent.van_id}
+                    onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
+                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                    <option value="">No limit</option>
+                    {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                      <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                    ))}
+                  </select>
                 </div>
-                <select
-                  value={kitchenCapacity??''}
-                  onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
-                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0">
-                  <option value="">No limit</option>
-                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                  ))}
-                </select>
+                {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
+                  <div className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                )}
               </div>
             )}
             {activeEvent&&(

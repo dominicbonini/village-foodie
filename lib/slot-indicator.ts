@@ -3,12 +3,12 @@
 // Operator-only: consumed by the Add Order panel. Customers never see the
 // traffic-light — they only get cleanly available slots (no full/amber entries).
 //
-// "remaining" is the soft-cap definition (soft_max − current_orders) returned by
-// /api/slots. When a caller has a slot shape without it (e.g. /api/dashboard),
-// the same soft-cap maths is derived here — never max_orders − current_orders,
-// which overstates space relative to the availability cutoff.
+// As of the category-aware engine, the tone is RESOLVED in buildSlotAvailability
+// (lib/slot-availability.ts) from the per-window ceiling + cumulative per-category
+// throughput. This reads that resolved `tone`/`remaining`; the legacy batch-scalar
+// calc remains only as a fallback for slot shapes that predate the engine.
 
-const SOFT_CAP_RATIO = 0.85 // must match lib/slot-availability.ts
+const SOFT_CAP_RATIO = 0.85
 
 export type SlotTone = 'green' | 'amber' | 'red'
 
@@ -16,6 +16,8 @@ export interface SlotIndicatorInput {
   current_orders: number
   max_orders: number
   remaining?: number
+  /** Engine-resolved tone (category-aware). Preferred when present. */
+  tone?: SlotTone
 }
 
 export function getSlotIndicator(slot: SlotIndicatorInput): {
@@ -24,14 +26,28 @@ export function getSlotIndicator(slot: SlotIndicatorInput): {
   label: string
   remaining: number
 } {
-  const unlimited = slot.max_orders >= 999
-  if (unlimited) return { tone: 'green', emoji: '🟢', label: '', remaining: 999 }
-  const softMax = Math.max(1, Math.floor(slot.max_orders * SOFT_CAP_RATIO))
-  const remaining = slot.remaining ?? Math.max(0, softMax - slot.current_orders)
-  const pct = slot.current_orders / slot.max_orders
-  if (pct >= 1 || remaining <= 0) return { tone: 'red', emoji: '🔴', label: 'Full', remaining: 0 }
-  // "spaces" = orders the operator can still fit — natural language, not batch jargon.
-  if (pct >= 0.7) return { tone: 'amber', emoji: '🟡', label: `${remaining} space${remaining !== 1 ? 's' : ''}`, remaining }
-  // Green carries no label — available slots stay clean, only amber/red warn.
-  return { tone: 'green', emoji: '🟢', label: '', remaining }
+  const remaining = slot.remaining ?? (
+    slot.max_orders >= 999
+      ? 999
+      : Math.max(0, Math.floor(slot.max_orders * SOFT_CAP_RATIO) - slot.current_orders)
+  )
+
+  // Prefer the engine-resolved tone; fall back to the legacy batch-scalar calc.
+  let tone = slot.tone
+  if (!tone) {
+    if (slot.max_orders >= 999) {
+      tone = 'green'
+    } else {
+      const pct = slot.current_orders / slot.max_orders
+      tone = pct >= 1 || remaining <= 0 ? 'red' : pct >= 0.7 ? 'amber' : 'green'
+    }
+  }
+
+  // Directional wording only (Manual s.27 — no precise count until the proper
+  // items-based display lands).
+  switch (tone) {
+    case 'red':   return { tone, emoji: '🔴', label: 'Full', remaining: 0 }
+    case 'amber': return { tone, emoji: '🟡', label: 'Filling up', remaining }
+    default:      return { tone: 'green', emoji: '🟢', label: '', remaining }
+  }
 }

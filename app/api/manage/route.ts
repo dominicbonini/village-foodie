@@ -7,6 +7,8 @@ import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
+import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
+import { getSoleActiveVanId } from '@/lib/van-utils'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -404,7 +406,11 @@ export async function POST(req: NextRequest) {
     } else {
       const now = new Date().toISOString()
       const eventStatus = 'confirmed'
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null }).select().single()
+      // FIX 3 (single-van auto-assign): if the operator didn't pick a van and the
+      // truck has exactly one active van, assign it so capacity etc. can resolve.
+      // Multi-van trucks leave van selection to the operator (van_id stays null).
+      const resolvedVanId = van_id ?? await getSoleActiveVanId(supabase, targetTruckId)
+      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
 
@@ -448,6 +454,16 @@ export async function POST(req: NextRequest) {
         await supabase
           .from('slot_capacity')
           .upsert(rows, { onConflict: 'truck_id,event_date,slot' })
+      }
+    }
+
+    // Gap 3: self-heal production_slot_usage whenever an event is created/confirmed,
+    // alongside the slot_capacity regen. Best-effort — never block the event save.
+    if (event_date) {
+      try {
+        await rebuildProductionSlotUsage(supabase, targetTruckId, event_date)
+      } catch (err) {
+        console.warn('[upsert_event] production_slot_usage rebuild failed (drift risk):', err)
       }
     }
 

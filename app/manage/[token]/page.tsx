@@ -8,6 +8,7 @@ import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -385,7 +386,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} />}
+        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
       </main>
 
@@ -3923,11 +3924,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
 // ══════════════════════════════════════════════════════════════
 // SETTINGS TAB
 // ══════════════════════════════════════════════════════════════
-function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab }: {
+function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   onVerifySuccess: (events: any[]) => void
   onSwitchTab: (tab: Tab) => void
+  categories: Category[]
 }) {
   const [form, setForm] = useState({ ...truck })
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -4827,27 +4829,32 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               </div>
 
               {/* Kitchen capacity */}
-              <div className="flex items-center justify-between gap-3 mt-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit.
-                  </p>
+              <div className="mt-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {KITCHEN_CAPACITY_DESC}
+                    </p>
+                  </div>
+                  <select
+                    value={van.kitchen_capacity ?? ''}
+                    onChange={e => updateVanSetting(
+                      van.id,
+                      'kitchen_capacity',
+                      e.target.value === '' ? null : parseInt(e.target.value)
+                    )}
+                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-32"
+                  >
+                    <option value="">No limit</option>
+                    {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                      <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                    ))}
+                  </select>
                 </div>
-                <select
-                  value={van.kitchen_capacity ?? ''}
-                  onChange={e => updateVanSetting(
-                    van.id,
-                    'kitchen_capacity',
-                    e.target.value === '' ? null : parseInt(e.target.value)
-                  )}
-                  className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-32"
-                >
-                  <option value="">No limit</option>
-                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                  ))}
-                </select>
+                {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
+                  <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                )}
               </div>
 
             </div>

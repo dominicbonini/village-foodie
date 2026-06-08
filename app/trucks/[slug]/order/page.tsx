@@ -649,7 +649,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <div className="text-center">
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">😕</div>
           <p className="text-slate-600 font-medium">{error}</p>
-          <Link href={`/trucks/${slug}`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back to truck page</Link>
+          <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back to truck page</a>
         </div>
       </div>
     </Shell>
@@ -664,7 +664,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4 mx-auto">🚚</div>
             <p className="font-bold text-slate-900 mb-1">Online ordering not available</p>
             <p className="text-slate-500 text-sm">This truck takes walk-up orders at the hatch.</p>
-            <Link href={`/trucks/${slug}`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back</Link>
+            <a href={`/trucks/${slug}/order`} className="mt-4 inline-block text-orange-600 font-bold hover:underline">← Back</a>
           </div>
         </div>
       </Shell>
@@ -672,7 +672,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   if (submitted) return (
-    <Shell><Hdr slug={slug} truck={truck} scrolled={false} />
+    <Shell><Hdr slug={slug} truck={truck} scrolled={false} showBack={false} />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-sm w-full text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">✓</div>
@@ -768,9 +768,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           </div>
 
           <p className="text-slate-400 text-xs mb-6">Confirmation sent to {email}</p>
-          <Link href={`/trucks/${slug}`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
+          {/* Slug-based truck route (Manual s.7). Targets the truck's own order/menu
+             page, the only customer route that resolves by slug for a HatchGrab truck
+             (/trucks/[slug] is the discovery profile and 404s for operator-only trucks).
+             A full navigation (<a>) reloads a fresh form — the confirmation shares this
+             URL, so a soft <Link> would just re-render the confirmation. */}
+          <a href={`/trucks/${slug}/order`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
             Back to {truck?.name}
-          </Link>
+          </a>
         </div>
       </div>
     </Shell>
@@ -1615,7 +1620,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-slate-50 flex flex-col">{children}</div>
 }
 
-function Hdr({ slug, truck, scrolled }: { slug: string; truck: TruckData | null; scrolled: boolean }) {
+function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: TruckData | null; scrolled: boolean; showBack?: boolean }) {
   return (
     <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
       <div className="max-w-6xl mx-auto flex justify-between items-center w-full relative">
@@ -1640,12 +1645,17 @@ function Hdr({ slug, truck, scrolled }: { slug: string; truck: TruckData | null;
           </div>
         )}
 
-        {/* Right — Back link, always visible */}
-        {truck && (
-          <Link href={`/trucks/${slug}`} className="text-slate-400 hover:text-white text-xs font-bold transition-colors shrink-0 z-20">
+        {/* Right — Back link. Hidden on the confirmation screen (showBack=false), where
+           the bottom "Back to {truck}" button is the single action. Targets the truck's
+           own order page by slug (Manual s.7) — /trucks/[slug] is the discovery profile
+           and 404s for a HatchGrab-only tenant. Full navigation (<a>) so it lands on a
+           fresh menu even from the error/unavailable states (same URL otherwise). */}
+        {showBack && truck && (
+          <a href={`/trucks/${slug}/order`} className="text-slate-400 hover:text-white text-xs font-bold transition-colors shrink-0 z-20">
             ← Back
-          </Link>
+          </a>
         )}
+
       </div>
     </header>
   )

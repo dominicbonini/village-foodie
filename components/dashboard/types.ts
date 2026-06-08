@@ -60,6 +60,10 @@ export interface Slot {
    *  the /api/dashboard slot shape omits it — getSlotIndicator derives a fallback. */
   remaining?: number
   soft_max?: number
+  /** Category-aware engine: resolved traffic-light tone, read by getSlotIndicator. */
+  tone?: 'green' | 'amber' | 'red'
+  /** Which constraint/category bound the slot (null when green). Diagnostic only. */
+  bound_by?: string | null
 }
 
 export type CrewMode = 'solo' | 'full'

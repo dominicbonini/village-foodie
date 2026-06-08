@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEventCancellationEmail } from '@/lib/email'
+import { getSoleActiveVanId } from '@/lib/van-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,6 +41,18 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // FIX 3 (single-van auto-assign): on confirm, if this event has no van and the
+    // truck has exactly one active van, assign it. Don't override an existing choice.
+    const { data: ev } = await supabase
+      .from('truck_events')
+      .select('van_id')
+      .eq('id', eventId)
+      .eq('truck_id', truck.id)
+      .single()
+    const vanPatch = (!ev?.van_id)
+      ? { van_id: await getSoleActiveVanId(supabase, truck.id) }
+      : {}
+
     const { error } = await supabase
       .from('truck_events')
       .update({
@@ -49,6 +62,7 @@ export async function POST(req: NextRequest) {
         auto_close,
         venue_address: venue_address || null,
         customer_note: customer_note || null,
+        ...vanPatch,
       })
       .eq('id', eventId)
       .eq('truck_id', truck.id)

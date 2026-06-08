@@ -10,8 +10,11 @@ import {
   getProductionSlotUnits,
   buildItemCatMap,
   normaliseOrderLines,
+  deriveProductionSlot,
 } from '@/lib/slot-bookings'
-import { canFitInProductionSlot, orderItemsToQtyByCat } from '@/lib/slot-capacity'
+import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
+import { buildSlotAvailability } from '@/lib/slot-availability'
+import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import type { CatConfig } from '@/lib/prep-utils'
@@ -113,10 +116,102 @@ function timeToMins(t: string): number {
 }
 
 /** Resolve collection slot after auto-accept; bump if production window is batch-full. */
-async function resolveAutoAcceptSlot(
+/**
+ * Live kitchen_capacity (items ceiling) + event start for a truck/date, from the
+ * event's van — the same source the operator traffic light uses. Replaces the dead
+ * slot_capacity batch cache for the customer capacity decision.
+ */
+async function eventKitchenCapacity(
   truckId: string,
   eventDate: string,
-  requestedSlot: string,
+): Promise<{ kitchenCapacity: number | null; eventStartMins: number }> {
+  const { data: ev } = await supabase
+    .from('truck_events')
+    .select('start_time, van_id')
+    .eq('truck_id', truckId)
+    .eq('event_date', eventDate)
+    .neq('status', 'cancelled')
+    .order('start_time', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+  let kitchenCapacity: number | null = null
+  if (ev?.van_id) {
+    const { data: van } = await supabase
+      .from('truck_vans')
+      .select('kitchen_capacity')
+      .eq('id', ev.van_id)
+      .single()
+    kitchenCapacity = van?.kitchen_capacity ?? null
+  }
+  return { kitchenCapacity, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0 }
+}
+
+// ── Per-EVENT mutex (Option A) — gap-free serialization ───────────────────────
+// One event-level lock per submit so the entire decide-and-book runs against a
+// snapshot that already includes EVERY prior booking on the event — required by the
+// cumulative cross-slot per-category throughput model (b), not just per-slot (a).
+const LOCK_TTL_MS = 10_000      // a leaked lock self-heals after this
+const LOCK_MAX_WAIT_MS = 1_000  // total acquire budget before the pending fallback
+const LOCK_RETRY_MS = 150
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+/**
+ * Acquire the per-event booking lock. Acquire = INSERT into booking_locks; a PK
+ * conflict (23505) means it's held — retry within the budget. Stale rows (older than
+ * LOCK_TTL_MS) are reclaimed first, and the sweep only deletes rows OLDER than the TTL
+ * so a fresh lock is never stolen. Returns true if acquired (caller MUST release in
+ * finally); false if contended/errored → caller falls back to pending (never overfills).
+ */
+async function acquireEventLock(truckId: string, eventDate: string): Promise<boolean> {
+  const deadline = Date.now() + LOCK_MAX_WAIT_MS
+  for (;;) {
+    await supabase
+      .from('booking_locks')
+      .delete()
+      .eq('truck_id', truckId)
+      .eq('event_date', eventDate)
+      .lt('locked_at', new Date(Date.now() - LOCK_TTL_MS).toISOString())
+    const { error } = await supabase
+      .from('booking_locks')
+      .insert({ truck_id: truckId, event_date: eventDate })
+    if (!error) return true
+    if (error.code !== '23505') {
+      console.warn('[booking_locks] acquire error (failing safe to pending):', error.message)
+      return false
+    }
+    if (Date.now() >= deadline) return false
+    await sleep(LOCK_RETRY_MS)
+  }
+}
+
+async function releaseEventLock(truckId: string, eventDate: string): Promise<void> {
+  const { error } = await supabase
+    .from('booking_locks')
+    .delete()
+    .eq('truck_id', truckId)
+    .eq('event_date', eventDate)
+  if (error) console.warn('[booking_locks] release failed (self-heals via TTL):', error.message)
+}
+
+/**
+ * Customer slot rule (Section 5/6/7), race-safe via ONE per-event lock. The whole
+ * walk runs inside a single lock: read units FRESH (reflecting all prior bookings on
+ * the event), evaluate the requested/ASAP-resolved slot then each later slot via
+ * buildSlotAvailability (this order folded in as basket), and BOOK the first non-red
+ * one atomically. ASAP (requestedSlot null) resolves its start via getAsapSlot
+ * (Section 6 — not forked) then walks the same way.
+ *
+ *   booked=true  → order booked at finalSlot (capacity consumed under lock).
+ *   booked=false → no slot non-red (event full) OR lock contended → pending, NOT
+ *                  booked. A slot is never overfilled and the customer is never rejected.
+ *
+ * Reuses buildSlotAvailability + addOrderToProductionSlot — no forked formula (S3/S6),
+ * no change to writer semantics (we only wrap decide+book in the lock).
+ */
+async function claimAvailableSlot(
+  truckId: string,
+  eventDate: string,
+  requestedSlot: string | null,
   orderLines: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>,
   catConfigs: Record<string, CatConfig>,
@@ -124,66 +219,87 @@ async function resolveAutoAcceptSlot(
   eventEndTime?: string | null,
   intervalMins?: number,
   slotDurationMins?: number,
-): Promise<{ confirmedSlot: string; slotChanged: boolean; canConfirm: boolean }> {
-  const [{ data: staticTimes }, { data: capacities }, slotUnits] = await Promise.all([
-    supabase
+  kitchenCapacity?: number | null,
+): Promise<{ finalSlot: string | null; booked: boolean }> {
+  if (!(await acquireEventLock(truckId, eventDate))) {
+    console.warn(`[claimAvailableSlot] event lock contended (${truckId}/${eventDate}) — pending fallback`)
+    return { finalSlot: requestedSlot, booked: false }
+  }
+  try {
+    const { data: staticTimes } = await supabase
       .from('collection_times')
       .select('collection_time, production_slot')
       .eq('truck_id', truckId)
-      .order('collection_time', { ascending: true }),
-    supabase
-      .from('slot_capacity')
-      .select('slot, max_orders')
-      .eq('truck_id', truckId)
-      .eq('event_date', eventDate),
-    getProductionSlotUnits(supabase, truckId, eventDate),
-  ])
+      .order('collection_time', { ascending: true })
 
-  // Prefer dynamic slot generation from event times when static table is empty
-  const iv = intervalMins ?? 0
-  const dur = slotDurationMins ?? iv
-  const times =
-    staticTimes?.length
-      ? staticTimes
-      : eventStartTime && eventEndTime && iv > 0
-        ? generateCollectionTimes(eventStartTime, eventEndTime, iv, dur)
-        : []
+    const iv = intervalMins ?? 0
+    const dur = slotDurationMins ?? iv
+    const times =
+      staticTimes?.length
+        ? staticTimes
+        : eventStartTime && eventEndTime && iv > 0
+          ? generateCollectionTimes(eventStartTime, eventEndTime, iv, dur)
+          : []
+    const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
+    const basketByCat = orderItemsToQtyByCat(orderLines, itemCatMap)
 
-  const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
-  const timeEntry = times.find(t => t.collection_time === requestedSlot)
-  if (!timeEntry) {
-    return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: true }
-  }
+    // Resolve the starting slot: explicit request, else ASAP via the existing resolver
+    // (Section 6/7 — first slot at/after the ASAP floor; not forked).
+    const startSlot =
+      requestedSlot ??
+      getAsapSlot(times.map(t => ({ collection_time: t.collection_time, available: true })), eventDate)?.collection_time ??
+      null
 
-  const trySlot = (collectionTime: string, productionSlot: string) =>
-    canFitInProductionSlot(
-      slotUnits[productionSlot] || {},
-      orderLines,
-      itemCatMap,
-      capacityMap[productionSlot] || 999,
-      catConfigs
-    )
-
-  if (trySlot(requestedSlot, timeEntry.production_slot)) {
-    return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: true }
-  }
-
-  const requestedMins = timeToMins(requestedSlot)
-  const sorted = (times || [])
-    .filter(t => timeToMins(t.collection_time) > requestedMins)
-    .sort((a, b) => timeToMins(a.collection_time) - timeToMins(b.collection_time))
-
-  for (const s of sorted) {
-    if (trySlot(s.collection_time, s.production_slot)) {
-      return {
-        confirmedSlot: s.collection_time,
-        slotChanged: s.collection_time !== requestedSlot,
-        canConfirm: true,
-      }
+    // No schedule / unresolvable start (e.g. pub / no collection_times) → book at the
+    // event-start window with no slot model, preserving prior ASAP-booking behaviour.
+    if (!startSlot || !times.length) {
+      const ct = startSlot ?? (eventStartTime ? eventStartTime.slice(0, 5) : null)
+      if (!ct) return { finalSlot: null, booked: false }
+      await addOrderToProductionSlot(supabase, truckId, eventDate, ct, orderLines, itemCatMap)
+      return { finalSlot: ct, booked: true }
     }
-  }
 
-  return { confirmedSlot: requestedSlot, slotChanged: false, canConfirm: false }
+    const startEntry = times.find(t => t.collection_time === startSlot)
+    // Unrecognised slot (not in the list) → confirm at requested, no capacity check (Section 5).
+    if (!startEntry) {
+      await addOrderToProductionSlot(supabase, truckId, eventDate, startSlot, orderLines, itemCatMap)
+      return { finalSlot: startSlot, booked: true }
+    }
+
+    const startMins = timeToMins(startSlot)
+    const candidates = [
+      startEntry,
+      ...times
+        .filter(t => timeToMins(t.collection_time) > startMins)
+        .sort((a, b) => timeToMins(a.collection_time) - timeToMins(b.collection_time)),
+    ]
+
+    // One FRESH read under the event lock — we are the sole writer for its duration,
+    // so this snapshot is authoritative for the whole walk.
+    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventDate)
+    const rows = buildSlotAvailability({
+      times: candidates.map(c => ({ collection_time: c.collection_time, production_slot: c.production_slot })),
+      productionSlotUnits: slotUnits,
+      catConfigs,
+      kitchenCapacity: kitchenCapacity ?? null,
+      date: '', // capacity-only decision — timing (too_soon/is_past) must not gate this
+      nowMins: 0,
+      earliestCollectionMins: 0,
+      eventStartMins,
+      basketByCat,
+    })
+    const toneByTime = new Map(rows.map(r => [r.collection_time, r.tone]))
+    const winner = candidates.find(c => toneByTime.get(c.collection_time) !== 'red')
+    if (winner) {
+      await addOrderToProductionSlot(supabase, truckId, eventDate, winner.collection_time, orderLines, itemCatMap)
+      return { finalSlot: winner.collection_time, booked: true }
+    }
+
+    // Every slot full → pending, not booked (no slot overfilled, never rejected).
+    return { finalSlot: null, booked: false }
+  } finally {
+    await releaseEventLock(truckId, eventDate)
+  }
 }
 
 function cap(s: string) {
@@ -303,49 +419,10 @@ export async function POST(req: NextRequest) {
       buildCatConfigs(supabase, resolvedTruckId),
     ])
 
-    // ── Slot capacity check (batch-based per production window) ───────────────
-    if (truck.mode === 'village' && slot && eventDate) {
-      const [{ data: timeRow }, slotUnits, { data: capacities }] = await Promise.all([
-        supabase
-          .from('collection_times')
-          .select('production_slot')
-          .eq('truck_id', resolvedTruckId)
-          .eq('collection_time', slot)
-          .maybeSingle(),
-        getProductionSlotUnits(supabase, resolvedTruckId, eventDate),
-        supabase
-          .from('slot_capacity')
-          .select('slot, max_orders')
-          .eq('truck_id', resolvedTruckId)
-          .eq('event_date', eventDate),
-      ])
-      const capacityMap = Object.fromEntries((capacities || []).map(c => [c.slot, c.max_orders]))
-      // For dynamic-slot trucks (no collection_times), derive production_slot from the slot time
-      const productionSlot = timeRow?.production_slot ?? (() => {
-        const dur = truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
-        if (dur > 0) {
-          const [h, m] = slot.split(':').map(Number)
-          const slotMins = h * 60 + m
-          const prodMins = Math.floor(slotMins / dur) * dur
-          return `${String(Math.floor(prodMins / 60)).padStart(2, '0')}:${String(prodMins % 60).padStart(2, '0')}`
-        }
-        return slot
-      })()
-      const maxBatches = capacityMap[productionSlot] ?? 999
-
-      if (!canFitInProductionSlot(
-        slotUnits[productionSlot] || {},
-        orderLines,
-        itemCatMap,
-        maxBatches,
-        catConfigs
-      )) {
-        return NextResponse.json(
-          { error: 'This time slot is full — please choose another' },
-          { status: 409 }
-        )
-      }
-    }
+    // NOTE: the old "slot full → 409" hard-block is removed for the customer path.
+    // A full slot now never rejects — capacity is resolved at booking time by
+    // claimAvailableSlot (reassign to the first available later slot, else pending).
+    // Non-capacity validation (payload/total/event) stays below, unchanged.
 
     // ── Server-side total validation ──────────────────────────────────────────
     const { data: menuItems } = await supabase
@@ -444,48 +521,61 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
     }
 
-    // ── Auto-accept if truck has it enabled ───────────────────────────────────
+    // ── Capacity-safe slot placement (customer path, Section 5/7) ─────────────
+    // Customers only ever get an AVAILABLE slot. The chosen slot is validated
+    // against LIVE capacity under a per-slot lock (claimAvailableSlot): not red →
+    // use it; full → reassign to the first available later slot; all full →
+    // pending. Never rejected. Status: auto-accept ON → confirm; OFF → pending on
+    // the (possibly reassigned) available slot for operator confirmation.
     const requestedSlot = slot ?? null
-    let confirmedSlot = requestedSlot
+    let confirmedSlot = requestedSlot          // what the customer email shows (null = ASAP)
     let autoAccepted = false
     let slotChanged = false
 
-    if (truck.auto_accept) {
-      if (requestedSlot && eventDate) {
-        const resolved = await resolveAutoAcceptSlot(
-          resolvedTruckId, eventDate, requestedSlot, orderLines, itemCatMap, catConfigs,
-          eventRow?.start_time ?? null,
-          eventRow?.end_time ?? null,
-          truck.collection_interval_mins ?? 0,
-          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
-        )
-        if (resolved.canConfirm) {
-          autoAccepted = true
-          confirmedSlot = resolved.confirmedSlot
-          slotChanged = resolved.slotChanged
-          await supabase
-            .from('orders')
-            .update({
-              status: 'confirmed',
-              ...(slotChanged ? { slot: confirmedSlot } : {}),
-            })
-            .eq('order_key', order.order_key)
+    if (eventDate) {
+      // Live kitchen_capacity (items) from the event's van — same source as the
+      // operator traffic light, so customer placement and the dot agree on "full".
+      const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate)
+      const claim = await claimAvailableSlot(
+        resolvedTruckId, eventDate, requestedSlot, orderLines, itemCatMap, catConfigs,
+        eventRow?.start_time ?? null,
+        eventRow?.end_time ?? null,
+        truck.collection_interval_mins ?? 0,
+        truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
+        kitchenCapacity,
+      )
+      const update: Record<string, unknown> = {}
+      if (claim.booked && claim.finalSlot) {
+        const dur = truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
+        if (requestedSlot) {
+          // Chosen slot: persist the (possibly reassigned) slot; slotChanged drives
+          // the slotAdjustedFrom email box (Section 18 — reused, no new copy).
+          confirmedSlot = claim.finalSlot
+          slotChanged = claim.finalSlot !== requestedSlot
+          if (slotChanged) update.slot = claim.finalSlot
+        } else {
+          // ASAP: keep slot null ONLY when booked at the event-start window, so the
+          // production_slot_usage booking matches the writers' null->event-start
+          // resolution (book/unbook identity; writer semantics untouched). If pushed
+          // to a later window, persist the concrete slot (email then shows that time).
+          const startPs = deriveProductionSlot(String(eventRow?.start_time ?? claim.finalSlot).slice(0, 5), dur)
+          const finalPs = deriveProductionSlot(claim.finalSlot, dur)
+          if (finalPs === startPs) {
+            confirmedSlot = null            // customer still sees "ASAP"
+          } else {
+            update.slot = claim.finalSlot   // pushed later -> concrete collection time
+            confirmedSlot = claim.finalSlot
+          }
         }
-      } else {
-        autoAccepted = true
-        await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', order.order_key)
+        if (truck.auto_accept) {
+          autoAccepted = true
+          update.status = 'confirmed'
+        }
       }
-    }
-
-    // Track batch usage — never block the order if this fails
-    const slotToBook = confirmedSlot || requestedSlot
-    if (slotToBook && eventDate) {
-      try {
-        await addOrderToProductionSlot(
-          supabase, resolvedTruckId, eventDate, slotToBook, orderLines, itemCatMap
-        )
-      } catch (slotErr) {
-        console.error('[submit] production slot tracking failed:', slotErr)
+      // !claim.booked -> event full / lock contended -> leave pending at requested
+      // (or ASAP/null), unbooked. Never rejected, never overfilled.
+      if (Object.keys(update).length) {
+        await supabase.from('orders').update(update).eq('order_key', order.order_key)
       }
     }
 
@@ -614,20 +704,8 @@ export async function POST(req: NextRequest) {
       console.error('Customer email failed:', emailErr)
     }
 
-    if (truck.contact_email) {
-      try {
-        await sendConfirmationEmail({
-          to: truck.contact_email,
-          subject: `[Order copy] ${subject}`,
-          html,
-          text,
-          truckName: truck.name,
-          senderName: 'HatchGrab',
-        })
-      } catch (emailErr) {
-        console.error('Truck copy email failed:', emailErr)
-      }
-    }
+    // No "[Order copy]" to the truck — the "New order received" notification
+    // above (:547) is the single operator-bound email per self-order.
 
     // ── Done ──────────────────────────────────────────────────────────────────
     return NextResponse.json({
