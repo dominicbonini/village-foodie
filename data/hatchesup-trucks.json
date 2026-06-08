@@ -188,10 +188,10 @@
     {
       "name": "Al Chile",
       "orderUrl": "https://alchile.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T00:09:12.188Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Saffron Hill Food",
