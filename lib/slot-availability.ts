@@ -122,17 +122,18 @@ export function buildSlotAvailability(params: {
       }
     }
 
-    // ── (a) per-window global item ceiling ────────────────────────────────────
+    // ── (a) per-window committed-load ceiling ─────────────────────────────────
+    // Only the items ALREADY committed to T's own production window count here. The
+    // basket is NOT added: a multi-item order's items are produced ACROSS windows at
+    // the kitchen's rate (handled once by (b) throughput) — they do not all pile into
+    // T's single window. Adding the whole basket here was the bug that red-flagged
+    // every slot for a large order. (a) now only reddens a window already full of
+    // prior bookings; whether THIS order fits is (b)'s job.
     if (kitchenCapacity != null) {
       let usedItems = 0
       for (const [cat, qty] of Object.entries(unitsHere)) {
         const cfg = catConfigs[cat.toLowerCase()]
         if (cfg && cfg.secs) usedItems += qty // exclude instant items (Manual s.14)
-      }
-      // Basket "placed here" counts against this window's ceiling too.
-      for (const [cat, qty] of Object.entries(basket)) {
-        const cfg = catConfigs[cat.toLowerCase()]
-        if (cfg && cfg.secs) usedItems += qty
       }
       const cap = kitchenCapacity
       const soft = Math.max(1, Math.floor(cap * SOFT_CAP_RATIO))

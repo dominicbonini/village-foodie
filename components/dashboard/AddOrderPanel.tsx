@@ -242,29 +242,27 @@ export function AddOrderPanel({
     return { row, ind: getSlotIndicator({ ...row, tone }) }
   }
 
-  // ASAP slot calculation — see Engineering Manual s.6
-  // queueByCat sourced from /api/slots response (canonical, includes modified orders)
-  // Both dropdown and sub-label derive from calcQueueAwareReadySecs — single formula
-  // adjustedAsapSlot = first slot at or after eventStart + queueAware.minsFromNow
-  // Do NOT rebuild queueByCat from orders prop — it misses modified status
+  // ASAP slot calculation — see Engineering Manual s.6.
+  // Resolve ASAP from the SAME corrected engine the slot dots use (slotEngineRows,
+  // basket-inclusive): the earliest slot the order can ACTUALLY be ready for —
+  // not past, not before the kitchen's ready floor, and not red on capacity/
+  // throughput. This guarantees the ASAP time + sub-label never point at a slot
+  // whose dot is red.
   const adjustedAsapSlot = useMemo(() => {
     if (!manualSlots.length) return null
-    if (!queueAware.minsFromNow) return manualAsapSlot
-    const tMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
-    // Use readyTime HH:MM as the floor — identical to the "Ready around" label.
-    // nowMins + minsFromNow is wrong for future events: minsFromNow spans overnight
-    // (e.g. 20h) so neededMins overflows past midnight and always picks the last slot.
-    const neededMins = queueAware.readyTime
-      ? tMins(queueAware.readyTime)
-      : new Date().getHours() * 60 + new Date().getMinutes() + queueAware.minsFromNow
-    return (
-      manualSlots.find(s => !s.is_grace && s.available && tMins(s.collection_time) >= neededMins)
-      ?? manualSlots.filter(s => !s.is_grace && s.available).slice(-1)[0]
-      ?? manualAsapSlot
-    )
-  }, [manualSlots, queueAware, manualAsapSlot])
+    const ready = manualSlots.find(s => {
+      const row = slotEngineRows.get(s.collection_time)
+      if (s.is_grace) return false
+      if (!row) return s.available // pre-engine fallback
+      return !row.is_past && !row.too_soon && row.tone !== 'red'
+    })
+    return ready ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
+  }, [manualSlots, slotEngineRows, manualAsapSlot])
 
+  // Sub-label "around" time = the engine-resolved ASAP slot (so it agrees with the
+  // dots and the ASAP option), falling back to the queue-aware estimate.
   const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
+  const asapAround = adjustedAsapSlot?.collection_time ?? readyTime
 
   const isEventEnded = manualEvent ? (() => {
     const today = new Date().toISOString().split('T')[0]
@@ -565,12 +563,12 @@ setItemModal({ item, modGroups, editCartKey })
           <div className="mt-2 bg-teal-50 border border-teal-200 rounded-xl px-3 py-2.5 flex items-center gap-2">
             <span className="text-teal-600 text-base">⚡</span>
             <div>
-              <p className="text-sm font-black text-teal-800">Ready around {readyTime}</p>
+              <p className="text-sm font-black text-teal-800">Ready around {asapAround}</p>
               <p className="text-xs text-teal-600 font-medium">{dateLabel}</p>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {readyTime}</p>
+          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {asapAround}</p>
         )
       })()}
     </div>
