@@ -220,18 +220,18 @@
     {
       "name": "Gurkha Street Food",
       "orderUrl": "https://gurkhastreetfood.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T17:54:16.337Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Peaky Pizzas",
       "orderUrl": "https://peakypizzas.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T20:17:29.461Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Maya Street Food",
