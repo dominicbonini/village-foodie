@@ -11,7 +11,7 @@ import { cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
-import { formatTime } from '@/lib/time-utils';
+import { formatTime, localTodayIso } from '@/lib/time-utils';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -38,6 +38,7 @@ interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean }
 interface EventData {
+  id: string            // truck_events.id — the event the customer is ordering against
   date: string          // dd/mm/yyyy
   date_iso: string      // yyyy-mm-dd
   date_friendly: string
@@ -221,12 +222,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [event, slotHour])
 
   // Fetch available slots (must use date_iso yyyy-mm-dd to match orders.event_date in Supabase)
-  const fetchSlots = async (truckId: string, dateIso: string, startTime?: string, endTime?: string) => {
+  const fetchSlots = async (truckId: string, dateIso: string, startTime?: string, endTime?: string, eventId?: string) => {
     setLoadingSlots(true)
     try {
       const p = new URLSearchParams({ date: dateIso })
       if (startTime) p.set('start', startTime)
       if (endTime) p.set('end', endTime)
+      // event_id scopes the slot capacity to THIS event (re-key fix) — date is the fallback.
+      if (eventId) p.set('event_id', eventId)
       const res = await fetch(`/api/slots/${truckId}?${p}`, { cache: 'no-store' })
       const data = await res.json()
       const slots = data.slots || []
@@ -244,13 +247,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Reload slot availability whenever truck/event is known or customer returns to the tab
   useEffect(() => {
     if (!truck?.id) return
-    fetchSlots(truck.id, eventDateIso, event?.start_time, event?.end_time)
-  }, [truck?.id, eventDateIso, event?.start_time, event?.end_time])
+    fetchSlots(truck.id, eventDateIso, event?.start_time, event?.end_time, event?.id)
+  }, [truck?.id, eventDateIso, event?.start_time, event?.end_time, event?.id])
 
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState === 'visible' && truck?.id) {
-        fetchSlots(truck.id, eventDateIso, event?.start_time, event?.end_time)
+        fetchSlots(truck.id, eventDateIso, event?.start_time, event?.end_time, event?.id)
       }
     }
     document.addEventListener('visibilitychange', onVisible)
@@ -504,7 +507,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             ])
           )
 
-    const todayIso = new Date().toISOString().split('T')[0]
+    const todayIso = localTodayIso() // local date (s.7) — a future LOCAL event is never "today"
     const isToday = eventDateIso === todayIso
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     const beforeEvent = !isToday || nowMins < eventStartMins
@@ -571,27 +574,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return h * 60 + m
   }
 
-  // Snap chosen time forward if basket changes push ASAP later
+  // ASAP is selected by DEFAULT (asapChosen initial = true) and submits as slot=null,
+  // so there's nothing to auto-populate on load — the selection no longer depends on a
+  // concrete slotHour/Minute being filled in. This is the fix for "looks selected but
+  // can't place" and for the basket recompute clearing ASAP.
+
+  // Snap only an EXPLICITLY chosen specific time back to ASAP if a basket change pushes
+  // the ready time past it. ASAP itself is never touched here — it persists through
+  // basket edits; only the "Around …" estimate (customerAsapTime) updates.
   useEffect(() => {
+    if (asapChosen) return
     if (!selectedSlot || !customerAsapTime) return
     if (toMins(selectedSlot) < toMins(customerAsapTime)) {
       setAsapChosen(true)
-      const [h, m] = customerAsapTime.split(':')
-      setSlotHour(h); setSlotMinute(m)
+      setSlotHour(''); setSlotMinute('')
     }
   }, [customerAsapTime]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Auto-select ASAP on first load (only once, and only once real slot data is available)
-  const hasAutoSelected = useRef(false)
-  useEffect(() => {
-    if (hasAutoSelected.current) return
-    const t = customerAsapTime || asapSlot
-    if (!t) return
-    const [h, m] = t.split(':')
-    setSlotHour(h)
-    setSlotMinute(m)
-    hasAutoSelected.current = true
-  }, [customerAsapTime, asapSlot]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const applyCode = () => {
     if (!menu) return
@@ -605,14 +603,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const submitOrder = async (extra: { upsellEvents?: any[] } = {}) => {
     if (!truck || !menu || !name || !email || !hasItems || !event) return
-    if (truck.mode === 'village' && !selectedSlot) return
+    // ASAP (asapChosen) is a genuine active choice — it submits slot=null and the
+    // server resolves the earliest ready window. A specific time requires selectedSlot.
+    if (truck.mode === 'village' && !selectedSlot && !asapChosen) return
     setSubmitting(true)
     try {
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           truckId: slug, customerName: name, customerEmail: email, customerPhone: phone,
-          slot: selectedSlot || null, eventDate: eventDateIso,
+          slot: asapChosen ? null : (selectedSlot || null), eventDate: eventDateIso, eventId: event?.id ?? null,
           items: basket.map(b => ({
             name: b.menuItem.name,
             quantity: b.quantity,
@@ -787,7 +787,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Block ordering after event end time (only applies to today's event)
   const isEventClosed = (() => {
     if (!event?.end_time || !event?.date_iso) return false
-    const todayIso = new Date().toISOString().split('T')[0]
+    const todayIso = localTodayIso() // local date (s.7) — don't mark a future event "closed"
     if (event.date_iso !== todayIso) return false
     const [endH, endM] = event.end_time.split(':').map(Number)
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
@@ -1243,11 +1243,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     return (
                       <button
                         onClick={() => {
+                          // ASAP is selected as a first-class choice (submits null) —
+                          // clear any concrete time so the highlight + submit agree.
                           setAsapChosen(true)
-                          if (asapTime) {
-                            const [h, m] = asapTime.split(':')
-                            setSlotHour(h); setSlotMinute(m)
-                          }
+                          setSlotHour(''); setSlotMinute('')
                         }}
                         disabled={!asapTime}
                         className={`flex-1 flex flex-col items-center justify-center px-3 py-3 rounded-2xl border-2 font-bold transition-all active:scale-95 ${
@@ -1282,14 +1281,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 const [h, m] = val.split(':')
                                 setSlotHour(h); setSlotMinute(m)
                               } else {
-                                // Deselect — back to ASAP
+                                // Deselect a specific time — back to ASAP (submits null).
                                 setAsapChosen(true)
-                                if (asapTime) {
-                                  const [h, m] = asapTime.split(':')
-                                  setSlotHour(h); setSlotMinute(m)
-                                } else {
-                                  setSlotHour(''); setSlotMinute('')
-                                }
+                                setSlotHour(''); setSlotMinute('')
                               }
                             }}
                             className={`w-full h-full min-h-[68px] rounded-2xl border-2 px-3 py-3 text-sm font-bold appearance-none text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-orange-400 ${
@@ -1463,7 +1457,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
           <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
-            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot) || (!eventLoading && !event)}
+            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
           </button>

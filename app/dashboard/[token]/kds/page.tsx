@@ -66,6 +66,10 @@ export default function KdsPage() {
       const params = new URLSearchParams({ token })
       if (currentPin) params.set('pin', currentPin)
       if (vanId) params.set('van_id', vanId)
+      // event_id scopes the slot projection to the active event (re-key fix). Null on the
+      // first load → the server falls back to the sole event on the date; once an event is
+      // selected, fetchAll's identity changes and the effect re-fetches event-scoped.
+      if (selectedEventId) params.set('event_id', selectedEventId)
       const res = await fetch(`/api/dashboard?${params}`)
       const data = await res.json()
 
@@ -120,7 +124,7 @@ export default function KdsPage() {
     } finally {
       setLoading(false)
     }
-  }, [token, pin])
+  }, [token, pin, selectedEventId])
 
   useEffect(() => {
     configureStatusBar()

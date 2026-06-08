@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
   // See session notes May 2026.
   const { data: rows, error } = await supabase
     .from('truck_events')
-    .select('event_date, start_time, end_time, venue_name, town, notes')
+    .select('id, event_date, start_time, end_time, venue_name, town, notes')
     .eq('truck_id', truck.id)
     .in('status', ['confirmed', 'open'])
     .gte('event_date', today)
@@ -87,6 +87,7 @@ export async function GET(req: NextRequest) {
     if (seen.has(key)) return null
     seen.add(key)
     return {
+      id:            e.id,
       date:          toddmmyyyy(e.event_date),
       date_iso:      e.event_date,
       date_friendly: formatFriendly(e.event_date),

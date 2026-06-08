@@ -491,7 +491,22 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'delete_event') {
+    const { data: ev } = await supabase
+      .from('truck_events')
+      .select('event_date')
+      .eq('id', body.id)
+      .eq('truck_id', truck.id)
+      .single()
     await supabase.from('truck_events').update({ status: 'cancelled' }).eq('id', body.id).eq('truck_id', truck.id)
+    // Recompute the date's production_slot_usage from LIVE orders so a removed event
+    // no longer leaves stale load for other same-date events (best-effort).
+    if (ev?.event_date) {
+      try {
+        await rebuildProductionSlotUsage(supabase, truck.id, ev.event_date)
+      } catch (err) {
+        console.warn('[delete_event] production_slot_usage rebuild failed (drift risk):', err)
+      }
+    }
     return NextResponse.json({ success: true })
   }
 

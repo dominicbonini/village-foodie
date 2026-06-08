@@ -237,7 +237,10 @@ export function AddOrderPanel({
     let tone: SlotTone = occ?.tone ?? 'green'
     if (s.too_soon && tone === 'green') tone = 'amber'
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
-    const label = tone === 'green' ? '' : (occ?.bound_by ?? (tone === 'red' ? 'Full' : 'Filling up'))
+    // Display text only (tone unchanged): red is always "Full" (no category/ratio);
+    // amber shows the binding per-category count ("Pizza 2/4"), with a plain fallback
+    // only when there's no category info (e.g. a timing-only amber); green has no label.
+    const label = tone === 'green' ? '' : tone === 'red' ? 'Full' : (occ?.bound_by ?? 'Filling up')
     return { occ, tone, emoji, label }
   }
 
@@ -306,12 +309,14 @@ export function AddOrderPanel({
     finally { setEventsLoading(false) }
   }, [token])
 
-  const fetchManualSlots = useCallback(async (eventDate: string, startTime?: string, endTime?: string) => {
+  const fetchManualSlots = useCallback(async (eventDate: string, startTime?: string, endTime?: string, eventId?: string) => {
     if (!truck?.id) return
     try {
       const p = new URLSearchParams({ date: eventDate })
       if (startTime) p.set('start', startTime)
       if (endTime) p.set('end', endTime)
+      // event_id scopes the panel's capacity projection to THIS event (re-key fix).
+      if (eventId) p.set('event_id', eventId)
       const res = await fetch(`/api/slots/${truck.id}?${p}`)
       const data = await res.json()
       setManualSlots(data.slots || [])
@@ -347,7 +352,7 @@ export function AddOrderPanel({
     if (!controlledEvent) return
     if (controlledEvent.id === manualEvent?.id) return
     setManualEvent(controlledEvent)
-    fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time)
+    fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time, controlledEvent.id)
     setManualSlot('')
   }, [controlledEvent?.id, isActive]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -374,9 +379,9 @@ export function AddOrderPanel({
   useEffect(() => {
     if (!isActive) return
     if (manualEvent?.event_date) {
-      fetchManualSlots(manualEvent.event_date, manualEvent.start_time, manualEvent.end_time)
+      fetchManualSlots(manualEvent.event_date, manualEvent.start_time, manualEvent.end_time, manualEvent.id)
     }
-  }, [manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots, isActive])
+  }, [manualEvent?.id, manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots, isActive])
 
   // ── item manipulation ───────────────────────────────────────────────────────
   const addManualItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '') => {
@@ -530,7 +535,7 @@ setItemModal({ item, modGroups, editCartKey })
           {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
             const ind = slotIndicatorFor(s)
-            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` · ${ind.label}` : ''}</option>
+            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` ${ind.label}` : ''}</option>
           })}
         </select>
       ) : (

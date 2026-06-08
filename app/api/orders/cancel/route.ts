@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         await removeOrderFromProductionSlot(
           supabase,
           order.truck_id,
-          order.event_date,
+          order.event_id,
           order.slot,
           normaliseOrderLines(order.items || [], order.deals),
           itemCatMap

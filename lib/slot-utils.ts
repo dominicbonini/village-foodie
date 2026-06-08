@@ -2,6 +2,8 @@
 // SINGLE SOURCE OF TRUTH for slot/time availability logic
 // Used by: customer order form, truck dashboard
 
+import { localTodayIso } from '@/lib/time-utils'
+
 export interface SlotBase {
   collection_time: string
   available: boolean
@@ -10,7 +12,9 @@ export interface SlotBase {
 
 export function getAsapSlot<T extends SlotBase>(slots: T[], eventDate?: string): T | null {
   const now = new Date()
-  const todayStr = now.toISOString().split('T')[0]
+  // LOCAL date (s.7) so it agrees with the LOCAL nowMins below — toISOString() (UTC) would
+  // roll over at UTC midnight and treat a future event as today, flooring it by the clock.
+  const todayStr = localTodayIso()
   const isToday = !eventDate || eventDate === todayStr
 
   if (!isToday) {

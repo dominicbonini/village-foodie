@@ -8,6 +8,7 @@ import { getCatConfig, calcMinReadyMins, calcQueuePushSecs, type CatConfig } fro
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
+import { localTodayIso } from '@/lib/time-utils'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -55,6 +56,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const date = normalizeEventDate(rawDate)
   const paramStart = req.nextUrl.searchParams.get('start') || null
   const paramEnd   = req.nextUrl.searchParams.get('end')   || null
+  const eventIdParam = req.nextUrl.searchParams.get('event_id')
 
   const truck = await resolveTruck(truckIdParam)
   if (!truck) {
@@ -63,13 +65,43 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const truckId = truck.id
   const extraWaitMins = effectiveExtraWaitMins(truck.extra_wait_mins ?? 0, truck.extra_wait_started_at ?? null)
 
-  // Fetch everything in parallel
+  // Resolve THE event for this slot view (re-key fix): prefer the explicit event_id the
+  // customer page passes (event.id). Fall back to the sole non-cancelled event on the
+  // date — warning on an ambiguous date so a two-same-date-event truck doesn't project
+  // the wrong event. The resolved id scopes the production-usage read below.
+  type EventRow = { id: string; start_time: string | null; end_time: string | null; van_id: string | null }
+  let todayEvent: EventRow | null = null
+  if (eventIdParam) {
+    const { data } = await supabase
+      .from('truck_events')
+      .select('id, start_time, end_time, van_id')
+      .eq('truck_id', truckId)
+      .eq('id', eventIdParam)
+      .maybeSingle()
+    todayEvent = (data as EventRow) ?? null
+    if (!todayEvent) console.warn(`[slots] event_id ${eventIdParam} not found for truck ${truckId} — date fallback`)
+  }
+  if (!todayEvent) {
+    const { data, count } = await supabase
+      .from('truck_events')
+      .select('id, start_time, end_time, van_id', { count: 'exact' })
+      .eq('truck_id', truckId)
+      .eq('event_date', date)
+      .neq('status', 'cancelled')
+      .order('start_time', { ascending: true })
+      .limit(1)
+    todayEvent = (data?.[0] as EventRow) ?? null
+    if (!eventIdParam && (count ?? 0) > 1) {
+      console.warn(`[slots] ${count} events on ${date} for truck ${truckId} and no event_id — using earliest (${todayEvent?.id})`)
+    }
+  }
+
+  // Fetch everything else in parallel
   const [
     { data: staticTimes },
     { data: existingOrders },
     { data: categories },
     { data: menuItems },
-    { data: todayEvent },
   ] = await Promise.all([
     supabase
       .from('collection_times')
@@ -93,15 +125,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       .from('menu_items_db')
       .select('name, category_id')
       .eq('truck_id', truckId),
-
-    // Today's event for dynamic slot generation
-    supabase
-      .from('truck_events')
-      .select('start_time, end_time, van_id')
-      .eq('truck_id', truckId)
-      .eq('event_date', date)
-      .neq('status', 'cancelled')
-      .maybeSingle(),
   ])
 
   // Use dynamically generated times: prefer truck_events row, fall back to caller-supplied
@@ -147,7 +170,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   }
 
   // ── Calculate minimum ready time ─────────────────────────────────────────
-  const today = new Date().toISOString().split('T')[0]
+  // LOCAL date (s.7) so it agrees with the LOCAL nowMins below. toISOString() is UTC and
+  // rolls over at UTC midnight — in the evening it would read tomorrow's date while nowMins
+  // is still today's wall clock, wrongly flooring a FUTURE event's slots by now.
+  const today = localTodayIso()
   const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
 
   // Customers cannot book slots before the event start time
@@ -183,7 +209,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       .single()
     kitchenCapacity = van?.kitchen_capacity ?? null
   }
-  const productionSlotUnits = await getProductionSlotUnits(supabase, truckId, date)
+  // Event-scoped usage (re-key fix): only the resolved event's load, never pooled with
+  // other same-date events. No event resolved → empty (slots still generated from times).
+  const productionSlotUnits = todayEvent?.id
+    ? await getProductionSlotUnits(supabase, truckId, todayEvent.id)
+    : {}
 
   const slots = buildSlotAvailability({
     times,

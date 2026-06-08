@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendEventCancellationEmail } from '@/lib/email'
 import { getSoleActiveVanId } from '@/lib/van-utils'
+import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -173,6 +174,18 @@ export async function POST(req: NextRequest) {
             paymentStatus: order.paid_at ? 'paid' : null,
           })
         }
+      }
+    }
+
+    // The event's orders are now cancelled, but their items still sit in the
+    // date-keyed production_slot_usage rows. Recompute the date from LIVE orders so
+    // the cancelled load no longer bleeds into other same-date events' projections.
+    // Best-effort (reuses the existing rebuild; never block the cancel).
+    if (eventRow?.event_date) {
+      try {
+        await rebuildProductionSlotUsage(supabase, truck.id, eventRow.event_date)
+      } catch (err) {
+        console.warn('[events/cancel] production_slot_usage rebuild failed (drift risk):', err)
       }
     }
 

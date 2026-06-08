@@ -82,64 +82,64 @@ async function fetchCollectionTimeMap(
 }
 
 /**
- * Event start time (HH:MM) for a truck/date — the earliest non-cancelled event.
- * Used as the STABLE production window for null-slot (ASAP) orders so booking is
- * now-independent: submit and a later cancel/collect always resolve to the same
- * window and therefore cancel out. (production_slot_usage is date-keyed, so a
- * date-scoped lookup matches the storage model.)
+ * Event metadata for production bookkeeping: the event's OWN start window (HH:MM, for
+ * null-slot/ASAP resolution) and its event_date (for the date-scoped delete and the
+ * event_date column). Keyed by event_id so a null-slot order books into THIS event's
+ * start window, NOT the date's earliest event (the cross-event mis-windowing fix).
  */
-async function getEventStartHHMM(
+async function getEventMeta(
   supabase: SupabaseClient,
-  truckId: string,
-  eventDate: string
-): Promise<string | null> {
+  eventId: string
+): Promise<{ start: string | null; eventDate: string | null }> {
   const { data } = await supabase
     .from('truck_events')
-    .select('start_time')
-    .eq('truck_id', truckId)
-    .eq('event_date', eventDate)
-    .neq('status', 'cancelled')
-    .order('start_time', { ascending: true })
-    .limit(1)
+    .select('start_time, event_date')
+    .eq('id', eventId)
     .maybeSingle()
-  return data?.start_time ? String(data.start_time).slice(0, 5) : null
+  return {
+    start: data?.start_time ? String(data.start_time).slice(0, 5) : null,
+    eventDate: data?.event_date ?? null,
+  }
 }
 
 /**
  * Resolve the collection time used for production-slot bookkeeping. A real slot
- * passes through unchanged; a null slot (ASAP) resolves to the event-start window
- * (stable, see getEventStartHHMM). book and unbook MUST both go through this so
- * they target the identical production slot.
+ * passes through unchanged; a null slot (ASAP) resolves to THIS event's start window.
+ * book and unbook MUST both go through this so they target the identical production slot.
  */
 async function resolveBookingSlot(
   supabase: SupabaseClient,
-  truckId: string,
-  eventDate: string,
+  eventId: string,
   collectionTime: string | null
 ): Promise<string | null> {
   if (collectionTime) return collectionTime
-  return getEventStartHHMM(supabase, truckId, eventDate)
+  return (await getEventMeta(supabase, eventId)).start
 }
 
-/** All production windows for a truck/date → item qty by category. */
+/** All production windows for ONE event → item qty by category. Event-scoped: returns
+ *  only this event's rows, never pooled with other same-date events. */
 export async function getProductionSlotUnits(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string
+  eventId: string | null
 ): Promise<ProductionSlotUnits> {
+  // No event → order/view belongs to no event; nothing pooled, empty usage.
+  if (!eventId) return {}
   const { data, error } = await supabase
     .from('production_slot_usage')
     .select('production_slot, units_by_cat')
     .eq('truck_id', truckId)
-    .eq('event_date', eventDate)
+    .eq('event_id', eventId)
 
   if (error) {
-    return buildUnitsFromOrders(supabase, truckId, eventDate)
+    return buildUnitsFromOrders(supabase, truckId, eventId)
   }
 
   if (!data?.length) {
-    const built = await buildUnitsFromOrders(supabase, truckId, eventDate)
-    await syncProductionSlotUsage(supabase, truckId, eventDate, built)
+    // Lazy reseed (covers the empty table between migration and backfill).
+    const built = await buildUnitsFromOrders(supabase, truckId, eventId)
+    const { eventDate } = await getEventMeta(supabase, eventId)
+    if (eventDate) await syncProductionSlotUsage(supabase, truckId, eventId, eventDate, built)
     return built
   }
 
@@ -153,22 +153,24 @@ export async function getProductionSlotUnits(
 async function buildUnitsFromOrders(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string
+  eventId: string
 ): Promise<ProductionSlotUnits> {
-  const [timeMap, eventStart, { data: orders }, { data: menuItems }, { data: categories }] = await Promise.all([
+  const [timeMap, meta, { data: orders }, { data: menuItems }, { data: categories }] = await Promise.all([
     fetchCollectionTimeMap(supabase, truckId),
-    getEventStartHHMM(supabase, truckId, eventDate),
+    getEventMeta(supabase, eventId),
     supabase
       .from('orders')
-      // Include null-slot (ASAP) orders — they book into the event-start window
-      // below; the previous `.not('slot','is',null)` made them invisible.
+      // Event-scoped: this event's orders only. event_id IS NULL orders (which belong to
+      // no event) are excluded by the eq filter, so they pool into nothing. null-slot
+      // (ASAP) orders are still included — they book into the event-start window below.
       .select('slot, items, deals')
       .eq('truck_id', truckId)
-      .eq('event_date', eventDate)
+      .eq('event_id', eventId)
       .in('status', ['pending', 'confirmed', 'modified']),
     supabase.from('menu_items_db').select('name, category_id').eq('truck_id', truckId),
     supabase.from('menu_categories').select('id, name').eq('truck_id', truckId),
   ])
+  const eventStart = meta.start
 
   const itemCatMap: Record<string, string> = {}
   ;(menuItems || []).forEach(item => {
@@ -178,7 +180,7 @@ async function buildUnitsFromOrders(
 
   const out: ProductionSlotUnits = {}
   ;(orders || []).forEach(order => {
-    // null slot → event-start window, identical to the incremental booking path
+    // null slot → this event's start window, identical to the incremental booking path
     const ct = order.slot || eventStart
     if (!ct) return
     const productionSlot = timeMap[ct] || ct
@@ -194,11 +196,13 @@ async function buildUnitsFromOrders(
 async function syncProductionSlotUsage(
   supabase: SupabaseClient,
   truckId: string,
+  eventId: string,
   eventDate: string,
   units: ProductionSlotUnits
 ) {
   const rows = Object.entries(units).map(([production_slot, units_by_cat]) => ({
     truck_id: truckId,
+    event_id: eventId,
     event_date: eventDate,
     production_slot,
     units_by_cat,
@@ -206,13 +210,14 @@ async function syncProductionSlotUsage(
   }))
   if (!rows.length) return
   await supabase.from('production_slot_usage').upsert(rows, {
-    onConflict: 'truck_id,event_date,production_slot',
+    onConflict: 'truck_id,event_id,production_slot',
   })
 }
 
 async function upsertProductionSlotUnits(
   supabase: SupabaseClient,
   truckId: string,
+  eventId: string,
   eventDate: string,
   productionSlot: string,
   units: QtyByCat
@@ -220,25 +225,26 @@ async function upsertProductionSlotUnits(
   const { error } = await supabase.from('production_slot_usage').upsert(
     {
       truck_id: truckId,
+      event_id: eventId,
       event_date: eventDate,
       production_slot: productionSlot,
       units_by_cat: units,
       updated_at: new Date().toISOString(),
     },
-    { onConflict: 'truck_id,event_date,production_slot' }
+    { onConflict: 'truck_id,event_id,production_slot' }
   )
   if (error) console.warn('[production_slot_usage] upsert failed (drift risk):', error.message)
 }
 
-/** Batch count per collection_time (for slot picker UI). */
+/** Batch count per collection_time (for slot picker UI). Event-scoped. */
 export async function getBatchCountsByCollectionTime(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string,
   collectionTimes: { collection_time: string; production_slot: string }[],
   catConfigs: Record<string, CatConfig>
 ): Promise<Record<string, number>> {
-  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventDate)
+  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
   const counts: Record<string, number> = {}
   collectionTimes.forEach(t => {
     const units = slotUnits[t.production_slot] || {}
@@ -247,62 +253,66 @@ export async function getBatchCountsByCollectionTime(
   return counts
 }
 
-/** Add an order's items to its production window. collectionTime null → ASAP,
- *  booked into the stable event-start window (resolveBookingSlot). */
+/** Add an order's items to its production window. collectionTime null → ASAP, booked
+ *  into THIS event's start window (resolveBookingSlot). eventId null → order belongs to
+ *  no event; skipped (we never write null-event rows — they would pool). */
 export async function addOrderToProductionSlot(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string | null,
   collectionTime: string | null,
   items: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>
 ) {
-  if (!items.length) return
-  const ct = await resolveBookingSlot(supabase, truckId, eventDate, collectionTime)
-  if (!ct) return
+  if (!items.length || !eventId) return
+  const meta = await getEventMeta(supabase, eventId)
+  const ct = collectionTime || meta.start
+  if (!ct || !meta.eventDate) return
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)
   const productionSlot = timeMap[ct] || ct
-  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventDate)
+  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
   const current = slotUnits[productionSlot] || {}
   const merged = mergeQtyByCat(current, orderItemsToQtyByCat(items, itemCatMap))
-  await upsertProductionSlotUnits(supabase, truckId, eventDate, productionSlot, merged)
+  await upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, merged)
 }
 
 /** Remove an order's items from its production window. collectionTime null → ASAP,
- *  resolved to the SAME event-start window the add used, so they cancel out. */
+ *  resolved to the SAME event-start window the add used, so they cancel out. eventId
+ *  null → nothing was booked; nothing to remove. */
 export async function removeOrderFromProductionSlot(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string | null,
   collectionTime: string | null,
   items: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>
 ) {
-  if (!items.length) return
-  const ct = await resolveBookingSlot(supabase, truckId, eventDate, collectionTime)
-  if (!ct) return
+  if (!items.length || !eventId) return
+  const meta = await getEventMeta(supabase, eventId)
+  const ct = collectionTime || meta.start
+  if (!ct || !meta.eventDate) return
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)
   const productionSlot = timeMap[ct] || ct
-  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventDate)
+  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
   const current = slotUnits[productionSlot] || {}
   const delta = orderItemsToQtyByCat(items, itemCatMap)
   const next = subtractQtyByCat(current, delta)
-  await upsertProductionSlotUnits(supabase, truckId, eventDate, productionSlot, next)
+  await upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, next)
 }
 
 /**
- * Authoritatively recompute units_by_cat from the orders table and OVERWRITE the
- * stored rows — the reconcile/self-heal path (Gap 3). Extends buildUnitsFromOrders
- * (same resolution incl. null-slot → event-start and deal items), so a rebuild and
- * the incremental counter agree. Delete-then-insert so corrupted/stale rows are
- * removed, not just updated. Best-effort: a read-after-empty lazily reseeds anyway.
+ * Authoritatively recompute units_by_cat from the orders table and OVERWRITE the stored
+ * rows — the reconcile/self-heal path (Gap 3). DATE-SCOPED orchestrator: clears the whole
+ * date's rows, then rebuilds EACH non-cancelled event on that date as its own event-keyed
+ * rows (no cross-event pooling). Per-event rebuild reuses buildUnitsFromOrders (same
+ * resolution incl. null-slot → this event's start and deal items), so a rebuild and the
+ * incremental counter agree. Best-effort: a read-after-empty lazily reseeds anyway.
  */
 export async function rebuildProductionSlotUsage(
   supabase: SupabaseClient,
   truckId: string,
   eventDate: string
 ) {
-  const units = await buildUnitsFromOrders(supabase, truckId, eventDate)
   const { error: delErr } = await supabase
     .from('production_slot_usage')
     .delete()
@@ -312,26 +322,35 @@ export async function rebuildProductionSlotUsage(
     console.warn('[production_slot_usage] rebuild delete failed (drift risk):', delErr.message)
     return
   }
-  await syncProductionSlotUsage(supabase, truckId, eventDate, units)
+  const { data: events } = await supabase
+    .from('truck_events')
+    .select('id')
+    .eq('truck_id', truckId)
+    .eq('event_date', eventDate)
+    .neq('status', 'cancelled')
+  for (const ev of events || []) {
+    const units = await buildUnitsFromOrders(supabase, truckId, ev.id)
+    await syncProductionSlotUsage(supabase, truckId, ev.id, eventDate, units)
+  }
 }
 
 /** @deprecated Use getBatchCountsByCollectionTime — kept for gradual migration */
 export async function getSlotBookingCounts(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string,
   collectionTimes?: { collection_time: string; production_slot: string }[],
   catConfigs?: Record<string, CatConfig>
 ): Promise<Record<string, number>> {
   if (collectionTimes?.length && catConfigs) {
-    return getBatchCountsByCollectionTime(supabase, truckId, eventDate, collectionTimes, catConfigs)
+    return getBatchCountsByCollectionTime(supabase, truckId, eventId, collectionTimes, catConfigs)
   }
-  // Legacy fallback: order count per slot
+  // Legacy fallback: order count per slot (event-scoped)
   const { data } = await supabase
     .from('orders')
     .select('slot')
     .eq('truck_id', truckId)
-    .eq('event_date', eventDate)
+    .eq('event_id', eventId)
     .in('status', ['pending', 'confirmed', 'modified'])
     .not('slot', 'is', null)
   const counts: Record<string, number> = {}
@@ -345,13 +364,13 @@ export async function getSlotBookingCounts(
 export async function incrementSlotBooking(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string,
   collectionTime: string,
   items?: { name: string; quantity: number }[],
   itemCatMap?: Record<string, string>
 ) {
   if (items?.length && itemCatMap) {
-    await addOrderToProductionSlot(supabase, truckId, eventDate, collectionTime, items, itemCatMap)
+    await addOrderToProductionSlot(supabase, truckId, eventId, collectionTime, items, itemCatMap)
     return
   }
 }
@@ -360,29 +379,29 @@ export async function incrementSlotBooking(
 export async function decrementSlotBooking(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string,
   collectionTime: string,
   items?: { name: string; quantity: number }[],
   itemCatMap?: Record<string, string>
 ) {
   if (items?.length && itemCatMap) {
-    await removeOrderFromProductionSlot(supabase, truckId, eventDate, collectionTime, items, itemCatMap)
+    await removeOrderFromProductionSlot(supabase, truckId, eventId, collectionTime, items, itemCatMap)
   }
 }
 
 export async function moveSlotBooking(
   supabase: SupabaseClient,
   truckId: string,
-  eventDate: string,
+  eventId: string | null,
   fromSlot: string | null,
   toSlot: string | null,
   items: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>
 ) {
   if (fromSlot && fromSlot !== toSlot) {
-    await removeOrderFromProductionSlot(supabase, truckId, eventDate, fromSlot, items, itemCatMap)
+    await removeOrderFromProductionSlot(supabase, truckId, eventId, fromSlot, items, itemCatMap)
   }
   if (toSlot && fromSlot !== toSlot) {
-    await addOrderToProductionSlot(supabase, truckId, eventDate, toSlot, items, itemCatMap)
+    await addOrderToProductionSlot(supabase, truckId, eventId, toSlot, items, itemCatMap)
   }
 }

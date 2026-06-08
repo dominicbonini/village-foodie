@@ -13,6 +13,7 @@
 import { calcQueuePushSecsByCat, type CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
+import { localTodayIso } from '@/lib/time-utils'
 
 export interface CollectionTimeRow {
   collection_time: string
@@ -82,7 +83,9 @@ export function buildSlotAvailability(params: {
     date, nowMins, earliestCollectionMins, eventStartMins, eventEndMins,
     basketByCat,
   } = params
-  const today = new Date().toISOString().split('T')[0]
+  // LOCAL date (s.7) — must agree with the LOCAL nowMins passed in; toISOString() (UTC)
+  // would roll over at UTC midnight and mis-flag a future event's slots as is_past.
+  const today = localTodayIso()
   const basket = basketByCat ?? {}
 
   // Index production windows by minute for the cumulative (b) cohort.

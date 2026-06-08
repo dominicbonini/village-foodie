@@ -211,6 +211,7 @@ async function releaseEventLock(truckId: string, eventDate: string): Promise<voi
 async function claimAvailableSlot(
   truckId: string,
   eventDate: string,
+  eventId: string | null,
   requestedSlot: string | null,
   orderLines: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>,
@@ -221,6 +222,8 @@ async function claimAvailableSlot(
   slotDurationMins?: number,
   kitchenCapacity?: number | null,
 ): Promise<{ finalSlot: string | null; booked: boolean }> {
+  // Lock stays keyed by (truckId, eventDate) — unchanged. event_id only scopes the
+  // production_slot_usage read/write below so same-date events don't pool.
   if (!(await acquireEventLock(truckId, eventDate))) {
     console.warn(`[claimAvailableSlot] event lock contended (${truckId}/${eventDate}) — pending fallback`)
     return { finalSlot: requestedSlot, booked: false }
@@ -254,19 +257,19 @@ async function claimAvailableSlot(
     if (!startSlot || !times.length) {
       const ct = startSlot ?? (eventStartTime ? eventStartTime.slice(0, 5) : null)
       if (!ct) return { finalSlot: null, booked: false }
-      await addOrderToProductionSlot(supabase, truckId, eventDate, ct, orderLines, itemCatMap)
+      await addOrderToProductionSlot(supabase, truckId, eventId, ct, orderLines, itemCatMap)
       return { finalSlot: ct, booked: true }
     }
 
     const startEntry = times.find(t => t.collection_time === startSlot)
     // Unrecognised slot (not in the list) → confirm at requested, no capacity check (Section 5).
     if (!startEntry) {
-      await addOrderToProductionSlot(supabase, truckId, eventDate, startSlot, orderLines, itemCatMap)
+      await addOrderToProductionSlot(supabase, truckId, eventId, startSlot, orderLines, itemCatMap)
       return { finalSlot: startSlot, booked: true }
     }
 
     // One FRESH read under the event lock — we are the sole writer for its duration.
-    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventDate)
+    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
     const windowSecs = (dur > 0 ? dur : iv > 0 ? iv : 5) * 60 // real production-window interval
     const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
 
@@ -277,7 +280,7 @@ async function claimAvailableSlot(
 
     // Instant-only order (no oven time) → book at the start slot.
     if (!tail) {
-      await addOrderToProductionSlot(supabase, truckId, eventDate, startSlot, orderLines, itemCatMap)
+      await addOrderToProductionSlot(supabase, truckId, eventId, startSlot, orderLines, itemCatMap)
       return { finalSlot: startSlot, booked: true }
     }
 
@@ -289,7 +292,7 @@ async function claimAvailableSlot(
       // Tail-completion lands after event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }
     }
-    await addOrderToProductionSlot(supabase, truckId, eventDate, placement, orderLines, itemCatMap)
+    await addOrderToProductionSlot(supabase, truckId, eventId, placement, orderLines, itemCatMap)
     return { finalSlot: placement, booked: true }
   } finally {
     await releaseEventLock(truckId, eventDate)
@@ -313,6 +316,7 @@ export async function POST(req: NextRequest) {
       customerPhone,
       slot,
       eventDate,
+      eventId,
       items,
       deals,
       discountCode,
@@ -470,15 +474,50 @@ export async function POST(req: NextRequest) {
       }, { status: 400 })
     }
 
-    // ── Resolve event_id for this order ──────────────────────────────────────
+    // ── Resolve the event for this order ──────────────────────────────────────
+    // Prefer the event_id the customer ordered against (unambiguous). Only fall back
+    // to (truck_id, event_date) when no id was sent — and then take the earliest by
+    // start_time via limit(1) so 2+ same-date events no longer collapse to null
+    // (Section 5). van_id is selected so the order can be associated with the van.
     const orderEventDate = eventDate ?? new Date().toISOString().split('T')[0]
-    const { data: eventRow } = await supabase
-      .from('truck_events')
-      .select('id, start_time, end_time, venue_name, town, postcode')
-      .eq('truck_id', resolvedTruckId)
-      .eq('event_date', orderEventDate)
-      .neq('status', 'cancelled')
-      .maybeSingle()
+    const eventCols = 'id, start_time, end_time, venue_name, town, postcode, van_id'
+    let eventRow: {
+      id: string; start_time: string | null; end_time: string | null
+      venue_name: string | null; town: string | null; postcode: string | null; van_id: string | null
+    } | null = null
+    if (eventId) {
+      const { data } = await supabase
+        .from('truck_events')
+        .select(eventCols)
+        .eq('id', eventId)
+        .eq('truck_id', resolvedTruckId)
+        .neq('status', 'cancelled')
+        .maybeSingle()
+      eventRow = data
+    }
+    if (!eventRow) {
+      if (eventId) console.warn(`[submit] event_id ${eventId} not found for truck ${resolvedTruckId} — falling back to date`)
+      const { data } = await supabase
+        .from('truck_events')
+        .select(eventCols)
+        .eq('truck_id', resolvedTruckId)
+        .eq('event_date', orderEventDate)
+        .neq('status', 'cancelled')
+        .order('start_time', { ascending: true })
+        .limit(1)
+        .maybeSingle()
+      if (data && !eventId) {
+        // No event_id was sent — date fallback in use. Warn if the date is ambiguous.
+        const { count } = await supabase
+          .from('truck_events')
+          .select('id', { count: 'exact', head: true })
+          .eq('truck_id', resolvedTruckId)
+          .eq('event_date', orderEventDate)
+          .neq('status', 'cancelled')
+        if ((count ?? 0) > 1) console.warn(`[submit] no eventId sent and ${count} events on ${orderEventDate} for ${resolvedTruckId} — using earliest (${data.id})`)
+      }
+      eventRow = data
+    }
 
     // ── Generate display number (per-event, restarts at 1) ────────────────────
     // order_key (UUID) is generated by the column default — never set it here.
@@ -497,6 +536,7 @@ export async function POST(req: NextRequest) {
         order_type:     'collection',
         event_date:     orderEventDate,
         event_id:       eventRow?.id ?? null,
+        van_id:         eventRow?.van_id ?? null,
         items,
         deals:          deals ?? null,
         discount_code:  discountCode ?? null,
@@ -531,7 +571,7 @@ export async function POST(req: NextRequest) {
       // operator traffic light, so customer placement and the dot agree on "full".
       const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate)
       const claim = await claimAvailableSlot(
-        resolvedTruckId, eventDate, requestedSlot, orderLines, itemCatMap, catConfigs,
+        resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
         eventRow?.start_time ?? null,
         eventRow?.end_time ?? null,
         truck.collection_interval_mins ?? 0,

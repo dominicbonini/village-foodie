@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
   const pin   = req.nextUrl.searchParams.get('pin')
   const vanId = req.nextUrl.searchParams.get('van_id')
   const date  = req.nextUrl.searchParams.get('date') || new Date().toISOString().split('T')[0]
+  const eventIdParam = req.nextUrl.searchParams.get('event_id')
 
   if (!token) {
     return NextResponse.json({ error: 'Missing token' }, { status: 401 })
@@ -140,6 +141,19 @@ export async function GET(req: NextRequest) {
   // the client will select one and re-fetch; first is the best default)
   const todayEvent = (todayEvents && todayEvents.length > 0) ? todayEvents[0] : null
 
+  // Event-scoped projection (re-key fix): project the CLIENT-SELECTED event's un-pooled
+  // usage. The single-event-on-date case is a FALLBACK only; warn on an ambiguous date
+  // so a two-same-date-event truck never silently projects the wrong event.
+  let projectionEventId: string | null = null
+  if (eventIdParam && todayEvents?.some(e => e.id === eventIdParam)) {
+    projectionEventId = eventIdParam
+  } else if (todayEvents && todayEvents.length === 1) {
+    projectionEventId = todayEvents[0].id
+  } else if ((todayEvents?.length ?? 0) > 1) {
+    console.warn(`[dashboard] ${todayEvents!.length} events on ${date} for truck ${truck.id} and no valid event_id param — projecting first (${todayEvents![0].id})`)
+    projectionEventId = todayEvents![0].id
+  }
+
   const intervalMins = truck.collection_interval_mins ?? 0
   const slotDurationMins = truck.slot_duration_mins ?? intervalMins
   const GRACE_MINS = 30
@@ -209,7 +223,9 @@ export async function GET(req: NextRequest) {
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
     }
-    const productionSlotUnits = await getProductionSlotUnits(supabase, truck.id, date)
+    const productionSlotUnits = projectionEventId
+      ? await getProductionSlotUnits(supabase, truck.id, projectionEventId)
+      : {}
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     // For the truck: don't show slots before event start (use eventStartMins as minimum)
     const earliestMins = eventStartMins !== null ? eventStartMins : nowMins
