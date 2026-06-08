@@ -212,10 +212,10 @@
     {
       "name": "La Piazza Street Food",
       "orderUrl": "https://lapiazzastreetfood.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T14:35:03.091Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Gurkha Street Food",
