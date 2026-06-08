@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
             ${refundLine}
             <p>We're sorry for any inconvenience.</p>
             <p>${truck.name}</p>
-            <p style="color:#94a3b8;font-size:12px">Powered by Village Foodie · villagefoodie.co.uk</p>
+            <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
           </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'cancelled' })

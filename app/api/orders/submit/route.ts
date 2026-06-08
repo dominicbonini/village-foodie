@@ -124,16 +124,35 @@ function timeToMins(t: string): number {
 async function eventKitchenCapacity(
   truckId: string,
   eventDate: string,
+  eventId: string | null,
 ): Promise<{ kitchenCapacity: number | null; eventStartMins: number }> {
-  const { data: ev } = await supabase
-    .from('truck_events')
-    .select('start_time, van_id')
-    .eq('truck_id', truckId)
-    .eq('event_date', eventDate)
-    .neq('status', 'cancelled')
-    .order('start_time', { ascending: true })
-    .limit(1)
-    .maybeSingle()
+  // Resolve the SPECIFIC event by id (the order's actual event) so a multi-event-same-date
+  // day reads the right van/capacity. Fall back to the date's first event only when no
+  // event_id is available (warn).
+  let ev: { start_time: string | null; van_id: string | null } | null = null
+  if (eventId) {
+    const { data } = await supabase
+      .from('truck_events')
+      .select('start_time, van_id')
+      .eq('truck_id', truckId)
+      .eq('id', eventId)
+      .maybeSingle()
+    ev = data ?? null
+    if (!ev) console.warn(`[eventKitchenCapacity] event_id ${eventId} not found for truck ${truckId} — date fallback`)
+  }
+  if (!ev) {
+    if (!eventId) console.warn(`[eventKitchenCapacity] no event_id for truck ${truckId} on ${eventDate} — using date's first event`)
+    const { data } = await supabase
+      .from('truck_events')
+      .select('start_time, van_id')
+      .eq('truck_id', truckId)
+      .eq('event_date', eventDate)
+      .neq('status', 'cancelled')
+      .order('start_time', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+    ev = data ?? null
+  }
   let kitchenCapacity: number | null = null
   if (ev?.van_id) {
     const { data: van } = await supabase
@@ -569,7 +588,7 @@ export async function POST(req: NextRequest) {
     if (eventDate) {
       // Live kitchen_capacity (items) from the event's van — same source as the
       // operator traffic light, so customer placement and the dot agree on "full".
-      const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate)
+      const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
       const claim = await claimAvailableSlot(
         resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
         eventRow?.start_time ?? null,

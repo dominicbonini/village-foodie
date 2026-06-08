@@ -209,6 +209,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
+      // Capacity card: single-source from the server (service-role van read). Guard on
+      // !== undefined so a failed/partial response never wipes a good value.
+      if(data.kitchenCapacity !== undefined) setKitchenCapacity(data.kitchenCapacity)
+      if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
       setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
       try{
@@ -261,9 +265,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[upcomingEvents,selectedEventId])
   useEffect(()=>{
     const event=selectedEventId?upcomingEvents.find(e=>e.id===selectedEventId)??null:null
-    if(!event?.van_id){setVanAutoPause(false);setEventOfflineOverride(null);setKitchenCapacity(null);setActiveVanName(null);return}
-    supabaseBrowser.from('truck_vans').select('name, auto_pause_on_offline, kitchen_capacity').eq('id',event.van_id).single()
-      .then(({data})=>{if(data){setVanAutoPause(data.auto_pause_on_offline??false);setKitchenCapacity(data.kitchen_capacity??null);setActiveVanName(data.name??null)}})
+    // kitchen_capacity + active van name now come from /api/dashboard (service-role read in
+    // fetchAll). The direct anon truck_vans read here was RLS-blocked, so the card showed
+    // "No limit" even though the van had a value. See diagnosis. Only the event-scoped
+    // offline-override read remains.
+    if(!event?.van_id){setEventOfflineOverride(null);return}
     supabaseBrowser.from('truck_events').select('offline_protection_override').eq('id',event.id).single()
       .then(({data})=>{setEventOfflineOverride(data?.offline_protection_override??null)})
   },[selectedEventId,upcomingEvents])
@@ -404,8 +410,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const saveKitchenCapacity=async(value:number|null)=>{
     if(!activeEvent?.van_id)return
-    setKitchenCapacity(value)
-    await supabaseBrowser.from('truck_vans').update({kitchen_capacity:value}).eq('id',activeEvent.van_id)
+    setKitchenCapacity(value) // optimistic
+    // Service-role write via /api/manage (same action the Manage page uses). The previous
+    // anon supabaseBrowser.update on truck_vans was RLS-blocked and failed silently.
+    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
+    fetchAllRef.current() // re-sync from the authoritative server read
   }
 
   const applyKeepScreenOn=async(value:boolean)=>{

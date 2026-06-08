@@ -122,15 +122,11 @@ export function formatConfirmationEmail(params: {
       <strong>Special instructions:</strong> ${params.notes}
     </div>` : ''
 
-  // Collection venue section
-  const venueLocation = [params.venueTown, params.venuePostcode].filter(Boolean).join(' ')
-  const collectionSection = (params.venueName || params.venueTown || params.venuePostcode) ? `
-    <div style="margin-top:12px;padding:12px 16px;background:#f8fafc;border-radius:8px">
-      <p style="margin:0 0 2px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Where to find us</p>
-      ${params.venueName ? `<p style="margin:0;font-size:14px;font-weight:700;color:#1e293b">${params.venueName}</p>` : ''}
-      ${venueLocation ? `<p style="margin:2px 0 0;font-size:13px;color:#64748b">${venueLocation}</p>` : ''}
-      ${params.slot ? `<p style="margin:4px 0 0;font-size:14px;color:#475569">Ready at ${params.slot}</p>` : ''}
-    </div>` : ''
+  // Collection venue — single line (matches the truck "new order" email format)
+  const venueOneLine = [params.venueName, params.venueTown, params.venuePostcode].filter(Boolean).join(', ')
+  const collectionSection = venueOneLine
+    ? `<p style="margin:12px 0 0;font-size:14px;color:#475569">📍 ${venueOneLine}</p>`
+    : ''
 
   // Contact section
   const contactSection = (() => {
@@ -251,11 +247,7 @@ export function formatConfirmationEmail(params: {
     params.notes ? `Notes: ${params.notes}` : '',
     '',
     'Pay at the truck on collection.',
-    (params.venueName || params.venueTown || params.venuePostcode) ? [
-      'Where to find us:',
-      params.venueName || '',
-      venueLocation,
-    ].filter(Boolean).join('\n') : '',
+    venueOneLine ? `📍 ${venueOneLine}` : '',
     (() => {
       const method = params.preferredContactMethod
       if (!method) return ''

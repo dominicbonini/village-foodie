@@ -212,16 +212,24 @@ export async function GET(req: NextRequest) {
     tone?: 'green' | 'amber' | 'red'
   }[] = []
 
+  // Hoisted so they can be returned for the dashboard's capacity card (single source —
+  // the client used to read truck_vans directly with the anon key, which RLS blocked).
+  let kitchenCapacity: number | null = null
+  let activeVanName: string | null = null
+
   try {
-    // kitchen_capacity from the event's van; production_slot_usage for live units.
-    let kitchenCapacity: number | null = null
-    if (todayEvent?.van_id) {
+    // kitchen_capacity + name from the SELECTED event's van (projectionEventId — the same
+    // event the production-usage read below is scoped to), so a multi-event-same-date day
+    // shows the right event's capacity, not the date's first event. Falls back to todayEvent.
+    const capacityEvent = todayEvents?.find(e => e.id === projectionEventId) ?? todayEvent
+    if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity')
-        .eq('id', todayEvent.van_id)
+        .select('kitchen_capacity, name')
+        .eq('id', capacityEvent.van_id)
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
+      activeVanName = van?.name ?? null
     }
     const productionSlotUnits = projectionEventId
       ? await getProductionSlotUnits(supabase, truck.id, projectionEventId)
@@ -291,6 +299,10 @@ export async function GET(req: NextRequest) {
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }
       : null,
+    // Authoritative van capacity + name (service-role read above) for the capacity card —
+    // replaces the RLS-blocked anon truck_vans read the client used to do.
+    kitchenCapacity,
+    activeVanName,
     orders:  orders || [],
     slots:   slotsWithCapacity,
     date,

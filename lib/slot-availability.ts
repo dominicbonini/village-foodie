@@ -234,8 +234,29 @@ export function projectOvenOccupancy(
   const carry: Record<string, number> = {}
   const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
 
+  // BUG 1 fix: the cook rate must reflect the ACTUAL spacing between the windows we step
+  // through (the collection interval), not slot_duration. When slot_duration > interval the
+  // caller's windowSecs (slot_duration-based) over-states the step, doubling the rate. Derive
+  // the step from the smallest gap between consecutive rows; fall back to windowSecs for a
+  // single row (and the claim/tail path, whose synthetic windows are already correctly spaced
+  // so min-gap == windowSecs anyway).
+  let minGapSecs = Infinity
+  for (let i = 1; i < sorted.length; i++) {
+    const gap = (parseMins(sorted[i].collection_time) - parseMins(sorted[i - 1].collection_time)) * 60
+    if (gap > 0) minGapSecs = Math.min(minGapSecs, gap)
+  }
+  const stepSecs = Number.isFinite(minGapSecs) ? minGapSecs : windowSecs
+
+  // BUG 2 fix: several collection rows can map to one production_slot (slot_duration >
+  // interval buckets them). Attribute a slot's items to its FIRST row only, so the same
+  // units aren't re-counted in every row of the bucket. Genuine overflow still flows via
+  // carry; this only stops the double-read.
+  const countedSlots = new Set<string>()
+
   return sorted.map(s => {
-    const incoming = productionSlotUnits[s.production_slot] || {}
+    const firstForSlot = !countedSlots.has(s.production_slot)
+    countedSlots.add(s.production_slot)
+    const incoming = firstForSlot ? (productionSlotUnits[s.production_slot] || {}) : {}
     const cookingByCat: Record<string, number> = {}
     let totalCooking = 0
     let tone: SlotTone = 'green'
@@ -249,8 +270,8 @@ export function projectOvenOccupancy(
       if (!cfg || !cfg.secs) continue // instant categories don't occupy the oven (s.14)
       const queued = (carry[cat] || 0) + (incoming[cat] || 0)
       if (queued <= EPS) { carry[cat] = 0; continue }
-      // items this category cooks per window — scaled by window interval vs prep cycle
-      const rate = Math.max(1, cfg.batch * (windowSecs / cfg.secs))
+      // items this category cooks per window — scaled by the real window step vs prep cycle
+      const rate = Math.max(1, cfg.batch * (stepSecs / cfg.secs))
       const cooking = Math.min(queued, rate)
       cookingByCat[cat] = cooking
       totalCooking += cooking
