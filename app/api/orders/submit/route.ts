@@ -13,7 +13,7 @@ import {
   deriveProductionSlot,
 } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { buildSlotAvailability } from '@/lib/slot-availability'
+import { projectOrderTailWindow } from '@/lib/slot-availability'
 import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
@@ -240,7 +240,6 @@ async function claimAvailableSlot(
         : eventStartTime && eventEndTime && iv > 0
           ? generateCollectionTimes(eventStartTime, eventEndTime, iv, dur)
           : []
-    const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
     const basketByCat = orderItemsToQtyByCat(orderLines, itemCatMap)
 
     // Resolve the starting slot: explicit request, else ASAP via the existing resolver
@@ -266,37 +265,32 @@ async function claimAvailableSlot(
       return { finalSlot: startSlot, booked: true }
     }
 
-    const startMins = timeToMins(startSlot)
-    const candidates = [
-      startEntry,
-      ...times
-        .filter(t => timeToMins(t.collection_time) > startMins)
-        .sort((a, b) => timeToMins(a.collection_time) - timeToMins(b.collection_time)),
-    ]
-
-    // One FRESH read under the event lock — we are the sole writer for its duration,
-    // so this snapshot is authoritative for the whole walk.
+    // One FRESH read under the event lock — we are the sole writer for its duration.
     const slotUnits = await getProductionSlotUnits(supabase, truckId, eventDate)
-    const rows = buildSlotAvailability({
-      times: candidates.map(c => ({ collection_time: c.collection_time, production_slot: c.production_slot })),
-      productionSlotUnits: slotUnits,
-      catConfigs,
-      kitchenCapacity: kitchenCapacity ?? null,
-      date: '', // capacity-only decision — timing (too_soon/is_past) must not gate this
-      nowMins: 0,
-      earliestCollectionMins: 0,
-      eventStartMins,
-      basketByCat,
-    })
-    const toneByTime = new Map(rows.map(r => [r.collection_time, r.tone]))
-    const winner = candidates.find(c => toneByTime.get(c.collection_time) !== 'red')
-    if (winner) {
-      await addOrderToProductionSlot(supabase, truckId, eventDate, winner.collection_time, orderLines, itemCatMap)
-      return { finalSlot: winner.collection_time, booked: true }
+    const windowSecs = (dur > 0 ? dur : iv > 0 ? iv : 5) * 60 // real production-window interval
+    const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
+
+    // TAIL-COMPLETION: the window where THIS order's last item finishes cooking in the
+    // projected continuous queue (same projection as the operator dots). The earliest
+    // window the order can be collected.
+    const tail = projectOrderTailWindow(times, slotUnits, catConfigs, kitchenCapacity ?? null, windowSecs, basketByCat, startSlot)
+
+    // Instant-only order (no oven time) → book at the start slot.
+    if (!tail) {
+      await addOrderToProductionSlot(supabase, truckId, eventDate, startSlot, orderLines, itemCatMap)
+      return { finalSlot: startSlot, booked: true }
     }
 
-    // Every slot full → pending, not booked (no slot overfilled, never rejected).
-    return { finalSlot: null, booked: false }
+    const tailMins = timeToMins(tail)
+    // Collect at the later of the requested slot and the tail (reassign forward if the
+    // requested slot is too early for the order to be ready).
+    const placement = requestedSlot && timeToMins(requestedSlot) >= tailMins ? requestedSlot : tail
+    if (timeToMins(placement) > eventEndMins) {
+      // Tail-completion lands after event end → event full → pending (never reject).
+      return { finalSlot: null, booked: false }
+    }
+    await addOrderToProductionSlot(supabase, truckId, eventDate, placement, orderLines, itemCatMap)
+    return { finalSlot: placement, booked: true }
   } finally {
     await releaseEventLock(truckId, eventDate)
   }
@@ -330,7 +324,7 @@ export async function POST(req: NextRequest) {
     } = body
 
     // ── Validate ──────────────────────────────────────────────────────────────
-    if (!truckId || !customerName || !customerEmail || !customerPhone || (!items?.length && !deals?.length)) {
+    if (!truckId || !customerName || !customerEmail || (!items?.length && !deals?.length)) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 

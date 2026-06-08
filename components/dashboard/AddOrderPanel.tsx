@@ -7,9 +7,9 @@ import type {
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { buildSlotAvailability, type SlotAvailabilityRow } from '@/lib/slot-availability'
+import { projectOvenOccupancy, projectOrderTailWindow, type WindowOccupancy } from '@/lib/slot-availability'
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { getSlotIndicator } from '@/lib/slot-indicator'
+import type { SlotTone } from '@/lib/slot-indicator'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
@@ -131,6 +131,7 @@ export function AddOrderPanel({
     earliestCollectionMins: number
     date: string
     nowMins: number
+    windowSecs: number
   } | null>(null)
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
@@ -210,54 +211,55 @@ export function AddOrderPanel({
     )
   }, [manualItems, truckMenu])
 
-  // Per-slot tone WITH the basket folded in, via the same engine as the server
-  // traffic light. Keyed by collection_time. This is what makes the dot, the
-  // override modal, and the autoConfirm gate agree for the same slot + load.
-  const slotEngineRows = useMemo(() => {
-    const m = new Map<string, SlotAvailabilityRow>()
+  // Dots (queue-only): per-window OVEN OCCUPANCY from the shared projection — each
+  // window coloured by orders already booked still cooking through it. The in-progress
+  // basket is NOT folded in (it only affects the ASAP estimate below). Keyed by
+  // collection_time. windowSecs comes from the slot config (rate scaling, never 5).
+  const slotQueueRows = useMemo(() => {
+    const m = new Map<string, WindowOccupancy>()
     if (!capacityInputs || !manualSlots.length) return m
-    const rows = buildSlotAvailability({
-      times: manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
-      productionSlotUnits: capacityInputs.productionSlotUnits || {},
-      catConfigs: categoryConfigs,
-      kitchenCapacity: capacityInputs.kitchenCapacity ?? null,
-      date: capacityInputs.date,
-      nowMins: capacityInputs.nowMins,
-      earliestCollectionMins: capacityInputs.earliestCollectionMins,
-      eventStartMins: capacityInputs.eventStartMins,
-      eventEndMins: capacityInputs.eventEndMins ?? undefined,
-      basketByCat,
-    })
-    rows.forEach(r => m.set(r.collection_time, r))
+    const occ = projectOvenOccupancy(
+      manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
+      capacityInputs.productionSlotUnits || {},
+      categoryConfigs,
+      capacityInputs.kitchenCapacity ?? null,
+      capacityInputs.windowSecs,
+    )
+    occ.forEach(w => m.set(w.collection_time, w))
     return m
-  }, [capacityInputs, manualSlots, categoryConfigs, basketByCat])
+  }, [capacityInputs, manualSlots, categoryConfigs])
 
-  // Engine row for a slot, with the timing (too_soon) warning folded into the tone
-  // so the dot is never green for a too-soon/over-capacity slot — keeping the dot
-  // and the override modal in lockstep.
-  const slotIndicatorFor = (s: Slot): { row: SlotAvailabilityRow | null; ind: ReturnType<typeof getSlotIndicator> } => {
-    const row = slotEngineRows.get(s.collection_time) ?? null
-    if (!row) return { row: null, ind: getSlotIndicator(s) }
-    const tone = row.too_soon && row.tone === 'green' ? 'amber' : row.tone
-    return { row, ind: getSlotIndicator({ ...row, tone }) }
+  // Dot + pick-slot modal indicator. Tone = the window's oven occupancy; the slot's
+  // own too_soon (timing) folds a green window to amber so a too-soon slot is never
+  // shown green. The richer "Pizza 2/4" label comes from the occupancy bound_by.
+  const slotIndicatorFor = (s: Slot): { occ: WindowOccupancy | null; tone: SlotTone; emoji: string; label: string } => {
+    const occ = slotQueueRows.get(s.collection_time) ?? null
+    let tone: SlotTone = occ?.tone ?? 'green'
+    if (s.too_soon && tone === 'green') tone = 'amber'
+    const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
+    const label = tone === 'green' ? '' : (occ?.bound_by ?? (tone === 'red' ? 'Full' : 'Filling up'))
+    return { occ, tone, emoji, label }
   }
 
-  // ASAP slot calculation — see Engineering Manual s.6.
-  // Resolve ASAP from the SAME corrected engine the slot dots use (slotEngineRows,
-  // basket-inclusive): the earliest slot the order can ACTUALLY be ready for —
-  // not past, not before the kitchen's ready floor, and not red on capacity/
-  // throughput. This guarantees the ASAP time + sub-label never point at a slot
-  // whose dot is red.
+  // ASAP "ready around" slot — the BASKET-AWARE tail-completion window (the same
+  // projection): the earliest window this order's last item finishes cooking given
+  // the existing queue. The one place the in-progress basket influences the display.
   const adjustedAsapSlot = useMemo(() => {
-    if (!manualSlots.length) return null
-    const ready = manualSlots.find(s => {
-      const row = slotEngineRows.get(s.collection_time)
-      if (s.is_grace) return false
-      if (!row) return s.available // pre-engine fallback
-      return !row.is_past && !row.too_soon && row.tone !== 'red'
-    })
-    return ready ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
-  }, [manualSlots, slotEngineRows, manualAsapSlot])
+    if (!manualSlots.length || !capacityInputs) return manualAsapSlot
+    const asapStart = manualAsapSlot?.collection_time ?? manualSlots.find(s => !s.is_grace)?.collection_time
+    if (!asapStart) return manualAsapSlot
+    const tail = projectOrderTailWindow(
+      manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
+      capacityInputs.productionSlotUnits || {},
+      categoryConfigs,
+      capacityInputs.kitchenCapacity ?? null,
+      capacityInputs.windowSecs,
+      basketByCat,
+      asapStart,
+    )
+    const tailSlot = tail ? manualSlots.find(s => s.collection_time === tail) : null
+    return tailSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
+  }, [manualSlots, capacityInputs, categoryConfigs, basketByCat, manualAsapSlot])
 
   // Sub-label "around" time = the engine-resolved ASAP slot (so it agrees with the
   // dots and the ASAP option), falling back to the queue-aware estimate.
@@ -439,13 +441,12 @@ setItemModal({ item, modGroups, editCartKey })
     if (!value) { setManualSlot(''); return }
     const s = manualSlots.find(sl => sl.collection_time === value)
     if (s) {
-      // Same engine (basket-inclusive) the dot uses → dot and modal always agree.
-      const { row, ind } = slotIndicatorFor(s)
-      const tooSoon = row ? row.too_soon : !!s.too_soon
-      // Too-soon picks always confirm, carrying capacity state so the modal can
-      // show timing + availability in one message
-      if (tooSoon) { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red', tooSoon: true, tone: ind.tone }); return }
-      if (ind.tone !== 'green') { setPendingSlot({ time: value, remaining: ind.remaining, isFull: ind.tone === 'red' }); return }
+      // Same projection the dot uses → dot and modal always agree. Timing (too_soon)
+      // comes from the slot itself; capacity tone from the oven-occupancy projection.
+      const { tone } = slotIndicatorFor(s)
+      const tooSoon = !!s.too_soon
+      if (tooSoon) { setPendingSlot({ time: value, remaining: 0, isFull: tone === 'red', tooSoon: true, tone }); return }
+      if (tone !== 'green') { setPendingSlot({ time: value, remaining: 0, isFull: tone === 'red' }); return }
     }
     setManualSlot(value)
   }
@@ -528,7 +529,7 @@ setItemModal({ item, modGroups, editCartKey })
               warning lives in the confirmation modal, not the dropdown. */}
           {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
-            const { ind } = slotIndicatorFor(s)
+            const ind = slotIndicatorFor(s)
             return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` · ${ind.label}` : ''}</option>
           })}
         </select>

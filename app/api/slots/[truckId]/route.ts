@@ -211,6 +211,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       earliestCollectionMins,
       date,
       nowMins,
+      // real production-window interval (slot config, never hardcoded) for the
+      // oven-occupancy projection's rate scaling.
+      windowSecs: (slotDurationMins > 0 ? slotDurationMins : intervalMins > 0 ? intervalMins : 5) * 60,
     },
   })
 }

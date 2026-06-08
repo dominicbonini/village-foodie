@@ -192,3 +192,140 @@ export function buildSlotAvailability(params: {
     }
   })
 }
+
+// ── Oven-occupancy projection (read-time) ─────────────────────────────────────
+// Treats the kitchen as a CONTINUOUS per-category FIFO queue projected onto the
+// windows: each window cooks one batch (batch_size items) per category; unfinished
+// items carry into later windows. A window's occupancy for a category = items still
+// cooking from earlier windows + items starting in it. Categories cook in PARALLEL
+// (Manual s.6) → projected independently, then combined for the cross-category
+// kitchen_capacity ceiling. Pure read-time over the EXISTING single queue source
+// (productionSlotUnits) + catConfigs — no storage/writer/lock change (S3/S6).
+//
+// rate = batch_size * (windowSecs / prep_secs) — items a category cooks per window.
+// windowSecs is the real production-window interval (read from slot config, never
+// hardcoded). For a 5-min window with 5-min prep this equals batch_size, so the
+// validated examples are unchanged; for prep ≠ window it scales (e.g. 10-min prep on
+// 5-min windows → half a batch per window, spread across two windows).
+
+export interface WindowOccupancy {
+  collection_time: string
+  production_slot: string
+  tone: SlotTone
+  bound_by: string | null               // e.g. "Pizza 2/4" / "global ceiling" / null
+  cookingByCat: Record<string, number>  // items of each category cooking in this window
+  totalCooking: number                  // sum across prep categories (for the ceiling)
+}
+
+const capWord = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+const EPS = 1e-9
+
+export function projectOvenOccupancy(
+  times: CollectionTimeRow[],
+  productionSlotUnits: Record<string, QtyByCat>,
+  catConfigs: Record<string, CatConfig>,
+  kitchenCapacity: number | null,
+  windowSecs: number,
+): WindowOccupancy[] {
+  // carry[cat] = items still queued (not yet cooked) entering the NEXT window.
+  const carry: Record<string, number> = {}
+  const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
+
+  return sorted.map(s => {
+    const incoming = productionSlotUnits[s.production_slot] || {}
+    const cookingByCat: Record<string, number> = {}
+    let totalCooking = 0
+    let tone: SlotTone = 'green'
+    let boundBy: string | null = null
+    let bindRank = -1
+    let bindOcc = -1
+
+    const cats = new Set([...Object.keys(carry), ...Object.keys(incoming)])
+    for (const cat of cats) {
+      const cfg = catConfigs[cat.toLowerCase()]
+      if (!cfg || !cfg.secs) continue // instant categories don't occupy the oven (s.14)
+      const queued = (carry[cat] || 0) + (incoming[cat] || 0)
+      if (queued <= EPS) { carry[cat] = 0; continue }
+      // items this category cooks per window — scaled by window interval vs prep cycle
+      const rate = Math.max(1, cfg.batch * (windowSecs / cfg.secs))
+      const cooking = Math.min(queued, rate)
+      cookingByCat[cat] = cooking
+      totalCooking += cooking
+      carry[cat] = queued - cooking              // remainder cooks in later windows
+      // per-category batch saturation: full rate this window = red, partial = amber
+      const t: SlotTone = cooking >= rate - EPS ? 'red' : 'amber'
+      const r = RANK[t]
+      if (r > bindRank || (r === bindRank && cooking > bindOcc)) {
+        bindRank = r; bindOcc = cooking
+        tone = t; boundBy = `${capWord(cat)} ${Math.round(cooking)}/${Math.round(rate)}`
+      }
+    }
+
+    // cross-category kitchen_capacity ceiling (items cooking this window across cats)
+    if (kitchenCapacity != null && totalCooking >= kitchenCapacity - EPS) {
+      tone = 'red'; boundBy = 'global ceiling'; bindRank = RANK.red
+    }
+
+    return { collection_time: s.collection_time, production_slot: s.production_slot, tone, bound_by: boundBy, cookingByCat, totalCooking }
+  })
+}
+
+/**
+ * Placement TAIL-COMPLETION window (read-time, same projection as the dots). Folds
+ * the order into the cohort (existing items due ≤ its start window + the order, queued
+ * at the start window) and returns the LAST window where the order's prep categories
+ * are still cooking — i.e. when the order's last item completes. This is the earliest
+ * window the order can be collected; callers reassign/pend off it (never reject).
+ * Returns null when the order has no prep categories (instant-only) or no windows.
+ */
+export function projectOrderTailWindow(
+  times: CollectionTimeRow[],
+  productionSlotUnits: Record<string, QtyByCat>,
+  catConfigs: Record<string, CatConfig>,
+  kitchenCapacity: number | null,
+  windowSecs: number,
+  orderByCat: QtyByCat,
+  startCollectionTime: string,
+): string | null {
+  const startMins = parseMins(startCollectionTime)
+  const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
+  const startEntry = sorted.find(t => t.collection_time === startCollectionTime) ?? sorted.find(t => parseMins(t.collection_time) >= startMins)
+  if (!startEntry) return null
+  const startPs = startEntry.production_slot
+
+  // Cohort = existing items due at/before the start window (the queue ahead) + this order.
+  const cohort: QtyByCat = {}
+  for (const [ps, units] of Object.entries(productionSlotUnits)) {
+    if (parseMins(ps) <= startMins) for (const [c, q] of Object.entries(units)) cohort[c] = (cohort[c] || 0) + q
+  }
+  for (const [c, q] of Object.entries(orderByCat)) cohort[c] = (cohort[c] || 0) + q
+
+  const orderCats = Object.keys(orderByCat).filter(c => {
+    const cfg = catConfigs[c.toLowerCase()]
+    return cfg && cfg.secs
+  })
+  if (!orderCats.length) return null // instant-only order — no oven time
+
+  // Windows needed for the cohort to fully drain (max over the order's categories at
+  // each category's scaled rate). EXTEND past event end so an over-full event yields a
+  // tail beyond the last real window → caller pends (never reject).
+  const intervalMins = Math.max(1, Math.round(windowSecs / 60))
+  const need = Math.max(1, ...orderCats.map(c => {
+    const cfg = catConfigs[c.toLowerCase()]!
+    const rate = Math.max(1, cfg.batch * (windowSecs / cfg.secs))
+    return Math.ceil((cohort[c] || 0) / rate)
+  }))
+  const fmt = (mins: number) => `${String(Math.floor(mins / 60) % 24).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`
+  const windows: CollectionTimeRow[] = Array.from({ length: need }, (_, i) => {
+    const mm = startMins + i * intervalMins
+    return { collection_time: fmt(mm), production_slot: i === 0 ? startPs : fmt(mm) }
+  })
+
+  // Project the cohort from the start window onward; the order is the queue tail.
+  const occ = projectOvenOccupancy(windows, { [startPs]: cohort }, catConfigs, kitchenCapacity, windowSecs)
+  let tail: string | null = null
+  for (const w of occ) {
+    if (orderCats.some(c => (w.cookingByCat[c.toLowerCase()] || 0) > EPS)) tail = w.collection_time
+  }
+  return tail
+}

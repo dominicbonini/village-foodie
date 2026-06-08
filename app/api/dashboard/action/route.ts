@@ -13,7 +13,8 @@ import {
   deriveProductionSlot,
 } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { buildSlotAvailability } from '@/lib/slot-availability'
+import { projectOrderTailWindow } from '@/lib/slot-availability'
+import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import { nextOrderId } from '@/lib/order-utils'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
@@ -371,41 +372,31 @@ export async function POST(req: NextRequest) {
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
       const catConfigs = await buildCatConfigs(supabase, truck.id)
       if (slot) {
-        // Same live engine as the operator traffic light (buildSlotAvailability),
-        // with THIS order's basket placed at the slot — so the dot, the override
-        // modal, and this autoConfirm decision all agree. kitchen_capacity comes
-        // live from the event's van; slot_capacity's batch cache is not consulted.
-        const [{ data: timeRow }, slotUnits, { data: evRow }] = await Promise.all([
-          supabase.from('collection_times').select('production_slot').eq('truck_id', truck.id).eq('collection_time', slot).maybeSingle(),
+        // Same oven-occupancy projection the dots/claim use: autoConfirm only if this
+        // order's TAIL-COMPLETION (last item cooked, given the queue) is by the chosen
+        // slot. If it can't be ready by then → pending (operator can still confirm).
+        // kitchen_capacity comes live from the event's van; slot_capacity unused.
+        const [{ data: staticTimes }, slotUnits, { data: evRow }] = await Promise.all([
+          supabase.from('collection_times').select('collection_time, production_slot').eq('truck_id', truck.id).order('collection_time', { ascending: true }),
           getProductionSlotUnits(supabase, truck.id, eventDate),
-          supabase.from('truck_events').select('start_time, van_id').eq('truck_id', truck.id).eq('event_date', eventDate).neq('status', 'cancelled').order('start_time', { ascending: true }).limit(1).maybeSingle(),
+          supabase.from('truck_events').select('start_time, end_time, van_id').eq('truck_id', truck.id).eq('event_date', eventDate).neq('status', 'cancelled').order('start_time', { ascending: true }).limit(1).maybeSingle(),
         ])
         let kitchenCapacity: number | null = null
         if (evRow?.van_id) {
           const { data: van } = await supabase.from('truck_vans').select('kitchen_capacity').eq('id', evRow.van_id).single()
           kitchenCapacity = van?.kitchen_capacity ?? null
         }
-        const productionSlot = timeRow?.production_slot ?? deriveProductionSlot(
-          slot,
-          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
-        )
-        const eventStartMins = evRow?.start_time
-          ? (() => { const [h, m] = String(evRow.start_time).split(':').map(Number); return h * 60 + m })()
-          : 0
-        // autoConfirm is a CAPACITY decision (tone red) — timing/too_soon don't block
-        // it (the operator deliberately places too-soon orders via "Use anyway").
-        const [row] = buildSlotAvailability({
-          times: [{ collection_time: slot, production_slot: productionSlot }],
-          productionSlotUnits: slotUnits,
-          catConfigs,
-          kitchenCapacity,
-          date: '',
-          nowMins: 0,
-          earliestCollectionMins: 0,
-          eventStartMins,
-          basketByCat: orderItemsToQtyByCat(manualLines, itemCatMap),
-        })
-        if (row?.tone === 'red') autoConfirm = false
+        const iv = truck.collection_interval_mins ?? 0
+        const dur = truck.slot_duration_mins ?? iv
+        const times = staticTimes?.length
+          ? staticTimes
+          : (evRow?.start_time && evRow?.end_time && iv > 0 ? generateCollectionTimes(evRow.start_time, evRow.end_time, iv, dur) : [])
+        if (times.length) {
+          const windowSecs = (dur > 0 ? dur : iv > 0 ? iv : 5) * 60
+          const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
+          const tail = projectOrderTailWindow(times, slotUnits, catConfigs, kitchenCapacity, windowSecs, orderItemsToQtyByCat(manualLines, itemCatMap), slot)
+          if (tail && toMins(tail) > toMins(slot)) autoConfirm = false
+        }
       }
       // Display number (per-event, restarts at 1) — order_key UUID is set by the
       // column default. orderEventId may be null (ambiguous/no event) → truck fallback.
