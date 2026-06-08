@@ -196,10 +196,10 @@
     {
       "name": "Saffron Hill Food",
       "orderUrl": "https://saffronhillfood.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T05:13:33.960Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Taste of Cambridge",
