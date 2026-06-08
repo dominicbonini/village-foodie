@@ -236,10 +236,10 @@
     {
       "name": "Maya Street Food",
       "orderUrl": "https://mayastreetfood.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T22:10:41.656Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Smother Spudders",
