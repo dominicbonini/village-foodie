@@ -269,26 +269,28 @@
     {
       "name": "Bad Boi Burritos",
       "orderUrl": "https://badboiburritos.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-09T11:16:08.609Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "The Pizza Pod",
-      "orderUrl": "https://thepizzapod.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thepizzapod.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-09T14:00:16.441Z",
+      "menuChars": 941,
+      "error": null,
+      "itemCount": 13
     },
     {
       "name": "The Wood Oven",
-      "orderUrl": "https://thewoodoven.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thewoodoven.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-09T16:37:00.305Z",
+      "menuChars": 1354,
+      "error": null,
+      "itemCount": 12
     },
     {
       "name": "The Loaded Mac Shack",
