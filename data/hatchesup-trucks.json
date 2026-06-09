@@ -236,34 +236,35 @@
     {
       "name": "Maya Street Food",
       "orderUrl": "https://mayastreetfood.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T22:10:41.656Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Smother Spudders",
       "orderUrl": "https://smotherspudders.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-08T23:47:06.645Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "So Solid Sando",
-      "orderUrl": "https://sosolidsando.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://sosolidsando.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-09T03:32:40.186Z",
+      "menuChars": 1797,
+      "error": null,
+      "itemCount": 15
     },
     {
       "name": "Dirty Fryer Boys",
       "orderUrl": "https://dirtyfryerboys.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-09T07:50:33.066Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Bad Boi Burritos",
