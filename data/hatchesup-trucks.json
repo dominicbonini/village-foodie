@@ -261,10 +261,10 @@
     {
       "name": "Dirty Fryer Boys",
       "orderUrl": "https://dirtyfryerboys.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "processed": true,
+      "processedAt": "2026-06-09T07:50:33.066Z",
+      "menuChars": 0,
+      "error": "empty_page"
     },
     {
       "name": "Bad Boi Burritos",
