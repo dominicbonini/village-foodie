@@ -238,9 +238,11 @@ export function AddOrderPanel({
     if (s.too_soon && tone === 'green') tone = 'amber'
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
     // Display text only (tone unchanged): red is always "Full" (no category/ratio);
-    // amber shows the binding per-category count ("Pizza 2/4"), with a plain fallback
-    // only when there's no category info (e.g. a timing-only amber); green has no label.
-    const label = tone === 'green' ? '' : tone === 'red' ? 'Full' : (occ?.bound_by ?? 'Filling up')
+    // amber shows the binding per-category count ("Pizza 2/4") from the occupancy
+    // projection. Occupancy-driven amber ALWAYS sets bound_by; the only null-bound
+    // amber is a timing-only amber (too_soon over a green oven) where no binding
+    // category exists — render no label (the timing warning lives in the modal).
+    const label = tone === 'green' ? '' : tone === 'red' ? 'Full' : (occ?.bound_by ?? '')
     return { occ, tone, emoji, label }
   }
 
@@ -350,7 +352,13 @@ export function AddOrderPanel({
   useEffect(() => {
     if (!isActive) return
     if (!controlledEvent) return
-    if (controlledEvent.id === manualEvent?.id) return
+    if (controlledEvent.id === manualEvent?.id) return // tab switch / identical re-selection
+    // Operator ruling (supersedes the V6.4 persist-on-event-change rule): a genuine
+    // event CHANGE resets the in-progress basket + customer fields. manualEvent here is
+    // still the PREVIOUS event (setManualEvent below hasn't applied) — reset only when
+    // there was a prior event that differs, never on the first sync. Reset BEFORE the
+    // slot re-fetch so no slot from the old event lingers selected.
+    if (manualEvent && manualEvent.id !== controlledEvent.id) resetManual()
     setManualEvent(controlledEvent)
     fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time, controlledEvent.id)
     setManualSlot('')
@@ -1130,7 +1138,7 @@ setItemModal({ item, modGroups, editCartKey })
                     const isSelected = manualEvent?.id === ev.id
                     const isFuture = ev.event_date > todayIso
                     return (
-                      <button key={ev.id} onClick={() => { setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time); setManualSlot(''); onEventChange?.(ev.id) }}
+                      <button key={ev.id} onClick={() => { if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
                         className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>

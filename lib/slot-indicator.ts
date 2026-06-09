@@ -43,11 +43,12 @@ export function getSlotIndicator(slot: SlotIndicatorInput): {
     }
   }
 
-  // Directional wording only (Manual s.27 — no precise count until the proper
-  // items-based display lands).
+  // Red is "Full". V6.4: amber's per-category count ("Pizza 2/4") comes from the
+  // occupancy projection's bound_by (not derivable here, which lacks category data),
+  // so amber carries no directional label — no stale V6.3 directional string.
   switch (tone) {
     case 'red':   return { tone, emoji: '🔴', label: 'Full', remaining: 0 }
-    case 'amber': return { tone, emoji: '🟡', label: 'Filling up', remaining }
+    case 'amber': return { tone, emoji: '🟡', label: '', remaining }
     default:      return { tone: 'green', emoji: '🟢', label: '', remaining }
   }
 }

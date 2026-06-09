@@ -118,6 +118,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[cancelNote,setCancelNote]=useState('')
   // Edit modal
   const[editingOrder,setEditingOrder]=useState<Order|null>(null)
+  // Slots for the EDITED order's own event — fetched via the shared /api/slots path
+  // (same as Add Order), so the picker shows that event's window, not the dashboard's
+  // active event. Never reuse the dashboard `slots` here.
+  const[editSlots,setEditSlots]=useState<Slot[]>([])
+  const[editSlotsLoading,setEditSlotsLoading]=useState(false)
   const[editItems,setEditItems]=useState<BasketItem[]>([])
   const[editSlot,setEditSlot]=useState('')
   const[editNotes,setEditNotes]=useState('')
@@ -131,6 +136,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showQRFullscreen,setShowQRFullscreen]=useState(false)
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
+  // Event the ping baseline (prevPendingCount) belongs to — prevents an event
+  // SWITCH from being mistaken for new orders and firing a spurious ping.
+  const soundEventRef=useRef<string|null>(null)
+  // Selected event {id,date} for scoping /api/dashboard. Held in a ref so the
+  // realtime/interval refetches (which call fetchAllRef with no args) stay scoped.
+  const selectedEventRef=useRef<{id:string,date:string}|null>(null)
   const fetchAllRef=useRef<()=>void>(()=>{})
   // Tracks auth across fetchAll closures (authenticated state is stale inside the callback).
   // Once true, transient fetch failures keep existing state instead of showing the error screen.
@@ -185,9 +196,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }).catch(()=>null)
   },[])
 
-  const fetchStock=useCallback((currentPin:string)=>{
+  const fetchStock=useCallback((currentPin:string,eventId?:string|null)=>{
     fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({token,pin:currentPin,action:'get_stock'})})
+      body:JSON.stringify({token,pin:currentPin,action:'get_stock',eventId:eventId??null})})
       .then(r=>r.json()).then(d=>{
         if(d.stocks) setItemStocks(d.stocks)
         if(d.categoryStocks) setCategoryStocks(d.categoryStocks)
@@ -197,6 +208,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const fetchAll=useCallback(async(currentPin=pin)=>{
     try {
       const p=new URLSearchParams({token}); if(currentPin) p.set('pin',currentPin)
+      // Scope the read to the selected event (V6.4). Pass its date too so the
+      // route resolves the right event even when it isn't today's first event.
+      const sel=selectedEventRef.current
+      if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
       const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
       // Transient failure after successful auth — keep existing state, never blank the dashboard
@@ -274,6 +289,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .then(({data})=>{setEventOfflineOverride(data?.offline_protection_override??null)})
   },[selectedEventId,upcomingEvents])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
+  // Keep the scoping ref current (cheap — no fetch, runs on every event-list poll).
+  useEffect(()=>{
+    const ev=selectedEventId?upcomingEvents.find(e=>e.id===selectedEventId):null
+    selectedEventRef.current=ev?{id:ev.id,date:ev.event_date}:null
+  },[selectedEventId,upcomingEvents])
+  // Refetch only when the SELECTED event changes, so orders/badges/sound re-scope.
+  useEffect(()=>{
+    if(authenticatedRef.current) fetchAllRef.current()
+  },[selectedEventId])
   useEffect(()=>{
     fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name);if(d.is_admin)setIsAdmin(true)}).catch(()=>null)
   },[])
@@ -327,12 +351,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return()=>{allowSleep()}
   },[authenticated,keepScreenOn])
   useEffect(()=>{
+    // orders is now event-scoped server-side. The ping must only fire for NEW
+    // pending orders within the SAME event — never when switching events brings in
+    // a different event's set. Identify the event from the data (all rows share the
+    // selected event_id), falling back to selectedEventId for an empty list.
     const count=orders.filter(o=>o.status==='pending').length
-    if(count>prevPendingCount.current&&authenticated){
+    const ordersEventId=orders.find(o=>o.event_id)?.event_id??selectedEventId??null
+    const sameEvent=ordersEventId===soundEventRef.current
+    if(sameEvent&&count>prevPendingCount.current&&authenticated){
       try{const ctx=new(window.AudioContext||(window as any).webkitAudioContext)();const osc=ctx.createOscillator();const gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=880;gain.gain.setValueAtTime(0.3,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+0.6)}catch{}
     }
+    soundEventRef.current=ordersEventId
     prevPendingCount.current=count
-  },[orders,authenticated])
+  },[orders,authenticated,selectedEventId])
 
   useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo,truck?.qr_code_style])
 
@@ -374,7 +405,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const submitPin=async()=>{
-    const p=new URLSearchParams({token,pin:pinInput}); const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
+    const p=new URLSearchParams({token,pin:pinInput})
+    const sel=selectedEventRef.current; if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
+    const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
     setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
@@ -522,8 +555,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Failed','error')}finally{setActionLoading(null)}
   }
 
+  // Fetch the edited order's slots from the SHARED /api/slots path, keyed to the
+  // order's own event_id + date — identical to the Add Order panel's fetchManualSlots.
+  // The route resolves the event window from event_id and floors against localTodayIso(),
+  // so a future-dated order shows its full in-window list (no today wall-clock floor).
+  const fetchEditSlots=async(order:Order)=>{
+    if(!truck?.id){setEditSlots([]);return}
+    setEditSlotsLoading(true)
+    try{
+      const p=new URLSearchParams()
+      if(order.event_date)p.set('date',order.event_date)
+      if(order.event_id)p.set('event_id',order.event_id)
+      const res=await fetch(`/api/slots/${truck.id}?${p}`)
+      const data=await res.json()
+      setEditSlots(data.slots||[])
+    }catch{setEditSlots([])}
+    finally{setEditSlotsLoading(false)}
+  }
   const startEdit=(order:Order)=>{
     setEditingOrder(order)
+    setEditSlots([]); fetchEditSlots(order)
     setEditItems(order.items.map(i=>({...i,cartKey:makeCartKey(i.name,i.modifiers||[],i.specialInstructions)})))
     setEditDeals((order.deals||[]).map(d=>({name:d.name,slots:d.slots,slotModifiers:d.slotModifiers||{},slotNotes:d.slotNotes||{},isNew:false})))
     setEditSlot(order.slot||'')
@@ -668,6 +719,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return map
   }, [truckMenu])
 
+  // Sold counts are event-scoped (V6.4): refetch Menu & Stock whenever the
+  // resolved event changes so each event shows only its own counts. Mirrors the
+  // resolvedEvent logic below (without the transient last-known fallback).
+  const stockEventId = selectedEventId
+    ? (upcomingEvents.find(e=>e.id===selectedEventId)?.id ?? null)
+    : ((todayEvents.find(e=>e.status==='open')??todayEvents.find(e=>e.status==='confirmed')??todayEvents[0])?.id ?? null)
+  useEffect(()=>{
+    if(!authenticatedRef.current) return
+    fetchStock(pin,stockEventId)
+  },[stockEventId,pin,fetchStock])
+
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
   if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
   if(requiresPin&&!authenticated)return(
@@ -707,15 +769,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(aDt!==bDt) return aDt-bDt
     return a.order_key.localeCompare(b.order_key)
   }
-  // Scope orders to the selected event. Primary match: event_id. Fallback for
-  // orders with NULL event_id (pre-backfill rows, ambiguous same-date multi-event
-  // inserts, or any future path that misses event_id): match event_date + van_id.
-  // The van_id check is what prevents same-date multi-event bleed — two events on
-  // one date run on different vans, so date alone would merge their orders.
+  // Orders arrive already event-scoped from /api/dashboard (V6.4). Keep a strict
+  // event_id match as a client-side safety net during the brief window between an
+  // event switch and its refetch. NULL-event orders are intentionally excluded
+  // (the date+van fallback is dropped — it was the same-date multi-event bleed path).
   const eventOrders=activeEvent
-    ?orders.filter(o=>o.event_id
-      ?o.event_id===activeEvent.id
-      :o.event_date===activeEvent.event_date&&(o.van_id??null)===(activeEvent.van_id??null))
+    ?orders.filter(o=>o.event_id===activeEvent.id)
     :orders
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   const confirmedOrders=eventOrders.filter(o=>['confirmed','modified'].includes(o.status)).sort(sortByTimeThenId)
@@ -1674,7 +1733,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="mb-4">
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Collection time</label>
               {(()=>{
-                const editModalSlots=slots
+                const editModalSlots=editSlots
+                if(editSlotsLoading)return<div className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400">Loading slots…</div>
                 if(editModalSlots.length===0)return<input type="time" value={editSlot} onChange={e=>setEditSlot(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
                 return(
                   <select value={editSlot} onChange={e=>setEditSlot(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">

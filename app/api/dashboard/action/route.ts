@@ -521,6 +521,9 @@ export async function POST(req: NextRequest) {
     // ── GET STOCK ─────────────────────────────────────────────────────────────
     if (action === 'get_stock') {
       const today = new Date().toISOString().split('T')[0]
+      // Sold counts are event-scoped (V6.4). With no event selected, counts are
+      // empty so Menu & Stock shows 0 (Section 5). category_stock stays date-keyed.
+      const eventId: string | null = body.eventId ?? null
       const [{ data: overrides }, { data: cats }, liveItemCounts, { data: menuItems }, { data: menuCats }] = await Promise.all([
         supabase.from('item_overrides')
           .select('item_name, available, stock_count, category')
@@ -528,7 +531,7 @@ export async function POST(req: NextRequest) {
         supabase.from('category_stock')
           .select('category, stock_count')
           .eq('truck_id', truck.id).eq('date', today),
-        getLiveItemCounts(supabase, truck.id, today),
+        eventId ? getLiveItemCounts(supabase, truck.id, eventId) : Promise.resolve({} as Record<string, number>),
         supabase.from('menu_items_db')
           .select('name, menu_categories!category_id(name)')
           .eq('truck_id', truck.id),

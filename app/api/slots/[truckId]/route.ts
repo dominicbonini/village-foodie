@@ -96,6 +96,19 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     }
   }
 
+  // Queue read for queueByCat: scope to the SAME resolved event as the units read
+  // below (getProductionSlotUnits(todayEvent.id)), never the date's pooled orders.
+  // The event_id eq also excludes null-event rows. No event resolved (param
+  // start/end legacy path) → fall back to date scope, mirroring the units read ({}).
+  let existingOrdersQuery = supabase
+    .from('orders')
+    .select('items')
+    .eq('truck_id', truckId)
+    .in('status', ['pending', 'confirmed', 'modified'])
+  existingOrdersQuery = todayEvent?.id
+    ? existingOrdersQuery.eq('event_id', todayEvent.id)
+    : existingOrdersQuery.eq('event_date', date)
+
   // Fetch everything else in parallel
   const [
     { data: staticTimes },
@@ -109,12 +122,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       .eq('truck_id', truckId)
       .order('collection_time', { ascending: true }),
 
-    supabase
-      .from('orders')
-      .select('items')
-      .eq('truck_id', truckId)
-      .eq('event_date', date)
-      .in('status', ['pending', 'confirmed', 'modified']),
+    existingOrdersQuery,
 
     supabase
       .from('menu_categories')

@@ -111,10 +111,6 @@ export async function GET(
       .eq('truck_id', truck.id),
   ])
 
-  // Live order counts scoped to today's event date
-  const today = new Date().toISOString().split('T')[0]
-  const liveItemCounts = await getLiveItemCounts(supabase, truck.id, today)
-
   console.log('[MENU API] Query results:')
   console.log('  categories:', categories?.length || 0, catError)
   console.log('  items:', items?.length || 0, itemsError)
@@ -243,6 +239,12 @@ export async function GET(
       }
     }
   }
+
+  // Live order counts — event-scoped (V6.4 invariant), using the resolved event.
+  // No confirmed/open event → empty counts.
+  const liveItemCounts = effectiveEventId
+    ? await getLiveItemCounts(supabase, truck.id, effectiveEventId)
+    : {}
 
   // Build category → modifier groups map
   const groupMap: Record<string, { id: string; name: string; options: { id: string; name: string; price_adjustment: number }[] }[]> = {}

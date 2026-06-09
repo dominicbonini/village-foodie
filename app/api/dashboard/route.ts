@@ -79,49 +79,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid PIN', requiresPin: true }, { status: 401 })
   }
 
-  // In-flight orders: no date filter — covers pre-orders AND orders that moved to cooking/ready
-  // before event_date ticks over (timezone edges, near-midnight walk-ups, etc.)
-  const ACTIVE_STATUSES = ['pending', 'confirmed', 'modified', 'cooking', 'ready']
-  // Terminal orders: scoped to the selected date so yesterday's collected orders don't bleed in
-  const DATE_DONE_STATUSES = ['collected', 'rejected', 'cancelled']
-
-  let activeOrdersQuery = supabase
-    .from('orders')
-    .select('*')
-    .eq('truck_id', truck.id)
-    .in('status', ACTIVE_STATUSES)
-    .order('created_at', { ascending: true })
-
-  let doneOrdersQuery = supabase
-    .from('orders')
-    .select('*')
-    .eq('truck_id', truck.id)
-    .eq('event_date', date)
-    .in('status', DATE_DONE_STATUSES)
-    .order('created_at', { ascending: true })
-
-  // Van KDS: show orders for this van OR unassigned orders (van_id null appears on all vans)
-  if (vanId) {
-    activeOrdersQuery = activeOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
-    doneOrdersQuery   = doneOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
-  }
-
-  const [{ data: activeOrders }, { data: doneToday }] = await Promise.all([
-    activeOrdersQuery,
-    doneOrdersQuery,
-  ])
-
-  // Dedupe by order_key (UUID) — id is the per-event display number and is NOT
-  // unique across events, so keying by id would silently drop orders.
-  const orderMap = new Map<string, NonNullable<typeof activeOrders>[number]>()
-  ;(activeOrders || []).forEach(o => orderMap.set(o.order_key, o))
-  ;(doneToday || []).forEach(o => orderMap.set(o.order_key, o))
-  const orders = Array.from(orderMap.values()).sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-  )
-
-  // Fetch collection times: prefer dynamic generation from today's event,
-  // fall back to static collection_times table
+  // Resolve the dashboard event context BEFORE reading orders, so the order lists
+  // can be scoped to the selected event (V6.4: orders belong to an event, never a
+  // pooled date). collection_times is fetched alongside (retained as-is).
   const [{ data: staticTimes }, { data: todayEvents }] = await Promise.all([
     supabase
       .from('collection_times')
@@ -144,29 +104,83 @@ export async function GET(req: NextRequest) {
   // Event-scoped projection (re-key fix): project the CLIENT-SELECTED event's un-pooled
   // usage. The single-event-on-date case is a FALLBACK only; warn on an ambiguous date
   // so a two-same-date-event truck never silently projects the wrong event.
-  let projectionEventId: string | null = null
+  let selectedEventId: string | null = null
   if (eventIdParam && todayEvents?.some(e => e.id === eventIdParam)) {
-    projectionEventId = eventIdParam
+    selectedEventId = eventIdParam
   } else if (todayEvents && todayEvents.length === 1) {
-    projectionEventId = todayEvents[0].id
+    selectedEventId = todayEvents[0].id
   } else if ((todayEvents?.length ?? 0) > 1) {
     console.warn(`[dashboard] ${todayEvents!.length} events on ${date} for truck ${truck.id} and no valid event_id param — projecting first (${todayEvents![0].id})`)
-    projectionEventId = todayEvents![0].id
+    selectedEventId = todayEvents![0].id
   }
+
+  // The selected event row (matches selectedEventId and the production-units read).
+  // On a multi-event-same-date day this differs from todayEvents[0] — slot times,
+  // boundaries, capacity and units must ALL describe this one event, or the dots
+  // would be drawn against the wrong event's window.
+  const selectedEvent = todayEvents?.find(e => e.id === selectedEventId) ?? todayEvent
+
+  // In-flight orders: no date filter — covers pre-orders AND orders that moved to cooking/ready
+  // before event_date ticks over (timezone edges, near-midnight walk-ups, etc.)
+  const ACTIVE_STATUSES = ['pending', 'confirmed', 'modified', 'cooking', 'ready']
+  // Terminal orders shown alongside the active list for the same event.
+  const DONE_STATUSES = ['collected', 'rejected', 'cancelled']
+
+  // Orders are strictly event-scoped (no event_date+van_id fallback): with no
+  // selected event there is nothing to show (Section 5 — empty dashboard).
+  let activeOrders: any[] = []
+  let doneToday: any[] = []
+  if (selectedEventId) {
+    let activeOrdersQuery = supabase
+      .from('orders')
+      .select('*')
+      .eq('truck_id', truck.id)
+      .eq('event_id', selectedEventId)
+      .in('status', ACTIVE_STATUSES)
+      .order('created_at', { ascending: true })
+
+    let doneOrdersQuery = supabase
+      .from('orders')
+      .select('*')
+      .eq('truck_id', truck.id)
+      .eq('event_id', selectedEventId)
+      .in('status', DONE_STATUSES)
+      .order('created_at', { ascending: true })
+
+    // Van KDS: show orders for this van OR unassigned orders (van_id null appears on all vans)
+    if (vanId) {
+      activeOrdersQuery = activeOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
+      doneOrdersQuery   = doneOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
+    }
+
+    const [{ data: a }, { data: d }] = await Promise.all([activeOrdersQuery, doneOrdersQuery])
+    activeOrders = a || []
+    doneToday = d || []
+  }
+
+  // Dedupe by order_key (UUID) — id is the per-event display number and is NOT
+  // unique across events, so keying by id would silently drop orders.
+  const orderMap = new Map<string, NonNullable<typeof activeOrders>[number]>()
+  ;(activeOrders || []).forEach(o => orderMap.set(o.order_key, o))
+  ;(doneToday || []).forEach(o => orderMap.set(o.order_key, o))
+  const orders = Array.from(orderMap.values()).sort(
+    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  )
 
   const intervalMins = truck.collection_interval_mins ?? 0
   const slotDurationMins = truck.slot_duration_mins ?? intervalMins
   const GRACE_MINS = 30
 
-  // Compute event boundaries (HH:MM → minutes since midnight)
+  // Compute event boundaries (HH:MM → minutes since midnight) from the SELECTED
+  // event so times agree with the selected event's production units.
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
-  const eventStartMins = todayEvent?.start_time ? toMins(todayEvent.start_time) : null
-  const eventEndMins   = todayEvent?.end_time   ? toMins(todayEvent.end_time)   : null
+  const eventStartMins = selectedEvent?.start_time ? toMins(selectedEvent.start_time) : null
+  const eventEndMins   = selectedEvent?.end_time   ? toMins(selectedEvent.end_time)   : null
 
   // Generate slots only from event data — no static fallback
   const slots =
-    todayEvent?.start_time && todayEvent?.end_time && intervalMins > 0
-      ? generateCollectionTimes(todayEvent.start_time, todayEvent.end_time, intervalMins, slotDurationMins, GRACE_MINS)
+    selectedEvent?.start_time && selectedEvent?.end_time && intervalMins > 0
+      ? generateCollectionTimes(selectedEvent.start_time, selectedEvent.end_time, intervalMins, slotDurationMins, GRACE_MINS)
       : []
 
   const [{ data: categories }, { data: menuItemsForMap }] = await Promise.all([
@@ -218,10 +232,10 @@ export async function GET(req: NextRequest) {
   let activeVanName: string | null = null
 
   try {
-    // kitchen_capacity + name from the SELECTED event's van (projectionEventId — the same
-    // event the production-usage read below is scoped to), so a multi-event-same-date day
-    // shows the right event's capacity, not the date's first event. Falls back to todayEvent.
-    const capacityEvent = todayEvents?.find(e => e.id === projectionEventId) ?? todayEvent
+    // kitchen_capacity + name from the SELECTED event's van — the same event the
+    // production-usage read and slot times are scoped to, so a multi-event-same-date
+    // day shows the right event's capacity, not the date's first event.
+    const capacityEvent = selectedEvent
     if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
@@ -231,8 +245,8 @@ export async function GET(req: NextRequest) {
       kitchenCapacity = van?.kitchen_capacity ?? null
       activeVanName = van?.name ?? null
     }
-    const productionSlotUnits = projectionEventId
-      ? await getProductionSlotUnits(supabase, truck.id, projectionEventId)
+    const productionSlotUnits = selectedEventId
+      ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
       : {}
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     // For the truck: don't show slots before event start (use eventStartMins as minimum)

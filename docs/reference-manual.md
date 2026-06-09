@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.3
+HatchGrab Engineering Reference Manual · V6.4
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.3**
+**Version 6.4**
 
 June 2026
 
@@ -14,7 +14,33 @@ June 2026
 
 # Changelog
 
-## V6.3 — June 2026 (this session)
+## V6.4 — June 2026 (this session)
+
+Pre-trial capacity-engine and event-scoping session. Rebuilds the slot capacity / oven-occupancy traffic light from directional wording into a precise, items-based continuous-queue projection; re-keys `production_slot_usage` from date-scoped to event-scoped to stop same-date events pooling each other's load; adds a per-event booking lock; resolves a family of date/event-resolution bugs surfaced by live iPad testing (orders invisible or mis-numbered, future-event slot pickers floored to today's clock, capacity showing "No limit", phantom red on empty events); and fixes the customer ASAP-selection state machine. The capacity system is now event-scoped, race-safe, and verified on clean data. Key changes relative to V6.3:
+
+- **Oven-occupancy capacity engine — the precise items-based projection (replaces V6.3 directional wording)** — the V6.3 "Filling up / Full" directional labels and the BATCHES-vs-items ambiguity are superseded. `projectOvenOccupancy` (lib/slot-availability.ts) is now a continuous per-category FIFO simulation across production windows: a window's occupancy = items still cooking (carried forward) + items starting in it, where per-window throughput `rate = batch_size × (windowSecs / prep_secs)`. kitchen_capacity now counts ITEMS (the intended meaning, per the V6.3 decision), as a cross-category per-window ceiling. Two constraints bind: (a) a per-window global item ceiling (kitchen_capacity), and (b) cumulative per-category throughput. RED = batch full OR ceiling hit (label "Full"); AMBER = partial, showing the binding per-category count ("Pizza 2/4"); GREEN = empty. The same helper drives BOTH the operator dots AND placement — one implementation, no fork. See Section 6 and Section 10.
+
+- **ASAP / placement = tail-completion window** — ASAP and auto-accept resolve an order to the window where its LAST item finishes cooking in the projected queue (project with the order folded in, find its tail-completion window), not "first non-red slot". A 10-pizza ASAP order on an empty queue resolves to the window where its last items complete, telling the customer the truthful ready time. If the tail would fall after event end → pending (never rejected). See Section 6.
+
+- **production_slot_usage re-keyed by event (was date-keyed)** — the table was keyed `(truck_id, event_date, production_slot)`, so two events on the same date pooled into the same rows — an empty event projected another same-date event's load (phantom red), and ASAP/null-slot orders mis-windowed into the date's earliest event. It is now keyed `(truck_id, event_id, production_slot)`: each event's load is physically separate, null-event orders are un-poolable, and `getEventStartHHMM`/`resolveBookingSlot` resolve a null slot to THIS event's start. `event_date` is retained for the date-scoped rebuild orchestrator. The table is a pure cache, reconstructable from orders via `rebuildProductionSlotUsage`. New migration: 20260608_production_slot_usage_event_key.sql. See Section 6, Section 14, and Section 16.
+
+- **Per-event booking lock** — `booking_locks` (keyed `(truck_id, event_date)`) is an INSERT-mutex with ~1s retry, a 10s stale TTL, and a contention→pending fallback, protecting the cumulative per-category capacity check from races. The customer claim path and ASAP both go through it; reassign-or-pend is preserved. New migration: 20260608_booking_locks.sql. See Section 5 and Section 6.
+
+- **Event resolution by id, not by date guess** — the customer order page now sends the chosen `event_id`; the submit route uses it directly instead of re-deriving by `(truck_id, event_date)` with `.maybeSingle()` (which returned NULL — and thus a null event_id, the wrong order number, and an invisible order — whenever a truck had 2+ non-cancelled events on one date). The fallback resolves by date with `.order(...).limit(1)` and warns on ambiguity. Customer orders now also carry `van_id`. `eventKitchenCapacity` likewise resolves the order's actual event, not the date's earliest. See Section 5 and Section 7.
+
+- **Date-aware slot floors consolidated (UTC/local bug)** — a future-dated event's slot picker was floored to today's wall-clock time because the "is this event today?" check used `toISOString()` (UTC date) while the floor compared against the local clock; in the behind-UTC evening window a tomorrow event read as "today". A shared `localTodayIso()` (lib/time-utils.ts, local Y-M-D, never `toISOString`) now date-gates all four floors (`/api/slots` earliest/too_soon, `buildSlotAvailability` is_past, `getAsapSlot` fallback, `isEventClosed`). The same-day floor (now+lead) is unchanged. See Section 6 and Section 7.
+
+- **Rebuild-on-cancel** — event-cancel and event-delete previously set orders to cancelled but never removed their contributions from `production_slot_usage`, so cancelled load lingered and bled into other same-date events. Both paths now call `rebuildProductionSlotUsage` (recomputes the date's usage from live orders only). See Section 15.
+
+- **ASAP selection is a first-class state** — on the customer order page, ASAP was a fake selection (a highlight flag plus an effect that secretly populated a concrete time) while the real selection lived elsewhere and started empty — so on load the order couldn't be placed until ASAP was tapped, and adding items cleared it. ASAP is now genuinely selected by default (submits `slot: null`, server resolves it), persists across basket changes, and the highlight always matches what submits. See Section 7.
+
+- **Kitchen-capacity display fixed (RLS) + reads the selected event** — the dashboard capacity card read `truck_vans.kitchen_capacity` directly with the anon browser client, which RLS blocks (truck_vans is service-role-only), so it always showed "No limit" while the engine read the correct value server-side. The card now sources capacity (and the active van name) from the `/api/dashboard` response (service-role), and its write routes through the service-role `/api/manage update_van_settings` (the anon write was also silently failing). It also keys off the selected event, not the date's first event. See Section 10 and Section 14.
+
+- **Slot-label wording** — RED slots read "Full" (the category name and ratio dropped); AMBER reads the per-category count ("Pizza 2/4"); the leading "·" separator before slot labels was removed. The internal `bound_by` reason (incl. "global ceiling") is still computed, just not shown for red. See Section 10.
+
+- **New migrations** — 20260608_booking_locks.sql; 20260608_production_slot_usage_event_key.sql. Both applied in chunks via the Supabase SQL editor. See Section 16.
+
+## V6.3 — June 2026
 
 Order-numbering rebuild and dashboard-stability session. Replaces the global order primary key (which had taken customer ordering fully down with a duplicate-key collision) with a two-id architecture — `order_key` (uuid row identity) plus a per-event display number that restarts at 1 — closing the collision class permanently and the enumerable-order-id privacy hole as a bonus. Also: introduces layered anti-scraping rate limiting (Upstash Redis + Vercel Edge Middleware) with a strict tiering rule; migrates the WhatsApp integration from Twilio to the Meta Cloud API with a four-bucket classifier; fixes a cascade of order-flow bugs (events disappearing, orders invisible, ASAP slot timing, false prep-now urgency, a kitchen/assembly split that was broken for every truck, basket loss on tab switch); and splits the operator slot traffic-light from the customer slot picker. Key changes relative to V6.2:
 
@@ -711,6 +737,12 @@ Only customer-path orders are subject to auto_accept. Manual orders bypass auto_
 
 When auto_accept is false the customer path skips this block entirely, but the slot-capacity check at submission still runs: a full production window returns a 409 and the order is never created; otherwise it inserts as pending.
 
+### Per-event booking lock (V6.4)
+
+> **RULE** — The capacity claim is protected by a per-event INSERT-mutex: `booking_locks`, keyed `(truck_id, event_date)`, acquired before the fresh capacity read and released after the insert. ~1s retry, 10s stale TTL, and a contention→pending fallback (never a hard error to the customer). Both the customer claim path (`claimAvailableSlot`) and ASAP go through it; reassign-or-pend (Section "Auto-accept logic" above) is preserved — the lock changes WHEN the capacity check runs (under mutex, against fresh state), not WHAT it decides. The lock is keyed by date, so two same-date events serialise together — conservative but correct (capacity constraint (b) is cumulative). New migration: 20260608_booking_locks.sql. See Section 6.
+
+### Auto-accept logic (continued)
+
 > **RULE (V6)** — Auto-accept description copy in the dashboard: "Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity." The earlier "Full slots are still rejected" was inaccurate and must not return.
 
 > **RULE (V6.1)** — No amber "review regularly to avoid over-commitment" warning under the auto-accept toggle. Auto-accept is programmatically capacity-safe (it never confirms beyond slot capacity — see resolveAutoAcceptSlot above), so the warning was misleading and was removed.
@@ -727,9 +759,11 @@ With no event selected on the dashboard, every event-scoped surface degrades gra
 
 - **Auto-accept** toggle sits at the top of the Menu & Stock tab (moved from the bottom).
 
-### Orders must carry event_id; the dashboard filter is resilient (V6.3)
+### Orders must carry event_id; the dashboard filter is resilient (V6.3, resolution hardened V6.4)
 
 > **RULE** — Both order insert paths (/api/orders/submit and /api/dashboard/action manual) MUST write event_id on the row. For most of V6.2 neither did, so the event-scoped order filter (o.event_id === activeEvent.id) always returned empty — the dashboard showed "0 orders / All complete" despite orders existing, AND event-cancellation emails silently went to nobody (affected-orders queried by event_id, got 0). Inserts now write event_id (with a single-event-per-date fallback when ambiguous). The dashboard display filter is resilient: event_id is primary, with an event_date + van_id fallback so a legacy null-event_id order still shows. A backfill migration ran against the existing rows.
+
+> **RULE (V6.4) — resolve event by id, never guess by date.** The customer order page now sends the chosen `event_id` (the `/api/events` GET returns it; the order page threads `event.id` into the submit body), and the submit route resolves the event by that id directly. Previously it re-derived the event from `(truck_id, event_date)` with `.maybeSingle()`, which returns NULL whenever a truck has 2+ non-cancelled events on one date — producing a null event_id, the wrong display number (the truck-level counter fired instead of the per-event counter, so a first order showed #11 not #1), and an invisible order (null event_id missed the primary filter, and the date+van fallback also missed once the van-backfill gave the event a van while the order had none). The fallback (no event_id sent) now resolves by date with `.order(...).limit(1)` — never collapsing to null — and warns on ambiguity. Customer orders also now set `van_id` from the resolved event. `eventKitchenCapacity` likewise takes the order's event_id and reads that event's van capacity, with a date's-first-event fallback only when no id is available.
 
 > **RULE** — Never setState from a failed fetch. A rate-limit 429 on /api/events/manage was wiping upcomingEvents to [] ("events disappearing"). Fetches must check res.ok before setting state, and the last active event is cached in a ref so a transient failure doesn't blank the UI. (The route is also now rate-limit-exempt — see Section 28.)
 
@@ -763,7 +797,7 @@ New items are placed AFTER the existing queue. If batch 2 has space, new items s
 
 ## Categories cook in parallel
 
-When an order contains multiple categories (pizza + sides), ready time is the MAX across categories, not the sum. Pizza taking 8 minutes and sides taking 2 minutes are ready together at 8 minutes.
+When an order contains multiple categories (pizza + sides), ready time is the MAX across categories, not the sum. Pizza taking 8 minutes and sides taking 2 minutes are ready together at 8 minutes. (V6.4: the oven-occupancy projection likewise treats categories as cooking on independent equipment — see the shared-equipment caveat in the capacity-engine subsection below.)
 
 ## Buffer application
 
@@ -778,6 +812,12 @@ The customer page calculates ASAP from event.start_time, not new Date(). A custo
 ## ASAP is event-date aware
 
 getAsapSlot in lib/slot-utils.ts takes an optional eventDate. For a future-date event it returns the first available slot regardless of current time. For today's event it uses current time as the floor (event start if not yet open, else now). This fixed a bug where a future event showed the current time as ASAP. Also fixed a UTC-midnight parse bug — build dates with new Date(y, mo-1, d, h, m) (local), never new Date('YYYY-MM-DD') then setHours.
+
+### Date-aware slot floors — local date, never UTC (V6.4)
+
+> **RULE** — Every "is this event today / has this slot passed" gate must decide the event's date with a LOCAL Y-M-D, never `toISOString()` (UTC). There are FOUR such floors and they must agree: `/api/slots` (earliestCollectionMins / too_soon), `buildSlotAvailability` (is_past), `getAsapSlot` (the asapSlot fallback), and `isEventClosed`. A shared `localTodayIso()` helper (lib/time-utils.ts) is the single source.
+
+> **BUG FIXED (V6.4)** — A future-dated event's slot picker offered slots only from the current wall-clock time. The "is this event today?" check used the UTC date while the floor compared against the local clock; in the behind-UTC evening window (e.g. 20:05 BST on the 8th) UTC had already rolled to the 9th, so a 9 June event read as "today" and got the 20:05 floor applied to it. For a future-dated event the whole event is in the future → no wall-clock floor → all in-window slots are selectable. Today's event mid-service still floors at now+lead (unchanged). The defect existed in multiple floors; the first fix caught two, a second pass found the server `s.available` floor (the one actually filtering the dropdown) and centralised the helper. Lesson: when the same date logic is reimplemented in several places, fixing one floor is not enough — enumerate every gate.
 
 ## ASAP queue-aware calculation (V4)
 
@@ -796,6 +836,22 @@ In the Add Order panel (components/dashboard/AddOrderPanel.tsx), the ASAP collec
 ### Kitchen/assembly category split reads the DB config (V6.3)
 
 > **BUG FIXED** — after category prep times moved to the DB, getCatConfig was returning {secs:0} for ALL categories, so the kitchen-vs-assembly prep split was broken for EVERY truck (everything treated as instant). It now reads categoryConfigs[cat].secs. Any code computing a per-category split must read the resolved DB config, never a hardcoded or zero default.
+
+### Oven-occupancy capacity engine (V6.4 — replaces the V6.3 directional model)
+
+> **MODEL** — `projectOvenOccupancy` (lib/slot-availability.ts) is a continuous per-category FIFO simulation across production windows. For each window: occupancy = items still cooking (carried forward from earlier windows) + items starting in this window. Per-window throughput is `rate = batch_size × (windowSecs / prep_secs)`. When window == prep (e.g. 5-min window, 5-min prep) the rate is exactly `batch_size`; a slower category (10-min prep on 5-min windows → rate = batch_size/2) spreads a batch across multiple windows. `prep_secs == 0` (instant items: drinks, dips) never occupies the oven.
+
+> **RULE — kitchen_capacity counts ITEMS, not batches.** This resolves the V6.3 ambiguity (the old engine counted batches while the UI said "items"). kitchen_capacity is a per-window cross-category ceiling on total items cooking. TWO constraints bind a window: (a) the global item ceiling (total items in the window ≤ kitchen_capacity — a cross-category backstop), and (b) cumulative per-category throughput (the FIFO rate above). The per-category math lives in `calcReadySecsByCat` / `calcQueuePushSecsByCat` (lib/prep-utils.ts) — one formula, no fork.
+
+> **RULE — the ceiling reddens, it does not slow.** kitchen_capacity makes a window RED when total cooking ≥ capacity, but does NOT slow any category's drain rate — each category drains at its own batch rate. This assumes categories cook on INDEPENDENT equipment. For a truck whose categories share one oven/fryer (so they queue behind each other), the projection runs optimistic. Acceptable for single-category and independent-equipment trucks; a shared-equipment model is a deeper change (backlog, Section 27).
+
+> **RULE — tail-completion placement.** ASAP and auto-accept resolve an order to the window where its LAST item finishes cooking in the projected queue (project with the order folded in; find its tail-completion window), NOT "first non-red slot". This tells the customer the truthful ready time: a 10-pizza ASAP order on an empty queue resolves to the window where its last items complete (e.g. 17:10), even though the earlier windows are red (busy cooking it). If the tail-completion window would fall after event end → pending (never rejected). The chosen-slot (non-ASAP) path measures the tail from the chosen slot — mildly conservative, never overfills.
+
+> **RULE — one helper for dots and placement.** The same projection drives BOTH the operator traffic-light dots AND the ASAP/auto-accept placement (S3/S6 DRY). The dots are queue-only; the basket affects only the live ASAP estimate, not the dot colours.
+
+> **VERIFIED EXAMPLES (test-kitchen, batch 4, 5-min window == 5-min prep, capacity 6):** 1 pizza @17:20 → 17:20 AMBER "Pizza 1/4", 17:25 GREEN (a sub-batch order occupies only its own window, no spill). 10 pizzas @17:00 → 17:00 RED 4/4, 17:05 RED 4/4, 17:10 AMBER 2/4, 17:15+ GREEN (genuine multi-batch carry-forward). 4 pizzas @17:00 → 17:00 only (exactly one batch, no spill). Rate scaling: a 10-min-prep category on 5-min windows runs at rate 2, spreading a 4-item order across two windows.
+
+> **TWO BUGS FIXED in the rate/carry math (V6.4):** (1) the displayed denominator was doubled ("1/8" for a batch of 4) because the rate used the caller's `slot_duration`-based windowSecs which over-stated the step; it now derives the real step (`stepSecs`, the smallest gap between consecutive collection rows). (2) A single sub-batch order lit two windows because two 5-min display rows mapped to one production bucket and both counted the same items; units are now read only on the first collection row per production_slot (countedSlots). The genuine multi-batch carry-forward is preserved (the 10-pizza spread still works).
 
 ## ASAP cancellation cutoff (V6)
 
@@ -836,6 +892,8 @@ On the customer order page, ASAP is auto-selected by default (asapChosen initial
 - Selected: solid orange background, white text.
 
 - Unavailable: greyed out, "Unavailable" label.
+
+> **RULE (V6.4) — ASAP is a first-class selection.** ASAP is genuinely selected by default on load (the customer can place an order immediately, no tap required) and the submit payload sends `slot: null` for it (the server resolves it via tail-completion, Section 6). It PERSISTS across basket changes — adding/removing items recomputes the "Around HH:MM" estimate but never clears the selection. Only an explicit tap on a specific time deselects ASAP; tapping ASAP (or clearing the time) returns to it. The visual highlight must always match what will actually be submitted. Previously ASAP was a fake selection — a highlight flag (`asapChosen`) plus an effect that secretly populated a concrete time into the real selection state (`selectedSlot`, which started empty) — so on load the order couldn't be placed until ASAP was tapped, and adding items re-ran the effect and cleared the time. `asapChosen` is now the single source of truth for both the highlight and the submit.
 
 ## Choose Time visual states
 
@@ -1091,15 +1149,17 @@ The dashboard auto-selects the most relevant event once on load so the operator 
 
 - Slot defaults to ASAP; the operator can override to a future slot. The operator sees ALL slots except genuinely past ones — including too-soon and full slots — each with a traffic-light indicator and an override modal (operator-only, lib/slot-indicator.ts). See the slot traffic-light rule below.
 
-### Slot traffic-light — operator-only, customer picker stays clean (V6.3)
+### Slot traffic-light — operator-only, customer picker stays clean (V6.3, engine rebuilt V6.4)
 
 > **RULE** — too_soon is its own slot-availability field (lib/slot-availability.ts), no longer conflated into is_past (the server previously merged them, so the operator couldn't see or override a too-soon slot).
 
-- **Operator (dashboard / Add Order)** — sees every slot except genuinely past ones, each with a traffic-light state and an override modal: green (available), amber ("Filling up"), red ("Full"). lib/slot-indicator.ts is operator-only and is never imported by the customer page.
+- **Operator (dashboard / Add Order)** — sees every slot except genuinely past ones, each with a traffic-light state driven by `projectOvenOccupancy` (Section 6): green (empty), amber (partial — shows the binding per-category count, e.g. "Pizza 2/4"), red ("Full" — batch full or item ceiling hit).
 
 - **Customer order page** — NO traffic-light. Only cleanly-available slots are shown; full and too-soon slots are HIDDEN (not shown-disabled), consistent with the no-internal-state-on-customer-surfaces principle (Section 4 / Section 7).
 
-> **INTERIM (V6.3) — directional wording only.** The amber/red labels are directional ("Filling up" / "Full"), not a precise count. kitchen_capacity counts BATCHES but the UI says "items"; the proper items-based capacity display and the kitchen_capacity semantics fix (decided: ITEMS is the intended meaning) are DEFERRED to a careful session — it touches the slot engine and existing slot_capacity data. Do not ship the precise count until that is done. See Section 27.
+> **PRECISE ITEMS-BASED DISPLAY (V6.4 — supersedes the V6.3 interim wording).** The V6.3 directional-only labels and the batch-vs-items ambiguity are gone. The dots are driven by the items-based oven-occupancy projection (Section 6); kitchen_capacity counts ITEMS. Label rules: RED reads just "Full" (category name and ratio dropped, for both the batch-bound and ceiling-bound cases); AMBER reads the per-category count ("Pizza 2/4"); GREEN has no label. The leading "·" separator before slot labels was removed. The internal `bound_by` reason (including "global ceiling") is still computed for diagnostics but not shown for red. The dots are queue-only; the basket affects only the live ASAP estimate, not the dot colours.
+
+> **RULE — operator dots and customer availability use different reads.** The operator dots and ASAP placement run through `projectOvenOccupancy`. The legacy `getSlotIndicator`/`lib/slot-indicator.ts` and `buildSlotAvailability`'s indicator path now serve ONLY the customer available/unavailable flags; they no longer drive the operator dots or placement. They are candidates for removal once the trial baseline is settled (do not remove mid-stack — Section 27).
 
 ## Confirm order button
 
@@ -1133,7 +1193,9 @@ Deal header rows use the same font-bold text-slate-900 text-lg weight as standal
 
 The Menu & Stock tab shows the slim event bar at the top (V6.1 — added to this tab so it is consistent with the Orders and Add Order tabs). When an event is selected it then shows (in order) Auto-accept, Kitchen capacity, and Offline protection cards:
 
-- **Kitchen capacity** — reads and writes the active van's kitchen_capacity (truck_vans). Options: No limit, then 1–20 items (matching the manage page). The description is the single canonical copy, identical to the Settings tab: "Maximum items per 5-minute window. Items with no prep time set are excluded. Leave blank for no limit." (V6.1 — the previous "Max cooked items..." wording and the amber "this is a global van setting" warning were both removed; Settings is the source of truth for this copy.)
+- **Kitchen capacity** — the active van's kitchen_capacity (truck_vans). Options: No limit, then 1–20 items. The description is the single canonical copy, identical to the Settings tab. (V6.4 — the copy is being simplified away from the "items with no prep time are excluded" wording toward an explicit per-category opt-in; see the per-category capacity tickbox on the backlog, Section 27.)
+
+> **RULE (V6.4) — capacity display is read AND written via the service role; never anon.** `truck_vans` is RLS service-role-only (Section 16), so the dashboard's old direct anon-client read of `truck_vans.kitchen_capacity` was silently blocked and the card always showed "No limit" even when capacity was set (the engine read the real value server-side, so the dots were correct — only the display lied). The card now sources `kitchenCapacity` (and `activeVanName`) from the `/api/dashboard` response (which already reads it via the service role) and refreshes on the normal 60s poll / realtime; a failed poll must not wipe a good value. The in-card SAVE routes through the service-role `/api/manage update_van_settings` action (the old anon write was also silently failing). The displayed capacity keys off the SELECTED event's van, not the date's first event (consistent with the projection's event scoping). Do not add an anon RLS policy on truck_vans to "fix" reads — route through the server.
 
 - **Offline protection** — reads the van's auto_pause_on_offline as the default and the event's offline_protection_override; the toggle writes the per-event override (see Section 15). The card description is identical in both on and off states ("Pauses online orders if this device goes offline"), with a secondary line showing whether the event override or van default is in effect. (V6.1 — see the confirm-dialog behaviour in Section 11.)
 
@@ -1353,13 +1415,15 @@ Settings section is "Your trucks" with "+ Add truck". Each vehicle is rendered a
 
 - **show_cooking_step** (boolean) — adds the Cooking step on this vehicle's KDS.
 
-- **kitchen_capacity** (integer, nullable) — max COOKED items per 5-minute window; drinks/instant items do not count; blank = no limit. Options are No limit then 1–20 items (V6 — was a sparse 3/5/8/10/15/20). Editable from both the manage page Settings and, when an event is active, the dashboard Menu & Stock tab; both surfaces use identical options. It remains a global van setting. (V6.3 note: the slot engine currently counts BATCHES against this while the UI calls it "items" — the items-based semantics fix is on the backlog, Section 27.)
+- **kitchen_capacity** (integer, nullable) — max items cooking per production window; instant items (prep_secs 0) do not count; blank = no limit. Options are No limit then 1–20 items (V6). Editable from both the manage page Settings and, when an event is active, the dashboard Menu & Stock tab; both surfaces use identical options. It is a per-van default that the engine applies as a per-window cross-category item ceiling. (V6.4: the slot engine now counts ITEMS, not batches — the V6.3 ambiguity is resolved; see Section 6. Reads/writes from the dashboard go via the service role — Section 10.) A per-category "apply the capacity limit to this category" opt-in is on the backlog (Section 27).
 
 - **display_layout and split_screen** columns exist in the DB but are NOT exposed in van settings — they are set from the dashboard/KDS directly.
 
 ## Kitchen capacity wiring
 
 When an event is created or confirmed with a vehicle assigned, slot_capacity rows are written automatically using that vehicle's kitchen_capacity. No vehicle assigned, or no capacity set, means no limit.
+
+> **NOTE (V6.4)** — The live oven-occupancy engine (Section 6) reads kitchen_capacity through the service-role projection (`/api/dashboard`, `/api/slots`), not the legacy `slot_capacity` cache. The `slot_capacity` rows are effectively vestigial for the projection; the engine works from `production_slot_usage` (event-keyed) + the van's kitchen_capacity. A stale `slot_capacity` therefore does NOT affect the dots or placement. If a van soft-delete ever orphans an event onto a dead van (capacity null), that event's ceiling silently switches off — reassign such events to the active van (backlog consideration).
 
 ## Staff vehicle access
 
@@ -1519,6 +1583,8 @@ Manual events geocode via Gemini from venue name + town + postcode at save time,
 
 trucks.default_auto_open and default_auto_close live in Settings → Order settings, not per-event. Events open for online orders at start time and stop at end time per these defaults.
 
+> **BACKLOG (V6.4) — auto open/close not firing.** Observed: with "Open for orders automatically" ON and the event start time passed, the dashboard still showed the event as Closed with a manual Start Event button. Needs diagnosis-first: clarify whether "open for orders" (the auto toggle) and "event started" (the Start Event control / event `status`) are intended as DISTINCT states or the same — the fix differs depending on the answer. Auto-close likely has the same gap. Related to the date-aware "now relative to this event" logic (Section 6); whatever notion of "now vs event window" is used must be local-date aware and consistent with the slot floors. See Section 27.
+
 ### Event lifecycle controls — Start, Restart, Close (V5)
 
 Operators control whether an event is taking orders through the event bar and the in-panel box. Wording and status, canonical:
@@ -1540,6 +1606,8 @@ The Cancel action on an event card opens a confirmation modal with an optional r
 > **RULE** — openEventCancelModal fetches the real affected order count from /api/events/affected-orders (counts pending + confirmed orders for the event, token-verified) before showing the modal. It must never be hardcoded to 0, which previously misled the operator into thinking no orders were affected.
 
 > **RULE (V6.3)** — Event cancellation queries and bulk-cancels affected orders by event_id, and the bulk cancel updates rows by order_key (`.in('order_key', …)`), NEVER by display id (`.in('id', …)` would cancel the same-numbered order across every other event — Section 18a). Note this depended on orders carrying event_id, which for most of V6.2 they did not — so cancellation emails silently went to nobody until the event_id-on-insert fix (Section 5). Both are now in place.
+
+> **RULE (V6.4) — cancel must rebuild production_slot_usage.** Event-cancel and event-delete previously set the event's orders to cancelled but never decremented their contributions from `production_slot_usage`, so the cancelled load lingered in the date's rows and (under the old date-keying) bled into other same-date events as phantom red. Both paths now call `rebuildProductionSlotUsage(truckId, eventDate)` after cancelling the orders, which recomputes the date's usage from LIVE (pending/confirmed/modified) orders only. The order-level cancel paths already did this; event-level cancel was the gap. `rebuildProductionSlotUsage` stays date-scoped (it loops the date's non-cancelled events internally), so manage / events-action callers are unchanged.
 
 ## Add/Edit event form
 
@@ -1698,6 +1766,8 @@ Per Section 18a, display numbers are generated by atomic counters, never by read
 20260604_scraper_adaptive.sql
 20260604_exclusion_terms.sql
 20260607_order_key_per_event.sql
+20260608_booking_locks.sql
+20260608_production_slot_usage_event_key.sql
 ```
 
 ### Migration process (V6.2, extended V6.3)
@@ -1710,7 +1780,17 @@ Per Section 18a, display numbers are generated by atomic counters, never by read
 
 ### 20260607_order_key_per_event.sql (V6.3)
 
-The order-numbering rebuild migration, applied in chunks. It: dropped the Studio-added messages_order_id_fkey; added orders.order_key (uuid, NOT NULL DEFAULT gen_random_uuid()); swapped the PK from id to order_key via a guarded DO block; added the two partial unique indexes (event_id,id WHERE event_id NOT NULL; truck_id,id WHERE event_id NULL); added truck_events.order_counter + increment_event_order_counter(uuid); re-declared trucks.order_counter + increment_order_counter(text) defensively; and issued the schema reload. The orders/production_slot_usage/messages tables were wiped (all test data) before the swap, so there was no backfill or counter-seeding. See Section 18a.
+The order-numbering rebuild migration, applied in chunks. It: dropped the Studio-added messages_order_id_fkey; added orders.order_key (uuid, NOT NULL DEFAULT gen_random_uuid()); swapped the PK from id to order_key via a guarded DO block; added the two partial unique indexes (event_id,id WHERE event_id NOT NULL; truck_id,id WHERE event_id NULL); added truck_events.order_counter + increment_event_order_counter(uuid); re-declared trucks.order_counter + increment_order_counter(text) defensively; and issued the schema reload. ### 20260608_booking_locks.sql (V6.4)
+
+Adds the `booking_locks` table for the per-event booking mutex (Section 5/6): key `(truck_id, event_date)`, a timestamp for the stale-TTL check, RLS on with no anon policy (service-role only). Applied in chunks.
+
+### 20260608_production_slot_usage_event_key.sql (V6.4)
+
+Re-keys `production_slot_usage` from date-scoped to event-scoped so same-date events stop pooling (Section 6). Applied in chunks: (1) add `event_id uuid REFERENCES truck_events(id) ON DELETE CASCADE` (nullable for transition); (2) drop the old `(truck_id, event_date, production_slot)` PK and add a unique index on `(truck_id, event_id, production_slot)` as the new upsert arbiter; (3) `DELETE FROM production_slot_usage` (the pooled rows mix events and cannot be un-pooled); (4) add a read index `(truck_id, event_id)`; (5) `notify pgrst`. `event_date` and its index are KEPT — the rebuild/cancel orchestrator deletes a whole date in one statement, so it stays date-scoped while reads/writes key by event_id.
+
+> **Backfill** — NOT a SQL transform of the old rows (impossible — they're pooled). Repopulation is per-event from the `orders` table (which carries correct event_id after the Section 5 fix): the new code lazily reseeds via `getProductionSlotUnits(eventId)` → `buildUnitsFromOrders(eventId)` on the first empty read, and re-saving an event triggers a full rebuild. `event_id IS NULL` orders are excluded (they belong to no event). The table is a pure cache; if a backfill is ever wrong, `DELETE FROM production_slot_usage` and let the reseed run — nothing authoritative lives here.
+
+> **event_id is uuid, not text.** Unlike `trucks.id` (text), `truck_events.id` and `orders.event_id` are uuid, so this FK column is uuid. (A reminder that the "FKs to trucks(id) are text" rule is specific to trucks; FKs to truck_events(id) are uuid.)
 
 ## Realtime
 
@@ -1724,7 +1804,9 @@ Two policy patterns are used:
 
 - **Public read (anon SELECT allowed, `using (true)`)** — on the tables the customer order page, discovery map, and dashboard realtime read directly with the anon key: discovery_events, discovery_trucks, venues, trucks, truck_events, menu_categories, menu_items_db, modifier_groups, modifier_options, bundles_db, category_modifier_groups, item_modifier_overrides, item_overrides, collection_times, slot_capacity, category_stock, and orders. Writes still go through service-role routes.
 
-- **Service-role only (RLS on, no anon policy)** — anon access fully blocked on the sensitive/internal tables: operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, truck_user_vans, truck_vans, kds_sessions, slot_bookings, production_slot_usage, event_deals, event_price_overrides, upsell_rules, excluded_terms, scraper_run_log, discount_codes_db, messages, order_counters, referrals.
+- **Service-role only (RLS on, no anon policy)** — anon access fully blocked on the sensitive/internal tables: operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, truck_user_vans, truck_vans, kds_sessions, slot_bookings, production_slot_usage, booking_locks (V6.4), event_deals, event_price_overrides, upsell_rules, excluded_terms, scraper_run_log, discount_codes_db, messages, order_counters, referrals.
+
+> **NOTE (V6.4)** — `truck_vans` being service-role-only is exactly why the dashboard kitchen-capacity card (which had been reading it with the anon browser client) always showed "No limit". Any browser-side read of a service-role-only table silently returns nothing under RLS — route such reads/writes through a service-role API route. See Section 10.
 
 > **RULE (V6.1, reaffirmed V6.2)** — New tables must have RLS enabled at creation. Decide deliberately between a public-read policy (only if an anon-key surface genuinely reads it) and no policy (service-role only). Both V6.2 tables — excluded_terms and scraper_run_log — are internal and are service-role only. Never leave a new table with RLS off. Never expose a sensitive table (anything with personal data, tokens, or billing) to anon.
 
@@ -1800,7 +1882,7 @@ When resolving whether to apply online_paused_until for a customer order, the me
 
 - Includes venue, contact method, and a cancel link. **As of V6.3 the cancel link is `/order/{order_key}/manage`** — the order_key uuid, with no `?truck=` slug (the slug is no longer needed to disambiguate, and the link is no longer guessable). The customer cancel page is built as of V5 (see Customer cancel page below).
 
-- **Venue and contact details (V6.3)** — both the customer confirmation and the truck-notification copies now include the venue (name / town / postcode) and contact details. Contact details are driven by trucks.preferred_contact_method so the customer is shown the channel the truck actually wants to be reached on. Previously these were missing from the confirmation.
+- **Venue and contact details (V6.3, confirmed present V6.4)** — both the customer confirmation and the truck-notification copies include the venue (name / town / postcode) and contact details. Contact details are driven by trucks.preferred_contact_method so the customer is shown the channel the truck actually wants to be reached on. Venue renders from the resolved `eventRow` (which the event-keying work depends on, so it resolves reliably). (V6.4: verified both builders already receive and render the venue — if a venue ever appears missing in a real email it is a DATA gap, blank town/postcode on the event, not a code gap. The customer "Where to find us" block can optionally render as the same single 📍 line as the truck email — weigh customer findability over visual consistency, since the customer is navigating to it.)
 
 - **No "Discount" line** — the V4 rewrite removed the discount line for deal-driven savings. It was confusing customers because the maths didn't reconcile cleanly. Deals now render as: deal name with bundle price → indented modifier upcharges below → Total. The maths visibly reconciles without a separate discount line.
 
@@ -1813,6 +1895,8 @@ When resolving whether to apply online_paused_until for a customer order, the me
 ## Transactional email integrity
 
 - All Brevo sends must check the response and surface failures rather than reporting success silently. Failed verification sends clean up their pending DB row.
+
+> **RULE (V6.4) — cancellation email branding is HatchGrab.** All customer-facing cancellation emails carry the "Powered by HatchGrab · hatchgrab.com" footer, matching the confirmation email. The customer self-cancel email was already correct; the operator-cancel email (app/api/dashboard/action) still showed "Powered by Village Foodie" and was corrected. Sender ADDRESS is unchanged (env-driven, Section 18 provider) — only the footer branding text. The brand-name-vs-sender-address split holds: operator-facing from-name is "HatchGrab", customer-facing from-name is the truck name, the address is env-driven.
 
 ### Operator-confirm and slot-change emails use the shared formatter (V5)
 
@@ -2401,7 +2485,7 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 ## Critical — before trial
 
-- **LIVE iPad click-through of the entire order flow on a real device (V6.3)** — the single most important pre-trial task. Every V6.3 order-flow fix (per-event numbering, urgency, slots, basket persistence, email venue/contact) stacks on this one path and NONE of it has been exercised end-to-end by a human on a real device; the smoke tests proved the data layer and RPCs only. This gates the trial.
+- **LIVE iPad click-through of the entire order flow on a real device (V6.3, still outstanding V6.4)** — the single most important pre-trial task. Every order-flow change (per-event numbering, urgency, slots, basket persistence, email venue/contact, AND now the V6.4 oven-occupancy engine, event-keyed usage, per-event lock, ASAP-selection state machine, date-aware floors) stacks on this one path. Much of V6.4 is verified by simulation + spot-checks, not a full human end-to-end run. Highest-value live checks: (a) place a customer order on ASAP WITHOUT touching the picker → confirms → shows #1 on the dashboard → right venue in the email; (b) Hundon traffic light: 1 pizza → only its window amber "Pizza 1/4", capacity reads 6; (c) reassignment: full slot → bumped, not rejected. This gates the trial.
 
 - Capacitor native wrapper; Stage A offline cache; offline detection banner; background sound; screen wake.
 
@@ -2414,6 +2498,8 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 - **Rotate the Upstash Redis REST token (V6.3)** — exposed in chat during setup (Section 28).
 
 - **Delete the now-vacuous supabase/migrations/20260607_backfill_order_event_id.sql (V6.3)** — the orders table was wiped, so it backfills nothing; hygiene.
+
+- **DONE (V6.4) — orphaned event_id:NULL order cleaned up.** The legacy order with `event_id` NULL (display #11) was cancelled (by `order_key`, not by display `id` which is text and non-unique) so it no longer pollutes any event's projection or the event-keying backfill.
 
 - Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store). Also the natural home for the Gemini-extraction DRY consolidation (Section 3 / Section 25) — once done, the two Apps Script paths can move in-repo behind lib/schedule-extract.ts.
 
@@ -2445,7 +2531,21 @@ process-schedule/route.ts now imports lib/schedule-extract.ts (V6.2 — see Sect
 
 - **Village-aware venue matching in inbound-schedule (V6.2)** — match on venue_name + village combined before falling back to name-only, to stop common pub names ("The Bell", "The Fox", "The Bull") pinning to the wrong village (Section 25). Currently corrected by hand in SQL.
 
-- **Items-based slot capacity display + kitchen_capacity semantics fix (V6.3, decided: ITEMS)** — replace the interim directional slot wording (Section 10) with a precise count; the slot engine currently counts BATCHES while the UI says "items". This touches the slot engine and existing slot_capacity data, so do it carefully in a dedicated session.
+- **DONE (V6.4) — items-based slot capacity display + kitchen_capacity semantics.** The V6.3 interim directional wording is replaced by the precise oven-occupancy projection; kitchen_capacity now counts ITEMS (Sections 6 and 10). Superseded.
+
+- **Auto open/close not firing (V6.4)** — diagnose-first: is "open for orders automatically" the same state as "event started" (Start Event button / event `status`), or distinct? The fix depends on the answer; auto-close likely shares the gap. Must use local-date-aware "now vs event window" logic consistent with the slot floors (Section 6 / Section 15).
+
+- **Merge Business contact + Customer contact into one "what the customer sees" box (V6.4)** — Settings shows a Business contact box (email + phone) and a separate Customer contact box (preferred method) that doesn't display the resolved detail, so the operator can't see what the customer receives. Combine into one section that shows the resolved contact as the customer sees it, driven by `preferred_contact_method`. Layout change; interacts with the email contact rendering (Section 18).
+
+- **Per-category "apply kitchen capacity limit" tickbox (V6.4)** — replace the inferred "instant items don't count" rule with an explicit per-category opt-in. If batch/prep are set the limit auto-populates; a category can also opt into the ceiling WITHOUT setting prep. Removes the drinks/no-prep wording and gives the operator active control over what the ceiling applies to. Touches the projection (which categories count toward constraint (a)) — scope alongside the engine, not as pure cosmetic.
+
+- **Shared-equipment capacity model (V6.4)** — the oven-occupancy projection assumes categories cook on INDEPENDENT equipment (the ceiling reddens but doesn't slow per-category drain). For a truck whose categories share one oven/fryer, estimates run optimistic. A shared-equipment mode (categories queue behind each other) is a deeper model change; flag it when a multi-category shared-equipment truck onboards (Section 6).
+
+- **Order-copy vs notification email format (V6.4)** — an order reportedly went to the truck in the wrong email format; diagnose why before changing (which path sent which template).
+
+- **Remove dead slot code (V6.4)** — `getSlotIndicator` / `lib/slot-indicator.ts` and the vestigial `slot_capacity` cache are no longer on the operator dots or placement path (the projection replaced them); they still power the customer available/unavailable flags. Slim once the trial baseline is committed and tested — do NOT remove mid-stack.
+
+- **Capacity display per-selected-event already landed (V6.4)** — the dashboard card now keys off the selected event's van. Remaining multi-event-same-date display polish is minor.
 
 - **Retire the dormant Twilio WhatsApp handler and delete formatWhatsAppOrder dead code (V6.3)** — Meta Cloud API is now canonical (Section 20); the Twilio-vs-Meta consolidation decision is resolved in Meta's favour. Remaining work is the cleanup.
 

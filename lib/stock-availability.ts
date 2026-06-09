@@ -1,24 +1,12 @@
 // lib/stock-availability.ts
 // Shared logic for enforcing stock limits after any order is placed.
-// Reads live order counts from the orders table (event-scoped by date),
-// then marks items / categories as sold-out when limits are reached.
+// Reads live order counts from the orders table, then marks items /
+// categories as sold-out when limits are reached.
 
 type SupabaseClient = any
 
-/** Count items ordered today from the orders table, including deal slots. */
-export async function getLiveItemCounts(
-  supabase: SupabaseClient,
-  truckId: string,
-  eventDate: string,
-): Promise<Record<string, number>> {
-  const { data: orders } = await supabase
-    .from('orders')
-    .select('items, deals')
-    .eq('truck_id', truckId)
-    .eq('event_date', eventDate)
-    .neq('status', 'cancelled')
-    .neq('status', 'rejected')
-
+/** Tally item counts from a set of order rows, including deal slots. */
+function tallyItemCounts(orders: any[]): Record<string, number> {
   const counts: Record<string, number> = {}
   for (const order of orders || []) {
     for (const item of order.items || []) {
@@ -34,6 +22,27 @@ export async function getLiveItemCounts(
 }
 
 /**
+ * Count items ordered for a specific event from the orders table, including
+ * deal slots. Event-scoped per the V6.4 invariant: counts belong to an event,
+ * not a calendar day. Orders with a NULL event_id are excluded automatically
+ * (NULL never equals a value).
+ */
+export async function getLiveItemCounts(
+  supabase: SupabaseClient,
+  truckId: string,
+  eventId: string,
+): Promise<Record<string, number>> {
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('items, deals')
+    .eq('truck_id', truckId)
+    .eq('event_id', eventId)
+    .neq('status', 'cancelled')
+    .neq('status', 'rejected')
+  return tallyItemCounts(orders || [])
+}
+
+/**
  * After any order insertion, check live counts against item and category limits
  * and mark sold-out flags in item_overrides.
  * itemCatMap: { itemName -> categoryName } — from buildItemCatMap.
@@ -44,8 +53,18 @@ export async function enforceStockLimits(
   eventDate: string,
   itemCatMap: Record<string, string>,
 ): Promise<void> {
-  const [liveItemCounts, { data: itemLimits }, { data: catLimits }] = await Promise.all([
-    getLiveItemCounts(supabase, truckId, eventDate),
+  // NOTE: sellout enforcement remains DATE-scoped and writes truck-wide
+  // item_overrides (deferred — see V6.4). getLiveItemCounts is now event-scoped
+  // for the Menu & Stock display, so the date-scoped count is read inline here to
+  // keep this enforcement behaviour byte-for-byte unchanged.
+  const [{ data: liveOrders }, { data: itemLimits }, { data: catLimits }] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('items, deals')
+      .eq('truck_id', truckId)
+      .eq('event_date', eventDate)
+      .neq('status', 'cancelled')
+      .neq('status', 'rejected'),
     supabase
       .from('item_overrides')
       .select('item_name, stock_count, available')
@@ -58,6 +77,7 @@ export async function enforceStockLimits(
       .eq('date', eventDate)
       .not('stock_count', 'is', null),
   ])
+  const liveItemCounts = tallyItemCounts(liveOrders || [])
 
   // Item-level: mark sold out when ordered >= limit
   for (const limit of itemLimits || []) {
