@@ -4,7 +4,7 @@
 // dots/labels can never diverge (DRY — see Fix E). The projection→tone/label mapping
 // lives ONLY here; do not re-derive a count ratio at a call site.
 
-import { projectBackwardOccupancy, type WindowOccupancy } from '@/lib/slot-availability'
+import { projectBackwardOccupancy, backwardWindowStepMins, type WindowOccupancy } from '@/lib/slot-availability'
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
@@ -49,9 +49,13 @@ export function buildSlotIndicators(
 
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
   const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
+  // The dot on collection slot T = collectability there = the cooking window ENDING at T
+  // (keyed T−step), not the window starting at T (the off-by-one that showed the block one
+  // slot early). step = finest prep cadence (exact for single-cadence; see helper note).
+  const step = backwardWindowStepMins(catConfigs)
 
   for (const s of slots) {
-    const w = back.byStart.get(toMins(s.collection_time)) ?? null
+    const w = back.byStart.get(toMins(s.collection_time) - step) ?? null
     let tone: SlotTone = w?.tone ?? 'green'
     if (s.too_soon && tone === 'green') tone = 'amber'
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'

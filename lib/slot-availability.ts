@@ -51,6 +51,23 @@ function parseMins(hhmm: string): number {
   return (h || 0) * 60 + (m || 0)
 }
 
+/**
+ * Representative window step (minutes) for the SINGLE-window slot→cooking-window lookups
+ * (dots + no-basket availability): a collection slot at T is served by the cooking window
+ * ENDING at T, keyed T−step. We use the finest prep cadence among prep categories — exact
+ * for single-cadence events (the validated scenarios). The per-CATEGORY exact mapping lives
+ * in fitOrderBackward (the authoritative basket-aware path); for mixed-cadence menus the
+ * single-window display is approximate but the fit/booking/ASAP remain per-category exact.
+ * 0 when there are no prep categories (no oven windows ⇒ shift is moot).
+ */
+export function backwardWindowStepMins(catConfigs: Record<string, CatConfig>): number {
+  let step = Infinity
+  for (const cfg of Object.values(catConfigs)) {
+    if (cfg && cfg.secs) step = Math.min(step, Math.max(1, Math.round(cfg.secs / 60)))
+  }
+  return Number.isFinite(step) ? step : 0
+}
+
 export function buildSlotAvailability(params: {
   times: CollectionTimeRow[]
   /** Per production_slot item quantities by category (production_slot_usage). */
@@ -94,6 +111,9 @@ export function buildSlotAvailability(params: {
   // lead-time check is now "the order's backward windows all have spare and none precede
   // event start" (run-off-front), expressed per-window.
   const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
+  // A collection slot at T is served by the cooking window ENDING at T (keyed T−step), NOT
+  // the window starting at T — the off-by-one that blocked one slot early.
+  const step = backwardWindowStepMins(catConfigs)
 
   return times.map(s => {
     const slotMins = parseMins(s.collection_time)
@@ -114,8 +134,8 @@ export function buildSlotAvailability(params: {
       bindCap = kitchenCapacity ?? UNLIMITED
     } else {
       // No basket (customer initial view / dashboard list): the existing load in the cooking
-      // window STARTING at S. A full window ⇒ red ⇒ hidden from the customer.
-      const w = back.byStart.get(slotMins) ?? null
+      // window ENDING at S (keyed S−step). A full window ⇒ red ⇒ hidden from the customer.
+      const w = back.byStart.get(slotMins - step) ?? null
       tone = w?.tone ?? 'green'
       boundBy = w?.bound_by ?? null
       bindCurrent = Math.round(w?.total ?? 0)
@@ -123,7 +143,7 @@ export function buildSlotAvailability(params: {
     }
 
     const capacityAvailable = tone !== 'red'
-    const w = back.byStart.get(slotMins) ?? null
+    const w = back.byStart.get(slotMins - step) ?? null
     const bindRemaining = w ? (kitchenCapacity == null ? UNLIMITED : Math.max(0, Math.round(w.remainingTotal))) : (kitchenCapacity ?? UNLIMITED)
 
     return {
@@ -499,6 +519,11 @@ export function fitOrderBackward(
   // adjacent to collection), earlier windows = full batch (mirrors projectBackwardOccupancy).
   const orderLoad = new Map<number, Record<string, number>>()
   const batchOf: Record<string, number> = {}
+  // One pre-open batch is allowed: the kitchen may cook a SINGLE batch before event start
+  // (ready at open), so a window may extend at most one prep-interval before eventStart. An
+  // order fits the lead only if its EARLIEST required window starts ≥ eventStart − prep;
+  // needing two+ pre-open windows (e.g. >batch at the first slot) is insufficient lead.
+  let runsOffFront = false
   for (const [catRaw, rawM] of Object.entries(orderByCat)) {
     const cat = catRaw.toLowerCase()
     const cfg = catConfigs[cat]
@@ -508,8 +533,15 @@ export function fitOrderBackward(
     const prep = Math.max(1, Math.round(cfg.secs / 60))
     batchOf[cat] = batch
     const nw = Math.ceil(M / batch)
+    // earliest required window-start = slotMins − nw*prep; allow one pre-open window.
+    if (slotMins - nw * prep < eventStartMins - prep) runsOffFront = true
     for (let i = 0; i < nw; i++) {
-      const ws = slotMins - i * prep
+      // The order COOKS in the windows ENDING at the collection slot T: the latest/adjacent
+      // window is [T−prep, T) keyed T−prep (i=0), stepping back T−2prep, … T−nw*prep. This
+      // matches projectBackwardOccupancy's keying for a collection at T (it seats the cohort's
+      // latest window at deadline−prep). Using slotMins−i*prep (latest = T) was the off-by-one
+      // that blocked one slot too early. i=0 still holds the remainder (adjacent to collection).
+      const ws = slotMins - (i + 1) * prep
       const items = i === 0 ? M - batch * (nw - 1) : batch
       const w = orderLoad.get(ws) ?? {}
       w[cat] = (w[cat] || 0) + items
@@ -524,8 +556,9 @@ export function fitOrderBackward(
     const r = RANK[t]
     if (r > bindRank) { bindRank = r; tone = t; bound_by = t === 'green' ? null : label }
   }
+  // Insufficient lead (needs more than one pre-open window) ⇒ red, regardless of capacity.
+  if (runsOffFront) consider('red', 'too soon (insufficient lead)')
   for (const [ws, ord] of orderLoad) {
-    if (ws < eventStartMins) { consider('red', 'too soon (insufficient lead)'); continue }
     const existing = back.byStart.get(ws)
     let ordTotal = 0
     for (const [cat, add] of Object.entries(ord)) {

@@ -7,7 +7,7 @@
 //
 // Run:  npx tsx scripts/verify-slots-floor.ts
 
-import { buildSlotAvailability } from '@/lib/slot-availability'
+import { buildSlotAvailability, fitOrderBackward, projectBackwardOccupancy } from '@/lib/slot-availability'
 import { buildSlotIndicators } from '@/lib/slot-display'
 import { calcMinReadyMins, type CatConfig } from '@/lib/prep-utils'
 
@@ -60,10 +60,12 @@ console.log('\n(A/B) availability with corrected floor (future, floor=17:00):')
   const r = (t: string) => rows.find(x => x.collection_time === t)!
   expect('17:00 NOT too_soon, available', r('17:00').too_soon === false && r('17:00').available === true, `too_soon=${r('17:00').too_soon} available=${r('17:00').available}`)
   expect('17:05 NOT too_soon, available', r('17:05').too_soon === false && r('17:05').available === true, `too_soon=${r('17:05').too_soon} available=${r('17:05').available}`)
-  // (3) backward capacity cohort unchanged:
-  expect('18:45 red (4/4)', r('18:45').tone === 'red', r('18:45').tone)
-  expect('18:50 red (4/4)', r('18:50').tone === 'red', r('18:50').tone)
-  expect('18:55 amber (2/4)', r('18:55').tone === 'amber', r('18:55').tone)
+  // (3) backward capacity cohort — collectability (window ENDING at T), post off-by-one fix:
+  // 18:45 free (window 18:40), 18:50/18:55 blocked (windows 18:45/18:50 full), 19:00 = 2 spare.
+  expect('18:45 green (window 18:40 free)', r('18:45').tone === 'green', r('18:45').tone)
+  expect('18:50 red (window 18:45 full)', r('18:50').tone === 'red', r('18:50').tone)
+  expect('18:55 red (window 18:50 full)', r('18:55').tone === 'red', r('18:55').tone)
+  expect('19:00 amber (window 18:55 = 2/4)', r('19:00').tone === 'amber', r('19:00').tone)
 }
 
 // ── (B) operator dots: 17:00/17:05 GREEN (no labelless amber) ───────────────
@@ -75,7 +77,22 @@ console.log('\n(B) operator dots with corrected floor:')
   const d = (t: string) => ind.get(t)!
   expect('17:00 GREEN (no spurious amber)', d('17:00').tone === 'green' && d('17:00').label === '', `${d('17:00').tone} "${d('17:00').label}"`)
   expect('17:05 GREEN', d('17:05').tone === 'green', d('17:05').tone)
-  expect('18:55 amber "Pizza 2/4" (cohort unchanged)', d('18:55').tone === 'amber' && d('18:55').label === 'Pizza 2/4', `${d('18:55').tone} "${d('18:55').label}"`)
+  // 19:00 collection slot reads the cohort's partial window (18:55 = 2/4) post-shift.
+  expect('19:00 amber "Pizza 2/4" (window 18:55)', d('19:00').tone === 'amber' && d('19:00').label === 'Pizza 2/4', `${d('19:00').tone} "${d('19:00').label}"`)
+}
+
+// ── Floor consistency (Option A): no-basket view AND a real basket AGREE at 17:00 ──
+console.log('\n(floor consistency) no-basket 17:00 available AND 4-pizza basket books at 17:00:')
+{
+  const rows = buildSlotAvailability({
+    times: [{ collection_time: '17:00', production_slot: '17:00' }], productionSlotUnits: {}, catConfigs: PIZZA,
+    kitchenCapacity: 6, date: '2099-01-01', nowMins: 0, earliestCollectionMins: EVENT_START, eventStartMins: EVENT_START,
+  })
+  const noBasket1700 = rows[0].available
+  const back = projectBackwardOccupancy({}, PIZZA, EVENT_START, 6)
+  const basket1700 = fitOrderBackward(back, EVENT_START, { pizza: 4 }, PIZZA, 6, EVENT_START).fits
+  expect('no-basket 17:00 available === 4-pizza basket fits 17:00 (both true, no inconsistency)',
+    noBasket1700 === true && basket1700 === true, `noBasket=${noBasket1700} basket=${basket1700}`)
 }
 
 console.log('\n' + '─'.repeat(60))
