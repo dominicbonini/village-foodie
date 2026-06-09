@@ -1169,7 +1169,7 @@ setItemModal({ item, modGroups, editCartKey })
                         className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>
-                          {ev.status === 'closed' && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">● Closed</span>}
+                          {ev.status === 'closed' && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">● Finished</span>}
                           {ev.status === 'open' && <span className="text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 rounded px-1.5 py-0.5 flex-shrink-0">● Live</span>}
                           {isFuture && ev.status !== 'closed' && ev.status !== 'open' && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
                         </div>

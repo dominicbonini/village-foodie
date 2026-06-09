@@ -666,6 +666,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
       setUpcomingEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'open' as const,opened_at:opened}:e))
       showToast(wasClosedEvent?'Event restarted':'Event started')
+      fetchAllRef.current() // re-sync from the authoritative server read so status propagates immediately
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
@@ -682,12 +683,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
-  const closeEventEarly=async(eventId:string)=>{
+  const finishEvent=async(eventId:string)=>{
+    // Timing-aware confirm: finishing ON TIME / past close is routine; finishing EARLY (before
+    // end_time) stops orders ahead of schedule, so warn harder and name the scheduled end.
+    const ev=todayEvents.find(e=>e.id===eventId)??upcomingEvents.find(e=>e.id===eventId)
+    const nowMins=new Date().getHours()*60+new Date().getMinutes()
+    const endMins=ev?.end_time?(()=>{const[h,m]=ev.end_time.split(':').map(Number);return (h||0)*60+(m||0)})():null
+    const finishingEarly=endMins!=null && nowMins<endMins
+    const msg=finishingEarly
+      ? `This event isn't scheduled to finish until ${formatTime(ev!.end_time)}. Finishing now stops all new orders immediately. Are you sure?`
+      : 'Finish this event? No more orders will be taken.'
+    if(!window.confirm(msg)) return
     try{
+      // Flips the EVENT status to 'closed' only — existing orders are untouched and stay
+      // fully visible/actionable; this just stops NEW customer orders.
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'close',eventId,payload:{}})})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.map(e=>e.id===eventId?{...e,status:'closed' as const,closed_at:new Date().toISOString()}:e))
-      setShowEventMenu(false); showToast('Event closed')
+      setShowEventMenu(false); showToast('Event finished')
+      fetchAllRef.current() // re-sync so the status flips to "Finished" immediately (no manual refresh)
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
@@ -711,6 +725,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const data=await res.json(); if(!res.ok) throw new Error(data.error)
       setTodayEvents(prev=>prev.filter(e=>e.id!==eventId))
       setSelectedEventId(null); setShowEventMenu(false); showToast('Event cancelled')
+      fetchAllRef.current() // re-sync so the cancelled event drops out immediately
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
@@ -914,8 +929,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <span className="text-xs font-medium text-amber-400 flex-shrink-0">⏸ Paused</span>
                 ):activeEvent.status==='open'?(
                   <span className="text-xs font-medium text-green-400 flex-shrink-0">● Live</span>
+                ):activeEvent.status==='closed'?(
+                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">● Finished</span>
+                ):activeEvent.status==='cancelled'?(
+                  <span className="text-xs font-medium text-red-400 flex-shrink-0">Cancelled</span>
                 ):(
-                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">● Closed</span>
+                  // 'confirmed' (or any not-yet-started status) — NOT finished; pairs with Start Event.
+                  <span className="text-xs font-medium text-slate-400 flex-shrink-0">Not started</span>
                 )}
                 <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
                   className="text-slate-400 hover:text-white flex-shrink-0 text-base leading-none px-1">
@@ -970,7 +990,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* Recently closed banner */}
             {recentlyClosed&&activeEvent&&(
               <div className="bg-slate-100 border border-slate-200 rounded-xl p-4 mb-4 flex items-center justify-between">
-                <span className="text-sm text-slate-600">Event closed · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
+                <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {formatTime(activeEvent.end_time)}</span>
                 <button onClick={()=>extendEvent(activeEvent.id,30)} className="text-sm font-medium text-teal-600 hover:text-teal-700">Extend 30 min</button>
               </div>
             )}
@@ -1973,7 +1993,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
             {activeEvent.status==='confirmed'&&!activeEvent.auto_open&&(
               <button onClick={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
-                className="w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl hover:bg-teal-700 text-sm mb-3">
+                className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm mb-3">
                 Start Event
               </button>
             )}
@@ -1992,8 +2012,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="space-y-2 border-t border-slate-100 pt-3">
               <button onClick={()=>{extendEvent(activeEvent.id,30);setShowEventMenu(false)}}
                 className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">+30 min</button>
-              <button onClick={()=>closeEventEarly(activeEvent.id)}
-                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Close early</button>
+              <button onClick={()=>finishEvent(activeEvent.id)}
+                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
               <button onClick={()=>cancelEventFromMenu(activeEvent.id)}
                 className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
             </div>

@@ -1348,6 +1348,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     // no disabled "Full" entries, no too-soon. The override judgement
                                     // (squeezing into amber/full slots) is operator-only.
                                     if (!s.available) return false
+                                    // Cap customers at end_time INCLUSIVE: grace slots (strictly after
+                                    // end_time, is_grace) are operator-only ("After closing"). 16:00 is
+                                    // is_grace:false (kept); 16:05+ excluded. Matches backwardAsap above.
+                                    if (s.is_grace) return false
                                     // Hard block: the current order can't fit this slot's backward
                                     // cooking windows (no spare / insufficient lead). No override.
                                     if (unfittableSlots.has(s.collection_time)) return false

@@ -356,6 +356,7 @@ export default function KdsPage() {
       if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'open' as const, opened_at: new Date().toISOString() } : e))
       showKdsToast('Event started')
+      fetchAllRef.current() // re-sync from the server read so status propagates immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
@@ -374,14 +375,25 @@ export default function KdsPage() {
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
-  const closeEventEarly = async (eventId: string) => {
+  const finishEvent = async (eventId: string) => {
+    // Timing-aware confirm: finishing EARLY (before end_time) stops orders ahead of schedule.
+    const ev = todayEvents.find(e => e.id === eventId)
+    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const endMins = ev?.end_time ? (() => { const [h, m] = ev.end_time.split(':').map(Number); return (h || 0) * 60 + (m || 0) })() : null
+    const finishingEarly = endMins != null && nowMins < endMins
+    const msg = finishingEarly
+      ? `This event isn't scheduled to finish until ${ev!.end_time}. Finishing now stops all new orders immediately. Are you sure?`
+      : 'Finish this event? No more orders will be taken.'
+    if (!window.confirm(msg)) return
     try {
+      // EVENT status → 'closed' only; existing orders stay visible/actionable on the KDS.
       const res = await fetch('/api/events/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, action: 'close', eventId, payload: {} }) })
       const data = await res.json()
       if (data?.queued) { setPendingSyncCount(c => c + 1); setShowEventMenu(false); return }
       if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.map(e => e.id === eventId ? { ...e, status: 'closed' as const, closed_at: new Date().toISOString() } : e))
-      setShowEventMenu(false); showKdsToast('Event closed')
+      setShowEventMenu(false); showKdsToast('Event finished')
+      fetchAllRef.current() // re-sync so the status flips to "Finished" immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
@@ -394,6 +406,7 @@ export default function KdsPage() {
       if (!res.ok) throw new Error(data.error)
       setTodayEvents(prev => prev.filter(e => e.id !== eventId))
       setSelectedEventId(null); setShowEventMenu(false); showKdsToast('Event cancelled')
+      fetchAllRef.current() // re-sync so the cancelled event drops out immediately
     } catch (err: any) { showKdsToast(err.message || 'Failed') }
   }
 
@@ -718,7 +731,7 @@ export default function KdsPage() {
       {/* ── Recently closed banner ── */}
       {recentlyClosed && activeEvent && (
         <div className="mx-3 mt-2 mb-1 bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between flex-shrink-0">
-          <span className="text-sm text-slate-600">Event closed · {activeEvent.venue_name} ended at {activeEvent.end_time}</span>
+          <span className="text-sm text-slate-600">Event finished · {activeEvent.venue_name} ended at {activeEvent.end_time}</span>
           <button onClick={() => extendEvent(activeEvent.id, 30)} className="text-sm font-medium text-teal-600 hover:text-teal-700 ml-3 flex-shrink-0">Extend 30 min</button>
         </div>
       )}
@@ -832,7 +845,7 @@ export default function KdsPage() {
               <button onClick={() => saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
-              <button onClick={() => closeEventEarly(activeEvent.id)} className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Close early</button>
+              <button onClick={() => finishEvent(activeEvent.id)} className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
               <button onClick={() => cancelEventFromMenu(activeEvent.id)} className="w-full bg-red-50 text-red-600 font-bold py-2.5 rounded-xl hover:bg-red-100 border border-red-200 text-sm">Cancel event</button>
             </div>
           </div>
