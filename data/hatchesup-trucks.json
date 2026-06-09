@@ -285,11 +285,12 @@
     },
     {
       "name": "The Wood Oven",
-      "orderUrl": "https://thewoodoven.hatchesup.app",
-      "processed": false,
-      "processedAt": null,
-      "menuChars": null,
-      "error": null
+      "orderUrl": "https://thewoodoven.hatchesup.app/basket",
+      "processed": true,
+      "processedAt": "2026-06-09T16:37:00.305Z",
+      "menuChars": 1354,
+      "error": null,
+      "itemCount": 12
     },
     {
       "name": "The Loaded Mac Shack",
