@@ -13,7 +13,7 @@ import {
   deriveProductionSlot,
 } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { projectOrderTailWindow } from '@/lib/slot-availability'
+import { earliestBackwardFitSlot } from '@/lib/slot-availability'
 import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
@@ -289,26 +289,30 @@ async function claimAvailableSlot(
 
     // One FRESH read under the event lock — we are the sole writer for its duration.
     const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
-    const windowSecs = (dur > 0 ? dur : iv > 0 ? iv : 5) * 60 // real production-window interval
     const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
+    const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
 
-    // TAIL-COMPLETION: the window where THIS order's last item finishes cooking in the
-    // projected continuous queue (same projection as the operator dots). The earliest
-    // window the order can be collected.
-    const tail = projectOrderTailWindow(times, slotUnits, catConfigs, kitchenCapacity ?? null, windowSecs, basketByCat, startSlot)
-
-    // Instant-only order (no oven time) → book at the start slot.
-    if (!tail) {
+    // Instant-only order (no oven categories) → book at the start slot (no window model).
+    const hasOven = Object.keys(basketByCat).some(c => {
+      const cfg = catConfigs[c.toLowerCase()]
+      return !!(cfg && cfg.secs)
+    })
+    if (!hasOven) {
       await addOrderToProductionSlot(supabase, truckId, eventId, startSlot, orderLines, itemCatMap)
       return { finalSlot: startSlot, booked: true }
     }
 
-    const tailMins = timeToMins(tail)
-    // Collect at the later of the requested slot and the tail (reassign forward if the
-    // requested slot is too early for the order to be ready).
-    const placement = requestedSlot && timeToMins(requestedSlot) >= tailMins ? requestedSlot : tail
-    if (timeToMins(placement) > eventEndMins) {
-      // Tail-completion lands after event end → event full → pending (never reject).
+    // BACKWARD-FIT placement (Stage 3): the earliest slot whose ceil(N/batch) cooking windows
+    // (ending at it) have spare — the SAME fitOrderBackward engine the picker/ASAP use, so the
+    // server places exactly where the backward picker would OFFER. A requested slot is honored
+    // when it fits; otherwise the order reassigns FORWARD to the next fitting slot (never
+    // rejected). ASAP (no requested slot) → earliest fitting at/after the now-floor startSlot.
+    const fromMins = requestedSlot
+      ? Math.max(timeToMins(startSlot), timeToMins(requestedSlot))
+      : timeToMins(startSlot)
+    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins)
+    if (!placement || timeToMins(placement) > eventEndMins) {
+      // No fitting slot before event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }
     }
     await addOrderToProductionSlot(supabase, truckId, eventId, placement, orderLines, itemCatMap)

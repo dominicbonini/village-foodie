@@ -7,7 +7,7 @@ import type {
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { projectOrderTailWindow } from '@/lib/slot-availability'
+import { earliestBackwardFitSlot, buildSlotAvailability } from '@/lib/slot-availability'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
@@ -150,9 +150,10 @@ export function AddOrderPanel({
   const [activeDealBundle, setActiveDealBundle] = useState<Bundle | null>(null)
 
   // ── slot capacity confirmation ──────────────────────────────────────────────
-  // Set only when the basket would OVERFLOW the chosen slot (capacity confirm). capacityLabel
-  // = the binding load fractions. Too-soon slots no longer warn — they select silently.
-  const [pendingSlot, setPendingSlot] = useState<{ time: string; capacityLabel: string } | null>(null)
+  // Set only when the kitchen genuinely CAN'T produce the order by the chosen slot (per the
+  // SAME engine the traffic-light/booking use). `reason` = a human sentence ("too soon to make
+  // N Pizza by 18:05"). A slot the order fits selects silently — no nag.
+  const [pendingSlot, setPendingSlot] = useState<{ time: string; reason: string } | null>(null)
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
@@ -226,31 +227,33 @@ export function AddOrderPanel({
       capacityInputs.productionSlotUnits || {},
       categoryConfigs,
       capacityInputs.kitchenCapacity ?? null,
-      capacityInputs.windowSecs,
+      capacityInputs.eventStartMins,
     )
   }, [capacityInputs, manualSlots, categoryConfigs])
 
   const slotIndicatorFor = (s: Slot): SlotIndicator =>
     slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', occ: null }
 
-  // ASAP "ready around" slot — the BASKET-AWARE tail-completion window (the same
-  // projection): the earliest window this order's last item finishes cooking given
-  // the existing queue. The one place the in-progress basket influences the display.
+  // ASAP "ready around" slot — the BASKET-AWARE earliest BACKWARD-FITTING slot (Stage 3):
+  // the earliest collection slot whose cooking windows have room for this order, via the SAME
+  // fitOrderBackward engine the picker/server use (no forward tail). The one place the
+  // in-progress basket influences the display, and it now agrees with what the picker offers.
   const adjustedAsapSlot = useMemo(() => {
     if (!manualSlots.length || !capacityInputs) return manualAsapSlot
     const asapStart = manualAsapSlot?.collection_time ?? manualSlots.find(s => !s.is_grace)?.collection_time
     if (!asapStart) return manualAsapSlot
-    const tail = projectOrderTailWindow(
+    const [sh, sm] = asapStart.split(':').map(Number)
+    const fitTime = earliestBackwardFitSlot(
       manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
       capacityInputs.productionSlotUnits || {},
       categoryConfigs,
       capacityInputs.kitchenCapacity ?? null,
-      capacityInputs.windowSecs,
+      capacityInputs.eventStartMins,
       basketByCat,
-      asapStart,
+      (sh || 0) * 60 + (sm || 0),
     )
-    const tailSlot = tail ? manualSlots.find(s => s.collection_time === tail) : null
-    return tailSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
+    const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
+    return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
   }, [manualSlots, capacityInputs, categoryConfigs, basketByCat, manualAsapSlot])
 
   // The REAL kitchen-ready estimate (prep + queue + operator extra-wait, buffer-free) — the
@@ -443,32 +446,48 @@ setItemModal({ item, modGroups, editCartKey })
     if (!value) { setManualSlot(''); return }
     const s = manualSlots.find(sl => sl.collection_time === value)
 
-    // Capacity confirm fires ONLY on genuine OVERFLOW — the in-progress basket (items +
-    // deals) exceeds this slot's per-category batch remaining OR the global kitchen ceiling.
-    // An amber-but-fits slot selects SILENTLY (the picker already shows the load — don't nag,
-    // Section 10). Reads the SAME projectOvenOccupancy data the picker uses (occ), no parallel calc.
-    const EPS = 1e-9
+    // Capacity confirm fires ONLY on genuine OVERFLOW — the kitchen cannot PRODUCE this order
+    // by the collection time. We ask the SAME backward engine the slot traffic-light and booking
+    // use (buildSlotAvailability), folding the in-progress basket in as "placed at this slot",
+    // and warn only when it returns RED. RED = the order's backward cooking windows (ending at
+    // this slot) don't all have spare, OR they'd run before event start (insufficient lead). An
+    // amber/green slot FITS → select silently (the dot already shows the load — don't nag). The
+    // operator can still "use anyway" (override → honest over-full). This is the operator override
+    // path; the customer (no override) is hard-blocked by the same fit check server-side.
     const capWord = (c: string) => c.charAt(0).toUpperCase() + c.slice(1)
-    const occ = s ? (slotIndicators.get(value)?.occ ?? null) : null
-    let capacityLabel: string | null = null
-    if (occ) {
-      const binding: string[] = []
-      for (const [cat, qty] of Object.entries(basketByCat)) {
-        const rate = occ.rateByCat[cat]
-        if (rate == null) continue // instant category — doesn't occupy the oven
-        const cooking = occ.cookingByCat[cat] ?? 0
-        if (qty > rate - cooking + EPS) binding.push(`${capWord(cat)} ${Math.round(cooking)}/${Math.round(rate)}`)
+    let reason: string | null = null
+    if (s && capacityInputs) {
+      const [row] = buildSlotAvailability({
+        times: [{ collection_time: s.collection_time, production_slot: s.production_slot }],
+        productionSlotUnits: capacityInputs.productionSlotUnits || {},
+        catConfigs: categoryConfigs,
+        kitchenCapacity: capacityInputs.kitchenCapacity ?? null,
+        date: capacityInputs.date,
+        nowMins: capacityInputs.nowMins,
+        earliestCollectionMins: capacityInputs.earliestCollectionMins,
+        eventStartMins: capacityInputs.eventStartMins,
+        eventEndMins: capacityInputs.eventEndMins ?? undefined,
+        basketByCat,
+      })
+      if (row && row.tone === 'red') {
+        const hhmm = value.slice(0, 5)
+        const bb = row.bound_by ?? ''
+        // bound_by: "too soon (insufficient lead)" (run-off-front) | "global ceiling" |
+        // "<Cat> x/y" (a cooking window has no spare for that category).
+        if (bb.startsWith('too soon')) {
+          reason = `too soon to make this order by ${hhmm}`
+        } else if (bb === 'global ceiling') {
+          reason = `over the kitchen's capacity around ${hhmm}`
+        } else {
+          const cat = bb.split(' ')[0]?.toLowerCase()
+          reason = cat && basketByCat[cat]
+            ? `too full to make ${basketByCat[cat]} ${capWord(cat)} by ${hhmm}`
+            : `too full to make this order by ${hhmm}`
+        }
       }
-      const ceiling = capacityInputs?.kitchenCapacity ?? null
-      if (ceiling != null) {
-        const basketCookable = Object.entries(basketByCat)
-          .reduce((sum, [cat, qty]) => sum + (occ.rateByCat[cat] != null ? qty : 0), 0)
-        if (occ.totalCooking + basketCookable > ceiling + EPS) binding.push(`Kitchen ${Math.round(occ.totalCooking)}/${ceiling}`)
-      }
-      if (binding.length) capacityLabel = binding.join(', ')
     }
 
-    if (capacityLabel) { setPendingSlot({ time: value, capacityLabel }); return }
+    if (reason) { setPendingSlot({ time: value, reason }); return }
     setManualSlot(value)
   }
 
@@ -1113,7 +1132,7 @@ setItemModal({ item, modGroups, editCartKey })
             <div className="text-center mb-4">
               <div className="text-3xl mb-2">🟡</div>
               <p className="font-bold text-slate-900 text-base">
-                {`This slot is at ${pendingSlot.capacityLabel} — your order would overflow it. Use anyway?`}
+                {`This slot is ${pendingSlot.reason}. Use anyway?`}
               </p>
             </div>
             <div className="flex gap-2">

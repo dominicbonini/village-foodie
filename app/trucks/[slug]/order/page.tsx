@@ -9,6 +9,7 @@ import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
 import { cleanupDealsForItem, groupByCategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
+import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
 import { formatTime, localTodayIso } from '@/lib/time-utils';
@@ -174,6 +175,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [asapChosen, setAsapChosen] = useState(true)
   const [queueByCat, setQueueByCat] = useState<Record<string,number>>({})
   const [serverCatConfigs, setServerCatConfigs] = useState<Record<string,{secs:number;batch:number}>>({})
+  // Backward-occupancy inputs from /api/slots — for the client-side basket-aware fit overlay
+  // (hard-blocks a slot the customer's order can't fit; no override on the customer surface).
+  const [capacityInputs, setCapacityInputs] = useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;eventStartMins:number}|null>(null)
   const [notes, setNotes] = useState('')
 
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
@@ -236,6 +240,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       setAvailableSlots(slots)
       setQueueByCat(data.queueByCat || {})
       setServerCatConfigs(data.catConfigs || {})
+      setCapacityInputs(data.capacityInputs ?? null)
       const first = getAsapSlot(slots, dateIso)
       setAsapSlot(first?.collection_time || null)
     } catch { setAvailableSlots([]) }
@@ -567,6 +572,53 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     const [h, m] = time.split(':').map(Number)
     return h * 60 + m
   }
+
+  // ── Backward-occupancy fit (Stage 2): which slots can't fit the current order ──
+  // The customer is HARD-BLOCKED from a slot whose backward cooking windows (ending at it)
+  // can't hold the order (no spare, or run-off-front) — no override on this surface. Uses
+  // the SAME engine (fitOrderBackward) as the operator/server, fed by /api/slots capacityInputs.
+  const basketByCat = useMemo(() => {
+    const m: Record<string, number> = {}
+    basket.forEach(b => { const c = b.menuItem.category?.toLowerCase() || 'mains'; m[c] = (m[c] || 0) + b.quantity })
+    appliedDeals.forEach(d => Object.values(d.slots).filter(Boolean).forEach(name => {
+      const item = menu?.items.find(mi => mi.name === name)
+      const c = item?.category?.toLowerCase() || 'mains'
+      m[c] = (m[c] || 0) + 1
+    }))
+    return m
+  }, [basket, appliedDeals, menu])
+
+  const unfittableSlots = useMemo(() => {
+    const out = new Set<string>()
+    if (!capacityInputs || Object.keys(basketByCat).length === 0) return out
+    const back = projectBackwardOccupancy(
+      capacityInputs.productionSlotUnits || {},
+      serverCatConfigs,
+      capacityInputs.eventStartMins,
+      capacityInputs.kitchenCapacity,
+    )
+    for (const s of availableSlots) {
+      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins)
+      if (!fit.fits) out.add(s.collection_time)
+    }
+    return out
+  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots])
+
+  // Backward-fit ASAP (Stage 3): the earliest slot the order actually fits — the SAME
+  // engine the picker/server use, so the displayed "Around HH:MM" and the auto-booked slot
+  // agree. Null (no basket / no capacity data) ⇒ fall back to the queue-based estimate.
+  const backwardAsap = useMemo(() => {
+    if (!capacityInputs || Object.keys(basketByCat).length === 0) return null
+    const avail = availableSlots.filter(s => s.available && !s.is_grace)
+    return earliestBackwardFitSlot(
+      avail.map(s => ({ collection_time: s.collection_time, production_slot: s.collection_time })),
+      capacityInputs.productionSlotUnits || {},
+      serverCatConfigs,
+      capacityInputs.kitchenCapacity,
+      capacityInputs.eventStartMins,
+      basketByCat,
+    )
+  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots])
 
   // ASAP is selected by DEFAULT (asapChosen initial = true) and submits as slot=null,
   // so there's nothing to auto-populate on load — the selection no longer depends on a
@@ -1232,7 +1284,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
                   {/* LEFT: ASAP button */}
                   {(() => {
-                    const asapTime = customerAsapTime || asapSlot || (availableHours.length > 0
+                    const asapTime = backwardAsap || customerAsapTime || asapSlot || (availableHours.length > 0
                       ? `${availableHours[0]}:${availableMinutes[0] || '00'}`
                       : null)
                     const isSelected = asapChosen
@@ -1264,7 +1316,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {/* RIGHT: Choose time button / dropdown */}
                   <div className="flex-1">
                     {truck?.time_selection_enabled ? (() => {
-                      const asapTime = customerAsapTime || asapSlot || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
+                      const asapTime = backwardAsap || customerAsapTime || asapSlot || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
                       const hasChosenTime = !asapChosen && selectedSlot && selectedSlot !== asapTime
 
                       return (
@@ -1296,6 +1348,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     // no disabled "Full" entries, no too-soon. The override judgement
                                     // (squeezing into amber/full slots) is operator-only.
                                     if (!s.available) return false
+                                    // Hard block: the current order can't fit this slot's backward
+                                    // cooking windows (no spare / insufficient lead). No override.
+                                    if (unfittableSlots.has(s.collection_time)) return false
                                     // Only show slots at or after the ASAP time
                                     if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
                                     return true

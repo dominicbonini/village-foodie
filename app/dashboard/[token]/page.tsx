@@ -125,7 +125,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editSlots,setEditSlots]=useState<Slot[]>([])
   // Engine inputs from /api/slots so the edit picker runs the SAME oven-occupancy
   // projection as Add Order (shared buildSlotIndicators) — not a count ratio.
-  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;windowSecs:number}|null>(null)
+  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;windowSecs:number;eventStartMins:number}|null>(null)
   const[editSlotsLoading,setEditSlotsLoading]=useState(false)
   const[editItems,setEditItems]=useState<BasketItem[]>([])
   const[editSlot,setEditSlot]=useState('')
@@ -236,6 +236,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // !== undefined so a failed/partial response never wipes a good value.
       if(data.kitchenCapacity !== undefined) setKitchenCapacity(data.kitchenCapacity)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
+      // Real van offline-protection default (Settings value) — feeds the toggle/label when
+      // there's no event override. Without this, vanAutoPause stayed hardcoded false.
+      if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
       setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
@@ -749,7 +752,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       editCapacityInputs.productionSlotUnits || {},
       categoryConfigs,
       editCapacityInputs.kitchenCapacity ?? null,
-      editCapacityInputs.windowSecs,
+      editCapacityInputs.eventStartMins,
     )
   }, [editCapacityInputs, editSlots, categoryConfigs])
 

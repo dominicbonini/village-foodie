@@ -10,7 +10,7 @@
 // Both read live from production_slot_usage.units_by_cat (ITEMS per production slot
 // per category). slot_capacity's batch rows are no longer consulted (dead cache).
 
-import { calcQueuePushSecsByCat, type CatConfig } from '@/lib/prep-utils'
+import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
 import { localTodayIso } from '@/lib/time-utils'
@@ -43,11 +43,7 @@ export interface SlotAvailabilityRow {
   bound_by: string | null
 }
 
-const SOFT_CAP_RATIO = 0.85
 const UNLIMITED = 999
-// Pre-event ordering context (Manual s.6: customer pre-order passes 0). The (b)
-// throughput gate is a pure physical-cook check anchored at event start.
-const THROUGHPUT_BUFFER_SECS = 0
 const RANK: Record<SlotTone, number> = { green: 0, amber: 1, red: 2 }
 
 function parseMins(hhmm: string): number {
@@ -87,12 +83,17 @@ export function buildSlotAvailability(params: {
   // would roll over at UTC midnight and mis-flag a future event's slots as is_past.
   const today = localTodayIso()
   const basket = basketByCat ?? {}
+  const hasBasket = Object.keys(basket).length > 0
 
-  // Index production windows by minute for the cumulative (b) cohort.
-  const prodWindows = Object.entries(productionSlotUnits).map(([slot, units]) => ({
-    mins: parseMins(slot),
-    units,
-  }))
+  // BACKWARD occupancy model (Stage 2): an order's oven load lives in the COOKING windows
+  // before its collection, not its collection bucket. We project the EXISTING load once,
+  // then per candidate slot S read the window STARTING at S (the picker slot ⟷ that cooking
+  // window). No basket ⇒ tone is that window's existing load (hide a full window). With a
+  // basket ⇒ overlay the order via fitOrderBackward (windows ending at S) — RED = doesn't
+  // fit. Retires the old (a) collection-bucket ceiling AND (b) cumulative throughput: the
+  // lead-time check is now "the order's backward windows all have spare and none precede
+  // event start" (run-off-front), expressed per-window.
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
 
   return times.map(s => {
     const slotMins = parseMins(s.collection_time)
@@ -100,91 +101,37 @@ export function buildSlotAvailability(params: {
     const isPast = !isGrace && date === today && slotMins <= nowMins + 5
     const tooSoon = !isPast && slotMins < earliestCollectionMins
 
-    const unitsHere: QtyByCat = productionSlotUnits[s.production_slot] || {}
-    const windowSecs = Math.max(0, (slotMins - eventStartMins) * 60)
-
-    // Collapse all pressures to the most-constrained one for the scalar contract.
-    let tone: SlotTone = 'green'
-    let boundBy: string | null = null
-    let bindCurrent = 0
-    let bindCap = UNLIMITED
-    let bindSoft = UNLIMITED
-    let bindRemaining = UNLIMITED
-    let bindRank = -1
-    const consider = (label: string, t: SlotTone, used: number, cap: number, soft: number, remaining: number) => {
-      const r = RANK[t]
-      // Worst tone wins; tie-break on smallest remaining headroom.
-      if (r > bindRank || (r === bindRank && remaining < bindRemaining)) {
-        bindRank = r
-        tone = t
-        boundBy = t === 'green' ? null : label
-        bindCurrent = used
-        bindCap = cap
-        bindSoft = soft
-        bindRemaining = remaining
-      }
+    let tone: SlotTone
+    let boundBy: string | null
+    let bindCurrent: number
+    let bindCap: number
+    if (hasBasket) {
+      // Operator/customer placing THIS order: does it fit the backward windows ending at S?
+      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins)
+      tone = fit.tone
+      boundBy = fit.bound_by
+      bindCurrent = 0
+      bindCap = kitchenCapacity ?? UNLIMITED
+    } else {
+      // No basket (customer initial view / dashboard list): the existing load in the cooking
+      // window STARTING at S. A full window ⇒ red ⇒ hidden from the customer.
+      const w = back.byStart.get(slotMins) ?? null
+      tone = w?.tone ?? 'green'
+      boundBy = w?.bound_by ?? null
+      bindCurrent = Math.round(w?.total ?? 0)
+      bindCap = kitchenCapacity ?? UNLIMITED
     }
 
-    // ── (a) per-window committed-load ceiling ─────────────────────────────────
-    // Only the items ALREADY committed to T's own production window count here. The
-    // basket is NOT added: a multi-item order's items are produced ACROSS windows at
-    // the kitchen's rate (handled once by (b) throughput) — they do not all pile into
-    // T's single window. Adding the whole basket here was the bug that red-flagged
-    // every slot for a large order. (a) now only reddens a window already full of
-    // prior bookings; whether THIS order fits is (b)'s job.
-    if (kitchenCapacity != null) {
-      let usedItems = 0
-      for (const [cat, qty] of Object.entries(unitsHere)) {
-        const cfg = catConfigs[cat.toLowerCase()]
-        if (cfg && cfg.secs) usedItems += qty // exclude instant items (Manual s.14)
-      }
-      const cap = kitchenCapacity
-      const soft = Math.max(1, Math.floor(cap * SOFT_CAP_RATIO))
-      const remaining = Math.max(0, soft - usedItems)
-      const pct = cap > 0 ? usedItems / cap : Infinity
-      const t: SlotTone = pct >= 1 || remaining <= 0 ? 'red' : pct >= 0.7 ? 'amber' : 'green'
-      consider('global ceiling', t, usedItems, cap, soft, remaining)
-    }
-
-    // ── (b) cumulative per-category throughput ────────────────────────────────
-    const cohort: QtyByCat = {}
-    for (const w of prodWindows) {
-      if (w.mins <= slotMins) {
-        for (const [cat, qty] of Object.entries(w.units)) cohort[cat] = (cohort[cat] || 0) + qty
-      }
-    }
-    // Basket "placed here" joins the cumulative cohort (its window is this slot's).
-    for (const [cat, qty] of Object.entries(basket)) cohort[cat] = (cohort[cat] || 0) + qty
-    // Mirror the ASAP base (Manual s.6): prep runs during the lead time before the
-    // event, so batch 1 is ready AT event start. The cohort's ready time relative to
-    // event start is the pre-prep push (ceil(qty/batch)-1)*secs — NOT the full
-    // finalBatch*secs. This is why a light early load is GREEN at T = eventStart
-    // instead of redding out. (The now-anchored floor for not-before-now is handled
-    // separately by tooSoon/earliestCollectionMins.)
-    const pushByCat = calcQueuePushSecsByCat(cohort, {}, catConfigs)
-    for (const [cat, qty] of Object.entries(cohort)) {
-      if (qty <= 0) continue
-      const cfg = catConfigs[cat.toLowerCase()]
-      if (!cfg || !cfg.secs) continue // instant categories impose no throughput limit
-      const need = (pushByCat[cat] ?? 0) + THROUGHPUT_BUFFER_SECS // secs past event start
-      // Max items of this category cookable by T with the lead credit:
-      // (ceil(N/batch)-1)*secs <= windowSecs  ⇒  maxBatches = floor(windowSecs/secs)+1
-      const cap = (Math.floor(windowSecs / cfg.secs) + 1) * cfg.batch
-      const remaining = Math.max(0, cap - qty)
-      const ratio = windowSecs > 0 ? need / windowSecs : (need > 0 ? Infinity : 0)
-      const t: SlotTone = need > windowSecs ? 'red' : ratio >= 0.7 ? 'amber' : 'green'
-      consider(`${cat} (cumulative throughput)`, t, qty, cap, Math.max(1, Math.floor(cap * SOFT_CAP_RATIO)), remaining)
-    }
-
-    // kitchen_capacity null AND no prep anywhere ⇒ no pressures ⇒ unlimited green.
-    const capacityAvailable = bindRank < RANK.red
+    const capacityAvailable = tone !== 'red'
+    const w = back.byStart.get(slotMins) ?? null
+    const bindRemaining = w ? (kitchenCapacity == null ? UNLIMITED : Math.max(0, Math.round(w.remainingTotal))) : (kitchenCapacity ?? UNLIMITED)
 
     return {
       collection_time: s.collection_time,
       production_slot: s.production_slot,
       current_orders: bindCurrent,
       max_orders: bindCap,
-      soft_max: bindSoft,
+      soft_max: bindCap,
       remaining: bindRemaining,
       available: capacityAvailable && !isPast && !tooSoon,
       is_past: isPast,
@@ -196,6 +143,13 @@ export function buildSlotAvailability(params: {
   })
 }
 
+// ⚠️ RETIRED (Stage 3) — FORWARD-attribution projection. No live callers: the operator
+// dots, customer/operator availability, ASAP and auto-placement all moved to the BACKWARD
+// model (projectBackwardOccupancy / fitOrderBackward / earliestBackwardFitSlot). Kept only
+// because the WindowOccupancy interface below is still referenced (slot-display reconstructs
+// it for back-compat). Do NOT wire new consumers to this — it seats load at the COLLECTION
+// window and carries forward (the inverted bug the backward model fixes). Safe to delete once
+// the WindowOccupancy shape is inlined.
 // ── Oven-occupancy projection (read-time) ─────────────────────────────────────
 // Treats the kitchen as a CONTINUOUS per-category FIFO queue projected onto the
 // windows: each window cooks one batch (batch_size items) per category; unfinished
@@ -305,6 +259,10 @@ export function projectOvenOccupancy(
 }
 
 /**
+ * ⚠️ RETIRED (Stage 3) — forward TAIL-COMPLETION placement. No live callers: ASAP and
+ * auto-confirm placement moved to earliestBackwardFitSlot (the backward-fit search). Kept
+ * transiently; do NOT wire new consumers — use earliestBackwardFitSlot. Safe to delete.
+ *
  * Placement TAIL-COMPLETION window (read-time, same projection as the dots). Folds
  * the order into the cohort (existing items due ≤ its start window + the order, queued
  * at the start window) and returns the LAST window where the order's prep categories
@@ -362,4 +320,257 @@ export function projectOrderTailWindow(
     if (orderCats.some(c => (w.cookingByCat[c.toLowerCase()] || 0) > EPS)) tail = w.collection_time
   }
   return tail
+}
+
+// ── BACKWARD cohort occupancy (read-time, STAGE 1 — not yet wired to any consumer) ──
+//
+// Physically correct per-window oven occupancy. An order of N items (per category)
+// collected at T occupies ceil(N/batch) COOKING windows BACKWARD from T, at the
+// category's prep cadence (cfg.secs), batch-size per window, the window ADJACENT to
+// collection holding the remainder. Example: 10 pizzas, batch 4, prep 5min, collect
+// 19:00 → 18:45=4, 18:50=4, 18:55=2; 19:00+ = 0 (free).
+//
+// This is the inverse of projectOvenOccupancy, which seats an order's load AT its
+// collection production_slot and carries FORWARD — the bug that reds the collection
+// window while leaving the (physically busy) lead-up windows free. projectOvenOccupancy
+// is left UNTOUCHED this stage; consumers still read the old forward path. This function
+// exists only to be verified in isolation before anything trusts it.
+//
+// ── GRANULARITY RECONCILIATION (coarse stored bucket → fine cooking windows) ──
+// production_slot_usage is keyed by a slot_duration-bucketed production_slot (coarse,
+// e.g. 10-min) holding the SUM of every order collecting in that bucket. The backward
+// spread is at PREP cadence (fine, e.g. 5-min, and per-category). We anchor each bucket's
+// cohort at its production_slot key (the bucket START, "HH:MM") as the ready-by DEADLINE,
+// and spread its batches backward from there at cfg.secs cadence. Anchoring at the bucket
+// START (not its end) is the CONSERVATIVE choice when slot_duration > prep cadence: an
+// order collecting at 19:05 that buckets to "19:00" is treated as due by 19:00, reserving
+// oven time slightly earlier than its true 19:05 deadline (never later). Each category
+// spreads independently at its own prep cadence (categories cook in parallel, Manual s.6);
+// the per-window map keys by exact window-start minute, so differing cadences accumulate
+// honestly by minute. Instant categories (secs 0) occupy no oven time and are skipped.
+
+export interface BackwardWindow {
+  /** Window start minutes-from-midnight (== collectionDeadline − k*prepMins). May be < eventStartMins (run-off-front). */
+  startMins: number
+  /** Window start "HH:MM" (display; wraps 24h, so run-off-front entries may read oddly — rely on startMins). */
+  start: string
+  /** True when this window starts before event start — physically impossible (insufficient lead). */
+  beforeEventStart: boolean
+  /** Items of each prep category cooking in this window. */
+  byCat: Record<string, number>
+  /** Sum across categories (for the kitchen-capacity ceiling). */
+  total: number
+  /** batch − used per category. Negative ⇒ honest over-subscription (override) — NOT re-packed. */
+  remainingByCat: Record<string, number>
+  /** kitchenCapacity − total (Infinity when no ceiling set). Negative ⇒ honest over-full. */
+  remainingTotal: number
+  /** Traffic-light for this window — IDENTICAL rule to projectOvenOccupancy: a category
+   *  full/over (used >= batch) ⇒ red, partial ⇒ amber; total >= ceiling ⇒ red. */
+  tone: SlotTone
+  /** Binding category/constraint, e.g. "Pizza 4/4" / "global ceiling" / null (never green-binding). */
+  bound_by: string | null
+}
+
+export interface CantFitFlag {
+  /** The stored collection bucket whose backward spread runs before event start. */
+  productionSlot: string
+  cat: string
+  qty: number
+  /** Earliest cooking-window start this cohort needs (< eventStartMins ⇒ insufficient lead). */
+  earliestWindowMins: number
+  eventStartMins: number
+}
+
+export interface BackwardOccupancy {
+  /** All cooking windows that carry load, sorted by startMins ascending. */
+  windows: BackwardWindow[]
+  /** Same windows indexed by startMins for O(1) lookup. */
+  byStart: Map<number, BackwardWindow>
+  /** Cohorts that can't fit because they'd need windows before event start (old (b)'s real job). */
+  cantFit: CantFitFlag[]
+  /** Per-category batch size seen (the "/Y" denominator) — for fit-checks/rate reconstruction. */
+  batchByCat: Record<string, number>
+}
+
+export function projectBackwardOccupancy(
+  productionSlotUnits: Record<string, QtyByCat>,
+  catConfigs: Record<string, CatConfig>,
+  eventStartMins: number,
+  kitchenCapacity: number | null,
+): BackwardOccupancy {
+  // Accumulate load per window-start minute → { cat: items }.
+  const loadByStart = new Map<number, Record<string, number>>()
+  const batchByCat: Record<string, number> = {}
+  const cantFit: CantFitFlag[] = []
+
+  const fmt = (mins: number) => {
+    const m = ((mins % 1440) + 1440) % 1440
+    return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+  }
+
+  for (const [ps, units] of Object.entries(productionSlotUnits)) {
+    const deadline = parseMins(ps) // bucket START = ready-by deadline (see reconciliation note)
+    for (const [catRaw, rawN] of Object.entries(units)) {
+      const cat = catRaw.toLowerCase()
+      const cfg = catConfigs[cat]
+      const N = Number(rawN) || 0
+      if (!cfg || !cfg.secs || N <= 0) continue // instant / empty → no oven time
+      const batch = Math.max(1, cfg.batch)
+      const prepMins = Math.max(1, Math.round(cfg.secs / 60))
+      batchByCat[cat] = batch
+      const numWindows = Math.ceil(N / batch)
+      const earliestWindowMins = deadline - numWindows * prepMins
+      if (earliestWindowMins < eventStartMins) {
+        cantFit.push({ productionSlot: ps, cat, qty: N, earliestWindowMins, eventStartMins })
+      }
+      // Seat batches backward: earliest windows full (batch), the window ADJACENT to
+      // collection (i = numWindows-1) holds the remainder N − batch*(numWindows-1) ∈ [1, batch].
+      for (let i = 0; i < numWindows; i++) {
+        const startMins = deadline - (numWindows - i) * prepMins
+        const isAdjacent = i === numWindows - 1
+        const items = isAdjacent ? N - batch * (numWindows - 1) : batch
+        const w = loadByStart.get(startMins) ?? {}
+        w[cat] = (w[cat] || 0) + items
+        loadByStart.set(startMins, w)
+      }
+    }
+  }
+
+  const windows: BackwardWindow[] = [...loadByStart.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([startMins, byCat]) => {
+      const total = Object.values(byCat).reduce((s, v) => s + v, 0)
+      const remainingByCat: Record<string, number> = {}
+      // Tone — IDENTICAL rule to projectOvenOccupancy: per category full/over ⇒ red,
+      // partial ⇒ amber (worst wins, tie-break higher load); total >= ceiling ⇒ red.
+      let tone: SlotTone = 'green'
+      let bound_by: string | null = null
+      let bindRank = -1
+      let bindUsed = -1
+      for (const [cat, used] of Object.entries(byCat)) {
+        const batch = batchByCat[cat] ?? used
+        remainingByCat[cat] = batch - used
+        const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
+        const r = RANK[t]
+        if (r > bindRank || (r === bindRank && used > bindUsed)) {
+          bindRank = r; bindUsed = used
+          tone = t; bound_by = `${capWord(cat)} ${Math.round(used)}/${Math.round(batch)}`
+        }
+      }
+      if (kitchenCapacity != null && total >= kitchenCapacity - EPS) {
+        tone = 'red'; bound_by = 'global ceiling'
+      }
+      return {
+        startMins,
+        start: fmt(startMins),
+        beforeEventStart: startMins < eventStartMins,
+        byCat,
+        total,
+        remainingByCat,
+        remainingTotal: kitchenCapacity == null ? Infinity : kitchenCapacity - total,
+        tone,
+        bound_by,
+      }
+    })
+
+  const byStart = new Map<number, BackwardWindow>()
+  for (const w of windows) byStart.set(w.startMins, w)
+  return { windows, byStart, cantFit, batchByCat }
+}
+
+// ── Backward FIT check: can an order of `orderByCat` be placed at collection slot S? ──
+// The order's LATEST cooking window is the one STARTING at S (adjacent to its collection,
+// holding the remainder); earlier full batches extend backward at prep cadence. The order
+// FITS when, for every window it touches: existing load + the order's batch ≤ batch (per
+// category) AND ≤ kitchenCapacity (across categories), AND no window starts before event
+// start (run-off-front). Returns the binding tone — RED ⇒ doesn't fit (customer hidden /
+// operator override-confirm). Shared by buildSlotAvailability AND the customer order page
+// so both audiences ask ONE engine the same question. `back` is the EXISTING occupancy
+// (basket NOT folded — this overlays the order on top).
+export function fitOrderBackward(
+  back: BackwardOccupancy,
+  slotMins: number,
+  orderByCat: QtyByCat,
+  catConfigs: Record<string, CatConfig>,
+  kitchenCapacity: number | null,
+  eventStartMins: number,
+): { tone: SlotTone; bound_by: string | null; fits: boolean } {
+  // Build the order's own per-(windowStart, cat) load: window at S = remainder (i=0,
+  // adjacent to collection), earlier windows = full batch (mirrors projectBackwardOccupancy).
+  const orderLoad = new Map<number, Record<string, number>>()
+  const batchOf: Record<string, number> = {}
+  for (const [catRaw, rawM] of Object.entries(orderByCat)) {
+    const cat = catRaw.toLowerCase()
+    const cfg = catConfigs[cat]
+    const M = Number(rawM) || 0
+    if (!cfg || !cfg.secs || M <= 0) continue // instant / empty
+    const batch = Math.max(1, cfg.batch)
+    const prep = Math.max(1, Math.round(cfg.secs / 60))
+    batchOf[cat] = batch
+    const nw = Math.ceil(M / batch)
+    for (let i = 0; i < nw; i++) {
+      const ws = slotMins - i * prep
+      const items = i === 0 ? M - batch * (nw - 1) : batch
+      const w = orderLoad.get(ws) ?? {}
+      w[cat] = (w[cat] || 0) + items
+      orderLoad.set(ws, w)
+    }
+  }
+
+  let tone: SlotTone = 'green'
+  let bound_by: string | null = null
+  let bindRank = -1
+  const consider = (t: SlotTone, label: string) => {
+    const r = RANK[t]
+    if (r > bindRank) { bindRank = r; tone = t; bound_by = t === 'green' ? null : label }
+  }
+  for (const [ws, ord] of orderLoad) {
+    if (ws < eventStartMins) { consider('red', 'too soon (insufficient lead)'); continue }
+    const existing = back.byStart.get(ws)
+    let ordTotal = 0
+    for (const [cat, add] of Object.entries(ord)) {
+      ordTotal += add
+      const batch = batchOf[cat]
+      const combined = (existing?.byCat[cat] ?? 0) + add
+      const t: SlotTone = combined > batch + EPS ? 'red' : combined >= batch - EPS ? 'amber' : 'green'
+      consider(t, `${capWord(cat)} ${Math.round(combined)}/${Math.round(batch)}`)
+    }
+    if (kitchenCapacity != null) {
+      const combinedTotal = (existing?.total ?? 0) + ordTotal
+      const t: SlotTone = combinedTotal > kitchenCapacity + EPS ? 'red' : combinedTotal >= kitchenCapacity - EPS ? 'amber' : 'green'
+      consider(t, 'global ceiling')
+    }
+  }
+  // fits derived from bindRank (number) — `tone` is closure-mutated, so a direct
+  // `tone !== 'red'` would mis-narrow to the literal 'green'.
+  return { tone, bound_by, fits: bindRank < RANK.red }
+}
+
+// ── ASAP / auto-placement (Stage 3): earliest collection slot that BACKWARD-FITS ──
+// The single ASAP+placement definition: the earliest collection time T (sorted, T ≥
+// fromMins time-floor) whose ceil(N/batch) backward cooking windows ending at T have spare
+// and don't run before event start — i.e. fitOrderBackward is NOT red. Replaces the old
+// forward projectOrderTailWindow "last window still cooking". Shared by the operator panel,
+// the customer page, and the submit auto-confirm so ASAP, the floor, placement, and the
+// picker all answer ONE fit question. Returns null when no slot in `times` fits (caller
+// pends — never rejects). `fromMins` is the now/lead time floor (default: no floor).
+export function earliestBackwardFitSlot(
+  times: CollectionTimeRow[],
+  productionSlotUnits: Record<string, QtyByCat>,
+  catConfigs: Record<string, CatConfig>,
+  kitchenCapacity: number | null,
+  eventStartMins: number,
+  orderByCat: QtyByCat,
+  fromMins: number = Number.NEGATIVE_INFINITY,
+): string | null {
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
+  const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
+  for (const t of sorted) {
+    const m = parseMins(t.collection_time)
+    if (m < fromMins) continue
+    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins).fits) {
+      return t.collection_time
+    }
+  }
+  return null
 }
