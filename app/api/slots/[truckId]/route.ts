@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getCatConfig, calcMinReadyMins, calcQueuePushSecs, type CatConfig } from '@/lib/prep-utils'
+import { getCatConfig, calcMinReadyMins, type CatConfig } from '@/lib/prep-utils'
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
@@ -188,21 +188,18 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
   const eventStartMins = eventStart ? toMins(eventStart) : 0
   const eventEndMins = eventEnd ? toMins(eventEnd) : undefined
-  // Unified slot floor (manual s.6), mirrors AddOrderPanel queueAware:
-  //   max(now-anchored live-service term, eventStart + queue push)
-  // - now-term: only meaningful for today (today's clock is meaningless against a
-  //   future date's slot times) — zeroed out for future dates.
-  // - eventStart + push: pre-prep term — batch 1 ready AT event start; phantom
-  //   1 item per queued category = minimal push for the NEXT order. Empty queue
-  //   ⇒ push 0 ⇒ floor = event start exactly.
-  // Same calcQueuePushSecs as the client dropdown — they agree by construction.
-  const queuePushMins = Math.ceil(calcQueuePushSecs(
-    Object.fromEntries(Object.keys(queueByCat).map(c => [c, 1])),
-    queueByCat, catConfigs
-  ) / 60)
+  // Slot TIME floor — capacity is now per-window via fitOrderBackward (backward model), NOT a
+  // front-of-queue cumulative push. So the floor is purely:
+  //   - never before event start (eventStartMins), and
+  //   - today only: not before now + minimal prep + operator extra-wait (the "don't offer a
+  //     past/too-soon-TODAY slot" guard that fitOrderBackward has no "now" awareness for).
+  // The old `eventStartMins + queuePushMins` term added the existing queue's cumulative
+  // pre-prep push (a retired-(b) artifact): under the backward model the queue's load lives in
+  // its own cooking windows, so a new order at event start fits — the push double-counted the
+  // queue and wrongly floored future events past their opening (e.g. 17:00 → 17:10). Removed.
   const earliestCollectionMins = Math.max(
+    eventStartMins,
     date === today ? nowMins + calcMinReadyMins(queueByCat, catConfigs) + extraWaitMins : 0,
-    eventStartMins + queuePushMins,
   )
 
   // ── Live category-aware capacity inputs ───────────────────────────────────

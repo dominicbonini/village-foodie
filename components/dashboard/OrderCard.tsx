@@ -87,6 +87,7 @@ export function OrderCard({
   itemCategoryMap,
   viewMode = 'solo',
   kdsMode = false,
+  showCookingStep = false,
   pendingSync = false,
 }: {
   order: Order
@@ -100,6 +101,9 @@ export function OrderCard({
   itemCategoryMap?: Record<string, string>
   viewMode?: ViewMode
   kdsMode?: boolean
+  /** Van "show cooking step" preference — when false the cook view skips the intermediate
+   *  "Start cooking" stage (confirmed → ready directly). Defaults off. */
+  showCookingStep?: boolean
   pendingSync?: boolean
 }) {
   const [expanded, setExpanded] = useState(true)
@@ -238,7 +242,9 @@ export function OrderCard({
 
     if (viewMode === 'cook') {
       if (['confirmed', 'modified'].includes(order.status)) {
-        return kdsMode ? (
+        // The intermediate "Start cooking" stage only exists when the van enables it
+        // (Settings → show cooking step). Otherwise the cook marks confirmed → ready directly.
+        return kdsMode && showCookingStep ? (
           <>
             <Btn label="Start cooking" colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.order_key)} />
             <Btn label="Ready"         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.order_key)} />

@@ -234,6 +234,11 @@ export async function GET(req: NextRequest) {
   // shows this when there's no per-event override — without it the client's vanAutoPause
   // stays hardcoded false and misreports the toggle/label.
   let vanAutoPause: boolean = false
+  // The selected event's van "show cooking step" preference (Settings value). The KDS cook
+  // view gates the "Start cooking" button on this — without it the KDS never loads the
+  // setting and the cook step shows regardless of the toggle. Defaults off (matches the
+  // Settings toggle's default) when the van has no value.
+  let vanShowCookingStep: boolean = false
 
   try {
     // kitchen_capacity + name from the SELECTED event's van — the same event the
@@ -243,12 +248,13 @@ export async function GET(req: NextRequest) {
     if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity, name, auto_pause_on_offline')
+        .select('kitchen_capacity, name, auto_pause_on_offline, show_cooking_step')
         .eq('id', capacityEvent.van_id)
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
       activeVanName = van?.name ?? null
       vanAutoPause = van?.auto_pause_on_offline ?? false
+      vanShowCookingStep = van?.show_cooking_step ?? false
     }
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
@@ -323,6 +329,7 @@ export async function GET(req: NextRequest) {
     kitchenCapacity,
     activeVanName,
     vanAutoPause,
+    vanShowCookingStep,
     orders:  orders || [],
     slots:   slotsWithCapacity,
     date,

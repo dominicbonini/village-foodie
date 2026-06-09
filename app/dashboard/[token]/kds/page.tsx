@@ -26,6 +26,9 @@ export default function KdsPage() {
   const vanName = searchParams.get('van_name') ?? ''
 
   const [truck, setTruck] = useState<TruckData | null>(null)
+  // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
+  // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
+  const [showCookingStep, setShowCookingStep] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
   const [pausedUntil, setPausedUntil] = useState<string | null>(null)
   const [extraWaitMins, setExtraWaitMins] = useState(0)
@@ -85,6 +88,7 @@ export default function KdsPage() {
       if (!res.ok) throw new Error('Failed to fetch')
 
       setTruck(data.truck)
+      setShowCookingStep(data.vanShowCookingStep ?? false)
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
       setOrders(data.orders ?? [])
       setPausedUntil(data.truck?.paused_until ?? null)
@@ -335,6 +339,7 @@ export default function KdsPage() {
     }
     setPin(pinInput)
     setTruck(data.truck)
+    setShowCookingStep(data.vanShowCookingStep ?? false)
     setOrders(data.orders ?? [])
     setPausedUntil(data.truck?.paused_until ?? null)
     setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
@@ -757,6 +762,7 @@ export default function KdsPage() {
                 onEdit={() => {}}
                 viewMode={cardViewMode}
                 kdsMode={kdsMode}
+                showCookingStep={showCookingStep}
                 categoryOrder={categoryOrder}
                 itemCategoryMap={itemCategoryMap}
                 pendingSync={pendingSync.has(order.order_key)}
