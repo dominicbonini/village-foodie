@@ -5,12 +5,14 @@
 
 /** Canonical kitchen-capacity description — identical on both surfaces. */
 export const KITCHEN_CAPACITY_DESC =
-  "The most items your kitchen can cook in a 5-minute window, across all menu " +
-  "categories combined. This works together with the prep time and batch size on " +
-  "each menu category: prep and batch decide how long each item takes; kitchen " +
-  "capacity is the overall ceiling that stops too many orders landing in the same " +
-  "window. Drinks and items with no prep time don't count. Leave as No limit for " +
-  "no ceiling."
+  "The most items you can cook in one 5-minute window, across selected categories. " +
+  "Prep time and batch size set how long each item takes; this is the overall " +
+  "ceiling. Leave as No limit for none."
+
+/** Canonical worked example — rendered as a second paragraph on both surfaces. */
+export const KITCHEN_CAPACITY_EXAMPLE =
+  "Example: a capacity of 6 with pizzas in batches of 4 means a window can hold one " +
+  "full batch of 4 plus 2 more before it's full."
 
 /** Canonical warning copy shown when capacity is set but categories are under-configured. */
 export const KITCHEN_CAPACITY_WARNING =

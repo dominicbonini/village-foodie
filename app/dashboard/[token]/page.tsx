@@ -31,11 +31,12 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { calculateOrderTotal } from '@/lib/order-calculations'
-import { adjustQuantity, cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils'
+import { adjustQuantity, cleanupDealsForItem, groupByCategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime } from '@/lib/time-utils'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
+import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -122,11 +123,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // (same as Add Order), so the picker shows that event's window, not the dashboard's
   // active event. Never reuse the dashboard `slots` here.
   const[editSlots,setEditSlots]=useState<Slot[]>([])
+  // Engine inputs from /api/slots so the edit picker runs the SAME oven-occupancy
+  // projection as Add Order (shared buildSlotIndicators) — not a count ratio.
+  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;windowSecs:number}|null>(null)
   const[editSlotsLoading,setEditSlotsLoading]=useState(false)
   const[editItems,setEditItems]=useState<BasketItem[]>([])
   const[editSlot,setEditSlot]=useState('')
   const[editNotes,setEditNotes]=useState('')
-  const[editDeals,setEditDeals]=useState<Array<{name:string;slots:Record<string,string>;slotModifiers?:Record<string,{name:string;price:number}[]>;slotNotes?:Record<string,string>;isNew?:boolean}>>([])
+  // Customer contact — all OPTIONAL; never gate Save (Save gates only on isOrderNonEmpty).
+  const[editName,setEditName]=useState('')
+  const[editEmail,setEditEmail]=useState('')
+  const[editPhone,setEditPhone]=useState('')
+  const[editDeals,setEditDeals]=useState<Array<{name:string;slots:Record<string,string>;slotModifiers?:Record<string,{name:string;price:number}[]>;slotNotes?:Record<string,string>;isNew?:boolean;itemsTakenFromBasket?:string[]}>>([])
   const[showEditDealModal,setShowEditDealModal]=useState(false)
   const[editOrderBaseline,setEditOrderBaseline]=useState<{total:number;itemsSubtotal:number;deals:Array<{name:string}>}|null>(null)
   const[editItemModal,setEditItemModal]=useState<{item:MenuItem;modGroups:ModifierGroup[];allowNotes:boolean}|null>(null)
@@ -229,7 +237,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.kitchenCapacity !== undefined) setKitchenCapacity(data.kitchenCapacity)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
       setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
-      if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin)}
+      if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
         const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true`)
         // Never replace good event state with data from a failed response (429/500
@@ -289,11 +297,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .then(({data})=>{setEventOfflineOverride(data?.offline_protection_override??null)})
   },[selectedEventId,upcomingEvents])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
+  // SINGLE source for the event the Menu & Stock counts AND the order-scoping ref
+  // resolve to: the explicitly-selected event, else today's open/confirmed/first.
+  // EVERY stock/order fetcher reads this one value — the ref for non-reactive callers
+  // (fetchAll, submitPin, realtime, poll), stockEventId for the reactive effect — so
+  // they can't drift apart and blank the counts (Fix A-finish).
+  const stockEvent:TruckEvent|null=selectedEventId
+    ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
+    :(todayEvents.find(e=>e.status==='open')??todayEvents.find(e=>e.status==='confirmed')??todayEvents[0]??null)
+  const stockEventId=stockEvent?.id??null
   // Keep the scoping ref current (cheap — no fetch, runs on every event-list poll).
   useEffect(()=>{
-    const ev=selectedEventId?upcomingEvents.find(e=>e.id===selectedEventId):null
-    selectedEventRef.current=ev?{id:ev.id,date:ev.event_date}:null
-  },[selectedEventId,upcomingEvents])
+    selectedEventRef.current=stockEvent?{id:stockEvent.id,date:stockEvent.event_date}:null
+  },[stockEvent])
   // Refetch only when the SELECTED event changes, so orders/badges/sound re-scope.
   useEffect(()=>{
     if(authenticatedRef.current) fetchAllRef.current()
@@ -411,7 +427,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!res.ok){setPinError('Incorrect PIN');return}
     setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
-    if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput)}
+    if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput,selectedEventRef.current?.id??null)}
   }
 
   const saveAutoAccept=async(val:boolean)=>{
@@ -560,7 +576,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // The route resolves the event window from event_id and floors against localTodayIso(),
   // so a future-dated order shows its full in-window list (no today wall-clock floor).
   const fetchEditSlots=async(order:Order)=>{
-    if(!truck?.id){setEditSlots([]);return}
+    if(!truck?.id){setEditSlots([]);setEditCapacityInputs(null);return}
     setEditSlotsLoading(true)
     try{
       const p=new URLSearchParams()
@@ -569,16 +585,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const res=await fetch(`/api/slots/${truck.id}?${p}`)
       const data=await res.json()
       setEditSlots(data.slots||[])
-    }catch{setEditSlots([])}
+      setEditCapacityInputs(data.capacityInputs??null)
+    }catch{setEditSlots([]);setEditCapacityInputs(null)}
     finally{setEditSlotsLoading(false)}
   }
   const startEdit=(order:Order)=>{
     setEditingOrder(order)
-    setEditSlots([]); fetchEditSlots(order)
+    setEditSlots([]); setEditCapacityInputs(null); fetchEditSlots(order)
     setEditItems(order.items.map(i=>({...i,cartKey:makeCartKey(i.name,i.modifiers||[],i.specialInstructions)})))
     setEditDeals((order.deals||[]).map(d=>({name:d.name,slots:d.slots,slotModifiers:d.slotModifiers||{},slotNotes:d.slotNotes||{},isNew:false})))
     setEditSlot(order.slot||'')
     setEditNotes(order.notes||'')
+    // "Walk-up" is the display default, not a real name — start the field empty for it so
+    // it isn't shown as a pseudo-name (blank on save preserves the "Walk-up" default).
+    setEditName(order.customer_name&&order.customer_name!=='Walk-up'?order.customer_name:''); setEditEmail(order.customer_email||''); setEditPhone(order.customer_phone||'')
     const itemsSubtotal=order.items.reduce((s,i)=>s+Number(i.unit_price)*i.quantity,0)
     setEditOrderBaseline({total:Number(order.total),itemsSubtotal,deals:(order.deals||[]).map(d=>({name:d.name}))})
   }
@@ -603,7 +623,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const submitEdit=async()=>{
     if(!editingOrder)return; setActionLoading(`edit-${editingOrder.id}`)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:editItems.filter(i=>i.quantity>0),deals:editDeals,slot:editSlot||null,notes:editNotes||null}})})
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:editItems.filter(i=>i.quantity>0),deals:editDeals,slot:editSlot||null,notes:editNotes||null,customerName:editName,customerEmail:editEmail,customerPhone:editPhone}})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       showToast(`Order #${editingOrder.id} updated`); setEditingOrder(null); await fetchAll()
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
@@ -719,12 +739,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return map
   }, [truckMenu])
 
-  // Sold counts are event-scoped (V6.4): refetch Menu & Stock whenever the
-  // resolved event changes so each event shows only its own counts. Mirrors the
-  // resolvedEvent logic below (without the transient last-known fallback).
-  const stockEventId = selectedEventId
-    ? (upcomingEvents.find(e=>e.id===selectedEventId)?.id ?? null)
-    : ((todayEvents.find(e=>e.status==='open')??todayEvents.find(e=>e.status==='confirmed')??todayEvents[0])?.id ?? null)
+  // Edit picker traffic-light: SAME shared oven-occupancy helper as Add Order, so the
+  // edit modal shows "Pizza 1/4" amber identically (no count-ratio fork). Empty until
+  // /api/slots returns capacityInputs for the edited order's event.
+  const editSlotIndicators = useMemo<Map<string, SlotIndicator>>(() => {
+    if (!editCapacityInputs || !editSlots.length) return new Map()
+    return buildSlotIndicators(
+      editSlots,
+      editCapacityInputs.productionSlotUnits || {},
+      categoryConfigs,
+      editCapacityInputs.kitchenCapacity ?? null,
+      editCapacityInputs.windowSecs,
+    )
+  }, [editCapacityInputs, editSlots, categoryConfigs])
+
+  // Sold counts are event-scoped (V6.4): refetch Menu & Stock whenever the resolved
+  // stockEvent changes (single-source resolution above) so each event shows only its
+  // own counts. fetchAll/submitPin/realtime/poll fetch the SAME id via selectedEventRef.
   useEffect(()=>{
     if(!authenticatedRef.current) return
     fetchStock(pin,stockEventId)
@@ -777,8 +808,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     ?orders.filter(o=>o.event_id===activeEvent.id)
     :orders
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
-  const confirmedOrders=eventOrders.filter(o=>['confirmed','modified'].includes(o.status)).sort(sortByTimeThenId)
-  const otherOrders=eventOrders.filter(o=>!['pending','confirmed','modified'].includes(o.status))
+  // Active in-progress states render as live cards (cooking/ready included — food done/
+  // being made, still awaiting collection). otherOrders is a POSITIVE terminal filter, NOT
+  // a negative one — so cooking/ready (or any future status) can't silently fall into the
+  // Completed section. Mirrors the server's ACTIVE_STATUSES / DONE_STATUSES split.
+  const confirmedOrders=eventOrders.filter(o=>['confirmed','modified','cooking','ready'].includes(o.status)).sort(sortByTimeThenId)
+  const otherOrders=eventOrders.filter(o=>['collected','cancelled','rejected'].includes(o.status))
   const cancelledCount=otherOrders.filter(o=>o.status==='cancelled').length
   const menuGroups = truckMenu ? Object.fromEntries(groupByCategory(truckMenu.items, truckMenu.categories?.map(c => c.name))) : {}
   const editItemsSubtotal=editItems.reduce((s,i)=>s+i.unit_price*i.quantity,0)
@@ -961,11 +996,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
               <div className="flex gap-1.5 sm:ml-2 sm:shrink-0">
                 <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
-                {otherOrders.length>0&&(
-                  <button onClick={()=>setShowCompleted(c=>!c)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showCompleted?'bg-slate-700 text-white':cancelledCount>0?'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
-                    {showCompleted?'Hide':cancelledCount>0?`✕ ${cancelledCount} cancelled · ${otherOrders.length-cancelledCount} done`:'✓ '+otherOrders.length+' done'}
-                  </button>
-                )}
               </div>
             </div>
             {(pendingOrders.length>0||confirmedOrders.length>0)&&(()=>{
@@ -1054,9 +1084,63 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 }
               })
 
-              // Also include slotless confirmed orders in current batch — but never
-              // future-event ones (a slotless pre-order for tomorrow isn't due now)
-              eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot&&(!o.event_date||o.event_date<=todayStr)).forEach(o=>currentBatch.push(o))
+              // Slotless (ASAP) orders: gate by DISTANCE like the slotted branch (Section 9
+              // — a far-off order must NEVER show "prep needed now"). ASAP base = max(now,
+              // eventStart) (Section 6); start cooking = base − this order's cook time, so
+              // startBy = max(now, eventStart − cookTime). A future/not-yet-started event →
+              // start is in the future → "Coming up", not the current batch. Event start is
+              // parsed LOCAL from event_date + start_time (Section 7), never from now.
+              const asapEventStart=activeEvent?.start_time||null
+              eventOrders
+                .filter(o=>['pending','confirmed','modified'].includes(o.status)&&!o.slot)
+                .forEach(o=>{
+                  // Per-order display items + cook time (mirrors the slotted branch above)
+                  const itemMap:Record<string,number>={}
+                  const displayItems:Record<string,{label:string;qty:number}>={}
+                  const addDisplayItem=(name:string,qty:number,mods:string[],note?:string)=>{
+                    itemMap[name]=(itemMap[name]||0)+qty
+                    const parts=[...mods];if(note)parts.push(`📝 ${note}`)
+                    const label=`${name}${parts.length?` (${parts.join(', ')})`:''}`;if(!displayItems[label])displayItems[label]={label,qty:0};displayItems[label].qty+=qty
+                  }
+                  o.items.forEach((i:any)=>addDisplayItem(i.name,i.quantity,(i.modifiers||[]).map((m:any)=>m.name),i.specialInstructions));
+                  (o.deals||[]).forEach((d:any)=>Object.entries(d.slots||{}).forEach(([cat,itemName]:any)=>{
+                    if(!itemName)return
+                    const mods=((d.slotModifiers||{})[cat]||[]).map((m:any)=>m.name)
+                    const note=(d.slotNotes||{})[cat]
+                    addDisplayItem(itemName,1,mods,note)
+                  }))
+                  const orderNotes=o.notes?[o.notes]:[]
+                  const catGroups:Record<string,number>={}
+                  Object.entries(itemMap).forEach(([name,qty])=>{
+                    const cat=truckMenu?.items.find(m=>m.name===name)?.category||'mains'
+                    catGroups[cat]=(catGroups[cat]||0)+qty
+                  })
+                  let maxSecs=0
+                  Object.entries(catGroups).forEach(([cat,qty]:[string,number])=>{
+                    const cfg=categoryConfigs[cat.toLowerCase()]??getCatConfig(cat)
+                    const secs=catCookSecs(qty,cfg)
+                    if(secs>maxSecs)maxSecs=secs
+                  })
+                  const totalSecs=maxSecs+BUFFER_SECS
+                  const odate=o.event_date
+                  const eventStartMs=(odate&&asapEventStart)
+                    ?(()=>{const[y,mo,d]=odate.split('-').map(Number);const[sh,sm]=asapEventStart.split(':').map(Number);return new Date(y,mo-1,d,sh,sm,0,0).getTime()})()
+                    :null
+                  if(eventStartMs===null){
+                    // No event start time (walk-up / no schedule): preserve prior behaviour
+                    // — today/past is due now; a future-dated order is never "prep now".
+                    if(!odate||odate<=todayStr) currentBatch.push(o)
+                    return
+                  }
+                  const startMs=Math.max(Date.now(),eventStartMs-totalSecs*1000)
+                  const minsUntilStart=Math.floor((startMs-Date.now())/60000)
+                  if(minsUntilStart<=2){
+                    currentBatch.push(o)
+                  } else {
+                    const fmt=(ms:number)=>{const dt=new Date(ms);return`${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`}
+                    upcomingBatches.push({id:o.order_key,slot:`ASAP ~${fmt(startMs+totalSecs*1000)}`,startBy:fmt(startMs),minsUntil:minsUntilStart,items:Object.values(displayItems),orderNotes})
+                  }
+                })
 
               // Build current prep map
               // Build ordered list of units in insertion order across orders, then by item position
@@ -1069,13 +1153,37 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               })
               type PrepUnit={name:string;orderId:string;unitIdx:number;cat:string;modLabel:string}
               const allUnits:PrepUnit[]=[]
-              sortedBatch.forEach(o=>o.items.forEach(item=>{
-                const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||''
-                const parts=(item.modifiers||[]).map((m:any)=>m.name)
-                if(item.specialInstructions)parts.push(`📝 ${item.specialInstructions}`)
-                const modLabel=parts.length?` (${parts.join(', ')})`:''
-                for(let u=0;u<item.quantity;u++) allUnits.push({name:item.name,orderId:o.order_key,unitIdx:u,cat,modLabel})
-              }))
+              sortedBatch.forEach(o=>{
+                // Monotonic unitIdx per (order,name) so the pillKey stays unique across
+                // BOTH standalone items AND deal constituents that repeat a name (e.g.
+                // "Dinner 2 pizzas" = 2× the same pizza) — otherwise pills collide / double-strike.
+                const nextIdx:Record<string,number>={}
+                const pushUnit=(name:string,cat:string,modLabel:string)=>{
+                  const k=`${o.order_key}:${name}`
+                  const unitIdx=nextIdx[k]=(nextIdx[k]??-1)+1
+                  allUnits.push({name,orderId:o.order_key,unitIdx,cat,modLabel})
+                }
+                o.items.forEach(item=>{
+                  const cat=truckMenu?.items.find(m=>m.name===item.name)?.category||''
+                  const parts=(item.modifiers||[]).map((m:any)=>m.name)
+                  if(item.specialInstructions)parts.push(`📝 ${item.specialInstructions}`)
+                  const modLabel=parts.length?` (${parts.join(', ')})`:''
+                  for(let u=0;u<item.quantity;u++) pushUnit(item.name,cat,modLabel)
+                })
+                // Deal constituents count as cookable units exactly like standalone items
+                // (same deal.slots iteration displayItems/getAllDayCounts use). Category comes
+                // from the item's own category, so instant constituents (e.g. drinks) fall to
+                // Assembly via the kitchen-vs-assembly split below — no deal special-casing.
+                ;(o.deals||[]).forEach((d:any)=>Object.entries(d.slots||{}).forEach(([slotKey,itemName]:any)=>{
+                  if(!itemName)return
+                  const cat=truckMenu?.items.find(m=>m.name===String(itemName))?.category||''
+                  const parts=((d.slotModifiers||{})[slotKey]||[]).map((m:any)=>m.name)
+                  const note=(d.slotNotes||{})[slotKey]
+                  if(note)parts.push(`📝 ${note}`)
+                  const modLabel=parts.length?` (${parts.join(', ')})`:''
+                  pushUnit(String(itemName),cat,modLabel)
+                }))
+              })
               // Split into kitchen vs assembly preserving order.
               // Use DB-loaded categoryConfigs — getCategoryTime always returns 0 since
               // prep config moved to the DB, which silently put everything in Assembly.
@@ -1184,11 +1292,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
-            {showCompleted&&otherOrders.length>0&&(
+            {otherOrders.length>0&&(
               <div className="mb-4">
-                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Completed today</p>
-                <div className="space-y-2">
-                  {otherOrders.slice(0,5).map(o=>(
+                {/* In-place expander (V6.1 unified arrow) — the ONE control for the completed
+                    list, sitting directly above it so cause and effect are visible. */}
+                <button onClick={()=>setShowCompleted(c=>!c)} className="w-full flex items-center justify-between gap-2 py-2 text-left">
+                  <span className="flex items-center gap-2 text-sm font-bold text-slate-700">
+                    <span className={`transition-transform inline-block text-slate-400 text-xs ${showCompleted?'rotate-90':''}`}>▶</span>
+                    Completed &amp; cancelled ({otherOrders.length})
+                  </span>
+                  <span className="text-xs text-slate-500 shrink-0">{otherOrders.length-cancelledCount} done{cancelledCount>0?` · ${cancelledCount} cancelled`:''}</span>
+                </button>
+                {showCompleted&&(
+                <div className="space-y-2 mt-1">
+                  {otherOrders.map(o=>(
                     <div key={o.order_key} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
@@ -1196,19 +1313,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ${STATUS[o.status]?.bg||'bg-slate-100'} ${STATUS[o.status]?.text||'text-slate-500'}`}>{STATUS[o.status]?.label||o.status}</span>
                           {o.slot&&<span className="text-xs text-slate-700">🕐 {o.slot}</span>}
                         </div>
-                        <p className="text-slate-500 text-xs mt-0.5 truncate">{o.customer_name} · {o.items.map(i=>`${i.quantity}× ${i.name}`).join(', ')}</p>
+                        <p className="text-slate-500 text-xs mt-0.5 truncate">{o.customer_name} · {Object.entries(getAllDayCounts([o])).map(([name,qty])=>`${qty}× ${name}`).join(', ')}</p>
                         {o.notes&&<p className="text-orange-500 text-xs truncate">📝 {o.notes}</p>}
                       </div>
                       <div className="shrink-0 ml-3 flex items-center gap-2">
                         <span className="font-black text-slate-600 text-sm">£{Number(o.total).toFixed(2)}</span>
-                        {o.status==='collected'&&(
-                          <button onClick={()=>doAction('undo_collected',o.order_key)} className="text-xs text-slate-400 hover:text-orange-600 font-bold transition-colors">↩ Undo</button>
-                        )}
                       </div>
                     </div>
                   ))}
-                  {otherOrders.length>5&&<p className="text-xs text-slate-700 text-center pt-1">+{otherOrders.length-5} more</p>}
                 </div>
+                )}
               </div>
             )}
             {pendingOrders.length===0&&confirmedOrders.length===0&&(
@@ -1271,37 +1385,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             {activeEvent&&(
-              <div className="p-4 bg-white rounded-2xl border border-slate-100">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                      {activeEvent.van_id&&activeVanName&&(
-                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
-                      )}
-                    </div>
-                    <p className="text-sm text-slate-500">{KITCHEN_CAPACITY_DESC}</p>
-                    {!activeEvent.van_id&&(
-                      <p className="text-xs text-amber-600 font-medium mt-1">⚠ Assign a truck to this event before setting kitchen capacity.</p>
-                    )}
-                  </div>
-                  <select
-                    value={kitchenCapacity??''}
-                    disabled={!activeEvent.van_id}
-                    onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
-                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                    <option value="">No limit</option>
-                    {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                      <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                    ))}
-                  </select>
-                </div>
-                {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
-                  <div className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
-                )}
-              </div>
-            )}
-            {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Offline protection</p>
@@ -1327,6 +1410,42 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Stock & availability</p>
+              {/* Kitchen capacity is the ceiling; per-category prep/batch below set the
+                  timings — grouped as one section (Item 2 Stage 1). Event-scoped, so it
+                  only shows with an active event. Reads/writes via the service-role
+                  /api/dashboard + update_van_settings path (Section 10 — no anon read). */}
+              {activeEvent&&(
+                <div className="mb-4 pb-4 border-b border-slate-100">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+                        {activeEvent.van_id&&activeVanName&&(
+                          <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-500">{KITCHEN_CAPACITY_DESC}</p>
+                      <p className="text-sm text-slate-500 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
+                      {!activeEvent.van_id&&(
+                        <p className="text-xs text-amber-600 font-medium mt-1">⚠ Assign a truck to this event before setting kitchen capacity.</p>
+                      )}
+                    </div>
+                    <select
+                      value={kitchenCapacity??''}
+                      disabled={!activeEvent.van_id}
+                      onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
+                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                      <option value="">No limit</option>
+                      {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                        <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
+                    <div className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                  )}
+                </div>
+              )}
               <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
               {truckMenu?(
                 <div className="space-y-5">
@@ -1343,7 +1462,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <div className="mb-2 pb-2 border-b border-slate-100">
                           {/* Line 1 (mobile) / full row (desktop) */}
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}</p>
+                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">({catOrdered} sold)</span>}</p>
                             {/* Prep + Batch: hidden on mobile, shown on sm+ */}
                             {catObj&&(
                               <div className="hidden sm:flex items-center gap-2 text-sm">
@@ -1377,7 +1496,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             )}
                             <div className="flex items-center gap-2">
                               {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
-                              {catOrdered>0&&<span className="text-xs text-slate-600">{catOrdered} sold</span>}
                               <div className="flex flex-col items-center gap-0.5">
                                 <input type="number" min="0" placeholder="∞" value={catCount??''}
                                   onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
@@ -1440,7 +1558,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                     {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
                                     {isAvailable&&effectiveRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${effectiveRem<=3?'text-red-600 bg-red-100':effectiveRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{effectiveRem} left</span>}
                                   </div>
-                                  {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} ordered</p>}
+                                  {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} sold</p>}
                                 </div>
                                 <div className="flex flex-col items-center gap-0.5">
                                   <input type="number" min="0" placeholder="–" value={itemCount??''}
@@ -1743,16 +1861,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       const isCurrent=s.collection_time===editingOrder?.slot
                       if(s.is_past&&!s.is_grace&&!isCurrent)return null
                       if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing{isCurrent?' · (current)':''}</option>
-                      const unlimited=s.max_orders>=999
-                      const remaining=Math.max(0,s.max_orders-s.current_orders)
-                      const pct=unlimited?0:s.current_orders/s.max_orders
-                      const ind=pct>=1?'🔴':pct>=0.7?'🟡':'🟢'
-                      const label=(!unlimited&&pct>=1)?isCurrent?' · (current)':' · Full':(!unlimited&&pct>=0.7)?` · ${remaining} left${isCurrent?' · (current)':''}`:isCurrent?' · (current)':''
-                      return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind}{label}</option>
+                      // Same oven-occupancy indicator as Add Order (shared helper): tone +
+                      // "Pizza X/4" label, not a current/max ratio. (current) is edit-only.
+                      const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:''}
+                      const label=`${ind.label?` · ${ind.label}`:''}${isCurrent?' · (current)':''}`
+                      return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{label}</option>
                     })}
                   </select>
                 )
               })()}
+            </div>
+            <div className="mb-4">
+              {/* Name + email + phone grouped, all optional, collapsed. Name is NOT pre-filled
+                  with the "Walk-up" default (that reads like a real name) — it starts empty for
+                  walk-ups; blank on save keeps the "Walk-up" display default. Never gates Save. */}
+              <details className="text-xs text-slate-400">
+                <summary className="cursor-pointer select-none py-1">+ Add name / email / phone</summary>
+                <div className="mt-2 flex flex-col gap-2">
+                  <input type="text" placeholder="Name — optional" value={editName} onChange={e=>setEditName(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                  <input type="email" placeholder="Email for receipt" value={editEmail} onChange={e=>setEditEmail(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                  <input type="tel" placeholder="Phone number" value={editPhone} onChange={e=>setEditPhone(e.target.value)}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                </div>
+              </details>
             </div>
             <div className="mb-4">
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Notes</label>
@@ -1760,7 +1893,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
             <div className="flex gap-2">
               <button onClick={()=>setEditingOrder(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
-              <button onClick={submitEdit} disabled={!!actionLoading?.startsWith('edit')||editItems.length===0} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">{actionLoading?.startsWith('edit')?'Saving...':'Save changes'}</button>
+              <button onClick={submitEdit} disabled={!!actionLoading?.startsWith('edit')||!isOrderNonEmpty(editItems,editDeals)} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">{actionLoading?.startsWith('edit')?'Saving...':'Save changes'}</button>
             </div>
           </div>
         </div>
@@ -1772,9 +1905,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           menuItems={truckMenu?.items||[]}
           menuCategories={truckMenu?.categories||[]}
           basketItems={editItems.map(i=>({name:i.name,quantity:i.quantity,unit_price:i.unit_price,cartKey:i.cartKey,modifiers:i.modifiers,specialInstructions:i.specialInstructions}))}
-          existingDeals={editDeals.map(d=>({bundle:{name:d.name,description:'',bundle_price:0,original_price:null,available:true,start_time:null,end_time:null,slot_1_category:null,slot_2_category:null,slot_3_category:null,slot_4_category:null,slot_5_category:null,slot_6_category:null},slots:d.slots,itemsTakenFromBasket:[]}))}
+          existingDeals={editDeals.map(d=>({bundle:{name:d.name,description:'',bundle_price:0,original_price:null,available:true,start_time:null,end_time:null,slot_1_category:null,slot_2_category:null,slot_3_category:null,slot_4_category:null,slot_5_category:null,slot_6_category:null},slots:d.slots,itemsTakenFromBasket:d.itemsTakenFromBasket||[]}))}
           onApply={(deal,slots,price,discount,rawSlots,modifierExtra,slotModifiers,slotNotes)=>{
-            setEditDeals(prev=>[...prev,{name:deal.name,slots,slotModifiers,slotNotes,isNew:true}])
+            // Consume the in-basket items the deal took (shared helper) so they aren't
+            // double-counted in total OR re-booked into capacity (the Edit #7 bug).
+            setEditItems(prev=>consumeBasketItemsForDeal(prev,rawSlots))
+            setEditDeals(prev=>[...prev,{name:deal.name,slots,slotModifiers,slotNotes,isNew:true,itemsTakenFromBasket:dealConsumedCartKeys(rawSlots)}])
             setShowEditDealModal(false)
           }}
           onClose={()=>setShowEditDealModal(false)}

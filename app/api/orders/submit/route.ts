@@ -18,7 +18,7 @@ import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import type { CatConfig } from '@/lib/prep-utils'
-import { formatConfirmationEmail, sendConfirmationEmail } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
 
@@ -665,53 +665,21 @@ export async function POST(req: NextRequest) {
     try {
       const truckEmail = truck.contact_email
       if (truckEmail) {
-        const truckItemRows = items.map((i: any) => {
-          const modRows = (i.modifiers || []).map((m: any) =>
-            `<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</td></tr>`
-          ).join('')
-          const noteRow = i.specialInstructions
-            ? `<tr><td colspan="2" style="padding:1px 0 3px 14px;font-size:12px;color:#64748b;font-style:italic">📝 ${i.specialInstructions}</td></tr>`
-            : ''
-          return `<tr><td style="padding:3px 0 1px;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0 1px">£${(parseFloat(i.unit_price)*i.quantity).toFixed(2)}</td></tr>${modRows}${noteRow}`
-        }).join('')
-        const truckDealRows = (deals || []).map((d: any) => {
-          const slotNames = Object.values(d.slots || {}).filter(Boolean).join(', ')
-          const subRows = Object.entries(d.slots || {}).flatMap(([cat, itemName]: [string, any]) => {
-            if (!itemName) return []
-            const rows: string[] = []
-            const mods = (d.slotModifiers || {})[cat] || []
-            if (mods.length) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">↳ ${itemName}: ${mods.map((m: any) => `+ ${m.name}`).join(', ')}</td></tr>`)
-            const note = (d.slotNotes || {})[cat]
-            if (note) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
-            return rows
-          }).join('')
-          return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
-        }).join('')
-        await sendConfirmationEmail({
-          to: truckEmail,
-          subject: `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`,
-          html: `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2 style="color:#ea580c;margin:0 0 12px">🔔 New order received</h2>
-            <p><strong>Order #${orderId}</strong> from <strong>${customerName}</strong></p>
-            ${slot ? `<p style="font-size:16px"><strong>⏰ Collection: ${slot}</strong></p>` : '<p>No specific time — ASAP</p>'}
-            ${(eventRow?.venue_name || eventRow?.town) ? `<p>📍 ${[eventRow?.venue_name, eventRow?.town, eventRow?.postcode].filter(Boolean).join(', ')}</p>` : ''}
-            ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
-            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
-              ${truckItemRows}
-              ${truckDealRows}
-              <tr style="border-top:2px solid #e2e8f0">
-                <td style="padding-top:8px;font-weight:800">Total</td>
-                <td style="text-align:right;padding-top:8px;font-weight:800">£${total.toFixed(2)}</td>
-              </tr>
-            </table>
-            ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
-            ${autoAccepted
-              ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
-              : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>`}
-          </body>`,
-          text: `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(eventRow?.venue_name || eventRow?.town) ? ' at ' + [eventRow?.venue_name, eventRow?.town].filter(Boolean).join(', ') : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`,
-          senderName: 'HatchGrab',
+        const { subject, html, text } = formatNewOrderEmail({
+          orderId,
+          customerName,
+          customerPhone,
+          slot,
+          items,
+          deals: deals || [],
+          total,
+          notes: notes ?? null,
+          venueName:     eventRow?.venue_name ?? null,
+          venueTown:     eventRow?.town ?? null,
+          venuePostcode: eventRow?.postcode ?? null,
+          autoAccepted,
         })
+        await sendConfirmationEmail({ to: truckEmail, subject, html, text, senderName: 'HatchGrab' })
       }
     } catch (err) {
       console.error('Truck email failed:', err)
@@ -757,8 +725,9 @@ export async function POST(req: NextRequest) {
       console.error('Customer email failed:', emailErr)
     }
 
-    // No "[Order copy]" to the truck — the "New order received" notification
-    // above (:547) is the single operator-bound email per self-order.
+    // The truck's only operator-bound email per self-order is the 🔔 New order
+    // notification sent above (formatNewOrderEmail) — never a copy of the customer
+    // confirmation.
 
     // ── Done ──────────────────────────────────────────────────────────────────
     return NextResponse.json({

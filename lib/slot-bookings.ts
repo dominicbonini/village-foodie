@@ -116,15 +116,21 @@ async function resolveBookingSlot(
   return (await getEventMeta(supabase, eventId)).start
 }
 
-/** All production windows for ONE event → item qty by category. Event-scoped: returns
- *  only this event's rows, never pooled with other same-date events. */
-export async function getProductionSlotUnits(
+/**
+ * Internal read: returns this event's stored units AND whether it had to lazily
+ * REBUILD them from `orders`. `reseeded:true` means the returned units were rebuilt
+ * from the live orders table (which already reflects EVERY current order, including
+ * one just inserted), and persisted — so an incremental caller must NOT re-apply its
+ * order on top (that's the first-order double-count). `reseeded:false` means stored
+ * rows that do NOT yet include a brand-new order, so an incremental merge is correct.
+ */
+async function readProductionSlotUnits(
   supabase: SupabaseClient,
   truckId: string,
   eventId: string | null
-): Promise<ProductionSlotUnits> {
+): Promise<{ units: ProductionSlotUnits; reseeded: boolean }> {
   // No event → order/view belongs to no event; nothing pooled, empty usage.
-  if (!eventId) return {}
+  if (!eventId) return { units: {}, reseeded: false }
   const { data, error } = await supabase
     .from('production_slot_usage')
     .select('production_slot, units_by_cat')
@@ -132,22 +138,35 @@ export async function getProductionSlotUnits(
     .eq('event_id', eventId)
 
   if (error) {
-    return buildUnitsFromOrders(supabase, truckId, eventId)
+    // Degraded fallback (SELECT failed): rebuild but DON'T claim reseeded, so the
+    // incremental caller still merges+persists its order (unchanged prior behaviour).
+    return { units: await buildUnitsFromOrders(supabase, truckId, eventId), reseeded: false }
   }
 
   if (!data?.length) {
-    // Lazy reseed (covers the empty table between migration and backfill).
+    // Lazy reseed (covers the empty table between migration and backfill). The rebuild
+    // already includes every current order, so we persist it and flag reseeded.
     const built = await buildUnitsFromOrders(supabase, truckId, eventId)
     const { eventDate } = await getEventMeta(supabase, eventId)
     if (eventDate) await syncProductionSlotUsage(supabase, truckId, eventId, eventDate, built)
-    return built
+    return { units: built, reseeded: true }
   }
 
   const out: ProductionSlotUnits = {}
   data.forEach(r => {
     out[r.production_slot] = (r.units_by_cat as QtyByCat) || {}
   })
-  return out
+  return { units: out, reseeded: false }
+}
+
+/** All production windows for ONE event → item qty by category. Event-scoped: returns
+ *  only this event's rows, never pooled with other same-date events. */
+export async function getProductionSlotUnits(
+  supabase: SupabaseClient,
+  truckId: string,
+  eventId: string | null
+): Promise<ProductionSlotUnits> {
+  return (await readProductionSlotUnits(supabase, truckId, eventId)).units
 }
 
 async function buildUnitsFromOrders(
@@ -270,7 +289,11 @@ export async function addOrderToProductionSlot(
   if (!ct || !meta.eventDate) return
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)
   const productionSlot = timeMap[ct] || ct
-  const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
+  const { units: slotUnits, reseeded } = await readProductionSlotUnits(supabase, truckId, eventId)
+  // First order of an event: the cache was empty, so the read just REBUILT it from
+  // `orders` (which already contains this order, inserted moments ago) and persisted it.
+  // Re-merging would double-count this order — the reseed already booked it. Skip.
+  if (reseeded) return
   const current = slotUnits[productionSlot] || {}
   const merged = mergeQtyByCat(current, orderItemsToQtyByCat(items, itemCatMap))
   await upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, merged)

@@ -2,20 +2,15 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { formatConfirmationEmail, sendConfirmationEmail } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import {
   addOrderToProductionSlot,
   removeOrderFromProductionSlot,
   moveSlotBooking,
   buildItemCatMap,
-  getProductionSlotUnits,
   normaliseOrderLines,
   deriveProductionSlot,
 } from '@/lib/slot-bookings'
-import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import { projectOrderTailWindow } from '@/lib/slot-availability'
-import { generateCollectionTimes } from '@/lib/slot-generation'
-import { buildCatConfigs } from '@/lib/prep-utils'
 import { nextOrderId } from '@/lib/order-utils'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 
@@ -221,25 +216,52 @@ export async function POST(req: NextRequest) {
 
     // ── EDIT ORDER ────────────────────────────────────────────────────────────
     if (action === 'edit') {
-      const { items, slot, notes, deals: editedDeals } = editedOrder || {}
+      const { items, slot, notes, deals: editedDeals, customerName, customerEmail, customerPhone } = editedOrder || {}
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
 
-      const originalItemsSubtotal = (order.items || []).reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
-      const dealContribution = Number(order.total) - originalItemsSubtotal
-
-      const newItemsSubtotal = items
-        ? items.reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
-        : originalItemsSubtotal
+      // Recompute the total DEAL-AWARE from the EDITED items + deals — the same formula
+      // Add Order uses (calculateOrderTotal): items subtotal + Σ(deal bundle_price + slot
+      // modifiers), less the order's existing discount. The previous delta carried the
+      // ORIGINAL order's deal contribution, so a newly-added/changed deal's price was
+      // dropped and the stored total went stale. Recomputed from the persisted items+deals
+      // so the total can never drift from the contents (identical to the Add Order path).
+      const effItems = items || order.items || []
+      const effDeals = editedDeals !== undefined ? editedDeals : (order.deals || [])
+      const newItemsSubtotal = effItems.reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
+      const { data: bundleRows } = await supabase.from('bundles_db').select('name, bundle_price').eq('truck_id', truck.id)
+      const bundlePrice = (name: string) => Number(bundleRows?.find(b => b.name === name)?.bundle_price ?? 0)
+      const dealsTotal = (effDeals || []).reduce((s: number, d: any) => {
+        const modExtra = (Object.values(d.slotModifiers || {}) as any[]).flat().reduce((sm: number, m: any) => sm + (Number(m?.price) || 0), 0)
+        return s + bundlePrice(d.name) + modExtra
+      }, 0)
+      const discountAmt = Number(order.discount_amt) || 0
       const newSubtotal = newItemsSubtotal
-      const newTotal = Math.max(0, newItemsSubtotal + dealContribution)
+      const newTotal = Math.max(0, newItemsSubtotal + dealsTotal - discountAmt)
+
+      // Persist deals in EXACTLY the Add Order shape {name, slots, slotModifiers, slotNotes,
+      // price} — set price = bundle_price (what OrderCard's deal price column reads, the same
+      // £15 the total uses) and drop UI-only fields (isNew / itemsTakenFromBasket). So an
+      // edit-saved deal renders byte-identically to an Add-Order deal.
+      const dealsToStore = editedDeals !== undefined
+        ? (editedDeals as any[]).map(d => ({
+            name: d.name, slots: d.slots, slotModifiers: d.slotModifiers, slotNotes: d.slotNotes,
+            price: bundlePrice(d.name),
+          }))
+        : order.deals
 
       const newSlot = slot !== undefined ? slot : order.slot
       await supabase.from('orders').update({
         items:    items    || order.items,
-        deals:    editedDeals !== undefined ? editedDeals : order.deals,
+        deals:    dealsToStore,
         slot:     newSlot,
         notes:    notes    !== undefined ? notes : order.notes,
+        // Customer contact — all optional; blank clears to null. Preserve when not sent.
+        // Blank name → the "Walk-up" sentinel (same default as the manual insert), so a
+        // walk-up edited with the name left empty still reads "Walk-up", not blank.
+        customer_name:  customerName  !== undefined ? ((customerName || '').trim() || 'Walk-up') : order.customer_name,
+        customer_email: customerEmail !== undefined ? (customerEmail || null) : order.customer_email,
+        customer_phone: customerPhone !== undefined ? (customerPhone || null) : order.customer_phone,
         total:    newTotal,
         subtotal: newSubtotal,
         status:   'modified',
@@ -247,10 +269,13 @@ export async function POST(req: NextRequest) {
 
       if (order.event_date && (items || slot !== undefined)) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
+        // REMOVE uses the PRIOR stored state (old items + old deals) to subtract exactly
+        // what was previously booked. ADD uses the EDITED state — the SAME items+deals
+        // written to the row above — so a deal CHANGE re-counts production usage correctly
+        // (Gap 4). Deal constituents are counted via normaliseOrderLines' deals arg.
         const oldLines = normaliseOrderLines(order.items || [], order.deals)
-        // TODO(Gap 4): newLines reuses order.deals even when editedDeals changes the
-        // deal — a deal edit can miscount production usage. Left as-is for this pass.
-        const newLines = normaliseOrderLines(items || order.items || [], order.deals)
+        const newDeals = editedDeals !== undefined ? editedDeals : order.deals
+        const newLines = normaliseOrderLines(items || order.items || [], newDeals)
         // No slot gate: order.slot / newSlot may be null (ASAP) — both resolve to the
         // event-start window inside the helpers, so old usage is freed and new re-booked.
         await removeOrderFromProductionSlot(
@@ -367,39 +392,16 @@ export async function POST(req: NextRequest) {
           console.warn(`[manual] ${dateEvents!.length} events on ${eventDate} for truck ${truck.id} — leaving event_id null`)
         }
       }
-      let autoConfirm = true
-      const manualLines = normaliseOrderLines(items || [])
+      // Walk-up / manual orders ALWAYS confirm (Section 5): the operator is present and
+      // knows the queue, so the manual path bypasses auto_accept and ALL capacity gating
+      // (that gate lives only on the customer path / claimAvailableSlot). The order still
+      // occupies the oven via addOrderToProductionSlot below — confirm always, occupy always.
+      // Pass `deals` so a deal's cookable constituents (deals[].slots) count toward oven
+      // capacity, exactly like standalone items — same shared extractor every other path
+      // uses (submit/edit/rebuild). Without it, walk-up deal pizzas were dropped from the
+      // incremental capacity write. Instant constituents are skipped later by projectOvenOccupancy.
+      const manualLines = normaliseOrderLines(items || [], deals)
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
-      const catConfigs = await buildCatConfigs(supabase, truck.id)
-      // Need a concrete event_id to read this event's (un-pooled) production usage. An
-      // ambiguous date leaves orderEventId null → skip the capacity gate (autoConfirm).
-      if (slot && orderEventId) {
-        // Same oven-occupancy projection the dots/claim use: autoConfirm only if this
-        // order's TAIL-COMPLETION (last item cooked, given the queue) is by the chosen
-        // slot. If it can't be ready by then → pending (operator can still confirm).
-        // kitchen_capacity comes live from the event's van; slot_capacity unused.
-        const [{ data: staticTimes }, slotUnits, { data: evRow }] = await Promise.all([
-          supabase.from('collection_times').select('collection_time, production_slot').eq('truck_id', truck.id).order('collection_time', { ascending: true }),
-          getProductionSlotUnits(supabase, truck.id, orderEventId),
-          supabase.from('truck_events').select('start_time, end_time, van_id').eq('truck_id', truck.id).eq('event_date', eventDate).neq('status', 'cancelled').order('start_time', { ascending: true }).limit(1).maybeSingle(),
-        ])
-        let kitchenCapacity: number | null = null
-        if (evRow?.van_id) {
-          const { data: van } = await supabase.from('truck_vans').select('kitchen_capacity').eq('id', evRow.van_id).single()
-          kitchenCapacity = van?.kitchen_capacity ?? null
-        }
-        const iv = truck.collection_interval_mins ?? 0
-        const dur = truck.slot_duration_mins ?? iv
-        const times = staticTimes?.length
-          ? staticTimes
-          : (evRow?.start_time && evRow?.end_time && iv > 0 ? generateCollectionTimes(evRow.start_time, evRow.end_time, iv, dur) : [])
-        if (times.length) {
-          const windowSecs = (dur > 0 ? dur : iv > 0 ? iv : 5) * 60
-          const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
-          const tail = projectOrderTailWindow(times, slotUnits, catConfigs, kitchenCapacity, windowSecs, orderItemsToQtyByCat(manualLines, itemCatMap), slot)
-          if (tail && toMins(tail) > toMins(slot)) autoConfirm = false
-        }
-      }
       // Display number (per-event, restarts at 1) — order_key UUID is set by the
       // column default. orderEventId may be null (ambiguous/no event) → truck fallback.
       let newOrderId: string
@@ -419,7 +421,7 @@ export async function POST(req: NextRequest) {
         event_id: orderEventId,
         items, deals, discount_code: null,
         subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
-        notes: notes || null, status: autoConfirm ? 'confirmed' : 'pending',
+        notes: notes || null, status: 'confirmed',
         payment_status: 'unpaid',
       }).select('order_key').single()
       if (insertErr || !manualOrderRow) {
@@ -479,35 +481,26 @@ export async function POST(req: NextRequest) {
       }
 
       if (truck.contact_email) {
-        const { subject, html, text } = formatConfirmationEmail({
+        // Truck gets the canonical 🔔 New order notification (shared builder) — the
+        // SAME email the customer self-order path sends the truck. Never a copy of the
+        // customer confirmation. The customer email above is unchanged.
+        const { subject, html, text } = formatNewOrderEmail({
           orderId: newOrderId,
-          orderKey: manualOrderKey,
-          truckName: truck.name,
           customerName: customerName || 'Walk-up',
+          customerPhone: customerPhone || null,
           slot: slot || null,
           items: manualEmailItems,
           deals: deals || [],
-          discountAmt: manualOrder.discountAmt || 0,
           total: passedTotal || total,
           notes: notes || null,
+          venueName:     manualEventRow?.venue_name ?? null,
+          venueTown:     manualEventRow?.town ?? null,
+          venuePostcode: manualEventRow?.postcode ?? null,
           autoAccepted: true,
-          venueName:              manualEventRow?.venue_name ?? null,
-          venueTown:              manualEventRow?.town ?? null,
-          venuePostcode:          manualEventRow?.postcode ?? null,
-          preferredContactMethod: truck.preferred_contact_method ?? null,
-          contactPhone:           truck.contact_phone ?? null,
-          whatsappSender:         truck.whatsapp_sender ?? null,
-          socialFacebook:         truck.social_facebook ?? null,
-          socialInstagram:        truck.social_instagram ?? null,
-          contactEmail:           truck.contact_email ?? null,
-          allowCancellation:      truck.allow_customer_cancellation ?? true,
-          cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
-          baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
-          truckSlug:              truck.slug ?? undefined,
         })
         await sendConfirmationEmail({
           to: truck.contact_email,
-          subject: `[Order copy] ${subject}`,
+          subject,
           html,
           text,
           truckName: truck.name,
@@ -515,7 +508,7 @@ export async function POST(req: NextRequest) {
         })
       }
 
-      return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: autoConfirm, slotFull: !autoConfirm })
+      return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: true })
     }
 
     // ── GET STOCK ─────────────────────────────────────────────────────────────

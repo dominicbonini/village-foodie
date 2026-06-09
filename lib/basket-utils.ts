@@ -28,6 +28,57 @@ export interface Deal {
 }
 
 /**
+ * SINGLE SOURCE for "is this basket/order non-empty?". An order counts as non-empty
+ * when it has standalone items OR at least one deal — deals are real content too.
+ * Shared by the Add Order panel (Confirm-enable) and the Edit Order modal (Save-enable)
+ * so the two can never diverge on item-vs-deal counting. Length-only so it accepts any
+ * item/deal array shape from either surface.
+ */
+export function isOrderNonEmpty(
+  items: { length: number } | null | undefined,
+  deals: { length: number } | null | undefined
+): boolean {
+  return (items?.length ?? 0) > 0 || (deals?.length ?? 0) > 0
+}
+
+/**
+ * The basket cartKeys a deal consumed, one entry per consuming slot. DealsModal emits
+ * `USE_EXISTING:<cartKey>` in rawSlots for each "(in basket)" slot (unit suffix already
+ * stripped), so a line consumed into N slots appears N times. Used as a deal's
+ * itemsTakenFromBasket record. SINGLE SOURCE — all three apply surfaces derive it here.
+ */
+export function dealConsumedCartKeys(rawSlots: Record<string, string> | null | undefined): string[] {
+  return Object.values(rawSlots || {})
+    .filter((r): r is string => typeof r === 'string' && r.startsWith('USE_EXISTING:'))
+    .map(r => r.slice('USE_EXISTING:'.length))
+    .filter(Boolean)
+}
+
+/**
+ * Remove the standalone basket lines a deal consumed (the "(in basket)" slots), so an
+ * in-basket deal doesn't double-count those items. QUANTITY-AWARE: a line consumed N
+ * times drops by N units and is removed only at 0 — consuming 2 of a qty-3 line leaves
+ * qty 1 (NOT the whole line). Keyed by cartKey (every manual/edit/customer basket line
+ * carries one; DealsModal references lines by cartKey). Returns the items unchanged when
+ * the deal took nothing from the basket. SINGLE SOURCE for the consume across all three
+ * apply handlers (Add Order, customer, edit) so they can't drift.
+ */
+export function consumeBasketItemsForDeal<T extends { cartKey?: string; quantity: number }>(
+  items: T[],
+  rawSlots: Record<string, string> | null | undefined,
+): T[] {
+  const consumed: Record<string, number> = {}
+  for (const key of dealConsumedCartKeys(rawSlots)) consumed[key] = (consumed[key] || 0) + 1
+  if (!Object.keys(consumed).length) return items
+  return items.flatMap(item => {
+    const take = item.cartKey ? (consumed[item.cartKey] || 0) : 0
+    if (take <= 0) return [item]
+    const qty = item.quantity - take
+    return qty > 0 ? [{ ...item, quantity: qty }] : []
+  })
+}
+
+/**
  * Add item to basket, increment quantity if already exists
  * 
  * @param basket - Current basket items

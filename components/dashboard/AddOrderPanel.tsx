@@ -7,15 +7,15 @@ import type {
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { projectOvenOccupancy, projectOrderTailWindow, type WindowOccupancy } from '@/lib/slot-availability'
-import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
-import type { SlotTone } from '@/lib/slot-indicator'
+import { projectOrderTailWindow } from '@/lib/slot-availability'
+import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
+import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { formatTime } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -150,7 +150,9 @@ export function AddOrderPanel({
   const [activeDealBundle, setActiveDealBundle] = useState<Bundle | null>(null)
 
   // ── slot capacity confirmation ──────────────────────────────────────────────
-  const [pendingSlot, setPendingSlot] = useState<{ time: string; remaining: number; isFull: boolean; tooSoon?: boolean; tone?: 'green' | 'amber' | 'red' } | null>(null)
+  // Set only when the basket would OVERFLOW the chosen slot (capacity confirm). capacityLabel
+  // = the binding load fractions. Too-soon slots no longer warn — they select silently.
+  const [pendingSlot, setPendingSlot] = useState<{ time: string; capacityLabel: string } | null>(null)
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
@@ -168,16 +170,30 @@ export function AddOrderPanel({
 
   const { itemsTotal: manualItemsSubtotal, dealSavings, total: manualTotal } = calculation
 
+  // In-progress basket as items-by-category INCLUDING deal constituents (deals[].slots),
+  // mirroring the customer page. ONE conversion, reused by the ASAP estimate (#2), the
+  // tail-completion slot (#3), and the capacity fit-check — so the deal's cookable items
+  // are counted everywhere. Instant categories land here too but are ignored downstream
+  // (projection: secs 0; fit-check: no rateByCat entry).
+  const basketByCat = useMemo(() => {
+    const itemCatMap: Record<string, string> = {}
+    ;(truckMenu?.items || []).forEach(i => { itemCatMap[i.name] = (i.category || 'mains').toLowerCase() })
+    const byCat: Record<string, number> = {}
+    manualItems.forEach(i => { const c = itemCatMap[i.name] || 'mains'; byCat[c] = (byCat[c] || 0) + i.quantity })
+    appliedDeals.forEach(d => Object.values(d.slots || {}).filter(Boolean).forEach(name => {
+      const c = itemCatMap[String(name)] || 'mains'; byCat[c] = (byCat[c] || 0) + 1
+    }))
+    return byCat
+  }, [manualItems, appliedDeals, truckMenu])
+
   // Single formula for both pre-event and live: queue from API, new items from basket.
   // Base time = max(now, eventStart) so pre-event orders anchor to event start correctly.
   const queueAware = useMemo(() => {
     if (!manualItems.length && !appliedDeals.length) return { readyTime: '', minsFromNow: 0 }
-    const newByCat: Record<string, number> = {}
-    manualItems.forEach(item => {
-      const cat = (truckMenu?.items.find(m => m.name === item.name)?.category || 'mains').toLowerCase()
-      newByCat[cat] = (newByCat[cat] || 0) + item.quantity
-    })
-    const totalSecs = calcQueueAwareReadySecs(newByCat, apiQueueByCat, categoryConfigs, waitMinutes * 60 + 120)
+    const newByCat = basketByCat
+    // Prep (kitchen-set) + operator extra-wait is the truth — NO phantom +120s buffer.
+    // (waitMinutes is the deliberate operator control; the max(30,…) floor stays in the helper.)
+    const totalSecs = calcQueueAwareReadySecs(newByCat, apiQueueByCat, categoryConfigs, waitMinutes * 60)
     if (totalSecs === 0) return { readyTime: '', minsFromNow: 0 }
     // Unified ASAP formula (manual s.6): max(now + totalSecs, eventStart + pushSecs).
     // - now + totalSecs: live-service term — full prep from now, nothing pre-prepped.
@@ -197,54 +213,25 @@ export function AddOrderPanel({
       readyTime: `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`,
       minsFromNow: Math.max(0, Math.ceil((t.getTime() - Date.now()) / 60000)),
     }
-  }, [manualItems, appliedDeals, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes, truckMenu])
+  }, [manualItems, appliedDeals, basketByCat, apiQueueByCat, manualEvent, categoryConfigs, waitMinutes])
 
-  // In-progress basket as items-by-category (matches the server autoConfirm path,
-  // which counts items via normaliseOrderLines — deals are excluded on both sides;
-  // see flag in the reconciliation notes).
-  const basketByCat = useMemo(() => {
-    const itemCatMap: Record<string, string> = {}
-    ;(truckMenu?.items || []).forEach(i => { itemCatMap[i.name] = (i.category || 'mains').toLowerCase() })
-    return orderItemsToQtyByCat(
-      manualItems.map(i => ({ name: i.name, quantity: i.quantity })),
-      itemCatMap,
-    )
-  }, [manualItems, truckMenu])
-
-  // Dots (queue-only): per-window OVEN OCCUPANCY from the shared projection — each
-  // window coloured by orders already booked still cooking through it. The in-progress
-  // basket is NOT folded in (it only affects the ASAP estimate below). Keyed by
-  // collection_time. windowSecs comes from the slot config (rate scaling, never 5).
-  const slotQueueRows = useMemo(() => {
-    const m = new Map<string, WindowOccupancy>()
-    if (!capacityInputs || !manualSlots.length) return m
-    const occ = projectOvenOccupancy(
-      manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
+  // Dots + pick-slot indicator: per-window OVEN OCCUPANCY via the SHARED helper
+  // (lib/slot-display) — the SAME projection→tone/label mapping the Edit Order picker
+  // uses, so the two surfaces can never diverge. Keyed by collection_time. windowSecs
+  // comes from the slot config (rate scaling, never 5).
+  const slotIndicators = useMemo(() => {
+    if (!capacityInputs || !manualSlots.length) return new Map<string, SlotIndicator>()
+    return buildSlotIndicators(
+      manualSlots,
       capacityInputs.productionSlotUnits || {},
       categoryConfigs,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.windowSecs,
     )
-    occ.forEach(w => m.set(w.collection_time, w))
-    return m
   }, [capacityInputs, manualSlots, categoryConfigs])
 
-  // Dot + pick-slot modal indicator. Tone = the window's oven occupancy; the slot's
-  // own too_soon (timing) folds a green window to amber so a too-soon slot is never
-  // shown green. The richer "Pizza 2/4" label comes from the occupancy bound_by.
-  const slotIndicatorFor = (s: Slot): { occ: WindowOccupancy | null; tone: SlotTone; emoji: string; label: string } => {
-    const occ = slotQueueRows.get(s.collection_time) ?? null
-    let tone: SlotTone = occ?.tone ?? 'green'
-    if (s.too_soon && tone === 'green') tone = 'amber'
-    const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
-    // Display text only (tone unchanged): red is always "Full" (no category/ratio);
-    // amber shows the binding per-category count ("Pizza 2/4") from the occupancy
-    // projection. Occupancy-driven amber ALWAYS sets bound_by; the only null-bound
-    // amber is a timing-only amber (too_soon over a green oven) where no binding
-    // category exists — render no label (the timing warning lives in the modal).
-    const label = tone === 'green' ? '' : tone === 'red' ? 'Full' : (occ?.bound_by ?? '')
-    return { occ, tone, emoji, label }
-  }
+  const slotIndicatorFor = (s: Slot): SlotIndicator =>
+    slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', occ: null }
 
   // ASAP "ready around" slot — the BASKET-AWARE tail-completion window (the same
   // projection): the earliest window this order's last item finishes cooking given
@@ -266,10 +253,11 @@ export function AddOrderPanel({
     return tailSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
   }, [manualSlots, capacityInputs, categoryConfigs, basketByCat, manualAsapSlot])
 
-  // Sub-label "around" time = the engine-resolved ASAP slot (so it agrees with the
-  // dots and the ASAP option), falling back to the queue-aware estimate.
+  // The REAL kitchen-ready estimate (prep + queue + operator extra-wait, buffer-free) — the
+  // sub-label's minutes ("~N mins") AND "around HH:MM" both come from this. The ASAP OPTION
+  // shows the rounded grid slot (adjustedAsapSlot) separately; the two intentionally differ
+  // by the grid rounding.
   const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
-  const asapAround = adjustedAsapSlot?.collection_time ?? readyTime
 
   const isEventEnded = manualEvent ? (() => {
     const today = new Date().toISOString().split('T')[0]
@@ -279,7 +267,7 @@ export function AddOrderPanel({
     return new Date().getHours() * 60 + new Date().getMinutes() > h * 60 + m
   })() : false
 
-  const hasItems = manualItems.length > 0 || appliedDeals.length > 0
+  const hasItems = isOrderNonEmpty(manualItems, appliedDeals)
   const totalItemCount = manualItems.reduce((s, i) => s + i.quantity, 0) + appliedDeals.length
 
   // ── fetch events / slots ────────────────────────────────────────────────────
@@ -448,19 +436,39 @@ setItemModal({ item, modGroups, editCartKey })
   }
 
   // ── slot change handler ─────────────────────────────────────────────────────
-  // Operator can pick ANY visible slot (manual s.10) — amber/red/too-soon go
-  // through the confirmation modal first.
+  // Operator can pick ANY visible slot (manual s.10). The ONLY confirmation is capacity
+  // OVERFLOW — an early/too-soon slot selects SILENTLY: the operator knows their own start
+  // time and doesn't need nagging (Section 10).
   const handleSlotChange = (value: string) => {
     if (!value) { setManualSlot(''); return }
     const s = manualSlots.find(sl => sl.collection_time === value)
-    if (s) {
-      // Same projection the dot uses → dot and modal always agree. Timing (too_soon)
-      // comes from the slot itself; capacity tone from the oven-occupancy projection.
-      const { tone } = slotIndicatorFor(s)
-      const tooSoon = !!s.too_soon
-      if (tooSoon) { setPendingSlot({ time: value, remaining: 0, isFull: tone === 'red', tooSoon: true, tone }); return }
-      if (tone !== 'green') { setPendingSlot({ time: value, remaining: 0, isFull: tone === 'red' }); return }
+
+    // Capacity confirm fires ONLY on genuine OVERFLOW — the in-progress basket (items +
+    // deals) exceeds this slot's per-category batch remaining OR the global kitchen ceiling.
+    // An amber-but-fits slot selects SILENTLY (the picker already shows the load — don't nag,
+    // Section 10). Reads the SAME projectOvenOccupancy data the picker uses (occ), no parallel calc.
+    const EPS = 1e-9
+    const capWord = (c: string) => c.charAt(0).toUpperCase() + c.slice(1)
+    const occ = s ? (slotIndicators.get(value)?.occ ?? null) : null
+    let capacityLabel: string | null = null
+    if (occ) {
+      const binding: string[] = []
+      for (const [cat, qty] of Object.entries(basketByCat)) {
+        const rate = occ.rateByCat[cat]
+        if (rate == null) continue // instant category — doesn't occupy the oven
+        const cooking = occ.cookingByCat[cat] ?? 0
+        if (qty > rate - cooking + EPS) binding.push(`${capWord(cat)} ${Math.round(cooking)}/${Math.round(rate)}`)
+      }
+      const ceiling = capacityInputs?.kitchenCapacity ?? null
+      if (ceiling != null) {
+        const basketCookable = Object.entries(basketByCat)
+          .reduce((sum, [cat, qty]) => sum + (occ.rateByCat[cat] != null ? qty : 0), 0)
+        if (occ.totalCooking + basketCookable > ceiling + EPS) binding.push(`Kitchen ${Math.round(occ.totalCooking)}/${ceiling}`)
+      }
+      if (binding.length) capacityLabel = binding.join(', ')
     }
+
+    if (capacityLabel) { setPendingSlot({ time: value, capacityLabel }); return }
     setManualSlot(value)
   }
 
@@ -499,7 +507,7 @@ setItemModal({ item, modGroups, editCartKey })
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      showToast(data.slotFull ? `Order #${data.orderId} saved — slot full` : `Order #${data.orderId} confirmed`)
+      showToast(`Order #${data.orderId} confirmed`)
       if (manualItems.length) {
         const categoryMap: Record<string, string> = {}
         manualItems.forEach(item => {
@@ -536,11 +544,18 @@ setItemModal({ item, modGroups, editCartKey })
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
         >
           <option value="">⚡ ASAP{adjustedAsapSlot ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
-          {/* Operator sees ALL slots except genuinely-past ones (manual s.10):
-              too-soon and full slots stay visible and overridable via the modal.
-              Too-soon slots get the same traffic-light as any other — the timing
-              warning lives in the confirmation modal, not the dropdown. */}
-          {manualSlots.filter(s => !s.is_past || s.is_grace).map(s => {
+          {/* Operator (manual s.10) sees slots from NOW, including the imminent next slot.
+              The server's is_past adds a +5-min forward grace that hides the next slot (e.g.
+              17:35 at 17:32); operators can rush, so un-hide is_past slots whose time hasn't
+              ACTUALLY passed (>= now). Only genuinely-past slots stay hidden. Too-soon/full
+              slots stay visible with their capacity traffic-light. (Operator-only — customer
+              filters on `available`, which keeps the grace. ASAP keeps the grace too.) */}
+          {manualSlots.filter(s => {
+            if (s.is_grace || !s.is_past) return true
+            const [h, m] = s.collection_time.split(':').map(Number)
+            const now = new Date()
+            return h * 60 + m >= now.getHours() * 60 + now.getMinutes()
+          }).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
             const ind = slotIndicatorFor(s)
             return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` ${ind.label}` : ''}</option>
@@ -564,11 +579,19 @@ setItemModal({ item, modGroups, editCartKey })
           })()}
         </select>
       )}
-      {readyTime && (() => {
+      {/* ASAP-only: the ready estimate is meaningless once a specific slot is picked
+          (manualSlot set). manualSlot === '' is the ASAP/default state (the "ASAP — {time}"
+          option's value=""), the same truth the dropdown uses — no new source. */}
+      {!manualSlot && readyTime && (() => {
         const isFutureDay = manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0]
         const dateLabel = isFutureDay
           ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
           : null
+        // Sub-label = the REAL kitchen-ready estimate (prep + queue + operator extra-wait,
+        // buffer-free): both the minutes and the "around" time come from queueAware (now +
+        // totalSecs), so now + m == the around-time. The ASAP OPTION shows the rounded grid
+        // slot; this estimate intentionally differs from it by the grid rounding (e.g. ~17:33
+        // estimate vs 17:35 slot) — which the operator understands.
         const m = queueAware.minsFromNow
         const wait = m < 60
           ? `~${m} min${m !== 1 ? 's' : ''}`
@@ -577,12 +600,12 @@ setItemModal({ item, modGroups, editCartKey })
           <div className="mt-2 bg-teal-50 border border-teal-200 rounded-xl px-3 py-2.5 flex items-center gap-2">
             <span className="text-teal-600 text-base">⚡</span>
             <div>
-              <p className="text-sm font-black text-teal-800">Ready around {asapAround}</p>
+              <p className="text-sm font-black text-teal-800">Ready around {readyTime}</p>
               <p className="text-xs text-teal-600 font-medium">{dateLabel}</p>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {asapAround}</p>
+          <p className="text-xs text-green-600 font-medium mt-1.5">⚡ {wait} · around {readyTime}</p>
         )
       })()}
     </div>
@@ -624,7 +647,7 @@ setItemModal({ item, modGroups, editCartKey })
       <button
         onClick={submitManual}
         disabled={loading || !hasItems || !manualEvent}
-        className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
       >
         {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
       </button>
@@ -915,7 +938,7 @@ setItemModal({ item, modGroups, editCartKey })
           {(manualEvent.status === 'confirmed' || manualEvent.status === 'closed') && onOpenEvent && (
             <button
               onClick={() => onOpenEvent(manualEvent.id)}
-              className="mt-2 w-full bg-teal-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-teal-700 active:scale-[0.98] transition-all">
+              className="mt-2 w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-orange-700 active:scale-[0.98] transition-all">
               {manualEvent.status === 'closed' ? 'Restart Event' : 'Start Event'}
             </button>
           )}
@@ -1070,13 +1093,8 @@ setItemModal({ item, modGroups, editCartKey })
           basketItems={manualItems.map(i => ({ name: i.name, quantity: i.quantity, unit_price: i.unit_price, cartKey: i.cartKey, modifiers: i.modifiers, specialInstructions: i.specialInstructions }))}
           existingDeals={appliedDeals}
           onApply={(deal, slots, price, discount, rawSlots, modifierExtra, slotModifiers, slotNotes) => {
-            const itemsTakenFromBasket = Object.entries(rawSlots)
-              .filter(([, raw]) => raw.startsWith('USE_EXISTING:'))
-              .map(([, raw]) => raw.replace('USE_EXISTING:', ''))
-              .filter(Boolean)
-            if (itemsTakenFromBasket.length > 0) {
-              setManualItems(prev => prev.filter(item => !itemsTakenFromBasket.includes(item.cartKey || item.name)))
-            }
+            const itemsTakenFromBasket = dealConsumedCartKeys(rawSlots)
+            setManualItems(prev => consumeBasketItemsForDeal(prev, rawSlots))
             setAppliedDeals(prev => [...prev, {
               bundle: { ...deal, available: true, start_time: deal.start_time ?? null, end_time: deal.end_time ?? null },
               slots, itemsTakenFromBasket, modifierExtra, slotModifiers, slotNotes,
@@ -1093,19 +1111,9 @@ setItemModal({ item, modGroups, editCartKey })
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <div className="text-center mb-4">
-              <div className="text-3xl mb-2">{pendingSlot.tooSoon ? '⏱' : pendingSlot.isFull ? '🔴' : '🟡'}</div>
+              <div className="text-3xl mb-2">🟡</div>
               <p className="font-bold text-slate-900 text-base">
-                {pendingSlot.tooSoon
-                  ? `${pendingSlot.time} is before the kitchen's ready time${readyTime ? ` (${readyTime})` : ''}.${
-                      pendingSlot.isFull
-                        ? ' This slot is also full.'
-                        : pendingSlot.tone === 'amber'
-                        ? ` This slot has ${pendingSlot.remaining} space${pendingSlot.remaining !== 1 ? 's' : ''}.`
-                        : ''
-                    } Use anyway?`
-                  : pendingSlot.isFull
-                  ? 'This slot is full. Use anyway?'
-                  : `This slot only has ${pendingSlot.remaining} space${pendingSlot.remaining !== 1 ? 's' : ''} left. Use anyway?`}
+                {`This slot is at ${pendingSlot.capacityLabel} — your order would overflow it. Use anyway?`}
               </p>
             </div>
             <div className="flex gap-2">

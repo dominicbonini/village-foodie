@@ -269,6 +269,80 @@ export function formatConfirmationEmail(params: {
   return { subject, html, text }
 }
 
+/**
+ * Canonical TRUCK-facing "🔔 New order" notification. Used by BOTH the customer
+ * self-order path (/api/orders/submit) and the walk-up / manual path
+ * (/api/dashboard/action) for the truck recipient, so the operator always gets the
+ * same notification regardless of how the order was placed. (The CUSTOMER still gets
+ * formatConfirmationEmail on each path — that is unchanged.)
+ * Markup/wording moved verbatim from the former inline block in /api/orders/submit.
+ */
+export function formatNewOrderEmail(params: {
+  orderId: string
+  customerName: string
+  customerPhone?: string | null
+  slot: string | null
+  items: EmailOrderItem[]
+  deals: EmailDeal[]
+  total: number
+  notes: string | null
+  venueName?: string | null
+  venueTown?: string | null
+  venuePostcode?: string | null
+  autoAccepted?: boolean
+}): { subject: string; html: string; text: string } {
+  const { orderId, customerName, customerPhone, slot, items, deals, total, notes,
+          venueName, venueTown, venuePostcode, autoAccepted } = params
+
+  const truckItemRows = items.map(i => {
+    const modRows = (i.modifiers || []).map(m =>
+      `<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</td></tr>`
+    ).join('')
+    const noteRow = i.specialInstructions
+      ? `<tr><td colspan="2" style="padding:1px 0 3px 14px;font-size:12px;color:#64748b;font-style:italic">📝 ${i.specialInstructions}</td></tr>`
+      : ''
+    return `<tr><td style="padding:3px 0 1px;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0 1px">£${(Number(i.unit_price) * i.quantity).toFixed(2)}</td></tr>${modRows}${noteRow}`
+  }).join('')
+
+  const truckDealRows = (deals || []).map(d => {
+    const slotNames = Object.values(d.slots || {}).filter(Boolean).join(', ')
+    const subRows = Object.entries(d.slots || {}).flatMap(([cat, itemName]: [string, any]) => {
+      if (!itemName) return []
+      const rows: string[] = []
+      const mods = (d.slotModifiers || {})[cat] || []
+      if (mods.length) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">↳ ${itemName}: ${mods.map((m: any) => `+ ${m.name}`).join(', ')}</td></tr>`)
+      const note = (d.slotNotes || {})[cat]
+      if (note) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
+      return rows
+    }).join('')
+    return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
+  }).join('')
+
+  const subject = `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`
+  const html = `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+            <h2 style="color:#ea580c;margin:0 0 12px">🔔 New order received</h2>
+            <p><strong>Order #${orderId}</strong> from <strong>${customerName}</strong></p>
+            ${slot ? `<p style="font-size:16px"><strong>⏰ Collection: ${slot}</strong></p>` : '<p>No specific time — ASAP</p>'}
+            ${(venueName || venueTown) ? `<p>📍 ${[venueName, venueTown, venuePostcode].filter(Boolean).join(', ')}</p>` : ''}
+            ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
+            <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+              ${truckItemRows}
+              ${truckDealRows}
+              <tr style="border-top:2px solid #e2e8f0">
+                <td style="padding-top:8px;font-weight:800">Total</td>
+                <td style="text-align:right;padding-top:8px;font-weight:800">£${total.toFixed(2)}</td>
+              </tr>
+            </table>
+            ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
+            ${autoAccepted
+              ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
+              : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>`}
+          </body>`
+  const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`
+
+  return { subject, html, text }
+}
+
 export async function sendConfirmationEmail(params: {
   to: string
   subject: string

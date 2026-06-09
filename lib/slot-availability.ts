@@ -216,7 +216,8 @@ export interface WindowOccupancy {
   production_slot: string
   tone: SlotTone
   bound_by: string | null               // e.g. "Pizza 2/4" / "global ceiling" / null
-  cookingByCat: Record<string, number>  // items of each category cooking in this window
+  cookingByCat: Record<string, number>  // items of each category cooking in this window (the "X")
+  rateByCat: Record<string, number>     // per-prep-category cook capacity this window (the "/Y")
   totalCooking: number                  // sum across prep categories (for the ceiling)
 }
 
@@ -247,6 +248,15 @@ export function projectOvenOccupancy(
   }
   const stepSecs = Number.isFinite(minGapSecs) ? minGapSecs : windowSecs
 
+  // Per-prep-category cook capacity (the "/Y" denominator) for THIS slot config —
+  // constant across windows. Exposed on every WindowOccupancy so fit-checks (e.g. the
+  // Add Order capacity confirm) read the SAME rate the tone/bound_by use, never a
+  // parallel calc. Instant categories (secs 0) are omitted — they don't occupy the oven.
+  const rateByCat: Record<string, number> = {}
+  for (const [cat, cfg] of Object.entries(catConfigs)) {
+    if (cfg && cfg.secs) rateByCat[cat.toLowerCase()] = Math.max(1, cfg.batch * (stepSecs / cfg.secs))
+  }
+
   // BUG 2 fix: several collection rows can map to one production_slot (slot_duration >
   // interval buckets them). Attribute a slot's items to its FIRST row only, so the same
   // units aren't re-counted in every row of the bucket. Genuine overflow still flows via
@@ -271,7 +281,7 @@ export function projectOvenOccupancy(
       const queued = (carry[cat] || 0) + (incoming[cat] || 0)
       if (queued <= EPS) { carry[cat] = 0; continue }
       // items this category cooks per window — scaled by the real window step vs prep cycle
-      const rate = Math.max(1, cfg.batch * (stepSecs / cfg.secs))
+      const rate = rateByCat[cat.toLowerCase()] ?? Math.max(1, cfg.batch * (stepSecs / cfg.secs))
       const cooking = Math.min(queued, rate)
       cookingByCat[cat] = cooking
       totalCooking += cooking
@@ -290,7 +300,7 @@ export function projectOvenOccupancy(
       tone = 'red'; boundBy = 'global ceiling'; bindRank = RANK.red
     }
 
-    return { collection_time: s.collection_time, production_slot: s.production_slot, tone, bound_by: boundBy, cookingByCat, totalCooking }
+    return { collection_time: s.collection_time, production_slot: s.production_slot, tone, bound_by: boundBy, cookingByCat, rateByCat, totalCooking }
   })
 }
 

@@ -66,6 +66,12 @@ export function getAgeState(slotOffset: number): AgeState {
 /**
  * Combined urgency: the worse of slot-relative timing and time-since-creation.
  * ready/cooking overrides are handled in the caller — this only covers time urgency.
+ *
+ * RED ('late') fires ONLY when the SLOT is overdue (slotState === 'late', i.e.
+ * slotOffset >= 1) — that is the SOLE source of red. The creation-age signal is a gentle
+ * live-service nudge that CAPS at amber ('warn') from 15 min and never climbs: a not-yet-
+ * overdue order is never reddened for being a stale ticket (operator ruling). A 20-min and
+ * a 60-min not-due ticket both yield age='warn' — never 'late'.
  */
 export function getCombinedUrgency(slotDt: Date | null, createdAt: string): AgeState {
   const slotOffset = slotDt ? getSlotOffset(slotDt) : -999
@@ -76,10 +82,11 @@ export function getCombinedUrgency(slotDt: Date | null, createdAt: string): AgeS
   // than 60 min out, slot timing alone governs (calm/neutral).
   if (slotDt && slotOffset < -60) return slotState
   const ageMins    = getTicketAge(createdAt)
+  // Age caps at 'warn' from 15 min and never escalates to 'late' — only an overdue SLOT
+  // reds the card. Buckets: new (<5) / ok (<15) / warn (>=15).
   const ageState: AgeState =
-    ageMins < 5  ? 'new'  :
-    ageMins < 15 ? 'ok'   :
-    ageMins < 30 ? 'warn' : 'late'
+    ageMins < 5  ? 'new' :
+    ageMins < 15 ? 'ok'  : 'warn'
   const priority: Record<AgeState, number> = { new: 0, ok: 1, warn: 2, late: 3 }
   return priority[slotState] >= priority[ageState] ? slotState : ageState
 }

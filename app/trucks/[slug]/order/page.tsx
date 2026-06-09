@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
-import { cleanupDealsForItem, groupByCategory } from '@/lib/basket-utils';
+import { cleanupDealsForItem, groupByCategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
 import { getAsapSlot } from '@/lib/slot-utils';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
@@ -441,14 +441,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   const handleApplyDeal = (deal: any, slots: Record<string, string>, price: number, discount: number, rawSlots: Record<string, string>, modifierExtra: number, slotModifiers: Record<string, { name: string; price: number }[]>, slotNotes: Record<string, string>) => {
-    const itemsTakenFromBasket: string[] = Object.entries(rawSlots)
-      .filter(([, raw]) => raw.startsWith('USE_EXISTING:'))
-      .map(([, raw]) => raw.replace('USE_EXISTING:', ''))
-      .filter(Boolean)
-
-    if (itemsTakenFromBasket.length > 0) {
-      setBasket(prev => prev.filter(b => !itemsTakenFromBasket.includes(b.cartKey)))
-    }
+    const itemsTakenFromBasket: string[] = dealConsumedCartKeys(rawSlots)
+    setBasket(prev => consumeBasketItemsForDeal(prev, rawSlots))
 
     setAppliedDeals(prev => [...prev, { bundle: deal, slots, itemsTakenFromBasket, modifierExtra, slotModifiers, slotNotes }])
     setDealModalOpen(false)
@@ -913,11 +907,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               ) : (
                 // Multiple events — selector
                 <div className="space-y-2">
-                  {events.map((e, idx) => {
-                    const isSelected = event?.date_iso === e.date_iso && event?.venue_name === e.venue_name
+                  {events.map((e) => {
+                    // Selection MUST key on event.id (uuid) — date+venue collides for two
+                    // same-date same-venue events, highlighting both (V6.4 Section 5). `event`
+                    // is the chosen-event object; its id is what the submit body sends.
+                    const isSelected = event?.id === e.id
                     return (
                       <button
-                        key={idx}
+                        key={e.id}
                         onClick={() => { setEvent(e); setSlotHour(''); setSlotMinute('') }}
                         className={`w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
                           isSelected

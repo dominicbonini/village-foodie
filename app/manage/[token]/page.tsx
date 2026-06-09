@@ -8,7 +8,7 @@ import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -4835,6 +4835,9 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                     <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
                     <p className="text-xs text-slate-500 mt-0.5">
                       {KITCHEN_CAPACITY_DESC}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {KITCHEN_CAPACITY_EXAMPLE}
                     </p>
                   </div>
                   <select
