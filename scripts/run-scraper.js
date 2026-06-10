@@ -8,6 +8,11 @@ import { createClient } from '@supabase/supabase-js';
 
 dotenv.config({ path: '.env.local' });
 
+// CI installs Chrome via the workflow and sets PUPPETEER_EXECUTABLE_PATH; puppeteer's own
+// downloader is broken on the runner. Locally the var is unset → undefined → puppeteer uses its
+// normal bundled-Chrome behaviour, so dev machines are unaffected.
+const CHROME_PATH = process.env.PUPPETEER_EXECUTABLE_PATH || undefined;
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -482,6 +487,7 @@ const modelHeavy = genAI.getGenerativeModel({
 });
 
 const browser = await puppeteer.launch({
+  executablePath: CHROME_PATH,
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
 });
@@ -1051,6 +1057,7 @@ if (HATCHGRAB_API_URL && INBOUND_SECRET) {
 
   if (hgTrucks && hgTrucks.length > 0) {
     const hgBrowser = await puppeteer.launch({
+      executablePath: CHROME_PATH,
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors'],
     });

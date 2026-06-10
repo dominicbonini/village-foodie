@@ -58,23 +58,43 @@ export function buildSlotIndicators(
   // (keyed T−step), not the window starting at T (the off-by-one that showed the block one
   // slot early). step = finest prep cadence (exact for single-cadence; see helper note).
   const step = backwardWindowStepMins(catConfigs)
+  // Composition shows the PHYSICAL booked load per window (ALL categories, every order source —
+  // "what's in the slot"), independent of the capacity TONE. The capacity map (`back`) omits
+  // unticked no-prep categories (they don't gate), so it can't answer "what's physically booked".
+  // We re-project with every category forced counts_toward_capacity, which additionally seats the
+  // unticked no-prep cats (e.g. Drinks) into their collection-adjacent window. Same
+  // productionSlotUnits + prep cadences ⇒ identical step + window keys (T−step), so the
+  // composition describes EXACTLY the window whose colour is shown. Tone/occ still read `back`
+  // (capacity), so walk-up bypass keeps the colour unchanged — only the text widens. Note: items
+  // never booked into productionSlotUnits (e.g. a walk-up with no resolved event_id) are absent
+  // from BOTH maps — a booking-scope gap, not fixable in the indicator.
+  const physicalConfigs: Record<string, CatConfig> = {}
+  for (const [cat, cfg] of Object.entries(catConfigs)) physicalConfigs[cat] = { ...cfg, countsToCapacity: true }
+  const physical = projectBackwardOccupancy(productionSlotUnits, physicalConfigs, eventStartMins, kitchenCapacity)
 
   for (const s of slots) {
     const w = back.byStart.get(toMins(s.collection_time) - step) ?? null
+    const pw = physical.byStart.get(toMins(s.collection_time) - step) ?? null
     let tone: SlotTone = w?.tone ?? 'green'
     if (s.too_soon && tone === 'green') tone = 'amber'
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
-    // Label = the window's per-category COMPOSITION as plain counts ("4 Pizza, 2 Other"),
-    // shown on ALL tones — the colour conveys fullness, the text says what's actually in the
-    // window. Built from w.byCat, which is already the capacity-counted set only (prep-bearing
-    // seated here + no-prep-ticked; unticked no-prep like Drinks are absent) and is the SAME
-    // window the tone is for. No denominators (operators know their own limits). Empty window
-    // (no load, or a too_soon slot over a green oven) → '' so nothing odd renders. Replaces the
-    // old binding "Pizza 4/4" / "Full" label — display-only; tone/emoji are untouched.
-    const label = w
-      ? Object.entries(w.byCat)
+    // Label = the window's per-category COMPOSITION as plain counts ("4 Pizzas, 2 Others"), shown
+    // on ALL tones — the colour conveys fullness, the text says what's PHYSICALLY in the window.
+    // Built from the PHYSICAL projection (pw.byCat): every booked category incl. unticked no-prep
+    // (Drinks) and every order source, NOT the capacity-seated w.byCat. Same window key (T−step)
+    // as the tone. No denominators. Empty window (no load / too_soon over a green oven) → '' so
+    // nothing odd renders.
+    const label = pw
+      ? Object.entries(pw.byCat)
           .filter(([, n]) => Math.round(n) > 0)
-          .map(([cat, n]) => `${Math.round(n)} ${capWord(cat)}`)
+          .map(([cat, n]) => {
+            const count = Math.round(n)
+            const word = capWord(cat)
+            // Pluralise when count != 1 (naive +s); singular at 1 ("1 Pizza"). Skip names that
+            // are already plural ("Sides", "Drinks") so we don't produce "Sidess".
+            const display = count === 1 || word.endsWith('s') ? word : `${word}s`
+            return `${count} ${display}`
+          })
           .join(', ')
       : ''
     // Reconstruct a WindowOccupancy-shaped `occ` for back-compat (the SlotIndicator type;

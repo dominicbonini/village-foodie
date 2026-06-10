@@ -1948,7 +1948,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       // Same oven-occupancy indicator as Add Order (shared helper): tone +
                       // per-category composition label ("4 Pizza, 2 Other"). (current) is edit-only.
                       const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:''}
-                      const label=`${ind.label?` · ${ind.label}`:''}${isCurrent?' · (current)':''}`
+                      const label=`${ind.label?` ${ind.label}`:''}${isCurrent?' · (current)':''}`
                       return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{label}</option>
                     })}
                   </select>

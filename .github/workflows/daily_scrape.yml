@@ -23,56 +23,22 @@ jobs:
       with:
         node-version: '24'
 
-    # ubuntu-latest ships with ~14 GB free; Chrome's unzip was running out mid-extract (only small
-    # support files landed, the main `chrome` binary missing). Reclaim space BEFORE the install so
-    # the unpack completes. Keep tool-cache (holds the Node we just set up); drop Android/.NET/
-    # Haskell/Docker images we don't use.
-    - name: Free disk space
-      uses: jlumbroso/free-disk-space@main
+    # puppeteer's own Chrome downloader is broken on this runner (install exits 0, writes ~0 bytes,
+    # no `chrome` binary ever appears — even with a clean cache). Install Chrome via this action
+    # instead and point puppeteer at it with PUPPETEER_EXECUTABLE_PATH on the Run Scraper step.
+    - name: Install Chrome
+      id: setup-chrome
+      uses: browser-actions/setup-chrome@v1
       with:
-        tool-cache: false
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: false
-        docker-images: true
-        swap-storage: false
+        chrome-version: stable
 
     # npm ci honours the committed lock (puppeteer/puppeteer-core 24.38.0). SKIP puppeteer's
-    # postinstall Chrome download: it created chrome/linux-146.0.7680.31 and began the pinned-build
-    # fetch but didn't finish writing the binary — leaving a HALF-MADE folder that the explicit
-    # step below then threw on instead of re-fetching (stack trace: @puppeteer/browsers CLI.js →
-    # install.js, i.e. the install STEP threw, not launch()). With the download skipped here, no
-    # partial folder can exist and the explicit step becomes the single clean downloader.
+    # postinstall Chrome download entirely — we never want puppeteer downloading anything; the
+    # browser comes from the Install Chrome step above.
     - name: Install dependencies
       run: npm ci
       env:
         PUPPETEER_SKIP_DOWNLOAD: 'true'
-
-    # Verbose, self-checking Chrome download. We had never read this step's OWN stdout: the unzip
-    # creates subdirs but silently fails to write the top-level files (chrome binary, .pak, .so,
-    # locales) while still exiting 0. So: wipe the WHOLE chrome dir (a leftover .zip / partial
-    # folder may confuse the installer — per-run scratch on an ephemeral runner, nothing persistent
-    # lost), run the install with output, then HARD-FAIL if the chrome binary file isn't present.
-    # set +e so diagnostics still print if npx exits non-zero (default bash is -eo pipefail).
-    - name: Install Chrome for Puppeteer
-      run: |
-        set +e
-        rm -rf ~/.cache/puppeteer/chrome
-        echo "=== disk before ==="; df -h /
-        echo "=== running install (verbose) ==="
-        npx puppeteer browsers install chrome --path ~/.cache/puppeteer 2>&1
-        echo "=== install exit code: $? ==="
-        echo "=== disk after ==="; df -h /
-        BIN=$(find ~/.cache/puppeteer -name chrome -type f | head -1)
-        echo "=== found binary: $BIN ==="
-        if [ -z "$BIN" ]; then echo "BINARY NOT WRITTEN"; exit 1; fi
-        ls -la "$BIN"
-
-    - name: Verify Chrome is installed
-      run: |
-        echo "=== Puppeteer cache contents ==="
-        ls -R ~/.cache/puppeteer/chrome || (echo "NO CHROME INSTALLED" && exit 1)
 
     - name: Run Scraper
       env:
@@ -84,4 +50,5 @@ jobs:
         HATCHGRAB_API_URL: ${{ secrets.HATCHGRAB_API_URL }}
         INBOUND_SCHEDULE_SECRET: ${{ secrets.INBOUND_SCHEDULE_SECRET }}
         SCRAPE_TRUCK_ID: ${{ github.event.inputs.scrape_truck_id }}
+        PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
       run: node scripts/run-scraper.js
