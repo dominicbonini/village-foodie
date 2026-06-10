@@ -23,6 +23,21 @@ jobs:
       with:
         node-version: '24'
 
+    # ubuntu-latest ships with ~14 GB free; Chrome's unzip was running out mid-extract (only small
+    # support files landed, the main `chrome` binary missing). Reclaim space BEFORE the install so
+    # the unpack completes. Keep tool-cache (holds the Node we just set up); drop Android/.NET/
+    # Haskell/Docker images we don't use.
+    - name: Free disk space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: false
+
     # npm ci honours the committed lock (puppeteer/puppeteer-core 24.38.0). SKIP puppeteer's
     # postinstall Chrome download: it created chrome/linux-146.0.7680.31 and began the pinned-build
     # fetch but didn't finish writing the binary — leaving a HALF-MADE folder that the explicit
@@ -35,9 +50,12 @@ jobs:
         PUPPETEER_SKIP_DOWNLOAD: 'true'
 
     # The single, clean Chrome download (postinstall skipped above) — fetches the pinned build
-    # into ~/.cache/puppeteer (the exact dir launch() reads) and prints the build ID + path.
+    # into ~/.cache/puppeteer (the exact dir launch() reads). Remove ONLY the pinned-version folder
+    # first — last run left a corrupt half-extracted linux-146.0.7680.31 — NOT a blanket cache wipe.
     - name: Install Chrome for Puppeteer
-      run: npx puppeteer browsers install chrome --path ~/.cache/puppeteer
+      run: |
+        rm -rf ~/.cache/puppeteer/chrome/linux-146.0.7680.31
+        npx puppeteer browsers install chrome --path ~/.cache/puppeteer
 
     - name: Verify Chrome is installed
       run: |

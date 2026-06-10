@@ -4837,8 +4837,12 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               </div>
 
               {/* Kitchen capacity */}
-              <div className="mt-3">
-                <div className="flex items-center justify-between gap-3">
+              {/* Capacity number + its category scope = ONE tight, left-aligned unit (max-w keeps it
+                  from stretching apart). Category list uses a quiet inline lead-in, NOT a third
+                  heading; copy sits muted below. Behaviour unchanged: cooked (prep>0) always count
+                  (checked+locked); instant categories toggle; all disabled until a capacity is set. */}
+              <div className="mt-3 max-w-md">
+                <div className="flex items-center gap-3">
                   <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
                   <select
                     value={van.kitchen_capacity ?? ''}
@@ -4855,42 +4859,36 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                     ))}
                   </select>
                 </div>
-                {/* Category SCOPE — directly beneath the dropdown as ONE tight control (no copy
-                    wedged between). Cooked (prep>0) always count (checked+locked when a ceiling
-                    exists); instant categories are operator-toggleable; disabled until a capacity
-                    is set. The description/example sit BELOW as secondary helper text. */}
                 {categories.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Counts toward this limit:</p>
-                    <div className="flex flex-wrap gap-x-5 gap-y-2">
-                      {categories.map(cat => {
-                        const hasCap = van.kitchen_capacity != null
-                        const locked = cat.prep_secs > 0
-                        const disabled = locked || !hasCap
-                        return (
-                          <label key={cat.id}
-                            title={locked
-                              ? 'Cooked — always counts (its prep & batch set the pace)'
-                              : !hasCap ? 'Set a capacity to choose which categories count'
-                              : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
-                            className={`flex items-center gap-1.5 text-sm ${disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'}`}>
-                            <input
-                              type="checkbox"
-                              checked={locked ? true : !!cat.counts_toward_capacity}
-                              disabled={disabled}
-                              onChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
-                              className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
-                            />
-                            <span>{cat.name}</span>
-                            {locked && <span className="text-[10px] text-slate-400">cooked — always counts</span>}
-                          </label>
-                        )
-                      })}
-                    </div>
-                    {van.kitchen_capacity == null && (
-                      <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
-                    )}
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                    <span className="text-xs text-slate-400">Limit applies to:</span>
+                    {categories.map(cat => {
+                      const hasCap = van.kitchen_capacity != null
+                      const locked = cat.prep_secs > 0
+                      const disabled = locked || !hasCap
+                      return (
+                        <label key={cat.id}
+                          title={locked
+                            ? 'Cooked — always counts (its prep & batch set the pace)'
+                            : !hasCap ? 'Set a capacity to choose which categories count'
+                            : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
+                          className={`flex items-center gap-1.5 text-sm ${disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'}`}>
+                          <input
+                            type="checkbox"
+                            checked={locked ? true : !!cat.counts_toward_capacity}
+                            disabled={disabled}
+                            onChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                            className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                          <span>{cat.name}</span>
+                          {locked && <span className="text-[10px] text-slate-400">cooked — always counts</span>}
+                        </label>
+                      )
+                    })}
                   </div>
+                )}
+                {van.kitchen_capacity == null && categories.length > 0 && (
+                  <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
                 )}
                 {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
                   <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>

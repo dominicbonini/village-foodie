@@ -1464,26 +1464,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
               </div>
             )}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Stock & availability</p>
-              {/* Kitchen capacity is the ceiling; per-category prep/batch below set the
-                  timings — grouped as one section (Item 2 Stage 1). Event-scoped, so it
-                  only shows with an active event. Reads/writes via the service-role
-                  /api/dashboard + update_van_settings path (Section 10 — no anon read). */}
-              {activeEvent&&(
-                <div className="mb-4 pb-4 border-b border-slate-100">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 flex-wrap min-w-0">
-                      <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                      {activeEvent.van_id&&activeVanName&&(
-                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
-                      )}
-                    </div>
+            {/* Kitchen capacity — its own card now (was nested in Stock & availability). Event-scoped
+                ceiling + category scope; the control's bold "Kitchen capacity" label doubles as the
+                card heading. One tight, left-aligned unit (max-w stops it stretching on the wide
+                dashboard); mirrors Settings. Reads/writes via service-role /api/dashboard +
+                update_van_settings (Section 10). Behaviour unchanged. */}
+            {activeEvent&&(
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                <div>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+                    {activeEvent.van_id&&activeVanName&&(
+                      <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
+                    )}
                     <select
                       value={kitchenCapacity??''}
                       disabled={!activeEvent.van_id}
                       onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
-                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 w-32 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                       <option value="">No limit</option>
                       {Array.from({length:20},(_,i)=>i+1).map(n=>(
                         <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
@@ -1493,40 +1491,34 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {!activeEvent.van_id&&(
                     <p className="text-xs text-amber-600 font-medium mt-1.5">⚠ Assign a truck to this event before setting kitchen capacity.</p>
                   )}
-                  {/* Category SCOPE — directly beneath the dropdown as ONE tight control (no copy
-                      wedged between); mirrors Settings. Cooked (prep>0) always count (checked+locked
-                      when a ceiling exists); instant categories are operator-toggleable; disabled
-                      until a capacity is set. Description/example sit BELOW as helper text. */}
                   {truckMenu?.categories&&truckMenu.categories.length>0&&(
-                    <div className="mt-2">
-                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Counts toward this limit:</p>
-                      <div className="flex flex-wrap gap-x-5 gap-y-2">
-                        {truckMenu.categories.map(cat=>{
-                          const hasCap=kitchenCapacity!=null
-                          const locked=(cat.prep_secs??0)>0
-                          const disabled=locked||!hasCap||!activeEvent.van_id
-                          return(
-                            <label key={cat.id??cat.name}
-                              title={locked
-                                ? 'Cooked — always counts (its prep & batch set the pace)'
-                                : !hasCap ? 'Set a capacity to choose which categories count'
-                                : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
-                              className={`flex items-center gap-1.5 text-sm ${disabled?'text-slate-400 cursor-not-allowed':'text-slate-700 cursor-pointer'}`}>
-                              <input type="checkbox"
-                                checked={locked?true:!!cat.counts_toward_capacity}
-                                disabled={disabled}
-                                onChange={()=>{if(!locked&&hasCap&&cat.id)toggleCatCapacityDash(cat.id,!cat.counts_toward_capacity)}}
-                                className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"/>
-                              <span>{cat.name}</span>
-                              {locked&&<span className="text-[10px] text-slate-400">cooked — always counts</span>}
-                            </label>
-                          )
-                        })}
-                      </div>
-                      {kitchenCapacity==null&&activeEvent.van_id&&(
-                        <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
-                      )}
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                      <span className="text-xs text-slate-400">Limit applies to:</span>
+                      {truckMenu.categories.map(cat=>{
+                        const hasCap=kitchenCapacity!=null
+                        const locked=(cat.prep_secs??0)>0
+                        const disabled=locked||!hasCap||!activeEvent.van_id
+                        return(
+                          <label key={cat.id??cat.name}
+                            title={locked
+                              ? 'Cooked — always counts (its prep & batch set the pace)'
+                              : !hasCap ? 'Set a capacity to choose which categories count'
+                              : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
+                            className={`flex items-center gap-1.5 text-sm ${disabled?'text-slate-400 cursor-not-allowed':'text-slate-700 cursor-pointer'}`}>
+                            <input type="checkbox"
+                              checked={locked?true:!!cat.counts_toward_capacity}
+                              disabled={disabled}
+                              onChange={()=>{if(!locked&&hasCap&&cat.id)toggleCatCapacityDash(cat.id,!cat.counts_toward_capacity)}}
+                              className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"/>
+                            <span>{cat.name}</span>
+                            {locked&&<span className="text-[10px] text-slate-400">cooked — always counts</span>}
+                          </label>
+                        )
+                      })}
                     </div>
+                  )}
+                  {kitchenCapacity==null&&activeEvent.van_id&&truckMenu?.categories&&truckMenu.categories.length>0&&(
+                    <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
                   )}
                   {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
                     <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
@@ -1534,7 +1526,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
                   <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
                 </div>
-              )}
+              </div>
+            )}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Stock & availability</p>
               <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
               {truckMenu?(
                 <div className="space-y-5">
