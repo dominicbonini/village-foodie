@@ -566,6 +566,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch{}
   }
 
+  // Toggle a no-prep category's "counts toward kitchen capacity" flag from the dashboard's
+  // Kitchen Capacity tickbox list. Optimistic truckMenu update + update_category (carries
+  // counts_toward_capacity; omitting prep/batch leaves them untouched). Truck-wide flag.
+  const toggleCatCapacityDash=async(catId:string,newVal:boolean)=>{
+    if(!truck)return
+    const catData=truckMenu?.categories?.find(c=>c.id===catId)
+    if(!catData)return
+    setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catId?{...c,counts_toward_capacity:newVal}:c)}:prev)
+    try{
+      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'update_category',categoryId:catId,name:catData.name,counts_toward_capacity:newVal})})
+    }catch{}
+  }
+
   // orderKey is the UUID row identity. Display number comes from the looked-up order.
   const doAction=async(action:string,orderKey:string)=>{
     if(action==='cancel'){const ord=orders.find(o=>o.order_key===orderKey)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
@@ -1458,18 +1472,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   /api/dashboard + update_van_settings path (Section 10 — no anon read). */}
               {activeEvent&&(
                 <div className="mb-4 pb-4 border-b border-slate-100">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                        {activeEvent.van_id&&activeVanName&&(
-                          <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-slate-500">{KITCHEN_CAPACITY_DESC}</p>
-                      <p className="text-sm text-slate-500 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
-                      {!activeEvent.van_id&&(
-                        <p className="text-xs text-amber-600 font-medium mt-1">⚠ Assign a truck to this event before setting kitchen capacity.</p>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+                      {activeEvent.van_id&&activeVanName&&(
+                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
                       )}
                     </div>
                     <select
@@ -1483,9 +1490,49 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       ))}
                     </select>
                   </div>
-                  {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
-                    <div className="mt-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                  {!activeEvent.van_id&&(
+                    <p className="text-xs text-amber-600 font-medium mt-1.5">⚠ Assign a truck to this event before setting kitchen capacity.</p>
                   )}
+                  {/* Category SCOPE — directly beneath the dropdown as ONE tight control (no copy
+                      wedged between); mirrors Settings. Cooked (prep>0) always count (checked+locked
+                      when a ceiling exists); instant categories are operator-toggleable; disabled
+                      until a capacity is set. Description/example sit BELOW as helper text. */}
+                  {truckMenu?.categories&&truckMenu.categories.length>0&&(
+                    <div className="mt-2">
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Counts toward this limit:</p>
+                      <div className="flex flex-wrap gap-x-5 gap-y-2">
+                        {truckMenu.categories.map(cat=>{
+                          const hasCap=kitchenCapacity!=null
+                          const locked=(cat.prep_secs??0)>0
+                          const disabled=locked||!hasCap||!activeEvent.van_id
+                          return(
+                            <label key={cat.id??cat.name}
+                              title={locked
+                                ? 'Cooked — always counts (its prep & batch set the pace)'
+                                : !hasCap ? 'Set a capacity to choose which categories count'
+                                : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
+                              className={`flex items-center gap-1.5 text-sm ${disabled?'text-slate-400 cursor-not-allowed':'text-slate-700 cursor-pointer'}`}>
+                              <input type="checkbox"
+                                checked={locked?true:!!cat.counts_toward_capacity}
+                                disabled={disabled}
+                                onChange={()=>{if(!locked&&hasCap&&cat.id)toggleCatCapacityDash(cat.id,!cat.counts_toward_capacity)}}
+                                className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"/>
+                              <span>{cat.name}</span>
+                              {locked&&<span className="text-[10px] text-slate-400">cooked — always counts</span>}
+                            </label>
+                          )
+                        })}
+                      </div>
+                      {kitchenCapacity==null&&activeEvent.van_id&&(
+                        <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
+                      )}
+                    </div>
+                  )}
+                  {kitchenCapacityNeedsPrepWarning(kitchenCapacity, truckMenu?.categories)&&(
+                    <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                  )}
+                  <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
+                  <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
                 </div>
               )}
               <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>

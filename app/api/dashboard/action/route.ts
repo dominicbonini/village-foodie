@@ -781,10 +781,12 @@ export async function POST(req: NextRequest) {
 
     // ── UPDATE CATEGORY ───────────────────────────────────────────────────────
     if (action === 'update_category') {
-      const { categoryId, name, prep_secs, batch_size, allow_notes } = body
+      const { categoryId, name, prep_secs, batch_size, allow_notes, counts_toward_capacity } = body
       if (!categoryId) return NextResponse.json({ error: 'categoryId required' }, { status: 400 })
       await supabase.from('menu_categories')
-        .update({ name, prep_secs, batch_size, allow_notes })
+        // counts_toward_capacity only set when explicitly provided (the capacity tickbox) — a
+        // prep/batch save omits it and must NOT reset it. undefined fields are dropped by the PATCH.
+        .update({ name, prep_secs, batch_size, allow_notes, ...(counts_toward_capacity !== undefined ? { counts_toward_capacity: !!counts_toward_capacity } : {}) })
         .eq('id', categoryId)
         .eq('truck_id', truck.id)
       return NextResponse.json({ success: true })

@@ -115,7 +115,7 @@ export interface ModifierGroup {
 }
 
 export interface TruckMenu {
-  categories?: Array<{ id?: string; name: string; prep_secs?: number; batch_size?: number; allowNotes?: boolean; default_stock?: number | null; modifierGroups?: ModifierGroup[] }>
+  categories?: Array<{ id?: string; name: string; prep_secs?: number; batch_size?: number; allowNotes?: boolean; default_stock?: number | null; counts_toward_capacity?: boolean; modifierGroups?: ModifierGroup[] }>
   items: MenuItem[]
   bundles?: Bundle[]
   upsell_rules?: any[]

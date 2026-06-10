@@ -29,15 +29,20 @@ jobs:
     # step below then threw on instead of re-fetching (stack trace: @puppeteer/browsers CLI.js →
     # install.js, i.e. the install STEP threw, not launch()). With the download skipped here, no
     # partial folder can exist and the explicit step becomes the single clean downloader.
-    - name: Install Dependencies
+    - name: Install dependencies
       run: npm ci
       env:
         PUPPETEER_SKIP_DOWNLOAD: 'true'
 
     # The single, clean Chrome download (postinstall skipped above) — fetches the pinned build
-    # into ~/.cache/puppeteer for launch().
-    - name: Install Puppeteer Chrome
-      run: npx puppeteer browsers install chrome
+    # into ~/.cache/puppeteer (the exact dir launch() reads) and prints the build ID + path.
+    - name: Install Chrome for Puppeteer
+      run: npx puppeteer browsers install chrome --path ~/.cache/puppeteer
+
+    - name: Verify Chrome is installed
+      run: |
+        echo "=== Puppeteer cache contents ==="
+        ls -R ~/.cache/puppeteer/chrome || (echo "NO CHROME INSTALLED" && exit 1)
 
     - name: Run Scraper
       env:

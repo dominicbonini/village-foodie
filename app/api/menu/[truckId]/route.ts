@@ -272,6 +272,7 @@ export async function GET(
       batch_size: c.batch_size ?? null,
       allowNotes: c.allow_notes ?? false,
       default_stock: c.default_stock ?? null,
+      counts_toward_capacity: c.counts_toward_capacity ?? false,
       modifierGroups: groupMap[c.id] || [],
     })),
     
