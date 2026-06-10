@@ -4214,14 +4214,81 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         </div>
       </Card>
 
-      {/* Business contact */}
+      {/* Contact (merged: business contact + customer contact) */}
       <Card className="p-4 space-y-3">
         <div>
-          <p className="text-base font-bold text-slate-800">Business contact</p>
-          <p className="text-xs text-slate-400 mt-0.5">Shown to customers on order confirmations. For your personal account details, go to Team → My profile.</p>
+          <p className="text-base font-bold text-slate-800">Contact Details</p>
+          <p className="text-xs text-slate-400 mt-0.5">How customers reach you about their order (shown on order confirmations) and where you receive new-order alerts. For your personal account details, go to Team → My profile.</p>
         </div>
         <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" />
+        <p className="text-xs text-slate-400 -mt-1.5">Where you receive new-order notifications — and shown to customers on their confirmation when “Email” is the preferred method below.</p>
         <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={() => saveFormField()} placeholder="07700 900123" />
+
+        {/* Preferred contact method — gated on the email/phone above + whatsapp_sender (Online presence) */}
+        <div className="pt-3 border-t border-slate-100">
+          {['facebook', 'messenger', 'instagram'].includes(preferredContact) && (
+            <p className="text-xs text-slate-500 italic mb-2">Your previous contact method is no longer available. Please select a new one.</p>
+          )}
+          <div className="flex items-center gap-3">
+            <label className="text-sm text-slate-600 w-36 flex-shrink-0">Preferred method</label>
+            <select
+              value={['facebook', 'messenger', 'instagram'].includes(preferredContact) ? '' : preferredContact}
+              onChange={async e => {
+                const val = e.target.value
+                setPreferredContact(val)
+                await saveSetting('preferred_contact_method', val || null)
+              }}
+              className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
+            >
+              <option value="">Not specified</option>
+              {(!!form.contact_email?.trim() || preferredContact === 'email') && <option value="email">Email</option>}
+              {(!!form.contact_phone?.trim() || preferredContact === 'phone') && <option value="phone">Phone</option>}
+              {(!!whatsappSender?.trim() || preferredContact === 'whatsapp') && <option value="whatsapp">WhatsApp</option>}
+            </select>
+          </div>
+          <p className="text-xs text-slate-400 mt-1.5">How customers should contact you about their order — shown on their confirmation email.</p>
+          {!form.contact_email?.trim() && !form.contact_phone?.trim() && !whatsappSender?.trim() && (
+            <p className="text-xs text-slate-400 mt-1">Add an email or phone above (or a WhatsApp number in Online presence &amp; social) to offer a contact method.</p>
+          )}
+          {preferredContact === 'whatsapp' && !whatsappSender?.trim() && (
+            <p className="text-xs text-amber-600 mt-1">⚠️ Add your WhatsApp number in Online presence &amp; social</p>
+          )}
+        </div>
+
+        {/* Cancellation policy */}
+        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+          <div>
+            <p className="text-sm text-slate-700">Allow customers to cancel orders</p>
+            <p className="text-sm text-slate-700 mt-0.5">
+              Customers can cancel up to{' '}
+              <select
+                value={cancellationCutoff}
+                onChange={async e => {
+                  const val = parseInt(e.target.value)
+                  setCancellationCutoff(val)
+                  await saveSetting('cancellation_cutoff_mins', val)
+                }}
+                className="border-b border-slate-300 text-xs px-1 bg-transparent"
+              >
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">60 minutes</option>
+                <option value="120">2 hours</option>
+              </select>
+              {' '}before their pickup time
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              const next = !allowCancellation
+              setAllowCancellation(next)
+              await saveSetting('allow_customer_cancellation', next)
+            }}
+            className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${allowCancellation ? 'bg-teal-500' : 'bg-slate-300'}`}
+          >
+            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${allowCancellation ? 'translate-x-6' : 'translate-x-1'}`} />
+          </button>
+        </div>
       </Card>
 
       {/* Online presence & social */}
@@ -4633,85 +4700,6 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         </div>
       </Card>
 
-      {/* Customer contact */}
-      <Card className="p-4 space-y-3">
-        <div>
-          <p className="text-base font-bold text-slate-800">Customer contact</p>
-          <p className="text-xs text-slate-500 mt-0.5">
-            How customers should contact you about their order. This appears on their confirmation email.
-          </p>
-        </div>
-
-        {['facebook', 'messenger', 'instagram'].includes(preferredContact) && (
-          <p className="text-xs text-slate-500 italic">Your previous contact method is no longer available. Please select a new one.</p>
-        )}
-
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-slate-600 w-36 flex-shrink-0">Preferred method</label>
-          <select
-            value={['facebook', 'messenger', 'instagram'].includes(preferredContact) ? '' : preferredContact}
-            onChange={async e => {
-              const val = e.target.value
-              setPreferredContact(val)
-              await saveSetting('preferred_contact_method', val || null)
-            }}
-            className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white"
-          >
-            <option value="">Not specified</option>
-            {(!!form.contact_email?.trim() || preferredContact === 'email') && <option value="email">Email</option>}
-            {(!!form.contact_phone?.trim() || preferredContact === 'phone') && <option value="phone">Phone</option>}
-            {(!!whatsappSender?.trim() || preferredContact === 'whatsapp') && <option value="whatsapp">WhatsApp</option>}
-          </select>
-        </div>
-
-        {!form.contact_email?.trim() && !form.contact_phone?.trim() && !whatsappSender?.trim() && (
-          <p className="text-xs text-slate-400">Add your email or phone number above to set a contact method for customers.</p>
-        )}
-
-        {preferredContact === 'phone' && !form.contact_phone?.trim() && (
-          <p className="text-xs text-amber-600">⚠️ Add your phone number in truck details above</p>
-        )}
-        {preferredContact === 'whatsapp' && !whatsappSender?.trim() && (
-          <p className="text-xs text-amber-600">⚠️ Add your WhatsApp number in Online presence &amp; social above</p>
-        )}
-        {preferredContact === 'email' && !form.contact_email?.trim() && (
-          <p className="text-xs text-amber-600">⚠️ Add your contact email in truck details above</p>
-        )}
-
-        <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-          <div>
-            <p className="text-sm text-slate-700">Allow customers to cancel orders</p>
-            <p className="text-sm text-slate-700 mt-0.5">
-              Customers can cancel up to{' '}
-              <select
-                value={cancellationCutoff}
-                onChange={async e => {
-                  const val = parseInt(e.target.value)
-                  setCancellationCutoff(val)
-                  await saveSetting('cancellation_cutoff_mins', val)
-                }}
-                className="border-b border-slate-300 text-xs px-1 bg-transparent"
-              >
-                <option value="15">15 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="60">60 minutes</option>
-                <option value="120">2 hours</option>
-              </select>
-              {' '}before their pickup time
-            </p>
-          </div>
-          <button
-            onClick={async () => {
-              const next = !allowCancellation
-              setAllowCancellation(next)
-              await saveSetting('allow_customer_cancellation', next)
-            }}
-            className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${allowCancellation ? 'bg-teal-500' : 'bg-slate-300'}`}
-          >
-            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${allowCancellation ? 'translate-x-6' : 'translate-x-1'}`} />
-          </button>
-        </div>
-      </Card>
 
       {/* Your trucks */}
       <Card className="p-4">

@@ -155,10 +155,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
   const [dealModalOpen, setDealModalOpen] = useState(false)
   const [selectedBundleForModal, setSelectedBundleForModal] = useState<Bundle | null>(null)
-  const [expandedItem, setExpandedItem] = useState<string | null>(null)
-  const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[] } | null>(null)
+  const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[]; upsells: MenuItem[] } | null>(null)
   const [modalMods, setModalMods] = useState<{ name: string; price: number }[]>([])
   const [modalNotes, setModalNotes] = useState('')
+  // Upsells STAGED in the modal (like modalMods) — selected names, committed on "Add to basket".
+  const [modalUpsells, setModalUpsells] = useState<string[]>([])
   const [openNoteKey, setOpenNoteKey] = useState<string | null>(null)
   const [noteInputVal, setNoteInputVal] = useState('')
   const [discountInput, setDiscountInput] = useState('')
@@ -368,10 +369,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const getQty = (itemName: string) => basket.filter(b => b.menuItem.name === itemName).reduce((s, b) => s + b.quantity, 0)
 
   // Item modal helpers
-  const openItemModal = (item: MenuItem, modGroups: ModifierGroup[]) => {
-    setItemModal({ item, modGroups })
+  const openItemModal = (item: MenuItem, modGroups: ModifierGroup[], upsells: MenuItem[] = []) => {
+    setItemModal({ item, modGroups, upsells })
     setModalMods([])
     setModalNotes('')
+    setModalUpsells([])
   }
 
   const toggleModalMod = (opt: ModifierOption) => {
@@ -381,12 +383,23 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     })
   }
 
+  // Toggle a staged upsell (select/deselect) — mirrors toggleModalMod; committed on confirm.
+  const toggleModalUpsell = (name: string) => {
+    setModalUpsells(prev => prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name])
+  }
+
   const confirmAddFromModal = () => {
     if (!itemModal) return
     addItem(itemModal.item, modalMods, modalNotes)
+    // Commit selected upsells ONCE here (not on tap) — each as its OWN-category basket line
+    // (capacity-correct: drink ≠ pizza windows), tagged source:'upsell'.
+    itemModal.upsells
+      .filter(u => modalUpsells.includes(u.name))
+      .forEach(u => addItem(u, [], '', 'upsell'))
     setItemModal(null)
     setModalMods([])
     setModalNotes('')
+    setModalUpsells([])
   }
 
   // ── Grouped menu ────────────────────────────────────────────────────────────
@@ -1090,11 +1103,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 {items.map(item => {
                   const qty = getQty(item.name)
                   const isSoldOut = !(item.available ?? true)
-                  const itemUpsells = qty > 0 ? getItemUpsells(item) : []
-                  const isExpanded = expandedItem === item.name
+                  // Cross-category upsells for this item (resolved regardless of qty so they show
+                  // in the modal as you add). Rendered ONLY in the item modal now (not inline).
+                  const itemUpsells = getItemUpsells(item)
                   const catModGroups = menu?.categories?.find(c => c.name === item.category)?.modifierGroups || []
                   const hasModifiers = catModGroups.length > 0
                   const catAllowNotes = menu?.categories?.find(c => c.name.toLowerCase() === item.category.toLowerCase())?.allowNotes ?? false
+                  // Open the modal when the category has EXTRAS or UPSELLS or NOTES — so a
+                  // suggestion/notes-only category still surfaces them (was extras-only).
+                  const opensModal = hasModifiers || itemUpsells.length > 0 || catAllowNotes
                   const itemVariants = basket.filter(b => b.menuItem.name === item.name)
                   const directEntry = !hasModifiers ? itemVariants.find(b => b.modifiers.length === 0) : undefined
                   const atStockLimit = item.stock_remaining != null && qty >= item.stock_remaining
@@ -1136,10 +1153,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
                           <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
-                        ) : hasModifiers ? (
-                          // Items with modifiers: always show a "Customise" button that opens the modal
+                        ) : opensModal ? (
+                          // Extras OR upsells OR notes → open the modal (surfaces all three).
                           <button
-                            onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups)}
+                            onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups, itemUpsells)}
                             disabled={isOrderingBlocked || atStockLimit}
                             className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${
                               isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
@@ -1228,41 +1245,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       )
                     })()}
 
-                    {/* Upsells inline */}
-                    {qty > 0 && itemUpsells.length > 0 && (
-                      <div className="pl-3 pb-3">
-                        {!isExpanded ? (
-                          <button onClick={() => setExpandedItem(item.name)}
-                            className="text-xs text-orange-600 font-bold hover:text-orange-700 flex items-center gap-1">
-                            <span>+ Add extras</span>
-                            <span>▼</span>
-                          </button>
-                        ) : (
-                          <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-xs font-black text-orange-700">Available extras</p>
-                              <button onClick={() => setExpandedItem(null)} className="text-xs text-orange-400 hover:text-orange-600">▲</button>
-                            </div>
-                            <div className="space-y-1.5">
-                              {itemUpsells.map(upsell => {
-                                const upsellQty = getQty(upsell.name)
-                                return (
-                                  <button key={upsell.name} onClick={() => addItem(upsell)}
-                                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-bold transition-all ${
-                                      upsellQty > 0
-                                        ? 'bg-orange-600 text-white'
-                                        : 'bg-white text-slate-700 border border-orange-200 hover:border-orange-400'
-                                    }`}>
-                                    <span>{upsellQty > 0 ? `✓ ${upsellQty}× ` : ''}{upsell.name}</span>
-                                    <span className={upsellQty > 0 ? 'text-orange-200' : 'text-orange-600'}>+£{upsell.price.toFixed(2)}</span>
-                                  </button>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {/* Upsells now live in the item modal ("Goes well with") — not inline. */}
                     </div>
                   )
                 })}
@@ -1556,6 +1539,31 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   </div>
                 ))}
 
+                {/* GOES WELL WITH — cross-category upsells, added as STANDARD own-category basket
+                    items (not modifiers). Same compact pill style as PIZZA EXTRAS above (only the
+                    section heading frames them as a cross-category nudge). Tap TOGGLES selection (like an
+                    extra) — staged in modalUpsells and committed on "Add to basket"; the button total
+                    below reflects the selection. */}
+                {itemModal.upsells.length > 0 && (
+                  <div>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Goes well with</p>
+                    <div className="flex flex-wrap gap-2">
+                      {itemModal.upsells.map(u => {
+                        const selected = modalUpsells.includes(u.name)
+                        return (
+                          <button key={u.name} onClick={() => toggleModalUpsell(u.name)}
+                            className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 ${
+                              selected ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
+                            }`}>
+                            <span>{selected ? '✓ ' : ''}{u.name}</span>
+                            <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{u.price.toFixed(2)}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {(menu?.categories?.find(c => c.name === itemModal.item.category)?.allowNotes ?? false) && (
                   <ItemNoteInput value={modalNotes} onChange={setModalNotes} />
                 )}
@@ -1565,7 +1573,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="px-5 pb-5 pt-2 border-t border-slate-100">
               <button onClick={confirmAddFromModal}
                 className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98]">
-                Add to basket · £{(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)).toFixed(2)}
+                Add to basket · £{(
+                  itemModal.item.price
+                  + modalMods.reduce((s, m) => s + m.price, 0)
+                  + itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0)
+                ).toFixed(2)}
               </button>
             </div>
           </div>
