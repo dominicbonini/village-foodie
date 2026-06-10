@@ -15,3 +15,28 @@ export function localTodayIso(): string {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
+
+/**
+ * Status-INDEPENDENT default event pick (cross-event resolution fix). Given a list of
+ * events, return the one to default to WITHOUT ever keying on status ('open'/'live') or a
+ * UTC "today" lookup — so a stale-live event (auto-close failed) can NEVER hijack the
+ * resolution of a different selected/viewed event. Order:
+ *   1. the event currently in progress BY TIME (start <= now <= end), else
+ *   2. the earliest upcoming event by start datetime, else
+ *   3. the most recent past event by start datetime (so something sensible still shows).
+ * Times are parsed as LOCAL wall-clock (`${event_date}T${time}`), matching localTodayIso().
+ * Callers should always prefer an explicit event_id; this is only the no-selection default.
+ */
+export function pickDefaultEventByTime<
+  T extends { event_date: string; start_time: string | null; end_time: string | null }
+>(events: T[]): T | null {
+  if (!events?.length) return null
+  const now = Date.now()
+  const startMs = (e: T) => e.start_time ? new Date(`${e.event_date}T${e.start_time}`).getTime() : Number.POSITIVE_INFINITY
+  const endMs = (e: T) => e.end_time ? new Date(`${e.event_date}T${e.end_time}`).getTime() : Number.POSITIVE_INFINITY
+  const current = events.find(e => startMs(e) <= now && now <= endMs(e))
+  if (current) return current
+  const upcoming = events.filter(e => startMs(e) >= now).sort((a, b) => startMs(a) - startMs(b))
+  if (upcoming.length) return upcoming[0]
+  return [...events].sort((a, b) => startMs(b) - startMs(a))[0] ?? null
+}

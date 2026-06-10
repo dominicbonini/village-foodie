@@ -48,9 +48,18 @@ export function buildSlotIndicators(
   catConfigs: Record<string, CatConfig>,
   kitchenCapacity: number | null,
   eventStartMins: number,
+  /** Category names in MENU order (menu_categories.sort_order asc) — the same list/source the
+   *  catConfigs come from. Used ONLY to order the composition label ("1 Pizza, 2 Others")
+   *  so it matches the menu order the operator set. Categories absent from this list sort to
+   *  the end (stable). Display-only: tone/engine/occ are unaffected. */
+  categoryOrder: string[] = [],
 ): Map<string, SlotIndicator> {
   const out = new Map<string, SlotIndicator>()
   if (!slots.length) return out
+
+  // name(lowercase) → menu rank. Unknown categories → Infinity ⇒ sort to end, stable.
+  const catRank = new Map(categoryOrder.map((name, i) => [name.toLowerCase(), i] as const))
+  const rankOf = (cat: string) => catRank.get(cat.toLowerCase()) ?? Infinity
 
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
   const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
@@ -87,6 +96,10 @@ export function buildSlotIndicators(
     const label = pw
       ? Object.entries(pw.byCat)
           .filter(([, n]) => Math.round(n) > 0)
+          // Order by the category's menu sort_order (ascending) so the composition reads in the
+          // same order as the menu/settings ("1 Pizza, 2 Others"), not object-key order. Array
+          // .sort is stable, so unknown categories (rank Infinity) hold their order at the end.
+          .sort(([a], [b]) => rankOf(a) - rankOf(b))
           .map(([cat, n]) => {
             const count = Math.round(n)
             const word = capWord(cat)

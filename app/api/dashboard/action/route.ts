@@ -55,13 +55,18 @@ export async function POST(req: NextRequest) {
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey)
       if (order.customer_email) {
-        const { data: eventRow } = await supabase
+        // Resolve the venue strictly by the order's OWN event_id (cross-event fix): an
+        // event_date+maybeSingle lookup returns null/the wrong row on multi-event dates,
+        // putting the wrong venue in the confirmation email. Fall back to date only when the
+        // order has no event_id (legacy rows).
+        let eventQuery = supabase
           .from('truck_events')
           .select('venue_name, town, postcode')
           .eq('truck_id', truck.id)
-          .eq('event_date', order.event_date)
-          .neq('status', 'cancelled')
-          .maybeSingle()
+        eventQuery = order.event_id
+          ? eventQuery.eq('id', order.event_id)
+          : eventQuery.eq('event_date', order.event_date).neq('status', 'cancelled')
+        const { data: eventRow } = await eventQuery.maybeSingle()
         const { subject, html, text } = formatConfirmationEmail({
           orderId: order.id,
           orderKey: order.order_key,
@@ -432,13 +437,17 @@ export async function POST(req: NextRequest) {
       // orderEventId null (ambiguous/no event) → addOrderToProductionSlot skips it.
       await addOrderToProductionSlot(supabase, truck.id, orderEventId, slot, manualLines, itemCatMap)
 
-      const { data: manualEventRow } = await supabase
+      // Venue strictly by the resolved orderEventId (cross-event fix) — date+maybeSingle
+      // returns the wrong/no row on multi-event dates. Fall back to date only when ambiguous
+      // (orderEventId null), mirroring the order row that was just written.
+      let manualEventQuery = supabase
         .from('truck_events')
         .select('venue_name, town, postcode')
         .eq('truck_id', truck.id)
-        .eq('event_date', eventDate)
-        .neq('status', 'cancelled')
-        .maybeSingle()
+      manualEventQuery = orderEventId
+        ? manualEventQuery.eq('id', orderEventId)
+        : manualEventQuery.eq('event_date', eventDate).neq('status', 'cancelled')
+      const { data: manualEventRow } = await manualEventQuery.maybeSingle()
 
       const manualEmailItems = (items || []).map((i: any) => ({
         name: i.name,

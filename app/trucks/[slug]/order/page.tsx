@@ -307,7 +307,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   useEffect(() => {
     console.log('[ORDER FORM] Fetching menu for slug:', slug)
-    fetch(`/api/menu/${slug}`)
+    // Scope deals + pause + ordering_available to the SELECTED event (cross-event fix): a
+    // customer viewing a FUTURE event reads THAT event's deals/pause, not the server's "live
+    // event" auto-detect. Refetches when the customer switches events. /api/events only
+    // returns confirmed/open events, so the menu route's status-gate never 404s here.
+    const menuUrl = event?.id ? `/api/menu/${slug}?event_id=${event.id}` : `/api/menu/${slug}`
+    fetch(menuUrl)
       .then(async r => {
         if (!r.ok) {
           const body = await r.json().catch(() => ({}))
@@ -327,7 +332,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         setError('This truck is not currently taking orders.')
       })
       .finally(() => setLoading(false))
-  }, [slug])
+  }, [slug, event?.id])
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 

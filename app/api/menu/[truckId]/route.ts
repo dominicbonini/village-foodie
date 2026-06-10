@@ -124,7 +124,10 @@ export async function GET(
   let orderingAvailable = true
 
   if (eventIdParam) {
-    // Explicit event — check its status
+    // Explicit event — deals/pause/ordering resolve strictly from THIS id (cross-event fix);
+    // no status auto-detect runs. Customer surface still gates ordering on a not-yet-confirmed
+    // event; the operator dashboard (dashboard=1) bypasses the gate so it can load any event's
+    // menu/deals regardless of status.
     const { data: explicitEvent } = await supabase
       .from('truck_events')
       .select('id, status')
@@ -132,7 +135,7 @@ export async function GET(
       .eq('truck_id', truck.id)
       .maybeSingle()
 
-    if (explicitEvent && !['confirmed', 'open'].includes(explicitEvent.status)) {
+    if (!isDashboard && explicitEvent && !['confirmed', 'open'].includes(explicitEvent.status)) {
       return NextResponse.json({
         error: 'This event is not yet confirmed',
         event_status: explicitEvent.status,

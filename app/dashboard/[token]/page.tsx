@@ -34,7 +34,7 @@ import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
-import { formatTime } from '@/lib/time-utils'
+import { formatTime, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 
@@ -166,7 +166,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const authenticatedRef=useRef(false)
   // Last successfully resolved event — survives transient empty upcomingEvents (e.g. failed refetch)
   const lastActiveEventRef=useRef<TruckEvent|null>(null)
-  const asapSlot=getAsapSlot(slots,(todayEvents.find(e=>e.status==='open')??todayEvents[0])?.event_date)
+  // SINGLE status-INDEPENDENT event resolution (cross-event fix): the explicitly-selected
+  // event by id, else a time-based default (current-by-time, else earliest upcoming) from
+  // pickDefaultEventByTime. NEVER keys on status ('open'/'live') or a UTC "today" lookup, so
+  // a stale-live (auto-close-failed) or different-date event can't hijack the slots/ASAP/
+  // orders of the viewed event. resolvedEvent + stockEvent both read this one value.
+  const selectedOrDefaultEvent:TruckEvent|null=selectedEventId
+    ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
+    :pickDefaultEventByTime(upcomingEvents)
+  // ASAP date = the SELECTED/active event's own date (not "the live event"), so a future
+  // event's ASAP is its first real slot, never now-floored against a different event's date.
+  const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date)
   const availableDeals = truckMenu?.bundles ?? []
   // Auto-decay: effective remaining extra wait based on elapsed time since it was set
   const waitMinutes=useMemo(()=>{
@@ -192,7 +202,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const fetchMenu=useCallback((truckId:string,currentPin:string)=>{
-    fetch(`/api/menu/${truckId}?dashboard=1&nocache=${Date.now()}`)
+    // Scope deals/pause/ordering to the SELECTED event (cross-event fix) so the panel shows
+    // THIS event's deals + pause, never the server's "live event" auto-detect. dashboard=1
+    // bypasses the customer status-gate so the operator can load any event's menu.
+    const evId=selectedEventRef.current?.id
+    const evParam=evId?`&event_id=${evId}`:''
+    fetch(`/api/menu/${truckId}?dashboard=1${evParam}&nocache=${Date.now()}`)
       .then(r=>r.ok?r.json():null)
       .then(d=>{
         if(d?.truck?.logo) setTruck(prev=>prev?{...prev,logo:d.truck.logo}:prev)
@@ -259,7 +274,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           console.warn('[fetchAll] events fetch failed:',eventsRes.status,'— keeping existing events')
         }else{
           const eventsData=await eventsRes.json()
-          const todayStr=new Date().toISOString().split('T')[0]
+          const todayStr=localTodayIso() // LOCAL date (s.7) — UTC toISOString rolls at UTC midnight
           const fetched=(eventsData.events??[]).filter((e:TruckEvent)=>e.event_date===todayStr)
           setTodayEvents(fetched)
           setUpcomingEvents(eventsData.events??[])
@@ -280,7 +295,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(selectedEventId||!upcomingEvents.length) return
     console.log('[auto-select] running, upcomingEvents:', upcomingEvents.length)
     const now=new Date()
-    const todayStr=now.toISOString().split('T')[0]
+    const todayStr=localTodayIso() // LOCAL date (s.7) — UTC midnight must not misclassify "today"
     // Priority 1: currently open event (started, not ended)
     const openEvent=upcomingEvents.find(e=>{
       if(e.event_date!==todayStr||!e.start_time||!e.end_time) return false
@@ -315,9 +330,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // EVERY stock/order fetcher reads this one value — the ref for non-reactive callers
   // (fetchAll, submitPin, realtime, poll), stockEventId for the reactive effect — so
   // they can't drift apart and blank the counts (Fix A-finish).
-  const stockEvent:TruckEvent|null=selectedEventId
-    ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
-    :(todayEvents.find(e=>e.status==='open')??todayEvents.find(e=>e.status==='confirmed')??todayEvents[0]??null)
+  const stockEvent:TruckEvent|null=selectedOrDefaultEvent
   const stockEventId=stockEvent?.id??null
   // Keep the scoping ref current (cheap — no fetch, runs on every event-list poll).
   useEffect(()=>{
@@ -801,8 +814,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       categoryConfigs,
       editCapacityInputs.kitchenCapacity ?? null,
       editCapacityInputs.eventStartMins,
+      categoryOrder,
     )
-  }, [editCapacityInputs, editSlots, categoryConfigs])
+  }, [editCapacityInputs, editSlots, categoryConfigs, categoryOrder])
 
   // Sold counts are event-scoped (V6.4): refetch Menu & Stock whenever the resolved
   // stockEvent changes (single-source resolution above) so each event shows only its
@@ -827,12 +841,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     </div>
   )
 
-  const resolvedEvent:TruckEvent|null=selectedEventId
-    ?upcomingEvents.find(e=>e.id===selectedEventId)??null
-    :(todayEvents.find(e=>e.status==='open')
-      ??todayEvents.find(e=>e.status==='confirmed')
-      ??todayEvents[0]
-      ??null)
+  const resolvedEvent:TruckEvent|null=selectedOrDefaultEvent
   // Fall back to the last known event when upcomingEvents is transiently empty
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
@@ -1071,7 +1080,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               )
             })()}
             {showPrepList&&(()=>{
-              const todayStr=new Date().toISOString().split('T')[0]
+              const todayStr=localTodayIso() // LOCAL date (s.7) — pairs with local order-time batching
               const BUFFER_SECS=120
 
               // Get all active orders with slots, sorted by slot time

@@ -16,14 +16,14 @@ import { isModifierAvailable } from '@/lib/modifier-utils'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
-import { formatTime } from '@/lib/time-utils'
+import { formatTime, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function getAsapBaseTime(event: { event_date: string; start_time: string } | null): Date {
   if (!event) return new Date()
   const now = new Date()
-  const todayStr = now.toISOString().split('T')[0]
+  const todayStr = localTodayIso() // LOCAL date (s.7) — UTC must not treat a future event as today
   const [startH, startM] = (event.start_time || '00:00').split(':').map(Number)
   if (event.event_date > todayStr) {
     const [y, mo, d] = event.event_date.split('-').map(Number)
@@ -228,8 +228,9 @@ export function AddOrderPanel({
       categoryConfigs,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.eventStartMins,
+      categoryOrder,
     )
-  }, [capacityInputs, manualSlots, categoryConfigs])
+  }, [capacityInputs, manualSlots, categoryConfigs, categoryOrder])
 
   const slotIndicatorFor = (s: Slot): SlotIndicator =>
     slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', occ: null }
@@ -263,7 +264,7 @@ export function AddOrderPanel({
   const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
 
   const isEventEnded = manualEvent ? (() => {
-    const today = new Date().toISOString().split('T')[0]
+    const today = localTodayIso() // LOCAL date (s.7) — pairs with the local end_time check below
     if (manualEvent.event_date > today) return false
     if (manualEvent.event_date < today) return true
     const [h, m] = manualEvent.end_time.split(':').map(Number)
@@ -365,14 +366,11 @@ export function AddOrderPanel({
 
   useEffect(() => {
     if (manualEvent || upcomingEvents.length === 0) return
-    const todayIso = new Date().toISOString().split('T')[0]
-    const todayEvs = upcomingEvents.filter(e => e.event_date === todayIso)
-    if (todayEvs.length === 1) {
-      setManualEvent(todayEvs[0])
-    } else if (todayEvs.length === 0) {
-      // No today event — pre-select the next upcoming one
-      setManualEvent(upcomingEvents[0])
-    }
+    // Status-INDEPENDENT default (cross-event fix): current-by-time, else earliest upcoming —
+    // never "the single today event" by UTC date, which could seat a stale-live event. The
+    // dashboard's controlledEvent (activeEvent) remains the authoritative driver via the sync
+    // effect above; this is only the no-controlledEvent cold-start default.
+    setManualEvent(pickDefaultEventByTime(upcomingEvents))
   }, [upcomingEvents])
 
   useEffect(() => {
@@ -602,7 +600,7 @@ setItemModal({ item, modGroups, editCartKey })
           (manualSlot set). manualSlot === '' is the ASAP/default state (the "ASAP — {time}"
           option's value=""), the same truth the dropdown uses — no new source. */}
       {!manualSlot && readyTime && (() => {
-        const isFutureDay = manualEvent && manualEvent.event_date > new Date().toISOString().split('T')[0]
+        const isFutureDay = manualEvent && manualEvent.event_date > localTodayIso()
         const dateLabel = isFutureDay
           ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
           : null
