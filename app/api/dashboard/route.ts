@@ -239,6 +239,12 @@ export async function GET(req: NextRequest) {
   // setting and the cook step shows regardless of the toggle. Defaults off (matches the
   // Settings toggle's default) when the van has no value.
   let vanShowCookingStep: boolean = false
+  // The SELECTED event's van pause fields — the dashboard WRITES these (set_paused with vanId)
+  // but historically didn't read them, so it was blind to its own pause (showed not-paused →
+  // "Pause" not "Resume" → operator couldn't unpause). Return them so the client computes its
+  // paused state from the SAME fields the customer menu checks.
+  let vanPausedUntil: string | null = null
+  let vanOnlinePausedUntil: string | null = null
 
   try {
     // kitchen_capacity + name from the SELECTED event's van — the same event the
@@ -248,13 +254,15 @@ export async function GET(req: NextRequest) {
     if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity, name, auto_pause_on_offline, show_cooking_step')
+        .select('kitchen_capacity, name, auto_pause_on_offline, show_cooking_step, paused_until, online_paused_until')
         .eq('id', capacityEvent.van_id)
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
       activeVanName = van?.name ?? null
       vanAutoPause = van?.auto_pause_on_offline ?? false
       vanShowCookingStep = van?.show_cooking_step ?? false
+      vanPausedUntil = van?.paused_until ?? null
+      vanOnlinePausedUntil = van?.online_paused_until ?? null
     }
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
@@ -330,6 +338,8 @@ export async function GET(req: NextRequest) {
     activeVanName,
     vanAutoPause,
     vanShowCookingStep,
+    vanPausedUntil,
+    vanOnlinePausedUntil,
     orders:  orders || [],
     slots:   slotsWithCapacity,
     date,

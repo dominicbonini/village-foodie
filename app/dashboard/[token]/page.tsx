@@ -108,10 +108,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editProfileName,setEditProfileName]=useState('')
   const[savingProfile,setSavingProfile]=useState(false)
   // (showUserDropdown removed — UserMenu component manages its own open state)
-  // Pause state (paused_until ISO string, null = not paused)
-  const[pausedUntil,setPausedUntil]=useState<string|null>(null)
+  // Pause state. The dashboard pause toggle WRITES the active event's VAN pause
+  // (truck_vans.paused_until via vanId), so we must READ the van fields too — plus the
+  // truck-level legacy field and the offline pause — mirroring the customer menu, so the
+  // dashboard and customer agree and the operator can always Resume.
+  const[pausedUntil,setPausedUntil]=useState<string|null>(null)            // truck-level (legacy)
+  const[vanPausedUntil,setVanPausedUntil]=useState<string|null>(null)       // active van — manual
+  const[vanOnlinePausedUntil,setVanOnlinePausedUntil]=useState<string|null>(null) // active van — offline
   const[showPauseModal,setShowPauseModal]=useState(false)
-  const paused=pausedUntil?new Date(pausedUntil)>new Date():false
+  const isFuturePause=(s:string|null)=>!!s&&new Date(s).getTime()>Date.now()
+  const manualPaused=isFuturePause(pausedUntil)||isFuturePause(vanPausedUntil)
+  const offlinePaused=isFuturePause(vanOnlinePausedUntil)
+  const paused=manualPaused||offlinePaused
+  const pauseReason:'manual'|'offline'|null=manualPaused?'manual':offlinePaused?'offline':null
+  const pauseUntilEffective=[vanPausedUntil,pausedUntil,vanOnlinePausedUntil].find(isFuturePause)??null
   // Cancel confirmation modal
   const[showCancelModal,setShowCancelModal]=useState(false)
   const[cancellingOrder,setCancellingOrder]=useState<Order|null>(null)
@@ -226,7 +236,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
-      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
+      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
@@ -332,10 +342,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'trucks',filter:`id=eq.${truck.id}`},
         ()=>fetchAllRef.current())
       .subscribe()
+    // Van pause lives on truck_vans (paused_until / online_paused_until), set by this
+    // dashboard, other screens, AND the heartbeat-monitor — subscribe so a pause/unpause
+    // (incl. offline auto-pause) propagates live without a manual refresh.
+    const vansChannel=supabaseBrowser
+      .channel(`vans:${truck.id}`)
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'truck_vans',filter:`truck_id=eq.${truck.id}`},
+        ()=>fetchAllRef.current())
+      .subscribe()
     const fallbackInterval=setInterval(()=>fetchAllRef.current(),60000)
     return()=>{
       supabaseBrowser.removeChannel(ordersChannel)
       supabaseBrowser.removeChannel(truckChannel)
+      supabaseBrowser.removeChannel(vansChannel)
       clearInterval(fallbackInterval)
     }
   },[truck?.id])
@@ -995,7 +1014,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             <div className="flex gap-2 mb-3">
-              {activeEvent?.status==='open'&&<button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,vanId:activeEvent?.van_id})});setPausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>}
+              {activeEvent?.status==='open'&&<button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,vanId:activeEvent?.van_id})});setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>}
               {waitMinutes>0?(
                 <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0})});setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className="flex-1 py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200">
                   ⏱ +{waitMinutes}m active · Tap to clear
@@ -1009,7 +1028,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </select>
               )}
             </div>
-            {paused&&pausedUntil&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pausedUntil).getTime()-Date.now())/60000));const isIndefinite=new Date(pausedUntil).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p></div>})()}
+            {paused&&pauseUntilEffective&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{pauseReason==='offline'?' (device offline)':''}{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p></div>})()}
             {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ +{waitMinutes} min extra wait active</p></div>}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
               <div className="grid grid-cols-3 gap-2 mb-2 sm:mb-0 sm:flex-1">
@@ -1654,9 +1673,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <p className="text-slate-500 text-sm text-center mb-4">Customers can still browse the menu but won't be able to order.</p>
             <div className="space-y-2 mb-4">
               {[{label:'10 minutes',mins:10},{label:'20 minutes',mins:20},{label:'30 minutes',mins:30}].map(({label,mins})=>(
-                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,vanId:activeEvent?.van_id})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
+                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,vanId:activeEvent?.van_id})});setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
               ))}
-              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,vanId:activeEvent?.van_id})});setPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
+              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,vanId:activeEvent?.van_id})});setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
             </div>
             <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
           </div>

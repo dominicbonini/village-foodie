@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
+import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml } from '@/lib/email'
 import {
   addOrderToProductionSlot,
   removeOrderFromProductionSlot,
@@ -30,7 +30,7 @@ async function notifyCustomer(email: string, subject: string, html: string, truc
       method: 'POST',
       headers: { 'api-key': apiKey, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        sender:      { name: truckName || 'Village Foodie', email: 'donotreply@villagefoodie.co.uk' },
+        sender:      { name: truckName || 'HatchGrab', email: process.env.EMAIL_FROM_ADDRESS || 'donotreply@villagefoodie.co.uk' },
         to:          [{ email }],
         subject,
         htmlContent: html,
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
             <h2>Order update</h2>
             <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${order.id}.</p>
             <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
-            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+            <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
           </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'rejected' })
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
             <h2>Your order is ready! 🎉</h2>
             <p>Order #${order.id} from <strong>${truck.name}</strong> is ready for collection.</p>
             <p>Come and collect now — pay at the truck.</p>
-            <p style="color:#64748b;font-size:13px">Powered by Village Foodie · villagefoodie.co.uk</p>
+            <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
           </body>`, truck.name)
       }
       return NextResponse.json({ success: true, status: 'ready' })
@@ -289,43 +289,41 @@ export async function POST(req: NextRequest) {
       if (order.customer_email) {
         const finalItems = items || order.items
         const finalDeals = editedDeals !== undefined ? editedDeals : (order.deals || [])
-        const updatedItemRows = finalItems.map((i: any) => {
-          const modRows = (i.modifiers||[]).map((m: any) =>
-            `<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">+ ${m.name}${m.price>0?` +£${m.price.toFixed(2)}`:''}</td></tr>`
-          ).join('')
-          const noteRow = i.specialInstructions ? `<tr><td colspan="2" style="padding:1px 0 3px 14px;font-size:12px;color:#64748b;font-style:italic">📝 ${i.specialInstructions}</td></tr>` : ''
-          return `<tr><td style="padding:3px 0 1px;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0 1px">£${(parseFloat(i.unit_price)*parseFloat(i.quantity)).toFixed(2)}</td></tr>${modRows}${noteRow}`
-        }).join('')
-        const updatedDealRows = finalDeals.map((d: any) => {
-          const slotNames = Object.values(d.slots||{}).filter(Boolean).join(', ')
-          const subRows = Object.entries(d.slots||{}).flatMap(([cat, itemName]: [string, any]) => {
-            if (!itemName) return []
-            const rows: string[] = []
-            const mods = (d.slotModifiers||{})[cat]||[]
-            if (mods.length) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">↳ ${itemName}: ${mods.map((m: any) => `+ ${m.name}`).join(', ')}</td></tr>`)
-            const note = (d.slotNotes||{})[cat]
-            if (note) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
-            return rows
-          }).join('')
-          return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
-        }).join('')
+        // Route through the SHARED renderer (renderOrderLinesHtml) so the deal bundle price (£15)
+        // and per-modifier prices (+£1.50) render — the inline fork omitted them. Ensure each deal
+        // carries .price (bundlePrice is already resolved in this handler for newTotal/dealsToStore).
+        const emailDeals = (finalDeals || []).map((d: any) => ({
+          name: d.name,
+          slots: d.slots || {},
+          slotModifiers: d.slotModifiers || {},
+          slotNotes: d.slotNotes || {},
+          price: d.price != null ? Number(d.price) : bundlePrice(d.name),
+        }))
+        const linesHtml = renderOrderLinesHtml(finalItems || [], emailDeals)
         const slotToShow = slot !== undefined ? slot : order.slot
-        await notifyCustomer(order.customer_email, `Order #${order.id} updated`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
+        const html = `<body style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b">
             <h2>Your order has been updated ✓</h2>
             <p><strong>${truck.name}</strong> has updated order #${order.id}.</p>
             ${slotToShow ? `<p><strong>Collection time:</strong> ${slotToShow}</p>` : ''}
             <p style="font-size:12px;color:#64748b;margin-bottom:4px">Updated order:</p>
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">
-              ${updatedItemRows}
-              ${updatedDealRows}
+              ${linesHtml}
               <tr style="border-top:1px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:700">New total</td>
                 <td style="text-align:right;padding-top:8px;font-weight:700">£${newTotal.toFixed(2)}</td>
               </tr>
             </table>
-            <p style="color:#64748b;font-size:13px">Pay at the truck on collection · Powered by Village Foodie</p>
-          </body>`, truck.name)
+            <p style="color:#94a3b8;font-size:12px">Pay at the truck on collection · Powered by HatchGrab · hatchgrab.com</p>
+          </body>`
+        // Send via the shared, HatchGrab-branded, Brevo-verified sender (same path as the
+        // confirmation/new-order emails) — replaces the inline notifyCustomer (Village Foodie).
+        await sendConfirmationEmail({
+          to: order.customer_email,
+          subject: `Order #${order.id} updated`,
+          html,
+          text: `${truck.name} has updated your order #${order.id}. New total £${newTotal.toFixed(2)}. Pay at the truck on collection. — HatchGrab`,
+          truckName: truck.name,
+        })
       }
       return NextResponse.json({ success: true, status: 'modified' })
     }
@@ -731,8 +729,22 @@ export async function POST(req: NextRequest) {
     // ── set_paused ───────────────────────────────────────────────────────────
     if (action === 'set_paused') {
       const { paused_until, vanId } = body
+      const resuming = !paused_until // null/undefined ⇒ "Resume orders"
       if (vanId) {
-        await supabase.from('truck_vans').update({ paused_until: paused_until ?? null }).eq('id', vanId).eq('truck_id', truck.id)
+        // Resume clears BOTH the manual AND offline van pauses (operator forcing orders back
+        // on). If still genuinely offline, the heartbeat-monitor re-applies online_paused_until
+        // on its next run; while the device beats, the heartbeat keeps it null. Pausing sets
+        // only paused_until (leaves any offline pause untouched).
+        const patch = resuming
+          ? { paused_until: null, online_paused_until: null }
+          : { paused_until }
+        await supabase.from('truck_vans').update(patch).eq('id', vanId).eq('truck_id', truck.id)
+        // Belt-and-braces: Resume = "take orders now", so also clear any TRUCK-level pause
+        // (the dashboard's paused state reads it too — a stuck trucks.paused_until would
+        // otherwise keep the dashboard paused with no clear path once the event has a van).
+        if (resuming) {
+          await supabase.from('trucks').update({ paused_until: null }).eq('id', truck.id)
+        }
       } else {
         await supabase.from('trucks').update({ paused_until: paused_until ?? null }).eq('id', truck.id)
       }

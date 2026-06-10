@@ -17,6 +17,65 @@ export interface EmailDeal {
   price?: number
 }
 
+/**
+ * Canonical order line-item + deal rendering (HTML table rows). SINGLE SOURCE for the
+ * confirmation, new-order (truck), and updated-order emails so deal bundle prices (£15) and
+ * per-modifier prices (+£1.50) render consistently everywhere. Item rows carry per-modifier
+ * prices; deal header rows carry the bundle price cell; deal-slot modifiers carry their +£;
+ * notes render below. Numerics coerced defensively (callers may pass string unit_price/
+ * quantity straight from the orders table). Returns the inner <tr> rows (no <table> wrapper).
+ */
+export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]): string {
+  const itemRows = (items || []).map(item => {
+    const modRows = (item.modifiers || []).map(m =>
+      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+£${Number(m.price).toFixed(2)}</span>` : ''}</td></tr>`
+    ).join('')
+    const noteRow = item.specialInstructions
+      ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
+      : ''
+    return `<tr>
+      <td style="padding:4px 0 2px;color:#475569">${item.quantity}× ${item.name}</td>
+      <td style="text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500">£${(Number(item.unit_price) * Number(item.quantity)).toFixed(2)}</td>
+    </tr>${modRows}${noteRow}`
+  }).join('')
+
+  const dealRows = (deals || []).map(deal => {
+    const slotMods = deal.slotModifiers || {}
+    const slotNames = Object.entries(deal.slots)
+      .filter(([, v]) => v)
+      .map(([cat, itemName]) => {
+        const mods = slotMods[cat] || []
+        if (mods.length === 0) return itemName
+        return `${itemName} (+ ${mods.map(m => m.name).join(', ')})`
+      })
+    const slotNotes = deal.slotNotes || {}
+    const priceCell = deal.price != null
+      ? `<td style="text-align:right;padding:4px 0 2px;color:#d97706;font-weight:500">£${Number(deal.price).toFixed(2)}</td>`
+      : `<td></td>`
+    const headerRow = `<tr><td style="padding:4px 0 2px;color:#d97706;font-size:13px">🎁 ${deal.name}: ${slotNames.join(', ')}</td>${priceCell}</tr>`
+    const subRows = Object.entries(deal.slots).flatMap(([cat, itemName]) => {
+      if (!itemName) return []
+      const rows: string[] = []
+      const mods = slotMods[cat] || []
+      mods.forEach(m => {
+        if (Number(m.price) > 0) {
+          rows.push(`<tr><td style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td><td style="text-align:right;padding:1px 0;font-size:12px;color:#64748b">+£${Number(m.price).toFixed(2)}</td></tr>`)
+        } else {
+          rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td></tr>`)
+        }
+      })
+      const note = slotNotes[cat]
+      if (note) {
+        rows.push(`<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">↳ 📝 ${note}</td></tr>`)
+      }
+      return rows
+    }).join('')
+    return headerRow + subRows
+  }).join('')
+
+  return itemRows + dealRows
+}
+
 export function formatConfirmationEmail(params: {
   orderId: string
   /** UUID row key — used for the cancel link (globally unique, not enumerable).
@@ -54,52 +113,8 @@ export function formatConfirmationEmail(params: {
     ? `Order #${params.orderId} confirmed`
     : `Order #${params.orderId} received`
 
-  const itemRows = params.items.map(item => {
-    const modRows = (item.modifiers || []).map(m =>
-      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` <span style="color:#ea580c">+£${m.price.toFixed(2)}</span>` : ''}</td></tr>`
-    ).join('')
-    const noteRow = item.specialInstructions
-      ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
-      : ''
-    return `<tr>
-      <td style="padding:4px 0 2px;color:#475569">${item.quantity}× ${item.name}</td>
-      <td style="text-align:right;padding:4px 0 2px;color:#1e293b;font-weight:500">£${(item.unit_price * item.quantity).toFixed(2)}</td>
-    </tr>${modRows}${noteRow}`
-  }).join('')
-
-  const dealRows = params.deals.map(deal => {
-    const slotMods = deal.slotModifiers || {}
-    const slotNames = Object.entries(deal.slots)
-      .filter(([, v]) => v)
-      .map(([cat, itemName]) => {
-        const mods = slotMods[cat] || []
-        if (mods.length === 0) return itemName
-        return `${itemName} (+ ${mods.map(m => m.name).join(', ')})`
-      })
-    const slotNotes = deal.slotNotes || {}
-    const priceCell = deal.price != null
-      ? `<td style="text-align:right;padding:4px 0 2px;color:#d97706;font-weight:500">£${deal.price.toFixed(2)}</td>`
-      : `<td></td>`
-    const headerRow = `<tr><td style="padding:4px 0 2px;color:#d97706;font-size:13px">🎁 ${deal.name}: ${slotNames.join(', ')}</td>${priceCell}</tr>`
-    const subRows = Object.entries(deal.slots).flatMap(([cat, itemName]) => {
-      if (!itemName) return []
-      const rows: string[] = []
-      const mods = slotMods[cat] || []
-      mods.forEach(m => {
-        if (m.price > 0) {
-          rows.push(`<tr><td style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td><td style="text-align:right;padding:1px 0;font-size:12px;color:#64748b">+£${m.price.toFixed(2)}</td></tr>`)
-        } else {
-          rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">↳ + ${m.name}</td></tr>`)
-        }
-      })
-      const note = slotNotes[cat]
-      if (note) {
-        rows.push(`<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">↳ 📝 ${note}</td></tr>`)
-      }
-      return rows
-    }).join('')
-    return headerRow + subRows
-  }).join('')
+  // Single-sourced line rendering (item + deal rows) — see renderOrderLinesHtml.
+  const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals)
 
   const discountRow = ''
 
@@ -180,8 +195,7 @@ export function formatConfirmationEmail(params: {
   <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:12px">
     <p style="margin:0 0 10px;font-size:11px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:0.06em">Order #${params.orderId}</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
-      ${itemRows}
-      ${dealRows}
+      ${orderLinesHtml}
       ${discountRow}
       <tr style="border-top:1px solid #e2e8f0">
         <td style="padding-top:10px;font-weight:800;font-size:15px">Total</td>
@@ -294,29 +308,8 @@ export function formatNewOrderEmail(params: {
   const { orderId, customerName, customerPhone, slot, items, deals, total, notes,
           venueName, venueTown, venuePostcode, autoAccepted } = params
 
-  const truckItemRows = items.map(i => {
-    const modRows = (i.modifiers || []).map(m =>
-      `<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">+ ${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</td></tr>`
-    ).join('')
-    const noteRow = i.specialInstructions
-      ? `<tr><td colspan="2" style="padding:1px 0 3px 14px;font-size:12px;color:#64748b;font-style:italic">📝 ${i.specialInstructions}</td></tr>`
-      : ''
-    return `<tr><td style="padding:3px 0 1px;color:#475569">${i.quantity}× ${i.name}</td><td style="text-align:right;padding:3px 0 1px">£${(Number(i.unit_price) * i.quantity).toFixed(2)}</td></tr>${modRows}${noteRow}`
-  }).join('')
-
-  const truckDealRows = (deals || []).map(d => {
-    const slotNames = Object.values(d.slots || {}).filter(Boolean).join(', ')
-    const subRows = Object.entries(d.slots || {}).flatMap(([cat, itemName]: [string, any]) => {
-      if (!itemName) return []
-      const rows: string[] = []
-      const mods = (d.slotModifiers || {})[cat] || []
-      if (mods.length) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b">↳ ${itemName}: ${mods.map((m: any) => `+ ${m.name}`).join(', ')}</td></tr>`)
-      const note = (d.slotNotes || {})[cat]
-      if (note) rows.push(`<tr><td colspan="2" style="padding:1px 0 1px 14px;font-size:12px;color:#64748b;font-style:italic">↳ ${itemName}: 📝 ${note}</td></tr>`)
-      return rows
-    }).join('')
-    return `<tr><td colspan="2" style="padding:3px 0 1px;color:#d97706">🎁 ${d.name}: ${slotNames}</td></tr>${subRows}`
-  }).join('')
+  // Single-sourced line rendering (now shows deal bundle price + slot-modifier prices too).
+  const orderLinesHtml = renderOrderLinesHtml(items, deals)
 
   const subject = `🔔 New order #${orderId} — ${customerName}${slot ? ' · ' + slot : ''}`
   const html = `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
@@ -326,8 +319,7 @@ export function formatNewOrderEmail(params: {
             ${(venueName || venueTown) ? `<p>📍 ${[venueName, venueTown, venuePostcode].filter(Boolean).join(', ')}</p>` : ''}
             ${customerPhone ? `<p>📞 <a href="tel:${customerPhone}">${customerPhone}</a></p>` : ''}
             <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
-              ${truckItemRows}
-              ${truckDealRows}
+              ${orderLinesHtml}
               <tr style="border-top:2px solid #e2e8f0">
                 <td style="padding-top:8px;font-weight:800">Total</td>
                 <td style="text-align:right;padding-top:8px;font-weight:800">£${total.toFixed(2)}</td>
@@ -336,7 +328,7 @@ export function formatNewOrderEmail(params: {
             ${notes ? `<p><strong>📝 Notes:</strong> ${notes}</p>` : ''}
             ${autoAccepted
               ? `<p style="color:#16a34a;font-size:13px;font-weight:600;margin-top:16px">✓ Auto-confirmed — no action needed.</p>`
-              : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your Village Foodie dashboard to confirm or reject this order.</p>`}
+              : `<p style="color:#64748b;font-size:12px;margin-top:16px">Log in to your HatchGrab dashboard to confirm or reject this order.</p>`}
           </body>`
   const text = `New order #${orderId} from ${customerName}${slot ? ' for ' + slot : ''}${(venueName || venueTown) ? ' at ' + [venueName, venueTown].filter(Boolean).join(', ') : ''}. Total £${total.toFixed(2)}.${notes ? ' Notes: ' + notes : ''}`
 

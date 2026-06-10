@@ -113,6 +113,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [noEvents, setNoEvents] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  // Non-destructive "orders paused" notice on a submit 423 — keeps the basket + order UI
+  // (unlike `error`, which renders the page-replacing error view).
+  const [pauseNotice, setPauseNotice] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
@@ -666,6 +669,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // server resolves the earliest ready window. A specific time requires selectedSlot.
     if (truck.mode === 'village' && !selectedSlot && !asapChosen) return
     setSubmitting(true)
+    setPauseNotice(null)
     try {
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -687,6 +691,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         }),
       })
       const data = await res.json()
+      // Paused (423): non-destructive — keep the basket + order UI, show a dismissible notice,
+      // and let the customer wait and re-submit. Do NOT setError (page-replacing) or clear basket.
+      if (res.status === 423 || data?.paused) {
+        setPauseNotice('Orders are paused right now — please check back shortly. Your order is saved here.')
+        return
+      }
       if (!res.ok) throw new Error(data.error || 'Order failed')
       setSubmittedOrderId(data.orderId)
       setSubmittedAutoAccepted(!!data.autoAccepted)
@@ -1494,6 +1504,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           )}
 
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
+
+          {pauseNotice && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-2 flex items-start gap-2">
+              <p className="flex-1 text-amber-800 text-sm font-medium">⏸ {pauseNotice}</p>
+              <button onClick={() => setPauseNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
+            </div>
+          )}
 
           <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
             disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}

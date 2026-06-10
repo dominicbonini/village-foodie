@@ -388,15 +388,31 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Pause guard — van level (look up the event assigned to this date)
-    const pauseCheckDate = eventDate ?? new Date().toISOString().split('T')[0]
-    const { data: pauseEvent } = await supabase
-      .from('truck_events')
-      .select('van_id, status')
-      .eq('truck_id', resolvedTruckId)
-      .eq('event_date', pauseCheckDate)
-      .neq('status', 'cancelled')
-      .maybeSingle()
+    // Pause guard — van level. Resolve the order's event by its eventId (event-scoped, like the
+    // customer menu) so the van pause is enforced for the ACTUAL event. The old date +
+    // .maybeSingle() lookup returned null on multi-event-same-date days (>1 row) and silently
+    // SKIPPED the entire van guard → manual/offline van pause not enforced → orders slipped
+    // through. Fall back to the date lookup only when no eventId was sent.
+    let pauseEvent: { van_id: string | null; status: string | null } | null = null
+    if (eventId) {
+      const { data } = await supabase
+        .from('truck_events')
+        .select('van_id, status')
+        .eq('id', eventId)
+        .eq('truck_id', resolvedTruckId)
+        .maybeSingle()
+      pauseEvent = data
+    } else {
+      const pauseCheckDate = eventDate ?? new Date().toISOString().split('T')[0]
+      const { data } = await supabase
+        .from('truck_events')
+        .select('van_id, status')
+        .eq('truck_id', resolvedTruckId)
+        .eq('event_date', pauseCheckDate)
+        .neq('status', 'cancelled')
+        .maybeSingle()
+      pauseEvent = data
+    }
 
     // Event status guard — block orders for unconfirmed events
     if (pauseEvent?.status && !['confirmed', 'open'].includes(pauseEvent.status)) {
