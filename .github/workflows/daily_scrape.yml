@@ -49,13 +49,25 @@ jobs:
       env:
         PUPPETEER_SKIP_DOWNLOAD: 'true'
 
-    # The single, clean Chrome download (postinstall skipped above) — fetches the pinned build
-    # into ~/.cache/puppeteer (the exact dir launch() reads). Remove ONLY the pinned-version folder
-    # first — last run left a corrupt half-extracted linux-146.0.7680.31 — NOT a blanket cache wipe.
+    # Verbose, self-checking Chrome download. We had never read this step's OWN stdout: the unzip
+    # creates subdirs but silently fails to write the top-level files (chrome binary, .pak, .so,
+    # locales) while still exiting 0. So: wipe the WHOLE chrome dir (a leftover .zip / partial
+    # folder may confuse the installer — per-run scratch on an ephemeral runner, nothing persistent
+    # lost), run the install with output, then HARD-FAIL if the chrome binary file isn't present.
+    # set +e so diagnostics still print if npx exits non-zero (default bash is -eo pipefail).
     - name: Install Chrome for Puppeteer
       run: |
-        rm -rf ~/.cache/puppeteer/chrome/linux-146.0.7680.31
-        npx puppeteer browsers install chrome --path ~/.cache/puppeteer
+        set +e
+        rm -rf ~/.cache/puppeteer/chrome
+        echo "=== disk before ==="; df -h /
+        echo "=== running install (verbose) ==="
+        npx puppeteer browsers install chrome --path ~/.cache/puppeteer 2>&1
+        echo "=== install exit code: $? ==="
+        echo "=== disk after ==="; df -h /
+        BIN=$(find ~/.cache/puppeteer -name chrome -type f | head -1)
+        echo "=== found binary: $BIN ==="
+        if [ -z "$BIN" ]; then echo "BINARY NOT WRITTEN"; exit 1; fi
+        ls -la "$BIN"
 
     - name: Verify Chrome is installed
       run: |

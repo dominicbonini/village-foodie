@@ -32,9 +32,9 @@ console.log('\nTEST 1 — operator dots (10 pizzas @19:00), as collectability:')
   const ind = buildSlotIndicators(SLOTS, STORED, PIZZA, 6, EVENT_START)
   const d = (t: string) => ind.get(t)!
   expect('18:45 green (window 18:40 free)', d('18:45').tone === 'green', `${d('18:45').tone} "${d('18:45').label}"`)
-  expect('18:50 red "Pizza 4/4" (window 18:45 full)', d('18:50').tone === 'red' && d('18:50').label === 'Pizza 4/4', `${d('18:50').tone} "${d('18:50').label}"`)
-  expect('18:55 red "Pizza 4/4" (window 18:50 full)', d('18:55').tone === 'red' && d('18:55').label === 'Pizza 4/4', `${d('18:55').tone} "${d('18:55').label}"`)
-  expect('19:00 amber "Pizza 2/4" (window 18:55 = 2)', d('19:00').tone === 'amber' && d('19:00').label === 'Pizza 2/4', `${d('19:00').tone} "${d('19:00').label}"`)
+  expect('18:50 red "4 Pizza" (window 18:45 full)', d('18:50').tone === 'red' && d('18:50').label === '4 Pizza', `${d('18:50').tone} "${d('18:50').label}"`)
+  expect('18:55 red "4 Pizza" (window 18:50 full)', d('18:55').tone === 'red' && d('18:55').label === '4 Pizza', `${d('18:55').tone} "${d('18:55').label}"`)
+  expect('19:00 amber "2 Pizza" (window 18:55 = 2)', d('19:00').tone === 'amber' && d('19:00').label === '2 Pizza', `${d('19:00').tone} "${d('19:00').label}"`)
   expect('19:05 green (window 19:00 free)', d('19:05').tone === 'green', d('19:05').tone)
 }
 

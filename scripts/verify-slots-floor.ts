@@ -77,8 +77,8 @@ console.log('\n(B) operator dots with corrected floor:')
   const d = (t: string) => ind.get(t)!
   expect('17:00 GREEN (no spurious amber)', d('17:00').tone === 'green' && d('17:00').label === '', `${d('17:00').tone} "${d('17:00').label}"`)
   expect('17:05 GREEN', d('17:05').tone === 'green', d('17:05').tone)
-  // 19:00 collection slot reads the cohort's partial window (18:55 = 2/4) post-shift.
-  expect('19:00 amber "Pizza 2/4" (window 18:55)', d('19:00').tone === 'amber' && d('19:00').label === 'Pizza 2/4', `${d('19:00').tone} "${d('19:00').label}"`)
+  // 19:00 collection slot reads the cohort's partial window (18:55 = 2 pizza) post-shift.
+  expect('19:00 amber "2 Pizza" (window 18:55)', d('19:00').tone === 'amber' && d('19:00').label === '2 Pizza', `${d('19:00').tone} "${d('19:00').label}"`)
 }
 
 // ── Floor consistency (Option A): no-basket view AND a real basket AGREE at 17:00 ──

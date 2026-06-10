@@ -9,6 +9,9 @@ import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
 
+/** Capitalise a lowercase byCat key for display ("pizza" → "Pizza"), matching the engine's capWord. */
+const capWord = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
 export interface SlotIndicator {
   tone: SlotTone
   emoji: string
@@ -33,8 +36,10 @@ interface SlotInput {
  * amber, empty ⇒ green) — only WHICH window each dot reads is now physically correct.
  *   tone   = the window's occupancy tone; a too_soon slot over a GREEN oven folds to amber.
  *   emoji  = 🟢 / 🟡 / 🔴.
- *   label  = '' (green) · the binding per-category count (e.g. "Pizza 4/4" / "2/4", from
- *            bound_by) · 'Full' only when red with no per-category binding (global ceiling).
+ *   label  = the window's per-category COMPOSITION as plain counts ("4 Pizza, 2 Other"),
+ *            shown on every tone; '' when the window is empty. byCat is already capacity-
+ *            counted-only (unticked no-prep excluded). No denominators — operators know their
+ *            own limits; the colour conveys fullness, the text says what's in the window.
  * Returns a Map keyed by collection_time. Empty Map when there are no slots.
  */
 export function buildSlotIndicators(
@@ -59,7 +64,19 @@ export function buildSlotIndicators(
     let tone: SlotTone = w?.tone ?? 'green'
     if (s.too_soon && tone === 'green') tone = 'amber'
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
-    const label = tone === 'green' ? '' : (w?.bound_by ?? (tone === 'red' ? 'Full' : ''))
+    // Label = the window's per-category COMPOSITION as plain counts ("4 Pizza, 2 Other"),
+    // shown on ALL tones — the colour conveys fullness, the text says what's actually in the
+    // window. Built from w.byCat, which is already the capacity-counted set only (prep-bearing
+    // seated here + no-prep-ticked; unticked no-prep like Drinks are absent) and is the SAME
+    // window the tone is for. No denominators (operators know their own limits). Empty window
+    // (no load, or a too_soon slot over a green oven) → '' so nothing odd renders. Replaces the
+    // old binding "Pizza 4/4" / "Full" label — display-only; tone/emoji are untouched.
+    const label = w
+      ? Object.entries(w.byCat)
+          .filter(([, n]) => Math.round(n) > 0)
+          .map(([cat, n]) => `${Math.round(n)} ${capWord(cat)}`)
+          .join(', ')
+      : ''
     // Reconstruct a WindowOccupancy-shaped `occ` for back-compat (the SlotIndicator type;
     // no live reader dereferences it today). rate = batch per category in this window.
     const occ: WindowOccupancy | null = w ? {

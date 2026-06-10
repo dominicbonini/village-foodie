@@ -173,7 +173,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [phone, setPhone] = useState('')
   const [slotHour, setSlotHour] = useState('')
   const [slotMinute, setSlotMinute] = useState('')
-  const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean;is_grace:boolean}[]>([])
+  const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean;too_soon:boolean;is_grace:boolean}[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [asapSlot, setAsapSlot] = useState<string|null>(null)
   const [asapChosen, setAsapChosen] = useState(true)
@@ -625,7 +625,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // agree. Null (no basket / no capacity data) ⇒ fall back to the queue-based estimate.
   const backwardAsap = useMemo(() => {
     if (!capacityInputs || Object.keys(basketByCat).length === 0) return null
-    const avail = availableSlots.filter(s => s.available && !s.is_grace)
+    // Time-eligible candidates only (past / too-soon / grace), NOT capacity-filtered: feed every
+    // such slot so earliestBackwardFitSlot can reach a worst-case-vetoed-but-actually-fits slot
+    // (e.g. anchovies at a pizza-full 6pm with ceiling spare). Capacity is decided category-aware
+    // inside fitOrderBackward; the !too_soon filter preserves the lead/ASAP floor.
+    const avail = availableSlots.filter(s => !s.is_past && !s.too_soon && !s.is_grace)
     return earliestBackwardFitSlot(
       avail.map(s => ({ collection_time: s.collection_time, production_slot: s.collection_time })),
       capacityInputs.productionSlotUnits || {},
@@ -1337,17 +1341,26 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             {availableSlots.length > 0
                               ? availableSlots
                                   .filter(s => {
-                                    // Customers see ONLY cleanly available slots — no traffic-light,
-                                    // no disabled "Full" entries, no too-soon. The override judgement
-                                    // (squeezing into amber/full slots) is operator-only.
-                                    if (!s.available) return false
-                                    // Cap customers at end_time INCLUSIVE: grace slots (strictly after
-                                    // end_time, is_grace) are operator-only ("After closing"). 16:00 is
-                                    // is_grace:false (kept); 16:05+ excluded. Matches backwardAsap above.
+                                    // Non-capacity gates (unchanged behaviour) — past, too-soon (below
+                                    // the lead/ASAP floor), and grace (strictly after end_time, operator-
+                                    // only "After closing"). These were previously bundled inside
+                                    // s.available; now explicit so the CAPACITY decision below can be
+                                    // basket-aware. 16:00 is is_grace:false (kept); 16:05+ excluded.
+                                    if (s.is_past) return false
+                                    if (s.too_soon) return false
                                     if (s.is_grace) return false
-                                    // Hard block: the current order can't fit this slot's backward
-                                    // cooking windows (no spare / insufficient lead). No override.
-                                    if (unfittableSlots.has(s.collection_time)) return false
+                                    // CAPACITY — basket-aware when the customer has a basket: gate on the
+                                    // category-aware fitOrderBackward result (unfittableSlots), NOT the
+                                    // server's basket-agnostic worst-case s.available. So a window the
+                                    // worst-case dot vetoes (e.g. pizza-full 6pm) is still offered when
+                                    // THIS order fits the ceiling spare (anchovies: 4 pizzas + 2 = 6 ≤ 6),
+                                    // and still hidden when it doesn't (a pizza: batch full). Empty basket
+                                    // ⇒ keep the server worst-case default (nothing to fit yet).
+                                    if (Object.keys(basketByCat).length > 0) {
+                                      if (unfittableSlots.has(s.collection_time)) return false
+                                    } else if (!s.available) {
+                                      return false
+                                    }
                                     // Only show slots at or after the ASAP time
                                     if (asapTime) return toMins(s.collection_time) >= toMins(asapTime)
                                     return true
