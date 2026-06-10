@@ -20,7 +20,7 @@ import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
-interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean }
+interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
@@ -861,6 +861,13 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                     <span className="text-[11px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{cat.default_stock} per event</span>
                   )}
                   {cat.allow_notes && <span className="text-[11px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Notes on</span>}
+                  {/* "Counts toward kitchen capacity" is configured in Settings → Kitchen capacity
+                      (the tickbox list under the ceiling), not here — one place, no double-toggle.
+                      A tiny read-only indicator for instant categories that are included: */}
+                  {cat.prep_secs === 0 && cat.counts_toward_capacity && (
+                    <span title="Counts toward the kitchen-capacity limit (set in Settings → Kitchen capacity)"
+                      className="text-[11px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Counts toward capacity</span>
+                  )}
                 </div>
               </div>
               <div className="flex items-center shrink-0">
@@ -4163,6 +4170,19 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
     await api('update_van_settings', { vanId, [field]: value })
   }
 
+  // Toggle a NO-PREP category's "counts toward kitchen capacity" flag from the capacity
+  // tickbox list. Sends the full row + the new flag (upsert_category field update), then reload.
+  const toggleCatCapacity = async (cat: Category, newVal: boolean) => {
+    try {
+      await api('upsert_category', {
+        id: cat.id, name: cat.name, prep_secs: cat.prep_secs, batch_size: cat.batch_size,
+        allow_notes: cat.allow_notes, default_stock: cat.default_stock, sort_order: cat.sort_order,
+        counts_toward_capacity: newVal,
+      })
+      reload()
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <h2 className="font-black text-slate-900 text-lg">Settings</h2>
@@ -4845,6 +4865,33 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 </div>
                 {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
                   <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+                )}
+                {/* Which categories count toward this ceiling. Cooked (prep>0) always count
+                    (checked+locked); instant categories are operator-toggleable (counts_toward_capacity).
+                    The single place to set capacity SCOPE — the per-category-header chip was removed. */}
+                {van.kitchen_capacity != null && categories.length > 0 && (
+                  <div className="mt-3 border-t border-slate-100 pt-3">
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Counts toward this limit</p>
+                    <div className="flex flex-wrap gap-x-5 gap-y-2">
+                      {categories.map(cat => (
+                        <label key={cat.id}
+                          title={cat.prep_secs > 0
+                            ? 'Cooked — always counts (its prep & batch set the pace)'
+                            : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
+                          className={`flex items-center gap-1.5 text-sm ${cat.prep_secs > 0 ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'}`}>
+                          <input
+                            type="checkbox"
+                            checked={cat.prep_secs > 0 ? true : !!cat.counts_toward_capacity}
+                            disabled={cat.prep_secs > 0}
+                            onChange={() => { if (cat.prep_secs === 0) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                            className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                          <span>{cat.name}</span>
+                          {cat.prep_secs > 0 && <span className="text-[10px] text-slate-400">cooked — always counts</span>}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
 

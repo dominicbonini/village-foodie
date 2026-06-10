@@ -422,6 +422,8 @@ export function projectBackwardOccupancy(
   const loadByStart = new Map<number, Record<string, number>>()
   const batchByCat: Record<string, number> = {}
   const cantFit: CantFitFlag[] = []
+  // Window granularity for the ceiling — also where no-prep-ticked (instant) items land.
+  const step = backwardWindowStepMins(catConfigs)
 
   const fmt = (mins: number) => {
     const m = ((mins % 1440) + 1440) % 1440
@@ -434,7 +436,21 @@ export function projectBackwardOccupancy(
       const cat = catRaw.toLowerCase()
       const cfg = catConfigs[cat]
       const N = Number(rawN) || 0
-      if (!cfg || !cfg.secs || N <= 0) continue // instant / empty → no oven time
+      if (!cfg || N <= 0) continue
+      if (!cfg.secs) {
+        // No prep cadence. Ceiling-only if the operator ticked counts_toward_capacity: the N
+        // instant items occupy the COLLECTION-ADJACENT window (deadline − step, the same window
+        // a 1-batch prep item collected here uses) and feed `total` for the shared ceiling —
+        // but seat NO backward windows and set NO batchByCat (no per-category batch rule, so
+        // they never self-red). Unticked instant categories are skipped entirely (today's behaviour).
+        if (cfg.countsToCapacity) {
+          const ws = deadline - step
+          const w = loadByStart.get(ws) ?? {}
+          w[cat] = (w[cat] || 0) + N
+          loadByStart.set(ws, w)
+        }
+        continue
+      }
       const batch = Math.max(1, cfg.batch)
       const prepMins = Math.max(1, Math.round(cfg.secs / 60))
       batchByCat[cat] = batch
@@ -468,7 +484,10 @@ export function projectBackwardOccupancy(
       let bindRank = -1
       let bindUsed = -1
       for (const [cat, used] of Object.entries(byCat)) {
-        const batch = batchByCat[cat] ?? used
+        const batch = batchByCat[cat]
+        // Ceiling-only categories (no-prep-ticked) have no batch rule → no per-category tone
+        // (they must NOT self-red "Sides X/X"); they still feed `total` for the global ceiling.
+        if (batch == null) continue
         remainingByCat[cat] = batch - used
         const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
         const r = RANK[t]
@@ -519,6 +538,7 @@ export function fitOrderBackward(
   // adjacent to collection), earlier windows = full batch (mirrors projectBackwardOccupancy).
   const orderLoad = new Map<number, Record<string, number>>()
   const batchOf: Record<string, number> = {}
+  const step = backwardWindowStepMins(catConfigs)
   // One pre-open batch is allowed: the kitchen may cook a SINGLE batch before event start
   // (ready at open), so a window may extend at most one prep-interval before eventStart. An
   // order fits the lead only if its EARLIEST required window starts ≥ eventStart − prep;
@@ -528,7 +548,19 @@ export function fitOrderBackward(
     const cat = catRaw.toLowerCase()
     const cfg = catConfigs[cat]
     const M = Number(rawM) || 0
-    if (!cfg || !cfg.secs || M <= 0) continue // instant / empty
+    if (!cfg || M <= 0) continue
+    if (!cfg.secs) {
+      // No-prep-ticked (ceiling-only): the M instant items occupy the collection-adjacent
+      // window (slotMins − step) feeding ordTotal for the ceiling — no batchOf (no per-category
+      // check), no run-off-front (instant). Unticked instant items are skipped.
+      if (cfg.countsToCapacity) {
+        const ws = slotMins - step
+        const w = orderLoad.get(ws) ?? {}
+        w[cat] = (w[cat] || 0) + M
+        orderLoad.set(ws, w)
+      }
+      continue
+    }
     const batch = Math.max(1, cfg.batch)
     const prep = Math.max(1, Math.round(cfg.secs / 60))
     batchOf[cat] = batch
@@ -564,6 +596,9 @@ export function fitOrderBackward(
     for (const [cat, add] of Object.entries(ord)) {
       ordTotal += add
       const batch = batchOf[cat]
+      // Ceiling-only cat (no-prep-ticked): no per-category batch check — only feeds ordTotal
+      // for the global-ceiling check below.
+      if (batch == null) continue
       const combined = (existing?.byCat[cat] ?? 0) + add
       const t: SlotTone = combined > batch + EPS ? 'red' : combined >= batch - EPS ? 'amber' : 'green'
       consider(t, `${capWord(cat)} ${Math.round(combined)}/${Math.round(batch)}`)

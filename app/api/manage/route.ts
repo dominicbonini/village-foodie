@@ -192,11 +192,13 @@ export async function POST(req: NextRequest) {
 
   // ── CATEGORY CRUD ─────────────────────────────────────────
   if (action === 'upsert_category') {
-    const { id, name, prep_secs, batch_size, allow_notes, default_stock, sort_order } = body
+    const { id, name, prep_secs, batch_size, allow_notes, default_stock, sort_order, counts_toward_capacity } = body
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     if (id) {
       const { data, error } = await supabase.from('menu_categories')
-        .update({ name, slug, prep_secs, batch_size, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order })
+        // Only set counts_toward_capacity when explicitly provided — a partial save (e.g. the
+        // modal's notes toggle, which omits it) must NOT reset the flag to false.
+        .update({ name, slug, prep_secs, batch_size, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order, ...(counts_toward_capacity !== undefined ? { counts_toward_capacity: !!counts_toward_capacity } : {}) })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })
@@ -204,7 +206,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_categories').select('sort_order').eq('truck_id', truck.id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_categories')
-        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs ?? 0, batch_size: batch_size ?? 999, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder })
+        .insert({ truck_id: truck.id, name, slug, prep_secs: prep_secs ?? 0, batch_size: batch_size ?? 999, allow_notes: !!allow_notes, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, counts_toward_capacity: !!counts_toward_capacity })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ category: data })

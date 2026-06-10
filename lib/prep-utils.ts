@@ -7,6 +7,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 export interface CatConfig {
     secs: number
     batch: number
+    /** No-prep categories (secs 0) the operator ticked to count toward the shared
+     *  kitchen_capacity ceiling (e.g. instant Sides/Dips). Ignored when secs>0 (prep-bearing
+     *  categories always count). Default false → today's behaviour (0-prep skipped). */
+    countsToCapacity?: boolean
   }
   
   export interface PrepItem {
@@ -175,13 +179,14 @@ export interface CatConfig {
   ): Promise<Record<string, CatConfig>> {
     const { data: categories } = await supabase
       .from('menu_categories')
-      .select('name, prep_secs, batch_size')
+      .select('name, prep_secs, batch_size, counts_toward_capacity')
       .eq('truck_id', truckId)
     const catConfigs: Record<string, CatConfig> = {}
     ;(categories || []).forEach(c => {
       catConfigs[c.name.toLowerCase()] = {
         secs: c.prep_secs || 0,
         batch: c.batch_size && c.batch_size > 0 ? c.batch_size : 999,
+        countsToCapacity: !!c.counts_toward_capacity,
       }
     })
     return catConfigs

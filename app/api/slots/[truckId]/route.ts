@@ -126,7 +126,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
 
     supabase
       .from('menu_categories')
-      .select('id, name, prep_secs, batch_size')
+      .select('id, name, prep_secs, batch_size, counts_toward_capacity')
       .eq('truck_id', truckId),
 
     supabase
@@ -153,6 +153,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     catConfigs[c.name.toLowerCase()] = {
       secs: c.prep_secs || 0,
       batch: c.batch_size || 1,
+      countsToCapacity: !!c.counts_toward_capacity,
     }
   })
 

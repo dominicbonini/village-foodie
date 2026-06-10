@@ -23,21 +23,19 @@ jobs:
       with:
         node-version: '24'
 
-    # npm ci (not npm install) so the committed lock (puppeteer/puppeteer-core 24.38.0) is
-    # honoured deterministically and puppeteer's postinstall downloads the EXACT pinned Chrome
-    # build (146.0.7680.31) that launch() requests — into ~/.cache/puppeteer.
+    # npm ci honours the committed lock (puppeteer/puppeteer-core 24.38.0). SKIP puppeteer's
+    # postinstall Chrome download: it created chrome/linux-146.0.7680.31 and began the pinned-build
+    # fetch but didn't finish writing the binary — leaving a HALF-MADE folder that the explicit
+    # step below then threw on instead of re-fetching (stack trace: @puppeteer/browsers CLI.js →
+    # install.js, i.e. the install STEP threw, not launch()). With the download skipped here, no
+    # partial folder can exist and the explicit step becomes the single clean downloader.
     - name: Install Dependencies
       run: npm ci
+      env:
+        PUPPETEER_SKIP_DOWNLOAD: 'true'
 
-    # NO cache-clear. The old `rm -rf ~/.cache/puppeteer/chrome` ran AFTER the postinstall and
-    # DELETED the exact pinned Chrome it had just installed; the explicit install below (bare
-    # `install chrome` = latest-stable) then put a build that does NOT match the pinned revision
-    # launch wants, so the run failed with "Could not find Chrome (146.0.7680.31)" (CI logs:
-    # steps Install Dependencies/Install Puppeteer Chrome both SUCCEEDED, only Run Scraper/launch
-    # failed). Removing the clear preserves the postinstall's pinned build for launch.
-
-    # Safety net only: runs against an already-populated cache (postinstall provided the pinned
-    # build). If it adds a different build the pinned one is still present, so launch resolves it.
+    # The single, clean Chrome download (postinstall skipped above) — fetches the pinned build
+    # into ~/.cache/puppeteer for launch().
     - name: Install Puppeteer Chrome
       run: npx puppeteer browsers install chrome
 

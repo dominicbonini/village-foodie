@@ -186,7 +186,7 @@ export async function GET(req: NextRequest) {
   const [{ data: categories }, { data: menuItemsForMap }] = await Promise.all([
     supabase
       .from('menu_categories')
-      .select('id, name, prep_secs, batch_size, sort_order')
+      .select('id, name, prep_secs, batch_size, sort_order, counts_toward_capacity')
       .eq('truck_id', truck.id)
       .eq('is_active', true)
       .order('sort_order', { ascending: true }),
@@ -201,6 +201,7 @@ export async function GET(req: NextRequest) {
     catConfigs[c.name.toLowerCase()] = {
       secs: c.prep_secs || 0,
       batch: c.batch_size || 1,
+      countsToCapacity: !!c.counts_toward_capacity,
     }
   })
 
