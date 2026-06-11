@@ -1089,18 +1089,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         <Link
                           key={e.id}
                           href={`/trucks/${slug}/order?event_id=${e.id}`}
-                          className="block w-full text-left px-4 py-3.5 rounded-xl border bg-white border-slate-200 hover:border-orange-300 transition-all"
+                          className="flex items-center justify-between gap-3 w-full text-left px-4 py-3.5 rounded-xl border bg-white border-slate-200 hover:border-orange-300 transition-all"
                         >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="min-w-0">
-                              <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
-                              <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
-                            </div>
-                            <span className={`shrink-0 mt-0.5 inline-flex items-center gap-1 text-xs font-bold ${live ? 'text-green-600' : 'text-orange-600'}`}>
+                          {/* Left: venue / date·time / status. Right: compact boxed Order button. */}
+                          <div className="min-w-0">
+                            <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
+                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
+                            <span className={`mt-1 inline-flex items-center gap-1 text-xs font-bold ${live ? 'text-green-600' : 'text-orange-600'}`}>
                               {live && <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />}{live ? 'Live' : 'Pre-order'}
                             </span>
                           </div>
-                          <span className="mt-2.5 block w-full text-center bg-orange-600 text-white font-bold py-2 rounded-lg text-sm">Order now</span>
+                          <span className="shrink-0 bg-orange-600 text-white font-bold px-4 py-2 rounded-lg text-sm">Order now</span>
                         </Link>
                       )
                     })}

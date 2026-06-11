@@ -69,7 +69,20 @@ export default function TruckListCard({ event }: TruckListCardProps) {
                     </h3>
                 </Link>
             </div>
-            
+
+            {/* ORDER BUTTON — compact, right-aligned on the event row (HatchGrab only, operator
+                confirmed events). On mobile the row stacks, so self-start keeps it boxed (not full-width). */}
+            {isHatchGrab() && event.orderUrl && (
+                <a
+                    href={event.orderUrl}
+                    className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5
+                               bg-orange-600 hover:bg-orange-700 text-white font-semibold
+                               px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
+                >
+                    🛒 Pre-order
+                </a>
+            )}
+
         </div>
 
         {/* EVENT NOTES */}
@@ -92,17 +105,6 @@ export default function TruckListCard({ event }: TruckListCardProps) {
             </div>
         )}
 
-        {/* PRE-ORDER BUTTON — HatchGrab only, operator confirmed events */}
-        {isHatchGrab() && event.orderUrl && (
-            <a
-                href={event.orderUrl}
-                className="mt-3 flex items-center justify-center gap-2 w-full
-                           bg-orange-600 hover:bg-orange-700 text-white
-                           font-semibold py-2.5 rounded-xl text-sm transition-colors"
-            >
-                🛒 Pre-order
-            </a>
-        )}
     </div>
   );
 }
