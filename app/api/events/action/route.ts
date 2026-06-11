@@ -123,10 +123,10 @@ export async function POST(req: NextRequest) {
     const { cancellationNote, cancellationReason } = payload ?? {}
     const fullNote = [cancellationReason, cancellationNote].filter(Boolean).join(' — ')
 
-    // Fetch event details before cancelling (for email)
+    // Fetch event details before cancelling (for email + reject-memory).
     const { data: eventRow } = await supabase
       .from('truck_events')
-      .select('venue_name, village, event_date')
+      .select('venue_name, village, event_date, scraped_signature')
       .eq('id', eventId)
       .single()
 
@@ -137,6 +137,18 @@ export async function POST(req: NextRequest) {
       .eq('truck_id', truck.id)
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Reject-memory (Stage 3): when rejecting a scraped pending event (suppress flag), store its
+    // IMMUTABLE scraped signature so the bridge never re-creates it. Independent of this row, so it
+    // stays suppressed even if the row is later deleted. Best-effort — failure must not block reject.
+    if (payload?.suppress && eventRow) {
+      const { error: supErr } = await supabase.from('rejected_event_signatures').insert({
+        truck_id: truck.id,
+        event_date: eventRow.event_date,
+        scraped_signature: eventRow.scraped_signature || eventRow.venue_name || '',
+      })
+      if (supErr) console.warn('[cancel] suppression write failed:', supErr.message)
+    }
 
     // Cancel affected orders and notify customers
     const { data: affectedOrders } = await supabase

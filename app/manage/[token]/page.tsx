@@ -2713,7 +2713,8 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
       const res = await fetch('/api/events/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, action: 'cancel', eventId, payload: { auto_open: false, auto_close: false } }),
+        // suppress: true → server stores the event's scraped signature so it won't re-surface (Stage 3).
+        body: JSON.stringify({ token, action: 'cancel', eventId, payload: { auto_open: false, auto_close: false, suppress: true } }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -2723,16 +2724,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
     finally { setSaving(false); setPendingRejectId(null) }
   }
 
-  const handleRejectScrapedEvent = async (eventId: string, venueName: string, withExclusion: boolean) => {
-    if (withExclusion) {
-      try {
-        const res = await api('add_exclusion_term', { term: venueName })
-        setExclusionList(prev => [...prev, { id: res.id ?? '', term: venueName }])
-        setExclusionTerms(prev => [...prev, venueName])
-      } catch { /* continue */ }
-    }
-    await doRejectEvent(eventId)
-  }
+  const handleRejectScrapedEvent = (eventId: string) => doRejectEvent(eventId)
 
   const openEventCancelModal = async (event: TruckEvent) => {
     setCancellingEvent(event)
@@ -2871,14 +2863,14 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
             </div>
           </div>
 
-          {/* Reject confirm — scraper-pending only, inline below the row */}
+          {/* Reject confirm — scraper-pending only, inline below the row. Single OK/Cancel; OK
+              rejects AND suppresses this exact event (truck+date+venue) so it won't re-surface. */}
           {pending && pendingRejectId === event.id && (
             <div className="mt-3 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600">
-              <p className="font-medium mb-2">Remove this event?</p>
-              <div className="flex gap-2 flex-wrap">
-                <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, true)} className="text-xs font-medium px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">Yes, exclude similar</button>
-                <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, false)} className="text-xs font-medium px-3 py-1.5 border border-slate-200 bg-white rounded-lg hover:bg-slate-50">Just remove this one</button>
-                <button type="button" onClick={() => setPendingRejectId(null)} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5 ml-auto">Cancel</button>
+              <p className="font-medium mb-2">We won&apos;t show this event again.</p>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => handleRejectScrapedEvent(event.id)} className="text-xs font-medium px-4 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">OK</button>
+                <button type="button" onClick={() => setPendingRejectId(null)} className="text-xs font-medium px-4 py-1.5 border border-slate-200 bg-white rounded-lg hover:bg-slate-50">Cancel</button>
               </div>
             </div>
           )}

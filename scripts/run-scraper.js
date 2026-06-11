@@ -1187,6 +1187,7 @@ ${winningText.slice(0, 100000)}`;
             end_time: e.end_time || null,
             venue_name: e.venue_name,
             village: e.town || null,
+            postcode: e.postcode || null,
             source: `hg_scraper:${winningRule}`,
           })),
         };

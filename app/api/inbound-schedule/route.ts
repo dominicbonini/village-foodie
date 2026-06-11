@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       truck_name: e.truck_name || '',
       venue_name: e.venue_name || null,
       village: e.village || null,
+      postcode: e.postcode || null,
       event_notes: e.event_notes || null,
       source: e.source || null,
       ai_notes: e.ai_notes || null,
@@ -138,6 +139,21 @@ export async function POST(req: NextRequest) {
       .single()
     if (truckPref?.scraper_preference === 'manual') continue
 
+    const incomingVenue = normalizeVenue(row.venue_name || '')
+
+    // Reject-memory (Stage 3): skip events the operator previously rejected. Checked FIRST and
+    // independent of any truck_events row, so a rejected-then-deleted event stays gone. Same
+    // signature match (truck_id + event_date + fuzzy venue) reusing lib/venue-signature.
+    const { data: suppressed } = await supabase
+      .from('rejected_event_signatures')
+      .select('scraped_signature')
+      .eq('truck_id', truckId)
+      .eq('event_date', row.event_date!)
+    const isSuppressed = (suppressed || []).some(s =>
+      venuesFuzzyMatch(normalizeVenue(s.scraped_signature), incomingVenue)
+    )
+    if (isSuppressed) continue
+
     // Dedup against the IMMUTABLE scraped_signature (Stage 2): fetch this truck's events on this
     // date (date is exact + not editable, so it stays the scraped original), then fuzzy-match the
     // incoming venue against each row's scraped_signature. This survives edits — an operator
@@ -149,24 +165,25 @@ export async function POST(req: NextRequest) {
       .select('id, venue_name, scraped_signature')
       .eq('truck_id', truckId)
       .eq('event_date', row.event_date!)
-    const incomingVenue = normalizeVenue(row.venue_name || '')
     const isDup = (sameDay || []).some(r =>
       venuesFuzzyMatch(normalizeVenue(r.scraped_signature || r.venue_name || ''), incomingVenue)
     )
     if (isDup) continue
 
-    // Look up venue coordinates
+    // Look up venue coordinates + postcode (postcode falls back to the venue's when the page omitted it)
     let latitude: number | null = null
     let longitude: number | null = null
+    let venuePostcode: string | null = null
     if (row.venue_name) {
       const { data: venue } = await supabase
         .from('venues')
-        .select('latitude, longitude')
+        .select('latitude, longitude, postcode')
         .ilike('name', row.venue_name)
         .maybeSingle()
       if (venue) {
         latitude = venue.latitude
         longitude = venue.longitude
+        venuePostcode = venue.postcode ?? null
       }
     }
 
@@ -174,6 +191,8 @@ export async function POST(req: NextRequest) {
       truck_id:   truckId,
       venue_name: row.venue_name || null,
       town:       row.village || null,
+      // Scraped postcode first; fall back to the matched venue's postcode; null if neither.
+      postcode:   row.postcode || venuePostcode || null,
       event_date: row.event_date,
       start_time: row.start_time || null,
       end_time:   row.end_time || null,
@@ -214,7 +233,7 @@ export async function POST(req: NextRequest) {
         // Fetch the new unconfirmed events just written for this truck
         const { data: newEvents } = await supabase
           .from('truck_events')
-          .select('event_date, venue_name, town')
+          .select('event_date, venue_name, town, start_time, end_time')
           .eq('truck_id', truckId)
           .eq('status', 'unconfirmed')
           .eq('source', 'scraper')
@@ -229,13 +248,29 @@ export async function POST(req: NextRequest) {
           const d = new Date(iso + 'T00:00:00')
           return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
         }
+        // start–end as HH:MM; omit cleanly if either is missing.
+        const fmtTimeRange = (st?: string | null, et?: string | null) => {
+          const a = st ? String(st).slice(0, 5) : ''
+          const b = et ? String(et).slice(0, 5) : ''
+          return a && b ? `${a}–${b}` : a || ''
+        }
+        const headLine = (e: any) => {
+          const t = fmtTimeRange(e.start_time, e.end_time)
+          return `${fmtDate(e.event_date)}${t ? ` · ${t}` : ''}`           // "Thu 11 Jun · 17:00–20:00"
+        }
+        const venueLine = (e: any) => `${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`
 
+        // Stacked rows (NOT a table / multi-column) — each event is two stacked text lines with a
+        // light divider, so it reflows cleanly on mobile + Outlook/hotmail. Inline CSS only.
         const eventListHtml = (newEvents || []).map(e =>
-          `<li style="padding:3px 0;color:#475569">${fmtDate(e.event_date)} — ${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}</li>`
+          `<div style="padding:10px 0;border-bottom:1px solid #eef2f6">
+            <div style="font-weight:bold;color:#1e293b;font-size:15px;line-height:1.3">${headLine(e)}</div>
+            <div style="color:#475569;font-size:14px;line-height:1.4;margin-top:3px">${venueLine(e)}</div>
+          </div>`
         ).join('')
 
         const eventListText = (newEvents || []).map(e =>
-          `  - ${fmtDate(e.event_date)} — ${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`
+          `  - ${headLine(e)}\n    ${venueLine(e)}`
         ).join('\n')
 
         await sendConfirmationEmail({
@@ -250,7 +285,7 @@ export async function POST(req: NextRequest) {
               </a>
             </p>
             <p style="font-weight:600;margin-bottom:6px">Events found:</p>
-            <ul style="margin:0;padding-left:16px">${eventListHtml}</ul>
+            <div style="border-top:1px solid #eef2f6">${eventListHtml}</div>
             <p style="margin-top:16px">Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.</p>
             <p style="color:#94a3b8;font-size:12px;margin-top:24px">— The HatchGrab team · hatchgrab.com</p>
           </div>`,
