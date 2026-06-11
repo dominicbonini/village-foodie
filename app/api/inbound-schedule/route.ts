@@ -87,8 +87,11 @@ export async function POST(req: NextRequest) {
       if (match) venueId = match.id
     }
 
+    // Strip postcode: it belongs on truck_events only (the bridge insert reads row.postcode from
+    // `rows`). discovery_events has no postcode column — leaving it in would 500 the upsert (PGRST204).
+    const { postcode, ...discoveryRow } = row
     return {
-      ...row,
+      ...discoveryRow,
       visibility: 'public',
       discovery_truck_id: discoveryTruckId,
       venue_id: venueId,
