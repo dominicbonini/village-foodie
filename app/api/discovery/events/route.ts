@@ -181,6 +181,19 @@ export async function GET(req: NextRequest) {
   // ── Operator events (additive — failure must never break discovery map) ──
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
+  // Visibility map for gating operator events: operator truck (trucks.id) → its linked
+  // discovery_trucks.visibility (via hatchgrab_truck_id). Fetched UNFILTERED on purpose — we must see
+  // hg_only/hidden rows to EXCLUDE them on villagefoodie. (trData above is visibility-filtered, so an
+  // hg_only row would be missing there and wrongly default to 'public' → leak.) Operator trucks with
+  // no linked discovery row default to 'public' (shown on both sites — no regression for real trucks).
+  const { data: linkRows } = await supabase
+    .from('discovery_trucks')
+    .select('hatchgrab_truck_id, visibility')
+    .not('hatchgrab_truck_id', 'is', null)
+  const linkedVisibilityByTruckId = new Map<string, string>(
+    (linkRows || []).map((r: any) => [r.hatchgrab_truck_id, r.visibility || 'public'])
+  )
+
   let mappedOperatorEvents: any[] = []
   try {
     const opResult = await supabase
@@ -203,7 +216,6 @@ export async function GET(req: NextRequest) {
           cuisine_type,
           logo_storage_path,
           slug,
-          is_test,
           active
         )
       `)
@@ -220,8 +232,12 @@ export async function GET(req: NextRequest) {
         .filter((e: any) => {
           const truck = e.trucks as any
           if (!truck) return false
-          if (truck.is_test) return false
           if (!truck.active) return false
+          // Gate operator events by the linked discovery truck's visibility — SAME rule as the
+          // discovery-events path. No link → 'public' (both sites); 'hg_only' → HatchGrab only;
+          // 'hidden' → neither. Replaces the old is_test drop (is_test column doesn't exist in prod).
+          const linkedVis = linkedVisibilityByTruckId.get(truck.id) ?? 'public'
+          if (!allowedVisibility.includes(linkedVis)) return false
           if (slug && createSlug(truck.name || '') !== slug) return false
           return true
         })

@@ -50,11 +50,31 @@ export async function POST(req: NextRequest) {
     }))
     .filter(r => r.event_date && r.truck_name)
 
-  // Fetch lookup tables once for ID resolution
+  // Fetch lookup tables once for ID resolution. Venues carry coords + postcode so the bridge can
+  // fall back to a fuzzy-matched venue's postcode/coords without a second (stricter) query.
   const [{ data: allDiscoveryTrucks }, { data: allVenues }] = await Promise.all([
     supabase.from('discovery_trucks').select('id, name'),
-    supabase.from('venues').select('id, name, village'),
+    supabase.from('venues').select('id, name, village, latitude, longitude, postcode'),
   ])
+
+  // Single fuzzy venue matcher — used for BOTH venue_id resolution and the postcode/coords fallback,
+  // so a scraped name variant ("The Cavendish Five Bells") resolves to the stored venue ("Five Bells")
+  // in both places. Previously the postcode lookup used a strict .ilike(name) that missed variants.
+  const findVenue = (venueName: string | null, village: string | null) => {
+    if (!allVenues || !venueName) return null
+    const normVenue = normName(venueName)
+    const normVillage = normName(village || '')
+    return allVenues.find(v => {
+      const nameMatch = normName(v.name) === normVenue ||
+                        normName(v.name).includes(normVenue) ||
+                        normVenue.includes(normName(v.name))
+      const villageMatch = !normVillage ||
+                           normName(v.village || '') === normVillage ||
+                           normName(v.village || '').includes(normVillage) ||
+                           normVillage.includes(normName(v.village || ''))
+      return nameMatch && villageMatch
+    }) || null
+  }
 
   // Enrich each row with resolved IDs before upserting
   const enrichedRows = rows.map(row => {
@@ -69,23 +89,8 @@ export async function POST(req: NextRequest) {
       if (match) discoveryTruckId = match.id
     }
 
-    // Match venue_id
-    let venueId: string | null = null
-    if (allVenues && row.venue_name) {
-      const normVenue = normName(row.venue_name)
-      const normVillage = normName(row.village || '')
-      const match = allVenues.find(v => {
-        const nameMatch = normName(v.name) === normVenue ||
-                          normName(v.name).includes(normVenue) ||
-                          normVenue.includes(normName(v.name))
-        const villageMatch = !normVillage ||
-                             normName(v.village || '') === normVillage ||
-                             normName(v.village || '').includes(normVillage) ||
-                             normVillage.includes(normName(v.village || ''))
-        return nameMatch && villageMatch
-      })
-      if (match) venueId = match.id
-    }
+    // Match venue_id (same fuzzy matcher as the postcode/coords fallback below)
+    const venueId: string | null = findVenue(row.venue_name, row.village)?.id ?? null
 
     // Strip postcode: it belongs on truck_events only (the bridge insert reads row.postcode from
     // `rows`). discovery_events has no postcode column — leaving it in would 500 the upsert (PGRST204).
@@ -173,21 +178,17 @@ export async function POST(req: NextRequest) {
     )
     if (isDup) continue
 
-    // Look up venue coordinates + postcode (postcode falls back to the venue's when the page omitted it)
+    // Look up venue coordinates + postcode from the FUZZY-matched venue (same matcher as venue_id
+    // resolution above), so name variants resolve. postcode falls back to the venue's when the page
+    // omitted it. No second DB query — reuses the once-fetched allVenues.
     let latitude: number | null = null
     let longitude: number | null = null
     let venuePostcode: string | null = null
-    if (row.venue_name) {
-      const { data: venue } = await supabase
-        .from('venues')
-        .select('latitude, longitude, postcode')
-        .ilike('name', row.venue_name)
-        .maybeSingle()
-      if (venue) {
-        latitude = venue.latitude
-        longitude = venue.longitude
-        venuePostcode = venue.postcode ?? null
-      }
+    const matchedVenue = findVenue(row.venue_name, row.village)
+    if (matchedVenue) {
+      latitude = matchedVenue.latitude
+      longitude = matchedVenue.longitude
+      venuePostcode = matchedVenue.postcode ?? null
     }
 
     const { error: insertErr } = await supabase.from('truck_events').insert({
