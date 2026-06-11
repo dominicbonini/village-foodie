@@ -679,12 +679,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const updateStock=async(itemName:string,available:boolean,stockCount:number|null,category?:string)=>{
-    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,category})})
+    // event_id = the SAME event the Menu & Stock tab is showing (per-event override, Phase 5).
+    const event_id=selectedEventRef.current?.id??null
+    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,category,event_id})})
     setItemStocks(prev=>{const ex=prev.find(s=>s.name===itemName);if(ex)return prev.map(s=>s.name===itemName?{...s,available,stock_count:stockCount}:s);return[...prev,{name:itemName,available,stock_count:stockCount,orders_count:0,category:category||null}]})
     if(truck?.id)fetchMenu(truck.id,pin)
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
-    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount})})
+    const event_id=selectedEventRef.current?.id??null
+    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount,event_id})})
     setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,default_stock:null,orders_count:0}]})
   }
 

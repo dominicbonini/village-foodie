@@ -666,9 +666,11 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // ── Enforce stock limits (update sold-out flags) ──────────────────────────
+    // ── Enforce stock limits (update sold-out flags) — per-event (Phase 4) ────
+    // Scoped to eventRow.id, the SAME event_id the guard used above, so an exhausted event marks
+    // only itself. No-ops if the order had no resolvable event_id.
     try {
-      await enforceStockLimits(supabase, resolvedTruckId, orderEventDate, itemCatMap)
+      if (eventRow?.id) await enforceStockLimits(supabase, resolvedTruckId, eventRow.id, itemCatMap)
     } catch (err) {
       console.error('[submit] stock limit enforcement failed:', err)
       // Never block the order — stock enforcement is best-effort

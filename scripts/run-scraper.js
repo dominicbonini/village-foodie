@@ -1128,7 +1128,16 @@ if (HATCHGRAB_API_URL && INBOUND_SECRET) {
 You are extracting a food truck's schedule from website text. Extract ONLY future events.
 DATE RULES: Format "DD/MM/YYYY". Always append /${currentYear}. Map day names to exact dates based on today.
 TIME RULES: "HH:MM" 24-hour. "5pm" → "17:00". If unknown, use "".
-VENUE RULES: Extract only the pub/venue name, not the town.
+VENUE RULES: "venue_name" = ONLY the pub/venue name. "town" = the village/town/city it is in.
+TOWN RULES (IMPORTANT): ALWAYS populate "town". If the town/village is EMBEDDED inside the venue name,
+SPLIT it out — put the place-name in "town" and keep "venue_name" as just the pub/venue name. A UK
+place-name sitting next to a generic pub name (Bells/Star/Bell/Lion/Swan/Arms/Crown/Anchor, etc.) is the
+town, not part of the venue name. Never leave a town buried in venue_name. If the town truly cannot be
+determined, use "".
+EXAMPLES (embedded-town split):
+  "The Cavendish Five Bells"      -> {"venue_name":"Five Bells","town":"Cavendish"}
+  "The Star Pub, Lidgate"         -> {"venue_name":"The Star","town":"Lidgate"}
+  "Nethergate Brewery, Long Melford" -> {"venue_name":"Nethergate Brewery","town":"Long Melford"}
 Return ONLY valid JSON:
 {"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"Postcode or empty"}]}
 

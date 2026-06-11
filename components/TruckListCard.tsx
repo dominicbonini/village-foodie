@@ -84,7 +84,7 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                                bg-orange-600 hover:bg-orange-700 text-white font-semibold
                                px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
                 >
-                    🛒 Order
+                    Order
                 </a>
             )}
 

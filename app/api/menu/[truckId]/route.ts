@@ -55,7 +55,6 @@ export async function GET(
     { data: modifierGroups },
     { data: modifierOptions },
     { data: categoryModGroups },
-    { data: itemOverrides },
   ] = await Promise.all([
     supabase
       .from('menu_categories')
@@ -104,11 +103,6 @@ export async function GET(
     supabase
       .from('category_modifier_groups')
       .select('category_id, group_id'),
-
-    supabase
-      .from('item_overrides')
-      .select('item_name, stock_count, available')
-      .eq('truck_id', truck.id),
   ])
 
   console.log('[MENU API] Query results:')
@@ -249,6 +243,21 @@ export async function GET(
     ? await getLiveItemCounts(supabase, truck.id, effectiveEventId)
     : {}
 
+  // Per-event stock override (sparse) — fetched for the SAME effectiveEventId as liveItemCounts above,
+  // so the ceiling and the sold count belong to one event. A missing row falls through to the live
+  // menu_items_db default below (never unlimited-by-accident). Empty until a dashboard edit (Phase 5).
+  const eventItemOverride: Record<string, { stock_count: number | null; available: boolean }> = {}
+  if (effectiveEventId) {
+    const { data: eis } = await supabase
+      .from('event_item_stock')
+      .select('item_name, stock_count, available')
+      .eq('truck_id', truck.id)
+      .eq('event_id', effectiveEventId)
+    ;(eis || []).forEach((o: any) => {
+      eventItemOverride[o.item_name] = { stock_count: o.stock_count ?? null, available: o.available }
+    })
+  }
+
   // Build category → modifier groups map
   const groupMap: Record<string, { id: string; name: string; options: { id: string; name: string; price_adjustment: number }[] }[]> = {}
   ;(categories || []).forEach(c => { groupMap[c.id] = [] })
@@ -280,15 +289,18 @@ export async function GET(
     })),
     
     items: (items || []).map(i => {
-      const override = (itemOverrides || []).find((o: any) => o.item_name === i.name)
+      const override = eventItemOverride[i.name]
       const liveOrdered = liveItemCounts[i.name] || 0
-      // item_overrides.stock_count takes precedence; fall back to menu_items_db.default_stock
+      // Per-event override stock_count takes precedence; fall back to live menu_items_db.default_stock.
       const effectiveStockCount = override?.stock_count ?? i.default_stock ?? null
       const stockRemaining = calcStockRemaining(effectiveStockCount, liveOrdered)
-      // item_overrides.available takes precedence; also treat stock exhausted as unavailable
-      const isAvailable = override != null
-        ? (override.available !== false) && (stockRemaining === null || stockRemaining > 0)
-        : i.is_available !== false
+      // Availability via AND-composition (event_item_stock.available is NOT NULL DEFAULT true, so it
+      // can't represent "unset"): Settings is_available propagates (a Settings-disabled item stays
+      // disabled everywhere), a per-event override can only RESTRICT (available=false = per-event
+      // sold-out), never force-available. Stock exhaustion also marks unavailable.
+      const isAvailable = (i.is_available !== false)
+        && (override ? override.available !== false : true)
+        && (stockRemaining === null || stockRemaining > 0)
       return {
         name: i.name,
         description: i.description || '',

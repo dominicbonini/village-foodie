@@ -128,9 +128,9 @@ export default function TruckClient({ slug }: { slug: string }) {
             >
               <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[90px] sm:px-0 w-full">
                 {truckInfo.logo ? (
-                    <Image src={truckInfo.logo} alt={truckInfo.name} width={24} height={24} className="w-6 h-6 sm:w-7 sm:h-7 object-contain rounded-full bg-white shadow-sm shrink-0" />
+                    <Image src={truckInfo.logo} alt={truckInfo.name} width={48} height={48} className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full bg-white shadow-sm shrink-0" />
                 ) : (
-                    <div className="w-6 h-6 sm:w-7 sm:h-7 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-[10px] shrink-0">🚚</div>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-base shrink-0">🚚</div>
                 )}
                 <h1 className="text-[13px] sm:text-[15px] font-bold sm:font-black tracking-tight leading-tight truncate max-w-[110px] sm:max-w-xs">
                   {truckInfo.name}

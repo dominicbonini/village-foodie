@@ -60,10 +60,12 @@ export async function releaseEventLock(truckId: string, eventDate: string): Prom
  * Atomic stock guard. Given the order's DEAL-INCLUSIVE lines (normaliseOrderLines — deal-slot
  * constituents already flattened in), return the items whose requested qty exceeds the CURRENT
  * effective remaining, or null if everything fits. Effective remaining = min(item, category):
- * item ceiling = item_overrides.stock_count ?? menu_items_db.default_stock; category ceiling =
- * category_stock.stock_count ?? menu_categories.default_stock (date-scoped). "sold" is derived
- * live via getLiveItemCounts (which tallies deal slots too), so an item can't be oversold via a
- * deal. MUST be called under the per-event lock so the read+insert that follows is atomic.
+ * item ceiling = event_item_stock.stock_count(eventId) ?? menu_items_db.default_stock; category
+ * ceiling = event_category_stock.stock_count(eventId) ?? menu_categories.default_stock. The per-event
+ * override is read for the SAME eventId that feeds getLiveItemCounts (sold) — ceiling and sold are
+ * one event; a missing override row falls through to the live Settings default (never unlimited-by-
+ * accident). "sold" is derived live via getLiveItemCounts (which tallies deal slots too), so an item
+ * can't be oversold via a deal. MUST be called under the per-event lock so the read+insert is atomic.
  * null limits = unlimited (never blocks).
  */
 export async function checkStockShortfall(
@@ -73,12 +75,16 @@ export async function checkStockShortfall(
   orderLines: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>,
 ): Promise<{ name: string; remaining: number }[] | null> {
+  // Ceiling = per-event override (event_item_stock / event_category_stock) ?? live Settings default.
+  // The override is read for the SAME eventId that feeds getLiveItemCounts (sold) — so ceiling and
+  // sold are scoped to one event (no cross-event bleed). A missing override row falls through to the
+  // Settings default below; it never yields unlimited-by-accident.
   const [sold, { data: menuItems }, { data: menuCats }, { data: overrides }, { data: catStock }] = await Promise.all([
     getLiveItemCounts(supabase, truckId, eventId),
     supabase.from('menu_items_db').select('name, default_stock').eq('truck_id', truckId),
     supabase.from('menu_categories').select('name, default_stock').eq('truck_id', truckId),
-    supabase.from('item_overrides').select('item_name, stock_count').eq('truck_id', truckId),
-    supabase.from('category_stock').select('category, stock_count').eq('truck_id', truckId).eq('date', eventDate),
+    supabase.from('event_item_stock').select('item_name, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
+    supabase.from('event_category_stock').select('category, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
   ])
 
   // Ceilings (override/category_stock take precedence; fall back to the default_stock column).

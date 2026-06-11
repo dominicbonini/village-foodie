@@ -60,13 +60,14 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     rows: [
       { name: 'Discovery map listing',           starter: true,  pro: true,  max: true  },
       { name: 'Universal web dashboard',         starter: true,  pro: true,  max: true  },
-      { name: 'iPad kitchen app', footnote: '3', starter: true,  pro: true,  max: true  },
       { name: 'QR code',                          starter: true,  pro: true,  max: true  },
       { name: 'Meal deals & upsells',            starter: true,  pro: true,  max: true  },
       { name: 'Walk-up order processing', footnote: '1', starter: true, pro: true, max: true },
       { name: 'Instant sold out toggle',         starter: true,  pro: true,  max: true  },
       { name: 'Automated stock countdown',       starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', starter: true, pro: false, max: false },
+      // Coming soon (kept at the bottom of the section)
+      { name: 'iPad kitchen app', footnote: '3', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
@@ -78,9 +79,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Customer time slot selection',                 starter: false, pro: true,           max: true           },
       { name: 'Smart Slot Management',                        starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    starter: false, pro: true,           max: true           },
-      { name: 'Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: true, max: true },
-      { name: 'Branded QR code', footnote: '6', starter: false, pro: true,  max: true  },
-      { name: 'Advanced reporting', starter: false, pro: true, max: true },
+      { name: 'Branded QR code', starter: false, pro: true,  max: true  },
+      // Coming soon (kept at the bottom of the section)
+      { name: 'Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { name: 'Advanced reporting', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Personalised schedule generator',              starter: false, pro: 'coming_soon',  max: 'coming_soon'  },
     ],
   },
@@ -88,9 +90,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     title: 'Max tier',
     rows: [
       { name: 'WhatsApp auto-replies',    footnote: '4', starter: false, pro: false, max: true },
-      { name: 'Kitchen ticket printing',  footnote: '5', starter: false, pro: false, max: true },
       { name: 'Multi-device kitchen sync', starter: false, pro: false, max: true           },
       { name: 'Multi-user access',         starter: false, pro: false, max: true           },
+      // Coming soon (kept at the bottom of the section)
+      { name: 'Kitchen ticket printing',  footnote: '5', starter: false, pro: false, max: 'coming_soon' },
       { name: 'Customer-facing display',   starter: false, pro: false, max: 'coming_soon'  },
       { name: 'Event & festival pricing', starter: false, pro: false, max: 'coming_soon'  },
       // LOYALTY STAMP CARDS — Max only, coming soon
@@ -126,9 +129,5 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   {
     number: '5',
     text: 'Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
-  },
-  {
-    number: '6',
-    text: 'Branded QR code composites your truck logo into the centre of the QR code at high error-correction level. Requires a logo to be uploaded in Settings.',
   },
 ]

@@ -5167,8 +5167,11 @@ function BillingTab({ truck }: { truck: Truck | null }) {
 
   const matrixContent = (
     <>
-      {/* Plan columns header with prices */}
-      <div className="flex items-start justify-between mb-2">
+      {/* Plan columns header with prices — sticky below the nav (51px) + tabs bar (~44px) so the
+          plan/price columns stay visible while scrolling the feature rows. z-30 < tabs z-40 so it
+          tucks under the tabs. bg-white hides rows scrolling beneath. Works on mobile (the matrix
+          wrapper has no overflow ancestor — page scrolls on the window). */}
+      <div className="flex items-start justify-between mb-2 sticky top-[95px] z-30 bg-white pt-2">
         <div className="flex-1" />
         {billingPlans.map(p => (
           <div key={p} className={`w-[72px] sm:w-28 text-center pb-3 border-b-2 ${

@@ -334,23 +334,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, status: 'modified' })
     }
 
-    // ── ITEM AVAILABILITY (sold out toggle) ───────────────────────────────────
+    // ── ITEM AVAILABILITY (sold out toggle) — PER-EVENT (Phase 5) ──────────────
     if (action === 'set_item_availability') {
       if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
-      await supabase.from('item_overrides').upsert({
-        truck_id:   truck.id,
-        item_name:  itemName,
-        available:  available !== false,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'truck_id,item_name' })
+      const { event_id } = body
+      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      // Omit stock_count → preserved on an existing row, defaults null on a new row (no ceiling
+      // override). Writes only this event's row (onConflict event_id,item_name).
+      await supabase.from('event_item_stock').upsert({
+        truck_id:  truck.id,
+        event_id,
+        item_name: itemName,
+        available: available !== false,
+      }, { onConflict: 'event_id,item_name' })
       return NextResponse.json({ success: true, item: itemName, available })
     }
 
-    // ── GET ITEM OVERRIDES ────────────────────────────────────────────────────
+    // ── GET ITEM OVERRIDES — PER-EVENT (Phase 5) ───────────────────────────────
     if (action === 'get_item_overrides') {
+      const { event_id } = body
+      if (!event_id) return NextResponse.json({ success: true, soldOut: [] })
       const { data } = await supabase
-        .from('item_overrides').select('item_name, available')
-        .eq('truck_id', truck.id).eq('available', false)
+        .from('event_item_stock').select('item_name')
+        .eq('truck_id', truck.id).eq('event_id', event_id).eq('available', false)
       return NextResponse.json({ success: true, soldOut: (data || []).map((r: any) => r.item_name) })
     }
 
@@ -557,17 +563,21 @@ export async function POST(req: NextRequest) {
 
     // ── GET STOCK ─────────────────────────────────────────────────────────────
     if (action === 'get_stock') {
-      const today = new Date().toISOString().split('T')[0]
-      // Sold counts are event-scoped (V6.4). With no event selected, counts are
-      // empty so Menu & Stock shows 0 (Section 5). category_stock stays date-keyed.
+      // Per-event (Phase 5): the dashboard shows the override for the SELECTED event so it edits and
+      // displays the same per-event value. No event selected → no override rows + empty counts (shows
+      // live Settings defaults). Reads are scoped by the SAME event_id the writes/guard/menu use.
       const eventId: string | null = body.eventId ?? null
       const [{ data: overrides }, { data: cats }, liveItemCounts, { data: menuItems }, { data: menuCats }] = await Promise.all([
-        supabase.from('item_overrides')
-          .select('item_name, available, stock_count, category')
-          .eq('truck_id', truck.id),
-        supabase.from('category_stock')
-          .select('category, stock_count')
-          .eq('truck_id', truck.id).eq('date', today),
+        eventId
+          ? supabase.from('event_item_stock')
+              .select('item_name, available, stock_count')
+              .eq('truck_id', truck.id).eq('event_id', eventId)
+          : Promise.resolve({ data: [] as any[] }),
+        eventId
+          ? supabase.from('event_category_stock')
+              .select('category, stock_count')
+              .eq('truck_id', truck.id).eq('event_id', eventId)
+          : Promise.resolve({ data: [] as any[] }),
         eventId ? getLiveItemCounts(supabase, truck.id, eventId) : Promise.resolve({} as Record<string, number>),
         supabase.from('menu_items_db')
           .select('name, menu_categories!category_id(name)')
@@ -603,7 +613,7 @@ export async function POST(req: NextRequest) {
             available:   override?.available ?? true,
             stock_count: override?.stock_count ?? null,
             orders_count: liveItemCounts[name] || 0,
-            category:    override?.category ?? itemCatMap[name] ?? null,
+            category:    itemCatMap[name] ?? null,  // event_item_stock has no category — map via menu
           }
         })
 
@@ -652,42 +662,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
-    // ── SET ITEM STOCK ────────────────────────────────────────────────────────
+    // ── SET ITEM STOCK — PER-EVENT (Phase 5) ──────────────────────────────────
     if (action === 'set_stock') {
-      const { itemName, available, stockCount, category } = body
+      const { itemName, available, stockCount, event_id } = body
       if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
-      await supabase.from('item_overrides').upsert({
+      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      // Writes stock_count AND available together for THIS event. This is the RECOVERY path Phase 4
+      // flagged: a stock edit that passes available !== false clears a prior enforce-set sold-out
+      // (available back to true). (event_item_stock has no category/updated_at columns.)
+      await supabase.from('event_item_stock').upsert({
         truck_id:    truck.id,
+        event_id,
         item_name:   itemName,
         available:   available !== false,
         stock_count: stockCount ?? null,
-        category:    category ?? null,
-        updated_at:  new Date().toISOString(),
-      }, { onConflict: 'truck_id,item_name' })
+      }, { onConflict: 'event_id,item_name' })
       return NextResponse.json({ success: true })
     }
 
-    // ── SET CATEGORY STOCK ────────────────────────────────────────────────────
+    // ── SET CATEGORY STOCK — PER-EVENT (Phase 5) ──────────────────────────────
     if (action === 'set_category_stock') {
-      const { category, stockCount } = body
+      const { category, stockCount, event_id } = body
       if (!category) return NextResponse.json({ error: 'category required' }, { status: 400 })
-      const today = new Date().toISOString().split('T')[0]
-      await supabase.from('category_stock').upsert({
+      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      await supabase.from('event_category_stock').upsert({
         truck_id:    truck.id,
+        event_id,
         category,
         stock_count: stockCount ?? null,
-        date:        today,
-      }, { onConflict: 'truck_id,category,date' })
+      }, { onConflict: 'event_id,category' })
       return NextResponse.json({ success: true })
     }
 
     // ── DECREMENT STOCK ON ORDER ──────────────────────────────────────────────
+    // NOTE: no live client caller (kept for completeness). enforceStockLimits is per-event (Phase 4)
+    // — pass event_id from the body; it no-ops without one.
     if (action === 'decrement_stock') {
-      const { categoryMap } = body
-      const today = new Date().toISOString().split('T')[0]
+      const { categoryMap, event_id } = body
       // Live counts are read from the orders table — no counters to maintain.
       // categoryMap: { itemName: categoryName } from the caller.
-      await enforceStockLimits(supabase, truck.id, today, categoryMap || {})
+      await enforceStockLimits(supabase, truck.id, event_id, categoryMap || {})
       return NextResponse.json({ success: true })
     }
 

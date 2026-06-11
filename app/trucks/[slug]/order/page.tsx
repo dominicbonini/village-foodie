@@ -1053,14 +1053,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="mt-3 text-left">
               {event ? (
                 // Scoped to ONE event (deep-linked ?event_id, or the only event). Single-event
-                // card; "Change" returns to the order-entry schedule when there are alternatives.
+                // card; "Change" returns to the profile/schedule page (the event chooser) when there
+                // are alternatives — the order-page picker is redundant now.
                 <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3.5">
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-semibold text-slate-800 text-base leading-tight">
                       📍 {event.venue_name}{event.village ? `, ${event.village}` : ''}
                     </p>
                     {events.length > 1 && (
-                      <Link href={`/trucks/${slug}/order`} className="text-orange-600 text-xs font-bold shrink-0 mt-0.5 hover:underline">
+                      <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold shrink-0 mt-0.5 hover:underline">
                         Change
                       </Link>
                     )}

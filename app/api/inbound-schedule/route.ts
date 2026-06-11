@@ -57,23 +57,63 @@ export async function POST(req: NextRequest) {
     supabase.from('venues').select('id, name, village, latitude, longitude, postcode'),
   ])
 
-  // Single fuzzy venue matcher — used for BOTH venue_id resolution and the postcode/coords fallback,
-  // so a scraped name variant ("The Cavendish Five Bells") resolves to the stored venue ("Five Bells")
-  // in both places. Previously the postcode lookup used a strict .ilike(name) that missed variants.
+  // ── Venue matcher: token-overlap candidates → village-rank → ambiguity-BAIL ──────────────────────
+  // Used for BOTH venue_id resolution and the postcode/coords fallback (single source of truth, so a
+  // bail = no venue AND no postcode/coords — never a half-linked event). Replaces the old loose
+  // substring match that linked "The Cavendish Five Bells" to the Rattlesden "Five Bells".
+  //
+  // 1) CANDIDATES by token containment (drop stopwords): a venue is a candidate if its significant
+  //    tokens ⊆ the scraped tokens OR vice-versa (handles "Five Bells" ⊂ "Cavendish Five Bells" AND
+  //    "Platform One" ⊂ "Platform One, Clare Castle Country Park"), or an exact normalized-name match.
+  // 2) RANK by village agreement (normalized): event village == candidate village, OR the candidate's
+  //    village tokens all appear in the scraped name (the embedded-town signal — fixes Cavendish even
+  //    when the scraper left town null). Exactly one agreeing candidate → link it.
+  // 3) BAIL: ≥2 candidates with no village agreement (village null/blank or non-matching) → return
+  //    null. Blank-recoverable (operator fills it in) beats confident-wrong on the live site.
+  const STOP = new Set(['the', 'pub', 'inn', 'tavern', 'arms', 'bar', 'hotel', 'and', 'at', 'on', 'of'])
+  const toks = (s: string | null): string[] =>
+    (s || '').toLowerCase().split(/[^a-z0-9]+/).filter(t => t && !STOP.has(t))
+
   const findVenue = (venueName: string | null, village: string | null) => {
     if (!allVenues || !venueName) return null
-    const normVenue = normName(venueName)
-    const normVillage = normName(village || '')
-    return allVenues.find(v => {
-      const nameMatch = normName(v.name) === normVenue ||
-                        normName(v.name).includes(normVenue) ||
-                        normVenue.includes(normName(v.name))
-      const villageMatch = !normVillage ||
-                           normName(v.village || '') === normVillage ||
-                           normName(v.village || '').includes(normVillage) ||
-                           normVillage.includes(normName(v.village || ''))
-      return nameMatch && villageMatch
-    }) || null
+    const sTok = new Set(toks(venueName))
+    const normScraped = normName(venueName)
+
+    // 1) Candidates
+    const cands = (allVenues as any[]).filter(v => {
+      if (normName(v.name) === normScraped) return true
+      const vTok = new Set(toks(v.name))
+      if (vTok.size === 0 || sTok.size === 0) return false
+      const vSubS = [...vTok].every(t => sTok.has(t))   // venue name ⊆ scraped (e.g. "Five Bells")
+      const sSubV = [...sTok].every(t => vTok.has(t))   // scraped ⊆ venue name (e.g. "Platform One")
+      return vSubS || sSubV
+    })
+    if (cands.length === 0) return null
+    if (cands.length === 1) return cands[0]
+
+    // 2) Rank by village agreement. Primary: event village vs candidate village by token-subset in
+    //    EITHER direction, so "Clare" agrees with "Clare Castle Country Park" (specificity differs).
+    const evVilToks = toks(village)
+    let agree = evVilToks.length
+      ? cands.filter(c => {
+          const cvT = toks(c.village)
+          return cvT.length > 0 && (cvT.every(t => evVilToks.includes(t)) || evVilToks.every(t => cvT.includes(t)))
+        })
+      : []
+    // Fallback: candidate's village tokens all appear in the scraped name (embedded-town signal).
+    if (agree.length === 0) {
+      agree = cands.filter(c => {
+        const cv = toks(c.village)
+        return cv.length > 0 && cv.every(t => sTok.has(t))
+      })
+    }
+    if (agree.length === 1) return agree[0]
+    if (agree.length > 1) {
+      // Several candidates in the agreeing village — prefer an exact name match, else BAIL (ambiguous).
+      return agree.find(c => normName(c.name) === normScraped) || null
+    }
+    // 3) ≥2 candidates, none agree on village → BAIL (no venue, no postcode/coords).
+    return null
   }
 
   // Enrich each row with resolved IDs before upserting
@@ -191,7 +231,7 @@ export async function POST(req: NextRequest) {
       venuePostcode = matchedVenue.postcode ?? null
     }
 
-    const { error: insertErr } = await supabase.from('truck_events').insert({
+    const { data: insertedEvent, error: insertErr } = await supabase.from('truck_events').insert({
       truck_id:   truckId,
       venue_name: row.venue_name || null,
       town:       row.village || null,
@@ -207,12 +247,15 @@ export async function POST(req: NextRequest) {
       scraped_signature: row.venue_name || null,
       latitude,
       longitude,
-    })
+    }).select('id').single()
     if (insertErr) {
       console.error('[inbound-schedule] bridge insert failed:', insertErr.message)
       continue
     }
     bridgedCount++
+    // Per-event stock is sparse-override (rows created only on a dashboard edit) — no snapshot at
+    // creation. insertedEvent.id is captured for future per-event use (Phase 4/5).
+    void insertedEvent
 
     // Best-effort notification — once per truck per batch, with event list
     if (!notifiedTruckIds.has(truckId)) {
