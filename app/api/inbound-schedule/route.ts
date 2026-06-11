@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
+import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -137,18 +138,22 @@ export async function POST(req: NextRequest) {
       .single()
     if (truckPref?.scraper_preference === 'manual') continue
 
-    // Dedup: skip if a truck_events row already exists for this truck + date
-    // Scope by venue_name if present, otherwise date-only
-    let dedupQuery = supabase
+    // Dedup against the IMMUTABLE scraped_signature (Stage 2): fetch this truck's events on this
+    // date (date is exact + not editable, so it stays the scraped original), then fuzzy-match the
+    // incoming venue against each row's scraped_signature. This survives edits — an operator
+    // renaming the venue ("Fardons"→"Farndons") doesn't change scraped_signature, so a re-scrape of
+    // the original still matches and isn't re-surfaced. Falls back to venue_name for legacy rows
+    // with no signature yet (backward-compatible — same as the old venue_name dedup).
+    const { data: sameDay } = await supabase
       .from('truck_events')
-      .select('id')
+      .select('id, venue_name, scraped_signature')
       .eq('truck_id', truckId)
       .eq('event_date', row.event_date!)
-    if (row.venue_name) {
-      dedupQuery = dedupQuery.ilike('venue_name', row.venue_name)
-    }
-    const { data: existing } = await dedupQuery.maybeSingle()
-    if (existing) continue
+    const incomingVenue = normalizeVenue(row.venue_name || '')
+    const isDup = (sameDay || []).some(r =>
+      venuesFuzzyMatch(normalizeVenue(r.scraped_signature || r.venue_name || ''), incomingVenue)
+    )
+    if (isDup) continue
 
     // Look up venue coordinates
     let latitude: number | null = null
@@ -175,6 +180,8 @@ export async function POST(req: NextRequest) {
       notes:      row.event_notes || null,
       status:     'unconfirmed',
       source:     'scraper',
+      // Immutable as-scraped venue — set ONCE here, never touched by events/action update.
+      scraped_signature: row.venue_name || null,
       latitude,
       longitude,
     })
@@ -191,9 +198,11 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Send one notification email per truck that had new events bridged
-  for (const truckId of notifiedTruckIds) {
-    ;(async () => {
+  // Send one notification email per truck that had new events bridged. AWAITED (Promise.all) so
+  // the sends complete before the handler returns — on serverless (Vercel) an unawaited promise
+  // can be killed when the response is sent, so a fire-and-forget IIFE never actually emailed.
+  // Per-send try/catch keeps one truck's failure from breaking the others (events still bridged).
+  await Promise.all([...notifiedTruckIds].map(async (truckId) => {
       try {
         const { data: truck } = await supabase
           .from('trucks')
@@ -250,10 +259,9 @@ export async function POST(req: NextRequest) {
           truckName: truck.name,
         })
       } catch (err) {
-        console.error('[inbound-schedule] notification failed:', err)
+        console.error(`[inbound-schedule] notification failed for truck ${truckId}:`, err)
       }
-    })()
-  }
+  }))
 
   console.log(`[inbound-schedule] wrote ${rows.length} discovery rows, bridged ${bridgedCount} to truck_events`)
   return NextResponse.json({ ok: true, inserted: rows.length, bridged: bridgedCount })

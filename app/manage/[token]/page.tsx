@@ -180,6 +180,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
+  // Pending scraper-approval count → Schedule nav badge + "events to approve" banner.
+  const [pendingApprovalCount, setPendingApprovalCount] = useState(0)
+  // Banner is dismissible per-session but REAPPEARS when the count rises above the dismissed level
+  // (i.e. new events arrived) — not dismissed-forever.
+  const [bannerDismissedAtCount, setBannerDismissedAtCount] = useState<number | null>(null)
+  const showApprovalBanner = pendingApprovalCount > 0 &&
+    (bannerDismissedAtCount === null || pendingApprovalCount > bannerDismissedAtCount)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => setToast({ msg, type })
 
@@ -205,6 +212,26 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [token])
 
   useEffect(() => { load() }, [load])
+
+  // Fetch the pending scraper-approval count on load so the badge/banner show without opening
+  // Schedule. ScheduleTab keeps it live via onPendingCount after approve/reject. Upcoming only
+  // (end not passed), source=scraper, status=unconfirmed — mirrors the Schedule "Needs approval" list.
+  useEffect(() => {
+    let cancelled = false
+    fetch(`/api/events/manage?token=${token}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (cancelled || !Array.isArray(d?.events)) return
+        const now = new Date()
+        const n = d.events.filter((e: any) =>
+          e.status === 'unconfirmed' && e.source === 'scraper' &&
+          (e.end_time ? now < new Date(`${e.event_date}T${e.end_time}`) : new Date(`${e.event_date}T23:59`) >= now)
+        ).length
+        setPendingApprovalCount(n)
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [token])
 
   // Read ?tab= query param on mount and activate that tab
   useEffect(() => {
@@ -345,13 +372,30 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
-              <span>{t.icon}</span>{t.label}
+              <span>{t.icon}</span>
+              {t.id === 'schedule' && pendingApprovalCount > 0 ? (
+                // Pending: show the count inline in the same font, reading "Schedule (8)" in orange.
+                <span className="text-orange-400">{t.label} ({pendingApprovalCount})</span>
+              ) : (
+                t.label
+              )}
             </button>
           ))}
         </div>
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-6">
+        {/* Events-to-approve banner — helpful framing, dismissible, reappears when more arrive */}
+        {showApprovalBanner && (
+          <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
+            <span className="text-amber-500 text-lg shrink-0">📅</span>
+            <p className="text-sm text-amber-800 flex-1">
+              We found <strong>{pendingApprovalCount}</strong> event{pendingApprovalCount !== 1 ? 's' : ''} for you — review and approve before they go live.
+            </p>
+            <button onClick={() => setActiveTab('schedule')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
+            <button onClick={() => setBannerDismissedAtCount(pendingApprovalCount)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none shrink-0">✕</button>
+          </div>
+        )}
         {/* Mandatory fields banner */}
         {(() => {
           const missing = [
@@ -378,7 +422,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} operatorTrucks={operatorTrucks} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} />
+        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} operatorTrucks={operatorTrucks} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -2338,13 +2382,14 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
   return { start_time: newStart, end_time: currentEnd }
 }
 
-function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTrucks, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify }: {
+function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTrucks, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount }: {
   isActive: boolean; truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
   operatorTrucks: { id: string; name: string; dashboard_token: string }[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   onSwitchTab: (tab: Tab) => void
   pendingVerifyEvents?: any[] | null
   onClearPendingVerify?: () => void
+  onPendingCount?: (n: number) => void
 }) {
   const [events, setEvents] = useState<TruckEvent[]>([])
   const [loadingEvents, setLoadingEvents] = useState(true)
@@ -2394,6 +2439,18 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
   }, [token])
 
   useEffect(() => { if (isActive) loadEvents() }, [isActive, loadEvents])
+  // Keep the parent's Schedule badge/banner count live after approve/reject (optimistic setEvents).
+  // Upcoming scraper-unconfirmed only — mirrors the "Needs your approval" list. Past-check inlined
+  // (isPastEvent is defined later in render). Skipped while still loading (avoid a transient 0).
+  useEffect(() => {
+    if (!onPendingCount || loadingEvents) return
+    const now = new Date()
+    const n = events.filter(e =>
+      e.status === 'unconfirmed' && e.source === 'scraper' &&
+      (e.end_time ? now < new Date(`${e.event_date}T${e.end_time}`) : new Date(`${e.event_date}T23:59`) >= now)
+    ).length
+    onPendingCount(n)
+  }, [events, loadingEvents, onPendingCount])
   useEffect(() => { if (isActive) api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {}) }, [isActive])
   useEffect(() => {
     if (!isActive) return
@@ -2725,17 +2782,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
     await api('update_event_deal', { eventId, bundleId, active })
   }
 
-  const renderEvent = (event: TruckEvent) => {
+  const renderEvent = (event: TruckEvent, pending = false) => {
     const isPast = isPastEvent(event) || event.status === 'cancelled'
     const dateObj = new Date(event.event_date + 'T00:00:00')
     const dayName = dateObj.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase()
     const dayNum = dateObj.getDate()
     const month = dateObj.toLocaleDateString('en-GB', { month: 'short' }).toUpperCase()
-
-    const townAlreadyInVenue = event.town
-      ? event.venue_name?.toLowerCase().includes(event.town.toLowerCase())
-      : false
-    const venueDisplay = event.venue_name + (!townAlreadyInVenue && event.town ? `, ${event.town}` : '')
 
     return (
       <Card key={event.id}>
@@ -2753,14 +2805,18 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
             {/* Divider */}
             <div className="w-px bg-slate-100 self-stretch flex-shrink-0" />
 
-            {/* Venue + time + status */}
+            {/* Venue / area & postcode / time — 3 lines */}
             <div className="flex-1 min-w-0">
+              {/* Line 1: venue name (+ status) */}
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-sm font-bold text-slate-900">
-                  {venueDisplay}
-                </p>
+                <p className="text-sm font-bold text-slate-900">{event.venue_name}</p>
                 <EventStatusBadge status={event.status} event_date={event.event_date} end_time={event.end_time} />
               </div>
+              {/* Line 2: area & postcode */}
+              {(event.town || event.postcode) && (
+                <p className="text-xs text-slate-500 mt-0.5">{[event.town, event.postcode].filter(Boolean).join(' · ')}</p>
+              )}
+              {/* Line 3: time (+ van / truck) */}
               <p className="text-sm font-semibold text-slate-700 mt-0.5">
                 {event.start_time && event.end_time && `${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
                 {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
@@ -2770,38 +2826,62 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
                   </span>
                 )}
               </p>
-              {event.postcode && (
-                <p className="text-xs text-slate-400 mt-0.5">{event.postcode}</p>
-              )}
               {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
             </div>
 
-            {/* Actions — right aligned */}
+            {/* Actions — right-aligned in the card's button slot. Scraper-pending events show
+                [Approve][Edit][Reject] HERE (same slot as Confirm/Edit/Cancel), not a separate row. */}
             <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
-              {event.status === 'unconfirmed' && (
-                <button onClick={() => handleConfirmEvent(event.id)} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
-                  <span className="sm:hidden">✓</span>
-                  <span className="hidden sm:inline">Confirm</span>
-                </button>
-              )}
-              <button onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                <span className="sm:hidden">⧉</span>
-                <span className="hidden sm:inline">Copy</span>
-              </button>
-              {!isPast && (
+              {pending ? (
                 <>
-                  <button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
-                    <span className="sm:hidden">✏</span>
-                    <span className="hidden sm:inline">Edit</span>
+                  <button onClick={() => handleConfirmEvent(event.id)} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2.5 py-1.5 hover:bg-green-50">Approve</button>
+                  {!isPast && (
+                    <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2.5 py-1.5 hover:bg-slate-50">Edit</button>
+                  )}
+                  {pendingRejectId !== event.id && (
+                    <button onClick={() => setPendingRejectId(event.id)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2.5 py-1.5 hover:bg-red-50">Reject</button>
+                  )}
+                </>
+              ) : (
+                <>
+                  {event.status === 'unconfirmed' && (
+                    <button onClick={() => handleConfirmEvent(event.id)} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
+                      <span className="sm:hidden">✓</span>
+                      <span className="hidden sm:inline">Confirm</span>
+                    </button>
+                  )}
+                  <button onClick={() => { setAddMode('manual'); setExtractedEvents([]); handleCopyEvent(event) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                    <span className="sm:hidden">⧉</span>
+                    <span className="hidden sm:inline">Copy</span>
                   </button>
-                  <button onClick={() => openEventCancelModal(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">
-                    <span className="sm:hidden">✕</span>
-                    <span className="hidden sm:inline">Cancel</span>
-                  </button>
+                  {!isPast && (
+                    <>
+                      <button onClick={() => { setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">
+                        <span className="sm:hidden">✏</span>
+                        <span className="hidden sm:inline">Edit</span>
+                      </button>
+                      <button onClick={() => openEventCancelModal(event)} className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2 py-1.5 hover:bg-red-50">
+                        <span className="sm:hidden">✕</span>
+                        <span className="hidden sm:inline">Cancel</span>
+                      </button>
+                    </>
+                  )}
                 </>
               )}
             </div>
           </div>
+
+          {/* Reject confirm — scraper-pending only, inline below the row */}
+          {pending && pendingRejectId === event.id && (
+            <div className="mt-3 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-600">
+              <p className="font-medium mb-2">Remove this event?</p>
+              <div className="flex gap-2 flex-wrap">
+                <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, true)} className="text-xs font-medium px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">Yes, exclude similar</button>
+                <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, false)} className="text-xs font-medium px-3 py-1.5 border border-slate-200 bg-white rounded-lg hover:bg-slate-50">Just remove this one</button>
+                <button type="button" onClick={() => setPendingRejectId(null)} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5 ml-auto">Cancel</button>
+              </div>
+            </div>
+          )}
 
           {/* Deals — collapsed by default, expand on tap */}
           {!isPast && bundles.length > 0 && (() => {
@@ -3461,7 +3541,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
       {openEvents.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Open now</p>
-          {openEvents.map(renderEvent)}
+          {openEvents.map(e => renderEvent(e))}
         </div>
       )}
 
@@ -3470,90 +3550,33 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
           <div className="mb-1">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Needs your approval</p>
             <p className="text-sm text-slate-600 mt-0.5">
-              We found {scraperUnconfirmed.length} event{scraperUnconfirmed.length !== 1 ? 's' : ''} from your website — review and approve before they go live.
+              We found {scraperUnconfirmed.length} event{scraperUnconfirmed.length !== 1 ? 's' : ''} for you — review and approve before they go live.
             </p>
           </div>
-          {scraperUnconfirmed.map(event => {
-            const isPast = isPastEvent(event)
-            return (
-              <div key={event.id} className="border-l-4 border-l-amber-400 bg-white border border-slate-200 rounded-2xl overflow-hidden">
-                {renderEvent(event)}
-                <div className="flex gap-2 px-4 pb-3 pt-0">
-                  <button
-                    onClick={() => handleConfirmEvent(event.id)}
-                    className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-1.5 hover:bg-green-50"
-                  >
-                    Approve
-                  </button>
-                  {!isPast && (
-                    <button
-                      onClick={() => {
-                        setEditingEventConfirmOnSave(true)
-                        setFormErrors({})
-                        setEditingEvent({
-                          id: event.id,
-                          venue_name: event.venue_name,
-                          town: event.town || '',
-                          postcode: event.postcode || '',
-                          address: event.address || '',
-                          event_date: event.event_date,
-                          start_time: event.start_time ? event.start_time.substring(0, 5) : '',
-                          end_time: event.end_time ? event.end_time.substring(0, 5) : '',
-                          notes: event.notes || '',
-                          truck_id: event.truck_id || truck.id,
-                          van_id: event.van_id || null,
-                        })
-                      }}
-                      className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-1.5 hover:bg-slate-50"
-                    >
-                      Edit &amp; Approve
-                    </button>
-                  )}
-                  {pendingRejectId !== event.id && (
-                    <button
-                      onClick={() => setPendingRejectId(event.id)}
-                      className="text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-1.5 hover:bg-red-50 ml-auto"
-                    >
-                      Reject
-                    </button>
-                  )}
-                </div>
-                {pendingRejectId === event.id && (
-                  <div className="px-4 py-3 bg-slate-50 border-t border-slate-100 text-sm text-slate-600">
-                    <p className="font-medium mb-2">Remove this event?</p>
-                    <div className="flex gap-2">
-                      <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, true)} className="text-xs font-medium px-3 py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900">
-                        Yes, exclude similar
-                      </button>
-                      <button type="button" onClick={() => handleRejectScrapedEvent(event.id, event.venue_name, false)} className="text-xs font-medium px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-white">
-                        Just remove this one
-                      </button>
-                      <button type="button" onClick={() => setPendingRejectId(null)} className="text-xs text-slate-400 hover:text-slate-600 px-2 py-1.5 ml-auto">Cancel</button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )
-          })}
+          {scraperUnconfirmed.map(event => (
+            <div key={event.id} className="border-l-4 border-l-amber-400 bg-white border border-slate-200 rounded-2xl overflow-hidden">
+              {renderEvent(event, true)}
+            </div>
+          ))}
         </div>
       )}
 
       {operatorUnconfirmed.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Needs confirmation</p>
-          {operatorUnconfirmed.map(renderEvent)}
+          {operatorUnconfirmed.map(e => renderEvent(e))}
         </div>
       )}
 
       {confirmedEvents.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-bold text-slate-400 uppercase tracking-wide">Confirmed</p>
-          {confirmedEvents.map(renderEvent)}
+          {confirmedEvents.map(e => renderEvent(e))}
         </div>
       )}
 
       {otherUpcoming.length > 0 && (
-        <div className="space-y-2">{otherUpcoming.map(renderEvent)}</div>
+        <div className="space-y-2">{otherUpcoming.map(e => renderEvent(e))}</div>
       )}
 
       {past.length > 0 && (
@@ -3566,7 +3589,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
             <span>Past events ({past.length})</span>
           </button>
           {showPast && (
-            <div className="mt-3 space-y-2">{past.map(renderEvent)}</div>
+            <div className="mt-3 space-y-2">{past.map(e => renderEvent(e))}</div>
           )}
         </div>
       )}
@@ -4424,8 +4447,8 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         <p className="text-base font-bold text-slate-800">Your schedule</p>
         <div className="space-y-2">
           {([
-            { value: 'manual', label: "I'll upload the schedule myself", desc: 'Use the Import schedule button on your Schedule tab to add events.' },
-            { value: 'auto',   label: 'Find my events automatically',    desc: "We'll check your website for new events and email you to approve them before anything goes live. You can still add events manually at any time." },
+            { value: 'manual', label: "I'll add events myself", desc: 'You add your own events.' },
+            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval." },
           ] as { value: 'auto' | 'manual'; label: string; desc: string }[]).map(opt => {
             const pref = form.scraper_preference ?? 'manual'
             const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
@@ -4452,6 +4475,11 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             )
           })}
         </div>
+        {/* Clarifier — applies to BOTH options: found events always come for approval, nothing
+            goes live until confirmed (so a "I'll add events myself" truck isn't surprised). */}
+        <p className="text-xs text-slate-500">
+          Either way, if we find your events listed elsewhere, we&apos;ll still send these to you for approval. Nothing goes live until you confirm it.
+        </p>
         {['auto', 'both'].includes(form.scraper_preference ?? 'manual') && (
           <div className="space-y-1">
             <p className="text-sm font-semibold text-slate-800">Where do you post your schedule?</p>
