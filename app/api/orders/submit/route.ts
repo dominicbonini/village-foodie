@@ -21,6 +21,7 @@ import type { CatConfig } from '@/lib/prep-utils'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
+import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -165,53 +166,6 @@ async function eventKitchenCapacity(
   return { kitchenCapacity, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0 }
 }
 
-// ── Per-EVENT mutex (Option A) — gap-free serialization ───────────────────────
-// One event-level lock per submit so the entire decide-and-book runs against a
-// snapshot that already includes EVERY prior booking on the event — required by the
-// cumulative cross-slot per-category throughput model (b), not just per-slot (a).
-const LOCK_TTL_MS = 10_000      // a leaked lock self-heals after this
-const LOCK_MAX_WAIT_MS = 1_000  // total acquire budget before the pending fallback
-const LOCK_RETRY_MS = 150
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
-/**
- * Acquire the per-event booking lock. Acquire = INSERT into booking_locks; a PK
- * conflict (23505) means it's held — retry within the budget. Stale rows (older than
- * LOCK_TTL_MS) are reclaimed first, and the sweep only deletes rows OLDER than the TTL
- * so a fresh lock is never stolen. Returns true if acquired (caller MUST release in
- * finally); false if contended/errored → caller falls back to pending (never overfills).
- */
-async function acquireEventLock(truckId: string, eventDate: string): Promise<boolean> {
-  const deadline = Date.now() + LOCK_MAX_WAIT_MS
-  for (;;) {
-    await supabase
-      .from('booking_locks')
-      .delete()
-      .eq('truck_id', truckId)
-      .eq('event_date', eventDate)
-      .lt('locked_at', new Date(Date.now() - LOCK_TTL_MS).toISOString())
-    const { error } = await supabase
-      .from('booking_locks')
-      .insert({ truck_id: truckId, event_date: eventDate })
-    if (!error) return true
-    if (error.code !== '23505') {
-      console.warn('[booking_locks] acquire error (failing safe to pending):', error.message)
-      return false
-    }
-    if (Date.now() >= deadline) return false
-    await sleep(LOCK_RETRY_MS)
-  }
-}
-
-async function releaseEventLock(truckId: string, eventDate: string): Promise<void> {
-  const { error } = await supabase
-    .from('booking_locks')
-    .delete()
-    .eq('truck_id', truckId)
-    .eq('event_date', eventDate)
-  if (error) console.warn('[booking_locks] release failed (self-heals via TTL):', error.message)
-}
-
 /**
  * Customer slot rule (Section 5/6/7), race-safe via ONE per-event lock. The whole
  * walk runs inside a single lock: read units FRESH (reflecting all prior bookings on
@@ -225,9 +179,14 @@ async function releaseEventLock(truckId: string, eventDate: string): Promise<voi
  *                  booked. A slot is never overfilled and the customer is never rejected.
  *
  * Reuses buildSlotAvailability + addOrderToProductionSlot — no forked formula (S3/S6),
- * no change to writer semantics (we only wrap decide+book in the lock).
+ * no change to writer semantics.
+ *
+ * LOCK-FREE: the CALLER MUST already hold the per-event booking lock. The acquire/release is
+ * hoisted to the POST handler so the stock re-check + order insert + this placement all run
+ * under ONE lock (Option B atomic stock guard). Here booked=false means "event full / no
+ * fitting slot before end" only — lock contention is handled by the caller.
  */
-async function claimAvailableSlot(
+async function placeOrderInSlotLocked(
   truckId: string,
   eventDate: string,
   eventId: string | null,
@@ -241,13 +200,8 @@ async function claimAvailableSlot(
   slotDurationMins?: number,
   kitchenCapacity?: number | null,
 ): Promise<{ finalSlot: string | null; booked: boolean }> {
-  // Lock stays keyed by (truckId, eventDate) — unchanged. event_id only scopes the
-  // production_slot_usage read/write below so same-date events don't pool.
-  if (!(await acquireEventLock(truckId, eventDate))) {
-    console.warn(`[claimAvailableSlot] event lock contended (${truckId}/${eventDate}) — pending fallback`)
-    return { finalSlot: requestedSlot, booked: false }
-  }
-  try {
+  // event_id scopes the production_slot_usage read/write so same-date events don't pool.
+  {
     const { data: staticTimes } = await supabase
       .from('collection_times')
       .select('collection_time, production_slot')
@@ -317,8 +271,6 @@ async function claimAvailableSlot(
     }
     await addOrderToProductionSlot(supabase, truckId, eventId, placement, orderLines, itemCatMap)
     return { finalSlot: placement, booked: true }
-  } finally {
-    await releaseEventLock(truckId, eventDate)
   }
 }
 
@@ -458,8 +410,9 @@ export async function POST(req: NextRequest) {
 
     // NOTE: the old "slot full → 409" hard-block is removed for the customer path.
     // A full slot now never rejects — capacity is resolved at booking time by
-    // claimAvailableSlot (reassign to the first available later slot, else pending).
-    // Non-capacity validation (payload/total/event) stays below, unchanged.
+    // placeOrderInSlotLocked (reassign to the first available later slot, else pending).
+    // Non-capacity validation (payload/total/event) stays below, unchanged. The ONE 409
+    // the customer path can return now is the atomic stock guard (out of stock), below.
 
     // ── Server-side total validation ──────────────────────────────────────────
     const { data: menuItems } = await supabase
@@ -558,98 +511,138 @@ export async function POST(req: NextRequest) {
       eventRow = data
     }
 
-    // ── Generate display number (per-event, restarts at 1) ────────────────────
-    // order_key (UUID) is generated by the column default — never set it here.
-    const orderId = await nextOrderId(eventRow?.id ?? null, resolvedTruckId)
-
-    // ── Save to Supabase ──────────────────────────────────────────────────────
-    const { data: order, error: insertErr } = await supabase
-      .from('orders')
-      .insert({
-        id:             orderId,
-        truck_id:       resolvedTruckId,
-        customer_name:  customerName,
-        customer_email: customerEmail,
-        customer_phone: customerPhone,
-        slot:           slot ?? null,
-        order_type:     'collection',
-        event_date:     orderEventDate,
-        event_id:       eventRow?.id ?? null,
-        van_id:         eventRow?.van_id ?? null,
-        items,
-        deals:          deals ?? null,
-        discount_code:  discountCode ?? null,
-        subtotal:       subtotal ?? total,
-        discount_amt:   discountAmt ?? 0,
-        total,
-        notes:          notes ?? null,
-        status:         'pending',
-        payment_status: 'unpaid',
-      })
-      .select()
-      .single()
-
-    if (insertErr || !order) {
-      console.error('Order insert error:', insertErr)
-      return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
-    }
-
-    // ── Capacity-safe slot placement (customer path, Section 5/7) ─────────────
-    // Customers only ever get an AVAILABLE slot. The chosen slot is validated
-    // against LIVE capacity under a per-slot lock (claimAvailableSlot): not red →
-    // use it; full → reassign to the first available later slot; all full →
-    // pending. Never rejected. Status: auto-accept ON → confirm; OFF → pending on
-    // the (possibly reassigned) available slot for operator confirmation.
+    // ── Atomic stock guard + slot placement under ONE per-event lock (Stage 2, Option B) ──
+    // The booking_locks mutex is HOISTED here (it used to live inside claimAvailableSlot) so the
+    // stock re-check, the order INSERT, and the slot claim all run under a SINGLE lock — two
+    // concurrent submits can't both read the same "N remaining" and both insert (oversell). The
+    // stock check is BEFORE the insert → a shortfall returns 409 with NO half-written order (no
+    // rollback). GUARANTEE: NO order is ever inserted without holding the lock AND passing the
+    // stock check, so total sold can never exceed stock. On contention the caller WAITS within
+    // acquireEventLock's retry budget (which absorbs the timing blip); only if the budget is
+    // genuinely exhausted do we bail WITHOUT inserting and ask the client to retry — we never
+    // fall back to a non-atomic insert.
+    const haveLock = await acquireEventLock(resolvedTruckId, orderEventDate)
+    let order: any = null
+    let orderId = ''
     const requestedSlot = slot ?? null
-    let confirmedSlot = requestedSlot          // what the customer email shows (null = ASAP)
+    let confirmedSlot: string | null = requestedSlot   // what the customer email shows (null = ASAP)
     let autoAccepted = false
     let slotChanged = false
+    try {
+      // Lock not acquired within the retry budget (sustained overload, not a blip). We must NOT
+      // insert without the lock — overselling would be possible. Bail non-destructively; the
+      // client re-submits (basket kept). This is rare: the budget already absorbs normal waits.
+      if (!haveLock) {
+        return NextResponse.json(
+          { error: 'We are handling a lot of orders right now — please try again', retry: true },
+          { status: 409 },
+        )
+      }
 
-    if (eventDate) {
-      // Live kitchen_capacity (items) from the event's van — same source as the
-      // operator traffic light, so customer placement and the dot agree on "full".
-      const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
-      const claim = await claimAvailableSlot(
-        resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
-        eventRow?.start_time ?? null,
-        eventRow?.end_time ?? null,
-        truck.collection_interval_mins ?? 0,
-        truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
-        kitchenCapacity,
-      )
-      const update: Record<string, unknown> = {}
-      if (claim.booked && claim.finalSlot) {
-        const dur = truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
-        if (requestedSlot) {
-          // Chosen slot: persist the (possibly reassigned) slot; slotChanged drives
-          // the slotAdjustedFrom email box (Section 18 — reused, no new copy).
-          confirmedSlot = claim.finalSlot
-          slotChanged = claim.finalSlot !== requestedSlot
-          if (slotChanged) update.slot = claim.finalSlot
-        } else {
-          // ASAP: keep slot null ONLY when booked at the event-start window, so the
-          // production_slot_usage booking matches the writers' null->event-start
-          // resolution (book/unbook identity; writer semantics untouched). If pushed
-          // to a later window, persist the concrete slot (email then shows that time).
-          const startPs = deriveProductionSlot(String(eventRow?.start_time ?? claim.finalSlot).slice(0, 5), dur)
-          const finalPs = deriveProductionSlot(claim.finalSlot, dur)
-          if (finalPs === startPs) {
-            confirmedSlot = null            // customer still sees "ASAP"
-          } else {
-            update.slot = claim.finalSlot   // pushed later -> concrete collection time
+      // (a) STOCK RE-CHECK — event-scoped, deal-inclusive (orderLines already flattens deal-slot
+      //     constituents). Skipped when no resolved event (no event to scope live counts to).
+      //     Customer HARD STOP: any requested qty over remaining → 409, NO insert. Atomic: we
+      //     hold the lock through [check → insert], so a concurrent submit waits and then sees
+      //     this order's insert in its own check.
+      if (eventRow?.id) {
+        const shortfall = await checkStockShortfall(resolvedTruckId, eventRow.id, orderEventDate, orderLines, itemCatMap)
+        if (shortfall) {
+          return NextResponse.json(
+            { error: 'Some items just sold out', stock: true, items: shortfall },
+            { status: 409 },
+          )
+        }
+      }
+
+      // (b) Display number (per-event, restarts at 1) — under the lock, which also serialises
+      //     the per-event counter. order_key (UUID) is generated by the column default.
+      orderId = await nextOrderId(eventRow?.id ?? null, resolvedTruckId)
+
+      // (c) INSERT — the first irreversible write, only after stock passed.
+      const insertRes = await supabase
+        .from('orders')
+        .insert({
+          id:             orderId,
+          truck_id:       resolvedTruckId,
+          customer_name:  customerName,
+          customer_email: customerEmail,
+          customer_phone: customerPhone,
+          slot:           slot ?? null,
+          order_type:     'collection',
+          event_date:     orderEventDate,
+          event_id:       eventRow?.id ?? null,
+          van_id:         eventRow?.van_id ?? null,
+          items,
+          deals:          deals ?? null,
+          discount_code:  discountCode ?? null,
+          subtotal:       subtotal ?? total,
+          discount_amt:   discountAmt ?? 0,
+          total,
+          notes:          notes ?? null,
+          status:         'pending',
+          payment_status: 'unpaid',
+        })
+        .select()
+        .single()
+
+      if (insertRes.error || !insertRes.data) {
+        console.error('Order insert error:', insertRes.error)
+        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+      }
+      order = insertRes.data
+
+      // (d) Capacity-safe slot placement (customer path, Section 5/7). Customers only ever get
+      // an AVAILABLE slot: not red → use it; full → reassign to the first available later slot;
+      // all full → pending. Never rejected. We hold the lock here, so placeOrderInSlotLocked
+      // (the lock-free body) runs its read-decide-write safely.
+      if (eventDate) {
+        // Live kitchen_capacity (items) from the event's van — same source as the operator
+        // traffic light, so customer placement and the dot agree on "full".
+        const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
+        const claim = await placeOrderInSlotLocked(
+          resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
+          eventRow?.start_time ?? null,
+          eventRow?.end_time ?? null,
+          truck.collection_interval_mins ?? 0,
+          truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
+          kitchenCapacity,
+        )
+        const update: Record<string, unknown> = {}
+        if (claim.booked && claim.finalSlot) {
+          const dur = truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
+          if (requestedSlot) {
+            // Chosen slot: persist the (possibly reassigned) slot; slotChanged drives
+            // the slotAdjustedFrom email box (Section 18 — reused, no new copy).
             confirmedSlot = claim.finalSlot
+            slotChanged = claim.finalSlot !== requestedSlot
+            if (slotChanged) update.slot = claim.finalSlot
+          } else {
+            // ASAP: keep slot null ONLY when booked at the event-start window, so the
+            // production_slot_usage booking matches the writers' null->event-start
+            // resolution (book/unbook identity; writer semantics untouched). If pushed
+            // to a later window, persist the concrete slot (email then shows that time).
+            const startPs = deriveProductionSlot(String(eventRow?.start_time ?? claim.finalSlot).slice(0, 5), dur)
+            const finalPs = deriveProductionSlot(claim.finalSlot, dur)
+            if (finalPs === startPs) {
+              confirmedSlot = null            // customer still sees "ASAP"
+            } else {
+              update.slot = claim.finalSlot   // pushed later -> concrete collection time
+              confirmedSlot = claim.finalSlot
+            }
+          }
+          if (truck.auto_accept) {
+            autoAccepted = true
+            update.status = 'confirmed'
           }
         }
-        if (truck.auto_accept) {
-          autoAccepted = true
-          update.status = 'confirmed'
+        // !claim.booked -> event full / lock contended -> leave pending at requested
+        // (or ASAP/null), unbooked. Never rejected, never overfilled.
+        if (Object.keys(update).length) {
+          await supabase.from('orders').update(update).eq('order_key', order.order_key)
         }
       }
-      // !claim.booked -> event full / lock contended -> leave pending at requested
-      // (or ASAP/null), unbooked. Never rejected, never overfilled.
-      if (Object.keys(update).length) {
-        await supabase.from('orders').update(update).eq('order_key', order.order_key)
-      }
+    } finally {
+      if (haveLock) await releaseEventLock(resolvedTruckId, orderEventDate)
     }
 
     // ── Record upsell events ──────────────────────────────────────────────────

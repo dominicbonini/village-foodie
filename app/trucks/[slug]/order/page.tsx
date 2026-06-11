@@ -4,6 +4,7 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef, use } from 'reac
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
@@ -99,10 +100,24 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
   return parts.length > 0 ? `${itemName}::${parts.join('::')}` : itemName
 }
 
+// Live (open now) vs Pre-order (confirmed, not yet open) — derived from the event's own times,
+// local-parse per the engineering manual. Past events are already filtered out before display,
+// so a non-live upcoming event is a pre-order (ordering works via submit's confirmed-allowed guard).
+function isEventLiveNow(e: { date_iso?: string; start_time?: string; end_time?: string }): boolean {
+  if (!e.date_iso || !e.start_time || !e.end_time) return false
+  const now = new Date()
+  return now >= new Date(`${e.date_iso}T${e.start_time}`) && now < new Date(`${e.date_iso}T${e.end_time}`)
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function OrderPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
+  // Per-event deep-link (hatchgrab "Order now" flow). ?event_id present → scope the page to that
+  // one truck_events row (single-event card + "Change"). Absent → the order-entry schedule:
+  // a single-event truck auto-selects; a multi-event truck shows the picker to choose from.
+  const searchParams = useSearchParams()
+  const eventIdParam = searchParams.get('event_id')
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [menu, setMenu] = useState<TruckMenu | null>(null)
@@ -116,6 +131,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Non-destructive "orders paused" notice on a submit 423 — keeps the basket + order UI
   // (unlike `error`, which renders the page-replacing error view).
   const [pauseNotice, setPauseNotice] = useState<string | null>(null)
+  // Non-destructive "just sold out" notice on a submit 409 (atomic stock guard) — keeps the
+  // basket (capped to what's left) so the customer can review + re-submit. Customer hard stop.
+  const [stockNotice, setStockNotice] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
@@ -288,7 +306,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           })
           if (upcoming.length > 0) {
             setEvents(upcoming)
-            setEvent(upcoming[0])
+            // Selection is derived from ?event_id in the effect below — don't pre-select here.
           } else {
             setNoEvents(true)
           }
@@ -303,6 +321,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     }
     loadEvent()
   }, [slug])
+
+  // Derive the selected event from ?event_id (the deep-link). With a valid id → scope to it;
+  // without → auto-select the only event (single-event truck), else leave unselected so the
+  // picker (the order-entry schedule) is shown. Reset the slot when the scope changes so no
+  // slot from a previously-viewed event lingers. Re-runs on Link navigation (param change).
+  useEffect(() => {
+    if (!events.length) { setEvent(null); return }
+    const next = eventIdParam
+      ? (events.find(e => e.id === eventIdParam) ?? null)
+      : (events.length === 1 ? events[0] : null)
+    setEvent(next)
+    setSlotHour(''); setSlotMinute('')
+  }, [eventIdParam, events])
 
 
   useEffect(() => {
@@ -360,6 +391,29 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       if (!ex) return prev
       if (ex.quantity === 1) return prev.filter(b => b.cartKey !== cartKey)
       return prev.map(b => b.cartKey === cartKey ? { ...b, quantity: b.quantity - 1 } : b)
+    })
+  }
+
+  // Cap basket lines to the server's authoritative remaining (submit-409 stock guard). For each
+  // over-ordered item, trim quantity across its variant lines (from the last) until total ≤
+  // remaining; drop any line that hits 0. Deal-routed items aren't trimmed here — the server
+  // re-rejects on resubmit, so oversell is still impossible.
+  const capBasketToRemaining = (shortItems: { name: string; remaining: number }[]) => {
+    if (!shortItems.length) return
+    setBasket(prev => {
+      let next = [...prev]
+      for (const { name, remaining } of shortItems) {
+        const total = next.filter(b => b.menuItem.name === name).reduce((s, b) => s + b.quantity, 0)
+        let excess = total - Math.max(0, remaining)
+        if (excess <= 0) continue
+        for (let i = next.length - 1; i >= 0 && excess > 0; i--) {
+          if (next[i].menuItem.name !== name) continue
+          const take = Math.min(next[i].quantity, excess)
+          next[i] = { ...next[i], quantity: next[i].quantity - take }
+          excess -= take
+        }
+      }
+      return next.filter(b => b.quantity > 0)
     })
   }
 
@@ -679,6 +733,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (truck.mode === 'village' && !selectedSlot && !asapChosen) return
     setSubmitting(true)
     setPauseNotice(null)
+    setStockNotice(null)
     try {
       const res = await fetch('/api/orders/submit', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -704,6 +759,32 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       // and let the customer wait and re-submit. Do NOT setError (page-replacing) or clear basket.
       if (res.status === 423 || data?.paused) {
         setPauseNotice('Orders are paused right now — please check back shortly. Your order is saved here.')
+        return
+      }
+      // Lock contention past the retry budget (very rare, sustained load): the server did NOT
+      // insert (no-oversell guarantee). Non-destructive — keep the basket, ask to re-submit.
+      if (res.status === 409 && data?.retry) {
+        setPauseNotice('We are handling a lot of orders right now — please tap Place order again in a moment. Your order is saved here.')
+        return
+      }
+      // Out of stock (409, atomic guard): non-destructive HARD STOP — cap the basket to what's
+      // actually left, refresh availability, show a warning, and let the customer re-submit.
+      // Mirrors the pause-423 pattern (keep basket, never page-replacing). Customer can't exceed.
+      if (res.status === 409 && data?.stock) {
+        const shortItems: { name: string; remaining: number }[] = Array.isArray(data.items) ? data.items : []
+        capBasketToRemaining(shortItems)
+        setStockNotice(
+          shortItems.length
+            ? shortItems.map(s => `only ${s.remaining} ${s.name} left`).join(', ')
+            : 'some items just sold out'
+        )
+        // Refresh stock_remaining badges from the authoritative menu read.
+        if (event?.id) {
+          fetch(`/api/menu/${slug}?event_id=${event.id}`, { cache: 'no-store' })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => { if (d?.menu) { setMenu(d.menu); if (d.truck) setTruck(d.truck) } })
+            .catch(() => null)
+        }
         return
       }
       if (!res.ok) throw new Error(data.error || 'Order failed')
@@ -970,57 +1051,69 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             </div>
           ) : events.length > 0 ? (
             <div className="mt-3 text-left">
-              {events.length > 1 && (
-                <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
-              )}
-              {events.length === 1 ? (
-                // Single event
+              {event ? (
+                // Scoped to ONE event (deep-linked ?event_id, or the only event). Single-event
+                // card; "Change" returns to the order-entry schedule when there are alternatives.
                 <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3.5">
-                  <p className="font-semibold text-slate-800 text-base leading-tight">
-                    📍 {event?.venue_name}{event?.village ? `, ${event.village}` : ''}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-slate-800 text-base leading-tight">
+                      📍 {event.venue_name}{event.village ? `, ${event.village}` : ''}
+                    </p>
+                    {events.length > 1 && (
+                      <Link href={`/trucks/${slug}/order`} className="text-orange-600 text-xs font-bold shrink-0 mt-0.5 hover:underline">
+                        Change
+                      </Link>
+                    )}
+                  </div>
                   <p className="text-slate-600 text-sm mt-1.5 flex items-center gap-2 flex-wrap">
-                    <span>{event?.date_friendly}{event?.start_time && event?.end_time ? ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}` : ''}</span>
-                    {isOpenNow && (
+                    <span>{event.date_friendly}{event.start_time && event.end_time ? ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}` : ''}</span>
+                    {isOpenNow ? (
                       <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Open now
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live
                       </span>
+                    ) : (
+                      <span className="inline-flex items-center text-orange-600 text-xs font-semibold">Pre-order</span>
                     )}
                   </p>
                 </div>
               ) : (
-                // Multiple events — selector
-                <div className="space-y-2">
-                  {events.map((e) => {
-                    // Selection MUST key on event.id (uuid) — date+venue collides for two
-                    // same-date same-venue events, highlighting both (V6.4 Section 5). `event`
-                    // is the chosen-event object; its id is what the submit body sends.
-                    const isSelected = event?.id === e.id
-                    return (
-                      <button
-                        key={e.id}
-                        onClick={() => { setEvent(e); setSlotHour(''); setSlotMinute('') }}
-                        className={`w-full text-left px-4 py-3.5 rounded-xl border transition-all ${
-                          isSelected
-                            ? 'bg-orange-50 border-2 border-orange-500'
-                            : 'bg-white border border-slate-200 hover:border-orange-200'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
-                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
+                // No event selected → the ORDER-ENTRY SCHEDULE: pick a confirmed event. Each row
+                // deep-links to ?event_id=<truck_events.id> (real id from /api/events) and is
+                // tagged Live vs Pre-order. Only confirmed/open events are returned by /api/events.
+                <>
+                  <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
+                  <div className="space-y-2">
+                    {events.map((e) => {
+                      const live = isEventLiveNow(e)
+                      return (
+                        <Link
+                          key={e.id}
+                          href={`/trucks/${slug}/order?event_id=${e.id}`}
+                          className="block w-full text-left px-4 py-3.5 rounded-xl border bg-white border-slate-200 hover:border-orange-300 transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0">
+                              <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
+                              <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
+                            </div>
+                            <span className={`shrink-0 mt-0.5 inline-flex items-center gap-1 text-xs font-bold ${live ? 'text-green-600' : 'text-orange-600'}`}>
+                              {live && <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />}{live ? 'Live' : 'Pre-order'}
+                            </span>
                           </div>
-                          {isSelected && <span className="text-orange-500 text-sm font-black shrink-0 mt-0.5">✓</span>}
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
+                          <span className="mt-2.5 block w-full text-center bg-orange-600 text-white font-bold py-2 rounded-lg text-sm">Order now</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </>
               )}
             </div>
           ) : null}
         </div>
+
+        {/* Ordering UI (deals + menu) renders only once an event is scoped — until then the
+            block above is the order-entry schedule. Picking an event (?event_id) reveals this. */}
+        {event && (<>
 
         {/* MEAL DEALS — flat cards, before menu, hidden if none available */}
         {menu && menu.bundles.filter(b => b.available).length > 0 && (
@@ -1430,11 +1523,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           </div>
         </Sec>
 
+        </>)}{/* end event-scoped ordering UI */}
+
       </div>{/* end ordering_available wrapper */}
 
       </main>
 
-      {/* STICKY FOOTER with expandable summary */}
+      {/* STICKY FOOTER with expandable summary — only once an event is scoped (not on the
+          order-entry schedule, where there's nothing to total yet). */}
+      {event && (
       <div ref={footerRef} className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-xl px-4 pt-3 pb-2 z-50" style={{paddingBottom: 'max(8px, env(safe-area-inset-bottom))'}}>
         <div className="max-w-lg mx-auto">
 
@@ -1530,6 +1627,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             </div>
           )}
 
+          {stockNotice && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-2 flex items-start gap-2">
+              <p className="flex-1 text-amber-800 text-sm font-medium">Sorry — {stockNotice} now. We&apos;ve updated your order — please review and confirm.</p>
+              <button onClick={() => setStockNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
+            </div>
+          )}
+
           <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
             disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
@@ -1538,6 +1642,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
       </div>
+      )}
 
       {/* Item Modal — modifier selection before adding to basket */}
       {itemModal && (

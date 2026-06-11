@@ -13,6 +13,7 @@ import {
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
+import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -405,37 +406,73 @@ export async function POST(req: NextRequest) {
       // incremental capacity write. Instant constituents are skipped later by projectOvenOccupancy.
       const manualLines = normaliseOrderLines(items || [], deals)
       const itemCatMap = await buildItemCatMap(supabase, truck.id)
-      // Display number (per-event, restarts at 1) — order_key UUID is set by the
-      // column default. orderEventId may be null (ambiguous/no event) → truck fallback.
-      let newOrderId: string
-      try {
-        newOrderId = await nextOrderId(orderEventId, truck.id)
-      } catch (err: any) {
-        console.error('[manual] order counter failed:', err.message)
-        return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
-      }
       const total = (items || []).reduce((s: number, i: any) => s + (parseFloat(i.unit_price) * parseInt(i.quantity)), 0)
-      // .select() returns the default-generated order_key for the cancel link.
-      const { data: manualOrderRow, error: insertErr } = await supabase.from('orders').insert({
-        id: newOrderId, truck_id: truck.id,
-        customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
-        customer_email: customerEmail || null,
-        slot: slot || null, order_type: 'collection', event_date: eventDate,
-        event_id: orderEventId,
-        items, deals, discount_code: null,
-        subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
-        notes: notes || null, status: 'confirmed',
-        payment_status: 'unpaid',
-      }).select('order_key').single()
-      if (insertErr || !manualOrderRow) {
-        console.error('[manual] order insert failed:', insertErr?.message, insertErr?.details, insertErr?.hint)
-        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
-      }
-      const manualOrderKey = manualOrderRow.order_key
+      // Informed-override flag: the operator only sees this AFTER an atomic check reported the
+      // real shortfall, then consciously chooses to proceed. It does NOT skip the check.
+      const override = manualOrder.override === true
 
-      // slot may be null (manual ASAP) → booked into this event's start window.
-      // orderEventId null (ambiguous/no event) → addOrderToProductionSlot skips it.
-      await addOrderToProductionSlot(supabase, truck.id, orderEventId, slot, manualLines, itemCatMap)
+      // ── Atomic stock guard + insert under the per-event lock (Stage 3) ──
+      // SAME race-proof guarantee as the customer path: NO order inserts without holding the
+      // lock AND (for a non-override submit) passing the stock check, so ACCIDENTAL oversell is
+      // impossible. The ONLY oversell is a deliberate, INFORMED override — the check still RUNS
+      // (the operator was shown the real remaining); override just inserts past the reported
+      // shortfall. Contended past the retry budget → bail WITHOUT inserting (never unguarded).
+      const haveLock = await acquireEventLock(truck.id, eventDate)
+      let newOrderId = ''
+      let manualOrderKey = ''
+      try {
+        if (!haveLock) {
+          return NextResponse.json(
+            { error: 'We are handling a lot of orders right now — please try again', retry: true },
+            { status: 409 },
+          )
+        }
+
+        // (a) STOCK CHECK — atomic (deal-inclusive). Null event → no-op (no event-scoped count
+        //     possible; never block a null-event walk-up). On a shortfall WITHOUT override → do
+        //     NOT insert; return the real per-item remaining so the operator can decide. With
+        //     override:true → the operator has SEEN the shortfall and proceeds (informed oversell).
+        if (orderEventId && !override) {
+          const shortfall = await checkStockShortfall(truck.id, orderEventId, eventDate, manualLines, itemCatMap)
+          if (shortfall) {
+            return NextResponse.json({ error: 'Not enough stock', stock: true, items: shortfall }, { status: 409 })
+          }
+        }
+
+        // (b) Display number (per-event, restarts at 1) — under the lock. order_key UUID is set
+        //     by the column default. orderEventId may be null (ambiguous/no event) → truck fallback.
+        try {
+          newOrderId = await nextOrderId(orderEventId, truck.id)
+        } catch (err: any) {
+          console.error('[manual] order counter failed:', err.message)
+          return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+        }
+
+        // (c) INSERT — walk-up/manual orders ALWAYS confirm (operator present). .select() returns
+        //     the default-generated order_key for the cancel link.
+        const { data: manualOrderRow, error: insertErr } = await supabase.from('orders').insert({
+          id: newOrderId, truck_id: truck.id,
+          customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
+          customer_email: customerEmail || null,
+          slot: slot || null, order_type: 'collection', event_date: eventDate,
+          event_id: orderEventId,
+          items, deals, discount_code: null,
+          subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
+          notes: notes || null, status: 'confirmed',
+          payment_status: 'unpaid',
+        }).select('order_key').single()
+        if (insertErr || !manualOrderRow) {
+          console.error('[manual] order insert failed:', insertErr?.message, insertErr?.details, insertErr?.hint)
+          return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+        }
+        manualOrderKey = manualOrderRow.order_key
+
+        // (d) Occupy the oven window — under the lock. slot may be null (manual ASAP) → booked
+        //     into this event's start window. orderEventId null → addOrderToProductionSlot skips.
+        await addOrderToProductionSlot(supabase, truck.id, orderEventId, slot, manualLines, itemCatMap)
+      } finally {
+        if (haveLock) await releaseEventLock(truck.id, eventDate)
+      }
 
       // Venue strictly by the resolved orderEventId (cross-event fix) — date+maybeSingle
       // returns the wrong/no row on multi-event dates. Fall back to date only when ambiguous

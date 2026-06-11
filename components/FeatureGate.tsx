@@ -1,4 +1,5 @@
 import { canAccess, requiredPlan, PLAN_META, type Plan, type Feature } from '@/lib/features'
+import { maskPrice } from '@/lib/pricing'
 
 interface FeatureGateProps {
   feature: Feature
@@ -35,7 +36,7 @@ export function FeatureGate({
           {upgradeMessage ?? `This feature requires the ${meta.name} plan`}
         </div>
         <div className="text-xs text-slate-400 mt-0.5">
-          {meta.name} · {meta.price} · {meta.description}
+          {meta.name} · {maskPrice(meta.price)} · {meta.description}
         </div>
       </div>
       <a

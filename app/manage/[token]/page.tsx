@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
+import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
@@ -217,9 +218,17 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     if (truck?.plan === 'trial') setActiveTab('billing')
   }, [truck?.id])
 
-  // Daily trial reminder popup — shown once per day via localStorage
+  // Trial reminder popup — only within the final 2 months of the trial, then once per day.
+  // Previously it appeared on every login regardless of how far out the trial end was (no
+  // window gate) — e.g. ~2.4 months out. Now it stays hidden until now >= trial_end − 2 months
+  // (Test Kitchen trial ends 23 Aug 2026 → shows from ~23 Jun 2026). The daily-dismiss
+  // localStorage behaviour is kept on top (closing it won't re-show until the next day).
   useEffect(() => {
     if (truck?.plan !== 'trial') return
+    if (!truck.trial_expires_at) return
+    const windowStart = new Date(truck.trial_expires_at)
+    windowStart.setMonth(windowStart.getMonth() - 2)   // 2 months before trial end
+    if (new Date() < windowStart) return                // too early — don't nag yet
     const key = 'hg_trial_reminder_shown'
     const lastShown = localStorage.getItem(key)
     const today = new Date().toDateString()
@@ -227,7 +236,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setShowTrialReminder(true)
       localStorage.setItem(key, today)
     }
-  }, [truck?.plan])
+  }, [truck?.plan, truck?.trial_expires_at])
 
   // Staff have no business on the manage page — send them to the dashboard
   useEffect(() => {
@@ -5003,7 +5012,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 Your {truck.plan === 'pro' ? 'Pro' : 'Max'} plan includes{' '}
                 {truck.plan === 'pro' ? '2 trucks' : 'unlimited trucks'}.
                 Adding an additional truck costs{' '}
-                <strong>£{VAN_ADDON_PRICE[truck.plan]}/month</strong>{' '}
+                <strong>{maskPrice(`£${VAN_ADDON_PRICE[truck.plan]}/month`)}</strong>{' '}
                 and will be added to your next billing cycle.
               </p>
               <div className="mt-3 bg-slate-50 rounded-xl px-4 py-3">
@@ -5024,7 +5033,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 onClick={() => { setShowVanBillingModal(false); setAddingVan(true) }}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-orange-700"
               >
-                Add truck — £{VAN_ADDON_PRICE[truck.plan]}/mo
+                Add truck — {maskPrice(`£${VAN_ADDON_PRICE[truck.plan]}/mo`)}
               </button>
             </div>
           </div>
@@ -5131,6 +5140,11 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const openUpgrade = (target: 'pro' | 'max') => { setUpgradeTarget(target); setShowUpgradeModal(true) }
   const plan = truck.plan
 
+  // Pre-launch pricing gate (shared with FeatureGate + the van add-on) — concrete prices show as
+  // "TBC" until NEXT_PUBLIC_PRICING_PUBLISHED === 'true'. Free / 0% / Pay at Hatch / Lifetime stay
+  // visible. Plan structure and feature rows are unaffected. See lib/pricing.ts.
+  const px = maskPrice
+
   const matrixContent = (
     <>
       {/* Plan columns header with prices */}
@@ -5145,7 +5159,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             }`}>{p}</p>
             <p className={`text-base sm:text-xl font-bold mt-1 ${
               isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
-            }`}>{PLAN_PRICES[p]}</p>
+            }`}>{px(PLAN_PRICES[p])}</p>
             <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
               {p === 'trial' && truck.trial_expires_at
                 ? `until ${formatDate(truck.trial_expires_at)}`
@@ -5172,7 +5186,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
                 isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
               }`}>
-                {p === 'trial' ? row.values.starter : row.values[p as 'starter' | 'pro' | 'max']}
+                {px(p === 'trial' ? row.values.starter : row.values[p as 'starter' | 'pro' | 'max'])}
               </div>
             ))}
           </div>
@@ -5225,7 +5239,9 @@ function BillingTab({ truck }: { truck: Truck | null }) {
     <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
       {FOOTNOTES.map(f => (
         <p key={f.number} className="text-xs text-slate-700">
-          <sup>{f.number}</sup> {f.text}
+          <sup>{f.number}</sup> {PRICING_PUBLISHED || f.number !== '2'
+            ? f.text
+            : 'Online payments are powered by Stripe Connect. Platform and card processing fees are TBC and will be confirmed at launch.'}
         </p>
       ))}
     </div>
@@ -5264,7 +5280,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
-              <p className="text-sm text-slate-700 mt-0.5">{PLAN_PRICES[currentPlan]}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>
               <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
               {truck.trial_expires_at && (
                 <p className="text-xs text-amber-600 mt-1">
@@ -5287,13 +5303,13 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                     onClick={() => openUpgrade('max')}
                     className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
                   >
-                    Upgrade to Max — £49/mo
+                    Upgrade to Max — {px('£49/mo')}
                   </button>
                   <button
                     onClick={() => openUpgrade('pro')}
                     className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
                   >
-                    Choose Pro — £29/mo
+                    Choose Pro — {px('£29/mo')}
                   </button>
                 </div>
               </div>
@@ -5331,7 +5347,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {PLAN_META[currentPlan]?.name ?? currentPlan}
               </p>
-              <p className="text-sm text-slate-700 mt-0.5">{PLAN_PRICES[currentPlan]}</p>
+              <p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>
               <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
@@ -5341,13 +5357,13 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                   onClick={() => openUpgrade('pro')}
                   className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
                 >
-                  Pro — £29/mo
+                  Pro — {px('£29/mo')}
                 </button>
                 <button
                   onClick={() => openUpgrade('max')}
                   className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
                 >
-                  Max — £49/mo
+                  Max — {px('£49/mo')}
                 </button>
               </div>
             </div>
@@ -5370,7 +5386,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                 {plan === 'pro' ? 'Pro' : 'Max'}
               </p>
               <p className="text-sm text-slate-500 mt-0.5">
-                £{plan === 'pro' ? '29' : '49'}/mo per truck · renews automatically
+                {px(plan === 'pro' ? '£29/mo' : '£49/mo')} per truck · renews automatically
               </p>
             </div>
             <div className="mb-6">
@@ -5398,8 +5414,8 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </h3>
               <p className="text-sm text-slate-500 mt-1">
                 {upgradeTarget === 'max'
-                  ? '£49/month — High-volume operations & festivals'
-                  : '£29/month — Busy trucks scaling pre-orders'
+                  ? `${px('£49/month')} — High-volume operations & festivals`
+                  : `${px('£29/month')} — Busy trucks scaling pre-orders`
                 }
               </p>
             </div>
@@ -5409,7 +5425,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </p>
             </div>
             <a
-              href={`mailto:${SUPPORT_EMAIL}?subject=Upgrade to ${upgradeTarget === 'max' ? 'Max' : 'Pro'} — ${truck.name}&body=Hi, I'd like to upgrade ${truck.name} to the ${upgradeTarget === 'max' ? 'Max (£49/mo)' : 'Pro (£29/mo)'} plan.`}
+              href={`mailto:${SUPPORT_EMAIL}?subject=Upgrade to ${upgradeTarget === 'max' ? 'Max' : 'Pro'} — ${truck.name}&body=Hi, I'd like to upgrade ${truck.name} to the ${upgradeTarget === 'max' ? `Max (${px('£49/mo')})` : `Pro (${px('£29/mo')})`} plan.`}
               className="w-full py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl text-center hover:bg-orange-700 transition-colors"
             >
               Email us to upgrade

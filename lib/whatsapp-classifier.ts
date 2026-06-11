@@ -120,7 +120,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
 
   // ── MENU_QUERY ─────────────────────────────────────────────────────────────
   if (classification === 'MENU_QUERY') {
-    const menuFallback = `Hey! 👋 ${truckEmoji} You can check out our full menu here: ${orderUrl} — ${truckName} ${truckEmoji}`
+    const menuFallback = `Hey there 👋 You can check out our full menu here: ${orderUrl} — ${truckName} ${truckEmoji}`
     try {
       const { data: items } = await supabase
         .from('menu_items_db')
@@ -152,7 +152,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
           : `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`
 
       return {
-        reply: `Hey! 👋 ${truckEmoji} We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`,
+        reply: `Hey there 👋 We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`,
         classification: 'MENU_QUERY',
       }
     } catch {
@@ -161,41 +161,16 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   }
 
   // ── ALLERGEN_QUERY ─────────────────────────────────────────────────────────
+  // SAFETY/LEGAL: we NEVER auto-answer allergen questions. A wrong automated allergen reply is
+  // a serious safety + liability risk, so there is NO LLM call and NO item-specific content
+  // (no "contains/doesn't contain", no inference). The reply is a FIXED redirect to the
+  // authoritative menu + allergen page (/trucks/[slug]/order), regardless of how specific the
+  // question was. Greeting "Hey there" + 👋; no food emoji at the start; the truck's selected
+  // emoji once at the end; link always included.
   if (classification === 'ALLERGEN_QUERY') {
-    const allergenFallback = `Hey! 👋 ${truckEmoji} Thanks for checking — please message us directly about allergens as we want to make sure we give you accurate information.\n\nPlease confirm directly with us before ordering if you have a severe allergy — ingredients can change and cross-contamination is possible.\n\n${truckName} ${truckEmoji}`
-    try {
-      const { data: items } = await supabase
-        .from('menu_items_db')
-        .select('name, allergens')
-        .eq('truck_id', truckId)
-        .eq('is_active', true)
-
-      const allergenData = items?.length
-        ? items.map(i => `${i.name}: ${i.allergens || 'no allergen info recorded'}`).join('\n')
-        : 'No allergen data available.'
-
-      const allergenPrompt = `You are answering a WhatsApp message on behalf of a food truck called "${truckName}" ${truckEmoji}.
-
-The customer asked: "${customerMessage}"
-
-Here is the allergen information for our menu items:
-${allergenData}
-
-Instructions:
-- Answer the specific allergen question directly and helpfully based on the data above
-- If the allergen data is empty or incomplete, say you don't have full allergen details available right now
-- ALWAYS end with this exact safety line on a new line: "Please confirm directly with us before ordering if you have a severe allergy — ingredients can change and cross-contamination is possible."
-- Keep the response to 3-4 sentences maximum
-- Warm, friendly tone — like the owner typing it
-- Sign off as: ${truckName} ${truckEmoji}
-- Start with: "Hey! 👋 ${truckEmoji}"
-- Never invent allergen information not in the data provided`
-
-      const reply = await callGemini(allergenPrompt, 0.2)
-      return { reply: reply || allergenFallback, classification: 'ALLERGEN_QUERY' }
-    } catch (err) {
-      console.error('[WhatsApp classifier] allergen Gemini error:', err)
-      return { reply: allergenFallback, classification: 'ALLERGEN_QUERY' }
+    return {
+      reply: `Hey there 👋 You can see our full menu and allergen information here: ${orderUrl} — ${truckName} ${truckEmoji}`,
+      classification: 'ALLERGEN_QUERY',
     }
   }
 
@@ -226,7 +201,8 @@ ${formattedEvents.length > 0 ? formattedEvents.join('\n') : 'No upcoming events.
 Customer message: "${customerMessage}"
 
 Instructions:
-- Open with exactly: "Hey! 👋 ${truckEmoji}"
+- Open with exactly: "Hey there 👋"
+- Do NOT use any food emoji in the greeting or body. The ONLY food emoji is ${truckEmoji}, used once at the very end in the sign-off.
 - Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above
 - If they ask about a day by name (e.g. "Friday"), look up the exact date from DATE REFERENCE
 - If events exist for that date, give venue name, town and times in a friendly tone
@@ -238,7 +214,7 @@ Instructions:
 - Sign off as: ${truckName} ${truckEmoji}
 - Never mention Village Foodie or any platform name. Never make up events.`
 
-  const specificFallback = `Hey! 👋 ${truckEmoji} Check out our latest schedule here: ${scheduleUrl}\n\n${truckName} ${truckEmoji}`
+  const specificFallback = `Hey there 👋 Check out our latest schedule here: ${scheduleUrl}\n\n${truckName} ${truckEmoji}`
 
   try {
     const reply = await callGemini(replyPrompt, 0.4)

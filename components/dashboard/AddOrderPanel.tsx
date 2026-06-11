@@ -257,11 +257,28 @@ export function AddOrderPanel({
     return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
   }, [manualSlots, capacityInputs, categoryConfigs, basketByCat, manualAsapSlot])
 
-  // The REAL kitchen-ready estimate (prep + queue + operator extra-wait, buffer-free) — the
-  // sub-label's minutes ("~N mins") AND "around HH:MM" both come from this. The ASAP OPTION
-  // shows the rounded grid slot (adjustedAsapSlot) separately; the two intentionally differ
-  // by the grid rounding.
-  const readyTime = queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
+  // "Ready around" MIRRORS the ASAP dropdown: source the sub-label's "around HH:MM" + "~N mins"
+  // from adjustedAsapSlot — the SAME backward-fit collection slot the dropdown shows, whose
+  // window already bakes prep into the slot time. The old queue-batch estimate (queueAware) used
+  // `now + finalBatch×secs`, which re-cooked the already-queued items from now and landed a prep
+  // cycle late (16:10 vs the dropdown's 16:05). Fall back to the queue-batch / calcReadyTime
+  // estimate ONLY when there's no capacity data or no backward-fit slot to source from — the same
+  // role customerAsapTime plays behind backwardAsap on the customer page.
+  // Only source from the fit slot once there's actually a basket — an empty order "fits"
+  // every slot, so without this the sub-label would show with nothing in the cart (it was
+  // hidden before, via the empty calcReadyTime). Same basket guard queueAware uses.
+  const hasBasketForReady = manualItems.length > 0 || appliedDeals.length > 0
+  const fitReadyTime = (hasBasketForReady && capacityInputs) ? (adjustedAsapSlot?.collection_time || null) : null
+  const readyTime = fitReadyTime || queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
+  // "~N mins" wait — derived from the SAME slot time as `readyTime` so the two stay consistent.
+  // (Only rendered on the same-day branch; future-day shows a date label, not a wait.)
+  const readyMinsFromNow = fitReadyTime
+    ? (() => {
+        const [h, m] = fitReadyTime.split(':').map(Number)
+        const nowM = new Date().getHours() * 60 + new Date().getMinutes()
+        return Math.max(0, (h || 0) * 60 + (m || 0) - nowM)
+      })()
+    : queueAware.minsFromNow
 
   const isEventEnded = manualEvent ? (() => {
     const today = localTodayIso() // LOCAL date (s.7) — pairs with the local end_time check below
@@ -490,7 +507,11 @@ setItemModal({ item, modGroups, editCartKey })
   }
 
   // ── submit ──────────────────────────────────────────────────────────────────
-  const submitManual = async () => {
+  // override=false: normal submit, runs the atomic stock check. On a shortfall the server
+  // returns 409 {stock} WITHOUT inserting — we show the real remaining and let the operator
+  // choose. override=true (resubmit after "Proceed anyway"): the operator has SEEN the shortfall
+  // and deliberately oversells — the server still runs the check, then inserts past it.
+  const submitManual = async (override = false) => {
     if (!hasItems) return
     const effectiveSlot = manualSlot || adjustedAsapSlot?.collection_time || null
     setLoading(true)
@@ -519,10 +540,27 @@ setItemModal({ item, modGroups, editCartKey })
             notes: manualNotes || null,
             event_id: manualEvent?.id || null,
             event_date: manualEvent?.event_date || null,
+            override,
           },
         }),
       })
       const data = await res.json()
+      // Lock contention past the budget (rare): server did NOT insert — keep the order, retry.
+      if (res.status === 409 && data?.retry) {
+        showToast('Busy right now — tap Confirm again in a moment', 'error')
+        return
+      }
+      // Stock shortfall: the atomic check RAN and reported the real remaining. INFORMED override
+      // — operator proceeds anyway (deliberate oversell) or cancels to edit. Not inserted yet.
+      if (res.status === 409 && data?.stock) {
+        const shortItems: { name: string; remaining: number }[] = Array.isArray(data.items) ? data.items : []
+        const detail = shortItems.length
+          ? shortItems.map(s => `${s.name}: only ${s.remaining} left`).join('\n')
+          : 'Some items are low on stock'
+        const proceed = window.confirm(`${detail}\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order`)
+        if (proceed) { await submitManual(true); return }
+        return // Edit/Cancel — keep the order in the panel for adjustment, not inserted
+      }
       if (!res.ok) throw new Error(data.error)
       showToast(`Order #${data.orderId} confirmed`)
       if (manualItems.length) {
@@ -604,12 +642,11 @@ setItemModal({ item, modGroups, editCartKey })
         const dateLabel = isFutureDay
           ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
           : null
-        // Sub-label = the REAL kitchen-ready estimate (prep + queue + operator extra-wait,
-        // buffer-free): both the minutes and the "around" time come from queueAware (now +
-        // totalSecs), so now + m == the around-time. The ASAP OPTION shows the rounded grid
-        // slot; this estimate intentionally differs from it by the grid rounding (e.g. ~17:33
-        // estimate vs 17:35 slot) — which the operator understands.
-        const m = queueAware.minsFromNow
+        // Sub-label time + minutes both come from `readyTime`/`readyMinsFromNow`, which mirror
+        // the ASAP dropdown's backward-fit slot (adjustedAsapSlot) when capacity data exists, so
+        // "Ready around" == the dropdown ASAP time. Falls back to the queue-batch estimate only
+        // when there's no backward-fit slot to source from.
+        const m = readyMinsFromNow
         const wait = m < 60
           ? `~${m} min${m !== 1 ? 's' : ''}`
           : `~${Math.round(m / 30) / 2} hr${Math.round(m / 30) / 2 !== 1 ? 's' : ''}`
@@ -662,7 +699,7 @@ setItemModal({ item, modGroups, editCartKey })
       {slotSelector}
       {contactDetails}
       <button
-        onClick={submitManual}
+        onClick={() => submitManual()}
         disabled={loading || !hasItems || !manualEvent}
         className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
       >
