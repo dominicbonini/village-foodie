@@ -7,6 +7,7 @@ import { isHatchGrab } from '@/lib/domain';
 
 interface TruckListCardProps {
   event: VillageEvent;
+  slug: string;
 }
 
 const renderTextWithLinks = (text: string) => {
@@ -38,7 +39,7 @@ function formatStandardDate(dateStr: string) {
     return dateStr;
 }
 
-export default function TruckListCard({ event }: TruckListCardProps) {
+export default function TruckListCard({ event, slug }: TruckListCardProps) {
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
   const venueDisplay = showVillage ? `${event.venueName} - ${event.village}` : event.venueName;
   
@@ -70,16 +71,20 @@ export default function TruckListCard({ event }: TruckListCardProps) {
                 </Link>
             </div>
 
-            {/* ORDER BUTTON — compact, right-aligned on the event row (HatchGrab only, operator
-                confirmed events). On mobile the row stacks, so self-start keeps it boxed (not full-width). */}
-            {isHatchGrab() && event.orderUrl && (
+            {/* ORDER BUTTON — compact, right-aligned on the event row. Gated to HatchGrab AND
+                operator-sourced events: source==='operator' guarantees a real truck_events id
+                (orderable) and an order-taking truck (discovery events are excluded). Deep-links
+                the order FORM scoped to this exact event. Pending/unconfirmed events never reach
+                here (the discovery feed only returns confirmed/open operator events). On mobile the
+                row stacks, so self-start keeps it boxed (not full-width). */}
+            {isHatchGrab() && event.source === 'operator' && (
                 <a
-                    href={event.orderUrl}
+                    href={`/trucks/${slug}/order?event_id=${event.id}`}
                     className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5
                                bg-orange-600 hover:bg-orange-700 text-white font-semibold
                                px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
                 >
-                    🛒 Pre-order
+                    🛒 Order
                 </a>
             )}
 

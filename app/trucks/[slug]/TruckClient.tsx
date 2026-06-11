@@ -271,7 +271,7 @@ export default function TruckClient({ slug }: { slug: string }) {
                 {/* LEFT: FLAT EVENT LIST */}
                 <div className={`flex-1 space-y-1 ${mobileView === 'map' ? 'hidden lg:block' : 'block'}`}>
                     {truckEventsFlat.map(event => (
-                        <TruckListCard key={event.id} event={event} />
+                        <TruckListCard key={event.id} event={event} slug={slug} />
                     ))}
                     
                     <div className="mt-8 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
