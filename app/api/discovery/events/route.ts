@@ -287,7 +287,9 @@ export async function GET(req: NextRequest) {
     )
   )
 
-  const filteredDiscovery = (mappedDiscoveryEvents as any[]).filter(e =>
+  // TEMPORARY (trial): HatchGrab shows operator/approved events only; scraped discovery events are Village-Foodie-only.
+  // To be replaced by the per-truck customer-mode state machine (discovery → preview → live).
+  const filteredDiscovery = isHG ? [] : (mappedDiscoveryEvents as any[]).filter(e =>
     !operatorKeys.has(`${normalize(e.truckName)}-${e.date}-${normalize(e.venueName)}`)
   )
 
