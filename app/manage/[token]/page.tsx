@@ -2821,23 +2821,11 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
               {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
             </div>
 
-            {/* Actions — right-aligned in the card's button slot. Scraper-pending events show
-                [Approve][Edit][Reject] HERE (same slot as Confirm/Edit/Cancel), not a separate row. */}
-            <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
-              {pending ? (
-                // Mobile: stack vertically in a narrow right-hand column so the venue/area/time block
-                // gets the freed width. sm:+ keep the original horizontal row. Buttons stretch to the
-                // column (equal width), ≥16px text + taller tap target on mobile.
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1.5">
-                  <button onClick={() => handleConfirmEvent(event.id)} className="w-full sm:w-auto text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2.5 py-2 sm:py-1.5 hover:bg-green-50">Approve</button>
-                  {!isPast && (
-                    <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="w-full sm:w-auto text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2.5 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
-                  )}
-                  {pendingRejectId !== event.id && (
-                    <button onClick={() => setPendingRejectId(event.id)} className="w-full sm:w-auto text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-2.5 py-2 sm:py-1.5 hover:bg-red-50">Reject</button>
-                  )}
-                </div>
-              ) : (
+            {/* Actions — confirmed cards keep their compact icon buttons right-aligned here.
+                Pending (Approve/Edit/Reject) render in a full-width row BELOW the main row (see below),
+                so the venue/area/time block above gets the full card width. */}
+            {!pending && (
+              <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
                 <>
                   {event.status === 'unconfirmed' && (
                     <button onClick={() => handleConfirmEvent(event.id)} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
@@ -2862,9 +2850,24 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
                     </>
                   )}
                 </>
+              </div>
+            )}
+          </div>
+
+          {/* Pending approval actions — full-width row beneath the text (frees the venue/area/time
+              block above), same position pattern as the deal-summary line. flex-1 even on mobile;
+              compact right-aligned on desktop. ≥16px text on mobile (iOS rule). */}
+          {pending && (
+            <div className="flex gap-2 mt-3 sm:justify-end">
+              <button onClick={() => handleConfirmEvent(event.id)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50">Approve</button>
+              {!isPast && (
+                <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
+              )}
+              {pendingRejectId !== event.id && (
+                <button onClick={() => setPendingRejectId(event.id)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-red-50">Reject</button>
               )}
             </div>
-          </div>
+          )}
 
           {/* Reject confirm — scraper-pending only, inline below the row. Single OK/Cancel; OK
               rejects AND suppresses this exact event (truck+date+venue) so it won't re-surface. */}
