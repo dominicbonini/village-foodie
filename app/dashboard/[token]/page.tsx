@@ -63,6 +63,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[truckMenu,setTruckMenu]=useState<TruckMenu|null>(null)
   const[itemStocks,setItemStocks]=useState<ItemStock[]>([])
   const[categoryStocks,setCategoryStocks]=useState<CategoryStock[]>([])
+  // Local DRAFTS for the Menu & Stock number inputs (keyed by item name / category). While a field
+  // is focused/being edited it has a draft entry, so the input reads the draft — NOT the resolved
+  // prop — which stops fetchAll/fetchStock (orders realtime + 60s poll) clobbering it mid-edit during
+  // live service. Drafts are seeded on focus, updated on keystroke (no network), committed on
+  // blur/Enter, reverted on Escape, then cleared (input falls back to the optimistically-updated state).
+  const[stockDrafts,setStockDrafts]=useState<Record<string,string>>({})
+  const[catStockDrafts,setCatStockDrafts]=useState<Record<string,string>>({})
+  // Set by Escape so the blur it triggers reverts the draft instead of committing it.
+  const skipStockBlurRef=useRef(false)
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
   const[lastRefresh,setLastRefresh]=useState(new Date())
@@ -681,14 +690,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const updateStock=async(itemName:string,available:boolean,stockCount:number|null,category?:string)=>{
     // event_id = the SAME event the Menu & Stock tab is showing (per-event override, Phase 5).
     const event_id=selectedEventRef.current?.id??null
-    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,category,event_id})})
+    // Optimistic FIRST (reflect the value immediately), THEN POST — never await before showing it.
+    // No fetchMenu here: it re-pulled default_stock and was itself a clobber vector.
     setItemStocks(prev=>{const ex=prev.find(s=>s.name===itemName);if(ex)return prev.map(s=>s.name===itemName?{...s,available,stock_count:stockCount}:s);return[...prev,{name:itemName,available,stock_count:stockCount,orders_count:0,category:category||null}]})
-    if(truck?.id)fetchMenu(truck.id,pin)
+    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,category,event_id})})}
+    catch(err){console.warn('[updateStock] write failed (will re-sync on next refresh):',err)}
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
-    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount,event_id})})
     setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,default_stock:null,orders_count:0}]})
+    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount,event_id})})}
+    catch(err){console.warn('[updateCategoryStock] write failed (will re-sync on next refresh):',err)}
   }
 
   const updateModifierOptionAvailable=async(optionId:string,available:boolean)=>{
@@ -1593,9 +1605,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             <div className="flex items-center gap-2">
                               {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
                               <div className="flex flex-col items-center gap-0.5">
-                                <input type="number" min="0" placeholder="∞" value={catCount??''}
-                                  onChange={e=>updateCategoryStock(cat,e.target.value===''?null:parseInt(e.target.value))}
-                                  className={`w-16 border rounded-lg px-2 py-1.5 text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
+                                <input type="number" inputMode="numeric" min="0" placeholder="∞"
+                                  value={catStockDrafts[cat] ?? (catCount??'').toString()}
+                                  onFocus={()=>setCatStockDrafts(d=>({...d,[cat]:(catCount??'').toString()}))}
+                                  onChange={e=>setCatStockDrafts(d=>({...d,[cat]:e.target.value}))}
+                                  onKeyDown={e=>{if(e.key==='Enter')e.currentTarget.blur();else if(e.key==='Escape'){skipStockBlurRef.current=true;e.currentTarget.blur()}}}
+                                  onBlur={()=>{
+                                    const raw=catStockDrafts[cat]; const skip=skipStockBlurRef.current; skipStockBlurRef.current=false
+                                    setCatStockDrafts(d=>{const n={...d};delete n[cat];return n})
+                                    if(skip||raw===undefined)return
+                                    const p=raw.trim()===''?null:parseInt(raw,10)
+                                    const next=p!==null&&!isNaN(p)?Math.max(0,p):null
+                                    if(next!==(catStock?.stock_count??null))updateCategoryStock(cat,next)
+                                  }}
+                                  className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 ${isCatDefault?'border-blue-200 bg-blue-50 text-blue-700':'border-orange-200 bg-orange-50'}`}
                                   title={isCatDefault?'Default stock — save to override':'Category stock'}/>
                                 {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
                               </div>
@@ -1657,9 +1680,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} sold</p>}
                                 </div>
                                 <div className="flex flex-col items-center gap-0.5">
-                                  <input type="number" min="0" placeholder="–" value={itemCount??''}
-                                    onChange={e=>updateStock(item.name,isAvailable,e.target.value===''?null:parseInt(e.target.value),cat)}
-                                    className={`w-12 border rounded-lg px-1.5 py-1 text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={isDefault?'Default stock — save to override':'Item stock'}/>
+                                  <input type="number" inputMode="numeric" min="0" placeholder="–"
+                                    value={stockDrafts[item.name] ?? (itemCount??'').toString()}
+                                    onFocus={()=>setStockDrafts(d=>({...d,[item.name]:(itemCount??'').toString()}))}
+                                    onChange={e=>setStockDrafts(d=>({...d,[item.name]:e.target.value}))}
+                                    onKeyDown={e=>{if(e.key==='Enter')e.currentTarget.blur();else if(e.key==='Escape'){skipStockBlurRef.current=true;e.currentTarget.blur()}}}
+                                    onBlur={()=>{
+                                      const raw=stockDrafts[item.name]; const skip=skipStockBlurRef.current; skipStockBlurRef.current=false
+                                      setStockDrafts(d=>{const n={...d};delete n[item.name];return n})
+                                      if(skip||raw===undefined)return
+                                      const p=raw.trim()===''?null:parseInt(raw,10)
+                                      const next=p!==null&&!isNaN(p)?Math.max(0,p):null
+                                      if(next!==(stock?.stock_count??null))updateStock(item.name,isAvailable,next,cat)
+                                    }}
+                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={isDefault?'Default stock — save to override':'Item stock'}/>
                                   {isDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
                                 </div>
                                 <Toggle on={isAvailable} onToggle={()=>updateStock(item.name,!isAvailable,itemCount,cat)}/>

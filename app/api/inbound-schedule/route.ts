@@ -246,24 +246,35 @@ export async function POST(req: NextRequest) {
           const b = et ? String(et).slice(0, 5) : ''
           return a && b ? `${a}–${b}` : a || ''
         }
-        const headLine = (e: any) => {
-          const t = fmtTimeRange(e.start_time, e.end_time)
-          return `${fmtDate(e.event_date)}${t ? ` · ${t}` : ''}`           // "Thu 11 Jun · 17:00–20:00"
-        }
         const venueLine = (e: any) => `${e.venue_name || 'Unknown venue'}${e.town ? `, ${e.town}` : ''}`
 
-        // Stacked rows (NOT a table / multi-column) — each event is two stacked text lines with a
-        // light divider, so it reflows cleanly on mobile + Outlook/hotmail. Inline CSS only.
-        const eventListHtml = (newEvents || []).map(e =>
-          `<div style="padding:10px 0;border-bottom:1px solid #eef2f6">
-            <div style="font-weight:bold;color:#1e293b;font-size:15px;line-height:1.3">${headLine(e)}</div>
-            <div style="color:#475569;font-size:14px;line-height:1.4;margin-top:3px">${venueLine(e)}</div>
+        // Venue-first hierarchy: bold venue on line 1, date | time on line 2 with scannable emojis.
+        // Each event is two stacked text lines separated by an <hr> — reflows cleanly on mobile +
+        // Outlook/Gmail. Inline CSS only.
+        // ANTI AUTO-LINK: Apple Mail / Gmail "data detectors" auto-wrap date & time strings in blue
+        // calendar <a> links. Wrapping each value in our own <a> with forced dark colour +
+        // text-decoration:none + pointer-events:none pre-empts that, so they render as plain text.
+        const noLink = 'color:#1e293b !important;text-decoration:none !important;pointer-events:none;cursor:default'
+        const eventBlockHtml = (e: any) => {
+          const t = fmtTimeRange(e.start_time, e.end_time)
+          const timePart = t
+            ? ` <span style="color:#cbd5e1">|</span> <a style="${noLink}">⏱️ ${t}</a>`
+            : ''
+          return `<div style="padding:14px 0">
+            <div style="font-weight:bold;color:#1e293b;font-size:16px;line-height:1.35">📍 ${venueLine(e)}</div>
+            <div style="font-size:14px;line-height:1.5;margin-top:5px">
+              <a style="${noLink}">📅 ${fmtDate(e.event_date)}</a>${timePart}
+            </div>
           </div>`
-        ).join('')
+        }
+        // <hr> divider BETWEEN blocks (not after the last).
+        const eventListHtml = (newEvents || []).map(eventBlockHtml)
+          .join('<hr style="border:none;border-top:1px solid #eef2f6;margin:0" />')
 
-        const eventListText = (newEvents || []).map(e =>
-          `  - ${headLine(e)}\n    ${venueLine(e)}`
-        ).join('\n')
+        const eventListText = (newEvents || []).map(e => {
+          const t = fmtTimeRange(e.start_time, e.end_time)
+          return `  📍 ${venueLine(e)}\n  📅 ${fmtDate(e.event_date)}${t ? ` | ⏱️ ${t}` : ''}`
+        }).join('\n\n')
 
         await sendConfirmationEmail({
           to: truck.contact_email,
@@ -271,14 +282,14 @@ export async function POST(req: NextRequest) {
           html: `<div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
             <p>Hi there,</p>
             <p>We found <strong>${n} new event${n !== 1 ? 's' : ''}</strong> on your schedule that need your approval before they appear to customers.</p>
-            <p style="margin:24px 0">
+            <p style="font-weight:600;margin:20px 0 0">Events found:</p>
+            <div style="border-top:1px solid #eef2f6;border-bottom:1px solid #eef2f6">${eventListHtml}</div>
+            <p style="margin-top:16px">Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.</p>
+            <p style="margin:24px 0 8px">
               <a href="${manageUrl}" style="background:#ea580c;color:white;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold;display:inline-block">
                 Review your schedule →
               </a>
             </p>
-            <p style="font-weight:600;margin-bottom:6px">Events found:</p>
-            <div style="border-top:1px solid #eef2f6">${eventListHtml}</div>
-            <p style="margin-top:16px">Once you approve them in your Schedule tab they'll go live on the map and your ordering page will be ready to take pre-orders.</p>
             <p style="color:#94a3b8;font-size:12px;margin-top:24px">— The HatchGrab team · hatchgrab.com</p>
           </div>`,
           text: `Hi there,\n\nWe found ${n} new event${n !== 1 ? 's' : ''} on your schedule that need your approval:\n\n${eventListText}\n\nReview them at: ${manageUrl}\n\nOnce you approve them they'll go live on the map.\n\n— The HatchGrab team`,
