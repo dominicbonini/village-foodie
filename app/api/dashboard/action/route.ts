@@ -570,7 +570,7 @@ export async function POST(req: NextRequest) {
       const [{ data: overrides }, { data: cats }, liveItemCounts, { data: menuItems }, { data: menuCats }] = await Promise.all([
         eventId
           ? supabase.from('event_item_stock')
-              .select('item_name, available, stock_count')
+              .select('item_name, available, stock_count, no_item_cap')
               .eq('truck_id', truck.id).eq('event_id', eventId)
           : Promise.resolve({ data: [] as any[] }),
         eventId
@@ -605,13 +605,16 @@ export async function POST(req: NextRequest) {
       ])
 
       const stocks = Array.from(allNames)
-        .filter(name => (liveItemCounts[name] || 0) > 0 || overrideMap[name]?.stock_count != null)
+        // Surface a row if it has sales, an explicit cap, OR a no_item_cap flag (follow-category state
+        // has stock_count=null, so it must be included explicitly or the dashboard would miss it).
+        .filter(name => (liveItemCounts[name] || 0) > 0 || overrideMap[name]?.stock_count != null || overrideMap[name]?.no_item_cap === true)
         .map(name => {
           const override = overrideMap[name]
           return {
             name,
             available:   override?.available ?? true,
             stock_count: override?.stock_count ?? null,
+            no_item_cap: override?.no_item_cap ?? false,
             orders_count: liveItemCounts[name] || 0,
             category:    itemCatMap[name] ?? null,  // event_item_stock has no category — map via menu
           }
@@ -664,18 +667,20 @@ export async function POST(req: NextRequest) {
 
     // ── SET ITEM STOCK — PER-EVENT (Phase 5) ──────────────────────────────────
     if (action === 'set_stock') {
-      const { itemName, available, stockCount, event_id } = body
+      const { itemName, available, stockCount, noItemCap, event_id } = body
       if (!itemName) return NextResponse.json({ error: 'itemName required' }, { status: 400 })
       if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
-      // Writes stock_count AND available together for THIS event. This is the RECOVERY path Phase 4
-      // flagged: a stock edit that passes available !== false clears a prior enforce-set sold-out
-      // (available back to true). (event_item_stock has no category/updated_at columns.)
+      // Writes stock_count, available AND no_item_cap together for THIS event. no_item_cap=true =
+      // "follow category" (ceiling resolves to null); false + stock_count=null = "use default". This
+      // is the RECOVERY path Phase 4 flagged: available !== false clears a prior enforce-set sold-out.
+      // (event_item_stock has no category/updated_at columns.)
       await supabase.from('event_item_stock').upsert({
         truck_id:    truck.id,
         event_id,
         item_name:   itemName,
         available:   available !== false,
         stock_count: stockCount ?? null,
+        no_item_cap: noItemCap === true,
       }, { onConflict: 'event_id,item_name' })
       return NextResponse.json({ success: true })
     }

@@ -71,21 +71,23 @@ export async function enforceStockLimits(
       getLiveItemCounts(supabase, truckId, eventId),
       supabase.from('menu_items_db').select('name, default_stock').eq('truck_id', truckId).eq('is_active', true),
       supabase.from('menu_categories').select('name, default_stock').eq('truck_id', truckId),
-      supabase.from('event_item_stock').select('item_name, stock_count, available').eq('truck_id', truckId).eq('event_id', eventId),
+      supabase.from('event_item_stock').select('item_name, stock_count, available, no_item_cap').eq('truck_id', truckId).eq('event_id', eventId),
       supabase.from('event_category_stock').select('category, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
     ])
 
   // Per-event override maps (keyed by name; also tells us which items already have a row → UPDATE vs INSERT).
-  const itemOverride: Record<string, { stock_count: number | null; available: boolean }> = {}
-  ;(overrides || []).forEach((o: any) => { itemOverride[o.item_name] = { stock_count: o.stock_count ?? null, available: o.available } })
+  const itemOverride: Record<string, { stock_count: number | null; available: boolean; no_item_cap: boolean }> = {}
+  ;(overrides || []).forEach((o: any) => { itemOverride[o.item_name] = { stock_count: o.stock_count ?? null, available: o.available, no_item_cap: !!o.no_item_cap } })
   const catOverride: Record<string, number | null> = {}
   ;(catStock || []).forEach((r: any) => { catOverride[String(r.category).toLowerCase()] = r.stock_count ?? null })
 
   // Effective ceilings — IDENTICAL to the guard/menu (override ?? default). null = unlimited.
+  // no_item_cap = "follow category" → item ceiling null (no cap), overriding the default.
   const itemDefault: Record<string, number | null> = {}
   ;(menuItems || []).forEach((i: any) => { itemDefault[i.name] = i.default_stock ?? null })
   const itemCeiling = (name: string): number | null => {
     const ov = itemOverride[name]
+    if (ov?.no_item_cap) return null
     return ov && ov.stock_count != null ? ov.stock_count : (itemDefault[name] ?? null)
   }
   const catDefault: Record<string, number | null> = {}
@@ -112,7 +114,7 @@ export async function enforceStockLimits(
     } else {
       await supabase.from('event_item_stock')
         .insert({ truck_id: truckId, event_id: eventId, item_name: name, available: false, stock_count: null })
-      itemOverride[name] = { stock_count: null, available: false } // dedupe within this run (category pass)
+      itemOverride[name] = { stock_count: null, available: false, no_item_cap: false } // dedupe within this run (category pass)
     }
   }
 

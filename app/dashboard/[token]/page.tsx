@@ -61,8 +61,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[orders,setOrders]=useState<Order[]>([])
   const[slots,setSlots]=useState<Slot[]>([])
   const[truckMenu,setTruckMenu]=useState<TruckMenu|null>(null)
-  const[itemStocks,setItemStocks]=useState<ItemStock[]>([])
-  const[categoryStocks,setCategoryStocks]=useState<CategoryStock[]>([])
+  // Per-EVENT stock slices (keyed by event_id; '__none__' for the no-event case). Keeps each event's
+  // stock isolated so switching events never renders the previous event's rows during the re-fetch
+  // round-trip (stale-while-revalidate: a cached slice shows instantly, an unseen one shows a skeleton
+  // until its fetch lands). The flat `itemStocks`/`categoryStocks` below are the CURRENT slice derived
+  // from these maps, so all existing reads + draft inputs keep working unchanged.
+  const[itemStocksByEvent,setItemStocksByEvent]=useState<Record<string,ItemStock[]>>({})
+  const[categoryStocksByEvent,setCategoryStocksByEvent]=useState<Record<string,CategoryStock[]>>({})
+  // Event keys whose stock has resolved at least once → drives the skeleton (unseen key = skeleton,
+  // not empty rows).
+  const[fetchedStockKeys,setFetchedStockKeys]=useState<Set<string>>(new Set())
   // Local DRAFTS for the Menu & Stock number inputs (keyed by item name / category). While a field
   // is focused/being edited it has a draft entry, so the input reads the draft — NOT the resolved
   // prop — which stops fetchAll/fetchStock (orders realtime + 60s poll) clobbering it mid-edit during
@@ -239,11 +247,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[])
 
   const fetchStock=useCallback((currentPin:string,eventId?:string|null)=>{
+    // Write into THIS event's slice (keyed by the id the call was made with), never a flat replace —
+    // so a stale response from a previously-selected event can't pollute the current slice.
+    const key=eventId??'__none__'
     fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({token,pin:currentPin,action:'get_stock',eventId:eventId??null})})
       .then(r=>r.json()).then(d=>{
-        if(d.stocks) setItemStocks(d.stocks)
-        if(d.categoryStocks) setCategoryStocks(d.categoryStocks)
+        setItemStocksByEvent(prev=>({...prev,[key]:d.stocks??[]}))
+        setCategoryStocksByEvent(prev=>({...prev,[key]:d.categoryStocks??[]}))
+        setFetchedStockKeys(prev=>prev.has(key)?prev:new Set(prev).add(key))
       }).catch(()=>null)
   },[token])
 
@@ -341,6 +353,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // they can't drift apart and blank the counts (Fix A-finish).
   const stockEvent:TruckEvent|null=selectedOrDefaultEvent
   const stockEventId=stockEvent?.id??null
+  // Current event's stock slice, derived from the per-event maps. Same names as before so every
+  // downstream read (itemStocks.find / categoryStocks.find) + the draft inputs are unchanged.
+  const stockKey=stockEventId??'__none__'
+  const itemStocks=itemStocksByEvent[stockKey]??[]
+  const categoryStocks=categoryStocksByEvent[stockKey]??[]
+  const stockLoading=!fetchedStockKeys.has(stockKey) // unseen key → skeleton (not empty rows)
   // Keep the scoping ref current (cheap — no fetch, runs on every event-list poll).
   useEffect(()=>{
     selectedEventRef.current=stockEvent?{id:stockEvent.id,date:stockEvent.event_date}:null
@@ -687,18 +705,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
   }
 
-  const updateStock=async(itemName:string,available:boolean,stockCount:number|null,category?:string)=>{
+  const updateStock=async(itemName:string,available:boolean,stockCount:number|null,category?:string,noItemCap=false)=>{
     // event_id = the SAME event the Menu & Stock tab is showing (per-event override, Phase 5).
     const event_id=selectedEventRef.current?.id??null
-    // Optimistic FIRST (reflect the value immediately), THEN POST — never await before showing it.
-    // No fetchMenu here: it re-pulled default_stock and was itself a clobber vector.
-    setItemStocks(prev=>{const ex=prev.find(s=>s.name===itemName);if(ex)return prev.map(s=>s.name===itemName?{...s,available,stock_count:stockCount}:s);return[...prev,{name:itemName,available,stock_count:stockCount,orders_count:0,category:category||null}]})
-    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,category,event_id})})}
+    const key=event_id??'__none__'
+    // Optimistic FIRST (reflect the value immediately) into THIS event's slice, THEN POST — never
+    // await before showing it. no_item_cap rides along so the follow-category state shows pre-POST.
+    // No fetchMenu here: it re-pulled default_stock and was a clobber vector.
+    setItemStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.name===itemName);const next=ex?cur.map(s=>s.name===itemName?{...s,available,stock_count:stockCount,no_item_cap:noItemCap}:s):[...cur,{name:itemName,available,stock_count:stockCount,no_item_cap:noItemCap,orders_count:0,category:category||null}];return{...prev,[key]:next}})
+    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,noItemCap,category,event_id})})}
     catch(err){console.warn('[updateStock] write failed (will re-sync on next refresh):',err)}
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
-    setCategoryStocks(prev=>{const ex=prev.find(s=>s.category===category);if(ex)return prev.map(s=>s.category===category?{...s,stock_count:stockCount}:s);return[...prev,{category,stock_count:stockCount,default_stock:null,orders_count:0}]})
+    const key=event_id??'__none__'
+    setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,stock_count:stockCount}:s):[...cur,{category,stock_count:stockCount,default_stock:null,orders_count:0}];return{...prev,[key]:next}})
     try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount,event_id})})}
     catch(err){console.warn('[updateCategoryStock] write failed (will re-sync on next refresh):',err)}
   }
@@ -1555,7 +1576,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Stock & availability</p>
               <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
-              {truckMenu?(
+              {truckMenu&&stockLoading?(
+                // This event's stock hasn't resolved yet (never-viewed) — skeleton, NOT empty/stale rows.
+                <div className="space-y-2 animate-pulse">
+                  {[0,1,2,3].map(i=><div key={i} className="h-10 bg-slate-100 rounded-xl" />)}
+                </div>
+              ):truckMenu?(
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
                     const catStock=categoryStocks.find(s=>s.category===cat)
@@ -1663,12 +1689,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             const stock=itemStocks.find(s=>s.name===item.name)
                             // isAvailable: check itemStocks first (override), then fall back to menu
                             const isAvailable = stock ? (stock.available ?? true) : (item.available ?? true)
-                            // stock_count: explicit override wins; then fall back to item's default_stock as starting value
-                            const itemCount=stock?.stock_count ?? item.default_stock ?? null
+                            // no_item_cap = "follow category" → no individual cap → itemCount null (empty box,
+                            // inherits the category pool) REGARDLESS of any default_stock.
+                            const followsCategory=!!stock?.no_item_cap
+                            const itemCount=followsCategory?null:(stock?.stock_count ?? item.default_stock ?? null)
                             const itemOrdered=activeEvent?(stock?.orders_count??0):0
                             const itemRem=itemCount!==null?itemCount-itemOrdered:null
                             const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
-                            const isDefault=stock?.stock_count==null&&item.default_stock!=null
+                            // Drives the input's default-state border/tooltip (the visible "default"
+                            // label + "reset to default" link were removed — reset is still reachable
+                            // by typing the default number back in).
+                            const isDefault=!followsCategory&&stock?.stock_count==null&&item.default_stock!=null
                             return(
                               <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                 <div className="flex-1 min-w-0">
@@ -1689,14 +1720,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                       const raw=stockDrafts[item.name]; const skip=skipStockBlurRef.current; skipStockBlurRef.current=false
                                       setStockDrafts(d=>{const n={...d};delete n[item.name];return n})
                                       if(skip||raw===undefined)return
-                                      const p=raw.trim()===''?null:parseInt(raw,10)
+                                      const trimmed=raw.trim()
+                                      const p=trimmed===''?null:parseInt(trimmed,10)
                                       const next=p!==null&&!isNaN(p)?Math.max(0,p):null
-                                      if(next!==(stock?.stock_count??null))updateStock(item.name,isAvailable,next,cat)
+                                      if(next===null){
+                                        // empty → follow category (no individual cap this event)
+                                        if(!followsCategory)updateStock(item.name,isAvailable,null,cat,true)
+                                      }else if(next!==(stock?.stock_count??null)||followsCategory){
+                                        // a number → individual cap this event
+                                        updateStock(item.name,isAvailable,next,cat,false)
+                                      }
                                     }}
-                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={isDefault?'Default stock — save to override':'Item stock'}/>
-                                  {isDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
+                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={isDefault?'Default stock — save to override':followsCategory?'Following category total — type a number to cap':'Item stock'}/>
                                 </div>
-                                <Toggle on={isAvailable} onToggle={()=>updateStock(item.name,!isAvailable,itemCount,cat)}/>
+                                <Toggle on={isAvailable} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/>
                               </div>
                             )
                           })}

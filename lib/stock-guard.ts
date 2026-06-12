@@ -83,7 +83,7 @@ export async function checkStockShortfall(
     getLiveItemCounts(supabase, truckId, eventId),
     supabase.from('menu_items_db').select('name, default_stock').eq('truck_id', truckId),
     supabase.from('menu_categories').select('name, default_stock').eq('truck_id', truckId),
-    supabase.from('event_item_stock').select('item_name, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
+    supabase.from('event_item_stock').select('item_name, stock_count, no_item_cap').eq('truck_id', truckId).eq('event_id', eventId),
     supabase.from('event_category_stock').select('category, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
   ])
 
@@ -91,9 +91,14 @@ export async function checkStockShortfall(
   const itemDefault: Record<string, number | null> = {}
   ;(menuItems || []).forEach((i: any) => { itemDefault[i.name] = i.default_stock ?? null })
   const itemOverride: Record<string, number> = {}
-  ;(overrides || []).forEach((o: any) => { if (o.stock_count != null) itemOverride[o.item_name] = o.stock_count })
+  // no_item_cap = "follow category" → item ceiling resolves to null (no cap), overriding the default.
+  const itemNoCap = new Set<string>()
+  ;(overrides || []).forEach((o: any) => {
+    if (o.no_item_cap) itemNoCap.add(o.item_name)
+    else if (o.stock_count != null) itemOverride[o.item_name] = o.stock_count
+  })
   const itemCeiling = (name: string): number | null =>
-    name in itemOverride ? itemOverride[name] : (itemDefault[name] ?? null)
+    itemNoCap.has(name) ? null : (name in itemOverride ? itemOverride[name] : (itemDefault[name] ?? null))
 
   const catDefault: Record<string, number | null> = {}
   ;(menuCats || []).forEach((c: any) => { catDefault[c.name.toLowerCase()] = c.default_stock ?? null })

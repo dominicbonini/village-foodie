@@ -159,6 +159,7 @@ export interface ItemStock {
   name: string
   available: boolean
   stock_count: number | null
+  no_item_cap?: boolean   // true = no individual cap this event → follows the category pool
   orders_count: number
   category: string | null
 }
