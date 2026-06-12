@@ -2,15 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
+import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
-
-function normName(s: string): string {
-  return s.toLowerCase().replace(/[^a-z0-9]/g, '')
-}
 
 const INBOUND_SECRET = process.env.INBOUND_SCHEDULE_SECRET
 
@@ -51,70 +48,18 @@ export async function POST(req: NextRequest) {
     .filter(r => r.event_date && r.truck_name)
 
   // Fetch lookup tables once for ID resolution. Venues carry coords + postcode so the bridge can
-  // fall back to a fuzzy-matched venue's postcode/coords without a second (stricter) query.
-  const [{ data: allDiscoveryTrucks }, { data: allVenues }] = await Promise.all([
+  // fall back to the matched venue's postcode/coords without a second query.
+  const [{ data: allDiscoveryTrucks }, { data: allVenuesRaw }] = await Promise.all([
     supabase.from('discovery_trucks').select('id, name'),
     supabase.from('venues').select('id, name, village, latitude, longitude, postcode'),
   ])
+  // Shared venue matcher (lib/venue-matcher) takes allVenues as a param; pass once.
+  const allVenues = (allVenuesRaw ?? []) as VenueRow[]
 
-  // ── Venue matcher: token-overlap candidates → village-rank → ambiguity-BAIL ──────────────────────
-  // Used for BOTH venue_id resolution and the postcode/coords fallback (single source of truth, so a
-  // bail = no venue AND no postcode/coords — never a half-linked event). Replaces the old loose
-  // substring match that linked "The Cavendish Five Bells" to the Rattlesden "Five Bells".
-  //
-  // 1) CANDIDATES by token containment (drop stopwords): a venue is a candidate if its significant
-  //    tokens ⊆ the scraped tokens OR vice-versa (handles "Five Bells" ⊂ "Cavendish Five Bells" AND
-  //    "Platform One" ⊂ "Platform One, Clare Castle Country Park"), or an exact normalized-name match.
-  // 2) RANK by village agreement (normalized): event village == candidate village, OR the candidate's
-  //    village tokens all appear in the scraped name (the embedded-town signal — fixes Cavendish even
-  //    when the scraper left town null). Exactly one agreeing candidate → link it.
-  // 3) BAIL: ≥2 candidates with no village agreement (village null/blank or non-matching) → return
-  //    null. Blank-recoverable (operator fills it in) beats confident-wrong on the live site.
-  const STOP = new Set(['the', 'pub', 'inn', 'tavern', 'arms', 'bar', 'hotel', 'and', 'at', 'on', 'of'])
-  const toks = (s: string | null): string[] =>
-    (s || '').toLowerCase().split(/[^a-z0-9]+/).filter(t => t && !STOP.has(t))
-
-  const findVenue = (venueName: string | null, village: string | null) => {
-    if (!allVenues || !venueName) return null
-    const sTok = new Set(toks(venueName))
-    const normScraped = normName(venueName)
-
-    // 1) Candidates
-    const cands = (allVenues as any[]).filter(v => {
-      if (normName(v.name) === normScraped) return true
-      const vTok = new Set(toks(v.name))
-      if (vTok.size === 0 || sTok.size === 0) return false
-      const vSubS = [...vTok].every(t => sTok.has(t))   // venue name ⊆ scraped (e.g. "Five Bells")
-      const sSubV = [...sTok].every(t => vTok.has(t))   // scraped ⊆ venue name (e.g. "Platform One")
-      return vSubS || sSubV
-    })
-    if (cands.length === 0) return null
-    if (cands.length === 1) return cands[0]
-
-    // 2) Rank by village agreement. Primary: event village vs candidate village by token-subset in
-    //    EITHER direction, so "Clare" agrees with "Clare Castle Country Park" (specificity differs).
-    const evVilToks = toks(village)
-    let agree = evVilToks.length
-      ? cands.filter(c => {
-          const cvT = toks(c.village)
-          return cvT.length > 0 && (cvT.every(t => evVilToks.includes(t)) || evVilToks.every(t => cvT.includes(t)))
-        })
-      : []
-    // Fallback: candidate's village tokens all appear in the scraped name (embedded-town signal).
-    if (agree.length === 0) {
-      agree = cands.filter(c => {
-        const cv = toks(c.village)
-        return cv.length > 0 && cv.every(t => sTok.has(t))
-      })
-    }
-    if (agree.length === 1) return agree[0]
-    if (agree.length > 1) {
-      // Several candidates in the agreeing village — prefer an exact name match, else BAIL (ambiguous).
-      return agree.find(c => normName(c.name) === normScraped) || null
-    }
-    // 3) ≥2 candidates, none agree on village → BAIL (no venue, no postcode/coords).
-    return null
-  }
+  // Resolve each row's venue ONCE (was called twice — discovery enrichment + truck_events coords).
+  // Keyed by row reference; both passes below read from this map so the match (and its confidence)
+  // is computed a single time per event.
+  const venueMatchByRow = new Map(rows.map(r => [r, findVenue(r.venue_name, r.village, allVenues)]))
 
   // Enrich each row with resolved IDs before upserting
   const enrichedRows = rows.map(row => {
@@ -130,7 +75,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Match venue_id (same fuzzy matcher as the postcode/coords fallback below)
-    const venueId: string | null = findVenue(row.venue_name, row.village)?.id ?? null
+    const venueId: string | null = venueMatchByRow.get(row)?.venue?.id ?? null
 
     // Strip postcode: it belongs on truck_events only (the bridge insert reads row.postcode from
     // `rows`). discovery_events has no postcode column — leaving it in would 500 the upsert (PGRST204).
@@ -218,18 +163,13 @@ export async function POST(req: NextRequest) {
     )
     if (isDup) continue
 
-    // Look up venue coordinates + postcode from the FUZZY-matched venue (same matcher as venue_id
-    // resolution above), so name variants resolve. postcode falls back to the venue's when the page
-    // omitted it. No second DB query — reuses the once-fetched allVenues.
-    let latitude: number | null = null
-    let longitude: number | null = null
-    let venuePostcode: string | null = null
-    const matchedVenue = findVenue(row.venue_name, row.village)
-    if (matchedVenue) {
-      latitude = matchedVenue.latitude
-      longitude = matchedVenue.longitude
-      venuePostcode = matchedVenue.postcode ?? null
-    }
+    // Reuse the single venue match resolved once per row above (coords + postcode + the anchor/
+    // confidence stamps all come from the same VenueMatch — never resolved twice).
+    const match = venueMatchByRow.get(row) ?? { venue: null, confidence: 'none' as const }
+    const matchedVenue = match.venue
+    const latitude: number | null = matchedVenue?.latitude ?? null
+    const longitude: number | null = matchedVenue?.longitude ?? null
+    const venuePostcode: string | null = matchedVenue?.postcode ?? null
 
     const { data: insertedEvent, error: insertErr } = await supabase.from('truck_events').insert({
       truck_id:   truckId,
@@ -247,6 +187,11 @@ export async function POST(req: NextRequest) {
       scraped_signature: row.venue_name || null,
       latitude,
       longitude,
+      // Venue anchor + provenance/confidence (migration 20260612_truck_events_venue_id). 'scraper'
+      // source = matcher best-effort guess (NOT operator-validated). 'none' confidence → NULL.
+      venue_id:               matchedVenue?.id ?? null,
+      venue_id_source:        matchedVenue ? 'scraper' : null,
+      venue_match_confidence: matchedVenue ? match.confidence : null,
     }).select('id').single()
     if (insertErr) {
       console.error('[inbound-schedule] bridge insert failed:', insertErr.message)

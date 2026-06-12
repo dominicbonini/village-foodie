@@ -9,6 +9,7 @@
 //   npx tsx scripts/reresolve-event-venues.ts test-truck --apply  # actually write
 import { createClient } from '@supabase/supabase-js'
 import { readFileSync } from 'fs'
+import { findVenue, type VenueRow } from '../lib/venue-matcher'
 
 const env = Object.fromEntries(
   readFileSync('.env.local', 'utf8').split('\n').filter(l => l.includes('='))
@@ -16,30 +17,7 @@ const env = Object.fromEntries(
 )
 const sb = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY)
 
-const normName = (s: string | null) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-const STOP = new Set(['the', 'pub', 'inn', 'tavern', 'arms', 'bar', 'hotel', 'and', 'at', 'on', 'of'])
-const toks = (s: string | null) => (s || '').toLowerCase().split(/[^a-z0-9]+/).filter(t => t && !STOP.has(t))
-
-let allVenues: any[] = []
-const findVenue = (venueName: string | null, village: string | null) => {
-  if (!allVenues.length || !venueName) return null
-  const sTok = new Set(toks(venueName)); const normScraped = normName(venueName)
-  const cands = allVenues.filter(v => {
-    if (normName(v.name) === normScraped) return true
-    const vTok = new Set(toks(v.name)); if (vTok.size === 0 || sTok.size === 0) return false
-    return [...vTok].every(t => sTok.has(t)) || [...sTok].every(t => vTok.has(t))
-  })
-  if (cands.length === 0) return null
-  if (cands.length === 1) return cands[0]
-  const evVilToks = toks(village)
-  let agree = evVilToks.length
-    ? cands.filter(c => { const cvT = toks(c.village); return cvT.length > 0 && (cvT.every(t => evVilToks.includes(t)) || evVilToks.every(t => cvT.includes(t))) })
-    : []
-  if (agree.length === 0) agree = cands.filter(c => { const cv = toks(c.village); return cv.length > 0 && cv.every(t => sTok.has(t)) })
-  if (agree.length === 1) return agree[0]
-  if (agree.length > 1) return agree.find(c => normName(c.name) === normScraped) || null
-  return null
-}
+let allVenues: VenueRow[] = []
 
 async function main() {
   const truck = process.argv[2]
@@ -52,18 +30,28 @@ async function main() {
     .order('event_date')
 
   console.log(`${apply ? 'APPLY' : 'DRY-RUN'} — ${evs?.length || 0} events for ${truck}\n`)
+  let changedN = 0, unchangedN = 0, skippedN = 0
   for (const e of evs || []) {
-    const v = findVenue(e.venue_name, e.town)
-    if (!v) { console.log(`  ${e.event_date} "${e.venue_name}" → BAIL (left untouched)`); continue }
+    // Shared matcher now best-guesses on ambiguity; this script stays CONSERVATIVE — patch ONLY
+    // high-confidence matches, never re-pin an event on a low-confidence guess (preserves the old
+    // "only touch confident matches" behaviour). Does NOT stamp venue_id (out of scope here).
+    const { venue: v, confidence } = findVenue(e.venue_name, e.town, allVenues)
+    if (confidence !== 'high' || !v) {
+      console.log(`  ${e.event_date} "${e.venue_name}" → ${confidence}-confidence, left untouched`)
+      skippedN++
+      continue
+    }
     const patch: any = { latitude: v.latitude ?? null, longitude: v.longitude ?? null, postcode: v.postcode ?? null }
     if (!e.town && v.village) patch.town = v.village // fill blank town from matched venue
     const changed = String(patch.latitude) !== String(e.latitude) || patch.postcode !== e.postcode || (patch.town && patch.town !== e.town)
     console.log(`  ${e.event_date} "${e.venue_name}" → "${v.name}" (${v.village}) pc=${v.postcode || 'blank'} town=${patch.town ?? e.town}${changed ? '  *CHANGED' : ''}`)
+    if (changed) changedN++; else unchangedN++
     if (apply && changed) {
       const { error } = await sb.from('truck_events').update(patch).eq('id', e.id)
       if (error) console.log(`     ERROR: ${error.message}`)
     }
   }
-  console.log(`\n${apply ? 'Applied.' : 'Dry-run only — re-run with --apply to write.'}`)
+  console.log(`\nchanged=${changedN} unchanged=${unchangedN} skipped(low/none)=${skippedN}`)
+  console.log(apply ? 'Applied.' : 'Dry-run only — re-run with --apply to write.')
 }
 main()
