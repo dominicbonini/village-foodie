@@ -39,10 +39,27 @@ function formatStandardDate(dateStr: string) {
     return dateStr;
 }
 
+// "17:00:00" / "17:00" → "17:00"
+const fmtTime = (t?: string) => (t || '').slice(0, 5);
+
+// Live now = today AND the current time is within [start, end] on the event's date.
+function isEventLive(dateStr: string, startTime?: string, endTime?: string): boolean {
+  if (!dateStr || !startTime || !endTime) return false;
+  const [d, m, y] = dateStr.split('/').map(Number);
+  if (!d || !m || !y) return false;
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const now = new Date();
+  const start = new Date(y, m - 1, d, sh || 0, sm || 0);
+  const end = new Date(y, m - 1, d, eh || 0, em || 0);
+  return now >= start && now <= end;
+}
+
 export default function TruckListCard({ event, slug }: TruckListCardProps) {
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
   const venueDisplay = showVillage ? `${event.venueName} - ${event.village}` : event.venueName;
-  
+  const liveNow = isEventLive(event.date, event.startTime, event.endTime);
+
   return (
     <div className="bg-white p-3.5 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-3 hover:border-orange-200 transition-colors">
         <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4">
@@ -53,8 +70,14 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                     {formatStandardDate(event.date)}
                 </span>
                 <span className="text-[12px] font-bold text-slate-500 leading-none mt-0.5">
-                    {event.startTime} - {event.endTime}
+                    {fmtTime(event.startTime)} - {fmtTime(event.endTime)}
                 </span>
+                {liveNow && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mt-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        Open now
+                    </span>
+                )}
             </div>
 
             {/* VENUE NAME AND VILLAGE */}
@@ -84,7 +107,7 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                                bg-orange-600 hover:bg-orange-700 text-white font-semibold
                                px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
                 >
-                    Order
+                    {liveNow ? 'Order' : 'Pre-Order'}
                 </a>
             )}
 

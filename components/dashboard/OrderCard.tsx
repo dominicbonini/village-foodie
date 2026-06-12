@@ -106,7 +106,8 @@ export function OrderCard({
   showCookingStep?: boolean
   pendingSync?: boolean
 }) {
-  const [expanded, setExpanded] = useState(true)
+  // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
+  const expanded = true
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
   const [showContact, setShowContact] = useState(false)
 
@@ -340,8 +341,8 @@ export function OrderCard({
           </div>
         </div>
       ) : (
-        /* Window / solo: interactive collapsible header */
-        <button onClick={() => setExpanded(e => !e)} className={`w-full text-left px-4 py-3 ${headerCls} transition-colors active:opacity-80`}>
+        /* Window / solo: header (non-collapsing — content always shown) */
+        <div className={`w-full text-left px-4 py-3 ${headerCls}`}>
           {viewMode === 'solo' ? (
             /* Solo (mobile): two-row layout with status badge */
             <>
@@ -351,7 +352,6 @@ export function OrderCard({
                   {timeLabel && <span>{timeLabel}</span>}
                   {offsetLabel !== null && <span className="opacity-70">· {offsetLabel}</span>}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
-                  <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-0.5">
@@ -390,11 +390,10 @@ export function OrderCard({
                 {offsetLabel !== null && <span className="opacity-50">· {offsetLabel}</span>}
                 <span className="font-bold">£{Number(order.total).toFixed(2)}</span>
                 {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
-                <span className="text-xs opacity-50">{expanded ? '▲' : '▼'}</span>
               </div>
             </div>
           )}
-        </button>
+        </div>
       )}
 
       {showContact && (
