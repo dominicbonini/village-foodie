@@ -208,13 +208,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   // kitchen_capacity comes from the event's van (truck_vans), computed live — the
   // slot_capacity batch cache is no longer consulted for the decision.
   let kitchenCapacity: number | null = null
+  let capacityWindowMins = 5
   if (todayEvent?.van_id) {
     const { data: van } = await supabase
       .from('truck_vans')
-      .select('kitchen_capacity')
+      .select('kitchen_capacity, capacity_window_mins')
       .eq('id', todayEvent.van_id)
       .single()
     kitchenCapacity = van?.kitchen_capacity ?? null
+    capacityWindowMins = van?.capacity_window_mins ?? 5
   }
   // Event-scoped usage (re-key fix): only the resolved event's load, never pooled with
   // other same-date events. No event resolved → empty (slots still generated from times).
@@ -227,6 +229,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     productionSlotUnits,
     catConfigs,
     kitchenCapacity,
+    capacityWindowMins,
     date,
     nowMins,
     earliestCollectionMins,
@@ -243,6 +246,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     capacityInputs: {
       productionSlotUnits,
       kitchenCapacity,
+      capacityWindowMins,
       eventStartMins,
       eventEndMins: eventEndMins ?? null,
       earliestCollectionMins,

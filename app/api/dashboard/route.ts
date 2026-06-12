@@ -230,6 +230,7 @@ export async function GET(req: NextRequest) {
   // Hoisted so they can be returned for the dashboard's capacity card (single source —
   // the client used to read truck_vans directly with the anon key, which RLS blocked).
   let kitchenCapacity: number | null = null
+  let capacityWindowMins = 5
   let activeVanName: string | null = null
   // The selected event's van offline-protection DEFAULT (Settings value). The dashboard
   // shows this when there's no per-event override — without it the client's vanAutoPause
@@ -254,10 +255,11 @@ export async function GET(req: NextRequest) {
     if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity, name, auto_pause_on_offline, show_cooking_step')
+        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, show_cooking_step')
         .eq('id', capacityEvent.van_id)
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
+      capacityWindowMins = van?.capacity_window_mins ?? 5
       activeVanName = van?.name ?? null
       vanAutoPause = van?.auto_pause_on_offline ?? false   // van offline-protection DEFAULT (toggle label)
       vanShowCookingStep = van?.show_cooking_step ?? false
@@ -273,6 +275,7 @@ export async function GET(req: NextRequest) {
       productionSlotUnits,
       catConfigs,
       kitchenCapacity,
+      capacityWindowMins,
       date,
       nowMins,
       earliestCollectionMins: earliestMins,
@@ -335,6 +338,7 @@ export async function GET(req: NextRequest) {
     // Authoritative van capacity + name (service-role read above) for the capacity card —
     // replaces the RLS-blocked anon truck_vans read the client used to do.
     kitchenCapacity,
+    capacityWindowMins,
     activeVanName,
     vanAutoPause,
     vanShowCookingStep,

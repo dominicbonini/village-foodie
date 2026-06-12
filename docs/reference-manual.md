@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.5
+HatchGrab Engineering Reference Manual · V6.7
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.5**
+**Version 6.7**
 
 June 2026
 
@@ -14,7 +14,42 @@ June 2026
 
 # Changelog
 
-## V6.5 — June 2026 (this session)
+## V6.7 — June 2026
+
+Capacity-engine rebuild session. The global `kitchen_capacity` ceiling is no longer a post-hoc per-window red check — it is now an EXACT sweep-line CONCURRENCY ceiling ("no more than N counted items in production at the same instant"), with its own cadence column `truck_vans.capacity_window_mins` (integer NOT NULL DEFAULT 5, CHECK 1–20) independent of any category's prep and of the cosmetic 5-min customer collection slots. Built + tsc-clean; live-verification pending. Key changes relative to V6.6:
+
+- **Global-ceiling roll-forward gap RESOLVED, then superseded.** The V6.6 KNOWN GAP (an over-ceiling order returned `fits:false` everywhere → empty picker / frozen ASAP) was first fixed with a `cascadeGlobalCeiling` spill helper, which was then REMOVED within the same session and replaced by the concurrency rebuild. Do not reintroduce the cascade helper. See Section 6 and Section 27.
+- **Kitchen capacity = exact concurrency ceiling (`maxConcurrentCount`, lib/slot-availability.ts).** A cooking batch of M items (prep P, window-start S) occupies `[S, S+P)` and counts M at every instant in it (a batch spanning a boundary counts M in BOTH windows — never split; splitting under-counts → oversell). An instant counted category is a zero-width point counting M at its instant. No buckets, no anchor/origin constant. See Section 6 and Section 16.
+- **Instant counted items are now first-class** — they count toward the concurrency ceiling, are spread on the capacity cadence, and advance the customer ready estimate. This CORRECTS the earlier "instant ceiling-only items aren't spread (out of scope)" framing, which was wrong. See Section 6.
+- **`capacity_window_mins` is van-global (operating-mode), not event state** — like `kitchen_capacity`; busy-night flexibility uses the existing dashboard mid-event capacity edit. Per-event overrides of the whole operating-mode set remain the single parked backlog item — do not fork a window-only per-event path. See Section 5 and Section 27.
+- **Submit instant-only bypass flipped `!hasOven` → `!hasCounted`** (authoritative gate) — an instant-only counted order previously booked with NO capacity check (an oversell hole now that instant items count); it now falls through to `earliestBackwardFitSlot`. Live-verify first. See Section 5 and Section 6.
+- **Cursor instructions must be a fenced code block** — triple-backtick, never free-running text. See Section 22.
+
+## V6.6 — June 2026 (this session)
+
+Pre-trial event-scoping, scheduler-recovery, and venue-keystone session. The headline work is a structural pass that moves PAUSE and EXTRA-WAIT from truck/van scope onto the EVENT (the same class of fix as the V6.5 per-event stock move — transient "what's happening at this event right now" state must be event-scoped, never van/truck), revives the two dead pg_cron schedulers that drive auto-close and offline auto-pause, adds the `venue_id` keystone column to `truck_events` with a live-verified write path and a rebuilt shared venue matcher, completes the per-event stock UI (input-revert, mobile, event-switch flash, follow-category), and ships a temporary HatchGrab event-display fix pending a proper per-truck customer-mode state machine. Key changes relative to V6.5:
+
+- **Pause + extra-wait now EVENT-scoped (replaces van/truck scope)** — manual pause, offline auto-pause, and extra-wait were stored at truck/van level and bled across every event sharing that van (a future event showed "paused" because its van was offline now; a truck-wide manual pause paused every event; extra-wait inflated every event's slots). New columns `truck_events.paused_until`, `online_paused_until`, `extra_wait_mins`, `extra_wait_started_at` hold these per-event. Manual pause writes the selected event; offline auto-pause (`heartbeat-monitor`) stamps the LIVE-NOW event on the stale van (a van with no live event pauses nothing — kills the future-event-paused bug); `/api/heartbeat` clears the event pause on reconnect (incl. the no-vanId dashboard ping — fixes "online dashboard shows Paused"); readers read the event's own columns. The van keeps `auto_pause_on_offline` as the creation default only. New migration `20260612_event_scoped_pause_extrawait.sql`. The legacy `trucks.paused_until` / `truck_vans.paused_until` / `truck_vans.online_paused_until` / `trucks.extra_wait_*` columns are now vestigial (remove post-trial). See Section 5, Section 6, Section 10, Section 11.
+
+- **Customer-side pause handling — basket-safe, view-only while paused** — the submit guard returns 423 (event-scoped) BEFORE any slot/stock/lock work, so a paused order never reaches the kitchen; the vestigial truck-level pause guard in submit was removed (a stale `trucks.paused_until` would falsely 423 every event). The customer order page's "Check again" now RE-FETCHES the menu in place instead of `window.location.reload()` (the reload was wiping the in-memory basket); the basket is kept but read-only while `isOrderingBlocked`. See Section 7.
+
+- **Prominent in-banner "Resume orders" control** — the offline-paused banner on the dashboard gained an inline Resume button (clears both event pause fields), with "connection unstable, may pause again" copy shown for the offline reason only. Primary recovery is still auto-clear-on-heartbeat; Resume is the manual override for stuck/false-positive pauses. See Section 11.
+
+- **Schedulers revived (auto-close + offline auto-pause were silently dead)** — the `auto-event-scheduler` and `heartbeat-monitor` edge functions were deployed with their pg_cron jobs intact, but the cron bearer reads the `service_role_key` secret from Supabase Vault and that Vault secret had been DELETED → empty bearer → 401 → ZERO invocations. So auto-close never fired and offline auto-pause never fired (auto-open limped along only via a client-side loop while a device was open). Fix: restored the Vault secret (`vault.create_secret(<key>, 'service_role_key')`); both jobs now succeed. `heartbeat-monitor` set to a 30-second interval; `auto-event-scheduler` stays 1-minute. Auto-open = "Start Event" = `status:'open'`; auto-close → `closed` is the real ordering gate. (A GitHub-Action-cron alternative was rejected: the 5-minute floor can't meet the 30s offline threshold.) See Section 11 and Section 15.
+
+- **venue_id keystone added to truck_events + venue matcher extracted to a shared module** — new columns `truck_events.venue_id` (uuid FK `venues(id)` ON DELETE SET NULL), `venue_id_source` (scraper|operator|manual|backfill), `venue_match_confidence` (high|low|none). `findVenue` extracted to shared `lib/venue-matcher.ts` (the duplicate copy in `scripts/reresolve-event-venues.ts` was deleted — a latent drift), now returns `{ venue, confidence }`, best-guesses on ambiguity instead of bailing, with a deterministic `pickBest`. The scraper bridge resolves the venue ONCE per row and stamps `venue_id` + `venue_id_source='scraper'` + `venue_match_confidence` on the `truck_events` insert. Live-verified: a test-truck re-scrape stamped 8/8 fresh events high-confidence. New migration `20260612_truck_events_venue_id.sql`. See Section 25 and Section 16.
+
+- **Per-event stock UI completed + `no_item_cap` flag** — four client-side stock fixes on the dashboard: (1) inputs hold a local draft from focus, commit on blur/Enter, revert on Escape (kills the type-over revert + realtime clobber); (2) inputs widened, 16px on mobile, `inputMode="numeric"`; (3) stock state re-shaped to per-event keyed maps with stale-while-revalidate + skeletons (kills the cross-event stale-render flash structurally); (4) a new `event_item_stock.no_item_cap` boolean = "no individual cap this event → ceiling resolves to null → follows the category pool", honoured in all three ceiling readers, surfaced by `get_stock`. The blue "default" label + "reset to default" link were removed (chrome only — empty box still = follow category, a number = cap, retype the default to reset). New migration `20260612_event_item_stock_no_item_cap.sql`. See Section 30.
+
+- **Pending approval-card buttons stack on mobile** — the Approve/Edit/Reject buttons on the "Needs your approval" cards sit in a full-width horizontal row BELOW the venue/time block on mobile (a brief vertical-stack attempt was reverted — too much card height), reverting to the inline horizontal row at `sm:`+. Confirmed-card icon buttons unchanged. See Section 23.
+
+- **HatchGrab event-display fix (TEMPORARY stopgap)** — `/api/discovery/events` now returns operator/approved events ONLY when the host is HatchGrab (`filteredDiscovery = isHG ? [] : …`); scraped `discovery_events` are Village-Foodie-only. This cleared ~10 stale scraped rows off `hatchgrab.com/trucks/test-kitchen` (which had survived a `truck_events` delete because the discovery_truck was flipped `hg_only` but its events stayed `public`). This is a trial expedient — it ties event-source to the HOST, when the durable model ties it to the TRUCK's customer state; to be replaced by the per-truck customer-mode state machine (Section 27, parked work). See Section 7 / Section 15.
+
+- **New migrations** — `20260612_truck_events_venue_id.sql`, `20260612_event_item_stock_no_item_cap.sql`, `20260612_event_scoped_pause_extrawait.sql`. All applied by hand in the Supabase SQL editor, then `notify pgrst, 'reload schema'`. See Section 16.
+
+- **iPad / native app pushed to POST-TRIAL** — the Capacitor wrapper and Stage A offline are no longer pre-trial blockers (dev taking too long); marked "Coming soon" in the features list. The trial runs on web / tablet-browser. Offline auto-pause is browser-agnostic (server-side heartbeat staleness) so it works for the web trial; native only adds the local offline detection banner / screen-wake later. See Section 11 and Section 26.
+
+## V6.5 — June 2026
 
 Pre-trial per-event-stock and live-site-correctness session. The headline change rebuilds stock from a truck-level model into a **per-event sparse-override** model, closing the cross-event sold-out bug (an item marked sold out — or sold through — on one event showed sold out on every other event). Also: brings the dormant operator-events branch of the discovery API alive and gates it by the linked discovery truck's visibility (so a test/hg-only truck shows on hatchgrab.com and is hidden on villagefoodie.co.uk); rebuilds the bridge venue matcher from loose substring matching into token-overlap + village-rank + best-effort, fixing a live-site venue mislink that cascaded the wrong postcode and map pin; strengthens the scraper's town extraction; consolidates the order page → profile page navigation; and clears a batch of small UI/data items (header logo size, billing-tab "coming soon" + sticky pricing header, order-button cart icon, test-kitchen logo). Key changes relative to V6.4:
 
@@ -24,9 +59,9 @@ Pre-trial per-event-stock and live-site-correctness session. The headline change
 
 - **Operator-events branch revived + visibility-gated (the test-kitchen-on-hatchgrab fix)** — `trucks.is_test` does NOT exist as a column despite being referenced in code, so the operator-events branch of `/api/discovery/events` had been ERRORING on the phantom column and silently returning `[]` — operator events were dormant on BOTH domains. The `is_test` references were removed from the operator select + filter, reviving the branch, and operator events are now gated by their LINKED discovery truck's `visibility` (via a dedicated UNFILTERED `hatchgrab_truck_id → visibility` fetch — NOT the visibility-filtered `trData`, which would default an `hg_only` row to public and leak it). Test-kitchen's discovery rows were flipped `public → hg_only`, so it shows on hatchgrab.com (with order buttons) and is hidden on villagefoodie.co.uk. This also FIXED a pre-existing leak: test-kitchen was previously a public discovery row, visible on villagefoodie. See Section 15 and Section 16.
 
-- **Bridge venue matcher rebuilt — token-overlap + village-rank + best-effort (replaces loose substring)** — `findVenue` matched on name substring with a vacuous village AND-filter and took the first match (`.find`), so "The Cavendish Five Bells" matched the RATTLESDEN "Five Bells" (substring) while the correct Cavendish "The Five Bells" was rejected on word order — and the mislink cascaded the wrong postcode (IP30 0RA) and wrong coordinates onto the event (the customer-facing map pin and "Cavendish Five Bells in Rattlesden" display). The matcher now: gathers candidates by token-overlap (so all "Five Bells" venues become candidates), ranks by normalised village agreement (with an embedded-town fallback that reads a town token out of the scraped venue_name), and picks the best candidate. See Section 25.
+- **Bridge venue matcher rebuilt — token-overlap + village-rank + best-effort (replaces loose substring)** — `findVenue` matched on name substring with a vacuous village AND-filter and took the first match (`.find`), so "The Cavendish Five Bells" matched the RATTLESDEN "Five Bells" (substring) while the correct Cavendish "The Five Bells" was rejected on word order — and the mislink cascaded the wrong postcode (IP30 0RA) and wrong coordinates onto the event (the customer-facing map pin and "Cavendish Five Bells in Rattlesden" display). The matcher now: gathers candidates by token-overlap (so all "Five Bells" venues become candidates), ranks by normalised village agreement (with an embedded-town fallback that reads a town token out of the scraped venue_name), and picks the best candidate. (V6.6: extracted to the shared `lib/venue-matcher.ts` and now stamps `venue_id`; see Section 25.) See Section 25.
 
-- **Best-effort, not bail — the truck validates at approval (the matcher's ambiguous-case philosophy)** — pending events are customer-invisible (every public read gates `status IN (confirmed, open)`), so a best-effort venue guess is only ever seen by the truck during approval, and the truck edits anything wrong before it goes live. The matcher therefore picks the best candidate rather than leaving a blank, and an approved event becomes a trusted anchor for future scrapes. (The confidence-flag surfacing and the venue_id anchor column are scoped but NOT yet built — see Section 27.) See Section 25.
+- **Best-effort, not bail — the truck validates at approval (the matcher's ambiguous-case philosophy)** — pending events are customer-invisible (every public read gates `status IN (confirmed, open)`), so a best-effort venue guess is only ever seen by the truck during approval, and the truck edits anything wrong before it goes live. The matcher therefore picks the best candidate rather than leaving a blank, and an approved event becomes a trusted anchor for future scrapes. (V6.6 — the `venue_id` anchor column now exists; the confidence-flag SURFACING in the approval queue is still scoped-not-built, Section 27.) See Section 25.
 
 - **Scraper town extraction strengthened** — `hgPrompt` already requested a `town` field but returned null when the town was embedded in the venue name ("The Cavendish Five Bells" → venue kept whole, town null). The prompt now always emits town and splits an embedded place-name out of the venue name, with few-shot examples. The town flows through the already-wired chain (prompt → POST `village` → bridge → `findVenue` village param → `truck_events.town`) with no new plumbing. See Section 24 and Section 25.
 
@@ -176,7 +211,7 @@ Pre-trial polish session. Confirms and hardens the multi-van pause isolation, co
 
 - **Admin page rebuilt** — uses the shared AppHeader and slate-900 tabs; two tabs, Trucks and Features. Features tab renders from FEATURE_SECTIONS (single source of truth) with section headers, footnotes, and the tester column. Truck edit modal: plan selector, trial controls, lifetime discount fields, feature overrides, create-operator, dashboard link.
 
-- **Manual pause isolation fixed** — the set_paused action now writes to truck_vans.paused_until scoped to the active event's van_id (falling back to trucks.paused_until only when there is no van). The pause button is gated on activeEvent?.status === 'open'. Operator UI reload state still reads trucks.paused_until — backlog fix noted.
+- **Manual pause isolation fixed** — the set_paused action now writes to truck_vans.paused_until scoped to the active event's van_id (falling back to trucks.paused_until only when there is no van). The pause button is gated on activeEvent?.status === 'open'. Operator UI reload state still reads trucks.paused_until — backlog fix noted. *(V6.6 — pause is now EVENT-scoped, on truck_events; the van/truck pause columns are vestigial. See Section 5 / Section 11.)*
 
 - **Offline protection per-event override** — truck_events.offline_protection_override (nullable boolean): null = use van default (auto_pause_on_offline), true/false = explicit per-event override set from the dashboard Menu & Stock tab. The menu API checks the event override before the van default. The dashboard warns that disabling is for this event only.
 
@@ -198,11 +233,11 @@ Pre-trial polish session. Confirms and hardens the multi-van pause isolation, co
 
 - **QR / order-URL DRY fix** — the dashboard_token fallback was removed from every customer-facing order-URL construction. The single pattern is truck.slug ? /trucks/${slug}/order : null; a missing slug surfaces a visible error rather than silently exposing the token. Fixed in the manage page, dashboard, discovery events API, and WhatsApp webhook.
 
-- **isHG gate removed** — the discovery/events route no longer restricts operator truck_events to HatchGrab; confirmed/open truck_events now surface on both the Village Foodie and HatchGrab maps unconditionally (the V5 "operator events HatchGrab-only" rule was temporary for testing). *(V6.5 — operator events are again visibility-gated, this time by the linked discovery truck's visibility enum rather than a host gate; see Section 15.)*
+- **isHG gate removed** — the discovery/events route no longer restricts operator truck_events to HatchGrab; confirmed/open truck_events now surface on both the Village Foodie and HatchGrab maps unconditionally (the V5 "operator events HatchGrab-only" rule was temporary for testing). *(V6.5 — operator events are again visibility-gated, this time by the linked discovery truck's visibility enum rather than a host gate; V6.6 — a TEMPORARY host gate `isHG ? []` additionally suppresses scraped discovery events on HatchGrab pending the per-truck state machine; see Section 15.)*
 
 - **Feature labels and footnotes** — FEATURE_SECTIONS in lib/plan-features.ts is the single source of truth for feature rows, human-readable labels, section grouping, and coming-soon status; coming-soon rows are ordered last in the data itself (not at render time). "Facebook, Messenger & Instagram auto-replies" renamed to "Messenger & Instagram auto-replies". PLAN_FOOTNOTES is exported and rendered by both the admin Features tab and the operator Billing tab.
 
-- **Heartbeat architecture documented** — a single last_heartbeat_at per truck_vans row, a 15s ping from both the KDS and the dashboard, a 30s stale threshold, a 2h auto-pause that clears online_paused_until on the next live receipt. All-or-nothing offline detection works by design — the last device still pinging keeps the van live.
+- **Heartbeat architecture documented** — a single last_heartbeat_at per truck_vans row, a 15s ping from both the KDS and the dashboard, a 30s stale threshold, a 2h auto-pause that clears online_paused_until on the next live receipt. All-or-nothing offline detection works by design — the last device still pinging keeps the van live. *(V6.6 — the resulting pause is now stamped on the LIVE-NOW event's truck_events row, not on truck_vans; the heartbeat that detects offline is still a van/device property. See Section 11.)*
 
 - **Scraper workflow** — the GitHub Actions daily_scrape workflow runs on Node 22 (Node 20 lacked native WebSocket for @supabase/realtime-js; Node 24 forced the actions deprecation and Puppeteer Chrome issues). Chrome installs via npx puppeteer browsers install chrome (cache cleared first). Gemini quota resolved by upgrading to a paid plan. *(V6.2 — the workflow moved to Node 24; see Section 24.)*
 
@@ -324,7 +359,7 @@ Major update following an extended build session. Adds operator account model, s
 
 ## V2.0 — May 2026
 
-Merged the earlier engineering-decisions document into a single reference. Starter became permanently free (was £19/mo). Trial became a distinct plan tier. Capacitor native wrapper designated a pre-trial deliverable. Three-stage offline progression documented. Cook screen made Max-only; Instagram/Messenger confirmed Pro; WhatsApp confirmed Max. Per-truck feature_overrides added. KDS view/layout modes and urgency logic documented.
+Merged the earlier engineering-decisions document into a single reference. Starter became permanently free (was £19/mo). Trial became a distinct plan tier. Capacitor native wrapper designated a pre-trial deliverable. Three-stage offline progression documented. Cook screen made Max-only; Instagram/Messenger confirmed Pro; WhatsApp confirmed Max. Per-truck feature_overrides added. KDS view/layout modes and urgency logic documented. *(V6.6 — the Capacitor wrapper is now a POST-trial deliverable; the web/tablet-browser trial does not require it. See Section 11 / Section 26.)*
 
 ## V1.0 — Earlier sessions
 
@@ -375,7 +410,9 @@ When in doubt about naming: customer-facing surfaces use Village Foodie branding
 
 - **Rate limiting / edge** — Upstash Redis behind Vercel Edge Middleware for anti-scraping protection on public data routes (V6.3, Section 28).
 
-- **Native wrapper** — Capacitor around the existing Next.js app. App ID com.hatchgrab.app, points to https://www.hatchgrab.com. Native modules only for hardware (printer) and OS features (background notifications, offline detection, screen wake).
+- **Scheduled functions (V6.6)** — two Supabase Edge Functions run on `pg_cron`: `auto-event-scheduler` (1-minute — auto-open/close events at their start/end time) and `heartbeat-monitor` (30-second — offline auto-pause). Both cron jobs authenticate with the `service_role_key` read from Supabase Vault (`vault.decrypted_secrets`); if that Vault secret is missing the bearer is empty and every invocation 401s silently (Section 11). A cron-health alert is on the backlog (Section 27).
+
+- **Native wrapper (POST-TRIAL as of V6.6)** — Capacitor around the existing Next.js app. App ID com.hatchgrab.app, points to https://www.hatchgrab.com. Native modules only for hardware (printer) and OS features (background notifications, offline detection, screen wake). Pushed to post-trial; the web/tablet-browser trial does not require it (Section 11 / Section 26).
 
 - **Scraper** — Google Apps Script (not in repo) processes Drive screenshots and vendor emails via Gemini, mirrors events to Supabase via /api/inbound-schedule. A separate GitHub Actions web scraper runs daily on Node 24 (see Section 24). Subject to the 6-minute Apps Script execution limit — needs a time guard.
 
@@ -445,6 +482,8 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/useDragDrop.ts** (V6) — the shared drag-and-drop hook. useDragDrop(onFileDrop, acceptedTypes) encapsulates isDragging plus a dragCounter ref and returns { isDragging, dragProps }. Used by the Menu and Schedule import upload zones and the extracted-events reorder list. Never re-implement drag handlers inline.
 
+- **lib/venue-matcher.ts (V6.6)** — the shared `findVenue` venue matcher, EXTRACTED this session from inline code (the duplicate copy in `scripts/reresolve-event-venues.ts` was deleted — a latent drift). Returns `{ venue: VenueRow|null, confidence: 'high'|'low'|'none' }`. Token-overlap candidates → village-rank → deterministic `pickBest` (exact normName → most token-overlap → lexicographically smallest id). Best-guesses on ambiguity rather than bailing to null. The single fuzzy matcher; resolves venue_id AND postcode/coords together. Separate from lib/venue-signature.ts. See Section 25.
+
 - **lib/schedule-extract.ts** (V6.2, town extraction strengthened V6.5) — the single in-repo home for Gemini schedule extraction and exclusion matching. Exports:
 
   - **ExtractedEvent** — the extracted-event type (event_date DD/MM/YYYY, start_time, end_time, venue_name, town, postcode, optional address). `address` is optional and must never contain a town or postcode.
@@ -459,7 +498,7 @@ All business calculations live in lib/. These are the only places these calculat
 
   In-repo callers: **app/api/manage/process-schedule/route.ts** (a ~40-line auth-and-input wrapper), **app/api/manage/verify-schedule-url/route.ts**, and the GitHub Actions scraper's HatchGrab loop. The scraper's inline hgPrompt is a SEPARATE prompt (a divergence — V6.5 found and noted it; convergence onto buildScheduleExtractionPrompt is on the backlog, Section 27). See Section 15 and Section 24.
 
-- **lib/venue-signature.ts** / venue matching in inbound-schedule — see Section 25. The single fuzzy matcher `findVenue` (V6.5 rebuild) resolves BOTH venue_id and postcode/coords for a scraped event; never resolve a venue twice with two different matchers.
+- **lib/venue-signature.ts** / venue matching in inbound-schedule — see Section 25. The single fuzzy matcher `findVenue` (V6.5 rebuild, V6.6 extracted to lib/venue-matcher.ts) resolves BOTH venue_id and postcode/coords for a scraped event; never resolve a venue twice with two different matchers.
 
 ### Display helpers — components/dashboard/helpers.ts
 
@@ -608,7 +647,7 @@ PLAN_ORDER in lib/features.ts is ['starter', 'trial', 'tester', 'pro', 'max']. P
 | **Customer-facing display** | — | — | Coming soon |
 | **Event & festival pricing** | — | — | Coming soon |
 
-> **COMING-SOON STATUS (V6.5)** — iPad kitchen app, advanced reporting, kitchen ticket printing, and Messenger & Instagram auto-replies are shown as "Coming soon" (FeatureValue 'coming_soon') because trial/test operators do not have these yet. Set the relevant plan column to 'coming_soon' in lib/plan-features.ts; the Billing tab and admin Features tab render the badge and order the row last within its section automatically. (The capability of some of these — e.g. the iPad app running in any tablet browser — still exists; "Coming soon" reflects what the current testers are given, and can be flipped back to ✓ when ready.)
+> **COMING-SOON STATUS (V6.5)** — iPad kitchen app, advanced reporting, kitchen ticket printing, and Messenger & Instagram auto-replies are shown as "Coming soon" (FeatureValue 'coming_soon') because trial/test operators do not have these yet. Set the relevant plan column to 'coming_soon' in lib/plan-features.ts; the Billing tab and admin Features tab render the badge and order the row last within its section automatically. (The capability of some of these — e.g. the iPad app running in any tablet browser — still exists; "Coming soon" reflects what the current testers are given, and can be flipped back to ✓ when ready. V6.6: the iPad/native app is explicitly post-trial — Section 11.)
 
 Trial and Tester columns take the same feature values as Max, with Pay-at-Hatch online ordering and a 0% walk-up fee. Their online-order fee shows Pay at Hatch, not 0.99% + card fee. The Trial column auto-follows Max (a 'trial' column value is derived as row.max), so any 'coming_soon' set on Max shows on Trial without extra work.
 
@@ -738,17 +777,23 @@ With no event selected, every event-scoped surface degrades gracefully:
 
 > **RULE** — Never setState from a failed fetch. A 429 on /api/events/manage was wiping upcomingEvents to []. Fetches must check res.ok before setting state; the last active event is cached in a ref.
 
-## Pause and extra wait
+## Pause and extra wait — EVENT-scoped (V6.6, replaces the van/truck model)
 
-- **Pause orders:** stops customer ordering for the active event's vehicle until resumed.
-- **Extra wait:** global delay on all collection estimates, 10-minute increments.
-- Both show a persistent banner on KDS and dashboard.
+> **CRITICAL ARCHITECTURE (V6.6) — do not undo.** Pause and extra-wait are now scoped to the EVENT, on `truck_events`. They were previously stored at truck level (`trucks.paused_until`, `trucks.extra_wait_mins`) and van level (`truck_vans.paused_until`, `truck_vans.online_paused_until`), which BLED across every event sharing that van/truck: a not-yet-started event showed "paused" because its van was offline now; a truck-wide manual pause paused every event; extra-wait inflated every event's slot estimates. This is the same class of contamination as the pre-V6.5 truck-level stock bug (Section 30) — transient "what's happening at THIS event right now" state must be event-scoped, never van/truck.
 
-### Manual pause is van-scoped (V6)
+New columns on `truck_events`: `paused_until`, `online_paused_until`, `extra_wait_mins`, `extra_wait_started_at` (migration `20260612_event_scoped_pause_extrawait.sql`). The van keeps `auto_pause_on_offline` as the per-event creation DEFAULT only; once an event exists, pause is the event's own property.
 
-> **RULE** — set_paused writes to truck_vans.paused_until scoped to the active event's van_id, NOT trucks.paused_until. Falls back to trucks.paused_until when there is no van. The pause button is gated on activeEvent?.status === 'open'.
+- **Manual pause** (`set_paused`, /api/dashboard/action) — writes the SELECTED event's `truck_events.paused_until` (eventId required). Resume clears BOTH `paused_until` and `online_paused_until` on that event. The old truck-wide and van-wide branches are removed. The dashboard and KDS pause/resume controls send `eventId`.
 
-> **BACKLOG** — The operator UI reload still reads pause state from trucks.paused_until. Update before scaling multi-van operators.
+- **Offline auto-pause** (`heartbeat-monitor` edge function) — for each stale van it finds the LIVE-NOW event (London-time `start_time ≤ now ≤ end_time`, today, not cancelled/closed); if effective protection (`event.offline_protection_override ?? van.auto_pause_on_offline`) is true and not already paused, sets `online_paused_until = now + 2h` on THAT event row. A van with NO live-now event pauses nothing (this kills the future-event-paused bug — a future event is never paused just because its van is offline now). Self-heals: if the van is still stale when the next event goes live, that event auto-pauses within ~30s.
+
+- **Readers** (menu API, submit guard, slots, dashboard badge) — read the event's OWN columns. No "live now" gate is needed at the read site because the WRITE side only ever stamps the correct event.
+
+- **Vestigial** — `trucks.paused_until`, `truck_vans.paused_until`, `truck_vans.online_paused_until`, `trucks.extra_wait_mins`, `trucks.extra_wait_started_at` are now unwritten/unread for these features. LEFT IN PLACE (removal post-trial, not mid-stack).
+
+> **BACKLOG (V6.6)** — the KDS pause badge still reads `data.truck?.paused_until` (now null post event-scoping) → it under-reports the event pause on the kitchen screen (display-only; ordering is still blocked server-side). Event-source it like the dashboard badge (Section 27).
+
+> **DEFERRED (V6.6) — "per-event operating overrides".** kitchen capacity, `time_selection_enabled`, slot cadence, and `auto_accept` are truck-wide and COULD optionally vary per event (festival vs quiet pub). These are NOT cross-event contamination (they're set-once operating modes, not live-event activities), so they were deliberately left truck-scoped; making them per-event-overridable is a post-trial config feature (Section 27).
 
 
 # 6. Prep time and queue logic
@@ -816,9 +861,29 @@ In the Add Order panel, the ASAP collection time is the later of (now + prep) an
 
 > **RULE — one helper for dots and placement.** The same projection drives BOTH the operator traffic-light dots AND the ASAP/auto-accept placement. The dots are queue-only; the basket affects only the live ASAP estimate, not the dot colours.
 
+> **RESOLVED (V6.7) — was: global-ceiling roll-forward gap.** The V6.6 gap (an over-ceiling order returned `fits:false` at EVERY slot → empty picker / frozen ASAP) is fixed. The interim `cascadeGlobalCeiling` spill helper was built and then REMOVED in the same session — do NOT reintroduce it. The global `kitchen_capacity` ceiling is now an EXACT sweep-line concurrency check with its own cadence (`capacity_window_mins`), documented in the next subsection. SEVERITY was UX-only (the submit gate pended over-ceiling orders under the lock — never overfilled).
+
 > **VERIFIED EXAMPLES (test-kitchen, batch 4, 5-min window == 5-min prep, capacity 6):** 1 pizza @17:20 → 17:20 AMBER "Pizza 1/4", 17:25 GREEN. 10 pizzas @17:00 → 17:00 RED 4/4, 17:05 RED 4/4, 17:10 AMBER 2/4, 17:15+ GREEN. 4 pizzas @17:00 → 17:00 only. Rate scaling: a 10-min-prep category on 5-min windows runs at rate 2.
 
 > **TWO BUGS FIXED in the rate/carry math (V6.4):** (1) the displayed denominator was doubled because the rate used the caller's `slot_duration`-based windowSecs; it now derives the real step (`stepSecs`). (2) A single sub-batch order lit two windows because two 5-min display rows mapped to one production bucket; units are now read only on the first collection row per production_slot (countedSlots).
+
+### Kitchen capacity = EXACT concurrency ceiling with its own cadence (V6.7)
+
+> **DO-NOT-UNDO (V6.7) — kitchen_capacity is a CONCURRENCY ceiling.** It means "no more than N counted items in production at the SAME INSTANT," judged by an exact SWEEP-LINE max-concurrency (`maxConcurrentCount`, lib/slot-availability.ts) — NOT per-window buckets, with NO anchor/origin constant (if you find yourself adding one, stop). A cooking batch of M items (prep P, window-start S) occupies `[S, S+P)` and counts M at every instant in that interval — a batch spanning a window boundary counts M in BOTH windows, NEVER split (splitting under-counts → oversell). An instant counted category (`secs:0`, `countsToCapacity:true`) is a zero-width point counting M at its instant.
+
+> **`truck_vans.capacity_window_mins` (V6.7)** — integer NOT NULL DEFAULT 5, CHECK 1–20; migration `20260612_capacity_window_mins.sql`. The ceiling's OWN cadence (`capacityStep`), independent of any category's prep AND of the cosmetic 5-min customer collection slots. Van-global — changing it propagates to all that van's events (an operating-mode setting, not transient event state — see Section 5 / Section 27). Read alongside `kitchen_capacity` in `/api/slots`, `/api/dashboard`, `/api/orders/submit` (`eventKitchenCapacity`), `/api/manage` `get_vans`; default 5 if null. Write via `update_van_settings`; an "every N min" 1–20 dropdown sits beside the items dropdown on the Manage van card AND the dashboard capacity card (disabled until a capacity is set).
+
+> **What capacityStep drives** — where instant counted items are SEATED and how `placeInstantPoints` rolls instant overflow backward. Cooking batches are deterministic (prep grid + collection time) — the sweep-line READS their concurrency; the cascade does NOT relocate them. With no cooking category, capacityStep still gives the instant spread a real cadence (closes the old `step==0` collapse). Per-category batch placement (pizza on its prep grid, "Pizza 4/4" tones) is UNCHANGED and independent — it is the category's own ceiling. Both ceilings co-exist via the existing worst-wins `consider()` logic ("4 pizzas + 2 other, or 3 other → 3 pizzas").
+
+> **Instant counted items are FIRST-CLASS (V6.7 — corrects the earlier note).** The prior framing that "instant ceiling-only zero-prep items aren't spread (rare, out of scope)" was WRONG — operators tick Other/sides into the ceiling deliberately. Counted-instant items now count toward concurrency, spread on the capacity cadence, and advance the ready estimate. Remove the "out of scope" framing wherever it surfaces.
+
+> **THE DO-NOT-UNDO — one helper, three callers.** ONE concurrency helper + ONE `placeInstantPoints` rule, used IDENTICALLY by `fitOrderBackward` (picker/dots), `projectBackwardOccupancy` (recorded occupancy), and the submit gate (`earliestBackwardFitSlot`). If any one constructs intervals or places instants differently, the three disagree → oversell. Oversell safety is by CONSTRUCTION, not the final sweep: `placeInstantPoints` pass 2 places the order's points against a base already containing pass 1's existing-instant points (via `back.intervals`) and only ever fills remaining per-window headroom, so `runsOffFront === false` ⟹ full union peak ≤ cap. The final union `maxConcurrentCount` only upgrades green→amber, never reds. Instant-cohort placement is deadline-ascending + latest-window-first (EDF) — exact for existing cohorts. KNOWN LIMITATION (undersell-only, acceptable): the ORDER's instant cohort is always placed last regardless of deadline, so a joint EDF re-pack might occasionally pend a placeable order (operator can place it manually). Never oversell.
+
+> **Ready estimate (V6.7)** — `customerAsapTime` (order/page.tsx) now advances "Around HH:MM" for counted-instant items via `extraCeilingMins = max(0, ceil(totalCounted / kitchenCapacity) - 1) * capacityStep`, folded as `max()` with the per-category cooking lead. `backwardAsap` stays authoritative.
+
+> **SUBMIT BYPASS CHANGED (V6.7 — authoritative gate, verify live first).** The instant-only bypass flipped from `if (!hasOven)` to `if (!hasCounted)`. Previously an instant-only order booked at the start slot with NO capacity check — now that instant items count, that was an oversell hole. Counted-instant orders now fall through to `earliestBackwardFitSlot`; truly-uncounted orders still bypass.
+
+> **LIVE-VERIFICATION PENDING (V6.7, folds into the Section 26/27 pre-trial click-through).** PRIORITY: an instant-only counted order over cap pends/bumps at SUBMIT (the bypass flip — silent-oversell path if wrong). Plus: 16 Other rolls ready time/picker; van window 10 + 8 pizzas reads over-capacity in the 10-min span; normal in-capacity event dots unchanged; "4 pizzas + 2 other / 3 other → 3 pizzas" holds; an unproducible-by-end order pends under the lock. tsc-clean ≠ done.
 
 ## ASAP cancellation cutoff (V6)
 
@@ -834,7 +899,7 @@ For ASAP orders (null slot), the cancellation cutoff falls back to the event end
 
 ## Slots API contract
 
-The slots API (/api/slots/[truckId]) returns the slots list with availability flags, queueByCat, and catConfigs so the customer page can do queue-aware ASAP client-side. As of V6.3 the availability flags include too_soon as a separate field (Section 10).
+The slots API (/api/slots/[truckId]) returns the slots list with availability flags, queueByCat, and catConfigs so the customer page can do queue-aware ASAP client-side. As of V6.3 the availability flags include too_soon as a separate field (Section 10). (V6.6: the route also sources extra-wait from the resolved EVENT's `extra_wait_mins` / `extra_wait_started_at`, not `trucks` — Section 5.)
 
 ## prep_secs and batch_size defaults
 
@@ -870,7 +935,16 @@ trucks.time_selection_enabled controls whether Choose Time is functional. Defaul
 
 ## Slot auto-clear on basket change
 
-If the customer picks a specific time then adds items that push ASAP past it, the chosen time auto-clears. The Choose Time dropdown only shows slots at or after the calculated ASAP.
+If the customer picks a specific time then adds items that push ASAP past it, the chosen time auto-clears. The Choose Time dropdown only shows slots at or after the calculated ASAP. (V6.6 known gap: when the basket exceeds the GLOBAL kitchen_capacity for one window, the picker currently goes empty rather than rolling to the next window — Section 6 / Section 27.)
+
+## Pause handling on the customer page — basket-safe, view-only while paused (V6.6)
+
+> **RULE (V6.6) — a paused event never takes an order, and the basket is never lost.** The submit guard (/api/orders/submit) reads the EVENT's own `paused_until` / `online_paused_until` and returns 423 BEFORE any slot/stock/lock work, so a paused order never reaches the kitchen. (The vestigial truck-level `trucks.paused_until` guard in submit was REMOVED — a stale value would have falsely 423'd every event.) On the customer page:
+> - The order page reads `truck.paused` / `pauseReason` on load and shows a sticky pause banner; `isOrderingBlocked = isPaused || isEventClosed` disables the order controls.
+> - **"Check again" RE-FETCHES the menu in place** (a reusable `refetchMenu`), NOT `window.location.reload()` — the reload was wiping the in-memory basket. If still paused → banner + basket stay; if no longer paused → banner clears, controls re-enable, basket intact.
+> - **The basket is kept but READ-ONLY while `isOrderingBlocked`** — the customer can view it but not add/remove/change quantities until ordering re-enables.
+> - A submit-time 423 is handled non-destructively (show a pause notice, keep the basket, early-return — never `setError`/clear).
+> - The basket is in-memory React state only (no localStorage); a manual browser refresh still clears it — full persistence is deferred (Section 27).
 
 ## Reaching the order page — the profile page is the event chooser (V6.5)
 
@@ -909,6 +983,11 @@ ASAP is calculated entirely client-side from category configs and queue data in 
 ## Category name lowercase consistency
 
 All category lookups use lowercase keys. Prevents "Pizza" failing to match "pizza".
+
+## HatchGrab event display — operator-only (V6.6, TEMPORARY)
+
+> **RULE (V6.6, STOPGAP) — on HatchGrab, scraped discovery events are suppressed.** `/api/discovery/events` returns operator events ONLY when the host is HatchGrab: `const filteredDiscovery = isHG ? [] : (mappedDiscoveryEvents…).filter(…)`. So hatchgrab.com shows only operator/approved events (with order buttons); scraped `discovery_events` are Village-Foodie-only. Village Foodie (`isHG === false`) is byte-for-byte unchanged. This cleared the ~10 stale scraped rows that were showing on hatchgrab.com/trucks/test-kitchen (scraped events have no status concept and survived a `truck_events` delete; the discovery_truck was flipped `hg_only` but its events stayed `public`). **THIS IS TEMPORARY** — it ties event-source to the HOST, whereas the durable model ties it to the TRUCK's customer state (discovery → preview → live). To be UNWOUND by the per-truck customer-mode state machine (Section 27, parked work). EXPOSURE NOTE: a stranger with the URL can still place a real order on any `trucks.active=true` truck with a confirmed event — only `active` + event status + pause gate it; there is no `published`/`accepting_online_orders` flag. Closing that gap is the state machine's job.
+
 
 # 8. Deal management
 
@@ -998,6 +1077,7 @@ show_cooking_step lives per vehicle (truck_vans). It adds a "Cooking" step betwe
 
 The dashboard Menu & Stock tab edits category prep and batch inline on the category header. Prep time is a minutes input plus a 0s/30s seconds select; batch size is a number input that is blank when null (placeholder ∞). updateCategoryField saves on blur/change. The category rename, allow-notes toggle, and full category settings remain on the Manage page only.
 
+> **KDS pause badge note (V6.6)** — the KDS reads its pause indicator from `data.truck?.paused_until`, which is now null because pause moved to `truck_events` (Section 5). The KDS controls write correctly (event-scoped) but the badge can under-report the event pause. Event-source it like the dashboard badge (backlog, Section 27).
 
 # 10. Add Order panel
 
@@ -1073,13 +1153,17 @@ The Menu & Stock tab shows the slim event bar at the top. When an event is selec
 
 - **Offline protection** — reads the van's auto_pause_on_offline as the default and the event's offline_protection_override; the toggle writes the per-event override (Section 15). (V6.1 — see the confirm-dialog behaviour in Section 11.)
 
+### Pause / extra-wait controls are event-scoped (V6.6)
+
+> **RULE (V6.6)** — the dashboard pause/resume and extra-wait controls send `eventId` and write the SELECTED event's `truck_events` columns (Section 5). The dashboard "Paused" badge derives from the active event's own `paused_until` / `online_paused_until`. The KDS controls also write event-scoped (via a render-synced `activeEventIdRef`). The offline-paused banner carries a prominent inline "Resume orders" button (Section 11).
+
 # 11. Native app and offline architecture
 
 ## Why native is needed
 
 Food trucks operate in villages with patchy 4G. A web-only KDS that loses connection during service is a critical failure.
 
-> **DECISION** — A native wrapper using Capacitor must be built BEFORE any trial begins.
+> **DECISION (updated V6.6)** — A native wrapper using Capacitor is a POST-TRIAL deliverable. The web/tablet-browser trial does NOT require it: offline AUTO-PAUSE is server-side (heartbeat staleness → `heartbeat-monitor` → event `online_paused_until`) and works in any browser. Native only adds the local offline DETECTION banner, screen wake, and background sound. The iPad/native app is marked "Coming soon" in the features list (Section 4). (This supersedes the V2 "must be built BEFORE any trial" designation.)
 
 ## Capacitor wrapper, not React Native rebuild
 
@@ -1087,7 +1171,7 @@ A Capacitor wrapper (com.hatchgrab.app) around the existing Next.js app, pointin
 
 ## Three-stage offline progression
 
-### Stage A — Read-only offline cache (V1 pre-trial)
+### Stage A — Read-only offline cache (post-trial as of V6.6)
 - Active orders cached to the iPad while online; shown while offline. Cook can mark ready/done — queued locally, synced on reconnect. New orders cannot be created while offline.
 
 ### Stage B — Walk-up orders while offline (post-trial)
@@ -1096,13 +1180,13 @@ A Capacitor wrapper (com.hatchgrab.app) around the existing Next.js app, pointin
 ### Stage C — Full offline with reconciliation (future)
 - Device UUIDs throughout, display IDs at sync time; slot capacity reconciliation; multi-device conflict resolution.
 
-## Trial scope
+## Trial scope (V6.6)
 
-Trial begins with Stage A only, in villages with reliable coverage.
+The trial runs on the WEB (tablet-browser), in villages with reliable coverage. The server-side safety nets (auto-close, offline auto-pause) are the protection during trial; native Stage A offline lands post-trial.
 
-## Per-vehicle offline protection
+## Per-vehicle offline protection → EVENT-scoped pause effect (V6.6)
 
-truck_vans.auto_pause_on_offline pauses online orders for that vehicle if its kitchen device goes offline. As of V6 an individual event can override the van default via truck_events.offline_protection_override.
+truck_vans.auto_pause_on_offline is the per-event creation DEFAULT for offline protection; an individual event overrides it via truck_events.offline_protection_override (V6). The DETECTION trigger is a van/device property (the heartbeat), but the resulting PAUSE is now stamped on the live-now event's `truck_events.online_paused_until`, not on the van (Section 5).
 
 ### Offline protection toggle UX (V6.1)
 
@@ -1112,10 +1196,20 @@ The dashboard Menu & Stock offline-protection toggle confirms both directions th
 
 The toggle uses the unified control styling: w-11 h-6 track, bg-teal-500 when on.
 
-## Heartbeat architecture (V6)
+## Heartbeat + scheduler architecture (V6, rescoped V6.6)
 
-- One last_heartbeat_at column per truck_vans row. Both the KDS page and the dashboard fire a heartbeat every 15 seconds, passing { token, vanId }. The monitor treats last_heartbeat_at older than 30 seconds as stale and, for vans with auto_pause_on_offline (or an event override) on, sets online_paused_until = now + 2h. A live heartbeat receipt clears it.
+- One `last_heartbeat_at` column per truck_vans row (a genuine device/van property). Both the KDS and the dashboard fire a heartbeat every 15 seconds. `/api/heartbeat` writes `last_heartbeat_at = now` and CLEARS the relevant event's `online_paused_until` (the no-vanId dashboard ping clears across the truck's active vans' events — this is what fixes "online dashboard still shows Paused").
+- The **`heartbeat-monitor`** edge function (30-second pg_cron) treats `last_heartbeat_at` older than 30 seconds as stale and, for a stale van WITH a live-now event and offline protection on, sets that EVENT's `online_paused_until = now + 2h` (Section 5).
+- **Ordering vs atomicity (V6.6):** `last_heartbeat_at` (truck_vans) and `online_paused_until` (truck_events) are on two tables, so a clear is NOT a single atomic UPDATE. The safeguard is ORDERING — every heartbeat branch stamps `last_heartbeat_at` FIRST, then clears the event pause. Because the monitor only pauses ALREADY-stale vans, a just-pinged device can't be re-paused in the gap.
 - **All-or-nothing offline detection is by design** — as long as any one device on the van is online and pinging, the van stays live.
+
+### The scheduler MUST be invoked by cron — the dead-Vault-secret failure (V6.6)
+
+> **CRITICAL (V6.6)** — `auto-event-scheduler` (1-min) and `heartbeat-monitor` (30-sec) are Supabase Edge Functions invoked by `pg_cron`. The cron command reads the `service_role_key` from Supabase Vault (`vault.decrypted_secrets`) as the bearer. This session the Vault secret had been DELETED, so the bearer resolved EMPTY → every invocation 401'd → ZERO invocations (auto-close and offline auto-pause silently never fired; auto-open limped along only via a client-side loop while a device was open). FIX: `select vault.create_secret('<service_role_key>', 'service_role_key');` — both jobs then `succeeded`. `heartbeat-monitor` set to `'30 seconds'` via `cron.alter_job`. Deploying NEW edge-function logic requires REDEPLOYING the function (pg_cron calls the deployed version). A cron-health alert (so a silent death surfaces instead of a blank "last run") is on the backlog (Section 27). A GitHub-Action cron was rejected — its 5-minute floor can't meet the 30s offline threshold.
+
+### Prominent in-banner Resume (V6.6)
+
+> **RULE (V6.6)** — the offline-paused banner on the dashboard carries a prominent inline "Resume orders" button that clears BOTH `paused_until` and `online_paused_until` on the active event (the same resume as the ··· menu), with an optimistic local clear so ordering resumes immediately. It shows "If your connection is unstable, orders may pause again" copy for the OFFLINE reason only (a manual pause won't re-pause itself). Primary recovery remains auto-clear-on-heartbeat; Resume is the manual override for stuck/false-positive pauses. Honest behaviour: if the device is genuinely still offline, the monitor re-pauses the live event within ~30s — correct, not a bug.
 
 ## Wake lock and screen-on (V4)
 
@@ -1124,6 +1218,7 @@ The "Screen on" toggle in the avatar dropdown requests the Wake Lock API. lib/na
 ### Browser compatibility
 
 navigator.wakeLock: Chrome since v84, Firefox Android since 72, Samsung Internet since 14, Safari (iOS/macOS) from 16.4. Firefox desktop does not support it. When 'wakeLock' in navigator is false, show an inline amber warning under the toggle.
+
 
 # 12. Authentication and access
 
@@ -1175,6 +1270,7 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 
 - Rate limiting on auth attempts (anti-scraping rate limiting on public data routes is done — Section 28).
 - ~~Admin secret~~ — RESOLVED in V6.1.
+- **No per-truck "published / accepting online orders" gate (V6.6)** — a stranger with the URL can place a real order on any `active=true` truck with a confirmed event; `active` doesn't even gate the menu load. The per-truck customer-mode state machine (Section 27, parked) is the durable fix; the temporary `isHG ? []` display rule (Section 7) only suppresses scraped events on HatchGrab, it does NOT gate ordering.
 
 # 13. Operator and multi-truck model
 
@@ -1207,9 +1303,10 @@ Settings section is "Your trucks" with "+ Add truck". Each vehicle renders as it
 
 ## Per-vehicle settings
 
-- **auto_pause_on_offline** (boolean) — an event can override via truck_events.offline_protection_override (V6).
+- **auto_pause_on_offline** (boolean) — the per-event creation DEFAULT for offline protection; an event overrides via truck_events.offline_protection_override (V6), and the resulting pause is stamped on the event, not the van (V6.6, Section 5 / Section 11).
 - **show_cooking_step** (boolean) — adds the Cooking step on this vehicle's KDS.
 - **kitchen_capacity** (integer, nullable) — max items cooking per production window; instant items (prep_secs 0) do not count; blank = no limit. Options No limit then 1–20 items. Editable from Settings and the dashboard Menu & Stock tab. (V6.4: the slot engine counts ITEMS, not batches; reads/writes via the service role — Section 10.) A per-category opt-in is on the backlog (Section 27).
+- **last_heartbeat_at, online_paused_until, paused_until** — `last_heartbeat_at` is the live device-online property the monitor reads. `online_paused_until` / `paused_until` on truck_vans are now VESTIGIAL — pause moved to truck_events (V6.6, Section 5).
 - **display_layout and split_screen** columns exist in the DB but are NOT exposed in van settings.
 
 ## Kitchen capacity wiring
@@ -1238,17 +1335,19 @@ An event is a truck appearing at a venue on a date and time. The discovery map s
 
 > **CUSTOMER-INVISIBILITY OF PENDING EVENTS (reaffirmed V6.5)** — Every public read path gates event status to `IN (confirmed, open)`. A scraped/pending event is NEVER shown to a customer (no map pin, no order button, not orderable by direct URL). This is the load-bearing fact behind the best-effort venue matcher (Section 25): a best-effort venue guess on a pending event is only ever seen by the TRUCK during approval, so the truck validates and corrects it before it can reach a customer.
 
-### All event sources flow to truck_events — the scraper bridge (V5, gated by preference V6.2)
+### All event sources flow to truck_events — the scraper bridge (V5, gated by preference V6.2, stamps venue_id V6.6)
 
 > **RULE** — Every event source — the scraper, vendor emails to schedule@villagefoodie.co.uk, and manual entry — can end up in truck_events for a linked truck. Inbound (scraper/email) events arrive unconfirmed; manual entries and operator imports are confirmed on save.
 
 Bridge mechanics in /api/inbound-schedule: after writing discovery_events, it normalises the incoming truck name, matches discovery_trucks rows with a hatchgrab_truck_id set, and inserts a truck_events row (status 'unconfirmed', source 'scraper') after a dedup on truck_id + event_date + venue_name. Venue coordinates are looked up via the venue matcher (Section 25). A best-effort notification email fires once per truck per batch (fire-and-forget).
 
+> **RULE (V6.6) — the bridge resolves the venue ONCE per row and stamps venue_id.** The bridge precomputes a per-row venue resolution (shared `findVenue` from lib/venue-matcher.ts) reused for both the discovery_events enrichment and the truck_events insert, and stamps `venue_id` + `venue_id_source='scraper'` + `venue_match_confidence` on the truck_events row. Never resolve a venue twice with two matchers (Section 25). Live-verified: a test-truck re-scrape stamped 8/8 fresh events high-confidence.
+
 > **RULE (V6.2) — bridge is gated by scraper_preference.** Only trucks set to 'auto' have scraped events bridged into truck_events and the operator emailed. A truck set to 'manual' (default) skips the truck_events insert. The discovery_events write is unaffected either way. A legacy value of 'both' is treated as 'auto'.
 
 Linking is a one-time admin step: the admin console's "Link HG truck" dropdown sets discovery_trucks.hatchgrab_truck_id.
 
-## Discovery / operator-events visibility (rebuilt V6.5)
+## Discovery / operator-events visibility (rebuilt V6.5, temporary HG suppression V6.6)
 
 > **CRITICAL (V6.5) — the operator-events branch was dormant and is now visibility-gated.** `/api/discovery/events` reads two sources: discovery_events (scraped public data) and truck_events (operator events for linked trucks), merging and deduping at read time. The operator-events branch had been ERRORING on a phantom `trucks.is_test` column (which does not exist — Section 16) and silently returning `[]`, so operator events were dormant on BOTH domains. The fix:
 
@@ -1257,7 +1356,9 @@ Linking is a one-time admin step: the admin console's "Link HG truck" dropdown s
 
 > **RULE (V6.5) — gate via a DEDICATED UNFILTERED visibility fetch, not `trData`.** To know a linked truck's visibility you must fetch `hatchgrab_truck_id → visibility` from discovery_trucks WITHOUT the visibility filter already applied. Reusing the visibility-filtered `trData` (the list already narrowed to the host's allowlist) would mean an `hg_only` truck is simply absent from that list, and a naive "not found → default public" would then LEAK it onto villagefoodie. The dedicated unfiltered map returns the true visibility for every linked truck, so an `hg_only` operator event is correctly excluded from villagefoodie and included on hatchgrab. (This was a sharp trap: the safe-looking default is the leak.)
 
-This replaces the V6 "operator events show on both maps unconditionally" rule and the V5 host-based "HatchGrab-only" rule — visibility is now a per-truck DATA property (the discovery row's enum), not a host hardcode.
+> **RULE (V6.6, TEMPORARY) — on HatchGrab, scraped discovery events are suppressed.** In addition to the visibility gate, the merge now does `filteredDiscovery = isHG ? [] : (…)` so HatchGrab returns operator/approved events ONLY (scraped `discovery_events` are Village-Foodie-only). This cleared stale scraped rows from hatchgrab.com profiles. It is a HOST-based stopgap and the WRONG shape long-term (event-source should follow the TRUCK's customer state, not the host) — to be unwound by the per-truck customer-mode state machine (Section 7 / Section 27). Village Foodie is unaffected (branch fires only when `isHG`).
+
+This replaces the V6 "operator events show on both maps unconditionally" rule and the V5 host-based "HatchGrab-only" rule — visibility is now a per-truck DATA property (the discovery row's enum), not a host hardcode. (The V6.6 scraped-suppression IS a host hardcode, explicitly temporary.)
 
 > **TEST-KITCHEN (V6.5)** — test-kitchen's discovery_trucks + discovery_events rows were flipped `public → hg_only` by SQL. Result: hatchgrab.com/trucks/test-kitchen resolves with its schedule and order buttons; villagefoodie 404s/hides it. This ALSO fixed a pre-existing leak — test-kitchen had been a public discovery row, visible on the live villagefoodie map. NOTE: `/trucks/test-truck` (the id) 404s — use the slug `test-kitchen`; the order page tolerates the id via its slug-then-id fallback, but the profile page resolves by slug.
 
@@ -1284,6 +1385,8 @@ Shows the truck's current preference with a "Change in Settings" link.
 
 Linked, auto-preference trucks see scraped, still-unconfirmed events under a **"Needs your approval"** heading with Approve / Edit & Approve / Reject actions.
 
+> **MOBILE LAYOUT (V6.6)** — on the pending "Needs your approval" cards, the Approve/Edit/Reject buttons sit in a full-width horizontal row BELOW the venue/area/time block on mobile (the venue text gets the full width), reverting to the inline horizontal row at `sm:`+. Confirmed-card icon buttons (copy/✏️/✕) are unchanged. (See Section 23.)
+
 ## Import schedule (operator upload) — review UX rebuilt V6.2
 
 A 📤/✨ Import schedule button on the Schedule tab header opens a dedicated modal with a drag-and-drop upload zone, a paste-text area, and a "Process schedule" button. Once events are extracted, the upload UI is hidden.
@@ -1302,7 +1405,7 @@ Field order on both: **Date → Venue name → Area + Postcode → Start time + 
 
 **Desktop** — an always-editable inline table, table-layout: fixed with an explicit colgroup (checkbox 32px, date 130px, venue 220px, area 150px, postcode 100px, start 100px, end 100px, delete 36px). Incomplete rows get an amber highlight.
 
-An attention banner counts incomplete events; Save is disabled until every selected event is complete. The "Area" label is "Area (village, town or city)".
+An attention banner counts incomplete events; Save is disabled until every event is complete. The "Area" label is "Area (village, town or city)".
 
 ### Historical (past-dated) events (V6.2)
 
@@ -1328,7 +1431,7 @@ Manual events geocode via Gemini from venue name + town + postcode, with an api.
 
 trucks.default_auto_open and default_auto_close live in Settings → Order settings. Events open for online orders at start time and stop at end time per these defaults.
 
-> **BACKLOG (V6.4) — auto open/close not firing.** With "Open for orders automatically" ON and the event start time passed, the dashboard still showed the event as Closed with a manual Start Event button. Needs diagnosis-first: clarify whether "open for orders" (the auto toggle) and "event started" (the Start Event control / event `status`) are DISTINCT states or the same. Auto-close likely has the same gap. See Section 27.
+> **RESOLVED MECHANISM (V6.6)** — auto-open and "Start Event" are the SAME state transition (`truck_events.status` → `'open'`); `auto_open` just automates it. Auto-CLOSE (`status` → `'closed'`) is the real ordering gate. The reason auto-open/close had appeared "not firing" was the dead pg_cron scheduler (the deleted Vault secret — Section 11), now fixed: the `auto-event-scheduler` edge function (1-min) does both auto-open (confirmed + auto_open + start_time ≤ now → open) and auto-close (open past end_time → closed) in London time. The truck-level `default_auto_*` flags only SEED the per-event `truck_events.auto_open` / `auto_close` at confirm. Behaviourally re-verify on a live event.
 
 ### Event lifecycle controls — Start, Restart, Close (V5)
 
@@ -1360,22 +1463,22 @@ The Cancel action opens a confirmation modal with an optional reason and message
 
 ## Event card display (Schedule tab, rebuilt V6)
 
-Date-anchored card: a left column with day name / large orange day number / month and a thin divider; venue + town with an inline status badge (town omitted when already in the venue name); the time prominent; the postcode on its own muted line. Actions right-aligned (Copy, Edit, Cancel). Deals collapsed into a `<details>` summary. Past events show Copy only and no deals; cancelled events show "Cancelled", other past events show "Finished". Scraped unconfirmed events for an auto-preference truck appear in "Needs your approval".
+Date-anchored card: a left column with day name / large orange day number / month and a thin divider; venue + town with an inline status badge (town omitted when already in the venue name); the time prominent; the postcode on its own muted line. Actions right-aligned (Copy, Edit, Cancel). Deals collapsed into a `<details>` summary. Past events show Copy only and no deals; cancelled events show "Cancelled", other past events show "Finished". Scraped unconfirmed events for an auto-preference truck appear in "Needs your approval" (mobile button layout — Section 23).
 
 ### Offline protection override on the event (V6)
 
-truck_events.offline_protection_override (nullable boolean): null = use the van default; true/false = explicit per-event override set from the dashboard. The menu API checks the event override first.
+truck_events.offline_protection_override (nullable boolean): null = use the van default; true/false = explicit per-event override set from the dashboard. The menu API checks the event override first. (V6.6 — this override, with the van's `auto_pause_on_offline` as the default, decides whether the live-now event gets offline-paused; the pause lands on the event — Section 5 / Section 11.)
 
 ## Multiple events handling
 
-Distinct order queues per event; per-event order numbering (display ids restart at 1 per event) is the V6.3 model (Section 18a).
+Distinct order queues per event; per-event order numbering (display ids restart at 1 per event) is the V6.3 model (Section 18a). Pause, extra-wait, and stock are all per-event (V6.5 / V6.6) — no cross-event bleed.
 
 
 # 16. Database schema essentials
 
 ## Core tables
 
-- **trucks** — one row per truck/brand. Holds plan, settings, dashboard_token, operator_id, default_auto_open/close, qr_code_style (V4), slug (V5, unique, URL-safe — used by /trucks/[slug]/order; prod-verified to EXIST V6.5), active (prod-verified to EXIST V6.5), truck_emoji (V5), logo_storage_path (operator-uploaded logo — note it is NOT mirrored to discovery_trucks.logo_url, Section 14), lifetime_discount_pct / lifetime_discount_note (V6), paused_until, order_counter (V6.3, int default 0 — no-event fallback display counter), and the scraper-preference / adaptive-scheduling columns (V6.2).
+- **trucks** — one row per truck/brand. Holds plan, settings, dashboard_token, operator_id, default_auto_open/close, qr_code_style (V4), slug (V5, unique, URL-safe — used by /trucks/[slug]/order; prod-verified to EXIST V6.5), active (prod-verified to EXIST V6.5), truck_emoji (V5), logo_storage_path (operator-uploaded logo — note it is NOT mirrored to discovery_trucks.logo_url, Section 14), lifetime_discount_pct / lifetime_discount_note (V6), paused_until (VESTIGIAL post-V6.6 — pause moved to truck_events), extra_wait_mins / extra_wait_started_at (VESTIGIAL post-V6.6 — extra-wait moved to truck_events), order_counter (V6.3, int default 0 — no-event fallback display counter), and the scraper-preference / adaptive-scheduling columns (V6.2).
 
 > **RULE (V6.5) — there is NO `trucks.is_test` column.** Prod verification confirmed `trucks.is_test` does not exist. Code still references it in places (the discovery/events operator branch did — fixed V6.5 — and admin/manage paths still do — backlog). Declaring or selecting `is_test` errors or silently returns nothing. The "filter test trucks from the public map" effect is achieved via the discovery row `visibility` enum (set a test truck's discovery rows to `hg_only`), NOT a trucks column. See Section 4 (is_test scope) and Section 27.
 
@@ -1386,7 +1489,7 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 - **scraper_preference** (text, 'manual'|'auto', default 'manual'), **schedule_url** (text), **scraper_rule** (text, 'scroll_lazy'|'scroll_next'), **scraper_last_changed_at** (timestamptz), **scraper_update_day** (smallint 0–6), **scraper_learning_complete** (boolean default false), **scraper_last_empty_notify_at** (timestamptz), **scraper_first_run_at** (timestamptz), **scraper_last_hash** (text). See Section 24.
 
 - **operators** — first_name, last_name, phone, email, auth_user_id, is_admin (V6), billing.
-- **truck_vans** — auto_pause_on_offline, show_cooking_step, kitchen_capacity, display_layout, split_screen, kds_token, name, active, last_heartbeat_at, online_paused_until, paused_until.
+- **truck_vans** — auto_pause_on_offline (offline-protection creation default), show_cooking_step, kitchen_capacity, **capacity_window_mins** (V6.7, integer NOT NULL DEFAULT 5, CHECK 1–20 — the concurrency ceiling's own window cadence, independent of category prep; Section 6), display_layout, split_screen, kds_token, name, active, last_heartbeat_at (device-online property), online_paused_until (VESTIGIAL post-V6.6), paused_until (VESTIGIAL post-V6.6). (V6.6 — pause moved to truck_events; the van keeps only `auto_pause_on_offline` as the default and `last_heartbeat_at` as the live device property. Section 5 / Section 11.)
 - **truck_users** — role (owner/manager/staff), email, name, auth_user_id, invited_at, accepted_at.
 - **truck_user_vans** — staff ↔ vehicle access junction.
 - **operator_email_changes** — old_email, new_email, token, requested_at, verified_at, expires_at.
@@ -1395,9 +1498,9 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 - **modifier_options** — available boolean (V4) — defaults true.
 - **bundles_db** — bundle_price, original_price, slot_1..6_category, apply_to_new_events, is_available, start/end_time.
 - **event_deals** — event_id, bundle_id, active, overridden.
-- **truck_events** — event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6), latitude/longitude, scraped_signature (dedup), order_counter (V6.3). (V6.5: `town` and `postcode` are the columns the venue matcher resolves; there is no venue_id column on truck_events yet — adding it is the keystone for the best-effort matcher's anchors and history-prior, Section 27.)
+- **truck_events** — event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6), latitude/longitude, scraped_signature (dedup), order_counter (V6.3), auto_open / auto_close (per-event, seeded from trucks.default_auto_* at confirm), **venue_id** (V6.6, uuid, FK venues(id) ON DELETE SET NULL), **venue_id_source** (V6.6, text: scraper|operator|manual|backfill — only operator|manual count as validated for history-prior), **venue_match_confidence** (V6.6, text: high|low|none→NULL), **paused_until** (V6.6, timestamptz — event-scoped manual pause), **online_paused_until** (V6.6, timestamptz — event-scoped offline auto-pause), **extra_wait_mins** (V6.6, integer), **extra_wait_started_at** (V6.6, timestamptz). (V6.5: `town`/`postcode` are what the venue matcher resolves. V6.6 added `venue_id` as the keystone for anchors/history-prior, and the four pause/extra-wait columns to make those event-scoped — Sections 5, 25.) Index `idx_truck_events_venue_id`.
 - **orders** — order_key (V6.3, uuid, PRIMARY KEY — the only identifier in any WHERE/URL/FK/dedupe/React key), id (text — per-event DISPLAY number, restarts at 1, NEVER a lookup key), items (JSONB — carries frozen item NAMES, no item id), deals (JSONB), status, paid_at, collected_at, event_id, van_id, slot. Two partial unique indexes: `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` and `UNIQUE (truck_id, id) WHERE event_id IS NULL`. See Section 18a.
-- **event_item_stock (V6.5)** — per-event item stock OVERRIDE. PK `(event_id, item_name)`. Columns: event_id (uuid, FK truck_events(id) on delete cascade), item_name (text — matches menu_items_db.name and the frozen order-line name), stock_count (int nullable — the per-event ceiling override), available (boolean nullable — per-event sold-out override). A row exists ONLY when the dashboard has edited that item's stock for that event; absence means "read the live Settings default". RLS service-role only. See Section 30.
+- **event_item_stock (V6.5, +no_item_cap V6.6)** — per-event item stock OVERRIDE. PK `(event_id, item_name)`. Columns: event_id (uuid, FK truck_events(id) on delete cascade), item_name (text — matches menu_items_db.name and the frozen order-line name), stock_count (int nullable — the per-event ceiling override), available (boolean nullable — per-event sold-out override), **no_item_cap (V6.6, boolean default false — true = no individual cap this event → ceiling resolves to null → follows the category pool; distinct from stock_count=null which means "use default")**. A row exists ONLY when the dashboard has edited that item's stock for that event; absence means "read the live Settings default". RLS service-role only. See Section 30.
 - **event_category_stock (V6.5)** — per-event category stock OVERRIDE. PK `(event_id, category)`. Columns: event_id (uuid, FK), category (text), stock_count (int nullable). Same sparse-override semantics. RLS service-role only. See Section 30.
 - **collection_times / slot_capacity** — fixed slot definitions and per-slot capacity rows.
 - **whatsapp_logs** — (V6.3 — migration never applied to prod; does not exist; writes fail silently — Section 27).
@@ -1405,12 +1508,14 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 - **discovery_trucks / discovery_events** — scraped discovery data; `visibility` enum (public|hg_only|hidden) controls public/HG exposure (the load-bearing gate for operator-event visibility, Section 15). discovery_trucks.hatchgrab_truck_id (FK to trucks.id — text) links a discovery truck to its HatchGrab account. discovery_trucks.logo_url is the profile-page logo source (Section 14). Set via the admin "Link HG truck" dropdown.
 - **scraper_run_log (V6.2)** — id, truck_id (text), run_at, day_of_week (0–6), events_found, events_changed, rule_used. RLS service-role only. Pruned to 90 days — the ONLY pruned table.
 - **excluded_terms (V6.2)** — id (uuid), truck_id (text), term. Unique (truck_id, term). RLS service-role only.
+- **booking_locks (V6.4)** — per-event booking mutex, key (truck_id, event_date). RLS service-role only.
+- **production_slot_usage (re-keyed V6.4)** — keyed (truck_id, event_id, production_slot); event_date retained for the rebuild orchestrator. RLS service-role only.
 - **upsell_events (planned/unapplied)** — migration never applied; table does not exist. As of V6.3 the insert writes order_key as the order reference.
 - **loyalty_cards (planned)** — V4 spec frozen. Do not build until instructed.
 
 ## Key columns of note
 
-- venues uses **village** (NOT area — "Area" is a UI label only; the columns are village/town). venues uniqueness = (name, village). truck_events.town and discovery_events.village hold the locality. The venue matcher ranks candidates on normalised village agreement (Section 25).
+- venues uses **village** (NOT area — "Area" is a UI label only; the columns are village/town). venues uniqueness = (name, village). truck_events.town and discovery_events.village hold the locality. The venue matcher ranks candidates on normalised village agreement (Section 25). venues.id is uuid (truck_events.venue_id FKs to it — V6.6).
 
 ## Order counters and atomic functions (V6.3)
 
@@ -1452,6 +1557,9 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 20260608_production_slot_usage_event_key.sql
 20260611_event_item_stock.sql
 20260611_event_category_stock.sql
+20260612_truck_events_venue_id.sql
+20260612_event_item_stock_no_item_cap.sql
+20260612_event_scoped_pause_extrawait.sql
 ```
 
 ### Migration process (V6.2, extended V6.3)
@@ -1482,17 +1590,33 @@ Creates `event_item_stock` (PK `(event_id, item_name)`; event_id uuid FK to truc
 
 Creates `event_category_stock` (PK `(event_id, category)`; event_id uuid FK; category text; stock_count int nullable). RLS enabled, service-role only. Applied + verified, schema reloaded. See Section 30.
 
+### 20260612_truck_events_venue_id.sql (V6.6)
+
+Adds `truck_events.venue_id` (uuid FK venues(id) ON DELETE SET NULL), `venue_id_source` (text), `venue_match_confidence` (text), and index `idx_truck_events_venue_id`. venues.id is uuid (confirmed). Applied by hand, verified, schema reloaded. The keystone for the best-effort matcher's anchors and history-prior (Section 25 / Section 27).
+
+### 20260612_event_item_stock_no_item_cap.sql (V6.6)
+
+Adds `event_item_stock.no_item_cap boolean not null default false`. Additive, defaults false, no backfill. Honoured in all three ceiling readers; `get_stock` must surface `no_item_cap=true` rows (they carry stock_count=null). See Section 30.
+
+### 20260612_event_scoped_pause_extrawait.sql (V6.6)
+
+Adds `truck_events.paused_until`, `online_paused_until` (timestamptz), `extra_wait_mins` (integer), `extra_wait_started_at` (timestamptz). All nullable/additive, no backfill (old van/truck values are transient and expire). truck_events is anon-readable so the customer page reads them; writes are service-role. Moves pause + extra-wait from van/truck scope to event scope (Section 5).
+
+### 20260612_capacity_window_mins.sql (V6.7)
+
+Adds `truck_vans.capacity_window_mins integer NOT NULL DEFAULT 5 CHECK (capacity_window_mins BETWEEN 1 AND 20)`. The concurrency ceiling's own window cadence, independent of any category's prep (Section 6). DEFAULT 5 so every existing van keeps today's implied behaviour and the ceiling always has a cadence. Apply in chunks, then `notify pgrst, 'reload schema';`. truck_vans is service-role-only; reads/writes route through the API.
+
 > **PHASE-2 UNWIND (V6.5)** — an eager-snapshot first attempt (143 item + 55 category backfilled rows) was DELETED when the model pivoted to sparse-override. BBQ Chicken Pizza's old truck-level `item_overrides=25` was migrated to `menu_items_db.default_stock=25` (so it now propagates) and the item_overrides row deleted. lib/event-stock-snapshot.ts and scripts/backfill-event-stock.ts were deleted. The legacy `item_overrides` / `category_stock` tables are now UNUSED by live paths but LEFT IN PLACE for rollback safety (Section 30).
 
 ## Realtime
 
 orders — INSERT/UPDATE/DELETE subscribed. trucks — UPDATE only. UI updates within ~1s; 60s polling fallback.
 
-## Row Level Security (V6.1, extended V6.2/V6.5)
+## Row Level Security (V6.1, extended V6.2/V6.5/V6.6)
 
 RLS is enabled on every table in the public schema. All API routes use SUPABASE_SERVICE_ROLE_KEY (bypasses RLS); the anon key is used only in the browser clients and a few Server Components. RLS governs only direct anon-key access.
 
-- **Public read (anon SELECT, `using (true)`)** — discovery_events, discovery_trucks, venues, trucks, truck_events, menu_categories, menu_items_db, modifier_groups, modifier_options, bundles_db, category_modifier_groups, item_modifier_overrides, item_overrides, collection_times, slot_capacity, category_stock, and orders.
+- **Public read (anon SELECT, `using (true)`)** — discovery_events, discovery_trucks, venues, trucks, truck_events (incl. the new venue_id and pause/extra-wait columns the customer page reads), menu_categories, menu_items_db, modifier_groups, modifier_options, bundles_db, category_modifier_groups, item_modifier_overrides, item_overrides, collection_times, slot_capacity, category_stock, and orders.
 - **Service-role only (RLS on, no anon policy)** — operators, subscribers, password_reset_tokens, operator_email_changes, truck_users, truck_user_vans, truck_vans, kds_sessions, slot_bookings, production_slot_usage, booking_locks (V6.4), event_item_stock (V6.5), event_category_stock (V6.5), event_deals, event_price_overrides, upsell_rules, excluded_terms, scraper_run_log, discount_codes_db, messages, order_counters, referrals.
 
 > **NOTE (V6.4/V6.5)** — `truck_vans`, `event_item_stock`, and `event_category_stock` are service-role-only. The per-event stock reads/writes all go through service-role API routes (the menu API, the dashboard action) — a browser-side anon read would silently return nothing, which is exactly the class of bug that made the kitchen-capacity card show "No limit" (Section 10). Never add an anon policy to "fix" a read — route through the server.
@@ -1517,17 +1641,22 @@ The dashboard's fetchMenu must append ?dashboard=1&nocache=${Date.now()}. Custom
 
 > **RULE** — Unavailable modifiers are HIDDEN everywhere (customer page AND operator Add Order panel). This differs from main items which show "Sold out" crossed out. The filter is opt.available !== false (shared util isModifierAvailable in lib/modifier-utils.ts), applied in AddOrderPanel.tsx (customise modal) and the customer modifier popup.
 
-## Item availability resolution (per-event as of V6.5)
+## Item availability resolution (per-event as of V6.5, +no_item_cap V6.6)
 
-> **RULE (V6.5) — item availability composes the live base AND the per-event override.** The effective ceiling is `event_item_stock.stock_count (if an override row exists for this event_id+item_name) ?? menu_items_db.default_stock (live)`. Availability is an AND-composition: `(menu_items_db.is_available !== false) && (override ? override.available !== false : true) && (stockRemaining === null || stockRemaining > 0)`. The override can only RESTRICT — it can never re-enable an item the Settings base has turned off (so "Settings unavailable = unavailable everywhere" holds). The item NAME is always read live from menu_items_db.name. This supersedes the pre-V6.5 truck-level `item_overrides` path for live reads (item_overrides is left in place for rollback only). The menu-API ceiling read and the stock-guard ceiling read must use the SAME event_id as getLiveItemCounts (the sold count) — same key, so the oversell invariant holds. A missing override row falls back to default_stock, never to accidental-unlimited and never to 0. See Section 30.
+> **RULE (V6.5/V6.6) — item availability composes the live base AND the per-event override.** The effective ceiling is `event_item_stock.stock_count (if an override row exists for this event_id+item_name) ?? menu_items_db.default_stock (live)`. A row with `no_item_cap=true` resolves the ceiling to **null** (no individual cap → follows the category pool), overriding the default (V6.6). Availability is an AND-composition: `(menu_items_db.is_available !== false) && (override ? override.available !== false : true) && (stockRemaining === null || stockRemaining > 0)`. The override can only RESTRICT — it can never re-enable an item the Settings base has turned off. The item NAME is always read live from menu_items_db.name. This supersedes the pre-V6.5 truck-level `item_overrides` path for live reads (item_overrides is left in place for rollback only). The menu-API ceiling read and the stock-guard ceiling read must use the SAME event_id as getLiveItemCounts (the sold count) — same key, so the oversell invariant holds. A missing override row falls back to default_stock, never to accidental-unlimited and never to 0. See Section 30.
+
+## Pause in the menu API — event-scoped (V6.6)
+
+> **RULE (V6.6)** — the menu API computes the customer-facing pause from the EVENT's own columns: `manualPaused = event.paused_until > now`; `offlineProtectionEnabled = event.offline_protection_override ?? van.auto_pause_on_offline`; `offlinePaused = offlineProtectionEnabled && event.online_paused_until > now`. It also sources extra-wait from `event.extra_wait_mins`/`extra_wait_started_at`. The old truck/van pause reads are removed (Section 5). No "live now" gate is needed because the write side only ever stamps the right event.
 
 ## Soft-deleted categories and items must be filtered (V6.1)
 
 > **RULE** — menu_categories and menu_items_db carry is_active (default true). Deleting sets is_active = false (soft delete). Every read path listing current menu data MUST filter `.eq('is_active', true)` — the menu_categories query AND the menu_items_db query in app/api/menu/[truckId]/route.ts, and the menu_categories query in app/api/dashboard/route.ts. Historical orders are unaffected (orders.items is a JSONB snapshot).
 
-## Offline protection in the menu API (V6)
 
-offlineProtectionEnabled = eventRow.offline_protection_override (if not null/undefined) else van.auto_pause_on_offline. The pause is only applied when true.
+## Offline protection in the menu API (V6, event-scoped V6.6)
+
+offlineProtectionEnabled = eventRow.offline_protection_override (if not null/undefined) else van.auto_pause_on_offline. The pause is only applied when true, and reads the EVENT's `online_paused_until` (V6.6, Section 5).
 
 # 18. Customer communications and email
 
@@ -1594,6 +1723,8 @@ The orders PK was GLOBAL on `id` alone. nextOrderId checked only `eq('truck_id')
 - `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` — per-event numbering.
 - `UNIQUE (truck_id, id) WHERE event_id IS NULL` — the no-event fallback.
 
+> **OPS NOTE (V6.6)** — `orders.event_id` is currently ON DELETE SET NULL. Deleting an event that still has orders nulls their event_id → those display ids land in the no-event uniqueness bucket and can collide (23505 family). To wipe a test truck, delete `orders` BEFORE `truck_events`. A likely-correct fix (ON DELETE RESTRICT or a proper detach) is diagnose-first on the backlog (Section 27).
+
 ### Bulk operations and dedupe
 
 - Event cancellation bulk-cancels by order_key (`.in('order_key', …)`), never by id.
@@ -1602,7 +1733,6 @@ The orders PK was GLOBAL on `id` alone. nextOrderId checked only `eq('truck_id')
 ### messages.order_id
 
 messages is a log; messages.order_id stores the display id as plain text with NO foreign key (the Studio-added FK was dropped in 20260607). Non-authoritative, never a lookup key, currently written null by every live path.
-
 
 # 19. Reports tab (V4)
 
@@ -1708,6 +1838,16 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **Coding chat (Claude within Cursor)** — implementation, file edits, smoke tests.
 - Instructions flow planning → coding; audit reports flow coding → planning.
 
+### Working with the planning chat (Dominic's method, V6.6)
+
+- Dominic DIRECTS and DECIDES; he does NOT read or write code, and he does the manual PASTE-IN of updates (the planning chat can't write the manual file). Give plain-English instructions; deliver any Cursor action as ONE clean copy-paste block; keep Supabase-SQL-he-runs separate from Cursor prompts.
+- He ALWAYS prefers the durable long-term fix; never a temporary patch that needs redoing unless he explicitly asks for one (e.g. the V6.6 event-display stopgap, taken knowingly).
+- He works fast-build-then-test, scans rather than reads, and reflex-yeses prompts → the planning chat must CATCH TRAPS before they ship. Diagnose-first (look-only audit → report → his nod → change prompt) is mandatory for: stock, capacity, order_key, migrations, live ordering, the scraper bridge, the venue matcher, and anything touching pause/offline.
+- "tsc-clean / simulated-pass" ≠ "works" — verify the END STATE on a live run, confirm DEPLOYED before judging a prod result.
+- Manual updates: the planning chat maintains a running tally and hands over a consolidated paste-ready block before a chat closes (Dominic pastes it into the master manual); it can't hold exact wording across chats, so the hand-over must happen with room to spare.
+
+> **RULE (V6.7) — Cursor instructions go in a FENCED CODE BLOCK.** Any Cursor action must be delivered inside a triple-backtick fenced code block, never as free-running prose. Free text forces a manual click-drag selection; a fenced block is one-click copy. This tightens the existing "ONE clean copy-paste block" rule with the explicit format requirement.
+
 ## Audit before build
 
 Read relevant files and paste excerpts; identify duplications/conflicts; confirm DRY; only then implement.
@@ -1716,7 +1856,7 @@ Read relevant files and paste excerpts; identify duplications/conflicts; confirm
 
 Every change includes a smoke test. Nothing is "done" without an operator-confirmed smoke test.
 
-> **NOTE (V6.3, reaffirmed V6.5)** — A passing data-layer / RPC / tsc-clean smoke test is NOT the same as an operator-confirmed live test. The order-key rebuild passed 9/9 data-layer smoke tests but was never clicked on a real device; the per-event stock build (V6.5) is fully built and tsc-clean but its two-device oversell e2e is still pending. A live iPad click-through still gates the trial (Section 26 / Section 27). "tsc-clean / simulated-pass" ≠ "works" — verify the END STATE on a live run, and confirm DEPLOYED before judging a prod-endpoint result.
+> **NOTE (V6.3, reaffirmed V6.5/V6.6)** — A passing data-layer / RPC / tsc-clean smoke test is NOT the same as an operator-confirmed live test. The order-key rebuild passed 9/9 data-layer smoke tests but was never clicked on a real device; the per-event stock build is fully built and tsc-clean but its two-device oversell e2e is still pending; the V6.6 pause event-scoping and scheduler revival are verified by logic + cron-success but the two-event-one-van repro and the behavioural auto-close/offline-pause tests are still live-pending. A live web/tablet click-through still gates the trial (Section 26 / Section 27). "tsc-clean / simulated-pass" ≠ "works" — verify the END STATE on a live run, and confirm DEPLOYED before judging a prod-endpoint result.
 
 ## Context limit handling
 
@@ -1752,6 +1892,10 @@ Same UserMenu with showDashboardLink=true. The mobile-only "← Orders dashboard
 
 Three rows: "Menu" + "+ Add category"; "N categories · N items"; "✨ Import menu" outline button (whitespace-nowrap). The Schedule tab's "✨ Import schedule" button mirrors this styling.
 
+## Pending approval-card buttons (V6.6)
+
+> **RULE (V6.6)** — on the "Needs your approval" (pending/unconfirmed) event cards, the Approve / Edit / Reject buttons sit in a **full-width horizontal row BELOW** the venue/area/time block on mobile, so the venue text gets the full card width; they revert to the inline horizontal row at `sm:`+ (desktop unchanged). A brief vertical-stack experiment was reverted (ate too much card height). The CONFIRMED-card compact icon buttons (copy / ✏️ / ✕) are unchanged.
+
 ## All categories collapsed by default
 
 expandedCat = null on Manage page open.
@@ -1766,7 +1910,7 @@ Truck name bold, operator first name muted below (currentUserName.split(' ')[0])
 
 ### Preventing iOS Safari auto-zoom (V5)
 
-> **RULE** — Inputs, selects, and textareas must be at least 16px on mobile. globals.css locks these to 16px below 640px. The viewport is width=device-width, initialScale=1, WITHOUT maximumScale/userScalable:false.
+> **RULE** — Inputs, selects, and textareas must be at least 16px on mobile. globals.css locks these to 16px below 640px. The viewport is width=device-width, initialScale=1, WITHOUT maximumScale/userScalable:false. (V6.6 — the per-event stock inputs were widened and set to `inputMode="numeric"` + 16px on mobile under this rule.)
 
 ### V6.1 manage-page UX pass
 
@@ -1781,6 +1925,7 @@ Truck name bold, operator first name muted below (currentUserName.split(' ')[0])
 
 slate-700 body, slate-500 secondary, slate-400 decorative only; orange reserved for current-plan/active highlights. Apply to any new operator surface.
 
+
 # 24. Scraper workflow (V6, updated V6.2)
 
 The web scraper runs as .github/workflows/daily_scrape.yml (separate from the Apps Script processor):
@@ -1791,6 +1936,8 @@ The web scraper runs as .github/workflows/daily_scrape.yml (separate from the Ap
 - **Gemini quota** — on a paid plan. The HatchGrab loop and lib/schedule-extract.ts use gemini-2.5-flash.
 
 > **NOTE (V6.2)** — actions/checkout@v4 and actions/setup-node@v4 emit a Node 20 deprecation warning; from 16 June 2026 GitHub forces Node 24 for the action runtime. The workflow's own node-version is '24' to match.
+
+> **NOTE (V6.6)** — the daily scraper is also the natural home for the cron-health alert (Section 27): a check that `cron.job_run_details` shows a recent successful `heartbeat-monitor` / `auto-event-scheduler` run, emailing Dominic via Brevo if a scheduler has gone silent.
 
 ## Town extraction strengthened (V6.5)
 
@@ -1850,26 +1997,31 @@ The venues table is the single coordinate store: name, **village**, latitude, lo
 
 Three independent pipelines POST to /api/inbound-schedule: processFoodTruckScreenshots (Apps Script), analyzeEmailWithGemini (Apps Script), and the GitHub Actions web scraper.
 
-## inbound-schedule route — ID resolution (V6.1) + venue matcher (rebuilt V6.5)
+## inbound-schedule route — ID resolution (V6.1) + venue matcher (rebuilt V6.5, extracted + venue_id V6.6)
 
 As of V6.1, /api/inbound-schedule resolves the FKs at insert time: fetch all discovery_trucks and venues up front, normalise the incoming truck_name and venue_name, match (including the aliases array), write the matched discovery_truck_id and venue_id with visibility 'public'.
 
-### Venue matcher — token-overlap + village-rank + best-effort (V6.5, replaces loose substring)
+### Venue matcher — token-overlap + village-rank + best-effort (V6.5, shared module + venue_id stamp V6.6)
 
 > **CRITICAL (V6.5)** — `findVenue` resolves a scraped event's venue (and through it the postcode and coordinates). The old matcher matched on a bare name substring with a vacuous village AND-filter and took the FIRST match (`.find`). This was simultaneously too loose AND too narrow: "The Cavendish Five Bells" matched the RATTLESDEN "Five Bells" (substring hit) while the correct Cavendish "The Five Bells" was REJECTED on word order, and the town safeguard was inert because the scraped town was null (the embedded-town bug, now fixed — Section 24). The mislink then CASCADED — the wrong venue's postcode (IP30 0RA), coordinates, and map pin were written onto the event, so a customer would see "Cavendish Five Bells" pinned in Rattlesden.
 
-> **RULE (V6.5) — the rebuilt matcher.** findVenue now:
+> **RULE (V6.5/V6.6) — the rebuilt, shared matcher.** `findVenue` lives in **lib/venue-matcher.ts** (V6.6 — extracted from inline code; the duplicate copy in `scripts/reresolve-event-venues.ts` was deleted, resolving a latent drift) and returns `{ venue, confidence: 'high'|'low'|'none' }`. It:
 > 1. **Gathers candidates by TOKEN-OVERLAP** — every venue sharing significant name tokens with the scraped venue_name (so all "Five Bells" venues become candidates, regardless of "The"/word order).
 > 2. **Ranks by normalised VILLAGE agreement** — the candidate whose village matches the scraped town (normalised: lowercased, punctuation-stripped) wins. An **embedded-town fallback** reads a town token out of the scraped venue_name when the town field is still blank.
-> 3. **Picks the BEST candidate** (best-effort), rather than bailing to null or taking the first.
+> 3. **Picks the BEST candidate** via a deterministic `pickBest` (exact normName → most token-overlap → lexicographically smallest id — no randomness/first-in-array), rather than bailing to null.
+> Confidence: no candidates → `none`; single / clean village agreement / multi-agreeing-with-exact-name → `high`; multi-agreeing-no-exact or multi-no-village → `low`.
 
-> **RULE (V6.5) — best-effort, NOT bail, is the right behaviour for the ambiguous case.** Because pending events are customer-invisible (Section 15), a best-effort venue guess is only ever seen by the TRUCK at approval, which validates and corrects it before it goes live; and an approved event becomes a trusted anchor for future scrapes. So when village can't disambiguate, the matcher picks the most plausible candidate rather than leaving a blank. (Two enhancements are scoped but NOT built — see Section 27: a **confidence flag** column to surface low-confidence guesses to the truck, and a **venue_id column on truck_events** which is the keystone that unlocks both trusted-anchor reuse and a **history-prior** tie-breaker — using the truck's prior CONFIRMED venues to rank candidates, with a ≥2-visit floor and anti-reinforcement since confirmed = event-approved not venue-validated.)
+> **RULE (V6.6) — the bridge stamps venue_id.** The bridge resolves the venue ONCE per row (precompute map) and stamps `truck_events.venue_id` + `venue_id_source='scraper'` + `venue_match_confidence` on the insert (Section 15). `venue_id` is the keystone that unlocks trusted-anchor reuse, history-prior tie-breaking, and rename-safety. Live-verified: a test-truck re-scrape stamped 8/8 fresh events high-confidence, coords agree (resolve-once map proven end-to-end).
 
-> **RESULT (V6.5, ran reresolve-event-venues.ts for test-truck, dry-run then --apply)** — of the all-events comparison: 3 changed, all improvements (Cavendish event → correct Five Bells, Cavendish; "Old School" blank → matched "The Old School"; a Platform One duplicate-row swap), 5 unchanged, 0 regressions. EYEBALL flags logged: confirm "The Old School" resolves to the Great Cornard centre, and there are duplicate "Platform One Café" venue rows to merge (Section 27).
+> **RULE (V6.5) — best-effort, NOT bail, is the right behaviour for the ambiguous case.** Because pending events are customer-invisible (Section 15), a best-effort venue guess is only ever seen by the TRUCK at approval, which validates and corrects it before it goes live; and an approved event becomes a trusted anchor for future scrapes. So when village can't disambiguate, the matcher picks the most plausible candidate rather than leaving a blank. (V6.6 added the `venue_id` anchor column. Two enhancements remain scoped-not-built — Section 27: a **confidence flag SURFACED in the approval queue** to flag low-confidence guesses to the truck, and a **history-prior** tie-breaker using the truck's prior CONFIRMED venues, with a ≥2-visit floor and anti-reinforcement since confirmed = event-approved not venue-validated.)
+
+### Class rule — discovery vs orderable (V6.6 directive)
+
+> **RULE (V6.6)** — Discovery-only events (no ordering): best-guess a venue link so the event always plots; no approval (a best-guess pin beats an invisible event). Orderable events (linked trucks): best-guess too, the event still goes to the approval queue, and the OPERATOR approves it (the operator validating their own location is the safety net; Dominic does not approve in production — testing only).
 
 ### Single-resolution rule
 
-> **RULE (V6.5)** — `findVenue` is the single fuzzy matcher and resolves venue_id AND postcode/coords together for a scraped event. Never resolve a venue twice with two different matchers (that was how the postcode and the pin diverged). The earlier discovery-upsert 500 (postcode leaked via `...row` spread into the discovery_events upsert, which has no postcode column → PGRST204 → route 500'd before the bridge → "0 bridged, 0 discovery") was fixed by destructuring it out: `const { postcode, ...discoveryRow } = row`.
+> **RULE (V6.5/V6.6)** — `findVenue` (lib/venue-matcher.ts) is the single fuzzy matcher and resolves venue_id AND postcode/coords together for a scraped event. Never resolve a venue twice with two different matchers (that was how the postcode and the pin diverged). The earlier discovery-upsert 500 (postcode leaked via `...row` spread into the discovery_events upsert, which has no postcode column → PGRST204 → route 500'd before the bridge → "0 bridged, 0 discovery") was fixed by destructuring it out: `const { postcode, ...discoveryRow } = row`.
 
 ### Earlier venue data fixes (V6.2, retained)
 
@@ -1887,7 +2039,7 @@ gemini-2.5-flash; 14-day date mapping; invalid-venue filter; a 15-second pacer b
 
 A new venue is geocoded via the Google Maps API and stored with name, village, lat, lng, aliases. Upserts use onConflict 'name,village'. The Sheets Venues tab holds aliases in columns N/O/P (SEPARATE from the Supabase aliases array — keep in step). backfillMissingVenueCoords() geocodes rows without coordinates.
 
-> **DATA HYGIENE (V6.1)** — (1) the same event from two pipelines with a one-day offset creates a near-duplicate — dedup on truck + date + venue; (2) duplicate venue rows with slightly different names split a venue's events — merge to the canonical row and add the variant as an alias in BOTH Supabase and the Sheet.
+> **DATA HYGIENE (V6.1)** — (1) the same event from two pipelines with a one-day offset creates a near-duplicate — dedup on truck + date + venue; (2) duplicate venue rows with slightly different names split a venue's events — merge to the canonical row and add the variant as an alias in BOTH Supabase and the Sheet. (V6.6 — the bridge still dedups on the venue_name STRING; deduping on `(truck_id, event_date, venue_id)` with a name fallback is on the backlog, Section 27, triggered by an operator editing venue_name post-confirm.)
 
 ## Visibility
 
@@ -1896,6 +2048,7 @@ discovery_events default to visibility = 'public'; there is no status column. Th
 ## Known DRY gap
 
 process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshots, analyzeEmailWithGemini, AND the scraper's inline hgPrompt still implement extraction independently. Long-term: migrate the Apps Script processing off Google Sheets, route the scraper through buildScheduleExtractionPrompt, then move all paths in-repo behind the shared utility (Section 27).
+
 
 # 26. Testing and dev environment
 
@@ -1907,11 +2060,11 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - **Test Kitchen** test truck: dashboard_token test-abc123def456, **id `test-truck`, slug `test-kitchen`** (the public profile resolves by slug — `/trucks/test-kitchen`; `/trucks/test-truck` 404s, though the order page tolerates the id via a fallback). Contact dominicbonini@hotmail.com. As of V6.5 its discovery rows are `hg_only` (shows on hatchgrab.com, hidden on villagefoodie.co.uk) — there is no `trucks.is_test` column (Section 16).
 
-- iPad Air simulator for KDS; Safari responsive mode at tablet sizes; phone widths 375/414px.
+- iPad Air simulator for KDS; Safari responsive mode at tablet sizes; phone widths 375/414px. (V6.6 — the trial runs on web/tablet-browser; the native iPad app is post-trial, Section 11.)
 
 ## Pre-trial checklist
 
-- Capacitor wrapper built; Stage A offline working reliably.
+- ~~Capacitor wrapper built; Stage A offline working reliably~~ — POST-TRIAL as of V6.6 (Section 11). The web/tablet-browser trial does not require it; auto-close + offline auto-pause are the server-side safety nets and work on web.
 
 - All known bugs fixed (target zero at trial start).
 
@@ -1921,65 +2074,71 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - Event confirmation flow live (done).
 
-- Order flow rebuilt on the order-key two-id model (V6.3, Section 18a) — migration 20260607 applied and verified; 9/9 data-layer/RPC smoke tests passed. **STILL TO DO: full live iPad click-through of the whole order flow on a real device** — React keys, toasts, and action buttons were type-checked and logic-verified only, never clicked. This gates the trial.
+- Order flow rebuilt on the order-key two-id model (V6.3, Section 18a) — migration 20260607 applied and verified; 9/9 data-layer/RPC smoke tests passed. **STILL TO DO: full live web/tablet click-through of the whole order flow on a real device** — this gates the trial. Every order-flow change (numbering, urgency, slots, basket persistence, email venue/contact, the V6.4 oven-occupancy engine, the V6.5 per-event stock model, and the V6.6 event-scoped pause + customer pause handling) stacks on this one path.
 
-- **Per-event stock built and tsc-clean (V6.5, Section 30) — two-device oversell e2e STILL PENDING.** All four read/write phases are in place (menu-API ceiling, stock-guard ceiling, enforceStockLimits, dashboard overrides), proven on real data for cross-event isolation (White Lion 25 vs The Oak 25−20=5). NOT YET RUN: a **live two-device oversell test on hatchgrab.com with two same-date events** — Test 2 (sell-through on event A leaves event B's ceiling untouched) and Test 3 (concurrent oversell race — exactly ONE of two simultaneous last-item orders succeeds) are non-negotiable before trial. As of the latest session this build was tsc-clean but NOT YET DEPLOYED.
+- **Per-event stock built and tsc-clean (V6.5/V6.6, Section 30) — two-device oversell e2e STILL PENDING.** All read/write phases are in place (menu-API ceiling, stock-guard ceiling, enforceStockLimits, dashboard overrides, the V6.6 no_item_cap follow-category, the four UI fixes). Proven on real data for cross-event isolation. NOT YET RUN: a **live two-device oversell test on hatchgrab.com with two same-date events** — Test 2 (sell-through on event A leaves event B's ceiling untouched) and Test 3 (concurrent oversell race — exactly ONE of two simultaneous last-item orders succeeds). Non-negotiable before trial.
 
-- Capacity engine (V6.4, Section 6) — oven-occupancy projection, event-keyed `production_slot_usage`, per-event booking lock, ASAP tail-completion placement, date-aware slot floors. Verified by simulation + spot-checks; folded into the live iPad click-through above.
+- Capacity engine (V6.4, Section 6) — oven-occupancy projection, event-keyed `production_slot_usage`, per-event booking lock, ASAP tail-completion placement, date-aware slot floors. Verified by simulation + spot-checks; folded into the live click-through above. **KNOWN GAP (V6.6):** the global kitchen_capacity ceiling doesn't roll an over-capacity single order forward — UX-only, parked (Section 6 / Section 27).
+
+- **Schedulers live + event-scoped (V6.6)** — auto-close and offline auto-pause are now wired (pg_cron restored, Vault secret back, both jobs succeeding; heartbeat-monitor on 30s) AND event-scoped. Both are server-side safety nets that work on web. STILL TO DO: behavioural live-test — the two-event-one-van repro (A live pauses, B future stays orderable), the dashboard-online-clears-pause path, auto-close firing at end_time, and confirm the deployed `heartbeat-monitor` runs the NEW event-scoped logic (redeploy the function).
 
 - Rate limiting live and correctly tiered (V6.3, Section 28) — STRICT only on /api/discovery and /api/events; ordering/authenticated routes exempt.
 
 - WhatsApp on Meta Cloud API (V6.3, Section 20) — webhook wired; four-bucket smoke tests and the whatsapp_logs migration still outstanding.
 
-- End-to-end smoke test of all flows: customer order, walk-up, ready notification, mark paid & done (verified in V4; re-run live on the V6.3/V6.4/V6.5 build).
+- End-to-end smoke test of all flows: customer order, walk-up, ready notification, mark paid & done (verified in V4; re-run live on the current build).
 
 - Brevo hatchgrab.com domain verified and propagated (SPF + DKIM authenticated).
 
-- Row Level Security enabled across all tables (DONE V6.1; new V6.5 tables `event_item_stock` and `event_category_stock` created with RLS on, service-role only — Section 16).
+- Row Level Security enabled across all tables (DONE V6.1; the V6.5 stock tables and the V6.6 truck_events columns are covered — truck_events stays anon-readable for the customer page; new pause/venue columns inherit that — Section 16).
 
-- Discovery map plotting verified: events resolve discovery_truck_id and venue_id and appear as pins (DONE V6.1). **Re-verify after the V6.5 venue-matcher rebuild** — in particular the Cavendish Five Bells event now resolves to the correct Cavendish venue with the correct postcode/pin, and confirm the EYEBALL flags (the "Old School" → Great Cornard centre, the duplicate "Platform One Café" rows — Section 27).
+- Discovery map plotting verified (DONE V6.1; re-verified after the V6.5 venue-matcher rebuild). **V6.6:** confirm scraped events still plot on Village Foodie (the `isHG ? []` stopgap fires ONLY on HatchGrab) and that operator events carry the stamped venue_id.
 
-- **Operator-events visibility verified (V6.5)** — `/trucks/test-kitchen` resolves on hatchgrab.com with its schedule and order buttons, and 404s on villagefoodie.co.uk / localhost. Confirm no `hg_only` truck ever leaks onto the public Village Foodie map (the dedicated unfiltered visibility fetch is the guard — Section 15).
+- **Operator-events visibility verified (V6.5)** — `/trucks/test-kitchen` resolves on hatchgrab.com with its schedule and order buttons, and 404s/hides on villagefoodie.co.uk. Confirm no `hg_only` truck leaks onto the public Village Foodie map (the dedicated unfiltered visibility fetch is the guard — Section 15). **V6.6:** confirm the HatchGrab profile shows only operator/approved events (the stale-scraped-rows fix) — and remember it's the temporary host stopgap, not the durable model.
 
 - Apps Script scraper confirmed working end-to-end after the key recovery (DONE V6.1).
 
-- Production deploy to Vercel with production Supabase; real iPad testing with simulated connectivity drops.
+- Production deploy to Vercel with production Supabase; real device testing with simulated connectivity drops (offline auto-pause is the path to exercise — it's server-side, so a dropped device tab is enough, no native build needed).
 
-- Wake lock confirmed working under iOS 16.4+ and Chrome Android.
+- Wake lock confirmed working under iOS 16.4+ and Chrome Android (post-trial native concern; for the web trial the browser tab staying open is the requirement).
 
 - QR code and dashboard order link resolve to /trucks/[slug]/order (slug populated for every truck; dashboard_token fallback removed in V6).
 
-- Scraper bridge verified: a linked, auto-preference truck's inbound event creates an unconfirmed truck_events row and shows in its Schedule tab; an unlinked or manual truck stays discovery-only (Section 15).
+- Scraper bridge verified: a linked, auto-preference truck's inbound event creates an unconfirmed truck_events row (now with stamped venue_id — V6.6) and shows in its Schedule tab; an unlinked or manual truck stays discovery-only (Section 15).
 
 - Scraper GitHub Actions workflow passes on Node 24. Diagnose the ~23-minute run failure (Section 24) before relying on the cron.
 
-- Migrations run in Supabase (filename order, `notify pgrst, 'reload schema';` after each, in chunks): through 20260608 (capacity/lock) and the two V6.5 stock migrations **20260611_event_item_stock.sql** and **20260611_event_category_stock.sql**. Reconcile the applied-vs-file list — upsell_events and whatsapp_logs were never applied (Section 16). Admin operator account set (operators.is_admin = true).
+- Migrations run in Supabase (filename order, `notify pgrst, 'reload schema';` after each, in chunks): through 20260608 (capacity/lock), the V6.5 stock migrations, and the three V6.6 migrations **20260612_truck_events_venue_id.sql**, **20260612_event_item_stock_no_item_cap.sql**, **20260612_event_scoped_pause_extrawait.sql**. Reconcile the applied-vs-file list — upsell_events and whatsapp_logs were never applied (Section 16). Admin operator account set (operators.is_admin = true).
 
 ## Contextual reminders
 
-- orders has TWO ids: order_key (uuid, identity, every WHERE/key/URL/FK/dedupe) and id (text, per-event display number, restarts at 1, NEVER a lookup key). Never conflate them (Section 18a).
+- orders has TWO ids: order_key (uuid, identity, every WHERE/key/URL/FK/dedupe) and id (text, per-event display number, restarts at 1, NEVER a lookup key). Never conflate them (Section 18a). orders.event_id is ON DELETE SET NULL — delete orders before truck_events when wiping a test truck (Section 18a / Section 27).
 
-- Order display numbers are bare integers ("5"), generated only by nextOrderId via the atomic event/truck counter — never read-max-then-check (Section 18a).
+- Order display numbers are bare integers ("5"), generated only by nextOrderId via the atomic event/truck counter (Section 18a).
 
-- **Stock is per-event via sparse override: read `event_item_stock.stock_count ?? menu_items_db.default_stock`; the override exists only when the dashboard edited that event; un-edited events read live Settings (so defaults propagate). Ceiling and sold count must share the SAME event_id, and a missing override falls back to default_stock — never accidental-unlimited, never 0 (Section 30).** (V6.5)
+- **Stock is per-event via sparse override: read `event_item_stock.stock_count ?? menu_items_db.default_stock`; the override exists only when the dashboard edited that event; un-edited events read live Settings. Ceiling and sold count must share the SAME event_id, and a missing override falls back to default_stock — never accidental-unlimited, never 0 (Section 30).** A `no_item_cap=true` row resolves the item ceiling to null = follows the category pool, distinct from `stock_count=null` = "use default" (V6.6).
 
-- **An override can only RESTRICT availability, never re-enable a Settings-disabled item. Item names are always read live from `menu_items_db.name` (Section 30).** (V6.5)
+- **Pause and extra-wait are EVENT-scoped on truck_events (V6.6); the van/truck columns are vestigial. Manual pause writes the selected event; offline auto-pause stamps the LIVE-NOW event on the stale van; readers read the event's own columns. A future event is never paused for a currently-offline van (Section 5).**
 
-- **The venue matcher (`findVenue`) is best-effort, not bail: token-overlap candidates → village-rank → best-pick. Pending events are customer-invisible, so the truck validates the guess at approval. Never resolve a venue with two different matchers — postcode and pin must come from one resolution (Section 25).** (V6.5)
+- **The two schedulers run on pg_cron and read service_role_key from Supabase Vault; a deleted Vault secret silently 401s every invocation (auto-close + offline auto-pause die). heartbeat-monitor = 30s, auto-event-scheduler = 1-min. Redeploy the edge function after logic changes (Section 11).**
 
-- **The scraper's inline `hgPrompt` is SEPARATE from `lib/schedule-extract.ts` — a known divergence. It must always emit a `town` and split an embedded place-name out of the venue name (Section 24).** (V6.5)
+- **An override can only RESTRICT availability, never re-enable a Settings-disabled item. Item names are always read live from `menu_items_db.name` (Section 30).**
 
-- **There is NO `trucks.is_test` column. Test trucks are kept off the public map via the discovery row `visibility` enum (`hg_only`). Phantom `is_test` references in admin/manage code likely error — backlog (Section 16 / Section 27).** (V6.5)
+- **The venue matcher (`findVenue`, lib/venue-matcher.ts) is best-effort, not bail: token-overlap candidates → village-rank → deterministic best-pick, returning {venue, confidence}. The bridge stamps truck_events.venue_id once per row. Never resolve a venue with two different matchers (Section 25).**
 
-- **Operator events are gated by the LINKED discovery truck's `visibility`, fetched via a DEDICATED UNFILTERED `hatchgrab_truck_id → visibility` map — never via the visibility-filtered `trData` (which would default `hg_only` to public and leak it) (Section 15).** (V6.5)
+- **The scraper's inline `hgPrompt` is SEPARATE from `lib/schedule-extract.ts` — a known divergence. It must always emit a `town` and split an embedded place-name out of the venue name (Section 24).**
 
-- **Host gating is a substring `.includes('hatchgrab')` check on the Host header (server) and `window.location.hostname` (client); no middleware, no exact-match. `hatchgrab.localhost:3000` renders localhost as HatchGrab (Section 2 / Section 26).** (V6.5)
+- **There is NO `trucks.is_test` column. Test trucks are kept off the public map via the discovery row `visibility` enum (`hg_only`). Phantom `is_test` references in admin/manage code likely error — backlog (Section 16 / Section 27).**
+
+- **Operator events are gated by the LINKED discovery truck's `visibility`, fetched via a DEDICATED UNFILTERED `hatchgrab_truck_id → visibility` map — never via the visibility-filtered `trData`. On HatchGrab, scraped discovery events are additionally suppressed by a TEMPORARY `isHG ? []` stopgap (Section 15 / Section 7).**
+
+- **Host gating is a substring `.includes('hatchgrab')` check on the Host header (server) and `window.location.hostname` (client); no middleware, no exact-match. `hatchgrab.localhost:3000` renders localhost as HatchGrab (Section 2 / Section 26).**
 
 - Both order insert paths must write event_id; never setState from a failed fetch (Section 5).
 
 - calcQueuePushSecs is shared by client and server ASAP — never fork it (Section 6).
 
-- kitchen_capacity counts ITEMS, not batches; the ceiling reddens but does not slow per-category drain (independent-equipment assumption) (Section 6).
+- kitchen_capacity counts ITEMS, not batches; the ceiling reddens but does not slow per-category drain (independent-equipment assumption) (Section 6). Global-ceiling roll-forward for an over-capacity single order is a known UX-only gap (Section 6 / Section 27).
 
 - Future-dated events never show red "prep now" urgency; age blends in only under 60 minutes (Section 9). Every "is this event today" floor uses a LOCAL Y-M-D, never toISOString (Section 6).
 
@@ -1999,11 +2158,9 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - New operator pages reuse AppHeader and slate-900 tabs (lib/brand.ts) — no inline page headers (Section 3).
 
-- Manual pause writes to truck_vans.paused_until for the active event's van, not trucks.paused_until (Section 5).
-
 - A null batch_size means "no limit" — render blank with an ∞ placeholder, never a sentinel like 999 (Section 6).
 
-- trucks.id is text, not uuid — any new FK to trucks(id) must be text. truck_events(id) and orders.event_id are uuid (Section 16).
+- trucks.id is text, not uuid — any new FK to trucks(id) must be text. truck_events(id), orders.event_id, and truck_events.venue_id are uuid (Section 16).
 
 - Schedule extraction goes through lib/schedule-extract.ts in-repo — never re-implement the Gemini prompt/retry/parse (the scraper's hgPrompt is the one known divergence) (Section 3 / Section 22).
 
@@ -2015,33 +2172,34 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - "tsc-clean / simulated-pass" ≠ "works": verify the END STATE on a live run, and confirm DEPLOYED before judging a prod-endpoint result (the local scraper POSTs to the PROD bridge) (Section 22).
 
+
 # 27. Open backlog (June 2026)
 
 ## Critical — before trial
 
-- **LIVE iPad click-through of the entire order flow on a real device** — the single most important pre-trial task. Every order-flow change (per-event numbering, urgency, slots, basket persistence, email venue/contact, the V6.4 oven-occupancy engine / event-keyed usage / per-event lock / ASAP-selection state machine / date-aware floors, and now the V6.5 per-event stock model) stacks on this one path. Highest-value live checks: (a) place a customer order on ASAP WITHOUT touching the picker → confirms → shows #1 → right venue in the email; (b) the slot traffic light reads correctly; (c) a full slot bumps, not rejects.
+- **LIVE web/tablet click-through of the entire order flow on a real device** — the single most important pre-trial task. Every order-flow change (per-event numbering, urgency, slots, basket persistence, email venue/contact, the V6.4 oven-occupancy engine / event-keyed usage / per-event lock / ASAP-selection state machine / date-aware floors, the V6.5 per-event stock model, and the V6.6 event-scoped pause + customer pause handling) stacks on this one path. Highest-value live checks: (a) place a customer order on ASAP WITHOUT touching the picker → confirms → shows #1 → right venue in the email; (b) the slot traffic light reads correctly; (c) a full slot bumps, not rejects; (d) a paused event blocks ordering and "Check again" keeps the basket; (e) Resume on the offline banner clears the pause.
 
-- **Per-event stock two-device oversell e2e (V6.5)** — deploy, then run on hatchgrab.com with two same-date events: Test 2 (sell-through on A leaves B untouched) and Test 3 (concurrent oversell race — exactly ONE of two simultaneous last-item orders succeeds). Non-negotiable (Section 30).
+- **Per-event stock two-device oversell e2e (V6.5/V6.6)** — deploy, then run on hatchgrab.com with two same-date events: Test 2 (sell-through on A leaves B untouched) and Test 3 (concurrent oversell race — exactly ONE of two simultaneous last-item orders succeeds). Non-negotiable (Section 30). Also live-verify the V6.6 `no_item_cap` follow-category on a real event (BBQ repro + sold-out → re-enable).
 
-- **Availability auto-reset on order-cancel (V6.5)** — Phase 4 left the per-event `available=false` flip MANUAL-only. A cancellation frees stock but leaves the item stuck sold-out, and cancellations mid-service are normal. Add an auto-reset (recompute the per-event availability from live sold count) on the cancel path, mirroring the way `rebuildProductionSlotUsage` runs on cancel for capacity (Section 30).
+- **Two-event-one-van pause repro + scheduler behavioural test (V6.6)** — with two events sharing a van: (a) the live event offline-pauses while the future event stays orderable; (b) the dashboard/KDS reconnect clears the event pause; (c) auto-close fires at end_time; (d) the DEPLOYED `heartbeat-monitor` runs the NEW event-scoped logic (REDEPLOY the function — pg_cron calls the deployed version). Confirm both cron jobs keep succeeding in `cron.job_run_details`.
 
-- Capacitor native wrapper; Stage A offline cache; offline detection banner; background sound; screen wake.
+- **Availability auto-reset on order-cancel (V6.5)** — Phase 4 left the per-event `available=false` flip MANUAL-only. A cancellation frees stock but leaves the item stuck sold-out, and cancellations mid-service are normal. Add an auto-reset (recompute the per-event availability from live sold count) on the cancel path, mirroring `rebuildProductionSlotUsage` on cancel for capacity (Section 30).
 
-- Auth-attempt rate limiting (public-data anti-scraping rate limiting is done — Section 28).
+- **Auth-attempt rate limiting** (public-data anti-scraping rate limiting is done — Section 28).
 
-- **Run the whatsapp_logs migration in prod (V6.3)** — the table does not exist, so logging is silently failing; confirm the lib/whatsapp-classifier.ts service-role-key usage; then run the WhatsApp four-bucket smoke tests (Section 20).
+- **Run the whatsapp_logs migration in prod (V6.3)** — the table does not exist, so logging is silently failing; then run the WhatsApp four-bucket smoke tests (Section 20).
 
 - **Applied-migrations reconciliation (V6.3)** — upsell_events (20260529_checkout_upsells) and whatsapp_logs were never applied to prod; audit the full applied-vs-file list.
 
 - **Rotate the Upstash Redis REST token (V6.3)** — exposed in chat during setup (Section 28).
 
-- **Phantom `trucks.is_test` references in admin + manage (V6.5)** — `is_test` does not exist as a column (Section 16). The discovery/events operator branch was fixed in V6.5, but admin and manage paths still select/reference it and therefore likely error on those queries. Remove the references (the public-map exclusion is the discovery `visibility` enum, not a trucks column). Diagnose-first which queries break.
+- **Phantom `trucks.is_test` references in admin + manage (V6.5)** — `is_test` does not exist as a column (Section 16). The discovery/events operator branch was fixed in V6.5, but admin and manage paths still select/reference it and therefore likely error on those queries. Diagnose-first which queries break; remove the references (the public-map exclusion is the discovery `visibility` enum).
+
+- **orders.event_id delete semantics (V6.6)** — currently ON DELETE SET NULL, which nulls a deleted event's orders' event_id → they fall into the no-event display-id bucket and can collide (23505 family). Workaround today: delete `orders` before `truck_events` when wiping a test truck. Diagnose-first the proper fix (likely ON DELETE RESTRICT, or detach-then-archive) (Section 18a).
 
 - Google Sheets → DB migration (scraper currently dual-writes; Sheets still config store). Also the home for the Gemini-extraction DRY consolidation — once done, the two Apps Script paths AND the scraper's inline hgPrompt can move in-repo behind lib/schedule-extract.ts (Section 3 / Section 24 / Section 25).
 
 - Reports tab data verification across multiple events.
-
-- Heartbeat/auto-pause end-to-end test.
 
 - Diagnose the ~23-minute scraper run failure (Section 24) — add per-site navigation and per-Gemini-call timeouts; confirm on the next Node 24 cron run.
 
@@ -2057,29 +2215,53 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - Add "Edwardstone White Horse" to the Google Sheets Venues tab alias columns N/O/P.
 
+## Parked for fresh chats (full briefs)
+
+### Per-truck customer-mode state machine (PARKED — fresh chat; unwinds the V6.6 host stopgap)
+
+> **The durable replacement for the V6.6 `isHG ? []` event-display stopgap (Section 7 / Section 15).** It subsumes three threads: "HatchGrab shows only approved events", "protect the order link before trial", and "Village Foodie flips to orderable when a truck converts". The model is **PER-TRUCK**, not per-host:
+> - **Discovery** — scraped events on Village Foodie, no order buttons (the truck hasn't signed up).
+> - **Preview / demo** — the truck's pages are fully viewable with a WORKING order walkthrough that places a CLEARLY-MARKED TEST ORDER (Dominic's chosen option — no password; password friction kills cold-email conversion and is deferred to post-conversion).
+> - **Live** — operator/approved events with order buttons on BOTH Village Foodie AND HatchGrab for that truck; scraped events suppressed everywhere for that truck. KEY: when a truck converts, Village Foodie ALSO flips to operator-events-with-buttons for that truck (VF is where their customers already are).
+> EXPOSURE (audit-confirmed): a stranger with the URL can place a REAL order on any `trucks.active=true` truck with a confirmed event — only `active` + event status + pause gate it, and `active` doesn't even gate the menu load; there is NO `published`/`accepting_online_orders` flag. Order buttons are gated `isHatchGrab() && source==='operator'` and must become TRUCK-STATE-driven. Plumbing: `/api/discovery/events` merges status-gated operator truck_events + visibility-only discovery_events (~:284-291), host gate ~:76-79; all consumers go via `useVillageData` (homepage map, venue page, trucks list, profile TruckClient); `allTrucks` comes from `discovery_trucks` independent of events. The `isHG ? []` stopgap must be UNWOUND as part of this. Re-prime a fresh chat with the V6.6 manual + this brief + one line: pre-trial, web-only, two gates outstanding (oversell e2e + live click-through).
+
+### Capacity global-ceiling roll-forward (DONE V6.7 — superseded by the concurrency rebuild)
+
+> **RESOLVED (V6.7).** Not via the spilling cascade proposed below — that interim `cascadeGlobalCeiling` helper was built then REMOVED. The ceiling is now an EXACT sweep-line concurrency check with its own cadence (`capacity_window_mins`); see Section 6 "Kitchen capacity = EXACT concurrency ceiling." Live-verification pending (Section 26). The original brief is kept below for history.
+
+> **The fix for the Section 6 known gap.** BUG: the global `kitchen_capacity` ceiling HARD-FAILS (`fits:false` everywhere → empty slot picker, frozen ASAP) when a single order exceeds one window's ceiling (e.g. 7 counted items vs capacity 6), instead of spilling across collection windows. Per-category batch capacity DOES spill correctly (5 pizzas/batch 4 → ASAP rolls forward). DECISION: the customer NEVER splits; the system computes prep time and offers the earliest slot the WHOLE order is ready = tail-completion = spill. Diagnosed: per-category spills because items are distributed across `ceil(M/batch)` windows during load construction; the global ceiling only does a post-hoc red check with no redistribution → `fitOrderBackward` red at every T → `earliestBackwardFitSlot` returns null. PROPOSED (Cursor-reviewed, NOT applied): in `fitOrderBackward` order-load construction (~:539-611) add a global-ceiling spread so the order occupies `max(per-category ceil(M/batch), ceil(totalCounted/kitchenCapacity))` windows, each ≤ ceiling; `earliestBackwardFitSlot` control flow unchanged. CRITICAL: `fitOrderBackward` (placement) and `projectBackwardOccupancy` (existing-occupancy spread) MUST spill by ONE shared rule or placement/recorded-occupancy diverge (oversell). MUST-NOT-BREAK: (a) the 5-pizza per-category spill (verify `max()` never below per-category nw); (b) ambient operator dot tones (thresholds ~:493-500 untouched); (c) oversell at submit (addOrderToProductionSlot untouched — read-time math only); (d) amber/red thresholds. Callers: customer page (~:667/674/690), submit (~:267), dashboard slots, AddOrderPanel (~:247), slot-display.ts. SEVERITY: UX-only today — the server pends an over-ceiling order under the booking lock, never overfills. Re-prime a fresh chat with the V6.6 manual + this brief + the same one-line status.
+
 ## Important — before public launch
 
-- **Venue matcher enhancements — the keystone is `venue_id` on `truck_events` (V6.5)** — the best-effort matcher (Section 25) is built, but two scoped-not-built enhancements both depend on adding a **`venue_id` column to `truck_events`**: (1) a **confidence flag** column so a low-confidence guess is surfaced to the truck at approval; (2) a **history-prior tie-breaker** — rank candidates by the truck's prior CONFIRMED venues (village wins → history → best-pick), with a ≥2-visit floor and anti-reinforcement (confirmed = event-approved, NOT venue-validated). `venue_id` also unlocks trusted-anchor reuse and rename-safety. This is the single highest-leverage matcher follow-up.
+- **Venue matcher enhancements — `venue_id` is now in place (V6.6); two enhancements remain** — (1) a **confidence flag SURFACED in the approval queue** so a `venue_match_confidence='low'` guess is flagged to the truck at approval; (2) a **history-prior tie-breaker** — rank candidates by the truck's prior CONFIRMED venues (village wins → history → best-pick), with a ≥2-visit floor and anti-reinforcement (confirmed = event-approved, NOT venue-validated; only `venue_id_source IN (operator,manual)` should count as validated). `venue_id` also unlocks trusted-anchor reuse and rename-safety. The single highest-leverage matcher follow-up (Section 25).
+
+- **Venue dedup on venue_id (V6.6)** — the bridge still dedups on the venue_name STRING, so an operator editing venue_name post-confirm can spawn a near-duplicate. Move to dedup on `(truck_id, event_date, venue_id)` with a name fallback (Section 25).
+
+- **venue_match_confidence='none' stores venue_id_source=NULL** — confirm the intended write when no candidate is found (Section 16).
 
 - **Extractor convergence (V6.5)** — route the scraper's inline `hgPrompt` through the shared `buildScheduleExtractionPrompt` (the manage "Import" path already does), so there is one prompt with truth-based `findVenue` rather than two. The manage prompt trusts the LLM for postcode (hallucination risk); the scraper has truth-based findVenue — converge on the stronger combination (Section 3 / Section 24).
 
-- **Systemic logo fallback (V6.5)** — the public profile reads `discovery_trucks.logo_url` only; an operator-uploaded logo lives in `trucks.logo_storage_path` and isn't mirrored, so a truck can show a blank logo (test-kitchen was fixed by SQL this session). Make the discovery/profile mapping fall back to the linked operator truck's `logo_storage_path` when `logo_url` is null (Section 14).
+- **Systemic logo fallback (V6.5)** — the public profile reads `discovery_trucks.logo_url` only; an operator-uploaded logo lives in `trucks.logo_storage_path` and isn't mirrored. Make the discovery/profile mapping fall back to `logo_storage_path` when `logo_url` is null (Section 14).
 
-- **"Old School" + "Platform One Café" venue cleanup (V6.5)** — EYEBALL flags from the reresolve run: confirm "The Old School" resolves to the Great Cornard centre, and merge the duplicate "Platform One Café" venue rows (to the canonical row, variant as an alias in BOTH Supabase and the Sheet) (Section 25).
+- **"Old School" + "Platform One Café" venue cleanup (V6.5)** — EYEBALL flags from the reresolve run: confirm "The Old School" resolves to the Great Cornard centre, and merge the duplicate "Platform One Café" venue rows (canonical row, variant as an alias in BOTH Supabase and the Sheet) (Section 25).
 
-- **Rename-safety for stock (V6.5)** — per-event stock keys on `item_name` because orders carry no item id (the frozen order-line name is the only join to the sold count). Renaming an item in Settings propagates the display name (read live) but a per-event OVERRIDE row keyed on the old name is orphaned. The proper fix is to carry `item_id` on order lines so ceiling and sold count can key on id; deferred (Section 30).
+- **Rename-safety for stock (V6.5)** — per-event stock keys on `item_name` because orders carry no item id. Renaming an item propagates the display name but orphans a per-event OVERRIDE row keyed on the old name. The proper fix carries `item_id` on order lines so ceiling and sold count key on id; deferred (Section 30).
 
-- **Auto open/close not firing (V6.4)** — diagnose-first: is "open for orders automatically" the same state as "event started" (Start Event / event `status`), or distinct? Auto-close likely shares the gap. Must use local-date-aware "now vs event window" logic consistent with the slot floors (Section 6 / Section 15).
+- **Cron-health alert (V6.6)** — a check (home: the daily scraper or a tiny scheduled function) that `cron.job_run_details` shows a recent SUCCESSFUL `heartbeat-monitor` and `auto-event-scheduler` run, emailing Dominic via Brevo if a scheduler has gone silent — so the next dead-Vault-secret (Section 11) surfaces instead of failing silently.
 
 - **Merge Business contact + Customer contact into one "what the customer sees" box (V6.4)** — Settings shows a Business contact box and a separate Customer contact box that doesn't display the resolved detail. Combine into one section showing the resolved contact as the customer sees it, driven by `preferred_contact_method` (Section 18).
 
 - **Per-category "apply kitchen capacity limit" tickbox (V6.4)** — replace the inferred "instant items don't count" rule with an explicit per-category opt-in (Section 6 / Section 14).
 
+- **Per-event operating overrides (V6.6, deferred; extended V6.7)** — make kitchen_capacity, capacity_window_mins, time_selection_enabled, slot cadence, and auto_accept optionally per-event-overridable (festival vs quiet pub). These are set-once operating modes, NOT cross-event contamination, so they remain truck/van-scoped (V6.7 added `capacity_window_mins` to this same van-global set). Busy-night flexibility is served by the EXISTING dashboard mid-event capacity edit (change the items number live) — do NOT fork a window-only per-event path; this stays the single parked override item (Section 5 / Section 6).
+
 - **Shared-equipment capacity model (V6.4)** — the oven-occupancy projection assumes INDEPENDENT equipment; for a truck sharing one oven/fryer it runs optimistic. Flag when a multi-category shared-equipment truck onboards (Section 6).
 
 - **Order-copy vs notification email format (V6.4)** — an order reportedly went to the truck in the wrong email format; diagnose which path sent which template before changing.
 
-- **Remove dead slot code (V6.4)** — `getSlotIndicator` / `lib/slot-indicator.ts` and the vestigial `slot_capacity` cache no longer drive the operator dots or placement; they still power the customer available/unavailable flags. Slim once the trial baseline is committed — do NOT remove mid-stack. Likewise the legacy `item_overrides` / `category_stock` tables are unused by live paths but kept for stock rollback (Section 30) — remove together post-trial.
+- **KDS pause badge event-sourcing (V6.6)** — the KDS pause badge reads `truck.paused_until` (now null after the move to truck_events); event-source it like the dashboard badge (Section 9 / Section 5).
+
+- **Remove dead slot code (V6.4)** — `getSlotIndicator` / `lib/slot-indicator.ts` and the vestigial `slot_capacity` cache no longer drive the operator dots or placement. Slim once the trial baseline is committed — do NOT remove mid-stack. Likewise the legacy `item_overrides` / `category_stock` tables (Section 30) and the vestigial van/truck pause columns (`trucks.paused_until`, `truck_vans.paused_until`/`online_paused_until`, `trucks.extra_wait_*` — Section 5) are unused by live paths but kept for rollback — remove together post-trial.
 
 - **Retire the dormant Twilio WhatsApp handler and delete formatWhatsAppOrder dead code (V6.3)** — Meta Cloud API is canonical (Section 20).
 
@@ -2091,11 +2273,13 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - Multi-device session enforcement (kds_sessions exists, logic pending).
 
-- Stage B offline; proper post-trial login.
+- Stage B offline; proper post-trial login. Native Capacitor wrapper + Stage A offline cache + offline detection banner + background sound + screen wake (all POST-TRIAL as of V6.6 — Section 11).
 
-- Operator UI pause-state reload — read from truck_vans.paused_until for the active event's van, not trucks.paused_until (V6).
+- Operator UI pause-state reload — superseded by the V6.6 event-scoping; confirm all reload paths read the event's pause, not truck_vans/trucks.
 
 - orders.ready_time column — store the calculated collection time at submit for tighter ASAP cancellation control post-trial.
+
+- Basket persistence across a manual browser refresh (V6.6 keeps the basket through pause "Check again" but it's still in-memory only; localStorage/session persistence deferred — Section 7).
 
 - Schedule tab map panel — latitude/longitude are already stored on truck_events; show event locations on a desktop map alongside the schedule list.
 
@@ -2139,23 +2323,37 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - AI DM classifier confidence threshold (set from real performance).
 
-- iPad printer model (Star Micronics vs Epson) — affects Capacitor native module.
+- iPad printer model (Star Micronics vs Epson) — affects Capacitor native module (post-trial).
 
 - Truck-level vs operator-level billing in Phase 2.
 
 - Loyalty redemption UX.
 
-## Resolved this session (V6.5)
+## Resolved this session (V6.6)
 
-- **Items-based slot capacity display + kitchen_capacity = items** — DONE V6.4, the V6.3 interim wording is gone (Sections 6 and 10).
+- **Pause / extra-wait cross-event bleed** — DONE: moved onto truck_events (event-scoped), van/truck columns vestigial (Section 5).
 
-- **Village-aware venue matching in inbound-schedule** — DONE V6.5: the `findVenue` rebuild (token-overlap + village-rank + best-effort) replaces loose substring matching (Section 25). Remaining matcher work is the `venue_id`-keystone enhancements above.
+- **Schedulers dead (auto-close + offline auto-pause never firing)** — DONE: the deleted Vault `service_role_key` secret restored; both pg_cron jobs succeeding; heartbeat-monitor on 30s (Section 11).
+
+- **Customer basket wiped by pause "Check again"** — DONE: refetch-in-place instead of `window.location.reload()`; basket kept read-only while paused (Section 7).
+
+- **venue_id missing on truck_events** — DONE: column + source + confidence added; shared matcher stamps it; live-verified 8/8 (Section 25 / Section 16).
+
+- **Stale scraped events on HatchGrab profiles** — DONE (TEMPORARY): `isHG ? []` suppression; durable per-truck state machine parked (Section 7 / Section 15).
+
+- **Per-event stock UI rough edges + no follow-category** — DONE: input-revert draft, mobile/16px/numeric, per-event keyed maps (kills flash), `no_item_cap` follow-category, chrome removal (Section 30).
+
+## Resolved earlier (V6.5)
+
+- **Items-based slot capacity display + kitchen_capacity = items** — DONE V6.4 (Sections 6 and 10).
+
+- **Village-aware venue matching in inbound-schedule** — DONE V6.5: the `findVenue` rebuild (token-overlap + village-rank + best-effort); V6.6 extracted it to lib/venue-matcher.ts and added venue_id (Section 25).
 
 - **Cross-event sold-out bug** — DONE V6.5: per-event sparse-override stock (Section 30).
 
 - **Operator events dormant on both domains** — DONE V6.5: phantom `is_test` removed from the discovery/events branch, branch revived and visibility-gated (Section 15).
 
-- **Orphaned `event_id: NULL` order** — DONE V6.4: cancelled by `order_key` so it no longer pollutes any projection.
+- **Orphaned `event_id: NULL` order** — DONE V6.4: cancelled by `order_key`.
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -2174,15 +2372,16 @@ Layered protection against bulk scraping of the public discovery and event data,
 
 - **STRICT — 3/min** — /api/discovery and /api/events (public slug lookups) ONLY.
 - **GENERAL — 60/min** — everything else, including /api/menu and /trucks (these sit behind shared IPs and must stay generous).
-- **EXEMPT (no limit)** — /api/dashboard/action, /api/orders/submit, /api/webhooks, /api/admin, /api/events/manage, /api/events/action, /api/events/affected-orders, /api/inbound-schedule.
+- **EXEMPT (no limit)** — /api/dashboard/action, /api/orders/submit, /api/webhooks, /api/admin, /api/events/manage, /api/events/action, /api/events/affected-orders, /api/inbound-schedule, /api/heartbeat.
 
 > **RULE** — Any new route handling authenticated operator actions or order placement is EXEMPT by default. Only add a route to STRICT if it serves public bulk-scrapeable data and nothing else.
 
-> **NOTE (V6.5)** — the discovery/events route is on the STRICT tier and is the same route whose operator branch was revived this session (Section 15). The revival changes what the route returns, not its rate-limit tier — STRICT still applies and ordering stays exempt.
+> **NOTE (V6.5)** — the discovery/events route is on the STRICT tier and is the same route whose operator branch was revived (Section 15) and whose HatchGrab scraped-suppression was added (V6.6, Section 7). The behavioural changes change what the route returns, not its rate-limit tier — STRICT still applies and ordering stays exempt.
 
 > **SECURITY NOTE** — the Upstash REST token was pasted in chat during setup; rotate it before trial (Section 27).
 
-# 30. Per-event stock — the sparse-override model (V6.5)
+
+# 30. Per-event stock — the sparse-override model (V6.5, extended V6.6)
 
 > **CRITICAL ARCHITECTURE — do not undo.** Stock is now scoped to the EVENT, held as a SPARSE override over the live Settings default. Conflating stock back to truck-level (the pre-V6.5 model) reintroduces the cross-event sold-out bug that this section exists to prevent.
 
@@ -2200,18 +2399,25 @@ So three independent leak vectors — manual toggle, manual ceiling edit, and au
 
 Two additive tables hold a per-event **override** that exists ONLY when the dashboard has edited stock for that specific event:
 
-- **`event_item_stock`** — PK `(event_id, item_name)`. Columns: `event_id` (uuid, FK `truck_events(id)` on delete cascade), `item_name` (text), `stock_count` (int nullable — the per-event ceiling override), `available` (boolean nullable — the per-event sold-out override).
+- **`event_item_stock`** — PK `(event_id, item_name)`. Columns: `event_id` (uuid, FK `truck_events(id)` on delete cascade), `item_name` (text), `stock_count` (int nullable — the per-event ceiling override), `available` (boolean nullable — the per-event sold-out override), `no_item_cap` (boolean default false — V6.6).
 - **`event_category_stock`** — PK `(event_id, category)`. Columns: `event_id` (uuid, FK), `category` (text), `stock_count` (int nullable).
 
 Both are RLS service-role only.
 
 ### The read formula (the core invariant)
 
-> **FORMULA** — effective ceiling = `event_item_stock.stock_count` **(if an override row exists for this `event_id` + `item_name`)** `?? menu_items_db.default_stock` **(live from Settings)**.
+> **FORMULA** — effective ceiling = `event_item_stock.stock_count` **(if an override row exists for this `event_id` + `item_name`)** `?? menu_items_db.default_stock` **(live from Settings)**. A row with **`no_item_cap = true` (V6.6)** resolves the ceiling to **null** — "no individual cap this event, follow the category pool" — regardless of stock_count/default.
 
-- An un-edited event has NO override row, so it reads the **live Settings default** — which means a Settings>Menu change to `default_stock` (or an item rename) **PROPAGATES to every future event** (confirmed AND unconfirmed). This propagation requirement is exactly why the model is sparse-override and NOT eager-snapshot (a snapshot at event-creation freezes the default and breaks propagation — an eager-snapshot first attempt was built and then unwound for this reason; see below).
+- An un-edited event has NO override row, so it reads the **live Settings default** — which means a Settings>Menu change to `default_stock` (or an item rename) **PROPAGATES to every future event** (confirmed AND unconfirmed). This propagation requirement is exactly why the model is sparse-override and NOT eager-snapshot (a snapshot at event-creation freezes the default and breaks propagation — an eager-snapshot first attempt was built and then unwound; see below).
 - A per-event edit writes an override row, isolating that event from Settings and from every other event.
 - A **missing override row falls back to `default_stock`** — never to accidental-unlimited, and never to 0.
+
+### no_item_cap — follow the category pool (V6.6)
+
+> **RULE (V6.6)** — `stock_count = null` and `no_item_cap = true` are DISTINCT, disambiguating an overloaded null:
+> - `stock_count = null`, `no_item_cap = false` → "use the live Settings default" (the un-edited / reset state).
+> - `no_item_cap = true` → "this item has NO individual cap THIS event → its ceiling resolves to null → it follows the CATEGORY pool" (`event_category_stock` / the category default), exactly as an item with no per-item stock configured does.
+> Honoured in ALL THREE ceiling readers (lib/stock-guard.ts, lib/stock-availability.ts `enforceStockLimits`, and the menu-API / `get_stock` dashboard read). `get_stock` MUST surface `no_item_cap = true` rows even though they carry `stock_count = null` (they would otherwise be filtered as "no override"). `set_stock` accepts a `noItemCap` flag. Ceiling parity was verified: `{stock_count:null}` → 25 (default) vs `{no_item_cap:true}` → null (follow category) — no collision. UI: an empty box = follow category, a number = cap, retype the default to reset.
 
 ### Availability is an AND-composition
 
@@ -2223,21 +2429,29 @@ The override can only **RESTRICT** — it can never re-enable an item the Settin
 
 > **RULE** — The effective ceiling and the sold count MUST be read by the SAME `event_id`. The sold count (`getLiveItemCounts`) is name-keyed off the FROZEN order-line names (orders carry no item id — Section 18a / the rename-safety backlog), so the override is also name-keyed (`item_name`), keeping ceiling and sold on the same key. The menu-API ceiling read (`/api/menu/[truckId]`) and the stock-guard ceiling read (`stock-guard.ts`) both read `event_item_stock` by the same `event_id` as the sold count. Proven on real data: White Lion event ceiling 25, The Oak event 25 − 20 sold = 5 — cross-event isolation holds.
 
-## The four phases (all built, tsc-clean, e2e pending)
+## The phases (all built, tsc-clean, e2e pending)
 
-- **Phase 1 — migrations.** `20260611_event_item_stock.sql` and `20260611_event_category_stock.sql` (above). Applied in chunks, verified, schema reloaded.
+- **Phase 1 — migrations.** `20260611_event_item_stock.sql` + `20260611_event_category_stock.sql`; plus `20260612_event_item_stock_no_item_cap.sql` (V6.6). Applied in chunks, verified, schema reloaded.
 
-- **Phase 2 — UNWOUND.** The first attempt was an **eager snapshot** (143 item + 55 category rows backfilled at event creation). It was deleted because it freezes the Settings default and breaks propagation. The unwind: DELETE all eager rows; migrate BBQ's truck-level `item_overrides = 25` into `menu_items_db.default_stock = 25` (so it now propagates) and delete the `item_overrides` row; strip the `snapshotEventStock` calls from the bridge and manual-create; delete `lib/event-stock-snapshot.ts` and `scripts/backfill-event-stock.ts` (the bridge keeps its `.select('id').single()` with `void insertedEvent`).
+- **Phase 2 — UNWOUND.** The first attempt was an **eager snapshot** (143 item + 55 category rows backfilled at event creation). It was deleted because it freezes the Settings default and breaks propagation. The unwind: DELETE all eager rows; migrate BBQ's truck-level `item_overrides = 25` into `menu_items_db.default_stock = 25` and delete the `item_overrides` row; strip the `snapshotEventStock` calls from the bridge and manual-create; delete `lib/event-stock-snapshot.ts` and `scripts/backfill-event-stock.ts`.
 
 - **Phase 3 — oversell-critical reads.** The menu-API ceiling and the stock-guard ceiling read `event_item_stock` by the same `event_id` as the sold count (the invariant above).
 
-- **Phase 4 — enforceStockLimits event-scoped.** `enforceStockLimits` (lib/stock-availability.ts) now reads sold by `event_id` and writes `event_item_stock.available = false` per-event, never clobbering `stock_count` and never writing a truck-wide flag. The enforce ceiling equals the guard ceiling.
+- **Phase 4 — enforceStockLimits event-scoped.** `enforceStockLimits` (lib/stock-availability.ts) reads sold by `event_id` and writes `event_item_stock.available = false` per-event, never clobbering `stock_count` and never writing a truck-wide flag. The enforce ceiling equals the guard ceiling.
 
-- **Phase 5 — dashboard writes the override.** `set_stock` / the sold-out toggle / `set_category_stock` write a per-event override into `event_item_stock` / `event_category_stock`, using the dashboard's existing `selectedEventId` / `selectedEventRef` (no new UI). `set_stock` re-enables an item on a stock raise; the toggle preserves the ceiling. Display reads (`get_stock`) are event-scoped.
+- **Phase 5 — dashboard writes the override.** `set_stock` / the sold-out toggle / `set_category_stock` write a per-event override into `event_item_stock` / `event_category_stock`, using the dashboard's existing `selectedEventId` / `selectedEventRef`. `set_stock` re-enables an item on a stock raise and accepts `noItemCap` (V6.6); the toggle preserves the ceiling. Display reads (`get_stock`) are event-scoped and surface `no_item_cap` rows.
+
+## UI completion (V6.6)
+
+> **RULE (V6.6) — four stock-UI fixes (all client-side on the dashboard Menu & Stock tab):**
+> 1. **Input-revert draft pattern** — each stock input holds a LOCAL draft from focus; commits on blur/Enter; reverts on Escape. Kills the "type a digit, it reverts" bug (the input was bound straight to server state, and a realtime tick clobbered mid-type).
+> 2. **Mobile sizing** — inputs widened, `inputMode="numeric"`, 16px on mobile (iOS auto-zoom rule, Section 23).
+> 3. **Per-event keyed maps + stale-while-revalidate** — stock state is re-shaped to maps keyed by event, so switching events shows skeletons then the correct event's numbers, never a flash of the previous event's stock (a structural fix, not a guard).
+> 4. **Chrome removal** — the blue "default" label and the "reset to default" link were removed (chrome only — behaviour unchanged: empty box = follow category, a number = cap, retype the default to reset). `isDefault` is kept (it drives the input border/tooltip); the orphaned `showReset` was removed.
 
 ## What is NOT built
 
-- **Two-device oversell e2e (PENDING — Section 26 / Section 27)** — Test 2 (sell-through isolation) and Test 3 (concurrent oversell race, exactly one succeeds) on hatchgrab.com with two same-date events. NOT YET DEPLOYED as of the latest session.
+- **Two-device oversell e2e (PENDING — Section 26 / Section 27)** — Test 2 (sell-through isolation) and Test 3 (concurrent oversell race, exactly one succeeds) on hatchgrab.com with two same-date events. Plus a live `no_item_cap` follow-category check.
 
 - **Availability auto-reset on cancel (PENDING — Section 27)** — Phase 4 left the `available = false` flip manual-only; a cancellation frees stock but leaves the item stuck sold-out. Mirror the capacity path (`rebuildProductionSlotUsage` on cancel) for availability.
 
@@ -2259,4 +2473,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6.5
+HatchGrab Engineering Reference Manual · V6.7

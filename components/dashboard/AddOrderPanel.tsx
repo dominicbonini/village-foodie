@@ -126,6 +126,7 @@ export function AddOrderPanel({
   const [capacityInputs, setCapacityInputs] = useState<{
     productionSlotUnits: Record<string, Record<string, number>>
     kitchenCapacity: number | null
+    capacityWindowMins?: number
     eventStartMins: number
     eventEndMins: number | null
     earliestCollectionMins: number
@@ -229,6 +230,7 @@ export function AddOrderPanel({
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.eventStartMins,
       categoryOrder,
+      capacityInputs.capacityWindowMins ?? 5,
     )
   }, [capacityInputs, manualSlots, categoryConfigs, categoryOrder])
 
@@ -252,6 +254,7 @@ export function AddOrderPanel({
       capacityInputs.eventStartMins,
       basketByCat,
       (sh || 0) * 60 + (sm || 0),
+      capacityInputs.capacityWindowMins ?? 5,
     )
     const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
     return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
@@ -477,6 +480,7 @@ setItemModal({ item, modGroups, editCartKey })
         productionSlotUnits: capacityInputs.productionSlotUnits || {},
         catConfigs: categoryConfigs,
         kitchenCapacity: capacityInputs.kitchenCapacity ?? null,
+        capacityWindowMins: capacityInputs.capacityWindowMins ?? 5,
         date: capacityInputs.date,
         nowMins: capacityInputs.nowMins,
         earliestCollectionMins: capacityInputs.earliestCollectionMins,

@@ -53,6 +53,8 @@ export function buildSlotIndicators(
    *  so it matches the menu order the operator set. Categories absent from this list sort to
    *  the end (stable). Display-only: tone/engine/occ are unaffected. */
   categoryOrder: string[] = [],
+  /** The global ceiling's own window cadence (capacity_window_mins). Default 5. */
+  capacityWindowMins: number = 5,
 ): Map<string, SlotIndicator> {
   const out = new Map<string, SlotIndicator>()
   if (!slots.length) return out
@@ -62,7 +64,7 @@ export function buildSlotIndicators(
   const rankOf = (cat: string) => catRank.get(cat.toLowerCase()) ?? Infinity
 
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
-  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
   // The dot on collection slot T = collectability there = the cooking window ENDING at T
   // (keyed T−step), not the window starting at T (the off-by-one that showed the block one
   // slot early). step = finest prep cadence (exact for single-cadence; see helper note).
@@ -79,7 +81,7 @@ export function buildSlotIndicators(
   // from BOTH maps — a booking-scope gap, not fixable in the indicator.
   const physicalConfigs: Record<string, CatConfig> = {}
   for (const [cat, cfg] of Object.entries(catConfigs)) physicalConfigs[cat] = { ...cfg, countsToCapacity: true }
-  const physical = projectBackwardOccupancy(productionSlotUnits, physicalConfigs, eventStartMins, kitchenCapacity)
+  const physical = projectBackwardOccupancy(productionSlotUnits, physicalConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
 
   for (const s of slots) {
     const w = back.byStart.get(toMins(s.collection_time) - step) ?? null

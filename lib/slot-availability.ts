@@ -75,6 +75,8 @@ export function buildSlotAvailability(params: {
   catConfigs: Record<string, CatConfig>
   /** Items ceiling for constraint (a); null = (a) OFF. */
   kitchenCapacity: number | null
+  /** The global ceiling's own window cadence (capacity_window_mins, van column). Default 5. */
+  capacityWindowMins?: number
   date: string
   nowMins: number
   earliestCollectionMins: number
@@ -92,10 +94,11 @@ export function buildSlotAvailability(params: {
   basketByCat?: QtyByCat
 }): SlotAvailabilityRow[] {
   const {
-    times, productionSlotUnits, catConfigs, kitchenCapacity,
+    times, productionSlotUnits, catConfigs, kitchenCapacity, capacityWindowMins,
     date, nowMins, earliestCollectionMins, eventStartMins, eventEndMins,
     basketByCat,
   } = params
+  const capWindow = Math.max(1, Math.round(capacityWindowMins ?? 5))
   // LOCAL date (s.7) — must agree with the LOCAL nowMins passed in; toISOString() (UTC)
   // would roll over at UTC midnight and mis-flag a future event's slots as is_past.
   const today = localTodayIso()
@@ -110,7 +113,7 @@ export function buildSlotAvailability(params: {
   // fit. Retires the old (a) collection-bucket ceiling AND (b) cumulative throughput: the
   // lead-time check is now "the order's backward windows all have spare and none precede
   // event start" (run-off-front), expressed per-window.
-  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capWindow)
   // A collection slot at T is served by the cooking window ENDING at T (keyed T−step), NOT
   // the window starting at T — the off-by-one that blocked one slot early.
   const step = backwardWindowStepMins(catConfigs)
@@ -127,7 +130,7 @@ export function buildSlotAvailability(params: {
     let bindCap: number
     if (hasBasket) {
       // Operator/customer placing THIS order: does it fit the backward windows ending at S?
-      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins)
+      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins, capWindow)
       tone = fit.tone
       boundBy = fit.bound_by
       bindCurrent = 0
@@ -410,6 +413,111 @@ export interface BackwardOccupancy {
   cantFit: CantFitFlag[]
   /** Per-category batch size seen (the "/Y" denominator) — for fit-checks/rate reconstruction. */
   batchByCat: Record<string, number>
+  /** EXISTING counted load as concurrency intervals (cooking = [start,start+prep); instant
+   *  counted = zero-width point). The global kitchen_capacity ceiling is judged ONLY by the
+   *  sweep-line over these ⊕ an order's intervals — see maxConcurrentCount. */
+  intervals: CookInterval[]
+}
+
+// ── Global kitchen_capacity ceiling = EXACT concurrency check (replaces the per-window cascade) ──
+// kitchen_capacity is a CONCURRENCY ceiling: "no more than N counted items in production at the
+// same instant." Each counted contribution is an interval on the timeline; a cooking batch of M
+// items (prep P, seated at window-start S) occupies [S, S+P) and counts M at every instant inside
+// it; an instant counted item is a zero-width point counting M at its seat instant. The ceiling
+// holds iff the sweep-line PEAK concurrency ≤ kitchen_capacity. No buckets, no anchor constant.
+// The capacity window cadence (capacity_window_mins) only governs where INSTANT items are seated
+// and how their overflow rolls backward (placeInstantPoints) — cooking is deterministic and merely
+// read by the sweep. Per-category batch placement (pizza on its prep grid) is unchanged.
+export interface CookInterval {
+  /** Start minute (inclusive). */
+  startMins: number
+  /** End minute (exclusive for cooking; == startMins for a zero-width instant point). */
+  endMins: number
+  /** Counted items present across [startMins, endMins). */
+  items: number
+}
+
+// Sweep-line peak concurrency over counted intervals. Tie-break at equal timestamps:
+// real END (free the oven) before real START (a batch finishing at T does NOT count concurrent
+// with one starting at T), and zero-width POINTS are evaluated AFTER both — so a point registers
+// at its instant alongside coincident-START batches and excluding coincident-END batches.
+export function maxConcurrentCount(intervals: CookInterval[]): number {
+  type Ev = { t: number; kind: 0 | 1 | 2; delta: number }
+  const events: Ev[] = []
+  const pointAt = new Map<number, number>()
+  for (const iv of intervals) {
+    if (iv.items <= 0) continue
+    if (iv.endMins > iv.startMins) {
+      events.push({ t: iv.startMins, kind: 1, delta: iv.items })   // real START
+      events.push({ t: iv.endMins, kind: 0, delta: -iv.items })    // real END
+    } else {
+      pointAt.set(iv.startMins, (pointAt.get(iv.startMins) || 0) + iv.items)
+    }
+  }
+  for (const t of pointAt.keys()) events.push({ t, kind: 2, delta: 0 })
+  events.sort((a, b) => a.t - b.t || a.kind - b.kind)   // END(0) < START(1) < POINT(2)
+  let running = 0
+  let peak = 0
+  for (const e of events) {
+    if (e.kind === 2) {
+      // running already reflects coincident STARTs (kind 1) and dropped coincident ENDs (kind 0).
+      const c = running + (pointAt.get(e.t) || 0)
+      if (c > peak) peak = c
+    } else {
+      running += e.delta
+      if (running > peak) peak = running
+    }
+  }
+  return peak
+}
+
+// Counted concurrency at a single instant t — reals cover [start,end); points hit only t == start.
+function concurrencyAt(intervals: CookInterval[], t: number): number {
+  let c = 0
+  for (const iv of intervals) {
+    if (iv.items <= 0) continue
+    if (iv.endMins > iv.startMins) { if (iv.startMins <= t && t < iv.endMins) c += iv.items }
+    else if (iv.startMins === t) c += iv.items
+  }
+  return c
+}
+
+// Greedy backward placement of zero-prep COUNTED instant items as concurrency points. Instant
+// items have no intrinsic schedule, so they seat into capacityStep-spaced windows ending at
+// `anchorMins` (collection-adjacent first), each taking only the concurrency headroom left by the
+// fixed cooking/existing load already present. Overflow rolls one capacityStep earlier; needing a
+// window before eventStart ⇒ can't fit (runsOffFront). IDENTICAL rule in both engine callers, so
+// placement and recorded-occupancy spill instant load the same way (the do-not-undo).
+function placeInstantPoints(
+  count: number,
+  anchorMins: number,
+  base: CookInterval[],
+  kitchenCapacity: number | null,
+  capacityStep: number,
+  eventStartMins: number,
+): { points: CookInterval[]; runsOffFront: boolean } {
+  const points: CookInterval[] = []
+  if (count <= 0) return { points, runsOffFront: false }
+  const ws0 = anchorMins - capacityStep
+  if (kitchenCapacity == null) {
+    points.push({ startMins: ws0, endMins: ws0, items: count })  // no ceiling ⇒ no spread needed
+    return { points, runsOffFront: false }
+  }
+  const sofar = [...base]
+  let remaining = count
+  let w = ws0
+  while (remaining > 0) {
+    if (w < eventStartMins) return { points, runsOffFront: true }
+    const headroom = Math.max(0, kitchenCapacity - concurrencyAt(sofar, w))
+    const place = Math.min(remaining, headroom)
+    if (place > 0) {
+      const p: CookInterval = { startMins: w, endMins: w, items: place }
+      points.push(p); sofar.push(p)
+      remaining -= place
+    }
+    w -= capacityStep
+  }
+  return { points, runsOffFront: false }
 }
 
 export function projectBackwardOccupancy(
@@ -417,38 +525,41 @@ export function projectBackwardOccupancy(
   catConfigs: Record<string, CatConfig>,
   eventStartMins: number,
   kitchenCapacity: number | null,
+  capacityWindowMins: number = 5,
 ): BackwardOccupancy {
-  // Accumulate load per window-start minute → { cat: items }.
+  // Accumulate COOKING load per window-start minute → { cat: items } (drives per-category batch tones).
   const loadByStart = new Map<number, Record<string, number>>()
   const batchByCat: Record<string, number> = {}
   const cantFit: CantFitFlag[] = []
-  // Window granularity for the ceiling — also where no-prep-ticked (instant) items land.
+  // step = PREP grid (cooking window keying + the no-basket single-window lookup). UNCHANGED.
   const step = backwardWindowStepMins(catConfigs)
+  // capacityStep = the global ceiling's OWN cadence (capacity_window_mins): where instant counted
+  // items seat and roll. Independent of prep — closes the "borrow the fastest prep" gap and the
+  // no-cooking-category collapse.
+  const capacityStep = Math.max(1, Math.round(capacityWindowMins))
 
   const fmt = (mins: number) => {
     const m = ((mins % 1440) + 1440) % 1440
     return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
   }
 
+  // Cooking concurrency intervals + per-deadline instant counted totals (placed after cooking).
+  const cookIntervals: CookInterval[] = []
+  const instantByDeadline: Array<{ deadline: number; count: number }> = []
+
   for (const [ps, units] of Object.entries(productionSlotUnits)) {
     const deadline = parseMins(ps) // bucket START = ready-by deadline (see reconciliation note)
+    let instantHere = 0
     for (const [catRaw, rawN] of Object.entries(units)) {
       const cat = catRaw.toLowerCase()
       const cfg = catConfigs[cat]
       const N = Number(rawN) || 0
       if (!cfg || N <= 0) continue
       if (!cfg.secs) {
-        // No prep cadence. Ceiling-only if the operator ticked counts_toward_capacity: the N
-        // instant items occupy the COLLECTION-ADJACENT window (deadline − step, the same window
-        // a 1-batch prep item collected here uses) and feed `total` for the shared ceiling —
-        // but seat NO backward windows and set NO batchByCat (no per-category batch rule, so
-        // they never self-red). Unticked instant categories are skipped entirely (today's behaviour).
-        if (cfg.countsToCapacity) {
-          const ws = deadline - step
-          const w = loadByStart.get(ws) ?? {}
-          w[cat] = (w[cat] || 0) + N
-          loadByStart.set(ws, w)
-        }
+        // No prep cadence. Counts toward the ceiling only if the operator ticked it — accumulated
+        // here and seated as zero-width concurrency points (capacity cadence) by placeInstantPoints
+        // below. No batchByCat (no per-category rule, never self-reds). Unticked instants: skipped.
+        if (cfg.countsToCapacity) instantHere += N
         continue
       }
       const batch = Math.max(1, cfg.batch)
@@ -459,8 +570,9 @@ export function projectBackwardOccupancy(
       if (earliestWindowMins < eventStartMins) {
         cantFit.push({ productionSlot: ps, cat, qty: N, earliestWindowMins, eventStartMins })
       }
-      // Seat batches backward: earliest windows full (batch), the window ADJACENT to
-      // collection (i = numWindows-1) holds the remainder N − batch*(numWindows-1) ∈ [1, batch].
+      // Seat batches backward on the PREP grid (UNCHANGED): earliest windows full (batch), the
+      // window ADJACENT to collection holds the remainder N − batch*(numWindows-1) ∈ [1, batch].
+      // Each window is ALSO a [S, S+prep) concurrency interval for the global sweep.
       for (let i = 0; i < numWindows; i++) {
         const startMins = deadline - (numWindows - i) * prepMins
         const isAdjacent = i === numWindows - 1
@@ -468,25 +580,34 @@ export function projectBackwardOccupancy(
         const w = loadByStart.get(startMins) ?? {}
         w[cat] = (w[cat] || 0) + items
         loadByStart.set(startMins, w)
+        cookIntervals.push({ startMins, endMins: startMins + prepMins, items })
       }
     }
+    if (instantHere > 0) instantByDeadline.push({ deadline, count: instantHere })
+  }
+
+  // Place EXISTING instant counted items as concurrency points, greedily backward against the fixed
+  // cooking load (and instants already placed) — deterministic deadline-asc order, the SAME
+  // placeInstantPoints rule fitOrderBackward applies to a new order's instants (the do-not-undo).
+  const intervals: CookInterval[] = [...cookIntervals]
+  instantByDeadline.sort((a, b) => a.deadline - b.deadline)
+  for (const { deadline, count } of instantByDeadline) {
+    const { points } = placeInstantPoints(count, deadline, intervals, kitchenCapacity, capacityStep, eventStartMins)
+    for (const p of points) intervals.push(p)
   }
 
   const windows: BackwardWindow[] = [...loadByStart.entries()]
     .sort((a, b) => a[0] - b[0])
     .map(([startMins, byCat]) => {
-      const total = Object.values(byCat).reduce((s, v) => s + v, 0)
       const remainingByCat: Record<string, number> = {}
-      // Tone — IDENTICAL rule to projectOvenOccupancy: per category full/over ⇒ red,
-      // partial ⇒ amber (worst wins, tie-break higher load); total >= ceiling ⇒ red.
+      // Per-category batch tone (PREP grid) — UNCHANGED: full/over ⇒ red, partial ⇒ amber
+      // (worst wins, tie-break higher load).
       let tone: SlotTone = 'green'
       let bound_by: string | null = null
       let bindRank = -1
       let bindUsed = -1
       for (const [cat, used] of Object.entries(byCat)) {
         const batch = batchByCat[cat]
-        // Ceiling-only categories (no-prep-ticked) have no batch rule → no per-category tone
-        // (they must NOT self-red "Sides X/X"); they still feed `total` for the global ceiling.
         if (batch == null) continue
         remainingByCat[cat] = batch - used
         const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
@@ -496,7 +617,11 @@ export function projectBackwardOccupancy(
           tone = t; bound_by = `${capWord(cat)} ${Math.round(used)}/${Math.round(batch)}`
         }
       }
-      if (kitchenCapacity != null && total >= kitchenCapacity - EPS) {
+      // Global ceiling for the no-basket display = EXACT concurrency at this window's instant
+      // (cooking spanning + instant points), not a per-window sum. Identical to the old per-window
+      // total when capacityStep == prep and nothing spans a boundary (today's state).
+      const conc = concurrencyAt(intervals, startMins)
+      if (kitchenCapacity != null && conc >= kitchenCapacity - EPS) {
         tone = 'red'; bound_by = 'global ceiling'
       }
       return {
@@ -504,9 +629,9 @@ export function projectBackwardOccupancy(
         start: fmt(startMins),
         beforeEventStart: startMins < eventStartMins,
         byCat,
-        total,
+        total: conc,
         remainingByCat,
-        remainingTotal: kitchenCapacity == null ? Infinity : kitchenCapacity - total,
+        remainingTotal: kitchenCapacity == null ? Infinity : kitchenCapacity - conc,
         tone,
         bound_by,
       }
@@ -514,7 +639,7 @@ export function projectBackwardOccupancy(
 
   const byStart = new Map<number, BackwardWindow>()
   for (const w of windows) byStart.set(w.startMins, w)
-  return { windows, byStart, cantFit, batchByCat }
+  return { windows, byStart, cantFit, batchByCat, intervals }
 }
 
 // ── Backward FIT check: can an order of `orderByCat` be placed at collection slot S? ──
@@ -533,16 +658,17 @@ export function fitOrderBackward(
   catConfigs: Record<string, CatConfig>,
   kitchenCapacity: number | null,
   eventStartMins: number,
+  capacityWindowMins: number = 5,
 ): { tone: SlotTone; bound_by: string | null; fits: boolean } {
-  // Build the order's own per-(windowStart, cat) load: window at S = remainder (i=0,
-  // adjacent to collection), earlier windows = full batch (mirrors projectBackwardOccupancy).
+  // Order's COOKING load on the PREP grid (drives per-category batch tones) + its concurrency
+  // intervals; counted-instant items are tallied for capacity-cadence placement below.
   const orderLoad = new Map<number, Record<string, number>>()
   const batchOf: Record<string, number> = {}
-  const step = backwardWindowStepMins(catConfigs)
-  // One pre-open batch is allowed: the kitchen may cook a SINGLE batch before event start
-  // (ready at open), so a window may extend at most one prep-interval before eventStart. An
-  // order fits the lead only if its EARLIEST required window starts ≥ eventStart − prep;
-  // needing two+ pre-open windows (e.g. >batch at the first slot) is insufficient lead.
+  const orderCookIntervals: CookInterval[] = []
+  let orderInstant = 0
+  const capacityStep = Math.max(1, Math.round(capacityWindowMins))
+  // One pre-open batch is allowed for COOKING lead: a window may extend at most one prep-interval
+  // before eventStart. (Instant lead is enforced by placeInstantPoints against eventStart.)
   let runsOffFront = false
   for (const [catRaw, rawM] of Object.entries(orderByCat)) {
     const cat = catRaw.toLowerCase()
@@ -550,15 +676,8 @@ export function fitOrderBackward(
     const M = Number(rawM) || 0
     if (!cfg || M <= 0) continue
     if (!cfg.secs) {
-      // No-prep-ticked (ceiling-only): the M instant items occupy the collection-adjacent
-      // window (slotMins − step) feeding ordTotal for the ceiling — no batchOf (no per-category
-      // check), no run-off-front (instant). Unticked instant items are skipped.
-      if (cfg.countsToCapacity) {
-        const ws = slotMins - step
-        const w = orderLoad.get(ws) ?? {}
-        w[cat] = (w[cat] || 0) + M
-        orderLoad.set(ws, w)
-      }
+      // Counted instant → seated as capacity-cadence concurrency points below; unticked: skipped.
+      if (cfg.countsToCapacity) orderInstant += M
       continue
     }
     const batch = Math.max(1, cfg.batch)
@@ -568,16 +687,14 @@ export function fitOrderBackward(
     // earliest required window-start = slotMins − nw*prep; allow one pre-open window.
     if (slotMins - nw * prep < eventStartMins - prep) runsOffFront = true
     for (let i = 0; i < nw; i++) {
-      // The order COOKS in the windows ENDING at the collection slot T: the latest/adjacent
-      // window is [T−prep, T) keyed T−prep (i=0), stepping back T−2prep, … T−nw*prep. This
-      // matches projectBackwardOccupancy's keying for a collection at T (it seats the cohort's
-      // latest window at deadline−prep). Using slotMins−i*prep (latest = T) was the off-by-one
-      // that blocked one slot too early. i=0 still holds the remainder (adjacent to collection).
+      // The order COOKS in the windows ENDING at the collection slot T: latest/adjacent window
+      // [T−prep, T) keyed T−prep (i=0), stepping back … T−nw*prep. Mirrors projectBackwardOccupancy.
       const ws = slotMins - (i + 1) * prep
       const items = i === 0 ? M - batch * (nw - 1) : batch
       const w = orderLoad.get(ws) ?? {}
       w[cat] = (w[cat] || 0) + items
       orderLoad.set(ws, w)
+      orderCookIntervals.push({ startMins: ws, endMins: ws + prep, items })
     }
   }
 
@@ -588,27 +705,43 @@ export function fitOrderBackward(
     const r = RANK[t]
     if (r > bindRank) { bindRank = r; tone = t; bound_by = t === 'green' ? null : label }
   }
-  // Insufficient lead (needs more than one pre-open window) ⇒ red, regardless of capacity.
+  // Insufficient COOKING lead (needs more than one pre-open window) ⇒ red, regardless of capacity.
   if (runsOffFront) consider('red', 'too soon (insufficient lead)')
+
+  // PER-CATEGORY batch tones (PREP grid) — UNCHANGED: existing per-cat load ⊕ order's per-cat load.
   for (const [ws, ord] of orderLoad) {
     const existing = back.byStart.get(ws)
-    let ordTotal = 0
     for (const [cat, add] of Object.entries(ord)) {
-      ordTotal += add
       const batch = batchOf[cat]
-      // Ceiling-only cat (no-prep-ticked): no per-category batch check — only feeds ordTotal
-      // for the global-ceiling check below.
       if (batch == null) continue
       const combined = (existing?.byCat[cat] ?? 0) + add
       const t: SlotTone = combined > batch + EPS ? 'red' : combined >= batch - EPS ? 'amber' : 'green'
       consider(t, `${capWord(cat)} ${Math.round(combined)}/${Math.round(batch)}`)
     }
-    if (kitchenCapacity != null) {
-      const combinedTotal = (existing?.total ?? 0) + ordTotal
-      const t: SlotTone = combinedTotal > kitchenCapacity + EPS ? 'red' : combinedTotal >= kitchenCapacity - EPS ? 'amber' : 'green'
-      consider(t, 'global ceiling')
+  }
+
+  // GLOBAL CEILING = EXACT sweep-line concurrency (the ONLY place it's judged). Cooking is fixed
+  // (existing ⊕ order intervals); if that alone peaks over the ceiling it's an unfixable collision
+  // ⇒ red. Otherwise greedily seat the order's counted-instant items as concurrency points on the
+  // capacity cadence — running off the event front (no headroom before open) ⇒ doesn't fit. Amber
+  // when the resulting peak sits exactly at the ceiling (parity with the old at-N amber).
+  if (kitchenCapacity != null) {
+    const realIntervals = [...back.intervals, ...orderCookIntervals]
+    const cookingPeak = maxConcurrentCount(realIntervals)
+    if (cookingPeak > kitchenCapacity + EPS) {
+      consider('red', 'global ceiling')
+    } else {
+      const { points, runsOffFront: instantOff } =
+        placeInstantPoints(orderInstant, slotMins, realIntervals, kitchenCapacity, capacityStep, eventStartMins)
+      if (instantOff) {
+        consider('red', 'global ceiling')
+      } else {
+        const peak = points.length ? maxConcurrentCount([...realIntervals, ...points]) : cookingPeak
+        if (peak >= kitchenCapacity - EPS) consider('amber', 'global ceiling')
+      }
     }
   }
+
   // fits derived from bindRank (number) — `tone` is closure-mutated, so a direct
   // `tone !== 'red'` would mis-narrow to the literal 'green'.
   return { tone, bound_by, fits: bindRank < RANK.red }
@@ -630,13 +763,14 @@ export function earliestBackwardFitSlot(
   eventStartMins: number,
   orderByCat: QtyByCat,
   fromMins: number = Number.NEGATIVE_INFINITY,
+  capacityWindowMins: number = 5,
 ): string | null {
-  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity)
+  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
   const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
   for (const t of sorted) {
     const m = parseMins(t.collection_time)
     if (m < fromMins) continue
-    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins).fits) {
+    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins).fits) {
       return t.collection_time
     }
   }

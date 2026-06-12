@@ -100,6 +100,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
   const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
+  const[capacityWindowMins,setCapacityWindowMins]=useState<number>(5)
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
@@ -152,7 +153,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editSlots,setEditSlots]=useState<Slot[]>([])
   // Engine inputs from /api/slots so the edit picker runs the SAME oven-occupancy
   // projection as Add Order (shared buildSlotIndicators) — not a count ratio.
-  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;windowSecs:number;eventStartMins:number}|null>(null)
+  const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;windowSecs:number;eventStartMins:number}|null>(null)
   const[editSlotsLoading,setEditSlotsLoading]=useState(false)
   const[editItems,setEditItems]=useState<BasketItem[]>([])
   const[editSlot,setEditSlot]=useState('')
@@ -281,6 +282,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Capacity card: single-source from the server (service-role van read). Guard on
       // !== undefined so a failed/partial response never wipes a good value.
       if(data.kitchenCapacity !== undefined) setKitchenCapacity(data.kitchenCapacity)
+      if(data.capacityWindowMins !== undefined) setCapacityWindowMins(data.capacityWindowMins ?? 5)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
       // Real van offline-protection default (Settings value) — feeds the toggle/label when
       // there's no event override. Without this, vanAutoPause stayed hardcoded false.
@@ -525,6 +527,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // Service-role write via /api/manage (same action the Manage page uses). The previous
     // anon supabaseBrowser.update on truck_vans was RLS-blocked and failed silently.
     await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
+    fetchAllRef.current() // re-sync from the authoritative server read
+  }
+
+  const saveCapacityWindow=async(value:number)=>{
+    if(!activeEvent?.van_id)return
+    setCapacityWindowMins(value) // optimistic
+    await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,capacity_window_mins:value})})
     fetchAllRef.current() // re-sync from the authoritative server read
   }
 
@@ -851,6 +860,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       editCapacityInputs.kitchenCapacity ?? null,
       editCapacityInputs.eventStartMins,
       categoryOrder,
+      editCapacityInputs.capacityWindowMins ?? 5,
     )
   }, [editCapacityInputs, editSlots, categoryConfigs, categoryOrder])
 
@@ -894,7 +904,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const aDt=resolveCollectionTime(a,activeEvent)?.getTime()??Number.POSITIVE_INFINITY
     const bDt=resolveCollectionTime(b,activeEvent)?.getTime()??Number.POSITIVE_INFINITY
     if(aDt!==bDt) return aDt-bDt
-    return a.order_key.localeCompare(b.order_key)
+    // Same collection time → first PLACED wins (creation order), not the random order_key UUID —
+    // otherwise a later order could jump ahead of an earlier one at the same time (looks like a bug).
+    return new Date(a.created_at).getTime()-new Date(b.created_at).getTime()
   }
   // Orders arrive already event-scoped from /api/dashboard (V6.4). Keep a strict
   // event_id match as a client-side safety net during the brief window between an
@@ -1122,7 +1134,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             })()}
             {showPrepList&&(()=>{
               const todayStr=localTodayIso() // LOCAL date (s.7) — pairs with local order-time batching
-              const BUFFER_SECS=120
+              // "Start by" = collection slot − cook time, with NO extra grace buffer (the old +2min
+              // padding made it read 11:53 for an 11:55 start, which confused operators). Removed.
+              const BUFFER_SECS=0
 
               // Get all active orders with slots, sorted by slot time
               const slottedOrders=eventOrders
@@ -1250,12 +1264,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
               // Build current prep map
               // Build ordered list of units in insertion order across orders, then by item position
-              // Sort orders by slot then ID, items keep their original order, expand each into units
+              // Sort orders by slot then CREATION ORDER (first placed first — same fairness as the
+              // order lists; not id.localeCompare, which mis-ranks "10" before "2" and ignores placement)
               const sortedBatch=[...currentBatch].sort((a,b)=>{
                 const aSlot=a.slot?parseInt(a.slot.replace(':','')):99999
                 const bSlot=b.slot?parseInt(b.slot.replace(':','')):99999
                 if(aSlot!==bSlot) return aSlot-bSlot
-                return a.id.localeCompare(b.id)
+                return new Date(a.created_at).getTime()-new Date(b.created_at).getTime()
               })
               type PrepUnit={name:string;orderId:string;unitIdx:number;cat:string;modLabel:string}
               const allUnits:PrepUnit[]=[]
@@ -1535,6 +1550,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       <option value="">No limit</option>
                       {Array.from({length:20},(_,i)=>i+1).map(n=>(
                         <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                      ))}
+                    </select>
+                    {/* The ceiling's OWN window cadence — how often the kitchen completes a cycle.
+                        Independent of any category's prep. Disabled until van + capacity are set. */}
+                    <span className="text-sm text-slate-500">every</span>
+                    <select
+                      value={capacityWindowMins}
+                      disabled={!activeEvent.van_id||kitchenCapacity==null}
+                      onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
+                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 w-28 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                      {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                        <option key={n} value={n}>{n} min</option>
                       ))}
                     </select>
                   </div>

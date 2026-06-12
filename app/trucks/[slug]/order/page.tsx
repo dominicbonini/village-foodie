@@ -201,7 +201,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [serverCatConfigs, setServerCatConfigs] = useState<Record<string,{secs:number;batch:number}>>({})
   // Backward-occupancy inputs from /api/slots — for the client-side basket-aware fit overlay
   // (hard-blocks a slot the customer's order can't fit; no override on the customer surface).
-  const [capacityInputs, setCapacityInputs] = useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;eventStartMins:number}|null>(null)
+  const [capacityInputs, setCapacityInputs] = useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;eventStartMins:number}|null>(null)
   const [notes, setNotes] = useState('')
 
   const selectedSlot = slotHour && slotMinute ? `${slotHour}:${slotMinute}` : ''
@@ -604,6 +604,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       })
     })
 
+    // Global-ceiling lead: COUNTED items (cooking + ticked-instant) need ceil(total / capacity)
+    // capacity windows, so the order can't be ready before (windows − 1) × capacityStep after it
+    // starts. This is the ONLY way counted-INSTANT items advance the estimate — they contribute
+    // nothing to the per-category prep loop below (secs 0). Mirrors the engine's capacity math so
+    // "Around HH:MM" tracks the placeable slot; backwardAsap stays authoritative when present.
+    let extraCeilingMins = 0
+    const cap = capacityInputs?.kitchenCapacity ?? null
+    const capStep = Math.max(1, Math.round(capacityInputs?.capacityWindowMins ?? 5))
+    if (cap != null && cap > 0 && hasItems) {
+      let totalCounted = 0
+      for (const [cat, qty] of Object.entries(newByCat)) {
+        const cfg = catConfigs[cat] as { secs: number; batch: number; countsToCapacity?: boolean } | undefined
+        if (!cfg) continue
+        if (cfg.secs || cfg.countsToCapacity) totalCounted += qty
+      }
+      extraCeilingMins = Math.max(0, Math.ceil(totalCounted / cap) - 1) * capStep
+    }
+
     let asapMins: number
 
     if (beforeEvent) {
@@ -624,11 +642,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         const mins = Math.ceil(Math.max(0, totalBatches - 1) * cfg.secs / 60)
         extraBatchMins = Math.max(extraBatchMins, mins)
       }
-      asapMins = eventStartMins + extraBatchMins + extraWait
+      asapMins = eventStartMins + Math.max(extraBatchMins, extraCeilingMins) + extraWait
     } else {
-      // During / after event: now + full prep time for all batches in queue
+      // During / after event: now + full prep time for all batches in queue (or the ceiling lead).
       const prepMins = Math.ceil(calcQueueAwareReadySecs(newByCat, queueByCat, catConfigs, 0) / 60)
-      asapMins = Math.max(eventStartMins, nowMins + prepMins + extraWait)
+      asapMins = Math.max(eventStartMins, nowMins + Math.max(prepMins, extraCeilingMins) + extraWait)
     }
 
     if (asapMins === eventStartMins && extraWait === 0) return event.start_time
@@ -638,7 +656,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     const m = roundedMins % 60
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
 
-  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs, truck, eventDateIso])
+  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs, truck, eventDateIso, capacityInputs])
 
   // Convert HH:MM to total minutes for comparison
   const toMins = (time: string) => {
@@ -669,9 +687,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       serverCatConfigs,
       capacityInputs.eventStartMins,
       capacityInputs.kitchenCapacity,
+      capacityInputs.capacityWindowMins ?? 5,
     )
     for (const s of availableSlots) {
-      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins)
+      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5)
       if (!fit.fits) out.add(s.collection_time)
     }
     return out
@@ -694,6 +713,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       capacityInputs.kitchenCapacity,
       capacityInputs.eventStartMins,
       basketByCat,
+      Number.NEGATIVE_INFINITY,
+      capacityInputs.capacityWindowMins ?? 5,
     )
   }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots])
 

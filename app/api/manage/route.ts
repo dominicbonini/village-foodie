@@ -644,7 +644,7 @@ export async function POST(req: NextRequest) {
   if (action === 'get_vans') {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, display_layout, split_screen, kitchen_capacity')
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, display_layout, split_screen, kitchen_capacity, capacity_window_mins')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
@@ -653,11 +653,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, show_cooking_step, kitchen_capacity } = body
+    const { vanId, autoPauseOnOffline, show_cooking_step, kitchen_capacity, capacity_window_mins } = body
     const updates: Record<string, unknown> = {}
     if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
     if (show_cooking_step !== undefined)  updates.show_cooking_step = show_cooking_step
     if (kitchen_capacity !== undefined)   updates.kitchen_capacity = kitchen_capacity
+    if (capacity_window_mins !== undefined) updates.capacity_window_mins = capacity_window_mins
     await supabase
       .from('truck_vans')
       .update(updates)

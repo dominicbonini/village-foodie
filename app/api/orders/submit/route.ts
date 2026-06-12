@@ -126,7 +126,7 @@ async function eventKitchenCapacity(
   truckId: string,
   eventDate: string,
   eventId: string | null,
-): Promise<{ kitchenCapacity: number | null; eventStartMins: number }> {
+): Promise<{ kitchenCapacity: number | null; capacityWindowMins: number; eventStartMins: number }> {
   // Resolve the SPECIFIC event by id (the order's actual event) so a multi-event-same-date
   // day reads the right van/capacity. Fall back to the date's first event only when no
   // event_id is available (warn).
@@ -155,15 +155,17 @@ async function eventKitchenCapacity(
     ev = data ?? null
   }
   let kitchenCapacity: number | null = null
+  let capacityWindowMins = 5
   if (ev?.van_id) {
     const { data: van } = await supabase
       .from('truck_vans')
-      .select('kitchen_capacity')
+      .select('kitchen_capacity, capacity_window_mins')
       .eq('id', ev.van_id)
       .single()
     kitchenCapacity = van?.kitchen_capacity ?? null
+    capacityWindowMins = van?.capacity_window_mins ?? 5
   }
-  return { kitchenCapacity, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0 }
+  return { kitchenCapacity, capacityWindowMins, eventStartMins: ev?.start_time ? timeToMins(String(ev.start_time)) : 0 }
 }
 
 /**
@@ -199,6 +201,7 @@ async function placeOrderInSlotLocked(
   intervalMins?: number,
   slotDurationMins?: number,
   kitchenCapacity?: number | null,
+  capacityWindowMins?: number,
 ): Promise<{ finalSlot: string | null; booked: boolean }> {
   // event_id scopes the production_slot_usage read/write so same-date events don't pool.
   {
@@ -246,12 +249,15 @@ async function placeOrderInSlotLocked(
     const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
     const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
 
-    // Instant-only order (no oven categories) → book at the start slot (no window model).
-    const hasOven = Object.keys(basketByCat).some(c => {
+    // Truly-uncounted order (no oven AND no ticked-instant categories) → book at the start slot
+    // (nothing participates in the concurrency ceiling). Counted-instant orders fall THROUGH to the
+    // backward-fit gate below so they're capacity-checked too (no oversell) — the engine seats their
+    // instant items as concurrency points on the capacity cadence.
+    const hasCounted = Object.keys(basketByCat).some(c => {
       const cfg = catConfigs[c.toLowerCase()]
-      return !!(cfg && cfg.secs)
+      return !!(cfg && (cfg.secs || cfg.countsToCapacity))
     })
-    if (!hasOven) {
+    if (!hasCounted) {
       await addOrderToProductionSlot(supabase, truckId, eventId, startSlot, orderLines, itemCatMap)
       return { finalSlot: startSlot, booked: true }
     }
@@ -264,7 +270,7 @@ async function placeOrderInSlotLocked(
     const fromMins = requestedSlot
       ? Math.max(timeToMins(startSlot), timeToMins(requestedSlot))
       : timeToMins(startSlot)
-    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins)
+    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5)
     if (!placement || timeToMins(placement) > eventEndMins) {
       // No fitting slot before event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }
@@ -590,7 +596,7 @@ export async function POST(req: NextRequest) {
       if (eventDate) {
         // Live kitchen_capacity (items) from the event's van — same source as the operator
         // traffic light, so customer placement and the dot agree on "full".
-        const { kitchenCapacity } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
+        const { kitchenCapacity, capacityWindowMins } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
         const claim = await placeOrderInSlotLocked(
           resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
           eventRow?.start_time ?? null,
@@ -598,6 +604,7 @@ export async function POST(req: NextRequest) {
           truck.collection_interval_mins ?? 0,
           truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
           kitchenCapacity,
+          capacityWindowMins,
         )
         const update: Record<string, unknown> = {}
         if (claim.booked && claim.finalSlot) {

@@ -26,7 +26,7 @@ interface Item { id: string; name: string; description: string | null; price: nu
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; kitchen_capacity: number | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -4193,7 +4193,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'kitchen_capacity',
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'kitchen_capacity' | 'capacity_window_mins',
     value: boolean | number | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
@@ -4891,6 +4891,19 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                     <option value="">No limit</option>
                     {Array.from({length:20},(_,i)=>i+1).map(n=>(
                       <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                    ))}
+                  </select>
+                  {/* The ceiling's OWN window cadence — how often the kitchen completes a cycle.
+                      Independent of any category's prep. Disabled until a capacity is set. */}
+                  <span className="text-sm text-slate-500">every</span>
+                  <select
+                    value={van.capacity_window_mins ?? 5}
+                    disabled={van.kitchen_capacity == null}
+                    onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
+                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-28 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50"
+                  >
+                    {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                      <option key={n} value={n}>{n} min</option>
                     ))}
                   </select>
                 </div>
