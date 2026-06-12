@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useMemo, useRef, use } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
@@ -134,6 +134,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // Non-destructive "just sold out" notice on a submit 409 (atomic stock guard) — keeps the
   // basket (capped to what's left) so the customer can review + re-submit. Customer hard stop.
   const [stockNotice, setStockNotice] = useState<string | null>(null)
+  // "Check again" in-place re-fetch state (pause banner) — never reloads, never clears the basket.
+  const [rechecking, setRechecking] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
@@ -336,34 +338,30 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [eventIdParam, events])
 
 
-  useEffect(() => {
-    console.log('[ORDER FORM] Fetching menu for slug:', slug)
-    // Scope deals + pause + ordering_available to the SELECTED event (cross-event fix): a
-    // customer viewing a FUTURE event reads THAT event's deals/pause, not the server's "live
-    // event" auto-detect. Refetches when the customer switches events. /api/events only
-    // returns confirmed/open events, so the menu route's status-gate never 404s here.
+  // Non-destructive menu re-fetch (truck.paused/pauseReason + menu) — reused by the initial load
+  // AND the pause banner's "Check again". Updates state in place; NEVER reloads, NEVER touches the
+  // basket. Scopes deals/pause/ordering_available to the SELECTED event (cross-event fix).
+  const refetchMenu = useCallback(async () => {
     const menuUrl = event?.id ? `/api/menu/${slug}?event_id=${event.id}` : `/api/menu/${slug}`
-    fetch(menuUrl)
-      .then(async r => {
-        if (!r.ok) {
-          const body = await r.json().catch(() => ({}))
-          console.error('[ORDER FORM] Menu API error:', r.status, body)
-          throw new Error(body.error || `HTTP ${r.status}`)
-        }
-        return r.json()
-      })
-      .then(data => {
-        console.log('[ORDER FORM] Menu API response:', data)
-        console.log('[ORDER FORM] Items count:', data.menu?.items?.length || 0)
-        setTruck(data.truck)
-        setMenu(data.menu)
-      })
-      .catch((err) => {
+    const r = await fetch(menuUrl, { cache: 'no-store' })
+    if (!r.ok) {
+      const body = await r.json().catch(() => ({}))
+      throw new Error(body.error || `HTTP ${r.status}`)
+    }
+    const data = await r.json()
+    setTruck(data.truck)
+    setMenu(data.menu)
+  }, [slug, event?.id])
+
+  useEffect(() => {
+    // Initial load: page-replacing error on failure (first paint has no basket to protect yet).
+    refetchMenu()
+      .catch((err: any) => {
         console.error('[ORDER FORM] Menu fetch error:', err?.message || err)
         setError('This truck is not currently taking orders.')
       })
       .finally(() => setLoading(false))
-  }, [slug, event?.id])
+  }, [refetchMenu])
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 
@@ -999,10 +997,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </p>
             </div>
             <button
-              onClick={() => window.location.reload()}
-              className="text-xs text-amber-700 font-medium underline flex-shrink-0 mt-0.5"
+              onClick={async () => { setRechecking(true); try { await refetchMenu() } catch { /* keep banner + basket */ } finally { setRechecking(false) } }}
+              disabled={rechecking}
+              className="text-xs text-amber-700 font-medium underline flex-shrink-0 mt-0.5 disabled:opacity-60"
             >
-              Check again
+              {rechecking ? 'Checking…' : 'Check again'}
             </button>
           </div>
         </div>
@@ -1280,7 +1279,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           </button>
                         ) : qty > 0 ? (
                           <>
-                            <QBtn onClick={() => removeItem(directEntry?.cartKey ?? makeCartKey(item.name, []))} label="−" />
+                            {/* Basket read-only while paused/closed: − and + both inert (basket stays visible). */}
+                            {isOrderingBlocked ? (
+                              <button disabled className="w-7 h-7 rounded-lg bg-slate-100 text-slate-300 font-black text-sm cursor-not-allowed">−</button>
+                            ) : (
+                              <QBtn onClick={() => removeItem(directEntry?.cartKey ?? makeCartKey(item.name, []))} label="−" />
+                            )}
                             <span className="w-5 text-center font-black text-slate-900 text-sm">{qty}</span>
                             {isOrderingBlocked || atStockLimit ? (
                               <button disabled className="w-7 h-7 rounded-lg bg-slate-100 text-slate-300 font-black text-sm cursor-not-allowed">+</button>
@@ -1307,9 +1311,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           return (
                             <div key={v.cartKey} className="flex items-center gap-2 bg-orange-50 rounded-xl px-3 py-2 border border-orange-100">
                               <div className="flex items-center gap-1 shrink-0">
-                                <button onClick={() => removeItem(v.cartKey)} className="w-6 h-6 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-100 text-sm leading-none">−</button>
+                                <button onClick={() => !isOrderingBlocked && removeItem(v.cartKey)} disabled={isOrderingBlocked} className="w-6 h-6 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-100 text-sm leading-none disabled:opacity-40">−</button>
                                 <span className="w-5 text-center font-black text-slate-900 text-sm">{v.quantity}</span>
-                                <button onClick={() => !atStockLimit && addItem(v.menuItem, v.modifiers, v.specialInstructions)} disabled={atStockLimit}
+                                <button onClick={() => !isOrderingBlocked && !atStockLimit && addItem(v.menuItem, v.modifiers, v.specialInstructions)} disabled={isOrderingBlocked || atStockLimit}
                                   className="w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center font-bold text-white hover:bg-orange-700 text-sm leading-none disabled:opacity-40">+</button>
                               </div>
                               <span className={`flex-1 text-xs truncate ${subLabel ? 'text-slate-600' : catAllowNotes ? 'text-slate-400 italic' : ''}`}>

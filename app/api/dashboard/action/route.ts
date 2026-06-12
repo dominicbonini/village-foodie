@@ -791,38 +791,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
-    // ── set_paused ───────────────────────────────────────────────────────────
+    // ── set_paused ── EVENT-scoped (truck_events), not truck/van ───────────────
     if (action === 'set_paused') {
-      const { paused_until, vanId } = body
+      const { paused_until, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
       const resuming = !paused_until // null/undefined ⇒ "Resume orders"
-      if (vanId) {
-        // Resume clears BOTH the manual AND offline van pauses (operator forcing orders back
-        // on). If still genuinely offline, the heartbeat-monitor re-applies online_paused_until
-        // on its next run; while the device beats, the heartbeat keeps it null. Pausing sets
-        // only paused_until (leaves any offline pause untouched).
-        const patch = resuming
-          ? { paused_until: null, online_paused_until: null }
-          : { paused_until }
-        await supabase.from('truck_vans').update(patch).eq('id', vanId).eq('truck_id', truck.id)
-        // Belt-and-braces: Resume = "take orders now", so also clear any TRUCK-level pause
-        // (the dashboard's paused state reads it too — a stuck trucks.paused_until would
-        // otherwise keep the dashboard paused with no clear path once the event has a van).
-        if (resuming) {
-          await supabase.from('trucks').update({ paused_until: null }).eq('id', truck.id)
-        }
-      } else {
-        await supabase.from('trucks').update({ paused_until: paused_until ?? null }).eq('id', truck.id)
-      }
+      // Resume = operator forcing orders back on for THIS event → clear both the manual pause and
+      // any offline auto-pause on the event. (If still genuinely offline, the heartbeat-monitor
+      // re-applies online_paused_until on its next run for the live event; the heartbeat clears it
+      // while the device beats.) Pause sets only paused_until, leaving any offline pause untouched.
+      const patch = resuming
+        ? { paused_until: null, online_paused_until: null }
+        : { paused_until }
+      await supabase.from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
       return NextResponse.json({ success: true })
     }
 
-    // ── set_extra_wait ────────────────────────────────────────────────────────
+    // ── set_extra_wait ── EVENT-scoped (truck_events), not trucks ──────────────
     if (action === 'set_extra_wait') {
+      const { eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
       const mins = parseInt(body.minutes) || 0
-      await supabase.from('trucks').update({
+      await supabase.from('truck_events').update({
         extra_wait_mins: mins,
         extra_wait_started_at: mins > 0 ? new Date().toISOString() : null,
-      }).eq('id', truck.id)
+      }).eq('id', eventId).eq('truck_id', truck.id)
       return NextResponse.json({ success: true })
     }
 

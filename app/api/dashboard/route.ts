@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date, van_id')
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, extra_wait_mins, extra_wait_started_at')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -240,12 +240,11 @@ export async function GET(req: NextRequest) {
   // setting and the cook step shows regardless of the toggle. Defaults off (matches the
   // Settings toggle's default) when the van has no value.
   let vanShowCookingStep: boolean = false
-  // The SELECTED event's van pause fields — the dashboard WRITES these (set_paused with vanId)
-  // but historically didn't read them, so it was blind to its own pause (showed not-paused →
-  // "Pause" not "Resume" → operator couldn't unpause). Return them so the client computes its
-  // paused state from the SAME fields the customer menu checks.
-  let vanPausedUntil: string | null = null
-  let vanOnlinePausedUntil: string | null = null
+  // Pause is now EVENT-scoped (truck_events). Sourced from the SELECTED event below and returned
+  // under these (legacy-named) keys so the client computes paused state from the SAME fields the
+  // customer menu checks. (Kept the key names to avoid churning the client read path.)
+  const eventPausedUntil: string | null = (selectedEvent as any)?.paused_until ?? null
+  const eventOnlinePausedUntil: string | null = (selectedEvent as any)?.online_paused_until ?? null
 
   try {
     // kitchen_capacity + name from the SELECTED event's van — the same event the
@@ -255,15 +254,13 @@ export async function GET(req: NextRequest) {
     if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity, name, auto_pause_on_offline, show_cooking_step, paused_until, online_paused_until')
+        .select('kitchen_capacity, name, auto_pause_on_offline, show_cooking_step')
         .eq('id', capacityEvent.van_id)
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
       activeVanName = van?.name ?? null
-      vanAutoPause = van?.auto_pause_on_offline ?? false
+      vanAutoPause = van?.auto_pause_on_offline ?? false   // van offline-protection DEFAULT (toggle label)
       vanShowCookingStep = van?.show_cooking_step ?? false
-      vanPausedUntil = van?.paused_until ?? null
-      vanOnlinePausedUntil = van?.online_paused_until ?? null
     }
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
@@ -314,9 +311,11 @@ export async function GET(req: NextRequest) {
       mode:        truck.mode,
       venue_name:  truck.venue_name,
       auto_accept:         truck.auto_accept ?? false,
-      paused_until:        truck.paused_until ?? null,
-      extra_wait_mins:     truck.extra_wait_mins ?? 0,
-      extra_wait_started_at: truck.extra_wait_started_at ?? null,
+      // Pause + extra-wait are EVENT-scoped now — sourced from the selected event, not the truck.
+      // (Legacy trucks.* columns left unread; the badge reads these via the response.)
+      paused_until:        null,
+      extra_wait_mins:     (selectedEvent as any)?.extra_wait_mins ?? 0,
+      extra_wait_started_at: (selectedEvent as any)?.extra_wait_started_at ?? null,
       kds_mode:            truck.kds_mode ?? false,
       crew_mode:           truck.crew_mode ?? 'solo',
       display_mode:        (truck.display_mode ?? 'list') as 'list' | 'grid',
@@ -339,8 +338,8 @@ export async function GET(req: NextRequest) {
     activeVanName,
     vanAutoPause,
     vanShowCookingStep,
-    vanPausedUntil,
-    vanOnlinePausedUntil,
+    vanPausedUntil: eventPausedUntil,            // event-scoped (key kept for the client)
+    vanOnlinePausedUntil: eventOnlinePausedUntil, // event-scoped (key kept for the client)
     orders:  orders || [],
     slots:   slotsWithCapacity,
     date,

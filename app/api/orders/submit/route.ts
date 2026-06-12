@@ -332,24 +332,21 @@ export async function POST(req: NextRequest) {
     // Use the actual truck UUID for all subsequent queries
     const resolvedTruckId = truck.id
 
-    // Pause guard — truck level
-    if (truck.paused_until && new Date(truck.paused_until) > new Date()) {
-      return NextResponse.json(
-        { error: 'Orders are currently paused', paused: true, reason: 'manual' },
-        { status: 423 }
-      )
-    }
+    // (Pause is EVENT-scoped — the per-event guard below reads truck_events.paused_until /
+    // online_paused_until. The old truck-level guard here was removed: nothing writes
+    // trucks.paused_until anymore, and a stale pre-migration value would have falsely 423'd
+    // every event truck-wide.)
 
     // Pause guard — van level. Resolve the order's event by its eventId (event-scoped, like the
     // customer menu) so the van pause is enforced for the ACTUAL event. The old date +
     // .maybeSingle() lookup returned null on multi-event-same-date days (>1 row) and silently
     // SKIPPED the entire van guard → manual/offline van pause not enforced → orders slipped
     // through. Fall back to the date lookup only when no eventId was sent.
-    let pauseEvent: { van_id: string | null; status: string | null } | null = null
+    let pauseEvent: { van_id: string | null; status: string | null; paused_until: string | null; online_paused_until: string | null } | null = null
     if (eventId) {
       const { data } = await supabase
         .from('truck_events')
-        .select('van_id, status')
+        .select('van_id, status, paused_until, online_paused_until')
         .eq('id', eventId)
         .eq('truck_id', resolvedTruckId)
         .maybeSingle()
@@ -358,7 +355,7 @@ export async function POST(req: NextRequest) {
       const pauseCheckDate = eventDate ?? new Date().toISOString().split('T')[0]
       const { data } = await supabase
         .from('truck_events')
-        .select('van_id, status')
+        .select('van_id, status, paused_until, online_paused_until')
         .eq('truck_id', resolvedTruckId)
         .eq('event_date', pauseCheckDate)
         .neq('status', 'cancelled')
@@ -374,19 +371,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (pauseEvent?.van_id) {
-      const { data: pauseVan } = await supabase
-        .from('truck_vans')
-        .select('paused_until, online_paused_until')
-        .eq('id', pauseEvent.van_id)
-        .single()
-
-      if (pauseVan) {
-        const offlinePaused = pauseVan.online_paused_until
-          ? new Date(pauseVan.online_paused_until) > new Date()
+    // EVENT-scoped pause: read THIS event's own pause fields (truck/van pause no longer consulted).
+    if (pauseEvent) {
+      {
+        const offlinePaused = pauseEvent.online_paused_until
+          ? new Date(pauseEvent.online_paused_until) > new Date()
           : false
-        const manualPaused = pauseVan.paused_until
-          ? new Date(pauseVan.paused_until) > new Date()
+        const manualPaused = pauseEvent.paused_until
+          ? new Date(pauseEvent.paused_until) > new Date()
           : false
 
         if (offlinePaused || manualPaused) {

@@ -290,6 +290,9 @@ export default function KdsPage() {
     fetchAllRef.current()
   }, [token, pin])
 
+  // Latest active-event id (assigned during render after activeEvent resolves below) so the pause/
+  // extra-wait callbacks — defined before activeEvent — can read the current id without a TDZ ref.
+  const activeEventIdRef = useRef<string | null>(null)
   const togglePause = useCallback(async () => {
     const isPaused = pausedUntil && new Date(pausedUntil) > new Date()
     if (!isPaused) {
@@ -303,7 +306,7 @@ export default function KdsPage() {
     const res = await fetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, pin, action: 'set_paused', paused_until, vanId: vanId || undefined }),
+      body: JSON.stringify({ token, pin, action: 'set_paused', paused_until, eventId: activeEventIdRef.current }),
     })
     const data = await res.json()
     if (data?.queued) {
@@ -311,14 +314,14 @@ export default function KdsPage() {
       return
     }
     fetchAllRef.current()
-  }, [token, pin, pausedUntil, vanId])
+  }, [token, pin, pausedUntil])
 
   const handleSetWait = useCallback(async (mins: number) => {
     setExtraWaitMins(mins)
     const res = await fetch('/api/dashboard/action', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, pin, action: 'set_extra_wait', minutes: mins }),
+      body: JSON.stringify({ token, pin, action: 'set_extra_wait', minutes: mins, eventId: activeEventIdRef.current }),
     })
     const data = await res.json()
     if (data?.queued) {
@@ -435,6 +438,7 @@ export default function KdsPage() {
       ?? todayEvents.find(e => e.status === 'confirmed')
       ?? todayEvents[0]
       ?? null)
+  activeEventIdRef.current = activeEvent?.id ?? null // keep the ref current for the pause/wait callbacks
   const recentlyClosed = !!(activeEvent?.status === 'closed' && activeEvent.closed_at && Date.now() - new Date(activeEvent.closed_at).getTime() < 10 * 60 * 1000)
 
   const isPaused = pausedUntil ? new Date(pausedUntil) > new Date() : false

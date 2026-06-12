@@ -190,50 +190,47 @@ export async function GET(
     })
   })
 
-  // Van-level pause check — extends truck-level pause state
-  let isPaused = truck.paused_until
-    ? new Date(truck.paused_until) > new Date()
-    : false
-  let pauseReason: 'manual' | 'offline' | null = isPaused ? 'manual' : null
+  // EVENT-scoped pause: read this event's own paused_until / online_paused_until (truck/van pause
+  // are no longer consulted — they bled across events). offline-protection effective = the event's
+  // override ?? the van's auto_pause_on_offline default. No live-gate: the write side only ever
+  // stamps the correct (live) event.
+  let isPaused = false
+  let pauseReason: 'manual' | 'offline' | null = null
+  // EVENT-scoped extra-wait (replaces truck.extra_wait_*). Captured here from the resolved event.
+  let eventExtraWaitMins = 0
+  let eventExtraWaitStartedAt: string | null = null
 
   if (effectiveEventId) {
-    const { data: eventVan } = await supabase
+    const { data: ev } = await supabase
       .from('truck_events')
-      .select('van_id')
+      .select('van_id, paused_until, online_paused_until, offline_protection_override, extra_wait_mins, extra_wait_started_at')
       .eq('id', effectiveEventId)
       .single()
 
-    if (eventVan?.van_id) {
-      const [{ data: van }, { data: eventOverrideRow }] = await Promise.all([
-        supabase
+    if (ev) {
+      eventExtraWaitMins = ev.extra_wait_mins ?? 0
+      eventExtraWaitStartedAt = ev.extra_wait_started_at ?? null
+      let vanAutoPause = false
+      if (ev.van_id) {
+        const { data: van } = await supabase
           .from('truck_vans')
-          .select('paused_until, online_paused_until, auto_pause_on_offline')
-          .eq('id', eventVan.van_id)
-          .single(),
-        supabase
-          .from('truck_events')
-          .select('offline_protection_override')
-          .eq('id', effectiveEventId)
-          .single(),
-      ])
-
-      if (van) {
-        const offlineProtectionEnabled =
-          eventOverrideRow?.offline_protection_override !== null &&
-          eventOverrideRow?.offline_protection_override !== undefined
-            ? eventOverrideRow.offline_protection_override
-            : (van.auto_pause_on_offline ?? false)
-
-        const manualPaused = van.paused_until
-          ? new Date(van.paused_until) > new Date()
-          : false
-        const offlinePaused = offlineProtectionEnabled && van.online_paused_until
-          ? new Date(van.online_paused_until) > new Date()
-          : false
-
-        if (offlinePaused) { isPaused = true; pauseReason = 'offline' }
-        if (manualPaused) { isPaused = true; pauseReason = 'manual' }
+          .select('auto_pause_on_offline')
+          .eq('id', ev.van_id)
+          .single()
+        vanAutoPause = van?.auto_pause_on_offline ?? false
       }
+      const offlineProtectionEnabled =
+        ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
+          ? ev.offline_protection_override
+          : vanAutoPause
+
+      const manualPaused = ev.paused_until ? new Date(ev.paused_until) > new Date() : false
+      const offlinePaused = offlineProtectionEnabled && ev.online_paused_until
+        ? new Date(ev.online_paused_until) > new Date()
+        : false
+
+      if (offlinePaused) { isPaused = true; pauseReason = 'offline' }
+      if (manualPaused) { isPaused = true; pauseReason = 'manual' }
     }
   }
 
@@ -363,8 +360,9 @@ export async function GET(
       paused: isPaused,
       pauseReason: pauseReason,
       extra_wait_mins: (() => {
-        const mins = truck.extra_wait_mins ?? 0
-        const startedAt = truck.extra_wait_started_at ?? null
+        // EVENT-scoped extra-wait (was truck.extra_wait_*).
+        const mins = eventExtraWaitMins
+        const startedAt = eventExtraWaitStartedAt
         if (!mins || !startedAt) return 0
         const elapsed = (Date.now() - new Date(startedAt).getTime()) / 60000
         return Math.max(0, Math.ceil(mins - elapsed))

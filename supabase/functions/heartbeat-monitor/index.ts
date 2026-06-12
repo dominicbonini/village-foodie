@@ -5,53 +5,73 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 )
 
+// Event LOCAL wall-clock is UK; the Deno runtime is UTC. Derive "now" in Europe/London so the
+// live-now window comparison is like-for-like (handles BST/GMT). Mirrors auto-event-scheduler.
+function londonNow(now: Date): { today: string; currentTime: string } {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(now)
+  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+  return {
+    today: `${get('year')}-${get('month')}-${get('day')}`,
+    currentTime: `${get('hour')}:${get('minute')}`, // HH:MM 00-23
+  }
+}
+
 Deno.serve(async () => {
   const STALE_THRESHOLD_SECONDS = 30
   const AUTO_PAUSE_DURATION_HOURS = 2
+  const now = new Date()
+  const staleThreshold = new Date(now.getTime() - STALE_THRESHOLD_SECONDS * 1000).toISOString()
+  const autoPauseUntil = new Date(now.getTime() + AUTO_PAUSE_DURATION_HOURS * 60 * 60 * 1000).toISOString()
+  const { today, currentTime } = londonNow(now)
 
-  const staleThreshold = new Date(
-    Date.now() - STALE_THRESHOLD_SECONDS * 1000
-  ).toISOString()
-
-  const autoPauseUntil = new Date(
-    Date.now() + AUTO_PAUSE_DURATION_HOURS * 60 * 60 * 1000
-  ).toISOString()
-
-  // Find vans that should be auto-paused:
-  // - auto_pause_on_offline is enabled
-  // - last_heartbeat_at is stale (or null with a recent created_at)
-  // - not already paused
+  // Stale active vans (heartbeat older than the threshold, or never sent). NOT pre-filtered by
+  // auto_pause_on_offline — effective offline-protection is decided PER live event below
+  // (event.offline_protection_override ?? van.auto_pause_on_offline).
   const { data: stalledVans, error } = await supabase
     .from('truck_vans')
-    .select('id, name, truck_id, last_heartbeat_at')
-    .eq('auto_pause_on_offline', true)
+    .select('id, name, auto_pause_on_offline, last_heartbeat_at')
     .eq('active', true)
     .or(`last_heartbeat_at.lt.${staleThreshold},last_heartbeat_at.is.null`)
-    .is('online_paused_until', null)
 
   if (error) {
     console.error('Heartbeat monitor query failed:', error.message)
     return new Response('error', { status: 500 })
   }
-
   if (!stalledVans || stalledVans.length === 0) {
-    return new Response(JSON.stringify({ paused: 0 }), {
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(JSON.stringify({ paused: 0 }), { headers: { 'Content-Type': 'application/json' } })
   }
 
-  // Auto-pause stalled vans
-  const vanIds = stalledVans.map(v => v.id)
-  await supabase
-    .from('truck_vans')
-    .update({ online_paused_until: autoPauseUntil })
-    .in('id', vanIds)
+  let pausedCount = 0
+  for (const van of stalledVans) {
+    // The LIVE-NOW event(s) on this van: today, not cancelled/closed, started and not yet ended.
+    // A future (not-yet-started) event must NOT be paused — that was the core cross-event bug.
+    const { data: liveEvents } = await supabase
+      .from('truck_events')
+      .select('id, online_paused_until, offline_protection_override')
+      .eq('van_id', van.id)
+      .eq('event_date', today)
+      .not('status', 'in', '("cancelled","closed")')
+      .lte('start_time', currentTime)
+      .gte('end_time', currentTime)
 
-  console.log(`Auto-paused ${stalledVans.length} van(s):`,
-    stalledVans.map(v => v.name).join(', '))
+    for (const ev of liveEvents || []) {
+      if (ev.online_paused_until) continue // already offline-paused — leave it
+      const effective = ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
+        ? ev.offline_protection_override
+        : (van.auto_pause_on_offline ?? false)
+      if (!effective) continue // offline protection off for this event → don't pause
+      const { error: updErr } = await supabase
+        .from('truck_events')
+        .update({ online_paused_until: autoPauseUntil })
+        .eq('id', ev.id)
+      if (updErr) console.error(`Auto-pause failed for event ${ev.id}:`, updErr.message)
+      else { pausedCount++; console.log(`Auto-paused event ${ev.id} (van ${van.name})`) }
+    }
+  }
 
-  return new Response(
-    JSON.stringify({ paused: stalledVans.length }),
-    { headers: { 'Content-Type': 'application/json' } }
-  )
+  return new Response(JSON.stringify({ paused: pausedCount }), { headers: { 'Content-Type': 'application/json' } })
 })

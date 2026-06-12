@@ -37,7 +37,7 @@ interface TruckRow {
 }
 
 async function resolveTruck(truckIdOrSlug: string): Promise<TruckRow | null> {
-  const cols = 'id, extra_wait_mins, extra_wait_started_at, collection_interval_mins, slot_duration_mins'
+  const cols = 'id, collection_interval_mins, slot_duration_mins' // extra-wait is now event-scoped
   const bySlug = await supabase.from('trucks').select(cols).eq('slug', truckIdOrSlug).single()
   if (bySlug.data) return bySlug.data as TruckRow
   const byId = await supabase.from('trucks').select(cols).eq('id', truckIdOrSlug).single()
@@ -63,18 +63,17 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
   }
   const truckId = truck.id
-  const extraWaitMins = effectiveExtraWaitMins(truck.extra_wait_mins ?? 0, truck.extra_wait_started_at ?? null)
 
   // Resolve THE event for this slot view (re-key fix): prefer the explicit event_id the
   // customer page passes (event.id). Fall back to the sole non-cancelled event on the
   // date — warning on an ambiguous date so a two-same-date-event truck doesn't project
   // the wrong event. The resolved id scopes the production-usage read below.
-  type EventRow = { id: string; start_time: string | null; end_time: string | null; van_id: string | null }
+  type EventRow = { id: string; start_time: string | null; end_time: string | null; van_id: string | null; extra_wait_mins: number | null; extra_wait_started_at: string | null }
   let todayEvent: EventRow | null = null
   if (eventIdParam) {
     const { data } = await supabase
       .from('truck_events')
-      .select('id, start_time, end_time, van_id')
+      .select('id, start_time, end_time, van_id, extra_wait_mins, extra_wait_started_at')
       .eq('truck_id', truckId)
       .eq('id', eventIdParam)
       .maybeSingle()
@@ -84,7 +83,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   if (!todayEvent) {
     const { data, count } = await supabase
       .from('truck_events')
-      .select('id, start_time, end_time, van_id', { count: 'exact' })
+      .select('id, start_time, end_time, van_id, extra_wait_mins, extra_wait_started_at', { count: 'exact' })
       .eq('truck_id', truckId)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -95,6 +94,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
       console.warn(`[slots] ${count} events on ${date} for truck ${truckId} and no event_id — using earliest (${todayEvent?.id})`)
     }
   }
+  // EVENT-scoped extra-wait (was truck.extra_wait_*).
+  const extraWaitMins = effectiveExtraWaitMins(todayEvent?.extra_wait_mins ?? 0, todayEvent?.extra_wait_started_at ?? null)
 
   // Queue read for queueByCat: scope to the SAME resolved event as the units read
   // below (getProductionSlotUnits(todayEvent.id)), never the date's pooled orders.
