@@ -507,7 +507,9 @@ function placeInstantPoints(
   let remaining = count
   let w = ws0
   while (remaining > 0) {
-    if (w < eventStartMins) return { points, runsOffFront: true }
+    // One pre-open window allowed (mirrors the cooking path's `eventStartMins - prep`): instant items
+    // may seat as early as one capacity window before open, so up to kitchenCapacity are ready at start.
+    if (w < eventStartMins - capacityStep) return { points, runsOffFront: true }
     const headroom = Math.max(0, kitchenCapacity - concurrencyAt(sofar, w))
     const place = Math.min(remaining, headroom)
     if (place > 0) {

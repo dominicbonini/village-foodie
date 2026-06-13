@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.7
+HatchGrab Engineering Reference Manual · V6.8
 
 **HatchGrab**
 
@@ -6,13 +6,22 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.7**
+**Version 6.8**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V6.8 — June 2026
+
+Capacity-engine completion + fixes session. Completed and corrected the V6.7 kitchen-capacity concurrency rebuild: restored the instant-category dot label (display-only), fixed the first-window pre-open lead for instant items, simplified the capacity description copy (pending), and logged three open issues. Built on V6.7 (`capacity_window_mins` van column + sweep-line concurrency ceiling). Key changes:
+
+- **Instant-category dot label restored (display-only).** The V6.7 rebuild dropped "Other N" from the operator dots (instant items moved out of `byCat` into anonymous concurrency points). Re-added as a DISPLAY-ONLY `byCat` tally in `projectBackwardOccupancy`'s instant branch — the sweep-line ceiling still reads `concurrencyAt(intervals)`, never `byCat`, so no double-count. See Section 6 / Section 10.
+- **Instant items get one pre-open window of lead.** `placeInstantPoints`' off-front check changed to `if (w < eventStartMins - capacityStep)` (was strict `< eventStartMins`), mirroring the cooking path's `- prep` allowance, so up to `kitchen_capacity` instant items are ready AT event start (1 item → start, not start+window). One line inside the shared helper → all three callers inherit it. See Section 6.
+- **KITCHEN_CAPACITY_DESC copy simplification PENDING** — the "5-minute window" hardcode is wrong post-V6.7 (the window is the configurable `capacity_window_mins`); copy to be shortened, wording not yet finalised. See Section 4 / Section 10.
+- **Three issues logged** — Choose-Time can't select the ASAP-equal time; WhatsApp item query falls back to the generic link; and the now-RESOLVED instant first-window lead. See Section 27.
 
 ## V6.7 — June 2026
 
@@ -885,6 +894,10 @@ In the Add Order panel, the ASAP collection time is the later of (now + prep) an
 
 > **LIVE-VERIFICATION PENDING (V6.7, folds into the Section 26/27 pre-trial click-through).** PRIORITY: an instant-only counted order over cap pends/bumps at SUBMIT (the bypass flip — silent-oversell path if wrong). Plus: 16 Other rolls ready time/picker; van window 10 + 8 pizzas reads over-capacity in the 10-min span; normal in-capacity event dots unchanged; "4 pizzas + 2 other / 3 other → 3 pizzas" holds; an unproducible-by-end order pends under the lock. tsc-clean ≠ done.
 
+> **INSTANT-CATEGORY DOT LABEL RESTORED (V6.8 — display-only).** The V6.7 concurrency rebuild relocated counted-instant items (e.g. Other) out of `byCat` into anonymous zero-width concurrency points, so the operator dot COMPOSITION label lost "Other N" (cooking cats kept their `byCat` entry, so Pizza still labelled). RESTORED as a DISPLAY-ONLY `byCat` tally written at `deadline − capacityStep` in `projectBackwardOccupancy`'s instant branch, ADDED alongside the unchanged `instantHere`/concurrency-points path. Safe because `byCat` is read only by display (composition label + `remainingByCat` + the cooking tone loop, which skips `batch==null` so instant cats never self-red); the sweep-line ceiling reads `concurrencyAt(intervals)`, NEVER `byCat` — so the instant item is counted once (as a point) and labelled separately, no double-count. Instant-only windows now create a `loadByStart` key so they emit a labelled `BackwardWindow`. Plain-count label ("Other 3" = 3 Other items in that window), not a ratio. NOTE: when `capacity_window_mins` ≠ a cooking category's prep, the instant tally sits on the capacity-grid window, which may render on a different dot than a co-collected cooking item — expected, given the decoupled cadence. See Section 10.
+
+> **INSTANT FIRST-WINDOW PRE-OPEN LEAD (V6.8 — DO-NOT-UNDO).** Instant counted items get ONE pre-open window of lead, mirroring the cooking path's `eventStartMins - prep` allowance. `placeInstantPoints`' off-front check is `if (w < eventStartMins - capacityStep)` (was strict `< eventStartMins`). So up to `kitchen_capacity` instant items are ready AT event start (1 item → start time, not start+window). Result at cap 6 / window 5 / empty 17:00 event: 1→17:00, 6→17:00, 7→17:05, 12→17:05, 13→17:10. The allowance lives INSIDE `placeInstantPoints` (the single shared helper) so `fitOrderBackward`, `projectBackwardOccupancy`, and the submit gate inherit it identically — NEVER add it in a caller (divergence → oversell). The sweep-line ceiling and per-window headroom check are unchanged; every window incl. the pre-open one is still capped at `kitchen_capacity`.
+
 ## ASAP cancellation cutoff (V6)
 
 For ASAP orders (null slot), the cancellation cutoff falls back to the event end_time. /api/orders/cancel joins truck_events!event_id (end_time) and computes effectiveSlot = order.slot ?? event.end_time ?? null; if neither is available the cutoff check is skipped.
@@ -1120,6 +1133,8 @@ Priority: (1) an event happening now today; (2) an upcoming event today; (3) the
 - **Customer order page** — NO traffic-light. Only cleanly-available slots are shown; full and too-soon slots are HIDDEN.
 
 > **PRECISE ITEMS-BASED DISPLAY (V6.4).** The dots are driven by the items-based oven-occupancy projection; kitchen_capacity counts ITEMS. RED reads just "Full"; AMBER reads the per-category count ("Pizza 2/4"); GREEN has no label. The leading "·" separator was removed. The internal `bound_by` reason is computed for diagnostics but not shown for red.
+
+> **CAPACITY COPY SIMPLIFICATION PENDING (V6.8).** The `KITCHEN_CAPACITY_DESC` copy (lib/kitchen-capacity.ts) is to be shortened to plainer English ("the most items you can make at once, across the categories you tick", one short example, "leave blank for no limit"). Exact wording not yet finalised — when set, update the string AND this manual reference together so the quoted copy doesn't drift. The old "5-minute window" hardcode in the copy is WRONG post-V6.7 (the window is the configurable `capacity_window_mins`).
 
 > **RULE — operator dots and customer availability use different reads.** The operator dots and ASAP placement run through `projectOvenOccupancy`. The legacy `getSlotIndicator` / `lib/slot-indicator.ts` and `buildSlotAvailability`'s indicator path now serve ONLY the customer available/unavailable flags. Candidates for removal post-trial (Section 27).
 
@@ -2058,6 +2073,8 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - **localhost-as-HatchGrab (V6.5)** — to test HatchGrab-only surfaces (operator events, the order buttons on the profile page, the visibility gate) locally, add a one-line `/etc/hosts` alias `127.0.0.1 hatchgrab.localhost` and browse **http://hatchgrab.localhost:3000**. Because both the server (Host header) and the client (`window.location.hostname`) run the same substring check and the browser sends the navigated hostname as the Host header, the two agree automatically and the whole app renders as HatchGrab — zero code change, zero production risk (no real visitor can present a `*.localhost` host). `localhost:3000` continues to render as Village Foodie, so both brands are testable side by side.
 
+> **REMINDER (V6.8) — test HatchGrab-only flows on a HatchGrab host.** Order buttons, the capacity engine, and operator events must be tested on **hatchgrab.com** or **hatchgrab.localhost:3000** — plain `localhost:3000` renders as Village Foodie and masks these paths (the substring host gate). A capacity bug that "doesn't reproduce on localhost" is usually this.
+
 - **Test Kitchen** test truck: dashboard_token test-abc123def456, **id `test-truck`, slug `test-kitchen`** (the public profile resolves by slug — `/trucks/test-kitchen`; `/trucks/test-truck` 404s, though the order page tolerates the id via a fallback). Contact dominicbonini@hotmail.com. As of V6.5 its discovery rows are `hg_only` (shows on hatchgrab.com, hidden on villagefoodie.co.uk) — there is no `trucks.is_test` column (Section 16).
 
 - iPad Air simulator for KDS; Safari responsive mode at tablet sizes; phone widths 375/414px. (V6.6 — the trial runs on web/tablet-browser; the native iPad app is post-trial, Section 11.)
@@ -2174,6 +2191,14 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+
+## Logged this session (V6.8)
+
+- **Choose Time can't select the ASAP-equal time** — at a slot where ASAP resolves to e.g. 13:30, picking 13:30 from the Choose Time dropdown reverts to "Choose time" (no selection sticks); other times select fine. Likely the dropdown filters strictly-after ASAP (`>`) rather than at-or-after (`>=`), excluding the ASAP slot itself, or a selection-handler collision with ASAP-already-selected state. Diagnose-first. UX-only (order still placeable via ASAP).
+- **WhatsApp item query falls back to generic link** — "Do you have pepperoni?" returned the bare menu-link reply instead of matching "Pepperoni Pizza". Should route to MENU_QUERY with fuzzy item-name matching. Likely tangled with the known unapplied `whatsapp_logs` migration + un-run four-bucket smoke tests (Section 20) — confirm the classifier is running on a complete setup before treating as a matching bug. Open question: desired response shape for a partial item-name query (e.g. "Yes — Pepperoni Pizza, £X, order here: [link]").
+- **Capacity first-window lead — RESOLVED this session** (Section 6 "Instant first-window pre-open lead"), was: 1 instant item bumped the start slot.
+
+> **LIVE-VERIFICATION PENDING (V6.7/V6.8 capacity engine)** — tsc-clean + trace-verified but NOT live-verified. Priority checks on hatchgrab.com: (a) over-cap instant-only order PENDS/bumps at SUBMIT, doesn't book the start slot (the `!hasOven`→`!hasCounted` bypass flip — silent-oversell path if wrong); (b) instant lead table 1→17:00, 7→17:05 (7 must NOT collapse to 17:00 — proves the window still caps at 6); (c) dots show "Other N" incl. an Other-only window; (d) van window 10 + 8 pizzas reads over-capacity in the 10-min span; (e) "4 pizzas + 2 other / 3 other → 3 pizzas" holds; (f) unproducible-by-end order pends under the lock. tsc-clean ≠ done.
 
 ## Critical — before trial
 
@@ -2473,4 +2498,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6.7
+HatchGrab Engineering Reference Manual · V6.8

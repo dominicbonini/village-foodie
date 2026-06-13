@@ -676,9 +676,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       const c = item?.category?.toLowerCase() || 'mains'
       m[c] = (m[c] || 0) + 1
     }))
-    console.log('[HOP1] basketByCat=', JSON.stringify(m),
-      'lines=', basket.map(b => ({ name: b.menuItem.name, category: b.menuItem.category })),
-      'catConfigKeys=', Object.keys(serverCatConfigs))
     return m
   }, [basket, appliedDeals, menu])
 
@@ -1440,7 +1437,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   <div className="flex-1">
                     {truck?.time_selection_enabled ? (() => {
                       const asapTime = backwardAsap || customerAsapTime || asapSlot || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
-                      const hasChosenTime = !asapChosen && selectedSlot && selectedSlot !== asapTime
+                      const hasChosenTime = !asapChosen && selectedSlot
 
                       return (
                         <div className="relative h-full">

@@ -122,19 +122,35 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   if (classification === 'MENU_QUERY') {
     const menuFallback = `Hey there 👋 You can check out our full menu here: ${orderUrl} — ${truckName} ${truckEmoji}`
     try {
-      const { data: items } = await supabase
+      // Availability uses the CANONICAL null-tolerant rule (`is_available !== false`) — the same as
+      // app/api/menu/[truckId]/route.ts and the dashboard. is_available is nullable; NULL = available,
+      // only explicit false excludes. A strict `.eq('is_available', true)` dropped NULL rows that are
+      // orderable on the customer page, falsely triggering the bare-link fallback. is_active stays in
+      // the query (soft-deleted items must never appear); select is_available for the JS filter.
+      // Category name comes from the menu_categories JOIN — menu_items_db has category_id (FK), NOT a
+      // bare `category` column. Mirrors app/api/menu/[truckId]/route.ts (:69 select, :305 name).
+      const { data: rows, error } = await supabase
         .from('menu_items_db')
-        .select('name, category, price')
+        .select('name, category_id, price, is_available, menu_categories!category_id(name)')
         .eq('truck_id', truckId)
         .eq('is_active', true)
-        .eq('is_available', true)
 
-      if (!items?.length) return { reply: menuFallback, classification: 'MENU_QUERY' }
+      // Do NOT swallow query errors (a bad column returns {data:null,error}, not a throw): surface it
+      // in the logs and fall back, so the next column/query mismatch is visible instead of looking
+      // like "no items". This is the structural guard that would have caught the `category` bug.
+      if (error) {
+        console.error('[whatsapp menu query]', error)
+        return { reply: menuFallback, classification: 'MENU_QUERY' }
+      }
 
-      // Group by category, find min price per category
+      const items = (rows ?? []).filter(i => i.is_available !== false)
+
+      if (!items.length) return { reply: menuFallback, classification: 'MENU_QUERY' }
+
+      // Group by category NAME (from the join), find min price per category
       const byCategory: Record<string, number[]> = {}
       for (const item of items) {
-        const cat = item.category || 'Other'
+        const cat = (item.menu_categories as any)?.name || 'Other'
         if (!byCategory[cat]) byCategory[cat] = []
         if (typeof item.price === 'number') byCategory[cat].push(item.price)
       }
