@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.8
+HatchGrab Engineering Reference Manual · V6.9
 
 **HatchGrab**
 
@@ -6,13 +6,17 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.8**
+**Version 6.9**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V6.9 — June 2026
+
+WhatsApp + capacity-fixes continuation. Tier-3 LLM menu answerer (free-prose, grounded, two safety guards); WhatsApp menu-read column bug fixed + error-swallowing lesson; capacity instant-label restored; capacity first-window pre-open lead; Choose Time ASAP-equal selection fixed. Logged: grounded-allergen answers as a post-trial feature (gated on data restructure); Gemini cost finding (negligible). All built tsc-clean; NONE live-verified.
 
 ## V6.8 — June 2026
 
@@ -1807,6 +1811,10 @@ lib/whatsapp-classifier.ts routes inbound messages into: **SPECIFIC_QUERY** (sch
 
 > **MENU_QUERY menu-read bug FIXED (V6.8).** MENU_QUERY returned the bare-link `menuFallback` instead of the menu summary because the query selected a non-existent column `category` on `menu_items_db` (the real column is `category_id`, FK to `menu_categories`). PostgREST returned `42703 undefined_column` → supabase-js `{ data: null, error }` → the code read only `data`, swallowing the error → indistinguishable from "no rows" → fallback. FIXED: (1) select `category_id` + `menu_categories!category_id(name)` join and read the category name from the join, mirroring `app/api/menu/[truckId]/route.ts`; (2) STOP swallowing the query error — destructure `error`, log it, fall back, so the next mismatch surfaces in function logs. **LESSON: a swallowed supabase-js error is indistinguishable from zero rows; always destructure and check `error`.** Two earlier wrong candidates (the `is_available` strict filter, and a truck-id mismatch) were eliminated by SQL (all items `is_available=true`; `whatsapp_sender` 447941042253 = `test-truck`) — the column error pre-empted both. The `is_available !== false` null-tolerant filter was also applied (correct for other trucks with NULL availability, though not this bug's cause). STILL OPEN (post-trial): per-item name matching ("pepperoni" → "Pepperoni Pizza") does not exist (category summary only); the truck-resolution-by-customer-sender-number model is unreviewed. See Section 27.
 
+## Tier-3 LLM menu answerer (V6.9 — free-prose, grounded, two safety guards)
+
+> **Built V6.9, tsc-clean, NOT live-verified.** MENU_QUERY now answers in free prose grounded in the live menu, replacing the fixed category summary. Flow (`lib/whatsapp-classifier.ts`): build the deterministic summary first (the fail-safe target) → **[1] pre-LLM ALLERGEN GUARD** — a broad case/punctuation-normalised stem/substring matcher (`allerg`, `dairy`, `vegan`, `free from`, `gf`/`df` whole-token, etc.) that DELIBERATELY over-triggers (a false positive = a safe redirect; a miss = the LLM answering a safety question with no data); on hit, return the fixed allergen redirect and the LLM is NEVER called → **[2] payload** = name/category/price/availability only → **[3] `callGemini` temp 0.2 with an 8s `AbortController` timeout** (`callGemini` gained an optional `timeoutMs`; existing callers unchanged) → **[4] PRICE VALIDATION** — every £ figure in the reply must exist in the payload's price set, else reject → **[5]** a valid + non-empty reply is returned, else `deterministicReply`; any throw/timeout/empty → `deterministicReply`. Prompt rules: answer ONLY from the payload, quote prices verbatim, "we don't have that" for absent items, REDIRECT (not guess) for ungroundable attribute questions (spicy/veggie/ingredients), never invent. Sounds like the owner; NO body disclaimer. +1 Gemini call per MENU_QUERY only. The ALLERGEN_QUERY branch is unchanged (now shares the redirect string via a single `allergenRedirect` helper). DECISION: an AI/auto-reply disclaimer is DEFERRED pending a check of Meta's current business-messaging disclosure rules. UPGRADE PATH: the payload reads menu fields generically, so future menu attributes (veggie/spicy flags) flow through to richer grounded answers with no answerer rework.
+
 ## Event lookup
 
 Queries truck_events for the truck (resolved by whatsapp_sender), confirmed/open/unconfirmed, from today forward. Be generous. Inject an explicit DATE REFERENCE mapping and label events (TODAY)/(TOMORROW)/(IN 2 DAYS). Include town.
@@ -1844,6 +1852,10 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 ## Honest comparison rule
 
 > **RULE** — Be transparent about all costs. "Hatches Up is 4.5% all in. We are £29/month plus 0.99% plus card processing. Above ~£1,750/month online orders we are cheaper, and you get features they do not have." Lead with features; price closes. Migration pitch: "Currently on Hatches Up? Switch and get 3 months free on any tier."
+
+## Gemini / API cost — negligible (V6.9)
+
+> **FINDING (V6.9)** — `gemini-2.5-flash` WhatsApp replies cost ~$0.0007/message (~300–500 input + ~200 output tokens at $0.30/$2.50 per 1M). Do NOT re-tier features (e.g. moving Messenger/Insta to Max) for API cost — the cost is rounding-error. Deterministic-first routing for simple queries (e.g. schedule) is worth doing for LATENCY/SAFETY, not cost.
 
 # 22. Development process
 
@@ -2194,6 +2206,15 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## Logged this session (V6.9)
+
+- **Choose Time ASAP-equal selection — FIXED V6.9.** Picking the time equal to ASAP reverted to "Choose time" due to a `selectedSlot !== asapTime` conjunct in `hasChosenTime`; removed so the equal pick sticks (ASAP deselects, explicit slot submitted). Live-pending.
+- **Capacity instant dot label — FIXED V6.8** (display-only `byCat` tally; see Section 6).
+- **Capacity first-window pre-open lead — FIXED V6.8** (`placeInstantPoints` off-front allowance; see Section 6).
+- **Grounded allergen answers — POST-TRIAL, gated on a data restructure.** Letting the WhatsApp LLM answer allergen questions is UNSAFE today and stays on refuse-and-redirect. Audit findings: per-item `menu_items_db.allergens` (string[]) exists but is optional/unvalidated and defaults to `[]` — so empty is AMBIGUOUS ("confirmed none" vs "never entered"), which forbids absence answers ("no nuts listed" ≠ "nut-free"). The truck-level allergen upload (`trucks.allergen_info_url` + `allergen_info_text`, migration `20260526`) stores an opaque PDF/image + one free-text blob — NOT machine-readable per-item; and `process-allergens` DOES extract structured `contains[]`/`may_contain[]`/`free_from[]` but DISCARDS them at save (only flattened text persists). PREREQUISITES before any grounded allergen answer: (1) persist the structured extraction to columns instead of flattening; (2) make per-item allergen entry required + add an explicit "confirmed none" state distinct from NULL; (3) only then feed confirmed data to the LLM (reading back the operator's legal declaration, not guessing). LESSON (recurring this session): absence of data is not data.
+
+> **LIVE-VERIFICATION PENDING (V6.9, pre-trial click-through — Section 26).** SIX customer-facing changes built tsc-clean, ZERO live-verified — next session should be live-testing, not building. Priority order: (1) capacity submit-bypass — an over-cap order PENDS at submit, not booked at start [silent-oversell path]; (2) capacity instant lead table 1→17:00, 7→17:05 [7 must NOT collapse to 17:00]; (3) instant dot label "Other N" incl. an Other-only window; (4) Choose Time ASAP-equal sticks; (5) WhatsApp menu summary returns (not the bare link); (6) WhatsApp tier-3 ADVERSARIAL set: "do you have pepperoni" → answers, "do you have a kebab" → "we don't have that", "is the pepperoni pizza gluten free" → allergen redirect (must NOT reach the LLM), forced error → degrades to summary. Test on hatchgrab.com (or hatchgrab.localhost). tsc-clean ≠ done.
+
 ## Logged this session (V6.8)
 
 - **Choose Time can't select the ASAP-equal time** — at a slot where ASAP resolves to e.g. 13:30, picking 13:30 from the Choose Time dropdown reverts to "Choose time" (no selection sticks); other times select fine. Likely the dropdown filters strictly-after ASAP (`>`) rather than at-or-after (`>=`), excluding the ASAP slot itself, or a selection-handler collision with ASAP-already-selected state. Diagnose-first. UX-only (order still placeable via ASAP).
@@ -2325,6 +2346,8 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 - slot_capacity.max_orders → max_batches rename.
 
 - is_instant boolean on menu_categories — to make zero-prep items explicit rather than inferred from prep_secs.
+
+- Per-item spice level (LOGGED, post-trial enhancement): optional 1-3 scale (mild/medium/hot) per menu item, for trucks that want it. SCHEMA: nullable spice_level column on menu_items_db (smallint 1-3, NULL = not set / not applicable). CRITICAL modelling rule (the allergen lesson, lower stakes): NULL means ABSENT, never 'mild/level 0' — a drink/salad with no spice level shows no chilli indicator and the AI says nothing about spice; an unset item likewise. Do not let NULL collapse to a value. UI: optional field in the menu editor, off by default; a chilli indicator on the customer menu only when set; invisible for trucks that don't use it. AI BENEFIT: once it's a field, the tier-3 WhatsApp answerer's payload gains spice, so 'is the X spicy?' becomes a GROUNDED answer instead of the current redirect — this is the first use of the answerer's generic-field upgrade path (payload reads menu fields generically, so adding the column flows through with no answerer rework). Build: column + menu-editor input + customer-menu display + add to the menu API select + add to the tier-3 payload + update the prompt's 'ungroundable attribute → redirect' rule to ALLOW spice when present. Not a fix, not trial-blocking.
 
 - Companies House registration for HatchGrab.
 
@@ -2500,4 +2523,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6.8
+HatchGrab Engineering Reference Manual · V6.9

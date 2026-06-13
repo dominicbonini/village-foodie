@@ -31,6 +31,13 @@ interface ClassifierParams {
   scheduleUrl: string
   events: TruckEvent[]
   menuItems?: MenuItem[]
+  // FIRST-message vs FOLLOW-UP greeting toggle. A human doesn't re-greet every message, so when
+  // this sender has messaged recently we drop the "Hey there 👋" opener from every reply path.
+  // DORMANT today: the webhook is stateless per message and has no per-sender history until the
+  // whatsapp_logs prod migration is applied, so callers pass false and behaviour is unchanged.
+  // LATER (one-query add): SELECT whatsapp_logs WHERE customer_number=$from AND truck_id=$id AND
+  // created_at > now()-interval '4 hours' LIMIT 1 → pass its existence as isFollowUp.
+  isFollowUp?: boolean
 }
 
 function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
@@ -79,10 +86,16 @@ async function callGemini(prompt: string, temperature: number, timeoutMs?: numbe
   }
 }
 
+// The single greeting opener, used by EVERY reply path (literals + both LLM prompts) so it can
+// be turned on/off in ONE place via isFollowUp. greetingPrefix prepends it to literal strings;
+// greetingInstruction tells the LLM prompts whether to open with it. See generateWhatsAppReply.
+const GREETING = 'Hey there 👋'
+
 // Single source for the allergen redirect — reused by the ALLERGEN_QUERY branch AND the
 // tier-3 menu-answerer's pre-LLM safety guard, so the wording can never drift between them.
-function allergenRedirect(truckName: string, truckEmoji: string, orderUrl: string): string {
-  return `Hey there 👋 You can see our full menu and allergen information here: ${orderUrl} — ${truckName} ${truckEmoji}`
+// greetingPrefix is '' on a follow-up, `${GREETING} ` on a first message.
+function allergenRedirect(truckName: string, truckEmoji: string, orderUrl: string, greetingPrefix: string): string {
+  return `${greetingPrefix}You can see our full menu and allergen information here: ${orderUrl} — ${truckName} ${truckEmoji}`
 }
 
 // Broad, deliberately over-triggering allergen/dietary-safety matcher. Normalises case,
@@ -112,7 +125,15 @@ export interface WhatsAppReplyResult {
 }
 
 export async function generateWhatsAppReply(params: ClassifierParams): Promise<WhatsAppReplyResult> {
-  const { truckName, truckEmoji, truckId, customerMessage, events, scheduleUrl, orderUrl } = params
+  const { truckName, truckEmoji, truckId, customerMessage, events, scheduleUrl, orderUrl, isFollowUp = false } = params
+
+  // Greeting toggle, computed ONCE and threaded everywhere (no scattered conditionals).
+  // greetingPrefix → literal replies (menuFallback, deterministicReply, allergenRedirect,
+  // specificFallback); greetingInstruction → the two LLM prompts (tier-3 MENU + SPECIFIC_QUERY).
+  const greetingPrefix = isFollowUp ? '' : `${GREETING} `
+  const greetingInstruction = isFollowUp
+    ? 'Do NOT open with a greeting; start directly with the answer.'
+    : `Open with exactly: "${GREETING}"`
 
   // Step 1: classify — ALLERGEN_QUERY listed before MENU_QUERY so allergen+food messages
   // route to the safety-first bucket rather than the general menu bucket.
@@ -157,7 +178,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
 
   // ── MENU_QUERY ─────────────────────────────────────────────────────────────
   if (classification === 'MENU_QUERY') {
-    const menuFallback = `Hey there 👋 You can check out our full menu here: ${orderUrl} — ${truckName} ${truckEmoji}`
+    const menuFallback = `${greetingPrefix}You can check out our full menu here: ${orderUrl} — ${truckName} ${truckEmoji}`
     try {
       // Availability uses the CANONICAL null-tolerant rule (`is_available !== false`) — the same as
       // app/api/menu/[truckId]/route.ts and the dashboard. is_available is nullable; NULL = available,
@@ -206,7 +227,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
 
       // Deterministic category summary — kept as the fail-safe target for EVERY tier-3 path
       // below (timeout / throw / empty / blocked / price-validation fail all land here).
-      const deterministicReply = `Hey there 👋 We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`
+      const deterministicReply = `${greetingPrefix}We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`
 
       // ── Tier-3: grounded free-prose answer ──────────────────────────────────────────────
       // Replaces ONLY the success reply. The two safety guards (allergen redirect + price
@@ -217,7 +238,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
         //    MENU (e.g. "is the pepperoni pizza gluten free?"). If it matches we redirect with
         //    the SAME fixed allergen string and never call the LLM.
         if (mentionsAllergen(customerMessage)) {
-          return { reply: allergenRedirect(truckName, truckEmoji, orderUrl), classification: 'MENU_QUERY' }
+          return { reply: allergenRedirect(truckName, truckEmoji, orderUrl, greetingPrefix), classification: 'MENU_QUERY' }
         }
 
         // 2) PAYLOAD — built from items[] (already filtered is_available !== false, so
@@ -237,6 +258,7 @@ ${JSON.stringify(menuPayload, null, 2)}
 Customer message: "${customerMessage}"
 
 Rules (follow exactly — same discipline as "never make up events"):
+- ${greetingInstruction}
 - Answer ONLY using items in the MENU above. Everything listed is available to order now.
 - Quote prices EXACTLY as written in the MENU. If an item's price is null, do not state a price — point them to the order link instead.
 - If they ask about an item that is NOT in the MENU, say we don't have it and point them to the order link.
@@ -284,7 +306,7 @@ Rules (follow exactly — same discipline as "never make up events"):
   // emoji once at the end; link always included.
   if (classification === 'ALLERGEN_QUERY') {
     return {
-      reply: allergenRedirect(truckName, truckEmoji, orderUrl),
+      reply: allergenRedirect(truckName, truckEmoji, orderUrl, greetingPrefix),
       classification: 'ALLERGEN_QUERY',
     }
   }
@@ -316,7 +338,7 @@ ${formattedEvents.length > 0 ? formattedEvents.join('\n') : 'No upcoming events.
 Customer message: "${customerMessage}"
 
 Instructions:
-- Open with exactly: "Hey there 👋"
+- ${greetingInstruction}
 - Do NOT use any food emoji in the greeting or body. The ONLY food emoji is ${truckEmoji}, used once at the very end in the sign-off.
 - Match the customer's date reference (tomorrow, Friday, tonight, this week etc) using the DATE REFERENCE above
 - If they ask about a day by name (e.g. "Friday"), look up the exact date from DATE REFERENCE
@@ -329,7 +351,7 @@ Instructions:
 - Sign off as: ${truckName} ${truckEmoji}
 - Never mention Village Foodie or any platform name. Never make up events.`
 
-  const specificFallback = `Hey there 👋 Check out our latest schedule here: ${scheduleUrl}\n\n${truckName} ${truckEmoji}`
+  const specificFallback = `${greetingPrefix}Check out our latest schedule here: ${scheduleUrl}\n\n${truckName} ${truckEmoji}`
 
   try {
     const reply = await callGemini(replyPrompt, 0.4)

@@ -80,6 +80,9 @@ export async function POST(req: NextRequest) {
       events:          events ?? [],
       scheduleUrl:     truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
       orderUrl:        truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
+      // DORMANT until whatsapp_logs is live in prod (then: existence check → isFollowUp). False
+      // today, so every reply greets exactly as before.
+      isFollowUp:      false,
     })
 
     console.log('[WA webhook] classification:', classification, 'reply:', reply)
