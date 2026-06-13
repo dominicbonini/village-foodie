@@ -556,10 +556,21 @@ export function projectBackwardOccupancy(
       const N = Number(rawN) || 0
       if (!cfg || N <= 0) continue
       if (!cfg.secs) {
-        // No prep cadence. Counts toward the ceiling only if the operator ticked it — accumulated
-        // here and seated as zero-width concurrency points (capacity cadence) by placeInstantPoints
-        // below. No batchByCat (no per-category rule, never self-reds). Unticked instants: skipped.
-        if (cfg.countsToCapacity) instantHere += N
+        // No prep cadence. Counts toward the ceiling only if the operator ticked it.
+        if (cfg.countsToCapacity) {
+          instantHere += N                          // CEILING path — feeds the concurrency points / sweep (UNCHANGED).
+          // DISPLAY-ONLY byCat tally so the operator dot composition label shows "Other N" again
+          // (the V6.7 rebuild relocated instant load to anonymous concurrency points and dropped it
+          // from byCat). byCat is read ONLY by the composition label, remainingByCat, and the cooking
+          // tone loop (which `continue`s on batch==null below, so instant cats still never self-red);
+          // it is NEVER read by the ceiling, which uses concurrencyAt(intervals,…). So this cannot
+          // double-count. Seated at the collection-adjacent CAPACITY window (deadline − capacityStep),
+          // a key the window builder emits. No batchByCat → no per-category denominator/tone.
+          const ws = deadline - capacityStep
+          const w = loadByStart.get(ws) ?? {}
+          w[cat] = (w[cat] || 0) + N
+          loadByStart.set(ws, w)
+        }
         continue
       }
       const batch = Math.max(1, cfg.batch)

@@ -676,6 +676,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       const c = item?.category?.toLowerCase() || 'mains'
       m[c] = (m[c] || 0) + 1
     }))
+    console.log('[HOP1] basketByCat=', JSON.stringify(m),
+      'lines=', basket.map(b => ({ name: b.menuItem.name, category: b.menuItem.category })),
+      'catConfigKeys=', Object.keys(serverCatConfigs))
     return m
   }, [basket, appliedDeals, menu])
 
