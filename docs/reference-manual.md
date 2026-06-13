@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V6.9
+HatchGrab Engineering Reference Manual · V7.0
 
 **HatchGrab**
 
@@ -6,13 +6,17 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 6.9**
+**Version 7.0**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V7.0 — June 2026
+
+Operator-path + capacity-correctness + offline-protection session. Unified operator/customer capacity inputs (catConfigs DRY); fixed instant-point tone under-colouring and the first-order slot-usage double-count; added durable offline-pause marker + reconnect notification; made rebuild fail loudly. Large set of logged post-trial design items. Most fixes tsc-clean, NOT live-verified.
 
 ## V6.9 — June 2026
 
@@ -902,6 +906,24 @@ In the Add Order panel, the ASAP collection time is the later of (now + prep) an
 
 > **INSTANT FIRST-WINDOW PRE-OPEN LEAD (V6.8 — DO-NOT-UNDO).** Instant counted items get ONE pre-open window of lead, mirroring the cooking path's `eventStartMins - prep` allowance. `placeInstantPoints`' off-front check is `if (w < eventStartMins - capacityStep)` (was strict `< eventStartMins`). So up to `kitchen_capacity` instant items are ready AT event start (1 item → start time, not start+window). Result at cap 6 / window 5 / empty 17:00 event: 1→17:00, 6→17:00, 7→17:05, 12→17:05, 13→17:10. The allowance lives INSIDE `placeInstantPoints` (the single shared helper) so `fitOrderBackward`, `projectBackwardOccupancy`, and the submit gate inherit it identically — NEVER add it in a caller (divergence → oversell). The sweep-line ceiling and per-window headroom check are unchanged; every window incl. the pre-open one is still capped at `kitchen_capacity`.
 
+### Operator-path catConfigs DRY unification (V7.0)
+
+> **FIXED (V7.0).** The operator surfaces (AddOrderPanel Add Order, dashboard Edit Order) previously fed the engine a reconstructed `categoryConfigs` (from `/api/menu`) lacking `countsToCapacity`, so instant items never counted toward the ceiling on the OPERATOR path (worked on the customer path only). FIXED: both operator surfaces now consume the server's complete `catConfigs` from their existing `/api/slots` fetch (`serverCatConfigs` / `editServerCatConfigs`), byte-identical to the customer path. Closes the blast radius: earliest-fit, slot dots/tones, AND the edit picker all under-counted instant items from the same root. **DRY PRINCIPLE (confirmed intent): capacity MATH and inputs are identical across customer and operator; the ONLY operator/customer difference is presentation** (operator sees all slots + traffic-light tones + override; customer sees available-only). The flag-less `categoryConfigs` is KEPT for non-engine prep/display reads (`.secs`/`.batch` only — `calcQueueAwareReadySecs`, kitchen/assembly split, dot labels) because it carries live operator prep-edits; no engine call reads it. See Section 10.
+
+### Instant-point tone under-colouring FIXED (V7.0 — display-only)
+
+> **FIXED (V7.0).** `projectBackwardOccupancy` built its per-window tone list from `loadByStart`, but spilled instant concurrency points were pushed to `intervals` (ceiling) without creating a `loadByStart` key — so a window holding ONLY spilled instant points (e.g. 11 anchovies spilling to a backward window at cap) got NO tone computed and the dot defaulted to green despite being at the ceiling. FIXED: each placed instant point's window-start is now guaranteed a `loadByStart` key (`if (!loadByStart.has(p.startMins)) loadByStart.set(p.startMins, {})`) so the existing `concurrencyAt`→tone loop colours it. **DISPLAY-ONLY** (`fitOrderBackward` reads `back.intervals` which already contained the points → subsequent fits were already correctly gated; this only fixes the dot tone). The single-window instant LABEL (`deadline − capacityStep`) was kept as-is in this fix.
+
+### OPEN — instant LABEL should spread per-window (decision pending, NOT YET BUILT)
+
+> **OPEN (V7.0).** The instant-item dot LABEL is stamped on a single window (`deadline − capacityStep`) while cooking labels spread per cooking-window. After the tone fix (above), tone and label DISAGREE for instant items (tone spreads, label bunches). **Agreed direction (Dominic):** the label should spread per-window like cooking batches — the capacity window has duration+count exactly like a category has prep+batch, so instant items should display per-window uniformly. `placeInstantPoints`' returned points carry per-window counts (`p.items`) directly, so the fix is to write each window's point-count into that window's `byCat` instead of dumping N on one window (REPLACE the single-window stamp, not add). **OPEN DECISION before building:** spread only genuinely `countsToCapacity` categories (e.g. anchovies), keeping forced-for-display-only categories (e.g. Drinks, force-counted in the physical re-projection pass) single-window — vs spread everything. The physical re-projection (`slot-display.ts`) forces all no-prep cats `countsToCapacity` for the label, so naive spreading would smear Drinks across windows and could misalign label vs tone. Also a `runsOffFront` edge: spread shows only placed count; single-window showed full N. NOT YET BUILT.
+
+### production_slot_usage maintenance — first-order double-count + silent rebuild no-op FIXED (V7.0)
+
+> **BUG 1 (confirmed by SQL — one pizza order recorded as `pizza:2`).** The FIRST order of an empty window double-counted. Submit's fit-check `getProductionSlotUnits` read an empty table, lazily rebuilt from `orders` (already including the just-inserted order) AND PERSISTED it; `addOrderToProductionSlot` then read the now-non-empty table, its reseed skip-guard didn't fire, and it merged on top → 2. Triggers only on the first order of an event/window (later orders merge once, correct). FIXED: read-only reseed — `readProductionSlotUnits` gained `persistReseed` (default true); pure reads (`getProductionSlotUnits`) pass false so the fit-check no longer writes; `addOrderToProductionSlot` keeps persist and is the sole authoritative write. `reseeded` now means `didPersist` (zero-count guard: `reseeded` ⟺ it wrote). Submit holds the per-event lock across fit→write so the gap is race-free. NOT the modifier (the parse provably never expands modifiers — that was a red herring; "first order of the window" was the real trigger).
+
+> **BUG 2 (why the reconcile silently failed).** `rebuildProductionSlotUsage` early-returned with only a `console.warn` on a DELETE error, leaving stale rows while the caller counted success → "ran, still 2" masquerade. FIXED: now THROWS on delete/query/per-event-write errors (`syncProductionSlotUsage` returns its upsert error); message includes truckId/eventDate/event id. CAVEAT: a zero-row-matched delete (event_date mismatch — stored `production_slot_usage.event_date` ≠ the event's current date) does NOT error, so it'd still no-op silently — if a rebuild reports ok but the row stays stale, check for that data condition. LESSON (recurring): a swallowed/absent error is indistinguishable from "nothing to do" — surface it. Both bugs: OVER-count → false-full (slots look fuller than reality, turn away fittable orders), NOT oversell. Bug 1 fired on every event = systematic, operator-facing. See Section 15.
+
 ## ASAP cancellation cutoff (V6)
 
 For ASAP orders (null slot), the cancellation cutoff falls back to the event end_time. /api/orders/cancel joins truck_events!event_id (end_time) and computes effectiveSlot = order.slot ?? event.end_time ?? null; if neither is available the cutoff check is skipped.
@@ -1229,6 +1251,10 @@ The toggle uses the unified control styling: w-11 h-6 track, bg-teal-500 when on
 ### Prominent in-banner Resume (V6.6)
 
 > **RULE (V6.6)** — the offline-paused banner on the dashboard carries a prominent inline "Resume orders" button that clears BOTH `paused_until` and `online_paused_until` on the active event (the same resume as the ··· menu), with an optimistic local clear so ordering resumes immediately. It shows "If your connection is unstable, orders may pause again" copy for the OFFLINE reason only (a manual pause won't re-pause itself). Primary recovery remains auto-clear-on-heartbeat; Resume is the manual override for stuck/false-positive pauses. Honest behaviour: if the device is genuinely still offline, the monitor re-pauses the live event within ~30s — correct, not a bug.
+
+### Durable offline-pause marker + reconnect notification (V7.0 — NEEDS DEPLOY)
+
+> **NEW (V7.0).** Offline-pause was invisible — operators couldn't tell it fired. NEW: `heartbeat-monitor` stamps `last_offline_pause_at` (new nullable `truck_events` column, migration `20260613_offline_pause_marker.sql`) in the SAME update as `online_paused_until`; the heartbeat reconnect-clear nulls only `online_paused_until`, leaving the marker DURABLE. The dashboard fires a one-time acknowledge popup ("Orders were paused while your device was offline. Customer orders are active again now.") when it sees a `last_offline_pause_at` newer than the localStorage ack (`hg_offline_pause_ack_<eventId>`); per-device toggle (default ON, localStorage `hg_offline_pause_notice`). Manual pauses never trigger it (only the monitor writes the marker). **DEPLOY REQUIRED before it works live:** (a) apply `20260613_offline_pause_marker.sql` + `notify pgrst`; (b) REDEPLOY the `heartbeat-monitor` edge function (pg_cron runs the deployed version). Until both, the column stays null and the popup never fires (fails safe).
 
 ## Wake lock and screen-on (V4)
 
@@ -2206,6 +2232,17 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## Logged this session (V7.0)
+
+- **LIVE-REDEFINITION (status-driven "live")**: redefine "live" from the scheduled clock window (start≤now≤end) to operator action (`status='open'`+`opened_at` = started; `status='closed'`+`closed_at` = finished); published times become display-only. Repoint `heartbeat-monitor` (key off `status='open'` instead of the clock window — excludes future not-yet-started events by construction = keeps the over-pause fix, AND protects a started event past its published end = closes the offline-protection gap), the customer `/api/events` feed (expose `status`+`opened_at`, currently stripped), and the ~3 "live" label computations (`isEventLiveNow`, `isEventLive`). Signal already EXISTS (`auto-event-scheduler` + Start/Finish buttons stamp it); this is a redefinition, not a lifecycle build. GREEN-LIT by cron health (`heartbeat-monitor` every 30s + `auto-event-scheduler` every 60s both confirmed succeeding in `cron.job_run_details` — Vault-secret regression NOT recurred). Inherits cron reliability (the "auto open/close not firing" backlog item is the same crons — server cron confirmed healthy).
+- **OFFLINE-PROTECTION future-event gap (now addressed BY the live-redefinition)**: a future open event accepted pre-orders but was never offline-paused because the monitor's live-now gate only paused today+within-window events. Confirmed root via audit. The status-driven redefinition closes this.
+- **CROSS-VAN heartbeat leak (multi-van trucks only)**: the no-vanId operator-dashboard heartbeat (Path A, `app/api/heartbeat`) stamps `last_heartbeat_at` AND clears `online_paused_until` for ALL the truck's active vans, not just the heartbeating one. So van A's dashboard keeps van B looking online and a reconnect on A clears B's offline pause. KDS (`kds_token`) and van-pinned dashboards (`?van_id=`) are correctly isolated. Monitor read/pause side is fully per-van isolated. Fix: scope Path A to the present van, or have the operator dashboard always carry a `van_id`. Not first-trial-blocking (one van).
+- **PHONE-BACKGROUNDING false pause**: a backgrounded/locked phone stops heartbeating and looks offline → monitor may pause when the operator just glanced at another app. No full software fix (a locked phone can't ping); answer is visibility-detection tuning + operator EDUCATION (let them knowingly disable protection with a clear notice). Design + UX, post-trial.
+- **OPERATOR FAQ/HELP section**: draft once the trial feature set is frozen and behaviours are live-verified (the manual is the raw material; needs translating to operator-facing plain English). Near-end task.
+- (carried) WhatsApp grounded-allergen answers (gated on allergen-data restructure); WhatsApp greeting follow-up detection (gated on `whatsapp_logs`); per-item spice level.
+
+> **LIVE-VERIFICATION PENDING (V7.0 — the testing backlog, Section 26).** tsc-clean, NOT live-verified. Priority: (1) slot-usage BUG 1 — first order of a fresh event/window records `{pizza:1}` not 2; second order → 2; (2) reconcile — re-run backfill on a drifted event, expect recompute + refreshed `updated_at`, OR a surfaced failure message (if still stale with no error → event_date-mismatch data condition); (3) capacity submit-bypass over-cap order PENDS at submit (silent-oversell guard — still unwatched); (4) operator capacity path 6→17:00 / 7→17:05 matching customer + dots colour for instant load; (5) instant-point tone — the 2-pizza+11-anchovy case: 17:05 dot RED (reads at-cap 17:00 window), 17:10 RED, label correct; (6) offline-pause notification — AFTER migration applied + monitor redeployed: close all screens → reconnect → popup once, ack prevents re-fire, manual pause doesn't trigger; (7) WhatsApp tier-3 adversarial set; (8) greeting consistency. Confirmed working live this session: time-select ASAP-equal, WhatsApp menu+tier-3, mobile schedule + event-card layout.
+
 ## Logged this session (V6.9)
 
 - **Choose Time ASAP-equal selection — FIXED V6.9.** Picking the time equal to ASAP reverted to "Choose time" due to a `selectedSlot !== asapTime` conjunct in `hasChosenTime`; removed so the equal pick sticks (ASAP deselects, explicit slot submitted). Live-pending.
@@ -2523,4 +2560,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V6.9
+HatchGrab Engineering Reference Manual · V7.0
