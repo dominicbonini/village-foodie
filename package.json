@@ -38,6 +38,7 @@
     "rrule": "^2.8.1"
   },
   "devDependencies": {
+    "@anthropic-ai/claude-code": "^2.1.177",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.6",

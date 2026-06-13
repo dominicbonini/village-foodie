@@ -56,17 +56,54 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
 
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`
 
-async function callGemini(prompt: string, temperature: number): Promise<string> {
-  const res = await fetch(GEMINI_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature }
+// timeoutMs is optional so existing callers are unchanged; when set, an AbortController
+// aborts the fetch so a hung Gemini call degrades to the caller's fallback instead of
+// stalling the (Meta-retried) webhook.
+async function callGemini(prompt: string, temperature: number, timeoutMs?: number): Promise<string> {
+  const controller = timeoutMs ? new AbortController() : undefined
+  const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : undefined
+  try {
+    const res = await fetch(GEMINI_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature }
+      }),
+      signal: controller?.signal,
     })
-  })
-  const data = await res.json()
-  return (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim()
+    const data = await res.json()
+    return (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim()
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
+}
+
+// Single source for the allergen redirect — reused by the ALLERGEN_QUERY branch AND the
+// tier-3 menu-answerer's pre-LLM safety guard, so the wording can never drift between them.
+function allergenRedirect(truckName: string, truckEmoji: string, orderUrl: string): string {
+  return `Hey there 👋 You can see our full menu and allergen information here: ${orderUrl} — ${truckName} ${truckEmoji}`
+}
+
+// Broad, deliberately over-triggering allergen/dietary-safety matcher. Normalises case,
+// punctuation and whitespace, then does substring/stem matching. A false positive just
+// redirects safely to the allergen page; a miss would let the menu LLM answer a safety
+// question with no allergen data — so we err hard toward redirecting.
+const ALLERGEN_STEMS = [
+  'allerg', 'intoleran', 'gluten', 'coeliac', 'celiac', 'dairy', 'lactose',
+  'nut', 'peanut', 'almond', 'cashew', 'soy', 'soya', 'egg', 'milk', 'wheat',
+  'sesame', 'shellfish', 'fish', 'crustacean', 'mollusc', 'vegan',
+  'free from', 'contain', 'ingredient', 'suitable for',
+]
+// Short ambiguous abbreviations matched as whole tokens only (substring would hit words
+// like "handful"/"bagful"). gf = gluten free, df = dairy free.
+const ALLERGEN_TOKENS = ['gf', 'df']
+
+function mentionsAllergen(message: string): boolean {
+  const normalised = ` ${message.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
+  if (ALLERGEN_STEMS.some(stem => normalised.includes(stem))) return true
+  const tokens = normalised.trim().split(' ')
+  return ALLERGEN_TOKENS.some(tok => tokens.includes(tok))
 }
 
 export interface WhatsAppReplyResult {
@@ -167,9 +204,71 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
           ? `${parts[0]} and ${parts[1]}`
           : `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`
 
-      return {
-        reply: `Hey there 👋 We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`,
-        classification: 'MENU_QUERY',
+      // Deterministic category summary — kept as the fail-safe target for EVERY tier-3 path
+      // below (timeout / throw / empty / blocked / price-validation fail all land here).
+      const deterministicReply = `Hey there 👋 We've got ${menuSummary}. Check out the full menu and order ahead here: ${orderUrl} — ${truckName} ${truckEmoji}`
+
+      // ── Tier-3: grounded free-prose answer ──────────────────────────────────────────────
+      // Replaces ONLY the success reply. The two safety guards (allergen redirect + price
+      // validation) are NOT optional — this is a customer-facing AI reply with safety stakes.
+      try {
+        // 1) ALLERGEN GUARD (pre-LLM, safety-critical). Belt-and-braces with the classifier's
+        //    own ALLERGEN bucket: catches allergen-adjacent messages that still classified as
+        //    MENU (e.g. "is the pepperoni pizza gluten free?"). If it matches we redirect with
+        //    the SAME fixed allergen string and never call the LLM.
+        if (mentionsAllergen(customerMessage)) {
+          return { reply: allergenRedirect(truckName, truckEmoji, orderUrl), classification: 'MENU_QUERY' }
+        }
+
+        // 2) PAYLOAD — built from items[] (already filtered is_available !== false, so
+        //    everything here is orderable right now). Fields read generically so adding menu
+        //    columns later flows through. price pre-formatted so the model quotes it verbatim.
+        const menuPayload = items.map(i => ({
+          name: i.name,
+          category: (i.menu_categories as any)?.name || 'Other',
+          price: typeof i.price === 'number' ? `£${i.price.toFixed(2)}` : null,
+        }))
+
+        const menuAnswerPrompt = `You are the owner of ${truckName} ${truckEmoji}, a food truck, replying to a customer's WhatsApp message about your menu.
+
+MENU (JSON — your ONLY source of truth; every item listed is available to order right now):
+${JSON.stringify(menuPayload, null, 2)}
+
+Customer message: "${customerMessage}"
+
+Rules (follow exactly — same discipline as "never make up events"):
+- Answer ONLY using items in the MENU above. Everything listed is available to order now.
+- Quote prices EXACTLY as written in the MENU. If an item's price is null, do not state a price — point them to the order link instead.
+- If they ask about an item that is NOT in the MENU, say we don't have it and point them to the order link.
+- If they ask about an attribute you do NOT have data for (spicy, vegetarian, vegan, size, ingredients, what's on it), do NOT guess — briefly say the full details are on the menu and give the order link. The ONLY facts you have are each item's name, category, price and that it is available.
+- If they ask about allergens or ingredients for dietary-safety reasons, say you can't confirm that here and point them to the menu/allergen page.
+- NEVER invent items, prices, sizes, ingredients, or dietary/allergen claims.
+- Sound like the owner: warm and brief (1-3 sentences). No "I am an AI" line, no disclaimers.
+- End with the order link: ${orderUrl}
+- Sign off exactly as: — ${truckName} ${truckEmoji}`
+
+        // 3) LLM CALL — reuse callGemini, low temp, 8s AbortController timeout.
+        const llmReply = await callGemini(menuAnswerPrompt, 0.2, 8000)
+
+        // 4) PRICE VALIDATION — every £ figure in the reply must exist in the payload's price
+        //    set (compared numerically so £12, £12.5 and £12.50 all normalise to 12.00/12.50).
+        //    Any stray figure ⇒ treat the whole reply as a hallucination. Cheap, no extra call.
+        const allowedPrices = new Set(
+          items.filter(i => typeof i.price === 'number').map(i => (i.price as number).toFixed(2))
+        )
+        const quotedPrices = (llmReply.match(/£\s?\d+(?:\.\d{1,2})?/g) ?? []).map(p =>
+          parseFloat(p.replace(/[£\s]/g, '')).toFixed(2)
+        )
+        const pricesValid = quotedPrices.every(p => allowedPrices.has(p))
+
+        // 5) RETURN the LLM answer only if non-empty AND price-clean; otherwise fail safe.
+        if (llmReply && pricesValid) {
+          return { reply: llmReply, classification: 'MENU_QUERY' }
+        }
+        return { reply: deterministicReply, classification: 'MENU_QUERY' }
+      } catch {
+        // ANY throw/timeout/abort in the tier-3 section → deterministic summary, never silence.
+        return { reply: deterministicReply, classification: 'MENU_QUERY' }
       }
     } catch {
       return { reply: menuFallback, classification: 'MENU_QUERY' }
@@ -185,7 +284,7 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   // emoji once at the end; link always included.
   if (classification === 'ALLERGEN_QUERY') {
     return {
-      reply: `Hey there 👋 You can see our full menu and allergen information here: ${orderUrl} — ${truckName} ${truckEmoji}`,
+      reply: allergenRedirect(truckName, truckEmoji, orderUrl),
       classification: 'ALLERGEN_QUERY',
     }
   }
