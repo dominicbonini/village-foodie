@@ -154,6 +154,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Engine inputs from /api/slots so the edit picker runs the SAME oven-occupancy
   // projection as Add Order (shared buildSlotIndicators) — not a count ratio.
   const[editCapacityInputs,setEditCapacityInputs]=useState<{productionSlotUnits:Record<string,Record<string,number>>;kitchenCapacity:number|null;capacityWindowMins?:number;windowSecs:number;eventStartMins:number}|null>(null)
+  // Server catConfigs (with countsToCapacity) for the edited order's event — fed to the edit
+  // picker's buildSlotIndicators instead of the flag-less `categoryConfigs`, so instant items
+  // count on the edit path too. Same source/shape as Add Order's serverCatConfigs.
+  const[editServerCatConfigs,setEditServerCatConfigs]=useState<Record<string,{secs:number;batch:number}>>({})
   const[editSlotsLoading,setEditSlotsLoading]=useState(false)
   const[editItems,setEditItems]=useState<BasketItem[]>([])
   const[editSlot,setEditSlot]=useState('')
@@ -661,7 +665,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // The route resolves the event window from event_id and floors against localTodayIso(),
   // so a future-dated order shows its full in-window list (no today wall-clock floor).
   const fetchEditSlots=async(order:Order)=>{
-    if(!truck?.id){setEditSlots([]);setEditCapacityInputs(null);return}
+    if(!truck?.id){setEditSlots([]);setEditCapacityInputs(null);setEditServerCatConfigs({});return}
     setEditSlotsLoading(true)
     try{
       const p=new URLSearchParams()
@@ -671,12 +675,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const data=await res.json()
       setEditSlots(data.slots||[])
       setEditCapacityInputs(data.capacityInputs??null)
-    }catch{setEditSlots([]);setEditCapacityInputs(null)}
+      setEditServerCatConfigs(data.catConfigs||{})
+    }catch{setEditSlots([]);setEditCapacityInputs(null);setEditServerCatConfigs({})}
     finally{setEditSlotsLoading(false)}
   }
   const startEdit=(order:Order)=>{
     setEditingOrder(order)
-    setEditSlots([]); setEditCapacityInputs(null); fetchEditSlots(order)
+    setEditSlots([]); setEditCapacityInputs(null); setEditServerCatConfigs({}); fetchEditSlots(order)
     setEditItems(order.items.map(i=>({...i,cartKey:makeCartKey(i.name,i.modifiers||[],i.specialInstructions)})))
     setEditDeals((order.deals||[]).map(d=>({name:d.name,slots:d.slots,slotModifiers:d.slotModifiers||{},slotNotes:d.slotNotes||{},isNew:false})))
     setEditSlot(order.slot||'')
@@ -856,13 +861,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return buildSlotIndicators(
       editSlots,
       editCapacityInputs.productionSlotUnits || {},
-      categoryConfigs,
+      editServerCatConfigs,
       editCapacityInputs.kitchenCapacity ?? null,
       editCapacityInputs.eventStartMins,
       categoryOrder,
       editCapacityInputs.capacityWindowMins ?? 5,
     )
-  }, [editCapacityInputs, editSlots, categoryConfigs, categoryOrder])
+  }, [editCapacityInputs, editSlots, editServerCatConfigs, categoryOrder])
 
   // Sold counts are event-scoped (V6.4): refetch Menu & Stock whenever the resolved
   // stockEvent changes (single-source resolution above) so each event shows only its

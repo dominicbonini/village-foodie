@@ -134,6 +134,12 @@ export function AddOrderPanel({
     nowMins: number
     windowSecs: number
   } | null>(null)
+  // Server catConfigs from /api/slots — the SAME complete object the customer page feeds the
+  // engine. It carries countsToCapacity (mapped from counts_toward_capacity at /api/slots:155);
+  // the flag-less `categoryConfigs` prop does NOT, which is why instant items never counted on
+  // the operator path. Typed {secs,batch} (countsToCapacity is optional on CatConfig and read at
+  // runtime), identical to the customer page's serverCatConfigs.
+  const [serverCatConfigs, setServerCatConfigs] = useState<Record<string, { secs: number; batch: number }>>({})
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
   const [eventsLoading, setEventsLoading] = useState(false)
@@ -226,13 +232,13 @@ export function AddOrderPanel({
     return buildSlotIndicators(
       manualSlots,
       capacityInputs.productionSlotUnits || {},
-      categoryConfigs,
+      serverCatConfigs,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.eventStartMins,
       categoryOrder,
       capacityInputs.capacityWindowMins ?? 5,
     )
-  }, [capacityInputs, manualSlots, categoryConfigs, categoryOrder])
+  }, [capacityInputs, manualSlots, serverCatConfigs, categoryOrder])
 
   const slotIndicatorFor = (s: Slot): SlotIndicator =>
     slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', occ: null }
@@ -249,7 +255,7 @@ export function AddOrderPanel({
     const fitTime = earliestBackwardFitSlot(
       manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
       capacityInputs.productionSlotUnits || {},
-      categoryConfigs,
+      serverCatConfigs,
       capacityInputs.kitchenCapacity ?? null,
       capacityInputs.eventStartMins,
       basketByCat,
@@ -258,7 +264,7 @@ export function AddOrderPanel({
     )
     const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
     return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
-  }, [manualSlots, capacityInputs, categoryConfigs, basketByCat, manualAsapSlot])
+  }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot])
 
   // "Ready around" MIRRORS the ASAP dropdown: source the sub-label's "around HH:MM" + "~N mins"
   // from adjustedAsapSlot — the SAME backward-fit collection slot the dropdown shows, whose
@@ -336,7 +342,8 @@ export function AddOrderPanel({
       setManualSlots(data.slots || [])
       setApiQueueByCat(data.queueByCat || {})
       setCapacityInputs(data.capacityInputs ?? null)
-    } catch { setManualSlots([]); setApiQueueByCat({}); setCapacityInputs(null) }
+      setServerCatConfigs(data.catConfigs || {})
+    } catch { setManualSlots([]); setApiQueueByCat({}); setCapacityInputs(null); setServerCatConfigs({}) }
   }, [truck?.id])
 
   useEffect(() => {
@@ -478,7 +485,7 @@ setItemModal({ item, modGroups, editCartKey })
       const [row] = buildSlotAvailability({
         times: [{ collection_time: s.collection_time, production_slot: s.production_slot }],
         productionSlotUnits: capacityInputs.productionSlotUnits || {},
-        catConfigs: categoryConfigs,
+        catConfigs: serverCatConfigs,
         kitchenCapacity: capacityInputs.kitchenCapacity ?? null,
         capacityWindowMins: capacityInputs.capacityWindowMins ?? 5,
         date: capacityInputs.date,
