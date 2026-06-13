@@ -606,7 +606,20 @@ export function projectBackwardOccupancy(
   instantByDeadline.sort((a, b) => a.deadline - b.deadline)
   for (const { deadline, count } of instantByDeadline) {
     const { points } = placeInstantPoints(count, deadline, intervals, kitchenCapacity, capacityStep, eventStartMins)
-    for (const p of points) intervals.push(p)
+    for (const p of points) {
+      intervals.push(p)
+      // TONE-COVERAGE FIX: a point can spill onto an EARLIER capacity window than the single
+      // display window (deadline−capacityStep). That earlier window may hold ONLY spilled points
+      // (no cooking, no label), so it never got a loadByStart key and the window-builder skipped it
+      // → its dot defaulted to green despite being at the ceiling. Guarantee the window EXISTS so the
+      // builder computes its tone via the SAME concurrencyAt(intervals, startMins) path below. byCat
+      // is left EMPTY on purpose: the "Other N" LABEL stays single-window (deadline−capacityStep,
+      // above) — only the TONE reflects spill. So a spilled-only window shows a red/amber tone with
+      // no item label ("full from earlier overflow"). Concurrency math + fit path are untouched: this
+      // adds no points/load, only a zero-byCat tone-list entry; fitOrderBackward still reads
+      // back.intervals (which already had these points) and existing?.byCat[cat] ?? 0 is unchanged.
+      if (!loadByStart.has(p.startMins)) loadByStart.set(p.startMins, {})
+    }
   }
 
   const windows: BackwardWindow[] = [...loadByStart.entries()]
