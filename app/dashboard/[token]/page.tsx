@@ -134,6 +134,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[vanPausedUntil,setVanPausedUntil]=useState<string|null>(null)       // active van — manual
   const[vanOnlinePausedUntil,setVanOnlinePausedUntil]=useState<string|null>(null) // active van — offline
   const[showPauseModal,setShowPauseModal]=useState(false)
+  // Offline-pause notification: durable marker from /api/dashboard (set only by heartbeat-monitor,
+  // survives the reconnect clear). Fires a one-time popup when it's NEWER than this device's ack.
+  const[lastOfflinePauseAt,setLastOfflinePauseAt]=useState<string|null>(null)
+  const[offlinePauseEventId,setOfflinePauseEventId]=useState<string|null>(null)
+  const[showOfflinePausedNotice,setShowOfflinePausedNotice]=useState(false)
+  const[offlinePauseNoticeEnabled,setOfflinePauseNoticeEnabled]=useState(true) // per-device pref (localStorage)
+  // OK → record the acknowledged marker for THIS event so a poll tick / reload won't re-pop it; a
+  // newer offline pause (newer timestamp) clears the guard and re-fires.
+  const ackOfflinePausedNotice=()=>{
+    if(typeof window!=='undefined'&&offlinePauseEventId&&lastOfflinePauseAt)
+      localStorage.setItem(`hg_offline_pause_ack_${offlinePauseEventId}`,lastOfflinePauseAt)
+    setShowOfflinePausedNotice(false)
+  }
+  const toggleOfflinePauseNotice=()=>setOfflinePauseNoticeEnabled(prev=>{
+    const next=!prev
+    if(typeof window!=='undefined') localStorage.setItem('hg_offline_pause_notice',next?'on':'off')
+    if(!next) setShowOfflinePausedNotice(false)
+    return next
+  })
   const isFuturePause=(s:string|null)=>!!s&&new Date(s).getTime()>Date.now()
   const manualPaused=isFuturePause(pausedUntil)||isFuturePause(vanPausedUntil)
   const offlinePaused=isFuturePause(vanOnlinePausedUntil)
@@ -277,7 +296,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
-      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
+      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
@@ -415,6 +434,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }).catch(err=>console.error('[VansFetch] error:',err))
   },[truck?.id])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
+  // Load the per-device offline-pause-notice preference (default ON).
+  useEffect(()=>{if(typeof window!=='undefined')setOfflinePauseNoticeEnabled(localStorage.getItem('hg_offline_pause_notice')!=='off')},[])
+  // Fire the popup when the durable marker is NEWER than this device's ack for that event. Deps are
+  // the marker + its event id, so a poll tick that returns the SAME timestamp doesn't re-run it; after
+  // OK (ack = marker) the `> ack` test is false; a NEW offline pause (newer marker) re-fires.
+  useEffect(()=>{
+    if(typeof window==='undefined'||!offlinePauseNoticeEnabled) return
+    if(!offlinePauseEventId||!lastOfflinePauseAt) return
+    const ack=localStorage.getItem(`hg_offline_pause_ack_${offlinePauseEventId}`)
+    if(!ack||new Date(lastOfflinePauseAt).getTime()>new Date(ack).getTime()) setShowOfflinePausedNotice(true)
+  },[lastOfflinePauseAt,offlinePauseEventId,offlinePauseNoticeEnabled])
   useEffect(()=>{
     const sendHeartbeat=async()=>{
       if(typeof navigator!=='undefined'&&!navigator.onLine)return
@@ -1534,6 +1564,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
               </div>
             )}
+            {/* Per-device pref: show the "paused while offline" popup on reconnect. Not gated on an
+                active event (it's a device UI pref). localStorage-backed — no migration. */}
+            <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-slate-800">Offline-pause alert</p>
+                <p className="text-xs text-slate-500 mt-0.5">Pop up on this device when offline protection paused orders while you were away.</p>
+              </div>
+              <Toggle on={offlinePauseNoticeEnabled} onToggle={toggleOfflinePauseNotice}/>
+            </div>
             {/* Kitchen capacity — its own card now (was nested in Stock & availability). Event-scoped
                 ceiling + category scope; the control's bold "Kitchen capacity" label doubles as the
                 card heading. One tight, left-aligned unit (max-w stops it stretching on the wide
@@ -1826,6 +1865,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           </div>
         )}
       </main>
+
+      {/* Offline-pause reconnect notice — surfaces that the safety net fired while the device was away.
+          Read-only: triggered by the durable last_offline_pause_at marker, ack'd per-device via localStorage. */}
+      {showOfflinePausedNotice&&(
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
+            <div className="text-3xl mb-2">📡</div>
+            <h3 className="font-black text-slate-900 text-base mb-1">Offline protection kept you covered</h3>
+            <p className="text-slate-600 text-sm">Orders were paused while your device was offline. Customer orders are active again now.</p>
+            <button onClick={ackOfflinePausedNotice} className="mt-5 w-full bg-orange-600 text-white font-black text-sm py-3 rounded-xl hover:bg-orange-700 transition-colors">OK</button>
+          </div>
+        </div>
+      )}
 
       {/* Pause duration picker */}
       {showPauseModal&&(

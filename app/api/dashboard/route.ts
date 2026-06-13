@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, extra_wait_mins, extra_wait_started_at')
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -246,6 +246,9 @@ export async function GET(req: NextRequest) {
   // customer menu checks. (Kept the key names to avoid churning the client read path.)
   const eventPausedUntil: string | null = (selectedEvent as any)?.paused_until ?? null
   const eventOnlinePausedUntil: string | null = (selectedEvent as any)?.online_paused_until ?? null
+  // Durable offline-pause marker (survives the heartbeat reconnect clear). Surfaced with the
+  // selected event's id so the dashboard can fire + ack the "paused while offline" popup per-event.
+  const eventLastOfflinePauseAt: string | null = (selectedEvent as any)?.last_offline_pause_at ?? null
 
   try {
     // kitchen_capacity + name from the SELECTED event's van — the same event the
@@ -344,6 +347,8 @@ export async function GET(req: NextRequest) {
     vanShowCookingStep,
     vanPausedUntil: eventPausedUntil,            // event-scoped (key kept for the client)
     vanOnlinePausedUntil: eventOnlinePausedUntil, // event-scoped (key kept for the client)
+    lastOfflinePauseAt: eventLastOfflinePauseAt, // durable offline-pause marker (popup trigger)
+    offlinePauseEventId: selectedEventId,         // the event the marker belongs to (ack key)
     orders:  orders || [],
     slots:   slotsWithCapacity,
     date,

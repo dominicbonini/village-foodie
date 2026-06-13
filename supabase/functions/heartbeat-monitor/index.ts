@@ -66,7 +66,10 @@ Deno.serve(async () => {
       if (!effective) continue // offline protection off for this event → don't pause
       const { error: updErr } = await supabase
         .from('truck_events')
-        .update({ online_paused_until: autoPauseUntil })
+        // last_offline_pause_at = a DURABLE marker of this offline auto-pause. /api/heartbeat clears
+        // online_paused_until on reconnect but NOT this column, so the dashboard can surface a
+        // one-time "you were offline-paused while away" popup after the device is back online.
+        .update({ online_paused_until: autoPauseUntil, last_offline_pause_at: now.toISOString() })
         .eq('id', ev.id)
       if (updErr) console.error(`Auto-pause failed for event ${ev.id}:`, updErr.message)
       else { pausedCount++; console.log(`Auto-paused event ${ev.id} (van ${van.name})`) }
