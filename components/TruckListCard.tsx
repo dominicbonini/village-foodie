@@ -80,36 +80,45 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                 )}
             </div>
 
-            {/* VENUE NAME AND VILLAGE */}
-            <div className="flex-1 min-w-0 flex flex-col border-t border-slate-100 sm:border-t-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0">
-                <Link 
-                    href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
-                    className="group min-w-0 cursor-pointer w-fit"
-                    title={`View venue details for ${event.venueName}`}
-                >
-                    {/* 👇 UPDATED: Changed from font-black to font-bold, slightly smaller and softer color 👇 */}
-                    <h3 className="text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight truncate group-hover:text-orange-600 transition-colors">
-                        {venueDisplay}
-                    </h3>
-                </Link>
-            </div>
+            {/* VENUE NAME (left) + ORDER BUTTON (right) — side-by-side on ONE row at all widths
+                (mobile included). The name column is flex-1 min-w-0 so a long venue name wraps to
+                two lines (line-clamp-2) within its own width while the button stays right-aligned,
+                vertically centred, and never gets pushed off-screen or clipped against the button.
+                The mobile separator (border-t/pt/mt, sm-cleared) now spans the whole name+button row. */}
+            <div className="flex-1 min-w-0 flex flex-row items-center justify-between gap-3 border-t border-slate-100 sm:border-t-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0">
 
-            {/* ORDER BUTTON — compact, right-aligned on the event row. Gated to HatchGrab AND
-                operator-sourced events: source==='operator' guarantees a real truck_events id
-                (orderable) and an order-taking truck (discovery events are excluded). Deep-links
-                the order FORM scoped to this exact event. Pending/unconfirmed events never reach
-                here (the discovery feed only returns confirmed/open operator events). On mobile the
-                row stacks, so self-start keeps it boxed (not full-width). */}
-            {isHatchGrab() && event.source === 'operator' && (
-                <a
-                    href={`/trucks/${slug}/order?event_id=${event.id}`}
-                    className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5
-                               bg-orange-600 hover:bg-orange-700 text-white font-semibold
-                               px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
-                >
-                    {liveNow ? 'Order' : 'Pre-Order'}
-                </a>
-            )}
+                {/* VENUE NAME AND VILLAGE */}
+                <div className="flex-1 min-w-0">
+                    <Link
+                        href={`/venues/${getVenueSlug(event.venueName, event.village || '')}`}
+                        className="group block min-w-0 cursor-pointer"
+                        title={`View venue details for ${event.venueName}`}
+                    >
+                        {/* line-clamp-2: wrap a long name to at most two lines (ellipsis beyond),
+                            instead of single-line truncate, so the full name shows where it fits. */}
+                        <h3 className="text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
+                            {venueDisplay}
+                        </h3>
+                    </Link>
+                </div>
+
+                {/* ORDER BUTTON — compact, right-aligned, intrinsic width (does NOT stretch full-width).
+                    Gated to HatchGrab AND operator-sourced events: source==='operator' guarantees a
+                    real truck_events id (orderable) and an order-taking truck (discovery events are
+                    excluded). Deep-links the order FORM scoped to this exact event. Pending/unconfirmed
+                    events never reach here (the discovery feed only returns confirmed/open operator
+                    events). px-4 py-2 keeps a sensible tap target even when not full-width. */}
+                {isHatchGrab() && event.source === 'operator' && (
+                    <a
+                        href={`/trucks/${slug}/order?event_id=${event.id}`}
+                        className="shrink-0 inline-flex items-center gap-1.5
+                                   bg-orange-600 hover:bg-orange-700 text-white font-semibold
+                                   px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
+                    >
+                        {liveNow ? 'Order' : 'Pre-Order'}
+                    </a>
+                )}
+            </div>
 
         </div>
 
