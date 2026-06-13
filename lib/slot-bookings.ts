@@ -127,7 +127,14 @@ async function resolveBookingSlot(
 async function readProductionSlotUnits(
   supabase: SupabaseClient,
   truckId: string,
-  eventId: string | null
+  eventId: string | null,
+  // WRITE callers (addOrderToProductionSlot) persist the lazy reseed and rely on `reseeded` to skip
+  // their own merge. PURE READS (getProductionSlotUnits — e.g. the submit fit-check) pass false so the
+  // reseed is computed but NOT written. BUG 1: when the fit-check persisted its reseed (which already
+  // includes the just-inserted order), the table went non-empty, so the subsequent
+  // addOrderToProductionSlot read returned reseeded:false and merged the order ON TOP → first-order
+  // double-count. A read-only reseed leaves the table empty until the single authoritative write.
+  persistReseed: boolean = true
 ): Promise<{ units: ProductionSlotUnits; reseeded: boolean }> {
   // No event → order/view belongs to no event; nothing pooled, empty usage.
   if (!eventId) return { units: {}, reseeded: false }
@@ -144,12 +151,18 @@ async function readProductionSlotUnits(
   }
 
   if (!data?.length) {
-    // Lazy reseed (covers the empty table between migration and backfill). The rebuild
-    // already includes every current order, so we persist it and flag reseeded.
+    // Lazy reseed (covers the empty table between migration and backfill). The rebuild already
+    // includes every current order. `reseeded` is claimed ONLY when we actually persisted (didPersist):
+    // it tells a write-caller "this order is already booked, skip your merge" — so claiming it without
+    // persisting would drop the order entirely (zero-count). Pure reads (persistReseed=false) never
+    // persist and never claim reseeded; the write path (default true) persists and skips its merge.
     const built = await buildUnitsFromOrders(supabase, truckId, eventId)
-    const { eventDate } = await getEventMeta(supabase, eventId)
-    if (eventDate) await syncProductionSlotUsage(supabase, truckId, eventId, eventDate, built)
-    return { units: built, reseeded: true }
+    let didPersist = false
+    if (persistReseed) {
+      const { eventDate } = await getEventMeta(supabase, eventId)
+      if (eventDate) { await syncProductionSlotUsage(supabase, truckId, eventId, eventDate, built); didPersist = true }
+    }
+    return { units: built, reseeded: didPersist }
   }
 
   const out: ProductionSlotUnits = {}
@@ -166,7 +179,9 @@ export async function getProductionSlotUnits(
   truckId: string,
   eventId: string | null
 ): Promise<ProductionSlotUnits> {
-  return (await readProductionSlotUnits(supabase, truckId, eventId)).units
+  // persistReseed=false → READ-ONLY reseed: never write the table from a pure read (the submit
+  // fit-check uses this). The single authoritative write is addOrderToProductionSlot (BUG 1 fix).
+  return (await readProductionSlotUnits(supabase, truckId, eventId, false)).units
 }
 
 async function buildUnitsFromOrders(
@@ -212,13 +227,15 @@ async function buildUnitsFromOrders(
   return out
 }
 
+// Returns the upsert error (or null) so the reconcile path can SURFACE a write failure instead of
+// it masquerading as a successful rebuild (BUG 2). The best-effort lazy-reseed caller ignores it.
 async function syncProductionSlotUsage(
   supabase: SupabaseClient,
   truckId: string,
   eventId: string,
   eventDate: string,
   units: ProductionSlotUnits
-) {
+): Promise<{ error: { message: string } | null }> {
   const rows = Object.entries(units).map(([production_slot, units_by_cat]) => ({
     truck_id: truckId,
     event_id: eventId,
@@ -227,10 +244,11 @@ async function syncProductionSlotUsage(
     units_by_cat,
     updated_at: new Date().toISOString(),
   }))
-  if (!rows.length) return
-  await supabase.from('production_slot_usage').upsert(rows, {
+  if (!rows.length) return { error: null }
+  const { error } = await supabase.from('production_slot_usage').upsert(rows, {
     onConflict: 'truck_id,event_id,production_slot',
   })
+  return { error }
 }
 
 async function upsertProductionSlotUnits(
@@ -341,19 +359,24 @@ export async function rebuildProductionSlotUsage(
     .delete()
     .eq('truck_id', truckId)
     .eq('event_date', eventDate)
-  if (delErr) {
-    console.warn('[production_slot_usage] rebuild delete failed (drift risk):', delErr.message)
-    return
-  }
-  const { data: events } = await supabase
+  // BUG 2: do NOT swallow. The old `warn + return` left stale rows AND let the caller record the
+  // reconcile as "ran" (the row's updated_at never changed). THROW so a failed reconcile is visible —
+  // backfill records it in `failures`, manage/events log it (they already try/catch). The thrown
+  // message exposes the real cause (RLS / constraint / event_date mismatch) on the next run.
+  if (delErr) throw new Error(`production_slot_usage rebuild delete failed (${truckId} / ${eventDate}): ${delErr.message}`)
+
+  const { data: events, error: evErr } = await supabase
     .from('truck_events')
     .select('id')
     .eq('truck_id', truckId)
     .eq('event_date', eventDate)
     .neq('status', 'cancelled')
+  if (evErr) throw new Error(`production_slot_usage rebuild events query failed (${truckId} / ${eventDate}): ${evErr.message}`)
   for (const ev of events || []) {
     const units = await buildUnitsFromOrders(supabase, truckId, ev.id)
-    await syncProductionSlotUsage(supabase, truckId, ev.id, eventDate, units)
+    // Surface a WRITE failure too: a silent upsert error would also leave updated_at unchanged.
+    const { error: syncErr } = await syncProductionSlotUsage(supabase, truckId, ev.id, eventDate, units)
+    if (syncErr) throw new Error(`production_slot_usage rebuild write failed (event ${ev.id}): ${syncErr.message}`)
   }
 }
 
