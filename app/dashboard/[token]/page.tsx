@@ -93,6 +93,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[upcomingEvents,setUpcomingEvents]=useState<TruckEvent[]>([])
   const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
   const[showEventMenu,setShowEventMenu]=useState(false)
+  // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
+  const[finishConfirm,setFinishConfirm]=useState<{eventId:string;early:boolean;endTime:string}|null>(null)
   const[eventNoteInput,setEventNoteInput]=useState('')
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
@@ -809,17 +811,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
-  const finishEvent=async(eventId:string)=>{
-    // Timing-aware confirm: finishing ON TIME / past close is routine; finishing EARLY (before
-    // end_time) stops orders ahead of schedule, so warn harder and name the scheduled end.
+  // Styled finish confirm (replaces window.confirm). finishEvent OPENS the modal; doFinishEvent runs
+  // the close after Yes. The timing-aware (finishingEarly = now<end_time, minute-parsed) logic is
+  // UNCHANGED — only the confirm SURFACE moved from native confirm to the modal below.
+  const finishEvent=(eventId:string)=>{
     const ev=todayEvents.find(e=>e.id===eventId)??upcomingEvents.find(e=>e.id===eventId)
     const nowMins=new Date().getHours()*60+new Date().getMinutes()
     const endMins=ev?.end_time?(()=>{const[h,m]=ev.end_time.split(':').map(Number);return (h||0)*60+(m||0)})():null
     const finishingEarly=endMins!=null && nowMins<endMins
-    const msg=finishingEarly
-      ? `This event isn't scheduled to finish until ${formatTime(ev!.end_time)}. Finishing now stops all new orders immediately. Are you sure?`
-      : 'Finish this event? No more orders will be taken.'
-    if(!window.confirm(msg)) return
+    setFinishConfirm({eventId,early:finishingEarly,endTime:ev?.end_time?formatTime(ev.end_time):''})
+  }
+  const doFinishEvent=async(eventId:string)=>{
+    setFinishConfirm(null)
     try{
       // Flips the EVENT status to 'closed' only — existing orders are untouched and stay
       // fully visible/actionable; this just stops NEW customer orders.
@@ -1875,6 +1878,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <h3 className="font-black text-slate-900 text-base mb-1">Offline protection kept you covered</h3>
             <p className="text-slate-600 text-sm">Orders were paused while your device was offline. Customer orders are active again now.</p>
             <button onClick={ackOfflinePausedNotice} className="mt-5 w-full bg-orange-600 text-white font-black text-sm py-3 rounded-xl hover:bg-orange-700 transition-colors">OK</button>
+          </div>
+        </div>
+      )}
+
+      {/* Finish-event confirm (styled — replaces window.confirm). Early close warns harder.
+          z-[60] so it stacks above the event menu the Finish button lives in. */}
+      {finishConfirm&&(
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="font-black text-slate-900 text-base mb-1">End event?</h3>
+            <p className="text-sm text-slate-600">
+              {finishConfirm.early
+                ? `This event isn't scheduled to finish until ${finishConfirm.endTime}. No more orders will be allowed. Confirm to end event?`
+                : 'Finish this event? No more orders will be taken.'}
+            </p>
+            <div className="flex gap-2 mt-5">
+              <button onClick={()=>doFinishEvent(finishConfirm.eventId)} className="flex-1 bg-red-600 text-white font-black text-sm py-2.5 rounded-xl hover:bg-red-700">Yes</button>
+              <button onClick={()=>setFinishConfirm(null)} className="flex-1 bg-slate-100 border border-slate-200 text-slate-700 font-bold text-sm py-2.5 rounded-xl hover:bg-slate-200">Cancel</button>
+            </div>
           </div>
         </div>
       )}

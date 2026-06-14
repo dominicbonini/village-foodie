@@ -42,23 +42,16 @@ function formatStandardDate(dateStr: string) {
 // "17:00:00" / "17:00" → "17:00"
 const fmtTime = (t?: string) => (t || '').slice(0, 5);
 
-// Live now = today AND the current time is within [start, end] on the event's date.
-function isEventLive(dateStr: string, startTime?: string, endTime?: string): boolean {
-  if (!dateStr || !startTime || !endTime) return false;
-  const [d, m, y] = dateStr.split('/').map(Number);
-  if (!d || !m || !y) return false;
-  const [sh, sm] = startTime.split(':').map(Number);
-  const [eh, em] = endTime.split(':').map(Number);
-  const now = new Date();
-  const start = new Date(y, m - 1, d, sh || 0, sm || 0);
-  const end = new Date(y, m - 1, d, eh || 0, em || 0);
-  return now >= start && now <= end;
+// LIVE-REDEFINITION (V7.0): live = operator STARTED the event (status==='open', from the Start
+// button or auto-event-scheduler), NOT the published clock window. Published times stay DISPLAY-only.
+function isEventLive(status?: string): boolean {
+  return status === 'open';
 }
 
 export default function TruckListCard({ event, slug }: TruckListCardProps) {
   const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
   const venueDisplay = showVillage ? `${event.venueName} - ${event.village}` : event.venueName;
-  const liveNow = isEventLive(event.date, event.startTime, event.endTime);
+  const liveNow = isEventLive(event.status);
 
   return (
     <div className="bg-white p-3.5 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-3 hover:border-orange-200 transition-colors">
@@ -72,10 +65,12 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                 <span className="text-[12px] font-bold text-slate-500 leading-none mt-0.5">
                     {fmtTime(event.startTime)} - {fmtTime(event.endTime)}
                 </span>
+                {/* Green "● Live" tag when the operator has STARTED the event (status==='open'),
+                    matching the dashboard's "● Live". Only shown when live; no tag when Pre-order. */}
                 {liveNow && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mt-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                        Open now
+                        Live
                     </span>
                 )}
             </div>
@@ -111,11 +106,13 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                 {isHatchGrab() && event.source === 'operator' && (
                     <a
                         href={`/trucks/${slug}/order?event_id=${event.id}`}
-                        className="shrink-0 inline-flex items-center gap-1.5
+                        // Equal-width (min-w + justify-center) so the card layout doesn't shift between
+                        // the Pre-order and Order now states. Text flips on live (status==='open').
+                        className="shrink-0 inline-flex items-center justify-center min-w-[104px]
                                    bg-orange-600 hover:bg-orange-700 text-white font-semibold
                                    px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap"
                     >
-                        {liveNow ? 'Order' : 'Pre-Order'}
+                        {liveNow ? 'Order now' : 'Pre-order'}
                     </a>
                 )}
             </div>

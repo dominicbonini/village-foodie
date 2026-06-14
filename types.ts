@@ -5,6 +5,9 @@ export interface VillageEvent {
   endTime: string;
   truckName: string;
   venueName: string;
+  // 'open' = operator-STARTED/auto-opened = LIVE (live-redefinition); else Pre-order. Present on
+  // operator truck_events (discovery feed maps it through); absent on scraped discovery events.
+  status?: string;
   
   // --- LOCATION FIELDS ---
   village?: string;

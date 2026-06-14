@@ -68,7 +68,9 @@ export async function GET(req: NextRequest) {
   // See session notes May 2026.
   const { data: rows, error } = await supabase
     .from('truck_events')
-    .select('id, event_date, start_time, end_time, venue_name, town, notes')
+    // status + opened_at expose the operator-STARTED signal so customer surfaces derive "live" from
+    // status==='open' (live-redefinition), not the published clock window. Times stay DISPLAY-only.
+    .select('id, event_date, start_time, end_time, venue_name, town, notes, status, opened_at')
     .eq('truck_id', truck.id)
     .in('status', ['confirmed', 'open'])
     .gte('event_date', today)
@@ -97,6 +99,8 @@ export async function GET(req: NextRequest) {
       venue_name:    e.venue_name || '',
       village:       e.town || '',
       notes:         e.notes || '',
+      status:        e.status || 'confirmed', // 'open' = operator-started/auto-opened = LIVE
+      opened_at:     e.opened_at || null,
     }
   }).filter(Boolean)
 

@@ -250,6 +250,7 @@ export async function GET(req: NextRequest) {
             endTime: e.end_time || '',
             truckName: truck?.name || '',
             venueName: e.venue_name || '',
+            status: e.status, // 'open' = LIVE (operator-started); 'confirmed' = Pre-order
             village: e.town || '',
             postcode: e.postcode || '',
             venueLat: e.latitude ? parseFloat(String(e.latitude)) : undefined,

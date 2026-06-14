@@ -102,15 +102,21 @@ function allergenRedirect(truckName: string, truckEmoji: string, orderUrl: strin
 // punctuation and whitespace, then does substring/stem matching. A false positive just
 // redirects safely to the allergen page; a miss would let the menu LLM answer a safety
 // question with no allergen data — so we err hard toward redirecting.
+// OPTION B (absence-gated): the guard redirects ABSENCE/SAFETY questions ONLY — NOT presence
+// questions that merely name an allergen. Confirming a TAGGED allergen ("yes, lists Dairy") is a
+// safe positive declaration and now reaches the LLM (answered from tags); only ABSENCE is unsafe.
+// So bare allergen NAMES (dairy, gluten, nut, soy, egg, …) and 'contain'/'ingredient' (presence/info)
+// were REMOVED from the triggers. The free-from wall is now carried by ABSENCE/SAFETY signals:
+//   substrings → 'allerg' (allergy/allergic), 'intoleran', 'coeliac'/'celiac', 'free from',
+//                'safe for', 'suitable for'
+//   whole-token 'free' → catches "gluten free"/"dairy free"/"nut free"/"free from" AFTER
+//                normalisation turns "-free" into " free" (substring 'free' would over-match
+//                "freely"/"carefree"; whole-token is tighter). gf/df = gluten-/dairy-free.
 const ALLERGEN_STEMS = [
-  'allerg', 'intoleran', 'gluten', 'coeliac', 'celiac', 'dairy', 'lactose',
-  'nut', 'peanut', 'almond', 'cashew', 'soy', 'soya', 'egg', 'milk', 'wheat',
-  'sesame', 'shellfish', 'fish', 'crustacean', 'mollusc', 'vegan',
-  'free from', 'contain', 'ingredient', 'suitable for',
+  'allerg', 'intoleran', 'coeliac', 'celiac',
+  'free from', 'safe for', 'suitable for',
 ]
-// Short ambiguous abbreviations matched as whole tokens only (substring would hit words
-// like "handful"/"bagful"). gf = gluten free, df = dairy free.
-const ALLERGEN_TOKENS = ['gf', 'df']
+const ALLERGEN_TOKENS = ['gf', 'df', 'free']
 
 function mentionsAllergen(message: string): boolean {
   const normalised = ` ${message.toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim()} `
@@ -189,7 +195,10 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
       // bare `category` column. Mirrors app/api/menu/[truckId]/route.ts (:69 select, :305 name).
       const { data: rows, error } = await supabase
         .from('menu_items_db')
-        .select('name, category_id, price, is_available, menu_categories!category_id(name)')
+        // allergens + dietary_info (both string[], same columns /api/menu surfaces) feed the tier-3
+        // payload so the LLM can confirm PRESENCE (which are vegetarian; what an item lists). ABSENCE
+        // is never asserted — guarded below + in the prompt.
+        .select('name, category_id, price, is_available, allergens, dietary_info, menu_categories!category_id(name)')
         .eq('truck_id', truckId)
         .eq('is_active', true)
 
@@ -248,6 +257,10 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
           name: i.name,
           category: (i.menu_categories as any)?.name || 'Other',
           price: typeof i.price === 'number' ? `£${i.price.toFixed(2)}` : null,
+          // PRESENCE-only tags (operator declarations). Default [] when absent — but a MISSING tag
+          // means "not entered", NOT "free of" / "not vegetarian"; the prompt forbids absence claims.
+          dietary: (i.dietary_info as string[]) || [],
+          allergens: (i.allergens as string[]) || [],
         }))
 
         const menuAnswerPrompt = `You are the owner of ${truckName} ${truckEmoji}, a food truck, replying to a customer's WhatsApp message about your menu.
@@ -262,8 +275,13 @@ Rules (follow exactly — same discipline as "never make up events"):
 - Answer ONLY using items in the MENU above. Everything listed is available to order now.
 - Quote prices EXACTLY as written in the MENU. If an item's price is null, do not state a price — point them to the order link instead.
 - If they ask about an item that is NOT in the MENU, say we don't have it and point them to the order link.
-- If they ask about an attribute you do NOT have data for (spicy, vegetarian, vegan, size, ingredients, what's on it), do NOT guess — briefly say the full details are on the menu and give the order link. The ONLY facts you have are each item's name, category, price and that it is available.
-- If they ask about allergens or ingredients for dietary-safety reasons, say you can't confirm that here and point them to the menu/allergen page.
+- The MENU includes per-item dietary tags (e.g. Vegetarian, Vegan) and allergen tags (e.g. Dairy, Gluten, Soy), entered by the operator.
+- PRESENCE — you MAY confirm what is TAGGED: if asked which items are vegetarian/vegan, list the items whose dietary tags include that, phrased as "the ones marked vegetarian" (NOT "only these"). If asked what an item contains, you MAY state the allergen tags listed on it (e.g. "the BBQ Chicken lists Dairy and Gluten").
+- ALLERGEN CAVEAT — ONLY when you actually STATE an item's allergen content (e.g. "lists Dairy and Gluten"): you MUST end that reply with "Please double-check the full menu for allergen info — this is an automated reply." (or a close paraphrase). Do NOT add this caveat to dietary answers (vegetarian/vegan) or to plain menu/price answers — it applies only when you affirmatively state allergen tags.
+- HAS/CONTAINS an allergen (presence-named question): if asked whether an item HAS or CONTAINS a specific allergen — if that allergen IS in the item's allergen tags, confirm it ("yes, the BBQ Chicken lists Dairy"). If it is NOT in the tags, do NOT say "no" / "it doesn't contain that" / "it's free of that" — the data may be incomplete — instead say you can't confirm that here and point them to the full menu/allergen info. DEFER, never DENY.
+- ABSENCE — NEVER assert, for BOTH dietary AND allergens: NEVER say an item is free of / does not contain / is safe for any allergen, and NEVER say an item is NOT vegetarian/vegan, based on a MISSING tag — the data may be incomplete. If a tag isn't present, do NOT infer its absence; point them to the full menu/allergen info for anything not listed.
+- COMPLETENESS: don't imply the list is exhaustive — say "the ones marked X" and suggest checking the menu for items not listed, since not every item may be tagged.
+- For other attributes you have NO data for (spicy, size, what's on it beyond the tags), do NOT guess — briefly say the full details are on the menu and give the order link.
 - NEVER invent items, prices, sizes, ingredients, or dietary/allergen claims.
 - Sound like the owner: warm and brief (1-3 sentences). No "I am an AI" line, no disclaimers.
 - End with the order link: ${orderUrl}
@@ -283,9 +301,25 @@ Rules (follow exactly — same discipline as "never make up events"):
         )
         const pricesValid = quotedPrices.every(p => allowedPrices.has(p))
 
-        // 5) RETURN the LLM answer only if non-empty AND price-clean; otherwise fail safe.
+        // 5) DETERMINISTIC ALLERGEN CAVEAT — guarantee (not prompt-hope) the caveat whenever the
+        //    reply STATES an allergen this truck has tagged. Trigger = any allergen tag word from the
+        //    payload appears (case-insensitive) in the reply. Dietary-only/plain replies have no
+        //    allergen word → no caveat. Append only if not already present (no duplication).
+        const ALLERGEN_CAVEAT = 'Please double-check the full menu for allergen info — this is an automated reply.'
+        const allergenTagWords = new Set<string>()
+        for (const i of items) for (const a of ((i.allergens as string[]) || [])) {
+          const w = String(a).trim().toLowerCase()
+          if (w) allergenTagWords.add(w)
+        }
+        const replyLower = llmReply.toLowerCase()
+        const statesAllergen = [...allergenTagWords].some(w => replyLower.includes(w))
+        const cavedReply = statesAllergen && !llmReply.includes(ALLERGEN_CAVEAT)
+          ? `${llmReply}\n\n${ALLERGEN_CAVEAT}`
+          : llmReply
+
+        // 6) RETURN the LLM answer only if non-empty AND price-clean; otherwise fail safe.
         if (llmReply && pricesValid) {
-          return { reply: llmReply, classification: 'MENU_QUERY' }
+          return { reply: cavedReply, classification: 'MENU_QUERY' }
         }
         return { reply: deterministicReply, classification: 'MENU_QUERY' }
       } catch {

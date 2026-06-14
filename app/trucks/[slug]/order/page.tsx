@@ -49,6 +49,8 @@ interface EventData {
   venue_name: string
   village: string
   notes: string
+  status?: string       // 'open' = operator-started/auto-opened = LIVE; else Pre-order. From /api/events.
+  opened_at?: string | null
 }
 
 interface BasketItem {
@@ -100,13 +102,13 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
   return parts.length > 0 ? `${itemName}::${parts.join('::')}` : itemName
 }
 
-// Live (open now) vs Pre-order (confirmed, not yet open) — derived from the event's own times,
-// local-parse per the engineering manual. Past events are already filtered out before display,
-// so a non-live upcoming event is a pre-order (ordering works via submit's confirmed-allowed guard).
-function isEventLiveNow(e: { date_iso?: string; start_time?: string; end_time?: string }): boolean {
-  if (!e.date_iso || !e.start_time || !e.end_time) return false
-  const now = new Date()
-  return now >= new Date(`${e.date_iso}T${e.start_time}`) && now < new Date(`${e.date_iso}T${e.end_time}`)
+// LIVE-REDEFINITION (V7.0): "live" = operator STARTED the event (status==='open', set by the Start
+// button OR auto-event-scheduler), NOT the published clock window. So a future-dated event the
+// operator opens early reads LIVE to customers (matching the dashboard); a 'confirmed' (not-yet-
+// started) event reads Pre-order; a 'closed' event is past. Published start_time/end_time are
+// DISPLAY-only now. Past events are already filtered out before display.
+function isEventLiveNow(e: { status?: string }): boolean {
+  return e.status === 'open'
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -136,6 +138,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [stockNotice, setStockNotice] = useState<string | null>(null)
   // "Check again" in-place re-fetch state (pause banner) — never reloads, never clears the basket.
   const [rechecking, setRechecking] = useState(false)
+  // Event finished EARLY (status='closed'/'cancelled') while the customer was already on the page —
+  // set by the /api/menu poll (real-time catch-up) AND the submit-403 safety net. Folds into
+  // isOrderingBlocked. Status-driven, alongside the clock-based isEventClosed backstop.
+  const [eventEnded, setEventEnded] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submittedOrderId, setSubmittedOrderId] = useState<string | null>(null)
@@ -362,6 +368,32 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       })
       .finally(() => setLoading(false))
   }, [refetchMenu])
+
+  // Real-time catch-up for the ALREADY-LOADED customer: poll the SELECTED event's /api/menu (the
+  // same status-aware source as the initial load / "Check again" — no new system) every 30s so a
+  // status='closed' (operator finished, possibly early) blocks ordering WITHOUT a submit attempt.
+  // On ok: refresh truck pause/ordering_available (also catches a pause that started while loaded).
+  // On a 404 with a closed/cancelled event_status (or ordering_available:false): flip eventEnded.
+  // NON-DESTRUCTIVE: never touches the basket; a transient failure is ignored (retry next tick).
+  // Stops once eventEnded (terminal) or when there's no selected event (the chooser view).
+  useEffect(() => {
+    if (!event?.id || eventEnded) return
+    const id = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/menu/${slug}?event_id=${event.id}`, { cache: 'no-store' })
+        if (r.ok) {
+          const data = await r.json()
+          setTruck(data.truck) // refresh paused/pauseReason/ordering_available; basket untouched
+          return
+        }
+        const body = await r.json().catch(() => ({}))
+        if (r.status === 404 && (body?.event_status === 'closed' || body?.event_status === 'cancelled' || body?.ordering_available === false)) {
+          setEventEnded(true)
+        }
+      } catch { /* transient (offline/blip) — keep current state, try next tick */ }
+    }, 30000)
+    return () => clearInterval(id)
+  }, [event?.id, eventEnded, slug])
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 
@@ -780,6 +812,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         setPauseNotice('Orders are paused right now — please check back shortly. Your order is saved here.')
         return
       }
+      // Event ended (403, server status guard): the operator finished the event (possibly early).
+      // Safety net for a customer who didn't catch the poll — block ordering with a clear notice
+      // instead of a silent failure. Folds into isOrderingBlocked via the sticky "closed" banner.
+      if (res.status === 403 && (data?.event_status === 'closed' || data?.event_status === 'cancelled')) {
+        setEventEnded(true)
+        setPauseNotice(null)
+        return
+      }
       // Lock contention past the retry budget (very rare, sustained load): the server did NOT
       // insert (no-oversell guarantee). Non-destructive — keep the basket, ask to re-submit.
       if (res.status === 409 && data?.retry) {
@@ -972,32 +1012,36 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return nowMins > endH * 60 + endM
   })()
 
-  const isOpenNow = (() => {
-    if (!event?.date_iso || !event?.start_time || !event?.end_time) return false
-    const now = new Date()
-    const start = new Date(`${event.date_iso}T${event.start_time}`)
-    const end = new Date(`${event.date_iso}T${event.end_time}`)
-    return now >= start && now < end
-  })()
+  // LIVE = operator-started (status==='open'), not the clock window (live-redefinition). Header tag
+  // mirrors the dashboard's "● Live" so an event opened early reads Live before its published start.
+  const isOpenNow = event?.status === 'open'
 
-  const isOrderingBlocked = isPaused || isEventClosed
+  // Closed = clock backstop (isEventClosed, past published end) OR status-driven (eventEnded, operator
+  // finished — possibly early). Either blocks ordering, matching the server's status guard + the
+  // finished-early promise.
+  const isClosed = isEventClosed || eventEnded
+  const isOrderingBlocked = isPaused || isClosed
 
   return (
     <Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
 
-      {/* Event closed banner */}
-      {isEventClosed && (
+      {/* Event closed banner — clock end (isEventClosed) OR operator finished (eventEnded, incl. early) */}
+      {isClosed && (
         <div className="sticky top-[60px] z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering has closed</p>
-            <p className="text-xs text-slate-300 mt-0.5">Online ordering for this event ended at {formatTime(event?.end_time || '')}. We hope to see you next time!</p>
+            <p className="text-xs text-slate-300 mt-0.5">
+              {eventEnded && !isEventClosed
+                ? 'This event has ended — no more orders are being taken.'
+                : `Online ordering for this event ended at ${formatTime(event?.end_time || '')}. We hope to see you next time!`}
+            </p>
           </div>
         </div>
       )}
 
       {/* Paused banner — stays visible while scrolling */}
-      {isPaused && !isEventClosed && (
+      {isPaused && !isClosed && (
         <div className="sticky top-[60px] z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
           <div className="flex items-start gap-3 max-w-lg mx-auto">
             <span className="text-xl flex-shrink-0">
@@ -1116,11 +1160,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           <div className="min-w-0">
                             <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
                             <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
-                            <span className={`mt-1 inline-flex items-center gap-1 text-xs font-bold ${live ? 'text-green-600' : 'text-orange-600'}`}>
-                              {live && <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />}{live ? 'Live' : 'Pre-order'}
-                            </span>
+                            {/* Green "● Live" tag ONLY when live (status==='open'); the button carries
+                                the Pre-order/Order now CTA otherwise. */}
+                            {live && (
+                              <span className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-green-600">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live
+                              </span>
+                            )}
                           </div>
-                          <span className="shrink-0 bg-orange-600 text-white font-bold px-4 py-2 rounded-lg text-sm">Order now</span>
+                          {/* Equal-width so the card doesn't shift between Pre-order/Order now states. */}
+                          <span className="shrink-0 w-[104px] text-center bg-orange-600 text-white font-bold px-4 py-2 rounded-lg text-sm">{live ? 'Order now' : 'Pre-order'}</span>
                         </Link>
                       )
                     })}
@@ -1166,7 +1215,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       </div>
                       <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
                         className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                        {isOrderingBlocked ? (isEventClosed ? 'Ordering closed' : 'Ordering paused') : applied === 0 ? 'Add deal' : '+ Add another deal'}
+                        {isOrderingBlocked ? (isClosed ? 'Ordering closed' : 'Ordering paused') : applied === 0 ? 'Add deal' : '+ Add another deal'}
                       </button>
                     </div>
                     {/* Applied deal instances - compact summary */}
@@ -1296,7 +1345,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               : qty > 0 ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
                               : 'bg-orange-600 text-white hover:bg-orange-700'
                             }`}>
-                            {isOrderingBlocked ? (isEventClosed ? 'Closed' : 'Paused') : qty > 0 ? `${qty} · Add` : 'Add'}
+                            {isOrderingBlocked ? (isClosed ? 'Closed' : 'Paused') : qty > 0 ? `${qty} · Add` : 'Add'}
                           </button>
                         ) : qty > 0 ? (
                           <>
@@ -1316,7 +1365,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         ) : (
                           <button onClick={() => !isOrderingBlocked && addItem(item)} disabled={isOrderingBlocked}
                             className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                            {isOrderingBlocked ? (isEventClosed ? 'Closed' : 'Paused') : 'Add'}
+                            {isOrderingBlocked ? (isClosed ? 'Closed' : 'Paused') : 'Add'}
                           </button>
                         )}
                       </div>
@@ -1662,7 +1711,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
             disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {submitting ? 'Sending order...' : isEventClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
+            {submitting ? 'Sending order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
           </button>
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
