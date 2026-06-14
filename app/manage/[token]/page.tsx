@@ -16,6 +16,7 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
 import { formatTime } from '@/lib/time-utils'
 import { isExcluded } from '@/lib/schedule-extract'
+import { detectEventConflicts } from '@/lib/event-conflicts'
 import UserMenu from '@/components/dashboard/UserMenu'
 import AppHeader from '@/components/shared/AppHeader'
 
@@ -2706,6 +2707,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
   }
 
   const [pendingRejectId, setPendingRejectId] = useState<string | null>(null)
+  // Conflict acknowledge gate: the event id whose Approve has been clicked while a conflict exists,
+  // so the card shows the explicit "approve anyway" acknowledgement (warn-with-friction, not block).
+  const [conflictAckId, setConflictAckId] = useState<string | null>(null)
 
   const doRejectEvent = async (eventId: string) => {
     setSaving(true)
@@ -2776,6 +2780,12 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
 
   const renderEvent = (event: TruckEvent, pending = false) => {
     const isPast = isPastEvent(event) || event.status === 'cancelled'
+    // READ-TIME conflict check (no new column): for ANY event being CONFIRMED — the scraper approval
+    // card (pending=true) AND the operator-added "Needs confirmation" card (pending=false, the inline
+    // Confirm button). Both are status 'unconfirmed' candidates; the helper compares them against
+    // existing same-date confirmed/open events and is source-agnostic. See lib/event-conflicts.ts.
+    // Complementary to the inbound-schedule scrape dedup (untouched).
+    const conflicts = event.status === 'unconfirmed' ? detectEventConflicts(event, events) : []
     const dateObj = new Date(event.event_date + 'T00:00:00')
     const dayName = dateObj.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase()
     const dayNum = dateObj.getDate()
@@ -2828,7 +2838,10 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
               <div className="flex items-center gap-1.5 flex-shrink-0 self-start">
                 <>
                   {event.status === 'unconfirmed' && (
-                    <button onClick={() => handleConfirmEvent(event.id)} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
+                    // SAME acknowledge gate as the scraper Approve button: with a conflict the first
+                    // click reveals "confirm anyway" in the banner below (warn-with-friction); no
+                    // conflict → confirms immediately. Keyed on event.id so cards don't collide.
+                    <button onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
                       <span className="sm:hidden">✓</span>
                       <span className="hidden sm:inline">Confirm</span>
                     </button>
@@ -2854,12 +2867,47 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
             )}
           </div>
 
+          {/* Conflict warning — shown when this unconfirmed event (scraper card OR operator-added
+              card) clashes with an existing confirmed/open event. `conflicts` is non-empty only for
+              status 'unconfirmed', so this is NOT gated on `pending` — it renders below the main row
+              for BOTH card types. Lists each conflicting event's details (venue/date/time/postcode)
+              for side-by-side comparison; the Approve/Confirm action requires an explicit acknowledge
+              (warn-with-friction, never hard-blocked). */}
+          {conflicts.length > 0 && (
+            <div className="mt-3 px-3 py-2.5 bg-amber-50 border border-amber-300 rounded-lg text-sm">
+              <p className="font-bold text-amber-800 mb-1.5">⚠️ Possible conflict{conflicts.length !== 1 ? 's' : ''} — review before {pending ? 'approving' : 'confirming'}</p>
+              <div className="space-y-2">
+                {conflicts.map((c, i) => (
+                  <div key={`${c.event.id}-${i}`} className="text-amber-900">
+                    <p>{c.message}</p>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      Already on your schedule: <strong>{c.event.venue_name || 'Unnamed venue'}</strong>
+                      {` · ${new Date(`${c.event.event_date}T00:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`}
+                      {(c.event.start_time || c.event.end_time) ? ` · ${(c.event.start_time || '').slice(0, 5)}–${(c.event.end_time || '').slice(0, 5)}` : ''}
+                      {c.event.postcode ? ` · ${c.event.postcode}` : ''}
+                      {` (${c.event.status})`}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {conflictAckId === event.id && (
+                <div className="flex flex-wrap gap-2 mt-2.5">
+                  <button onClick={() => { handleConfirmEvent(event.id); setConflictAckId(null) }} className="text-xs font-semibold px-3 py-1.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700">Yes, these are different events — {pending ? 'approve' : 'confirm'} anyway</button>
+                  <button onClick={() => setConflictAckId(null)} className="text-xs font-medium px-3 py-1.5 border border-amber-300 bg-white rounded-lg hover:bg-amber-100">Cancel</button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Pending approval actions — full-width row beneath the text (frees the venue/area/time
               block above), same position pattern as the deal-summary line. flex-1 even on mobile;
               compact right-aligned on desktop. ≥16px text on mobile (iOS rule). */}
           {pending && (
             <div className="flex gap-2 mt-3 sm:justify-end">
-              <button onClick={() => handleConfirmEvent(event.id)} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50">Approve</button>
+              {/* Approve: with a conflict, the FIRST click reveals the acknowledge in the banner
+                  above (warn-with-friction); the explicit "approve anyway" there confirms. No conflict
+                  → confirms immediately. */}
+              <button onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50">Approve</button>
               {!isPast && (
                 <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
               )}
