@@ -59,6 +59,12 @@ export default function TruckClient({ slug }: { slug: string }) {
     return mapEvents.filter(event => createSlug(event.truckName) === slug);
   }, [mapEvents, slug]);
 
+  // Operator-claimed / orderable signal — REUSES the exact condition TruckListCard uses to render
+  // Order/Pre-order buttons (isHatchGrab() && event.source === 'operator'), aggregated to truck level.
+  // If any event is operator-sourced and orderable, this is an operator-managed truck → hide the
+  // scraped/discovery "Are we missing an event?" affordance (it undercuts trust on an orderable page).
+  const truckHasOrdering = isHatchGrab() && truckEventsFlat.some(e => e.source === 'operator');
+
   const openTallyPopup = () => {
     if (posthog) {
       posthog.capture('clicked_newsletter_subscribe', { source: 'truck_page', truck: truckInfo?.name });
@@ -264,7 +270,7 @@ export default function TruckClient({ slug }: { slug: string }) {
           </div>
         ) : (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
-            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1 text-center lg:text-left">Upcoming Tour Dates</h2>
+            <h2 className="text-slate-800 font-extrabold text-xl mb-4 ml-1 text-center lg:text-left">Where to Find Us</h2>
             
             <div className="flex flex-col lg:flex-row gap-6 w-full">
                 
@@ -274,18 +280,22 @@ export default function TruckClient({ slug }: { slug: string }) {
                         <TruckListCard key={event.id} event={event} slug={slug} />
                     ))}
                     
+                    {/* Scraped/discovery affordance — hidden on an operator-claimed/orderable truck
+                        (truckHasOrdering), shown only for a scraped truck without ordering. */}
+                    {!truckHasOrdering && (
                     <div className="mt-8 p-6 bg-slate-100 rounded-xl text-center border border-dashed border-slate-300">
                       <p className="m-0 text-slate-600">
                         <strong className="text-slate-800">Are we missing an event?</strong> <br />
                         If you're the owner of this truck or just a dedicated fan, help us keep this page accurate! <br />
-                        <Link 
-                          href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`} 
+                        <Link
+                          href={`/contact?topic=Add%20Business&truck=${encodeURIComponent(truckInfo.name)}`}
                           className="text-orange-600 font-bold hover:underline mt-2 inline-block"
                         >
                           Contact us to add missing details.
                         </Link>
                       </p>
                     </div>
+                    )}
                 </div>
 
                 {/* RIGHT: REAL LEAFLET MAP */}

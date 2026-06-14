@@ -49,9 +49,12 @@ function isEventLive(status?: string): boolean {
 }
 
 export default function TruckListCard({ event, slug }: TruckListCardProps) {
-  const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
-  const venueDisplay = showVillage ? `${event.venueName} - ${event.village}` : event.venueName;
   const liveNow = isEventLive(event.status);
+  // Secondary "area" line under the venue name: village (only if not already in the name) + the
+  // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
+  // shows the area alone with NO trailing separator, and both-null → '' → line 2 not rendered.
+  const showVillage = event.village && !event.venueName.toLowerCase().includes(event.village.toLowerCase());
+  const areaLine = [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');
 
   return (
     <div className="bg-white p-3.5 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-3 hover:border-orange-200 transition-colors">
@@ -59,20 +62,20 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
             
             {/* DATE AND TIME */}
             <div className="flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0.5 shrink-0 sm:w-[140px]">
-                <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none uppercase tracking-wide">
+                {/* Date in normal case (was ALL-CAPS) — softer; keeps the orange accent. */}
+                <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">
                     {formatStandardDate(event.date)}
                 </span>
-                <span className="text-[12px] font-bold text-slate-500 leading-none mt-0.5">
-                    {fmtTime(event.startTime)} - {fmtTime(event.endTime)}
+                {/* Time + INLINE "● Live" on ONE line (status-driven). Inline (not its own row) so a
+                    live card is the SAME HEIGHT as a non-live card. Live condition + button flip unchanged. */}
+                <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5">
+                    <span>{fmtTime(event.startTime)}–{fmtTime(event.endTime)}</span>
+                    {liveNow && (
+                        <span className="inline-flex items-center gap-1 text-green-600">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live
+                        </span>
+                    )}
                 </span>
-                {/* Green "● Live" tag when the operator has STARTED the event (status==='open'),
-                    matching the dashboard's "● Live". Only shown when live; no tag when Pre-order. */}
-                {liveNow && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full mt-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                        Live
-                    </span>
-                )}
             </div>
 
             {/* VENUE NAME (left) + ORDER BUTTON (right) — side-by-side on ONE row at all widths
@@ -89,11 +92,16 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                         className="group block min-w-0 cursor-pointer"
                         title={`View venue details for ${event.venueName}`}
                     >
-                        {/* line-clamp-2: wrap a long name to at most two lines (ellipsis beyond),
-                            instead of single-line truncate, so the full name shows where it fits. */}
+                        {/* Line 1: venue NAME (primary). line-clamp-2 wraps a long name; ellipsis beyond. */}
                         <h3 className="text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
-                            {venueDisplay}
+                            {event.venueName}
                         </h3>
+                        {/* Line 2: area · postcode (SMALLER + MUTED, de-emphasised). Hidden when empty. */}
+                        {areaLine && (
+                            <p className="text-slate-400 text-[11px] sm:text-xs font-medium leading-tight mt-0.5 truncate">
+                                {areaLine}
+                            </p>
+                        )}
                     </Link>
                 </div>
 
