@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { formatTime } from '@/lib/time-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,8 +54,8 @@ function formatEventForPrompt(event: TruckEvent, todayStr: string): string {
   const friendlyDate = eventDate.toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long'
   })
-  const start = event.start_time?.substring(0, 5) || ''
-  const end = event.end_time?.substring(0, 5) || ''
+  const start = formatTime(event.start_time || '')
+  const end = formatTime(event.end_time || '')
   const time = start && end ? `${start}–${end}` : start || 'time TBC'
   const location = [event.venue_name, event.town, event.postcode].filter(Boolean).join(', ')
   const confirmed = event.status === 'confirmed' || event.status === 'open'

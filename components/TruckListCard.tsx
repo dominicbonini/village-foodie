@@ -4,6 +4,7 @@ import { VillageEvent } from '@/types';
 import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
 import { isHatchGrab } from '@/lib/domain';
+import { formatTimeRange } from '@/lib/time-utils';
 
 interface TruckListCardProps {
   event: VillageEvent;
@@ -39,8 +40,6 @@ function formatStandardDate(dateStr: string) {
     return dateStr;
 }
 
-// "17:00:00" / "17:00" → "17:00"
-const fmtTime = (t?: string) => (t || '').slice(0, 5);
 
 // LIVE-REDEFINITION (V7.0): live = operator STARTED the event (status==='open', from the Start
 // button or auto-event-scheduler), NOT the published clock window. Published times stay DISPLAY-only.
@@ -69,7 +68,7 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                 {/* Time + INLINE "● Live" on ONE line (status-driven). Inline (not its own row) so a
                     live card is the SAME HEIGHT as a non-live card. Live condition + button flip unchanged. */}
                 <span className="flex items-center gap-2 text-[12px] font-bold text-slate-500 leading-none mt-0.5">
-                    <span>{fmtTime(event.startTime)}–{fmtTime(event.endTime)}</span>
+                    <span>{formatTimeRange(event.startTime, event.endTime)}</span>
                     {liveNow && (
                         <span className="inline-flex items-center gap-1 text-green-600">
                             <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live

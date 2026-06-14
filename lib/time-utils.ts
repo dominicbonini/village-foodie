@@ -5,6 +5,20 @@ export function formatTime(time: string): string {
   return time?.slice(0, 5) ?? ''
 }
 
+/**
+ * "HH:MM – HH:MM" for display — the canonical event-time range. Always trims seconds (never raw).
+ * Both empty → ''; no end → just the start; no start → just the end. Use this everywhere a
+ * start–end pair is shown so no surface re-introduces seconds (the recurring bug).
+ */
+export function formatTimeRange(start?: string | null, end?: string | null): string {
+  const s = formatTime(start ?? '')
+  const e = formatTime(end ?? '')
+  if (!s && !e) return ''
+  if (!e) return s
+  if (!s) return e
+  return `${s} – ${e}`
+}
+
 // LOCAL calendar date (yyyy-mm-dd). Section 7: never use toISOString() (UTC) to decide
 // whether an event date is "today". toISOString() rolls over at UTC midnight, so in the
 // evening it can already read the next day's date while wall-clock-derived nowMins

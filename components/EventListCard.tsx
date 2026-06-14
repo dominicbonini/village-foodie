@@ -9,8 +9,9 @@ import {
     formatFriendlyDate,
     createSlug,
     getVenueSlug,
-    getDistanceKm 
+    getDistanceKm
   } from '@/lib/utils';
+import { formatTime, formatTimeRange } from '@/lib/time-utils';
 
 interface EventListCardProps {
   events: VillageEvent[]; 
@@ -68,7 +69,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
         menuText = `\n\nCheck out the menu: ${cleanMenuUrl}`; 
       }
 
-      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${ev.truckName} is at ${venueDisplay} ${dateSentence} from ${ev.startTime} to ${ev.endTime}.${menuText}\n\nFound on ${displayUrl} 🚚`;
+      const shareText = `Fancy some ${foodName}? ${introEmoji}\n\n${ev.truckName} is at ${venueDisplay} ${dateSentence} from ${formatTime(ev.startTime)} to ${formatTime(ev.endTime)}.${menuText}\n\nFound on ${displayUrl} 🚚`;
       const shareData = { title: `${ev.truckName} at ${venueDisplay}`, text: shareText };
 
       try {
@@ -158,7 +159,11 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
   const ContactBtns = (ev: VillageEvent, venueDisplay: string) => (
     <>
         {showWebsite && ev.orderUrl && ev.orderUrl.includes('http') && (
-            <a href={ev.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website', ev, venueDisplay)} className={PrimaryBtnClass}>
+            // Carry this event's id so the order page deep-links straight to it (skips the "choose an
+            // event" chooser) — the user already picked this event on the map/list. ?event_id is the
+            // SAME param the order page reads for effectiveEventId (order/page.tsx :122). Falls back to
+            // the bare order URL (chooser) when ev.id is missing, never a broken link.
+            <a href={ev.id ? `${ev.orderUrl}${ev.orderUrl.includes('?') ? '&' : '?'}event_id=${ev.id}` : ev.orderUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackOrderClick('Website', ev, venueDisplay)} className={PrimaryBtnClass}>
                 🌐 Order
             </a>
         )}
@@ -244,7 +249,7 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
                                 
                                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                                     <span className="text-[11px] font-bold text-slate-800 leading-none whitespace-nowrap">
-                                        {ev.startTime} - {ev.endTime}
+                                        {formatTimeRange(ev.startTime, ev.endTime)}
                                     </span>
                                     
                                     {!isVenuePage && (
