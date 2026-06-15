@@ -17,7 +17,7 @@ import { isModifierAvailable } from '@/lib/modifier-utils'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
-import { formatTime, localTodayIso, pickDefaultEventByTime } from '@/lib/time-utils'
+import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -259,6 +259,11 @@ export function AddOrderPanel({
     const asapStart = manualAsapSlot?.collection_time ?? manualSlots.find(s => !s.is_grace)?.collection_time
     if (!asapStart) return manualAsapSlot
     const [sh, sm] = asapStart.split(':').map(Number)
+    // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): the operator
+    // ASAP can't place cooking windows before now, so a large order pushes out by its real cook span.
+    const nowClamp = manualEvent?.event_date === getLocalDateInTz(eventTz)
+      ? getNowMinsInTz(eventTz)
+      : Number.NEGATIVE_INFINITY
     const fitTime = earliestBackwardFitSlot(
       manualSlots.map(s => ({ collection_time: s.collection_time, production_slot: s.production_slot })),
       capacityInputs.productionSlotUnits || {},
@@ -268,10 +273,11 @@ export function AddOrderPanel({
       basketByCat,
       (sh || 0) * 60 + (sm || 0),
       capacityInputs.capacityWindowMins ?? 5,
+      nowClamp,
     )
     const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
     return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
-  }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot])
+  }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot, eventTz, manualEvent])
 
   // "Ready around" MIRRORS the ASAP dropdown: source the sub-label's "around HH:MM" + "~N mins"
   // from adjustedAsapSlot — the SAME backward-fit collection slot the dropdown shows, whose

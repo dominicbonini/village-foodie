@@ -120,6 +120,10 @@ export function buildSlotAvailability(params: {
   // A collection slot at T is served by the cooking window ENDING at T (keyed T−step), NOT
   // the window starting at T — the off-by-one that blocked one slot early.
   const step = backwardWindowStepMins(catConfigs)
+  // NOW-CLAMP for the per-slot basket fit below: only meaningful when the event IS today (nowMins is
+  // mins-of-day, so for a future-date event it would mis-compare across days). Future event ⇒ -Inf
+  // (no clamp): the legacy eventStart-only behaviour, correct because the whole event is after now.
+  const nowClamp = date === today ? nowMins : Number.NEGATIVE_INFINITY
 
   return times.map(s => {
     const slotMins = parseMins(s.collection_time)
@@ -137,7 +141,7 @@ export function buildSlotAvailability(params: {
     let bindCap: number
     if (hasBasket) {
       // Operator/customer placing THIS order: does it fit the backward windows ending at S?
-      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins, capWindow)
+      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins, capWindow, nowClamp)
       tone = fit.tone
       boundBy = fit.bound_by
       bindCurrent = 0
@@ -502,6 +506,10 @@ function placeInstantPoints(
   kitchenCapacity: number | null,
   capacityStep: number,
   eventStartMins: number,
+  // NOW-CLAMP (event-tz mins-of-day; default -Inf = no clamp, e.g. a future-date event). An instant
+  // capacity point can't be seated before now — you can't use elapsed oven time. NEGATIVE_INFINITY
+  // preserves the legacy event-start-only behaviour for callers that don't pass it / future events.
+  nowMins: number = Number.NEGATIVE_INFINITY,
 ): { points: CookInterval[]; runsOffFront: boolean } {
   const points: CookInterval[] = []
   if (count <= 0) return { points, runsOffFront: false }
@@ -514,9 +522,11 @@ function placeInstantPoints(
   let remaining = count
   let w = ws0
   while (remaining > 0) {
-    // One pre-open window allowed (mirrors the cooking path's `eventStartMins - prep`): instant items
-    // may seat as early as one capacity window before open, so up to kitchenCapacity are ready at start.
-    if (w < eventStartMins - capacityStep) return { points, runsOffFront: true }
+    // Front floor = max(eventStart pre-open allowance, NOW). The eventStart side keeps its one pre-open
+    // capacity window (`- capacityStep`, the "ready at start" pre-prep credit); the NOW side has NO
+    // allowance — cooking/seating cannot start in an elapsed window. So instant points seat no earlier
+    // than max(eventStartMins - capacityStep, nowMins).
+    if (w < Math.max(eventStartMins - capacityStep, nowMins)) return { points, runsOffFront: true }
     const headroom = Math.max(0, kitchenCapacity - concurrencyAt(sofar, w))
     const place = Math.min(remaining, headroom)
     if (place > 0) {
@@ -692,6 +702,11 @@ export function fitOrderBackward(
   kitchenCapacity: number | null,
   eventStartMins: number,
   capacityWindowMins: number = 5,
+  // NOW-CLAMP (event-tz mins-of-day; default -Inf = no clamp). The order's earliest cooking window
+  // cannot start before NOW — cooking can only begin at/after the current time, so a multi-batch order
+  // can't borrow elapsed oven windows (the bug that made large-order ASAP impossibly early). Pass -Inf
+  // for a FUTURE-date event (mins-of-day would otherwise mis-compare across days). See the front floor below.
+  nowMins: number = Number.NEGATIVE_INFINITY,
 ): { tone: SlotTone; bound_by: string | null; fits: boolean } {
   // Order's COOKING load on the PREP grid (drives per-category batch tones) + its concurrency
   // intervals; counted-instant items are tallied for capacity-cadence placement below.
@@ -717,8 +732,13 @@ export function fitOrderBackward(
     const prep = Math.max(1, Math.round(cfg.secs / 60))
     batchOf[cat] = batch
     const nw = Math.ceil(M / batch)
-    // earliest required window-start = slotMins − nw*prep; allow one pre-open window.
-    if (slotMins - nw * prep < eventStartMins - prep) runsOffFront = true
+    // Front floor = max(eventStart pre-open allowance, NOW). eventStart keeps its one pre-open window
+    // (`- prep`, the batch-1-ready-AT-start pre-prep credit, Manual s.6); NOW has NO allowance — you
+    // can't cook in an elapsed window. So the earliest required window-start (slotMins − nw*prep) must
+    // be ≥ max(eventStartMins - prep, nowMins). For a started event (eventStart < now) this is `nowMins`,
+    // making ASAP(N) = now + ceil(N/batch)*prep (grid-rounded) — physically achievable. nowMins = -Inf
+    // (future event) → reduces to the legacy eventStart-only clamp.
+    if (slotMins - nw * prep < Math.max(eventStartMins - prep, nowMins)) runsOffFront = true
     for (let i = 0; i < nw; i++) {
       // The order COOKS in the windows ENDING at the collection slot T: latest/adjacent window
       // [T−prep, T) keyed T−prep (i=0), stepping back … T−nw*prep. Mirrors projectBackwardOccupancy.
@@ -765,7 +785,7 @@ export function fitOrderBackward(
       consider('red', 'global ceiling')
     } else {
       const { points, runsOffFront: instantOff } =
-        placeInstantPoints(orderInstant, slotMins, realIntervals, kitchenCapacity, capacityStep, eventStartMins)
+        placeInstantPoints(orderInstant, slotMins, realIntervals, kitchenCapacity, capacityStep, eventStartMins, nowMins)
       if (instantOff) {
         consider('red', 'global ceiling')
       } else {
@@ -797,13 +817,17 @@ export function earliestBackwardFitSlot(
   orderByCat: QtyByCat,
   fromMins: number = Number.NEGATIVE_INFINITY,
   capacityWindowMins: number = 5,
+  // NOW-CLAMP (event-tz mins-of-day; default -Inf = no clamp / future-date event). Forwarded to
+  // fitOrderBackward so a placement whose backward cooking windows extend before now is rejected — the
+  // returned ASAP/booked slot is physically achievable, not just ≥ fromMins.
+  nowMins: number = Number.NEGATIVE_INFINITY,
 ): string | null {
   const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
   const sorted = [...times].sort((a, b) => parseMins(a.collection_time) - parseMins(b.collection_time))
   for (const t of sorted) {
     const m = parseMins(t.collection_time)
     if (m < fromMins) continue
-    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins).fits) {
+    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, nowMins).fits) {
       return t.collection_time
     }
   }

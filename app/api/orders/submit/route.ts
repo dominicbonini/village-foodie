@@ -17,6 +17,7 @@ import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
 import type { CatConfig } from '@/lib/prep-utils'
+import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
@@ -269,7 +270,13 @@ async function placeOrderInSlotLocked(
     const fromMins = requestedSlot
       ? Math.max(timeToMins(startSlot), timeToMins(requestedSlot))
       : timeToMins(startSlot)
-    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5)
+    // NOW-CLAMP so the BOOKED slot is physically achievable (cooking can't start before now). Today
+    // only — for a future-date event nowMins (mins-of-day) would mis-compare, so pass -Inf (no clamp).
+    // Event tz hardcoded 'Europe/London' (matches the engine default), replaced by trucks.timezone later.
+    const placeNowMins = eventDate === getLocalDateInTz('Europe/London')
+      ? getNowMinsInTz('Europe/London')
+      : Number.NEGATIVE_INFINITY
+    const placement = earliestBackwardFitSlot(times, slotUnits, catConfigs, kitchenCapacity ?? null, eventStartMins, basketByCat, fromMins, capacityWindowMins ?? 5, placeNowMins)
     if (!placement || timeToMins(placement) > eventEndMins) {
       // No fitting slot before event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }

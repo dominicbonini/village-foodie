@@ -767,12 +767,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       capacityInputs.kitchenCapacity,
       capacityInputs.capacityWindowMins ?? 5,
     )
+    // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): a basket can't
+    // fit a slot whose cooking windows extend before now. void nowTick forces a live re-derive.
+    void nowTick
+    const nowClamp = eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
     for (const s of availableSlots) {
-      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5)
+      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp)
       if (!fit.fits) out.add(s.collection_time)
     }
     return out
-  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots])
+  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick])
 
   // Backward-fit ASAP (Stage 3): the earliest slot the order actually fits — the SAME
   // engine the picker/server use, so the displayed "Around HH:MM" and the auto-booked slot
@@ -784,6 +788,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // (e.g. anchovies at a pizza-full 6pm with ceiling spare). Capacity is decided category-aware
     // inside fitOrderBackward; the !too_soon filter preserves the lead/ASAP floor.
     const avail = availableSlots.filter(s => !isSlotPast(s, eventTz, eventDateIso) && !s.too_soon && !s.is_grace)
+    // NOW-CLAMP (today only): the backward-fit ASAP can't place cooking windows before now.
+    const nowClamp = eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
     return earliestBackwardFitSlot(
       avail.map(s => ({ collection_time: s.collection_time, production_slot: s.collection_time })),
       capacityInputs.productionSlotUnits || {},
@@ -793,6 +799,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       basketByCat,
       Number.NEGATIVE_INFINITY,
       capacityInputs.capacityWindowMins ?? 5,
+      nowClamp,
     )
   }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick])
 
@@ -1103,8 +1110,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         </div>
       )}
 
-      {/* Paused banner — stays visible while scrolling */}
-      {isPaused && !isClosed && (
+      {/* Paused banner — stays visible while scrolling. Gated on `event` (a specific event is
+          selected, i.e. the single-event order view) so it NEVER renders on the event-chooser
+          screen. truck.paused/pauseReason reflect the SELECTED event (/api/menu is fetched with
+          its event_id + refreshed by the catch-up poll), so this shows only for the event the
+          customer is actually ordering from. A pre-order event can't be offline-paused (the monitor
+          only pauses live status='open' events), so it never shows the offline variant. */}
+      {event && isPaused && !isClosed && (
         <div className="sticky top-[60px] z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
           <div className="flex items-start gap-3 max-w-lg mx-auto">
             <span className="text-xl flex-shrink-0">
