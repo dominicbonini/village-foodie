@@ -201,9 +201,24 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   // pre-prep push (a retired-(b) artifact): under the backward model the queue's load lives in
   // its own cooking windows, so a new order at event start fits — the push double-counted the
   // queue and wrongly floored future events past their opening (e.g. 17:00 → 17:10). Removed.
+  //
+  // NOW-FLOOR (today): the SAME serial-queue push had survived here as calcMinReadyMins(queueByCat)
+  // — it serially cleared the WHOLE existing queue from now (ceil(qty/batch)×prep), ignoring WHEN
+  // those items are scheduled to cook. A 5-pizza order booked at 14:30 cooks 14:20–14:30 (oven idle
+  // at 14:15), yet it floored a new order to 14:25 as if all 5 were cooking now. The existing queue's
+  // per-window occupancy is ALREADY enforced downstream by fitOrderBackward (each window's existing
+  // load + the order ≤ batch), so this floor must NOT scale with the queue. It carries ONLY the
+  // physical "you can't collect before one cook cycle from now": feed calcMinReadyMins a synthetic
+  // ONE-BATCH-per-cooking-category queue → it returns max over categories of a single batch's prep
+  // (the slowest cooking category's one cycle), keeping its built-in 2-min floor. Queue-SIZE no longer
+  // pushes the floor; a genuinely-busy current window is still blocked by fitOrderBackward, not here.
+  const oneBatchByCat: Record<string, number> = {}
+  for (const [cat, cfg] of Object.entries(catConfigs)) {
+    if (cfg.secs > 0) oneBatchByCat[cat] = Math.max(1, cfg.batch)
+  }
   const earliestCollectionMins = Math.max(
     eventStartMins,
-    date === today ? nowMins + calcMinReadyMins(queueByCat, catConfigs) + extraWaitMins : 0,
+    date === today ? nowMins + calcMinReadyMins(oneBatchByCat, catConfigs) + extraWaitMins : 0,
   )
 
   // ── Live category-aware capacity inputs ───────────────────────────────────
