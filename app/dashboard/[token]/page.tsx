@@ -1602,29 +1602,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Offline protection</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Pauses online orders if this device goes offline.</p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {eventOfflineOverride!==null
-                      ?'Using event override — van default is '+(vanAutoPause?'on':'off')
-                      :'Using van default setting'}
-                  </p>
-                  {eventOfflineOverride!==null&&(
-                    <button
-                      onClick={async()=>{
-                        const prev=eventOfflineOverride
-                        setEventOfflineOverride(null) // optimistic; revert on failure
-                        try{
-                          const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:null,eventId:activeEvent.id})})
-                          if(!res.ok)throw new Error('write failed')
-                        }catch{setEventOfflineOverride(prev)}
-                      }}
-                      className="text-xs text-slate-400 hover:text-slate-600 mt-1">
-                      Reset to van default
-                    </button>
-                  )}
+                  <p className="text-xs text-slate-500 mt-0.5">Pauses online orders if this device goes offline, so customers can&apos;t order when you can&apos;t see them.</p>
+                  <p className="text-xs text-amber-600 mt-1">Keep this screen on — if it turns off or loses connection, online orders pause automatically.</p>
                 </div>
                 <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
               </div>

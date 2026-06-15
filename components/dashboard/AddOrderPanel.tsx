@@ -8,7 +8,7 @@ import type {
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { isSlotPast } from '@/lib/slot-utils'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { earliestBackwardFitSlot, buildSlotAvailability } from '@/lib/slot-availability'
+import { earliestBackwardFitSlot } from '@/lib/slot-availability'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
@@ -167,7 +167,6 @@ export function AddOrderPanel({
   // Set only when the kitchen genuinely CAN'T produce the order by the chosen slot (per the
   // SAME engine the traffic-light/booking use). `reason` = a human sentence ("too soon to make
   // N Pizza by 18:05"). A slot the order fits selects silently — no nag.
-  const [pendingSlot, setPendingSlot] = useState<{ time: string; reason: string } | null>(null)
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
@@ -485,55 +484,13 @@ setItemModal({ item, modGroups, editCartKey })
 
   // ── slot change handler ─────────────────────────────────────────────────────
   // Operator can pick ANY visible slot (manual s.10). The ONLY confirmation is capacity
-  // OVERFLOW — an early/too-soon slot selects SILENTLY: the operator knows their own start
-  // time and doesn't need nagging (Section 10).
+  // Operator picks a slot → place at it directly, no confirmation. The traffic-light dots already
+  // show each slot's load + per-category label, so the operator reads them and makes their own call;
+  // the over-capacity "This slot is too full … Use anyway?" modal was removed (operator-only friction,
+  // Dominic 2026-06). The CUSTOMER path is unaffected — it's hard-blocked server-side by the same fit
+  // check (an over-capacity/too-soon slot is never offered to a customer); this only drops the operator
+  // prompt. Empty value clears the selection.
   const handleSlotChange = (value: string) => {
-    if (!value) { setManualSlot(''); return }
-    const s = manualSlots.find(sl => sl.collection_time === value)
-
-    // Capacity confirm fires ONLY on genuine OVERFLOW — the kitchen cannot PRODUCE this order
-    // by the collection time. We ask the SAME backward engine the slot traffic-light and booking
-    // use (buildSlotAvailability), folding the in-progress basket in as "placed at this slot",
-    // and warn only when it returns RED. RED = the order's backward cooking windows (ending at
-    // this slot) don't all have spare, OR they'd run before event start (insufficient lead). An
-    // amber/green slot FITS → select silently (the dot already shows the load — don't nag). The
-    // operator can still "use anyway" (override → honest over-full). This is the operator override
-    // path; the customer (no override) is hard-blocked by the same fit check server-side.
-    const capWord = (c: string) => c.charAt(0).toUpperCase() + c.slice(1)
-    let reason: string | null = null
-    if (s && capacityInputs) {
-      const [row] = buildSlotAvailability({
-        times: [{ collection_time: s.collection_time, production_slot: s.production_slot }],
-        productionSlotUnits: capacityInputs.productionSlotUnits || {},
-        catConfigs: serverCatConfigs,
-        kitchenCapacity: capacityInputs.kitchenCapacity ?? null,
-        capacityWindowMins: capacityInputs.capacityWindowMins ?? 5,
-        date: capacityInputs.date,
-        nowMins: capacityInputs.nowMins,
-        earliestCollectionMins: capacityInputs.earliestCollectionMins,
-        eventStartMins: capacityInputs.eventStartMins,
-        eventEndMins: capacityInputs.eventEndMins ?? undefined,
-        basketByCat,
-      })
-      if (row && row.tone === 'red') {
-        const hhmm = value.slice(0, 5)
-        const bb = row.bound_by ?? ''
-        // bound_by: "too soon (insufficient lead)" (run-off-front) | "global ceiling" |
-        // "<Cat> x/y" (a cooking window has no spare for that category).
-        if (bb.startsWith('too soon')) {
-          reason = `too soon to make this order by ${hhmm}`
-        } else if (bb === 'global ceiling') {
-          reason = `over the kitchen's capacity around ${hhmm}`
-        } else {
-          const cat = bb.split(' ')[0]?.toLowerCase()
-          reason = cat && basketByCat[cat]
-            ? `too full to make ${basketByCat[cat]} ${capWord(cat)} by ${hhmm}`
-            : `too full to make this order by ${hhmm}`
-        }
-      }
-    }
-
-    if (reason) { setPendingSlot({ time: value, reason }); return }
     setManualSlot(value)
   }
 
@@ -1189,23 +1146,6 @@ setItemModal({ item, modGroups, editCartKey })
         />
       )}
 
-      {/* ── Slot capacity confirmation ── */}
-      {pendingSlot && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-            <div className="text-center mb-4">
-              <div className="text-3xl mb-2">🟡</div>
-              <p className="font-bold text-slate-900 text-base">
-                {`This slot is ${pendingSlot.reason}. Use anyway?`}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <button onClick={() => { setManualSlot(''); setPendingSlot(null) }} className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
-              <button onClick={() => { setManualSlot(pendingSlot.time); setPendingSlot(null) }} className="flex-1 bg-orange-600 text-white font-bold py-3 rounded-xl hover:bg-orange-700 text-sm">Use anyway</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── Event picker sheet ── */}
       {showEventPicker && (() => {

@@ -176,12 +176,14 @@ async function eventKitchenCapacity(
  * one atomically. ASAP (requestedSlot null) resolves its start via getAsapSlot
  * (Section 6 — not forked) then walks the same way.
  *
- *   booked=true  → order booked at finalSlot (capacity consumed under lock).
+ *   booked=true  → finalSlot is the RESOLVED placement (capacity NOT yet consumed).
  *   booked=false → no slot non-red (event full) OR lock contended → pending, NOT
  *                  booked. A slot is never overfilled and the customer is never rejected.
  *
- * Reuses buildSlotAvailability + addOrderToProductionSlot — no forked formula (S3/S6),
- * no change to writer semantics.
+ * RESOLVE-ONLY: this function no longer files production_slot_usage. The caller persists
+ * order.slot = finalSlot FIRST, then calls addOrderToProductionSlot once — so the lazy reseed
+ * (buildUnitsFromOrders) reads the real placed slot on a first-order-after-clear, not the null
+ * insert value (which fell back to eventStart). Reuses buildSlotAvailability — no forked formula.
  *
  * LOCK-FREE: the CALLER MUST already hold the per-event booking lock. The acquire/release is
  * hoisted to the POST handler so the stock re-check + order insert + this placement all run
@@ -233,14 +235,12 @@ async function placeOrderInSlotLocked(
     if (!startSlot || !times.length) {
       const ct = startSlot ?? (eventStartTime ? eventStartTime.slice(0, 5) : null)
       if (!ct) return { finalSlot: null, booked: false }
-      await addOrderToProductionSlot(supabase, truckId, eventId, ct, orderLines, itemCatMap)
       return { finalSlot: ct, booked: true }
     }
 
     const startEntry = times.find(t => t.collection_time === startSlot)
     // Unrecognised slot (not in the list) → confirm at requested, no capacity check (Section 5).
     if (!startEntry) {
-      await addOrderToProductionSlot(supabase, truckId, eventId, startSlot, orderLines, itemCatMap)
       return { finalSlot: startSlot, booked: true }
     }
 
@@ -258,7 +258,6 @@ async function placeOrderInSlotLocked(
       return !!(cfg && (cfg.secs || cfg.countsToCapacity))
     })
     if (!hasCounted) {
-      await addOrderToProductionSlot(supabase, truckId, eventId, startSlot, orderLines, itemCatMap)
       return { finalSlot: startSlot, booked: true }
     }
 
@@ -281,7 +280,6 @@ async function placeOrderInSlotLocked(
       // No fitting slot before event end → event full → pending (never reject).
       return { finalSlot: null, booked: false }
     }
-    await addOrderToProductionSlot(supabase, truckId, eventId, placement, orderLines, itemCatMap)
     return { finalSlot: placement, booked: true }
   }
 }
@@ -645,6 +643,15 @@ export async function POST(req: NextRequest) {
         // (or ASAP/null), unbooked. Never rejected, never overfilled.
         if (Object.keys(update).length) {
           await supabase.from('orders').update(update).eq('order_key', order.order_key)
+        }
+        // BOOK capacity ONLY AFTER order.slot = finalSlot is persisted above. placeOrderInSlotLocked
+        // now RESOLVES the placement but no longer files — so the single authoritative book runs here,
+        // under the same event lock, once the order row carries the real placed boundary. This closes
+        // the first-order-after-clear ASAP mis-file: addOrderToProductionSlot's lazy reseed
+        // (buildUnitsFromOrders) reads order.slot and used to see the NULL insert value → eventStart
+        // fallback (10:00). It now reads the resolved finalSlot (e.g. 16:30) → files at the right slot.
+        if (claim.booked && claim.finalSlot) {
+          await addOrderToProductionSlot(supabase, resolvedTruckId, eventRow?.id ?? null, claim.finalSlot, orderLines, itemCatMap)
         }
       }
     } finally {
