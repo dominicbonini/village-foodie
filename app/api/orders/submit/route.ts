@@ -10,7 +10,6 @@ import {
   getProductionSlotUnits,
   buildItemCatMap,
   normaliseOrderLines,
-  deriveProductionSlot,
 } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat } from '@/lib/slot-capacity'
 import { earliestBackwardFitSlot } from '@/lib/slot-availability'
@@ -608,26 +607,27 @@ export async function POST(req: NextRequest) {
         )
         const update: Record<string, unknown> = {}
         if (claim.booked && claim.finalSlot) {
-          const dur = truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0)
+          // ALWAYS persist the SERVER-resolved placement boundary to order.slot — for EVERY booked
+          // order, chosen AND ASAP (including ASAP that books into the start window). The server is
+          // authoritative for placement (it knows if the requested slot was full and bumped forward),
+          // so order.slot is never null: the operator display, the incremental production_slot_usage
+          // booking, and a later rebuild (order.slot || eventStart) all read the SAME real slot —
+          // closing the null-slot display drift AND the incremental-vs-rebuild capacity divergence
+          // (was: incremental filed 10:05, rebuild re-filed 10:00 from the null fallback).
+          update.slot = claim.finalSlot
           if (requestedSlot) {
-            // Chosen slot: persist the (possibly reassigned) slot; slotChanged drives
-            // the slotAdjustedFrom email box (Section 18 — reused, no new copy).
+            // Chosen slot: slotChanged drives the slotAdjustedFrom email box (Section 18 — reused).
             confirmedSlot = claim.finalSlot
             slotChanged = claim.finalSlot !== requestedSlot
-            if (slotChanged) update.slot = claim.finalSlot
           } else {
-            // ASAP: keep slot null ONLY when booked at the event-start window, so the
-            // production_slot_usage booking matches the writers' null->event-start
-            // resolution (book/unbook identity; writer semantics untouched). If pushed
-            // to a later window, persist the concrete slot (email then shows that time).
-            const startPs = deriveProductionSlot(String(eventRow?.start_time ?? claim.finalSlot).slice(0, 5), dur)
-            const finalPs = deriveProductionSlot(claim.finalSlot, dur)
-            if (finalPs === startPs) {
-              confirmedSlot = null            // customer still sees "ASAP"
-            } else {
-              update.slot = claim.finalSlot   // pushed later -> concrete collection time
-              confirmedSlot = claim.finalSlot
-            }
+            // ASAP: order.slot is persisted above regardless. confirmedSlot is the CUSTOMER-FACING
+            // value (on-screen confirmation, email, submit response). ASAP is only a SELECTION
+            // shortcut — once placed, the order has a concrete allocated boundary and the customer
+            // must SEE it (when to collect), exactly as the operator does. So confirmedSlot is ALWAYS
+            // the concrete finalSlot, never null — whether booked at the start window or bumped to a
+            // later one. (slotChanged stays false: requestedSlot is null for ASAP, so the "your slot
+            // was taken" amber path never fires — the customer just sees "Collection time: HH:MM".)
+            confirmedSlot = claim.finalSlot
           }
           if (truck.auto_accept) {
             autoAccepted = true

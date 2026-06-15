@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
 import { cleanupDealsForItem, groupByCategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
-import { getAsapSlot } from '@/lib/slot-utils';
+import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
@@ -201,7 +201,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [slotMinute, setSlotMinute] = useState('')
   const [availableSlots, setAvailableSlots] = useState<{collection_time:string;available:boolean;remaining:number;is_past:boolean;too_soon:boolean;is_grace:boolean}[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
-  const [asapSlot, setAsapSlot] = useState<string|null>(null)
+  // Event timezone from /api/slots (default 'Europe/London'); now/ASAP/past all derive in this tz.
+  const [eventTz, setEventTz] = useState('Europe/London')
+  // Live clock tick (every 30s) so ASAP + the selectable list RE-DERIVE as time passes — never
+  // cached at fetch. `asapSlot` is now a useMemo (below), NOT useState (the staleness bug).
+  const [nowTick, setNowTick] = useState(0)
   const [asapChosen, setAsapChosen] = useState(true)
   const [queueByCat, setQueueByCat] = useState<Record<string,number>>({})
   const [serverCatConfigs, setServerCatConfigs] = useState<Record<string,{secs:number;batch:number}>>({})
@@ -271,13 +275,28 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       setQueueByCat(data.queueByCat || {})
       setServerCatConfigs(data.catConfigs || {})
       setCapacityInputs(data.capacityInputs ?? null)
-      const first = getAsapSlot(slots, dateIso)
-      setAsapSlot(first?.collection_time || null)
+      if (data.tz) setEventTz(data.tz) // event timezone for live ASAP/isSlotPast (default London)
+      // asapSlot is no longer cached here — it's derived live from availableSlots + the tick (below).
     } catch { setAvailableSlots([]) }
     finally { setLoadingSlots(false) }
   }
 
   const eventDateIso = event?.date_iso ?? new Date().toISOString().split('T')[0]
+
+  // Live clock tick — re-derive ASAP + the selectable list every 30s WITHOUT refetching, so a page
+  // left open never shows a stale/past ASAP. (The fix for: ASAP cached at load = 10:00 at 10:04.)
+  useEffect(() => {
+    const id = setInterval(() => setNowTick(t => t + 1), 30000)
+    return () => clearInterval(id)
+  }, [])
+
+  // ASAP collection time — DERIVED LIVE (was useState set once at fetch). Recomputes on every tick,
+  // slot change, or tz change, so it always reflects the CURRENT time in the event's timezone.
+  // nowTick is intentionally a dependency (forces the re-derive); getAsapSlot reads getNowMinsInTz.
+  const asapSlot = useMemo(
+    () => getAsapSlot(availableSlots, eventDateIso, eventTz)?.collection_time ?? null,
+    [availableSlots, eventDateIso, eventTz, nowTick],
+  )
 
   // Reload slot availability whenever truck/event is known or customer returns to the tab
   useEffect(() => {
@@ -737,7 +756,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     // such slot so earliestBackwardFitSlot can reach a worst-case-vetoed-but-actually-fits slot
     // (e.g. anchovies at a pizza-full 6pm with ceiling spare). Capacity is decided category-aware
     // inside fitOrderBackward; the !too_soon filter preserves the lead/ASAP floor.
-    const avail = availableSlots.filter(s => !s.is_past && !s.too_soon && !s.is_grace)
+    const avail = availableSlots.filter(s => !isSlotPast(s, eventTz, eventDateIso) && !s.too_soon && !s.is_grace)
     return earliestBackwardFitSlot(
       avail.map(s => ({ collection_time: s.collection_time, production_slot: s.collection_time })),
       capacityInputs.productionSlotUnits || {},
@@ -748,7 +767,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       Number.NEGATIVE_INFINITY,
       capacityInputs.capacityWindowMins ?? 5,
     )
-  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots])
+  }, [capacityInputs, basketByCat, serverCatConfigs, availableSlots, eventTz, eventDateIso, nowTick])
 
   // ASAP is selected by DEFAULT (asapChosen initial = true) and submits as slot=null,
   // so there's nothing to auto-populate on load — the selection no longer depends on a
@@ -1518,8 +1537,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                     // only "After closing"). These were previously bundled inside
                                     // s.available; now explicit so the CAPACITY decision below can be
                                     // basket-aware. 16:00 is is_grace:false (kept); 16:05+ excluded.
-                                    if (s.is_past) return false
-                                    if (s.too_soon) return false
+                                    // PAST: ALWAYS live (isSlotPast in the event tz) — never the
+                                    // cached server is_past flag (stale once the clock advances).
+                                    if (isSlotPast(s, eventTz, eventDateIso)) return false
+                                    if (s.too_soon) return false // prep-time constraint (not a clock one) — server flag is fine
                                     if (s.is_grace) return false
                                     // CAPACITY — basket-aware when the customer has a basket: gate on the
                                     // category-aware fitOrderBackward result (unfittableSlots), NOT the

@@ -13,7 +13,7 @@
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
-import { localTodayIso } from '@/lib/time-utils'
+import { getLocalDateInTz } from '@/lib/time-utils'
 
 export interface CollectionTimeRow {
   collection_time: string
@@ -92,16 +92,19 @@ export function buildSlotAvailability(params: {
    * here, what happens" — from one engine. Omit (customer path) for queue-only.
    */
   basketByCat?: QtyByCat
+  /** Event timezone for the "today"/is_past comparison. Default 'Europe/London'. The caller must
+   *  pass `nowMins` computed in the SAME tz (getNowMinsInTz(tz)) so the two agree. */
+  tz?: string
 }): SlotAvailabilityRow[] {
   const {
     times, productionSlotUnits, catConfigs, kitchenCapacity, capacityWindowMins,
     date, nowMins, earliestCollectionMins, eventStartMins, eventEndMins,
-    basketByCat,
+    basketByCat, tz,
   } = params
   const capWindow = Math.max(1, Math.round(capacityWindowMins ?? 5))
-  // LOCAL date (s.7) — must agree with the LOCAL nowMins passed in; toISOString() (UTC)
-  // would roll over at UTC midnight and mis-flag a future event's slots as is_past.
-  const today = localTodayIso()
+  // "today" in the EVENT timezone — must agree with the tz-computed nowMins passed in. UTC would
+  // roll over at UTC midnight and mis-flag a future event's slots as is_past.
+  const today = getLocalDateInTz(tz ?? 'Europe/London')
   const basket = basketByCat ?? {}
   const hasBasket = Object.keys(basket).length > 0
 

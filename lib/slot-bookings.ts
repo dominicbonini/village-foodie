@@ -214,7 +214,10 @@ async function buildUnitsFromOrders(
 
   const out: ProductionSlotUnits = {}
   ;(orders || []).forEach(order => {
-    // null slot → this event's start window, identical to the incremental booking path
+    // DEFENSIVE LEGACY FALLBACK: since the submit route now ALWAYS persists the resolved boundary to
+    // order.slot (never null for new orders), `order.slot` is the real placed slot and the rebuild
+    // reads the SAME ct the incremental booking used → no 10:05-vs-10:00 divergence. The `|| eventStart`
+    // only fires for LEGACY null-slot orders placed before that fix; kept so old data still resolves.
     const ct = order.slot || eventStart
     if (!ct) return
     const productionSlot = timeMap[ct] || ct
@@ -303,6 +306,11 @@ export async function addOrderToProductionSlot(
 ) {
   if (!items.length || !eventId) return
   const meta = await getEventMeta(supabase, eventId)
+  // DEFENSIVE LEGACY FALLBACK: callers now pass the SERVER-resolved boundary (order.slot is never
+  // null post-submit-fix), so `collectionTime` is the real placed slot and matches what the rebuild
+  // reads from order.slot → both converge on the same production_slot. `|| meta.start` only fires for
+  // a legacy null/ASAP collectionTime; kept defensively, unreachable for new orders. (book + unbook
+  // MUST share this so they target the identical slot.)
   const ct = collectionTime || meta.start
   if (!ct || !meta.eventDate) return
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)
@@ -330,6 +338,11 @@ export async function removeOrderFromProductionSlot(
 ) {
   if (!items.length || !eventId) return
   const meta = await getEventMeta(supabase, eventId)
+  // DEFENSIVE LEGACY FALLBACK: callers now pass the SERVER-resolved boundary (order.slot is never
+  // null post-submit-fix), so `collectionTime` is the real placed slot and matches what the rebuild
+  // reads from order.slot → both converge on the same production_slot. `|| meta.start` only fires for
+  // a legacy null/ASAP collectionTime; kept defensively, unreachable for new orders. (book + unbook
+  // MUST share this so they target the identical slot.)
   const ct = collectionTime || meta.start
   if (!ct || !meta.eventDate) return
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)

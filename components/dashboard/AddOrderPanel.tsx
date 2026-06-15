@@ -6,6 +6,7 @@ import type {
   ItemStock, CategoryStock, ModifierGroup, ModifierOption, Order,
 } from '@/components/dashboard/types'
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
+import { isSlotPast } from '@/lib/slot-utils'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
 import { earliestBackwardFitSlot, buildSlotAvailability } from '@/lib/slot-availability'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
@@ -120,6 +121,12 @@ export function AddOrderPanel({
   // ── event / slot state ──────────────────────────────────────────────────────
   const [manualEvent, setManualEvent] = useState<EventRecord | null>(todayEvent)
   const [manualSlots, setManualSlots] = useState<Slot[]>([])
+  // Event timezone from /api/slots (default London); ASAP + isSlotPast derive in this tz.
+  const [eventTz, setEventTz] = useState('Europe/London')
+  // Live 30s tick → re-render so manualAsapSlot + the dropdown's isSlotPast re-evaluate as the clock
+  // advances even without a refetch (a just-passed slot drops out automatically). Value unused — the
+  // re-render it triggers is the point.
+  const [, setNowTick] = useState(0)
   const [apiQueueByCat, setApiQueueByCat] = useState<Record<string, number>>({})
   // Engine inputs from /api/slots so the dot/modal can recompute basket-inclusive
   // tones with the SAME buildSlotAvailability the server traffic-light uses.
@@ -166,7 +173,7 @@ export function AddOrderPanel({
   const [showOrderSheet, setShowOrderSheet] = useState(false)
 
   // ── derived ─────────────────────────────────────────────────────────────────
-  const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date)
+  const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date, eventTz)
   const availableDeals = (truckMenu?.bundles || []).filter(b => b.available)
 
   const calculation = useMemo(() => calculateOrderTotal(
@@ -343,8 +350,15 @@ export function AddOrderPanel({
       setApiQueueByCat(data.queueByCat || {})
       setCapacityInputs(data.capacityInputs ?? null)
       setServerCatConfigs(data.catConfigs || {})
+      if (data.tz) setEventTz(data.tz)
     } catch { setManualSlots([]); setApiQueueByCat({}); setCapacityInputs(null); setServerCatConfigs({}) }
   }, [truck?.id])
+
+  // Live 30s tick so the ASAP label + the dropdown's isSlotPast re-evaluate as time passes.
+  useEffect(() => {
+    const id = setInterval(() => setNowTick(t => t + 1), 30000)
+    return () => clearInterval(id)
+  }, [])
 
   useEffect(() => {
     if (!isActive) return
@@ -610,18 +624,12 @@ setItemModal({ item, modGroups, editCartKey })
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
         >
           <option value="">⚡ ASAP{adjustedAsapSlot ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
-          {/* Operator (manual s.10) sees slots from NOW, including the imminent next slot.
-              The server's is_past adds a +5-min forward grace that hides the next slot (e.g.
-              17:35 at 17:32); operators can rush, so un-hide is_past slots whose time hasn't
-              ACTUALLY passed (>= now). Only genuinely-past slots stay hidden. Too-soon/full
-              slots stay visible with their capacity traffic-light. (Operator-only — customer
-              filters on `available`, which keeps the grace. ASAP keeps the grace too.) */}
-          {manualSlots.filter(s => {
-            if (s.is_grace || !s.is_past) return true
-            const [h, m] = s.collection_time.split(':').map(Number)
-            const now = new Date()
-            return h * 60 + m >= now.getHours() * 60 + now.getMinutes()
-          }).map(s => {
+          {/* PAST = the SINGLE live source of truth isSlotPast(eventTz) — never the cached server
+              is_past flag (stale once the clock advances; on Vercel it's UTC, an hour off in BST).
+              Operators see every slot from NOW including the imminent next one (isSlotPast excludes
+              only genuinely-elapsed slots, no +5 grace); too-soon/full slots stay visible with their
+              traffic-light. */}
+          {manualSlots.filter(s => s.is_grace || !isSlotPast(s, eventTz, manualEvent?.event_date)).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
             const ind = slotIndicatorFor(s)
             return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` ${ind.label}` : ''}</option>
@@ -641,7 +649,11 @@ setItemModal({ item, modGroups, editCartKey })
             for (let t = startMins; t <= endMins; t += 5) {
               opts.push(`${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`)
             }
-            return opts.map(time => <option key={time} value={time}>{time}</option>)
+            // Same INVARIANT as the capacity dropdown: never offer a slot before now (this fallback
+            // previously had NO past filter — a past time was selectable). isSlotPast in the event tz.
+            return opts
+              .filter(time => !isSlotPast({ collection_time: time }, eventTz, manualEvent?.event_date))
+              .map(time => <option key={time} value={time}>{time}</option>)
           })()}
         </select>
       )}

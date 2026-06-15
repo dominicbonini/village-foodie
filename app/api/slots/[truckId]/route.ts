@@ -8,7 +8,7 @@ import { getCatConfig, calcMinReadyMins, type CatConfig } from '@/lib/prep-utils
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { generateCollectionTimes } from '@/lib/slot-generation'
-import { localTodayIso } from '@/lib/time-utils'
+import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -180,11 +180,13 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   }
 
   // ── Calculate minimum ready time ─────────────────────────────────────────
-  // LOCAL date (s.7) so it agrees with the LOCAL nowMins below. toISOString() is UTC and
-  // rolls over at UTC midnight — in the evening it would read tomorrow's date while nowMins
-  // is still today's wall clock, wrongly flooring a FUTURE event's slots by now.
-  const today = localTodayIso()
-  const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+  // EVENT timezone (hardcoded 'Europe/London' for now — replaced by trucks.timezone later). now/today
+  // run in this tz, NOT the server's (UTC on Vercel) — otherwise in BST the server is an hour behind
+  // and wrongly marks a just-passed slot as still available. The client reads `tz` from the response
+  // and derives `isSlotPast` live in the same tz, so server + every client agree.
+  const eventTz = 'Europe/London'
+  const today = getLocalDateInTz(eventTz)
+  const nowMins = getNowMinsInTz(eventTz)
 
   // Customers cannot book slots before the event start time
   const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
@@ -235,6 +237,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     earliestCollectionMins,
     eventStartMins,
     eventEndMins,
+    tz: eventTz,
   })
 
   // Engine inputs so the operator panel can recompute basket-inclusive tones with
@@ -243,6 +246,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
     slots,
     queueByCat,
     catConfigs,
+    tz: eventTz, // event timezone — client derives isSlotPast/ASAP live in this tz
+    queryDate: date, // the event date these slots belong to (for isSlotPast future/prior-day guard)
     capacityInputs: {
       productionSlotUnits,
       kitchenCapacity,

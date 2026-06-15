@@ -238,6 +238,9 @@ export interface CatConfig {
       return new Date(y, mo - 1, d, h, m, 0, 0)
     }
 
+    // order.slot is now ALWAYS populated for new orders (submit persists the resolved boundary), so
+    // THIS branch fires for every order placed after that fix → the operator card shows a stable
+    // boundary time, not the drifting raw clock.
     if (order.slot && order.event_date) {
       return toLocal(order.event_date, order.slot)
     }
@@ -247,6 +250,8 @@ export interface CatConfig {
     const eventStart = toLocal(evDate, event.start_time)
     if (!eventStart) return null
 
+    // LEGACY FALLBACK (unreachable for new orders): only a legacy null-slot ASAP order reaches here.
+    // The raw `now` drifts every minute — that was the "10:23 · now" bug; new orders never hit it.
     const now = new Date()
     return now.getTime() > eventStart.getTime() ? now : eventStart
   }

@@ -19,15 +19,34 @@ export function formatTimeRange(start?: string | null, end?: string | null): str
   return `${s} – ${e}`
 }
 
-// LOCAL calendar date (yyyy-mm-dd). Section 7: never use toISOString() (UTC) to decide
-// whether an event date is "today". toISOString() rolls over at UTC midnight, so in the
-// evening it can already read the next day's date while wall-clock-derived nowMins
-// (getHours) is still the day before — that mismatch wrongly treats a FUTURE event as
-// today and floors its slots by the wall clock. Built from local Y/M/D so it always
-// agrees with the local nowMins it is compared against.
+// TIMEZONE ARCHITECTURE (V7.x) — the event's wall clock, not the device's or the server's (UTC on
+// Vercel). All "now"/"today" decisions for slots run in the EVENT's timezone so server and every
+// client agree. tz defaults to 'Europe/London' (the trial default); when trucks.timezone exists it
+// replaces the default at the call sites — the plumbing is already here.
+
+/** Current minute-of-day (hour*60+min) in the given timezone, regardless of device/server tz. */
+export function getNowMinsInTz(tz: string = 'Europe/London'): number {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(new Date())
+  const get = (t: string) => Number(parts.find(p => p.type === t)?.value ?? '0')
+  return get('hour') * 60 + get('minute')
+}
+
+/** Calendar date 'YYYY-MM-DD' in the given timezone (the tz-aware localToday). */
+export function getLocalDateInTz(tz: string = 'Europe/London'): string {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(new Date())
+  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+  return `${get('year')}-${get('month')}-${get('day')}`
+}
+
+// LOCAL calendar date (yyyy-mm-dd). Section 7: never use toISOString() (UTC) to decide whether an
+// event date is "today". Now a thin BACKWARD-COMPAT wrapper over getLocalDateInTz('Europe/London')
+// — existing callers keep working; new tz-aware code calls getLocalDateInTz(eventTz) directly.
 export function localTodayIso(): string {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  return getLocalDateInTz('Europe/London')
 }
 
 /**
