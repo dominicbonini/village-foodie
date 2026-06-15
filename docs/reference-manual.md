@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V7.3
+HatchGrab Engineering Reference Manual · V7.4
 
 **HatchGrab**
 
@@ -6,13 +6,37 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 7.3**
+**Version 7.4**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V7.4 — June 2026
+
+Customer-comms + console-polish session (additive on V7.3). Headline: the **reject-reason feature** (operator must give a reason on reject; it is emailed to the customer, HTML-escaped) + a **time-consistency audit** (the capacity engine CONFIRMED sound; a handful of non-engine device-tz spots logged as pre-multi-tz hardening) + the **pricing/feature table** WhatsApp→Pro move and mobile rebalance + the **slot-mismatch re-test** status (the V7.3 fix is confirmed present; a clean re-test on the deployed build is outstanding). Status tags: **[LIVE-VERIFIED]** real device; **[BUILT — pending live test]** tsc-clean, pending live; **[DATA FIX]** SQL; **[CONFIRMED]** verified-correct by audit, no change.
+
+**1. Reject-reason feature — [BUILT — pending live test].** When auto-confirm is OFF, an incoming order is `'pending'` and the operator gets approve / edit / reject. The REJECT now requires a reason that is emailed to the customer (previously one-tap, no reason). Built by cloning the existing Cancel reason pattern (modal → stored reason → reason line in the customer email).
+- **New column:** `rejection_reason text NULL` on `orders` (dedicated, NOT reusing `cancellation_reason` — a rejected order isn't cancelled). Migration run manually in the Supabase SQL editor: `ALTER TABLE orders ADD COLUMN IF NOT EXISTS rejection_reason text NULL; NOTIFY pgrst, 'reload schema';` (applied — confirmed success). **[DATA FIX]**
+- **Reject modal** (`app/manage/[token]/page.tsx`): presets "Sold out of an item" / "Too busy — can't make it in time" / "Closing soon" / "Other", plus a free-text note. `doAction('reject')` now OPENS the modal instead of firing immediately (mirrors Cancel).
+- **Required-reason validation:** Reject disabled unless a concrete preset is selected OR free-text is entered; "Other" alone is blocked (it requires free-text — Other is meaningless to the customer without detail); a concrete preset alone is allowed. `fullReason` = concrete preset → `"preset"` (or `"preset — note"`); Other/no-preset → the note. Never empty. `confirmRejectOrder` also guards `if (!fullReason) return`.
+- **Pass + store:** `confirmRejectOrder` posts `rejectionReason: fullReason` to `/api/dashboard/action`; the reject handler (`action/route.ts:115`) reads it and stores `update({ status: 'rejected', rejection_reason: rejectionReason || null })` — alongside the unchanged `removeOrderFromProductionSlot` unbook (`:120`).
+- **Email:** the reject customer email (`action/route.ts:127`, Brevo, guarded on `order.customer_email`) now includes `const reasonLine = rejectionReason ? '<p…>Reason: ${escapeHtml(rejectionReason)}</p>' : ''`, rendered between the "unable to fulfil" and "please order at the truck on arrival" lines. The reason is HTML-escaped (operator free-text → customer email).
+- **Prerequisites already in place** (audit-confirmed): the reject action + `'rejected'` status already existed; `customer_email` is REQUIRED at customer submit (every customer order can be emailed); the reject email already existed (it just lacked a reason); emailless manual orders skip the email gracefully (the `customer_email` guard) while still storing the reason.
+- Pending-only (reject is pending-gated). Confirm/edit/cancel/auto-confirm and capacity unbooking untouched.
+
+**2. KNOWN ISSUE — Cancel email does NOT HTML-escape the reason (low-priority backlog).** The existing Cancel customer email renders `cancellationReason` raw (`action/route.ts:155`) — an HTML/name-injection / broken-markup risk the reject email now avoids via `escapeHtml`. Exposure is low (operator free-text, not attacker-controlled), so not urgent, but apply the same `escapeHtml` to `cancellationReason` when Cancel is next touched. (An `escapeHtml` helper now exists in `action/route.ts:29`; a comment at `:28` flags the cancel-side gap.)
+
+**3. Time-consistency audit — [CONFIRMED, engine is sound].** Triggered by a 15:59-UTC-vs-17:00-local observation (which reconciled as UTC vs BST — the DB stores UTC `timestamptz`, the operator reads local; pure display, zero engine impact). Full audit verdict: the AUTHORITATIVE capacity/slot engine is time-CONSISTENT and event-tz-pinned — NO UTC/local 1-hour-error risk. Every "now" in slot resolution uses `getNowMinsInTz(eventTz)` (event-local minute-of-day), compared against event-local HH:MM slot strings — the same basis everywhere (the now-clamp, ASAP floor, `isSlotPast`, `earliestCollectionMins`, the `eventDate===today` guard). Helpers are Intl-based (IANA `Europe/London`) so BST/GMT is handled automatically, not a hardcoded offset. The DB-timestamp boundary is clean (the engine never compares a UTC timestamp to a local slot; only elapsed-duration math touches UTC, which is tz-agnostic).
+- **LATENT pre-multi-tz hardening** (NOT pre-trial; currently correct for a UK operator because device-tz == event-tz): a few NON-engine spots use device-local `new Date().getHours()` instead of `getNowMinsInTz(eventTz)` — the event closed/ended gates (`isEventClosed` `order/page.tsx:1064`, `isEventEnded` `AddOrderPanel:309`), the ready-time DISPLAY estimate (`calcReadyTime` `prep-utils.ts:70`, `readyMinsFromNow` `AddOrderPanel:227/299`), and UTC-today date fallbacks + Today/Tomorrow picker labels. These only 1-hour-error if device tz != event tz (operator travelling / non-`Europe/London` truck), and even then affect only gating/display, never capacity seating. Convert to `getNowMinsInTz`/`getLocalDateInTz` before multi-tz or native. Same class as the V7.1 `customerAsapTime` fix.
+
+**4. Pricing/feature table — [BUILT — pending live test].**
+- **WhatsApp auto-replies moved from Max into PRO** (`lib/plan-features.ts`: `starter:false, pro:true, max:true`), positioned directly above the "Messenger & Instagram auto-replies" row (which stays `coming_soon`) in the "Online sales & automation" section. Result row: Trial ✓ · Starter — · Pro ✓ · Max ✓. (Tier convention is explicit per-row, no auto-inheritance; every `pro:true` also sets `max:true`.)
+- **Mobile layout rebalance** (`app/manage/[token]/page.tsx`): the squashed/stacked feature labels were caused by the 4 tier columns at `w-[72px]` (288px) starving the `flex-1` name column (~87px on a ~375px phone) — NOT outer padding (the cards already go full-width on mobile: `px-0 border-0 rounded-none`, with `sm:` restoring desktop chrome). Fix: tier columns `w-[72px]` → `w-14` (56px) at all 11 occurrences (header + 4 transaction spacers + transaction cell + 4 feature spacers + feature cell, kept in lockstep for alignment); desktop `sm:w-28` untouched. Name column ~87px → ~151px (+74%), dropping 3-4-line labels to 1-2. Tradeoff: the 2 transaction rows ("0.99% + card fee" / "Pay at Hatch") may gain one wrap line; the ~20 feature rows (✓/—/Coming soon) fit fine in 56px. Held at `w-14`; `w-12` (48px) is the next lever if still tight on-device, but "Coming soon"/"Pay at Hatch" wrap harder there.
+
+**5. Slot-mismatch (V7.3 §1) — re-test status.** The V7.3 persist-before-file fix (`placeOrderInSlotLocked` resolve-only; persist `order.slot = finalSlot` before filing) is confirmed PRESENT in the customer submit path. A mis-filed order observed this session predated the fix (it was submitted ~58 min before commit `448130f` added the reorder), so it ran on pre-fix code — NOT a gap in the deployed fix. **CLEAN RE-TEST OUTSTANDING** on the deployed build: confirm the Vercel production deployment is `448130f` Ready → clear the test truck → place a fresh ASAP first order → it should file at the resolved slot (not eventStart 10:00). Optional belt-and-suspenders hardening (only if the re-test still mis-files): make the first-order reseed exclude the in-flight order from `buildUnitsFromOrders` (so it never reads the not-yet-persisted slot regardless of ordering) — not needed if the re-test passes.
 
 ## V7.3 — June 2026
 
@@ -2669,4 +2693,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V7.3
+HatchGrab Engineering Reference Manual · V7.4
