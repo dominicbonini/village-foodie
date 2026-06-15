@@ -372,27 +372,35 @@ export function OrderCard({
               </div>
             </>
           ) : (
-            /* Window (KDS): compact single row — price inline, no second row */
-            <div className="flex items-baseline justify-between">
-              <span className="text-3xl font-bold">#{order.id}</span>
-              <div className="flex items-center gap-2 font-medium text-sm">
-                <span className="opacity-80 truncate max-w-[120px]">{order.customer_name}</span>
+            /* Window (KDS): TWO-ROW header (was a single cramped row that truncated name + clipped
+               price at the dense 240px column). Row 1 = the glance numbers (#order / £total); Row 2 =
+               metadata (name + Contact + time + lateness). */
+            <>
+              {/* Row 1 — order # (left) + total (right) */}
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-3xl font-bold">#{order.id}</span>
+                <div className="flex items-baseline gap-1.5 flex-shrink-0">
+                  <span className="font-bold text-base">£{Number(order.total).toFixed(2)}</span>
+                  {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
+                </div>
+              </div>
+              {/* Row 2 — customer name + Contact + time + lateness */}
+              <div className="flex items-center gap-2 font-medium text-sm mt-0.5">
+                <span className="opacity-80 truncate min-w-0">{order.customer_name}</span>
                 {(order.customer_email || order.customer_phone) && (
                   <span
                     role="button"
                     tabIndex={0}
                     onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowContact(v => !v) } }}
-                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors font-normal cursor-pointer">
+                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors font-normal cursor-pointer flex-shrink-0">
                     Contact
                   </span>
                 )}
-                {timeLabel && <span className="opacity-70">{timeLabel}</span>}
-                {offsetLabel !== null && <span className="opacity-50">· {offsetLabel}</span>}
-                <span className="font-bold">£{Number(order.total).toFixed(2)}</span>
-                {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
+                {timeLabel && <span className="opacity-70 flex-shrink-0 ml-auto">{timeLabel}</span>}
+                {offsetLabel !== null && <span className="opacity-50 flex-shrink-0">· {offsetLabel}</span>}
               </div>
-            </div>
+            </>
           )}
         </div>
       )}

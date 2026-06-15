@@ -133,6 +133,27 @@ export default function KdsPage() {
     }
   }, [token, pin, selectedEventId])
 
+  // Per-DEVICE KDS prefs (localStorage, keyed by token so two trucks on one device don't collide):
+  // restore the saved view/layout on mount, then persist on change. A restored 'cook' still passes
+  // through the activeView gate (can('cook_screen') && showCookingStep), so a step-off / non-Max device
+  // falls back to Window automatically — no extra guard needed. null overrides are never written, so a
+  // first-ever-mount default isn't clobbered.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const v = localStorage.getItem(`hg_kds_view_${token}`)
+    if (v === 'window' || v === 'cook') setViewOverride(v)
+    const l = localStorage.getItem(`hg_kds_layout_${token}`)
+    if (l === 'list' || l === 'grid') setLayoutOverride(l)
+  }, [token])
+  useEffect(() => {
+    if (typeof window === 'undefined' || viewOverride === null) return
+    localStorage.setItem(`hg_kds_view_${token}`, viewOverride)
+  }, [viewOverride, token])
+  useEffect(() => {
+    if (typeof window === 'undefined' || layoutOverride === null) return
+    localStorage.setItem(`hg_kds_layout_${token}`, layoutOverride)
+  }, [layoutOverride, token])
+
   useEffect(() => {
     configureStatusBar()
     keepAwake() // on by default; updated when truck.keep_screen_on loads
@@ -776,7 +797,7 @@ export default function KdsPage() {
               : 'flex flex-col gap-3 p-3'
           }
           style={activeLayout === 'grid'
-            ? { gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }
+            ? { gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }
             : undefined
           }
         >

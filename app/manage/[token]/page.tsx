@@ -214,6 +214,31 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
   useEffect(() => { load() }, [load])
 
+  // Keep the truck's van(s) alive while the operator is on Manage — mirrors the dashboard/KDS
+  // heartbeat (every 15s → /api/heartbeat) so a dashboard→Manage switch doesn't stop the only
+  // heartbeat and trigger a FALSE offline-pause (the device is still online; orders still land).
+  // No vanId → the route's no-vanId path stamps THIS truck's active vans (Manage's URL token IS the
+  // dashboard_token). UNGATED on live-event (Manage isn't event-scoped) — harmless, the monitor only
+  // pauses status='open' events, so heartbeating with no live event keeps the van fresh and pauses
+  // nothing. navigator.onLine guard so a GENUINE connectivity loss on Manage still lets the van pause
+  // (protection intact) — we only suppress the false positive from a same-device screen switch.
+  // Single-van/single-truck fix; per-van attendance scoping is a logged backlog item.
+  useEffect(() => {
+    const sendHeartbeat = async () => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) return
+      try {
+        await fetch('/api/heartbeat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        })
+      } catch {}
+    }
+    sendHeartbeat() // immediate ping on arriving at Manage (close the gap after the dashboard unmounts)
+    const id = setInterval(sendHeartbeat, 15000)
+    return () => clearInterval(id)
+  }, [token])
+
   // Fetch the pending scraper-approval count on load so the badge/banner show without opening
   // Schedule. ScheduleTab keeps it live via onPendingCount after approve/reject. Upcoming only
   // (end not passed), source=scraper, status=unconfirmed — mirrors the Schedule "Needs approval" list.
