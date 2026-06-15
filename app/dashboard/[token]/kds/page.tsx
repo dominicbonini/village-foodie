@@ -11,6 +11,7 @@ import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime, formatTimeRange } from '@/lib/time-utils'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission, playNewOrderAlert, notifyNewOrder } from '@/lib/native/notifications'
+import { installAudioUnlock, primeAudio } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener, getQueueCount } from '@/lib/native/serviceWorker'
 
@@ -51,6 +52,10 @@ export default function KdsPage() {
   const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
   const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(null)
   const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(null)
+  // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON. A ref mirrors it for the
+  // realtime INSERT callback (set up once), which reads the CURRENT pref without re-subscribing.
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const soundEnabledRef = useRef(true)
   const [isOffline, setIsOffline] = useState(false)
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
   const [pendingSync, setPendingSync] = useState<Set<string>>(new Set())
@@ -153,6 +158,19 @@ export default function KdsPage() {
     if (typeof window === 'undefined' || layoutOverride === null) return
     localStorage.setItem(`hg_kds_layout_${token}`, layoutOverride)
   }, [layoutOverride, token])
+
+  // Per-device SOUND pref (hg_kds_sound_<token>): install audio-unlock + restore on mount, persist on
+  // change, and mirror into a ref the realtime INSERT callback reads. Default ON when no stored pref.
+  useEffect(() => {
+    installAudioUnlock()
+    if (typeof window === 'undefined') return
+    const s = localStorage.getItem(`hg_kds_sound_${token}`)
+    if (s !== null) setSoundEnabled(s === 'on')
+  }, [token])
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled
+    if (typeof window !== 'undefined') localStorage.setItem(`hg_kds_sound_${token}`, soundEnabled ? 'on' : 'off')
+  }, [soundEnabled, token])
 
   useEffect(() => {
     configureStatusBar()
@@ -263,10 +281,11 @@ export default function KdsPage() {
       }, (payload: any) => {
         fetchAllRef.current()
         if (
+          soundEnabledRef.current &&
           payload.eventType === 'INSERT' &&
           ['confirmed', 'pending'].includes(payload.new?.status)
         ) {
-          playNewOrderAlert(`#${payload.new.id}`)
+          playNewOrderAlert(`#${payload.new.id}`)   // web → shared primed AudioContext; native → local notif
         }
       })
       .subscribe()
@@ -631,6 +650,17 @@ export default function KdsPage() {
             Grid
           </button>
         </div>
+
+        {/* Sound toggle — per-device new-order ding. Enabling is a gesture → prime the audio so dings play. */}
+        <button
+          onClick={() => setSoundEnabled(v => { const next = !v; if (next) primeAudio(); return next })}
+          title={soundEnabled ? 'Sound on' : 'Sound off'}
+          className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
+            soundEnabled ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+          }`}
+        >
+          {soundEnabled ? '🔔' : '🔕'}
+        </button>
 
         <div className="flex-1" />
 

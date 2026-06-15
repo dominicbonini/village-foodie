@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature } from '@/lib/features'
 import AppHeader from '@/components/shared/AppHeader'
+import { playDing, installAudioUnlock, primeAudio } from '@/lib/audio'
 
 import type {
   Order, Slot, TruckData, TruckMenu, Bundle, MenuItem,
@@ -115,6 +116,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showPrepList,setShowPrepList]=useState(false)
   const[showPrepTimeBanner,setShowPrepTimeBanner]=useState(false)
   const[keepScreenOn,setKeepScreenOn]=useState(true)
+  // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON (a truck wants to hear orders).
+  const[soundEnabled,setSoundEnabled]=useState(true)
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
   const[currentUserFirstName,setCurrentUserFirstName]=useState<string|null>(null)
   const[currentUserEmail,setCurrentUserEmail]=useState<string|null>(null)
@@ -490,6 +493,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const id=setInterval(sendHeartbeat,15000)
     return()=>clearInterval(id)
   },[token,vanId,activeEventLive,deviceOnline])
+  // Sound pref: install the audio-unlock (prime the shared AudioContext on first user gesture) +
+  // restore the per-device localStorage pref on mount; persist on change. Per-token so two trucks on
+  // one device don't collide. Default ON when no stored pref.
+  useEffect(()=>{installAudioUnlock();if(typeof window!=='undefined'){const s=localStorage.getItem(`hg_sound_${token}`);if(s!==null)setSoundEnabled(s==='on')}},[token])
+  useEffect(()=>{if(typeof window!=='undefined')localStorage.setItem(`hg_sound_${token}`,soundEnabled?'on':'off')},[soundEnabled,token])
   useEffect(()=>{
     if(!authenticated)return
     if(keepScreenOn){keepAwake()}else{allowSleep()}
@@ -503,12 +511,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const count=orders.filter(o=>o.status==='pending').length
     const ordersEventId=orders.find(o=>o.event_id)?.event_id??selectedEventId??null
     const sameEvent=ordersEventId===soundEventRef.current
-    if(sameEvent&&count>prevPendingCount.current&&authenticated){
-      try{const ctx=new(window.AudioContext||(window as any).webkitAudioContext)();const osc=ctx.createOscillator();const gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=880;gain.gain.setValueAtTime(0.3,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+0.6)}catch{}
+    if(soundEnabled&&sameEvent&&count>prevPendingCount.current&&authenticated){
+      playDing(880,0.6,0.3) // shared primed AudioContext (unlocked on first gesture) — gated on the Sound pref
     }
     soundEventRef.current=ordersEventId
     prevPendingCount.current=count
-  },[orders,authenticated,selectedEventId])
+  },[orders,authenticated,selectedEventId,soundEnabled])
 
   useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo,truck?.qr_code_style])
 
@@ -1027,6 +1035,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         subtitle={truck?.venue_name || undefined}
       >
         {pendingOrders.length>0&&<span className="bg-orange-500 text-white text-xs font-black px-2 py-0.5 rounded-full animate-pulse">{pendingOrders.length}</span>}
+        {/* Sound toggle — per-device new-order ding. Enabling is a user gesture → prime the audio so
+            subsequent dings play (the autoplay-unlock moment). */}
+        <button onClick={()=>setSoundEnabled(v=>{const next=!v;if(next)primeAudio();return next})} className="hidden sm:flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-500 select-none">
+            {soundEnabled ? '🔔 Sound on' : '🔕 Sound off'}
+          </span>
+          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${soundEnabled ? 'bg-green-500' : 'bg-slate-300'}`}>
+            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${soundEnabled ? 'translate-x-5' : 'translate-x-1'}`} />
+          </div>
+        </button>
         {/* Screen toggle — desktop only; mobile handled via UserMenu */}
         <button onClick={toggleKeepScreenOn} className="hidden sm:flex items-center gap-2">
           <span className="text-xs font-medium text-slate-500 select-none">

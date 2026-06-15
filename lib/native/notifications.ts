@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core'
+import { playDing } from '@/lib/audio'
 
 async function getPlugin() {
   if (!Capacitor.isNativePlatform()) return null
@@ -53,17 +54,8 @@ export async function notifyNewOrder(count: number) {
   }
 }
 
+// Web fallback (non-native) — use the SHARED primed AudioContext (lib/audio) so the ding actually
+// plays. A fresh `new AudioContext()` here was suspended-by-autoplay-policy and silently blocked.
 function playWebBeep() {
-  try {
-    const ctx = new AudioContext()
-    const oscillator = ctx.createOscillator()
-    const gain = ctx.createGain()
-    oscillator.connect(gain)
-    gain.connect(ctx.destination)
-    oscillator.frequency.value = 880
-    gain.gain.setValueAtTime(0.3, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3)
-    oscillator.start(ctx.currentTime)
-    oscillator.stop(ctx.currentTime + 0.3)
-  } catch {}
+  playDing(880, 0.3, 0.3)
 }

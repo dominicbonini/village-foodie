@@ -8,6 +8,13 @@ import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHe
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
+// Per-item tap-to-mark-done (the "8× Anchovies (2/8)" progress ticking on Window/Solo line items).
+// DISABLED per product decision 2026-06 — operators read an order, make it, and tap "Mark paid & done";
+// they don't tick individual items. Flip to `true` to restore the full behaviour (Window + Solo).
+// The struckUnits/tapItem/allStruck code is RETAINED but unreachable when this is false, so re-enabling
+// is just this one flag — nothing to re-implement.
+const ITEM_TICK_ENABLED = false
+
 // ── Shared UI primitives ──────────────────────────────────────────────────────
 
 export function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
@@ -463,15 +470,20 @@ export function OrderCard({
                   </div>
                   {lines.map((line, j) => {
                     const itemIndex = sortedItems.findIndex(it => it.name === line.name)
-                    const struck = itemIndex >= 0 ? Math.min(struckUnits[itemIndex] || 0, line.quantity) : 0
-                    const allDone = struck >= line.quantity
-                    const partDone = struck > 0 && !allDone
+                    // All struck/done state is gated on ITEM_TICK_ENABLED — when off these stay 0/false,
+                    // so the item renders plain (name + price, no highlight/count/strike/✓) and the
+                    // <button> is non-interactive. struckUnits/tapItem remain referenced (just unreached).
+                    const struck = ITEM_TICK_ENABLED && itemIndex >= 0 ? Math.min(struckUnits[itemIndex] || 0, line.quantity) : 0
+                    const allDone = ITEM_TICK_ENABLED && struck >= line.quantity
+                    const partDone = ITEM_TICK_ENABLED && struck > 0 && !allDone
                     return (
                       <div key={j}>
                         <button
-                          onClick={() => itemIndex >= 0 && tapItem(itemIndex, line.quantity)}
-                          className={`w-full flex justify-between items-baseline gap-2 ${viewMode === 'solo' || viewMode === 'window' ? 'text-sm' : 'text-base'} rounded py-1.5 transition-all active:scale-[0.99] select-none text-left ${
-                            allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
+                          onClick={ITEM_TICK_ENABLED ? () => itemIndex >= 0 && tapItem(itemIndex, line.quantity) : undefined}
+                          className={`w-full flex justify-between items-baseline gap-2 ${viewMode === 'solo' || viewMode === 'window' ? 'text-sm' : 'text-base'} rounded py-1.5 text-left ${
+                            ITEM_TICK_ENABLED
+                              ? `transition-all active:scale-[0.99] select-none ${allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'}`
+                              : 'cursor-default'
                           }`}>
                           <span className={`flex-1 font-normal transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-900'}`}>
                             {line.quantity}× {line.name}
