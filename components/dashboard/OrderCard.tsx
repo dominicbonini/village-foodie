@@ -341,8 +341,9 @@ export function OrderCard({
           </div>
         </div>
       ) : (
-        /* Window / solo: header (non-collapsing — content always shown) */
-        <div className={`w-full text-left px-4 py-3 ${headerCls}`}>
+        /* Window / solo: header (non-collapsing — content always shown). Window uses Cook's compact
+           px-3 py-2 for KDS grid density; Solo keeps its roomier px-4 py-3 (gate is 'window'-only). */
+        <div className={`w-full text-left ${viewMode === 'window' ? 'px-3 py-2' : 'px-4 py-3'} ${headerCls}`}>
           {viewMode === 'solo' ? (
             /* Solo (mobile): two-row layout with status badge */
             <>
@@ -461,7 +462,7 @@ export function OrderCard({
                       <div key={j}>
                         <button
                           onClick={() => itemIndex >= 0 && tapItem(itemIndex, line.quantity)}
-                          className={`w-full flex justify-between items-baseline gap-2 ${viewMode === 'solo' ? 'text-sm' : 'text-base'} rounded py-1.5 transition-all active:scale-[0.99] select-none text-left ${
+                          className={`w-full flex justify-between items-baseline gap-2 ${viewMode === 'solo' || viewMode === 'window' ? 'text-sm' : 'text-base'} rounded py-1.5 transition-all active:scale-[0.99] select-none text-left ${
                             allDone ? 'opacity-40' : partDone ? 'bg-orange-50' : 'hover:bg-orange-50'
                           }`}>
                           <span className={`flex-1 font-normal transition-all ${allDone ? 'line-through text-slate-400' : 'text-slate-900'}`}>

@@ -466,9 +466,11 @@ export default function KdsPage() {
   const displayMode = truck?.display_mode ?? 'list'
   const { can } = useFeatures(truck)
 
-  // Session-only overrides — URL param / DB setting is the default
-  // Cook screen is Max-only: force window view if plan doesn't include it
-  const activeView: KdsView = can('cook_screen')
+  // Session-only overrides — URL param / DB setting is the default.
+  // Cook screen requires BOTH the Max-plan feature (can('cook_screen')) AND the van's "Show cooking
+  // step" being ON — without the cooking step the 'cooking' status is unreachable and Cook is just a
+  // redundant Window. Either off ⇒ force Window (also neutralises a stale ?view=cook / viewOverride='cook').
+  const activeView: KdsView = can('cook_screen') && showCookingStep
     ? (viewOverride ?? kdsView)
     : 'window'
   const activeLayout = layoutOverride ?? displayMode
@@ -491,7 +493,8 @@ export default function KdsPage() {
       return ta - tb
     })
 
-  const MAX_GRID_VISIBLE = activeView === 'cook' && activeLayout === 'grid' ? 8 : 6
+  // Grid (BOTH views, now equally dense) shows up to 8; list views are uncapped (slice n/a below).
+  const MAX_GRID_VISIBLE = activeLayout === 'grid' ? 8 : 6
   const visibleOrders = activeLayout === 'grid'
     ? displayOrders.slice(0, MAX_GRID_VISIBLE)
     : displayOrders
@@ -573,7 +576,7 @@ export default function KdsPage() {
           >
             Window
           </button>
-          {can('cook_screen') && (
+          {can('cook_screen') && showCookingStep && (
             <button
               onClick={() => setViewOverride('cook')}
               className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
@@ -766,15 +769,13 @@ export default function KdsPage() {
         <div className="flex flex-col flex-1 min-w-0 overflow-y-auto">
         <div
           className={
-            activeView === 'cook'
-              ? activeLayout === 'list'
-                ? 'flex flex-col gap-3 p-3'
-                : 'grid gap-3 items-stretch p-3'
-              : activeLayout === 'grid'
-                ? 'grid grid-cols-2 xl:grid-cols-3 gap-3 items-stretch p-3'
-                : 'flex flex-col gap-3 p-3'
+            activeLayout === 'grid'
+              // BOTH views' grid use the SAME compact auto-fill density (see style below). Window
+              // dropped its fixed `grid-cols-2 xl:grid-cols-3` (≈3 wide cards) to match Cook's ≈4-across.
+              ? 'grid gap-3 items-stretch p-3'
+              : 'flex flex-col gap-3 p-3'
           }
-          style={(activeView === 'cook' && activeLayout === 'grid')
+          style={activeLayout === 'grid'
             ? { gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }
             : undefined
           }
