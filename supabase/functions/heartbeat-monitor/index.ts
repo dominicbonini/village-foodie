@@ -71,9 +71,15 @@ Deno.serve(async () => {
     console.log(`[heartbeat-monitor]   van ${van.id}: ${liveEvents?.length ?? 0} open (live) event(s) — ${(liveEvents ?? []).map(e => e.id).join(', ') || 'none'}`)
 
     for (const ev of liveEvents || []) {
-      if (ev.online_paused_until) {
-        console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — already offline-paused (until ${ev.online_paused_until})`)
-        continue // already offline-paused — leave it
+      // Only skip if the pause is STILL ACTIVE (expiry in the FUTURE). A non-null-but-PAST
+      // online_paused_until (an expired pause that was never cleared — e.g. an offline van that
+      // never reconnected, so /api/heartbeat never nulled it) is NOT a live pause: fall through and
+      // re-pause. Was `if (ev.online_paused_until)` (bare non-null) → a stale past value made the
+      // event permanently immune to re-pausing. The pause duration (now + 2h) ≫ the 30s cron cadence,
+      // so a genuinely-active pause is always in the future here → still skipped → no re-pause spam.
+      if (ev.online_paused_until && new Date(ev.online_paused_until).getTime() > now.getTime()) {
+        console.log(`[heartbeat-monitor]     event ${ev.id}: SKIP — already offline-paused (until ${ev.online_paused_until}, still active)`)
+        continue // still genuinely paused — leave it
       }
       const effective = ev.offline_protection_override !== null && ev.offline_protection_override !== undefined
         ? ev.offline_protection_override
