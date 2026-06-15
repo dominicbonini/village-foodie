@@ -30,9 +30,9 @@ export interface SlotAvailabilityRow {
   soft_max: number
   remaining: number
   available: boolean
-  /** Genuinely past clock time only (today: slot <= now + 5). */
+  /** Genuinely past clock time only (today: slot < now, event tz). No lead — see too_soon. */
   is_past: boolean
-  /** Below earliestCollectionMins (queue-aware ready floor) but NOT actually past. */
+  /** Below earliestCollectionMins (the SINGLE prep/queue/extraWait readiness floor) but not past. */
   too_soon: boolean
   /** True for slots after the event end time (grace period for truck only). */
   is_grace: boolean
@@ -124,7 +124,11 @@ export function buildSlotAvailability(params: {
   return times.map(s => {
     const slotMins = parseMins(s.collection_time)
     const isGrace = eventEndMins !== undefined && slotMins > eventEndMins
-    const isPast = !isGrace && date === today && slotMins <= nowMins + 5
+    // PAST = genuinely elapsed only (slot strictly before now, event tz). The flat +5 "lead" is GONE
+    // (V7.1): the SINGLE readiness lead is now earliestCollectionMins (prep + queue + extraWait, via
+    // calcMinReadyMins) carried by tooSoon. So available folds ONE prep-based floor, not two — the
+    // ASAP slot (getAsapSlot, gated on available) now equals the earliest slot the picker allows.
+    const isPast = !isGrace && date === today && slotMins < nowMins
     const tooSoon = !isPast && slotMins < earliestCollectionMins
 
     let tone: SlotTone

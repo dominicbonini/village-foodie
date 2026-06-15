@@ -168,7 +168,26 @@ export default function KdsPage() {
     })
   }, [])
 
+  // SINGLE active-event resolution (also drives ● Live, the pause/extra-wait target, and the render
+  // below): the selected event, else the live → confirmed → first today event. Declared here, above
+  // the heartbeat effect, so the heartbeat can gate on its live status. "live" = status==='open'
+  // (live-redefinition) — the same rule as the customer page, TruckListCard, the dashboard, and the
+  // heartbeat-monitor.
+  const activeEvent: TruckEvent | null = selectedEventId
+    ? todayEvents.find(e => e.id === selectedEventId) ?? null
+    : (todayEvents.find(e => e.status === 'open')
+      ?? todayEvents.find(e => e.status === 'confirmed')
+      ?? todayEvents[0]
+      ?? null)
+  const activeEventLive = activeEvent?.status === 'open'
+
   useEffect(() => {
+    // Heartbeat ONLY while this KDS's active event is LIVE (status==='open') — offline protection
+    // only matters for a live event; a confirmed/pre-order event isn't affected by going offline,
+    // and the monitor only pauses status='open' events. Keyed on activeEventLive so STARTING an
+    // event fires an immediate ping then the interval, and FINISHING it clears the interval (no
+    // re-arm). No stale closure — the gate is the dep.
+    if (!activeEventLive) return
     const sendHeartbeat = async () => {
       if (typeof navigator !== 'undefined' && !navigator.onLine) return
       try {
@@ -179,10 +198,10 @@ export default function KdsPage() {
         })
       } catch {}
     }
-    sendHeartbeat()
+    sendHeartbeat() // immediate ping on the confirmed→open flip
     const heartbeatInterval = setInterval(sendHeartbeat, 15000)
     return () => { clearInterval(heartbeatInterval) }
-  }, [token, vanId])
+  }, [token, vanId, activeEventLive])
 
   useEffect(() => {
     fetchAllRef.current = fetchAll
@@ -437,12 +456,7 @@ export default function KdsPage() {
     setSelectedEventId(event.id)
   }
 
-  const activeEvent: TruckEvent | null = selectedEventId
-    ? todayEvents.find(e => e.id === selectedEventId) ?? null
-    : (todayEvents.find(e => e.status === 'open')
-      ?? todayEvents.find(e => e.status === 'confirmed')
-      ?? todayEvents[0]
-      ?? null)
+  // activeEvent + activeEventLive resolved once near the top (above the heartbeat effect).
   activeEventIdRef.current = activeEvent?.id ?? null // keep the ref current for the pause/wait callbacks
   const recentlyClosed = !!(activeEvent?.status === 'closed' && activeEvent.closed_at && Date.now() - new Date(activeEvent.closed_at).getTime() < 10 * 60 * 1000)
 

@@ -13,18 +13,12 @@ export interface SlotBase {
 // tz defaults to 'Europe/London' (current default; replaced by trucks.timezone later). "now"/"today"
 // run in the EVENT's timezone, so device/server tz can't shift the result.
 export function getAsapSlot<T extends SlotBase>(slots: T[], eventDate?: string, tz: string = 'Europe/London'): T | null {
-  const todayStr = getLocalDateInTz(tz)
-  const isToday = !eventDate || eventDate === todayStr
-
-  if (!isToday) {
-    return slots.find(s => s.available && !s.is_grace) || null
-  }
-
-  const nowMins = getNowMinsInTz(tz)
-  return slots.find(s => {
-    const [h, m] = s.collection_time.split(':').map(Number)
-    return (h * 60 + m) > nowMins && s.available && !s.is_grace
-  }) || null
+  // The earliest slot that is (a) not genuinely past — live, event tz, via the SAME isSlotPast the
+  // picker uses (handles future/prior day too) — AND (b) server-available. After V7.1, `available`
+  // folds the SINGLE prep-based readiness floor (earliestCollectionMins) + capacity, with NO flat +5
+  // lead. So this returns EXACTLY the earliest slot the picker allows → ASAP == earliest selectable
+  // == pickable (the V6.9 invariant), on every surface that derives ASAP from this one helper.
+  return slots.find(s => !isSlotPast(s, tz, eventDate) && s.available && !s.is_grace) || null
 }
 
 // SINGLE SOURCE OF TRUTH for "is this slot in the past" — used by BOTH the customer page and the

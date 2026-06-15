@@ -217,6 +217,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const selectedOrDefaultEvent:TruckEvent|null=selectedEventId
     ?(upcomingEvents.find(e=>e.id===selectedEventId)??null)
     :pickDefaultEventByTime(upcomingEvents)
+  // SINGLE live signal — same rule as the "● Live" indicator (activeEvent.status==='open'), the
+  // customer page, TruckListCard, and the heartbeat-monitor: live = the resolved active event is
+  // status==='open'. Derived from selectedOrDefaultEvent (the canonical resolution; activeEvent
+  // below is just this + a transient-blank UI guard) so the heartbeat hook above the early-returns
+  // can read it. Gates the heartbeat: ping ONLY while live (offline protection only matters then).
+  const activeEventLive=selectedOrDefaultEvent?.status==='open'
   // ASAP date = the SELECTED/active event's own date (not "the live event"), so a future
   // event's ASAP is its first real slot, never now-floored against a different event's date.
   const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date)
@@ -448,6 +454,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!ack||new Date(lastOfflinePauseAt).getTime()>new Date(ack).getTime()) setShowOfflinePausedNotice(true)
   },[lastOfflinePauseAt,offlinePauseEventId,offlinePauseNoticeEnabled])
   useEffect(()=>{
+    // Heartbeat ONLY while the active event is LIVE (status==='open'). Offline protection only
+    // matters for a live event — a confirmed/pre-order event is unaffected by the truck being
+    // offline, and the monitor only pauses status='open' events, so a non-live van going stale is
+    // harmless. Keyed on activeEventLive so the effect re-runs on the flip: STARTING an event
+    // (confirmed→open) fires an IMMEDIATE ping (no 15s wait) then the interval; FINISHING it
+    // (open→closed) runs cleanup → interval cleared, no re-arm. No stale closure — the gate is the
+    // dep, so the interval only ever exists during a live window.
+    if(!activeEventLive)return
     const sendHeartbeat=async()=>{
       if(typeof navigator!=='undefined'&&!navigator.onLine)return
       console.log('[Heartbeat] sending token:',token,'vanId:',vanId||'(none)')
@@ -457,10 +471,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         console.log('[Heartbeat] response:',data)
       }catch(err){console.error('[Heartbeat] failed:',err)}
     }
-    sendHeartbeat()
+    sendHeartbeat() // immediate ping on the confirmed→open flip
     const id=setInterval(sendHeartbeat,15000)
     return()=>clearInterval(id)
-  },[token])
+  },[token,vanId,activeEventLive])
   useEffect(()=>{
     if(!authenticated)return
     if(keepScreenOn){keepAwake()}else{allowSleep()}

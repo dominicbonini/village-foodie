@@ -13,7 +13,7 @@ import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
-import { formatTime, localTodayIso } from '@/lib/time-utils';
+import { formatTime, localTodayIso, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -128,6 +128,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [event, setEvent] = useState<EventData | null>(null)
   const [eventLoading, setEventLoading] = useState(true)
   const [noEvents, setNoEvents] = useState(false)
+  // Events fetch FAILED (after auto-retries) — set only on the failure paths, so the render shows a
+  // "couldn't load — tap to retry" card instead of a silent blank body. Bumping reloadKey re-runs
+  // the events effect (the Retry button); success clears eventsError.
+  const [eventsError, setEventsError] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   // Non-destructive "orders paused" notice on a submit 423 — keeps the basket + order UI
@@ -316,38 +321,60 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // Load upcoming events for this truck
   useEffect(() => {
-    const loadEvent = async () => {
-      try {
-        const res = await fetch(`/api/events?truck=${slug}`)
-        if (!res.ok) { setEventLoading(false); return }
-        const data = await res.json()
-        if (data.events && data.events.length > 0) {
-          const now = new Date()
-          const cutoff = new Date()
-          cutoff.setDate(cutoff.getDate() + 14)
-          const upcoming = data.events.filter((e: EventData) => {
-            // Exclude events whose end time has passed — local time parse per engineering manual
-            if (e.date_iso && e.end_time && now >= new Date(`${e.date_iso}T${e.end_time}`)) return false
-            const [d, m, y] = e.date.split('/').map(Number)
-            return new Date(y, m-1, d) <= cutoff
-          })
-          if (upcoming.length > 0) {
-            setEvents(upcoming)
-            // Selection is derived from ?event_id in the effect below — don't pre-select here.
+    // Initial events load WITH bounded auto-retry (3 attempts, 1s then 2s backoff). A transient
+    // cold-start/blip self-heals silently; only an exhausted-retry failure surfaces eventsError so
+    // the render shows the retry card (never a silent blank). `cancelled` (cleanup) prevents a stale
+    // loop from setState-ing after unmount or a slug/reloadKey change. Re-runs when reloadKey is
+    // bumped by the Retry button. SUCCESS PATH unchanged from before (filter + setEvents/setNoEvents).
+    let cancelled = false
+    const loadEvents = async () => {
+      setEventsError(false)
+      setEventLoading(true)
+      const backoffMs = [1000, 2000] // waits BEFORE retry attempts 2 and 3
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const res = await fetch(`/api/events?truck=${slug}`)
+          if (!res.ok) throw new Error(`HTTP ${res.status}`)
+          const data = await res.json()
+          if (cancelled) return
+          if (data.events && data.events.length > 0) {
+            const now = new Date()
+            const cutoff = new Date()
+            cutoff.setDate(cutoff.getDate() + 14)
+            const upcoming = data.events.filter((e: EventData) => {
+              // Exclude events whose end time has passed — local time parse per engineering manual
+              if (e.date_iso && e.end_time && now >= new Date(`${e.date_iso}T${e.end_time}`)) return false
+              const [d, m, y] = e.date.split('/').map(Number)
+              return new Date(y, m-1, d) <= cutoff
+            })
+            if (upcoming.length > 0) {
+              setEvents(upcoming)
+              // Selection is derived from ?event_id in the effect below — don't pre-select here.
+            } else {
+              setNoEvents(true)
+            }
           } else {
             setNoEvents(true)
           }
-        } else {
-          setNoEvents(true)
+          setEventsError(false)
+          setEventLoading(false)
+          return // success — stop retrying
+        } catch {
+          if (cancelled) return
+          if (attempt < 2) {
+            await new Promise(r => setTimeout(r, backoffMs[attempt]))
+            if (cancelled) return
+            continue // retry
+          }
+          // All attempts exhausted → surface the retry card (no silent blank).
+          setEventsError(true)
+          setEventLoading(false)
         }
-      } catch {
-        // Non-fatal
-      } finally {
-        setEventLoading(false)
       }
     }
-    loadEvent()
-  }, [slug])
+    loadEvents()
+    return () => { cancelled = true }
+  }, [slug, reloadKey])
 
   // Derive the selected event from ?event_id (the deep-link). With a valid id → scope to it;
   // without → auto-select the only event (single-event truck), else leave unselected so the
@@ -630,9 +657,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             ])
           )
 
-    const todayIso = localTodayIso() // local date (s.7) — a future LOCAL event is never "today"
+    const todayIso = getLocalDateInTz(eventTz) // event-tz date — a future LOCAL event is never "today"
     const isToday = eventDateIso === todayIso
-    const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
+    const nowMins = getNowMinsInTz(eventTz) // event tz, NOT device time — agrees with the slot floors
     const beforeEvent = !isToday || nowMins < eventStartMins
 
     if (!menu) {
@@ -702,12 +729,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
     if (asapMins === eventStartMins && extraWait === 0) return event.start_time
 
-    const roundedMins = Math.round(asapMins / 5) * 5
+    const roundedMins = Math.ceil(asapMins / 5) * 5 // ceil-to-grid (next 5-min slot), never round DOWN below the floor
     const h = Math.floor(roundedMins / 60)
     const m = roundedMins % 60
     return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`
 
-  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs, truck, eventDateIso, capacityInputs])
+  }, [basket, appliedDeals, menu, event, asapSlot, hasItems, queueByCat, serverCatConfigs, truck, eventDateIso, capacityInputs, eventTz, nowTick])
 
   // Convert HH:MM to total minutes for comparison
   const toMins = (time: string) => {
@@ -1041,6 +1068,23 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const isClosed = isEventClosed || eventEnded
   const isOrderingBlocked = isPaused || isClosed
 
+  // Shown in place of the event card when the events fetch failed (after auto-retries) — friendly,
+  // not alarming, with a Retry that re-runs the events effect (setReloadKey bump). Used by both the
+  // eventsError branch AND the catch-all, so the event section is NEVER a silent blank.
+  const eventsRetryCard = (
+    <div className="mt-3 bg-slate-100 rounded-xl px-4 py-4 text-center">
+      <p className="text-slate-600 text-sm font-medium">We couldn&apos;t load the menu right now.</p>
+      <p className="text-slate-400 text-xs mt-0.5 mb-3">Please check your connection and tap to retry.</p>
+      <button
+        onClick={() => setReloadKey(k => k + 1)}
+        disabled={eventLoading}
+        className="inline-block bg-orange-600 text-white font-bold px-5 py-2 rounded-lg text-sm hover:bg-orange-700 disabled:opacity-60"
+      >
+        {eventLoading ? 'Retrying…' : 'Retry'}
+      </button>
+    </div>
+  )
+
   return (
     <Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
@@ -1127,6 +1171,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3 animate-pulse">
               <p className="text-slate-400 text-sm">Loading events...</p>
             </div>
+          ) : eventsError ? (
+            eventsRetryCard
           ) : noEvents ? (
             <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3">
               <p className="text-slate-500 text-sm font-medium">No upcoming events in the next 2 weeks</p>
@@ -1196,7 +1242,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 </>
               )}
             </div>
-          ) : null}
+          ) : (
+            // Belt-and-braces: not loading, no error flag, no events, not noEvents — only reachable
+            // via a failure that slipped past the flags. NEVER a silent blank → show the retry card.
+            eventsRetryCard
+          )}
         </div>
 
         {/* Ordering UI (deals + menu) renders only once an event is scoped — until then the
@@ -1472,7 +1522,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
                   {/* LEFT: ASAP button */}
                   {(() => {
-                    const asapTime = backwardAsap || customerAsapTime || asapSlot || (availableHours.length > 0
+                    // ASAP display precedence (V7.1): backwardAsap (capacity-fit earliest, basket) →
+                    // asapSlot (getAsapSlot = earliest pickable, empty basket) → customerAsapTime (a
+                    // pure ESTIMATE, last resort only when there's no real slot). asapSlot now ranks
+                    // ABOVE the estimate so "Around HH:MM" equals the earliest selectable slot — both
+                    // derive from the one prep floor. (Was: estimate ahead of asapSlot → the divergence.)
+                    const asapTime = backwardAsap || asapSlot || customerAsapTime || (availableHours.length > 0
                       ? `${availableHours[0]}:${availableMinutes[0] || '00'}`
                       : null)
                     const isSelected = asapChosen
@@ -1504,7 +1559,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   {/* RIGHT: Choose time button / dropdown */}
                   <div className="flex-1">
                     {truck?.time_selection_enabled ? (() => {
-                      const asapTime = backwardAsap || customerAsapTime || asapSlot || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
+                      // ASAP display precedence (V7.1): real slot (backwardAsap → asapSlot) before the
+                      // customerAsapTime ESTIMATE, so the picker floor == the displayed ASAP.
+                      const asapTime = backwardAsap || asapSlot || customerAsapTime || (availableHours.length > 0 ? `${availableHours[0]}:${availableMinutes[0] || '00'}` : null)
                       const hasChosenTime = !asapChosen && selectedSlot
 
                       return (
