@@ -23,6 +23,13 @@ async function verifyToken(token: string, pin?: string) {
   return truck
 }
 
+// Escape operator free-text before interpolating into a customer email's HTML (prevents broken
+// markup / injection from a rejection/cancellation reason). NOTE: the CANCEL email (:cancellation
+// reasonLine) does NOT escape today — same risk there; escape it too if/when that's touched.
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 async function notifyCustomer(email: string, subject: string, html: string, truckName?: string) {
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey || !email) return
@@ -101,9 +108,11 @@ export async function POST(req: NextRequest) {
 
     // ── REJECT ────────────────────────────────────────────────────────────────
     if (action === 'reject') {
+      const { rejectionReason } = body
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'rejected' }).eq('order_key', orderKey)
+      // Dedicated rejection_reason column (NOT cancellation_reason — a rejected order isn't cancelled).
+      await supabase.from('orders').update({ status: 'rejected', rejection_reason: rejectionReason || null }).eq('order_key', orderKey)
       if (order.event_date) {
         // order.slot may be null (ASAP) — removeOrderFromProductionSlot resolves
         // it to the same event-start window the booking used, so it unbooks cleanly.
@@ -114,10 +123,13 @@ export async function POST(req: NextRequest) {
         )
       }
       if (order.customer_email) {
+        // Mirrors the cancel email's reasonLine — the operator's reason, escaped, shown to the customer.
+        const reasonLine = rejectionReason ? `<p style="color:#475569">Reason: ${escapeHtml(rejectionReason)}</p>` : ''
         await notifyCustomer(order.customer_email, `Order #${order.id} update`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Order update</h2>
             <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${order.id}.</p>
+            ${reasonLine}
             <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
             <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
           </body>`, truck.name)

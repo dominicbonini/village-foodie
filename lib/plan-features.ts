@@ -80,6 +80,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Smart Slot Management',                        starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    starter: false, pro: true,           max: true           },
       { name: 'Branded QR code', starter: false, pro: true,  max: true  },
+      { name: 'WhatsApp auto-replies',            footnote: '4', starter: false, pro: true,           max: true           },
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', starter: false, pro: 'coming_soon', max: 'coming_soon' },
@@ -89,7 +90,6 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
   {
     title: 'Max tier',
     rows: [
-      { name: 'WhatsApp auto-replies',    footnote: '4', starter: false, pro: false, max: true },
       { name: 'Multi-device kitchen sync', starter: false, pro: false, max: true           },
       { name: 'Multi-user access',         starter: false, pro: false, max: true           },
       // Coming soon (kept at the bottom of the section)

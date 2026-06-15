@@ -5266,7 +5266,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       <div className="flex items-start justify-between mb-2 sticky top-[95px] z-30 bg-white pt-2">
         <div className="flex-1" />
         {billingPlans.map(p => (
-          <div key={p} className={`w-[72px] sm:w-28 text-center pb-3 border-b-2 ${
+          <div key={p} className={`w-14 sm:w-28 text-center pb-3 border-b-2 ${
             isCurrent(p) ? 'border-orange-500' : 'border-slate-100'
           }`}>
             <p className={`text-[10px] sm:text-xs font-semibold uppercase tracking-widest ${
@@ -5287,7 +5287,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       <div className="mb-2">
         <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
           <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
-          {trialActive && <div className="w-[72px] sm:w-28" />}<div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
+          {trialActive && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
         </div>
         {TRANSACTION_ROWS.map(row => (
           <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
@@ -5298,7 +5298,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </div>
             </div>
             {billingPlans.map(p => (
-              <div key={p} className={`w-[72px] sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
+              <div key={p} className={`w-14 sm:w-28 text-center text-xs sm:text-sm font-semibold leading-snug ${
                 isCurrent(p) ? 'text-orange-600' : 'text-slate-600'
               }`}>
                 {px(p === 'trial' ? row.values.starter : row.values[p as 'starter' | 'pro' | 'max'])}
@@ -5314,7 +5314,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
               {section.title}
             </span>
-            {trialActive && <div className="w-[72px] sm:w-28" />}<div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" /><div className="w-[72px] sm:w-28" />
+            {trialActive && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
           </div>
           {section.rows.map(row => (
             <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
@@ -5330,7 +5330,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                   ? (row.name === 'Online ordering — Pay at Hatch' ? true : row.max)
                   : row[p as 'starter' | 'pro' | 'max']
                 return (
-                  <div key={p} className="w-[72px] sm:w-28 text-center">
+                  <div key={p} className="w-14 sm:w-28 text-center">
                     {val === true && (
                       <span className={`text-sm font-semibold ${isCurrent(p) ? 'text-orange-500' : 'text-slate-500'}`}>✓</span>
                     )}

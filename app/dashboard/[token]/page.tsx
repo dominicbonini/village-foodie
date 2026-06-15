@@ -165,6 +165,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[cancellingOrder,setCancellingOrder]=useState<Order|null>(null)
   const[cancelReason,setCancelReason]=useState('')
   const[cancelNote,setCancelNote]=useState('')
+  // Reject (pending-order review) — REQUIRED reason, mirrors the cancel modal pattern.
+  const[showRejectModal,setShowRejectModal]=useState(false)
+  const[rejectingOrder,setRejectingOrder]=useState<Order|null>(null)
+  const[rejectReason,setRejectReason]=useState('')
+  const[rejectNote,setRejectNote]=useState('')
   // Edit modal
   const[editingOrder,setEditingOrder]=useState<Order|null>(null)
   // Slots for the EDITED order's own event — fetched via the shared /api/slots path
@@ -716,6 +721,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // orderKey is the UUID row identity. Display number comes from the looked-up order.
   const doAction=async(action:string,orderKey:string)=>{
     if(action==='cancel'){const ord=orders.find(o=>o.order_key===orderKey)??null;setCancellingOrder(ord);setShowCancelModal(true);return}
+    if(action==='reject'){const ord=orders.find(o=>o.order_key===orderKey)??null;setRejectingOrder(ord);setShowRejectModal(true);return}
     setActionLoading(`${action}-${orderKey}`)
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,order_key:orderKey})})
@@ -892,6 +898,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null})})
       .then(r=>r.json()).then(()=>{showToast(`Order #${displayId} cancelled`);fetchAll()})
       .catch(()=>showToast('Failed to cancel','error'))
+      .finally(()=>setActionLoading(null))
+  }
+
+  const confirmRejectOrder=()=>{
+    if(!rejectingOrder) return
+    const note=rejectNote.trim()
+    // REQUIRED reason: a concrete preset → preset (+ optional note); "Other" or no preset → the note
+    // (mandatory). fullReason is never empty (the confirm button is also disabled until valid).
+    const fullReason=(rejectReason&&rejectReason!=='Other')?[rejectReason,note].filter(Boolean).join(' — '):note
+    if(!fullReason) return
+    const orderKey=rejectingOrder.order_key
+    const displayId=rejectingOrder.id
+    setShowRejectModal(false);setRejectingOrder(null);setRejectReason('');setRejectNote('')
+    setActionLoading(`reject-${orderKey}`)
+    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'reject',order_key:orderKey,rejectionReason:fullReason})})
+      .then(r=>r.json()).then(()=>{showToast(`Order #${displayId} rejected`);fetchAll()})
+      .catch(()=>showToast('Failed to reject','error'))
       .finally(()=>setActionLoading(null))
   }
 
@@ -2044,6 +2067,36 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="flex gap-3">
               <button onClick={()=>{setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
               <button onClick={()=>confirmCancelOrder()} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm">Cancel order</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject order modal — REQUIRED reason (shown to the customer). Mirrors the cancel modal. */}
+      {showRejectModal&&rejectingOrder&&(
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 flex flex-col gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Reject order #{rejectingOrder.id}?</h3>
+              <p className="text-sm text-slate-500 mt-1">{rejectingOrder.customer_name} · £{rejectingOrder.total.toFixed(2)}</p>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Reason — required (shown to the customer)</label>
+              <select value={rejectReason} onChange={e=>setRejectReason(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm">
+                <option value="">Select a reason</option>
+                <option value="Sold out of an item">Sold out of an item</option>
+                <option value="Too busy — can't make it in time">Too busy — can&apos;t make it in time</option>
+                <option value="Closing soon">Closing soon</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{rejectReason==='Other'?'Reason — required':'Additional note — optional'}</label>
+              <textarea value={rejectNote} onChange={e=>setRejectNote(e.target.value)} placeholder="Add more detail for the customer..." rows={2} className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none"/>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={()=>{setShowRejectModal(false);setRejectingOrder(null);setRejectReason('');setRejectNote('')}} className="flex-1 border border-slate-200 text-slate-600 font-medium py-3 rounded-xl text-sm">Keep order</button>
+              <button onClick={()=>confirmRejectOrder()} disabled={!((rejectReason!==''&&rejectReason!=='Other')||rejectNote.trim()!=='')} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed">Reject order</button>
             </div>
           </div>
         </div>
