@@ -807,6 +807,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // ── set_offline_protection ── EVENT-scoped offline_protection_override (truck_events) ──────────
+    // SERVICE-ROLE write (the dashboard toggle used to write via the browser anon client, which RLS
+    // silently no-op'd → the toggle never persisted). value: true (force on) / false (force off) /
+    // null (reset to the van default). Disabling (false) ALSO clears any active offline auto-pause
+    // (online_paused_until) for this event — "don't offline-pause this event" should take effect now,
+    // not wait for the AND-gate with a leftover value. NEVER touches paused_until (a manual pause is
+    // separate). Mirrors the set_paused clear, but offline-only.
+    if (action === 'set_offline_protection') {
+      const { value, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+      if (value !== true && value !== false && value !== null) {
+        return NextResponse.json({ error: 'value must be true, false, or null' }, { status: 400 })
+      }
+      const patch: Record<string, unknown> = { offline_protection_override: value }
+      if (value === false) patch.online_paused_until = null // disabling clears the offline pause too
+      const { error } = await supabase.from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true })
+    }
+
     // ── set_extra_wait ── EVENT-scoped (truck_events), not trucks ──────────────
     if (action === 'set_extra_wait') {
       const { eventId } = body

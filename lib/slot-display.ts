@@ -34,7 +34,9 @@ interface SlotInput {
  * STARTING at S (e.g. 10 pizzas @19:00 → 18:45 "Pizza 4/4" red, 18:50 "4/4" red, 18:55
  * "2/4" amber, 19:00+ green). The red/amber/green RULE is unchanged (full ⇒ red, partial ⇒
  * amber, empty ⇒ green) — only WHICH window each dot reads is now physically correct.
- *   tone   = the window's occupancy tone; a too_soon slot over a GREEN oven folds to amber.
+ *   tone   = the window's occupancy tone, from REAL cooking-window load ONLY (empty oven ⇒ green).
+ *            too_soon does NOT affect the tone (the old too_soon→amber fold was removed) — it's a
+ *            time/lead constraint, not oven load. So amber/red always carry real byCat load + a label.
  *   emoji  = 🟢 / 🟡 / 🔴.
  *   label  = the window's per-category COMPOSITION as plain counts ("4 Pizza, 2 Other"),
  *            shown on every tone; '' when the window is empty. byCat is already capacity-
@@ -86,15 +88,20 @@ export function buildSlotIndicators(
   for (const s of slots) {
     const w = back.byStart.get(toMins(s.collection_time) - step) ?? null
     const pw = physical.byStart.get(toMins(s.collection_time) - step) ?? null
-    let tone: SlotTone = w?.tone ?? 'green'
-    if (s.too_soon && tone === 'green') tone = 'amber'
+    // Tone comes ONLY from real cooking-window load (byCat-backed amber/red from the backward
+    // projection / global ceiling). No load ⇒ green. The old too_soon→amber fold was REMOVED: too_soon
+    // is a TIME/lead constraint ("can't collect that early"), not oven load, and painting it amber gave
+    // a bare amber dot with no "X/Y" label over an empty oven. too_soon still exists server-side and
+    // still drives the CUSTOMER picker filter (order/page.tsx !s.too_soon); it just no longer affects
+    // the display TONE. So amber/red now ALWAYS carry real byCat load + a composition label.
+    const tone: SlotTone = w?.tone ?? 'green'
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
     // Label = the window's per-category COMPOSITION as plain counts ("4 Pizzas, 2 Others"), shown
     // on ALL tones — the colour conveys fullness, the text says what's PHYSICALLY in the window.
     // Built from the PHYSICAL projection (pw.byCat): every booked category incl. unticked no-prep
     // (Drinks) and every order source, NOT the capacity-seated w.byCat. Same window key (T−step)
-    // as the tone. No denominators. Empty window (no load / too_soon over a green oven) → '' so
-    // nothing odd renders.
+    // as the tone. No denominators. Empty window (no load) → '' so nothing odd renders. (A too_soon
+    // slot over an empty oven is now plain green with no label — no bare amber dot.)
     const label = pw
       ? Object.entries(pw.byCat)
           .filter(([, n]) => Math.round(n) > 0)

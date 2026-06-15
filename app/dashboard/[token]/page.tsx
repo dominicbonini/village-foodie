@@ -135,13 +135,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[pausedUntil,setPausedUntil]=useState<string|null>(null)            // truck-level (legacy)
   const[vanPausedUntil,setVanPausedUntil]=useState<string|null>(null)       // active van — manual
   const[vanOnlinePausedUntil,setVanOnlinePausedUntil]=useState<string|null>(null) // active van — offline
+  // Reactive device-online flag (navigator.onLine + online/offline transition events). Drives BOTH the
+  // immediate reconnect-heartbeat (heartbeat-effect dep) AND the operator-only offline-pause suppression.
+  const[deviceOnline,setDeviceOnline]=useState(typeof navigator!=='undefined'?navigator.onLine:true)
   const[showPauseModal,setShowPauseModal]=useState(false)
   // Offline-pause notification: durable marker from /api/dashboard (set only by heartbeat-monitor,
   // survives the reconnect clear). Fires a one-time popup when it's NEWER than this device's ack.
   const[lastOfflinePauseAt,setLastOfflinePauseAt]=useState<string|null>(null)
   const[offlinePauseEventId,setOfflinePauseEventId]=useState<string|null>(null)
   const[showOfflinePausedNotice,setShowOfflinePausedNotice]=useState(false)
-  const[offlinePauseNoticeEnabled,setOfflinePauseNoticeEnabled]=useState(true) // per-device pref (localStorage)
   // OK → record the acknowledged marker for THIS event so a poll tick / reload won't re-pop it; a
   // newer offline pause (newer timestamp) clears the guard and re-fires.
   const ackOfflinePausedNotice=()=>{
@@ -149,17 +151,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       localStorage.setItem(`hg_offline_pause_ack_${offlinePauseEventId}`,lastOfflinePauseAt)
     setShowOfflinePausedNotice(false)
   }
-  const toggleOfflinePauseNotice=()=>setOfflinePauseNoticeEnabled(prev=>{
-    const next=!prev
-    if(typeof window!=='undefined') localStorage.setItem('hg_offline_pause_notice',next?'on':'off')
-    if(!next) setShowOfflinePausedNotice(false)
-    return next
-  })
   const isFuturePause=(s:string|null)=>!!s&&new Date(s).getTime()>Date.now()
   const manualPaused=isFuturePause(pausedUntil)||isFuturePause(vanPausedUntil)
   const offlinePaused=isFuturePause(vanOnlinePausedUntil)
-  const paused=manualPaused||offlinePaused
-  const pauseReason:'manual'|'offline'|null=manualPaused?'manual':offlinePaused?'offline':null
+  // `paused` / `pauseReason` (the DISPLAY values, with the local-reconnect override applied to the
+  // OFFLINE pause only) are derived below, after activeEventLive is resolved — see ~:228.
   const pauseUntilEffective=[vanPausedUntil,pausedUntil,vanOnlinePausedUntil].find(isFuturePause)??null
   // Cancel confirmation modal
   const[showCancelModal,setShowCancelModal]=useState(false)
@@ -223,6 +219,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // below is just this + a transient-blank UI guard) so the heartbeat hook above the early-returns
   // can read it. Gates the heartbeat: ping ONLY while live (offline protection only matters then).
   const activeEventLive=selectedOrDefaultEvent?.status==='open'
+  // LOCAL-RECONNECT OVERRIDE (operator DISPLAY only): this device knows it's back — navigator.onLine
+  // (deviceOnline) AND heartbeating for a live event (activeEventLive ⇒ the heartbeat is running). So
+  // it stops showing the OFFLINE pause IMMEDIATELY, without waiting ~15-30s for the DB online_paused_until
+  // to clear (the reconnect-heartbeat below clears it in the background within ~1-2s). Applies to the
+  // OFFLINE pause ONLY — a MANUAL pause (operator tapped Pause orders) is never suppressed, being online
+  // doesn't un-pause it. The CUSTOMER page is untouched: it stays DB-driven (authoritative server state).
+  const offlinePausedDisplay=offlinePaused&&!(deviceOnline&&activeEventLive)
+  const paused=manualPaused||offlinePausedDisplay
+  const pauseReason:'manual'|'offline'|null=manualPaused?'manual':offlinePausedDisplay?'offline':null
   // ASAP date = the SELECTED/active event's own date (not "the live event"), so a future
   // event's ASAP is its first real slot, never now-floored against a different event's date.
   const asapSlot=getAsapSlot(slots,selectedOrDefaultEvent?.event_date)
@@ -369,15 +374,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}
   },[upcomingEvents,selectedEventId])
   useEffect(()=>{
-    const event=selectedEventId?upcomingEvents.find(e=>e.id===selectedEventId)??null:null
-    // kitchen_capacity + active van name now come from /api/dashboard (service-role read in
-    // fetchAll). The direct anon truck_vans read here was RLS-blocked, so the card showed
-    // "No limit" even though the van had a value. See diagnosis. Only the event-scoped
-    // offline-override read remains.
-    if(!event?.van_id){setEventOfflineOverride(null);return}
-    supabaseBrowser.from('truck_events').select('offline_protection_override').eq('id',event.id).single()
-      .then(({data})=>{setEventOfflineOverride(data?.offline_protection_override??null)})
-  },[selectedEventId,upcomingEvents])
+    // Event-scoped offline-override read (anon SELECT is permitted; only the WRITE was RLS-blocked —
+    // that now goes through the service-role action). Keyed on selectedEventId ONLY (was also
+    // [upcomingEvents]) so a routine events poll no longer re-reads and CLOBBERS a just-set optimistic
+    // toggle value mid-change. Query by id directly (not via upcomingEvents.find) so it doesn't need
+    // that list. cancelled guard drops a stale in-flight read after a fast event switch.
+    if(!selectedEventId){setEventOfflineOverride(null);return}
+    let cancelled=false
+    supabaseBrowser.from('truck_events').select('offline_protection_override').eq('id',selectedEventId).single()
+      .then(({data})=>{if(!cancelled)setEventOfflineOverride(data?.offline_protection_override??null)})
+    return()=>{cancelled=true}
+  },[selectedEventId])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
   // SINGLE source for the event the Menu & Stock counts AND the order-scoping ref
   // resolve to: the explicitly-selected event, else today's open/confirmed/first.
@@ -442,17 +449,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }).catch(err=>console.error('[VansFetch] error:',err))
   },[truck?.id])
   useEffect(()=>{const id=setInterval(()=>setWaitTick(t=>t+1),30000);return()=>clearInterval(id)},[]);
-  // Load the per-device offline-pause-notice preference (default ON).
-  useEffect(()=>{if(typeof window!=='undefined')setOfflinePauseNoticeEnabled(localStorage.getItem('hg_offline_pause_notice')!=='off')},[])
-  // Fire the popup when the durable marker is NEWER than this device's ack for that event. Deps are
-  // the marker + its event id, so a poll tick that returns the SAME timestamp doesn't re-run it; after
-  // OK (ack = marker) the `> ack` test is false; a NEW offline pause (newer marker) re-fires.
+  // Fire the popup when the durable marker is NEWER than this device's ack for that event. ALWAYS
+  // shows (no per-device suppression pref — an operator must never miss that their orders were paused
+  // while away); the per-event ack (hg_offline_pause_ack_*) still prevents re-firing for the same event.
   useEffect(()=>{
-    if(typeof window==='undefined'||!offlinePauseNoticeEnabled) return
+    if(typeof window==='undefined') return
     if(!offlinePauseEventId||!lastOfflinePauseAt) return
     const ack=localStorage.getItem(`hg_offline_pause_ack_${offlinePauseEventId}`)
     if(!ack||new Date(lastOfflinePauseAt).getTime()>new Date(ack).getTime()) setShowOfflinePausedNotice(true)
-  },[lastOfflinePauseAt,offlinePauseEventId,offlinePauseNoticeEnabled])
+  },[lastOfflinePauseAt,offlinePauseEventId])
+  useEffect(()=>{
+    // Track the device's connectivity reactively so the UI re-renders on reconnect (offline-pause
+    // suppression) and the heartbeat effect re-fires immediately (its dep below).
+    if(typeof window==='undefined')return
+    const on=()=>setDeviceOnline(true)
+    const off=()=>setDeviceOnline(false)
+    window.addEventListener('online',on)
+    window.addEventListener('offline',off)
+    return()=>{window.removeEventListener('online',on);window.removeEventListener('offline',off)}
+  },[])
   useEffect(()=>{
     // Heartbeat ONLY while the active event is LIVE (status==='open'). Offline protection only
     // matters for a live event — a confirmed/pre-order event is unaffected by the truck being
@@ -471,10 +486,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         console.log('[Heartbeat] response:',data)
       }catch(err){console.error('[Heartbeat] failed:',err)}
     }
-    sendHeartbeat() // immediate ping on the confirmed→open flip
+    sendHeartbeat() // immediate ping on the confirmed→open flip OR an offline→online reconnect (deviceOnline dep)
     const id=setInterval(sendHeartbeat,15000)
     return()=>clearInterval(id)
-  },[token,vanId,activeEventLive])
+  },[token,vanId,activeEventLive,deviceOnline])
   useEffect(()=>{
     if(!authenticated)return
     if(keepScreenOn){keepAwake()}else{allowSleep()}
@@ -567,8 +582,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const confirmed=window.confirm('Disable offline protection for this event?\n\nIf this device loses connection, online orders will continue — customers may place orders you cannot see. Only disable if you have a reliable connection.')
       if(!confirmed)return
     }
+    // SERVICE-ROLE write (was a direct supabaseBrowser anon update → RLS silently no-op'd it, so the
+    // toggle never persisted). Optimistic, then revert on failure — same safe pattern as set_auto_accept.
+    const prev=eventOfflineOverride
     setEventOfflineOverride(value)
-    await supabaseBrowser.from('truck_events').update({offline_protection_override:value}).eq('id',activeEvent.id)
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value,eventId:activeEvent.id})})
+      if(!res.ok)throw new Error('write failed')
+      // Disabling clears the offline pause server-side too → reflect it locally so the dashboard
+      // un-pauses immediately (the customer catches up on its DB cycle).
+      if(value===false)setVanOnlinePausedUntil(null)
+    }catch{
+      setEventOfflineOverride(prev) // revert optimistic on failure
+    }
   }
 
   const saveKitchenCapacity=async(value:number|null)=>{
@@ -1569,9 +1595,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   </p>
                   {eventOfflineOverride!==null&&(
                     <button
-                      onClick={()=>{
-                        setEventOfflineOverride(null)
-                        supabaseBrowser.from('truck_events').update({offline_protection_override:null}).eq('id',activeEvent.id)
+                      onClick={async()=>{
+                        const prev=eventOfflineOverride
+                        setEventOfflineOverride(null) // optimistic; revert on failure
+                        try{
+                          const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_offline_protection',value:null,eventId:activeEvent.id})})
+                          if(!res.ok)throw new Error('write failed')
+                        }catch{setEventOfflineOverride(prev)}
                       }}
                       className="text-xs text-slate-400 hover:text-slate-600 mt-1">
                       Reset to van default
@@ -1581,15 +1611,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
               </div>
             )}
-            {/* Per-device pref: show the "paused while offline" popup on reconnect. Not gated on an
-                active event (it's a device UI pref). localStorage-backed — no migration. */}
-            <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl border border-slate-100">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-800">Offline-pause alert</p>
-                <p className="text-xs text-slate-500 mt-0.5">Pop up on this device when offline protection paused orders while you were away.</p>
-              </div>
-              <Toggle on={offlinePauseNoticeEnabled} onToggle={toggleOfflinePauseNotice}/>
-            </div>
+            {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
+                an operator must never be able to silence "your orders were paused while you were away".
+                The per-event ack still prevents re-firing for the same pause. */}
             {/* Kitchen capacity — its own card now (was nested in Stock & availability). Event-scoped
                 ceiling + category scope; the control's bold "Kitchen capacity" label doubles as the
                 card heading. One tight, left-aligned unit (max-w stops it stretching on the wide
