@@ -1100,7 +1100,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* Nav tabs row */}
         <div className="px-4">
           <div className="max-w-5xl mx-auto flex items-center">
-            {([['orders',(()=>{const c=activeEvent?eventOrders.filter(o=>['pending','confirmed'].includes(o.status)).length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
+            {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
             {/* Utility actions — desktop only */}
