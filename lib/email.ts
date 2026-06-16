@@ -150,7 +150,18 @@ export function formatConfirmationEmail(params: {
     type ContactEntry = { label: string; value: string | null | undefined; isLink: boolean }
     const map: Record<string, ContactEntry> = {
       phone:     { label: 'Call us',                  value: params.contactPhone,     isLink: false },
-      whatsapp:  { label: 'WhatsApp us',               value: params.whatsappSender ? `https://wa.me/${params.whatsappSender.replace(/\D/g, '')}` : null, isLink: true },
+      whatsapp:  (() => {
+        // Customer-facing WhatsApp number: prefer the WhatsApp sender, fall back to the contact phone
+        // (Gusto's number lives in contact_phone, not whatsapp_sender). Show the number VISIBLY in the
+        // label so the customer can read it even if the link doesn't open, and link to a wa.me URL
+        // normalised to UK international digits — strip a leading 0 / accept +44 or 44 → "44…":
+        // "07380736226" → "https://wa.me/447380736226".
+        const raw = params.whatsappSender ?? params.contactPhone
+        if (!raw) return { label: 'WhatsApp us', value: null as string | null, isLink: true }
+        const digits = raw.replace(/\D/g, '')
+        const intl = digits.startsWith('44') ? digits : digits.startsWith('0') ? `44${digits.slice(1)}` : `44${digits}`
+        return { label: `WhatsApp us: ${raw}`, value: `https://wa.me/${intl}`, isLink: true }
+      })(),
       facebook:  { label: 'Message us on Facebook',    value: params.socialFacebook,   isLink: true },
       messenger: { label: 'Message us on Messenger',   value: params.socialFacebook ? `https://m.me/${params.socialFacebook.split('/').pop()}` : null, isLink: true },
       instagram: { label: 'DM us on Instagram',        value: params.socialInstagram ? `https://instagram.com/${params.socialInstagram.replace('@', '')}` : null, isLink: true },

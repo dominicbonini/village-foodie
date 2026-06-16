@@ -75,69 +75,103 @@ export function buildSlotIndicators(
   const RANK: Record<SlotTone, number> = { green: 0, amber: 1, red: 2 }
   const EPS = 1e-6
 
-  for (const s of slots) {
-    // THE COLLECTION-SLOT TOTAL: the FULL load the operator committed to this slot's production window.
-    // Keyed by the WINDOW key — the EXACT expression the WRITE uses (slot-bookings.ts:223/317/349):
-    // `timeMap[collection_time] || collection_time`, pre-resolved server-side into s.production_window_key.
-    // On a truck WITH collection_times window data this is the range key (e.g. "19:20-19:30") so two
-    // collection times sharing a 10-min window share their load (and the read MATCHES the windowed write).
-    // On an empty-collection_times truck production_window_key is absent ⇒ we fall back to s.collection_time,
-    // which is ALSO what the write keys by there (timeMap empty ⇒ ct) — identical to the V7.5 #3 fix, so the
-    // off-by-one (reading s.production_slot, the grid-collapsed value) is NOT reintroduced. DISPLAY ONLY.
-    const units = productionSlotUnits[s.production_window_key ?? s.collection_time] || {}
+  const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
 
-    // Tone from the FULL total: each cooking (prep) category full/over its batch ⇒ red, partial ⇒
-    // amber (worst wins, tie-break higher load); plus the global ceiling on capacity-counting items.
-    // Empty ⇒ green. So 5 pizzas at a batch-4 slot ⇒ "5 Pizzas" RED (truthful: over one batch).
-    let tone: SlotTone = 'green'
-    let bound_by: string | null = null
-    let bindRank = -1
-    let bindUsed = -1
-    let capTotal = 0
-    for (const [catRaw, rawN] of Object.entries(units)) {
-      const cat = catRaw.toLowerCase()
-      const n = Number(rawN) || 0
-      if (n <= 0) continue
-      const cfg = catConfigs[cat]
-      // Capacity-counting items feed the global ceiling: cooking cats always, instant cats only if
-      // the operator ticked counts_toward_capacity (mirrors the engine's ceiling membership).
-      if (cfg && (cfg.secs || cfg.countsToCapacity)) capTotal += n
-      // Per-category batch tone — only cooking (prep) categories carry a batch denominator.
-      if (cfg && cfg.secs) {
-        const batch = Math.max(1, cfg.batch)
-        const t: SlotTone = n >= batch - EPS ? 'red' : 'amber'
-        const r = RANK[t]
-        if (r > bindRank || (r === bindRank && n > bindUsed)) {
-          bindRank = r; bindUsed = n
-          tone = t; bound_by = `${capWord(cat)} ${Math.round(n)}/${Math.round(batch)}`
-        }
+  // GROUP slots by their production WINDOW key — the EXACT key the WRITE stores load under
+  // (slot-bookings.ts:223/317/349: `timeMap[collection_time] || collection_time`, pre-resolved into
+  // s.production_window_key). On a windowed truck (slot_duration > interval, e.g. 10/5) several
+  // collection times share one key (17:00 + 17:05 → "17:00-17:10") and are that window's batch
+  // INTERVALS. On a non-windowed truck (slot_duration == interval, or empty collection_times) each
+  // collection_time is its OWN key ⇒ single-member groups. Grouping needs the full slot list — all
+  // call sites pass it (dashboard/route.ts, AddOrderPanel, dashboard/[token]/page.tsx). DISPLAY ONLY;
+  // the engine still reads the un-distributed window total for capacity.
+  const windowGroups = new Map<string, SlotInput[]>()
+  for (const s of slots) {
+    const key = s.production_window_key ?? s.collection_time
+    const g = windowGroups.get(key)
+    if (g) g.push(s); else windowGroups.set(key, [s])
+  }
+
+  for (const [key, groupSlots] of windowGroups) {
+    // The WINDOW TOTAL the engine/write hold (e.g. {pizza:4}). We DISTRIBUTE it across the window's
+    // member intervals so each dot shows what cooks in ITS batch interval, not the whole window total
+    // echoed onto every member (the 10/5 over-display: 4 pizzas read as 4+4=8 across 17:00 and 17:05).
+    const total = productionSlotUnits[key] || {}
+    const members = [...groupSlots].sort((a, b) => toMins(a.collection_time) - toMins(b.collection_time))
+    // DRAIN each category across the ordered members at batch_size cadence: each member gets
+    // min(batch, remaining), EXCEPT the LAST member which absorbs ALL remaining. So overflow shows
+    // truthfully on the last interval (never hidden), and a SINGLE-member (non-windowed) window — whose
+    // only member is also the last — absorbs the whole total UNCAPPED, preserving the existing-correct
+    // display (a one-interval slot with 4 pizzas still shows 4, not a batch-capped 2). Instant/no-prep
+    // categories have no batch cadence ⇒ no cap ⇒ they fall to the first interval (not oven-batched).
+    const perMember: QtyByCat[] = members.map((): QtyByCat => ({}))
+    for (const [catRaw, rawN] of Object.entries(total)) {
+      let remaining = Number(rawN) || 0
+      if (remaining <= 0) continue
+      const cfg = catConfigs[catRaw.toLowerCase()]
+      const batch = cfg && cfg.secs ? Math.max(1, cfg.batch) : Number.POSITIVE_INFINITY
+      for (let i = 0; i < members.length; i++) {
+        const share = i === members.length - 1 ? remaining : Math.min(batch, remaining)
+        if (share > 0) perMember[i][catRaw] = share
+        remaining -= share
+        if (remaining <= 0) break
       }
     }
-    if (kitchenCapacity != null && capTotal >= kitchenCapacity - EPS) {
-      tone = 'red'; bound_by = 'global ceiling'
-    }
-    const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
 
-    // Label = the slot's full per-category composition as plain counts ("5 Pizzas, 2 Others"),
-    // menu-ordered (ALL booked categories incl. unticked no-prep like Drinks, since storage already
-    // holds every booked item). Empty slot ⇒ '' (renders as a quiet green dot).
-    const label = Object.entries(units)
-      .filter(([, n]) => Math.round(Number(n)) > 0)
-      .sort(([a], [b]) => rankOf(a) - rankOf(b))
-      .map(([cat, rawN]) => {
-        const count = Math.round(Number(rawN))
-        const word = capWord(cat)
-        // Pluralise when count != 1 (naive +s); singular at 1 ("1 Pizza"). Skip already-plural
-        // names ("Sides", "Drinks") so we don't produce "Sidess".
-        const display = count === 1 || word.endsWith('s') ? word : `${word}s`
-        return `${count} ${display}`
-      })
-      .join(', ')
+    members.forEach((s, i) => {
+      // Tone + label from THIS member's drained per-interval share (NOT the raw window total): each
+      // cooking category at/over its batch this interval ⇒ red, partial ⇒ amber (worst wins, tie-break
+      // higher load); plus the global ceiling on capacity-counting items. Empty interval ⇒ green.
+      const units = perMember[i]
+      let tone: SlotTone = 'green'
+      let bound_by: string | null = null
+      let bindRank = -1
+      let bindUsed = -1
+      let capTotal = 0
+      for (const [catRaw, rawN] of Object.entries(units)) {
+        const cat = catRaw.toLowerCase()
+        const n = Number(rawN) || 0
+        if (n <= 0) continue
+        const cfg = catConfigs[cat]
+        // Capacity-counting items feed the global ceiling: cooking cats always, instant cats only if
+        // the operator ticked counts_toward_capacity (mirrors the engine's ceiling membership).
+        if (cfg && (cfg.secs || cfg.countsToCapacity)) capTotal += n
+        // Per-category batch tone — only cooking (prep) categories carry a batch denominator.
+        if (cfg && cfg.secs) {
+          const batch = Math.max(1, cfg.batch)
+          const t: SlotTone = n >= batch - EPS ? 'red' : 'amber'
+          const r = RANK[t]
+          if (r > bindRank || (r === bindRank && n > bindUsed)) {
+            bindRank = r; bindUsed = n
+            tone = t; bound_by = `${capWord(cat)} ${Math.round(n)}/${Math.round(batch)}`
+          }
+        }
+      }
+      if (kitchenCapacity != null && capTotal >= kitchenCapacity - EPS) {
+        tone = 'red'; bound_by = 'global ceiling'
+      }
+      const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
 
-    // occ retained for the SlotIndicator shape only — no live reader dereferences it (the dot/strip
-    // read tone/emoji/label). Null is correct now the backward window is no longer computed here.
-    void bound_by
-    out.set(s.collection_time, { tone, emoji, label, occ: null as WindowOccupancy | null })
+      // Label = this interval's per-category composition as plain counts ("2 Pizzas"), menu-ordered.
+      // Empty interval ⇒ '' (renders as a quiet green dot).
+      const label = Object.entries(units)
+        .filter(([, n]) => Math.round(Number(n)) > 0)
+        .sort(([a], [b]) => rankOf(a) - rankOf(b))
+        .map(([cat, rawN]) => {
+          const count = Math.round(Number(rawN))
+          const word = capWord(cat)
+          // Pluralise when count != 1 (naive +s); singular at 1 ("1 Pizza"). Skip already-plural
+          // names ("Sides", "Drinks") so we don't produce "Sidess".
+          const display = count === 1 || word.endsWith('s') ? word : `${word}s`
+          return `${count} ${display}`
+        })
+        .join(', ')
+
+      // occ retained for the SlotIndicator shape only — no live reader dereferences it (the dot/strip
+      // read tone/emoji/label). Null is correct now the backward window is no longer computed here.
+      void bound_by
+      out.set(s.collection_time, { tone, emoji, label, occ: null as WindowOccupancy | null })
+    })
   }
   return out
 }
