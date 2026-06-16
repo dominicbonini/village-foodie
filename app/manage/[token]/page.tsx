@@ -4950,7 +4950,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   heading; copy sits muted below. Behaviour unchanged: cooked (prep>0) always count
                   (checked+locked); instant categories toggle; all disabled until a capacity is set. */}
               <div className="mt-3 max-w-md">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
                   <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
                   <select
                     value={van.kitchen_capacity ?? ''}
@@ -4959,7 +4959,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                       'kitchen_capacity',
                       e.target.value === '' ? null : parseInt(e.target.value)
                     )}
-                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-32"
+                    className="border border-slate-200 rounded-xl px-2 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-24"
                   >
                     <option value="">No limit</option>
                     {Array.from({length:20},(_,i)=>i+1).map(n=>(
@@ -4973,7 +4973,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                     value={van.capacity_window_mins ?? 5}
                     disabled={van.kitchen_capacity == null}
                     onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
-                    className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-28 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50"
+                    className="border border-slate-200 rounded-xl px-2 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-20 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50"
                   >
                     {Array.from({length:20},(_,i)=>i+1).map(n=>(
                       <option key={n} value={n}>{n} min</option>
@@ -4981,31 +4981,35 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   </select>
                 </div>
                 {categories.length > 0 && (
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                  <div className="mt-2">
                     <span className="text-xs text-slate-400">Limit applies to:</span>
-                    {categories.map(cat => {
-                      const hasCap = van.kitchen_capacity != null
-                      const locked = cat.prep_secs > 0
-                      const disabled = locked || !hasCap
-                      return (
-                        <label key={cat.id}
-                          title={locked
-                            ? 'Cooked — always counts (its prep & batch set the pace)'
-                            : !hasCap ? 'Set a capacity to choose which categories count'
-                            : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
-                          className={`flex items-center gap-1.5 text-sm ${disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'}`}>
-                          <input
-                            type="checkbox"
-                            checked={locked ? true : !!cat.counts_toward_capacity}
-                            disabled={disabled}
-                            onChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
-                            className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
-                          />
-                          <span>{cat.name}</span>
-                          {locked && <span className="text-[10px] text-slate-400">cooked — always counts</span>}
-                        </label>
-                      )
-                    })}
+                    {/* Side-by-side wrapping row — Pizza / Other / Drinks flow inline and wrap to the
+                        next row only if they don't fit. Even spacing; auto-selected cooked categories
+                        (Pizza) show checked + locked, no caption. */}
+                    <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                      {categories.map(cat => {
+                        const hasCap = van.kitchen_capacity != null
+                        const locked = cat.prep_secs > 0
+                        const disabled = locked || !hasCap
+                        return (
+                          <label key={cat.id}
+                            title={locked
+                              ? 'Cooked — always counts (its prep & batch set the pace)'
+                              : !hasCap ? 'Set a capacity to choose which categories count'
+                              : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
+                            className={`flex items-center gap-1.5 text-sm ${disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'}`}>
+                            <input
+                              type="checkbox"
+                              checked={locked ? true : !!cat.counts_toward_capacity}
+                              disabled={disabled}
+                              onChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                              className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
+                            />
+                            <span>{cat.name}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
                   </div>
                 )}
                 {van.kitchen_capacity == null && categories.length > 0 && (
@@ -5629,6 +5633,13 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   }
   const [filterMode, setFilterMode] = useState<'date' | 'event'>(hasAdvanced ? 'date' : 'event')
   const [itemView, setItemView] = useState<'orders' | 'items'>('orders')
+  // Mobile order-history: which order rows are tap-expanded (desktop shows the full table, no expand).
+  const [expandedOrders, setExpandedOrders] = useState<Set<string | number>>(new Set())
+  const toggleOrderExpand = (id: string | number) => setExpandedOrders(prev => {
+    const next = new Set(prev)
+    next.has(id) ? next.delete(id) : next.add(id)
+    return next
+  })
   const [dateFrom, setDateFrom] = useState(() => isoDate(-7))
   const [dateTo, setDateTo]     = useState(() => isoDate(-1))
   const [reportEventId, setReportEventId] = useState('')
@@ -5776,12 +5787,15 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     a.click(); URL.revokeObjectURL(url)
   }
 
-  // Shared column cell classes — used by both Orders and Items views
+  // Shared column cell classes — used by both Orders and Items views. Lower-priority columns are
+  // hidden on mobile (hidden sm:block) so the Items view fits without the total being cut off; the
+  // Orders desktop row is itself hidden sm:flex (mobile uses the compact card), so this only affects
+  // the Items view on mobile. Desktop (sm:) unchanged.
   const colId    = 'font-mono text-slate-400 flex-shrink-0 w-10'
-  const colDate  = 'text-slate-400 flex-shrink-0 w-10'
+  const colDate  = 'text-slate-400 flex-shrink-0 w-10 hidden sm:block'
   const colVenue = 'text-slate-500 flex-shrink-0 w-24 truncate hidden sm:block'
-  const colTime  = 'text-slate-400 flex-shrink-0 w-10'
-  const colType  = (online: boolean) => `flex-shrink-0 w-14 font-medium ${online ? 'text-blue-600' : 'text-slate-500'}`
+  const colTime  = 'text-slate-400 flex-shrink-0 w-10 hidden sm:block'
+  const colType  = (online: boolean) => `flex-shrink-0 w-14 font-medium hidden sm:block ${online ? 'text-blue-600' : 'text-slate-500'}`
   const colCust  = 'text-slate-600 flex-shrink-0 w-16 truncate'
   const colTotal = 'font-medium text-slate-900 flex-shrink-0'
   const colMuted = 'text-slate-400 flex-shrink-0'
@@ -6053,16 +6067,53 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   const itemSummary = (Array.isArray(o.items) ? o.items : [])
                     .map((i: any) => `${i.quantity || 1}× ${i.name}`).join(', ')
                   const isCancelled = o.status === 'cancelled' || o.status === 'rejected'
+                  const isExpanded = expandedOrders.has(o.id)
                   return (
-                    <div key={o.id} className={`flex items-center gap-2 py-2 border-b border-slate-50 last:border-0 text-xs ${isCancelled ? 'opacity-50' : ''}`}>
-                      <span className={colId}>#{o.id}</span>
-                      <span className={colDate}>{dateStr}</span>
-                      <span className={colVenue}>{venueShort}</span>
-                      <span className={colTime}>{timePlaced}</span>
-                      <span className={colType(!!o.customer_email)}>{orderType}</span>
-                      <span className={colCust}>{customerLabel}</span>
-                      <span className="text-slate-600 flex-1 truncate min-w-0">{itemSummary}</span>
-                      <span className={colTotal}>{fmtGBP(o.total || 0)}</span>
+                    <div key={o.id} className={`border-b border-slate-50 last:border-0 text-xs ${isCancelled ? 'opacity-50' : ''}`}>
+                      {/* Desktop: full row (unchanged) */}
+                      <div className="hidden sm:flex items-center gap-2 py-2">
+                        <span className={colId}>#{o.id}</span>
+                        <span className={colDate}>{dateStr}</span>
+                        <span className={colVenue}>{venueShort}</span>
+                        <span className={colTime}>{timePlaced}</span>
+                        <span className={colType(!!o.customer_email)}>{orderType}</span>
+                        <span className={colCust}>{customerLabel}</span>
+                        <span className="text-slate-600 flex-1 truncate min-w-0">{itemSummary}</span>
+                        <span className={colTotal}>{fmtGBP(o.total || 0)}</span>
+                      </div>
+                      {/* Mobile: compact glance row (#N · date time | total) + tap-to-expand for the rest. */}
+                      <div className="sm:hidden">
+                        <button onClick={() => toggleOrderExpand(o.id)}
+                          className="w-full flex items-center justify-between gap-2 py-2.5 text-left text-sm">
+                          <span className="flex items-center gap-1.5 min-w-0">
+                            <span className={`text-slate-300 flex-shrink-0 text-[10px] transition-transform inline-block ${isExpanded ? 'rotate-90' : ''}`}>▶</span>
+                            <span className="font-mono font-semibold text-orange-500 flex-shrink-0">#{o.id}</span>
+                            <span className="text-slate-500 truncate">{dateStr} · {timePlaced}</span>
+                          </span>
+                          <span className="font-bold text-slate-900 flex-shrink-0">{fmtGBP(o.total || 0)}</span>
+                        </button>
+                        {isExpanded && (
+                          <div className="pb-2.5 pl-5 space-y-1.5">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                              <span className={colType(!!o.customer_email)}>{orderType}</span>
+                              {customerLabel !== '—' && <span className="text-slate-600">{customerLabel}</span>}
+                              {venueName && <span className="text-slate-400">· {venueName}</span>}
+                            </div>
+                            <div className="space-y-0.5">
+                              {(Array.isArray(o.items) ? o.items : []).map((i: any, idx: number) => {
+                                const mods = Array.isArray(i.modifiers) && i.modifiers.length > 0
+                                  ? ` (${i.modifiers.map((m: any) => m.name).join(', ')})` : ''
+                                return (
+                                  <div key={idx} className="flex items-baseline justify-between gap-2">
+                                    <span className="text-slate-700 min-w-0">{i.quantity || 1}× {i.name}{mods}</span>
+                                    <span className="text-slate-400 flex-shrink-0 tabular-nums">{fmtGBP(i.unit_price || 0)}</span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )
                 })}

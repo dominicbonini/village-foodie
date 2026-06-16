@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V7.4
+HatchGrab Engineering Reference Manual · V7.5
 
 **HatchGrab**
 
@@ -6,13 +6,88 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 7.4**
+**Version 7.5**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V7.5 — June 2026
+
+Operator-dashboard overhaul + capacity-engine corrections (16 Jun 2026). Headline: the **complete→undo capacity orphan** fix (rebuild-on-both) + the **day-load/dot DISPLAY** now showing the collection-slot TOTAL (with an off-by-one grid-key regression found+fixed) + the **ASAP/picker over-capacity** fix (combined-load front floor) + a broad **operator dashboard UI overhaul** (undo for "Mark paid & done", day-load strip, reject-reason, layout). Most items BUILT + tsc-clean; live-test status noted per item. Status tags: **[LIVE-VERIFIED]** real device; **[BUILT]** tsc-clean, pending live; **[DATA FIX]** SQL; **[CONFIRMED]** verified-correct by audit.
+
+### Capacity engine — the day's core fixes
+
+**1. Complete→Undo capacity orphan — FIXED (rebuild-on-both).**
+- SYMPTOM: marking an order done then undoing it left orphaned pizza load in the slot (observed 7 stored at 12:05 when live orders justified 5).
+- ROOT CAUSE: `undo_collected` (action/route.ts ~:218) had NO idempotency guard — it flipped status to confirmed and re-booked via `addOrderToProductionSlot` unconditionally. `collected` IS guarded (BOOKED_STATES check). With TWO undo entry points shipped today (toast + completed-list), a re-fire double-books. Compounded by a reseed asymmetry: `collected`'s remove reads with persistReseed=false (and, post status-flip, the reseed EXCLUDES the order); `undo`'s add reads with persistReseed=true (the reseed INCLUDES the now-confirmed order) — so remove and add operated on inconsistent bases when a reseed landed mid-cycle.
+- FIX: both `collected` AND `undo_collected` now call `rebuildProductionSlotUsage(supabase, truck.id, order.event_date)` AFTER the status flip, REPLACING the incremental remove/add. Rebuild is a pure function of live orders → the slot deterministically equals the live order set. Eliminates incremental drift, reseed asymmetry, AND undo re-fire double-count (rebuild is idempotent) in one stroke.
+- KEY PROPERTY (do-not-undo): `production_slot_usage` is COLLECTION-SLOT keyed — `buildUnitsFromOrders` writes each order's full load at its own `collection_time` (no spreading in storage; the backward-window spread is only a DISPLAY projection). Each collection slot is independent → reading the stored total per slot is non-overlapping (no double-count).
+- PERF: rebuild = one date-scoped delete + per-event `buildUnitsFromOrders` (4 parallel queries) + upsert. Cheap at food-truck volume; completes fire ≤ once per order. Rebuild-on-both chosen over the lighter guard+symmetry alternative.
+- STATUS: built, tsc-clean, **LIVE-TEST PENDING** (verify collect→undo nets zero; undo re-fire idempotent; co-located orders survive).
+- BACKLOG: the EDIT path (action/route.ts ~:285-293) has the SAME incremental-drift class (`removeOrderFromProductionSlot(old)` + `addOrderToProductionSlot(new)`). The same one-line `rebuildProductionSlotUsage` swap would fix it. NOT YET APPLIED (decision pending) — editing is more common in service than undo, so this is the higher-value remaining drift fix.
+
+**2. Day-load / slot dot DISPLAY — now shows the collection-slot TOTAL.**
+- CHANGE: `buildSlotIndicators` (slot-display.ts) now derives count/label/tone from the stored collection-slot total (`productionSlotUnits[s.collection_time]`), NOT the backward-projected adjacent cooking window.
+- WHY: the backward-window read under-reported — a multi-window order showed only the remainder at its collection dot (e.g. 5 pizzas committed at 12:00 displayed as "1" because 4 sat in an invisible pre-open window). Principle: show what's COMMITTED to the slot (the DB value), per category.
+- TONE: reflects the full total — a category at/over batch → red; partial → amber (worst wins); plus the global kitchen-capacity ceiling; empty → green. RED = a ceiling reached (batch OR kitchen capacity).
+- SAFE (no double-count): storage is collection-slot keyed and independent per slot (confirmed at source), so each dot reads its own slot's total. The old cross-dot spread ("16:50→4, 16:55→1" for a 16:55 order) was a projection artifact, not a stored truth.
+- BOTH surfaces: the day-load strip (/api/dashboard attaches the indicator's tone+label) and the order-screen dots use the same source and agree.
+- `buildSlotAvailability` / customer slot availability / placement fit (`fitOrderBackward`) left UNCHANGED — those answer capacity/placement, not "what's committed here".
+- STATUS: built, tsc-clean, **LIVE-VERIFIED** (the under-read fix), then a regression found+fixed (below, #3).
+
+**3. Day-load off-by-one (grid-key mismatch) — FIXED.**
+- SYMPTOM: after fix #2, each slot's dot showed the PREVIOUS slot's value (12:05 showed 12:00's 5; 12:15 showed 12:10's 3; 12:35 showed 12:30's 1).
+- ROOT CAUSE: this truck has `slot_duration_mins=10` but `collection_interval_mins=5` (they DIFFER). `generateCollectionTimes` collapses `production_slot` to the 10-min grid (`floor(mins/10)*10`: 12:05→"12:00", 12:15→"12:10"). Storage keys by `collection_time` (5-min grid). Reading `productionSlotUnits[s.production_slot]` (collapsed key) returned the previous slot's row.
+- FIX: read `productionSlotUnits[s.collection_time]` (the same key storage uses), not `s.production_slot`. Each dot now reads its own DB row, no shift.
+- GENERALISATION: only manifests when `slot_duration_mins ≠ collection_interval_mins`. For a 1:1 truck (`production_slot == collection_time`) the bug doesn't appear. **GUSTO ONBOARDING NOTE: check Gusto's `slot_duration_mins` / `collection_interval_mins` — grid config varies per truck; the display now handles the mismatch but it's a config-dependent area.**
+- STATUS: built, tsc-clean, **LIVE-TEST PENDING** (verify per-slot values match DB exactly).
+
+**4. ASAP / picker over-capacity — FIXED (combined-load front floor).**
+- SYMPTOM: ASAP suggested 12:00 even though 12:00 had hit its pizza ceiling (5, red). The customer picker ALSO offered 12:00 (shares the fit engine).
+- ROOT CAUSE: two divergent capacity models. DISPLAY = collection-slot total (5 ≥ batch 4 → red). FIT engine (`fitOrderBackward`, drives ASAP via `earliestBackwardFitSlot` + the picker veto) = backward cooking-window model. For a FUTURE event, `nowMins = -Inf` → the fit front floor = `eventStart − prep` (11:55), permitting ONE legitimate pre-open window. The fit judged the pre-open lead on the NEW order's windows alone (`nw = ceil(M/batch)`), so a new 1-pizza order seated in the [11:55] window (existing load there only 1) and "fit" — the over-committed batch sat invisibly in the forbidden 2nd pre-open window [11:50].
+- DECISION (Option 2): keep the backward multi-window model (uses real kitchen throughput — a slot can hold what's cookable from open onward, not just one batch), but judge the pre-open lead on COMBINED load. RED = ceiling reached (batch or kitchen); a ceiling-reached slot must reject more.
+- FIX: `fitOrderBackward` now takes `existingAtSlot` (the slot's committed `production_slot_usage` total by category) and judges the front floor on `nwCombined = ceil((existing + new)/batch)` instead of the new order's `nw`. Results: 12:00 with 5 + new 1 → nwCombined=2 → needs a 2nd pre-open window → REJECTED; 12:00 empty + 4 → nwCombined=1 → fits (first-batch-at-open preserved); 12:00 empty + 5 → rejected; 12:05 with 3 + 1 → fits (genuine room). Seating still uses the new order's `nw`; only the front-floor check uses combined.
+- SHARED ENGINE: threaded through 3 call sites — ASAP `earliestBackwardFitSlot` (customer backwardAsap, operator adjustedAsapSlot, submit placement), customer picker veto (order/page.tsx:775), `buildSlotAvailability` hasBasket. A SINGLE shared-engine change — NO separate picker edit. The picker is corrected because it runs the same engine (a customer manually picking a ceiling-reached slot is now blocked, consistent with ASAP + the red dot).
+- DISPLAY/placement/storage UNCHANGED. Display and fit models now AGREE on what "full" means.
+- STATUS: built, tsc-clean, **LIVE-VERIFIED** (working), BUT confirm the BOUNDARY live: empty 12:00 still accepts up to 4 (first batch at open) but rejects a 5th.
+
+**5. ASAP label — empty-basket refinement.**
+- CHANGE: the ASAP selector shows just "⚡ ASAP" (no time) when the basket is EMPTY, and "⚡ ASAP — {time}" only once items are added — so the time reflects the earliest for what's actually being ordered (avoids the misleading "12:00 then jumps to 12:05" on load).
+- Display-only (ASAP computation already basket-aware). Both surfaces: customer (order/page.tsx, the "Around {time}" sub-label, gated `hasItems || !asapTime` to preserve the "Unavailable" state) and operator (AddOrderPanel.tsx:589). Empty-basket submit isn't possible (`!hasItems` blocks), so a timeless ASAP never submits.
+- STATUS: built, tsc-clean, **LIVE-TEST PENDING**.
+
+### Operator dashboard — UI overhaul (16 Jun 2026)
+
+**Undo for "Mark paid & done" — BUILT.** "collected" was previously terminal in the UI. Now both: (1) a TOAST "Order #N completed — ↩ Undo" (7s, dismiss-then-fire to prevent double-tap) and (2) a ↩ Undo button in the "Completed & cancelled" list, gated to `status==='collected'` only. Both call the existing `undo_collected` action (which now rebuilds capacity — see #1). Toast system extended with an optional `{action:{label,run}}` (existing callers unchanged). Dead OrderCard:317 undo button left as harmless unreachable code. STATUS: built, tsc-clean, **LIVE-TEST PENDING** (verify capacity re-books on undo via the rebuild).
+
+**Reject-reason feature — migration RUN.** When auto-confirm OFF, reject now requires a reason (presets: "Sold out of an item" / "Too busy — can't make it in time" / "Closing soon" / "Other"; or free-text; "Other" requires free-text) emailed to the customer. New column `rejection_reason text NULL` (migration applied + schema reload). Reject email HTML-escaped via the new `escapeHtml` helper. `customer_email` REQUIRED at customer submit (emailless manual orders skip the email via the `if(order.customer_email)` guard). BACKLOG: the existing CANCEL email does NOT escape `cancellationReason` (action/route.ts:155) — same risk, apply escapeHtml when next touched.
+
+**Day-load strip (new feature).** Operator at-a-glance slot/load view. Desktop = vertical sticky sidebar (DayLoadStrip.tsx, lg:w-48). Mobile = horizontal-scroll strip (time + colour dot). Earliest-upcoming-first (event-tz), past excluded. Reads existing /api/dashboard slot state (no new fetch). Display per #2/#3 above (collection-slot total, `collection_time` key, tone = ceiling-reached).
+
+**Contact validation (customer order page).** Email REQUIRED + light format check (x@y.z). Phone OPTIONAL + permissive UK check only when provided. Inline errors on invalid content only.
+
+**Tab badge fix.** "Orders (N)" now counts `pendingOrders.length` (action-needed = awaiting confirmation), matching the "New" summary card. Was counting ['pending','confirmed'] (undercounted modified/cooking/ready). Shows the number only when >0.
+
+**Layout tidy-ups.** (a) "Add extra wait" moved beside New/Confirmed/Done boxes (desktop). (b) "To Make" aggregate box REMOVED (`getAllDayCounts` helper retained — shared by the completed-list line + KDS). (c) Order cards responsive: `grid-cols-1 md:grid-cols-2 xl:grid-cols-3`. (d) Button hierarchy: "Mark paid & done" full-width primary; Edit/Cancel ghost (py-2.5). (e) Event header shows the relative DATE ("Today/Tomorrow/{Weekday} {D}th Month", event-tz). (f) Card HEADER rebalanced: Row1 = #N + status badge; name (Row2, flex-1 min-w-0 — fixes "Dom" clipping) + Contact + price (flex-shrink-0).
+
+**Card header — TIME placement.** Time moved beside the order number on Row1 ("#2 · 12:00") so it's prominent (key info) and no longer stacked directly above the price (which read as two related numbers). Price alone on Row2 right. STATUS: built, tsc-clean, **LIVE-TEST PENDING**.
+
+**Deals-on-operator fix.** `event_deals.active` controls CUSTOMER visibility only. The /api/menu/[truckId] deal filter ran unconditionally → wrongly hid off-deals from the operator. Fixed: gated `if (effectiveEventId && !isDashboard)` — operator (dashboard=1) sees ALL deals incl. toggled-off; the customer branch is byte-for-byte unchanged.
+
+### Reference clarifications (banked this session)
+- **`max_orders` / "/5" = `kitchen_capacity`** (legacy/misleading field name) — a concurrency ceiling (= 5 for the one active van), NOT a per-slot order cap. Not a bug.
+- **Miso Cheesy Garlic Bread IS a pizza-category item** (counts as a pizza unit for capacity).
+- **Test event config:** Nethergate Brewery & Distillery — Long Melford, 20 Jun, `slot_duration_mins=10`, `collection_interval_mins=5` (they DIFFER — see #3).
+- **Time engine confirmed sound** (event-tz-pinned, BST-aware via Intl Europe/London; DB UTC vs operator BST is pure display, zero engine impact). Latent pre-multi-tz backlog (non-engine `new Date().getHours()` spots) unchanged — not pre-trial.
+- **Offline = deliverability only** (post-trial, native Capacitor app) — unchanged from prior.
+
+### Outstanding (post-V7.5)
+- **EDIT-path rebuild** (decision pending — same drift class as undo #1, one-line fix, higher value than undo since editing is more common).
+- **Slot-mismatch re-test** on the deployed build (the one outstanding confirmation — a fresh ASAP first order files at the resolved slot).
+- Cancel-email HTML-escape; pre-multi-tz device-local `getHours()` conversions; coarser-grid multi-collection-per-`production_slot` caveat (#3); the day's LIVE-TEST-PENDING items above.
 
 ## V7.4 — June 2026
 
@@ -2693,4 +2768,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V7.4
+HatchGrab Engineering Reference Manual · V7.5
