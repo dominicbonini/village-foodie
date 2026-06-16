@@ -1576,9 +1576,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               : 'bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed'
                         }`}>
                         <span className="text-sm font-black">⚡ ASAP</span>
-                        <span className={`text-xs mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-400'}`}>
-                          {asapTime ? `Around ${formatTime(asapTime)}` : 'Unavailable'}
-                        </span>
+                        {/* Show the concrete earliest-fitting time ONLY once the basket has items —
+                            an empty basket's "earliest" (event open) is misleading and jumps the moment
+                            an item is added. Display-only; the ASAP value/computation is unchanged. */}
+                        {(hasItems || !asapTime) && (
+                          <span className={`text-xs mt-0.5 ${isSelected ? 'text-orange-100' : 'text-orange-400'}`}>
+                            {asapTime ? `Around ${formatTime(asapTime)}` : 'Unavailable'}
+                          </span>
+                        )}
                       </button>
                     )
                   })()}

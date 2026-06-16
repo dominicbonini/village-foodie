@@ -586,7 +586,9 @@ setItemModal({ item, modGroups, editCartKey })
           onChange={e => handleSlotChange(e.target.value)}
           className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
         >
-          <option value="">⚡ ASAP{adjustedAsapSlot ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
+          {/* Show the concrete earliest-fitting time ONLY once the basket has items — empty-basket
+              "earliest" (event open) is misleading and jumps as soon as an item is added. Display-only. */}
+          <option value="">⚡ ASAP{(hasItems && adjustedAsapSlot) ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
           {/* PAST = the SINGLE live source of truth isSlotPast(eventTz) — never the cached server
               is_past flag (stale once the clock advances; on Vercel it's UTC, an hour off in BST).
               Operators see every slot from NOW including the imminent next one (isSlotPast excludes
