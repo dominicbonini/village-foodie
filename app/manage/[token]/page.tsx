@@ -4097,22 +4097,26 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, url }),
       })
-      if (res.status === 502) {
-        setVerifyError("Couldn't reach this website. Check the URL and try again.")
+      const data = await res.json().catch(() => ({} as any))
+      console.log('[verify]', { status: res.status, found: data.found, eventCount: data.events?.length, reason: data.reason, navStatus: data.status, error: data.error })
+      if (data.found) {
+        onVerifySuccess(data.events)
         return
       }
-      const data = await res.json()
-      console.log('[verify]', { status: res.status, found: data.found, eventCount: data.events?.length, reason: data.reason, error: data.error })
-      if (!data.found) {
-        setVerifyError(
-          data.reason === 'no_content'
-            ? "We couldn't load this page. Check the URL is correct and publicly accessible."
-            : "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed."
-        )
-        return
+      // Accurate, distinct messaging per outcome (was: blocks + launch-fail + unreachable all said
+      // "couldn't reach", wrongly blaming a valid URL). Unknown / unexpected server error (>=500)
+      // → treat as OUR problem, not the URL.
+      const reason: string = data.reason || (res.status >= 500 ? 'launch_failed' : 'unreachable')
+      const VERIFY_MESSAGES: Record<string, string> = {
+        launch_failed: "Verification is temporarily unavailable. Please try again in a moment.",
+        blocked: "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
+        unreachable: "Couldn't reach this website. Check the URL and try again.",
+        no_content: "We couldn't load this page. Check the URL is correct and publicly accessible.",
+        no_events: "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
       }
-      onVerifySuccess(data.events)
+      setVerifyError(VERIFY_MESSAGES[reason] || VERIFY_MESSAGES.unreachable)
     } catch {
+      // The verify request itself failed (network/our API) — genuinely couldn't complete the check.
       setVerifyError("Couldn't reach this website. Check the URL and try again.")
     } finally {
       setVerifying(false)

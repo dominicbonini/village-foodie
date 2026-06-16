@@ -12,6 +12,19 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+// Realistic Chrome UA — the SAME string every working scraper uses (scripts/run-scraper.js:513,
+// process-next-truck.js:30, etc.). The verify route previously announced a bot UA
+// ('HatchGrabBot/1.0'), which hosted-builder / Cloudflare sites instantly 403/block while serving
+// real browsers fine → empty page → false "couldn't reach". Keep this aligned with the scraper.
+const BROWSER_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+
+// Genuine connection/DNS failures = truly unreachable. A navigation TIMEOUT is NOT (the page often
+// loaded; we still scraped its DOM), so it is deliberately excluded here.
+function isUnreachableNavError(msg: string | null): boolean {
+  if (!msg) return false
+  return /ERR_NAME_NOT_RESOLVED|ERR_NAME_|ERR_CONNECTION|ERR_INTERNET_DISCONNECTED|ERR_ADDRESS_UNREACHABLE|ERR_CONNECTION_TIMED_OUT|ERR_CERT/i.test(msg)
+}
+
 async function getTruck(token: string) {
   const { data } = await supabase
     .from('trucks')
@@ -88,11 +101,27 @@ async function scrapePageContent(
   browser: any,
   url: string,
   rule: 'scroll_lazy' | 'scroll_next'
-): Promise<string> {
+): Promise<{ text: string; status: number | null; navError: string | null }> {
   const page = await browser.newPage()
   try {
-    await page.setUserAgent('Mozilla/5.0 (compatible; HatchGrabBot/1.0)')
-    await page.goto(url, { timeout: 20000, waitUntil: 'networkidle2' }).catch(() => {})
+    await page.setUserAgent(BROWSER_UA)
+    // Browser-like headers in addition to the UA (cheap; some bot filters also check these).
+    await page.setExtraHTTPHeaders({
+      'Accept-Language': 'en-GB,en;q=0.9',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    }).catch(() => {})
+
+    // Capture the navigation response status + any error instead of discarding both. A goto that
+    // throws a TIMEOUT is NOT fatal (the DOM usually loaded), so we still scrape; a 4xx/5xx status
+    // or a real network error is surfaced to the caller for accurate messaging.
+    let status: number | null = null
+    let navError: string | null = null
+    try {
+      const resp = await page.goto(url, { timeout: 20000, waitUntil: 'networkidle2' })
+      status = resp?.status() ?? null
+    } catch (e: any) {
+      navError = e?.message || 'navigation failed'
+    }
 
     // Extra wait for JS-rendered content
     await new Promise(r => setTimeout(r, 4000))
@@ -109,8 +138,8 @@ async function scrapePageContent(
       ? await performButtonHunt(page)
       : await performModernScroll(page)
 
-    console.log(`[verify] ${rule}: ${content.length} chars from ${url}`)
-    return content
+    console.log(`[verify] ${rule}: ${content.length} chars from ${url} (status=${status}${navError ? `, navError=${navError}` : ''})`)
+    return { text: content, status, navError }
   } finally {
     await page.close().catch(() => {})
   }
@@ -133,21 +162,37 @@ export async function POST(req: NextRequest) {
     try {
       browser = await launchBrowser()
     } catch {
-      return NextResponse.json({ error: 'Could not reach this website' }, { status: 502 })
+      // OUR infra (Puppeteer/Chromium couldn't launch) — not the customer's URL. Distinct reason so
+      // the client shows "temporarily unavailable", never "check the URL".
+      return NextResponse.json({ found: false, reason: 'launch_failed' })
     }
 
+    const empty = { text: '', status: null as number | null, navError: 'scrape failed' as string | null }
     const [lazyResult, nextResult] = await Promise.allSettled([
       scrapePageContent(browser, url, 'scroll_lazy'),
       scrapePageContent(browser, url, 'scroll_next'),
     ])
 
-    const lazyText = lazyResult.status === 'fulfilled' ? lazyResult.value : ''
-    const nextText = nextResult.status === 'fulfilled' ? nextResult.value : ''
+    const lazyRes = lazyResult.status === 'fulfilled' ? lazyResult.value : empty
+    const nextRes = nextResult.status === 'fulfilled' ? nextResult.value : empty
+    const lazyText = lazyRes.text
+    const nextText = nextRes.text
+    const navStatus = lazyRes.status ?? nextRes.status
 
-    console.log(`[verify] lazy=${lazyText.length} chars, next=${nextText.length} chars`)
+    console.log(`[verify] lazy=${lazyText.length} chars, next=${nextText.length} chars, status=${navStatus}`)
 
     if (!lazyText && !nextText) {
-      return NextResponse.json({ error: 'Could not reach this website' }, { status: 502 })
+      // No content scraped — distinguish WHY (was all collapsed into one "couldn't reach"):
+      //  - 4xx/5xx status → the site responded but blocked/errored (e.g. 403 bot block)
+      //  - real network/DNS/cert error → genuinely unreachable (check the URL)
+      //  - otherwise (2xx empty body / nav timeout with no text) → reachable but unreadable
+      if (navStatus != null && navStatus >= 400) {
+        return NextResponse.json({ found: false, reason: 'blocked', status: navStatus })
+      }
+      if (isUnreachableNavError(lazyRes.navError) || isUnreachableNavError(nextRes.navError)) {
+        return NextResponse.json({ found: false, reason: 'unreachable' })
+      }
+      return NextResponse.json({ found: false, reason: 'no_content' })
     }
 
     const betterContent = nextText.length > lazyText.length
