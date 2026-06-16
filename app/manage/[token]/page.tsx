@@ -11,6 +11,7 @@ import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
+import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -1115,7 +1116,13 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
             {/* Items */}
             {isOpen && (
               <div className="border-t border-slate-100">
-                {catItems.map(item => (
+                {/* Group the editor's item list by sub-category — ALL active sub-cats show as headings
+                    here INCLUDING EMPTY ones; ungrouped items (subcategory_id null) render first with no
+                    heading. Display-only (Phase 3); "+ Add item" stays category-level below. */}
+                {groupBySubcategory(catItems, subcatsFor(cat.id)).map(group => (
+                <div key={group.id ?? '__ungrouped'}>
+                  {group.name && <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-4 pt-2.5 pb-1">{group.name}{group.items.length === 0 ? ' · empty' : ''}</p>}
+                  {group.items.map(item => (
                   <div key={item.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
                     {/* Item image */}
                     <label className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0 cursor-pointer hover:opacity-80 transition-opacity block" title="Click to upload photo">
@@ -1164,6 +1171,8 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                       <button onClick={() => setDeletingItem(item)} className="text-slate-300 hover:text-red-500 text-xs p-1.5 rounded-lg hover:bg-red-50 transition-colors">🗑️</button>
                     </div>
                   </div>
+                  ))}
+                </div>
                 ))}
 
                 <div className="px-4 py-3">

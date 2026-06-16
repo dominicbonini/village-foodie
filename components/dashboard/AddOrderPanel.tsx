@@ -16,7 +16,7 @@ import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
-import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
+import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, groupBySubcategory } from '@/lib/basket-utils'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -820,8 +820,11 @@ setItemModal({ item, modGroups, editCartKey })
             <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-2">
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
             </p>
-            <div className="flex flex-wrap gap-2">
-              {items.map(item => {
+            {groupBySubcategory(items, truckMenu?.categories?.find(c => c.name === cat)?.subcategories).filter(g => g.items.length > 0).map(group => (
+            <div key={group.id ?? '__ungrouped'} className="mb-2 last:mb-0">
+              {group.name && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">{group.name}</p>}
+              <div className="flex flex-wrap gap-2">
+              {group.items.map(item => {
                 const isSoldOut = !(item.available ?? true)
                 const stock = itemStocks.find(s => s.name === item.name)
                 const catSt = categoryStocks.find(s => s.category === cat)
@@ -861,7 +864,9 @@ setItemModal({ item, modGroups, editCartKey })
                   </button>
                 )
               })}
+              </div>
             </div>
+            ))}
           </div>
         )
       })}
@@ -884,8 +889,11 @@ setItemModal({ item, modGroups, editCartKey })
                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
               </p>
             </div>
-            <div>
-              {items.map(item => {
+            {groupBySubcategory(items, truckMenu?.categories?.find(c => c.name === cat)?.subcategories).filter(g => g.items.length > 0).map(group => (
+            <div key={group.id ?? '__ungrouped'}>
+              {group.name && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide px-1 pt-1 pb-0.5">{group.name}</p>}
+              <div>
+              {group.items.map(item => {
                 const isSoldOut = !(item.available ?? true)
                 const stock = itemStocks.find(s => s.name === item.name)
                 const catSt = categoryStocks.find(s => s.category === cat)
@@ -931,7 +939,9 @@ setItemModal({ item, modGroups, editCartKey })
                   </div>
                 )
               })}
+              </div>
             </div>
+            ))}
           </div>
         )
       })}

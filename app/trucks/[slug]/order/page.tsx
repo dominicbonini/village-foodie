@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
-import { cleanupDealsForItem, groupByCategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
+import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
 import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
@@ -38,7 +38,7 @@ interface Bundle {
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
-interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[] }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
+interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean }
 interface EventData {
   id: string            // truck_events.id — the event the customer is ordering against
@@ -1376,8 +1376,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <span className="text-xs font-black text-orange-600 uppercase tracking-wider">{cap(category)}</span>
                 <div className="flex-1 h-px bg-orange-100" />
               </div>
-              <div className="divide-y divide-slate-100">
-                {items.map(item => {
+              {groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0).map(group => (
+              <div key={group.id ?? '__ungrouped'}>
+                {/* Sub-category heading — only a NAMED group with items (Phase 3 order-screen rule);
+                    the ungrouped (null) group renders no heading, and empty sub-cats are not shown. */}
+                {group.name && <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mt-2 mb-1 px-0.5">{cap(group.name)}</p>}
+                <div className="divide-y divide-slate-100">
+                {group.items.map(item => {
                   const qty = getQty(item.name)
                   const isSoldOut = !(item.available ?? true)
                   // Cross-category upsells for this item (resolved regardless of qty so they show
@@ -1531,7 +1536,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     </div>
                   )
                 })}
+                </div>
               </div>
+              ))}
             </div>
           ))}
         </div>

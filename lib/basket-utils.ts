@@ -12,6 +12,7 @@ export interface MenuItem {
   name: string
   price: number
   category: string
+  subcategory_id?: string | null
   description?: string
   available?: boolean
   stock_remaining?: number | null
@@ -220,6 +221,36 @@ export function groupByCategory(
   
   // Otherwise return in arbitrary order (Object.entries order)
   return Object.entries(groups)
+}
+
+/**
+ * Group ONE category's items by managed sub-category (display-only). Returns an ordered list of
+ * groups: the ungrouped group { id:null, name:null } FIRST (items with subcategory_id null, OR an
+ * orphan whose subcategory_id matches no active sub-category — graceful, never dropped), then one
+ * group per sub-category in the given sort order. Incoming item order is preserved within each group.
+ * Callers decide whether to render empty/null headings (order screens skip empty + the null heading;
+ * the Manage editor shows all sub-categories incl. empty). Pure; no schema/logic.
+ */
+export function groupBySubcategory<T extends { subcategory_id?: string | null }>(
+  items: T[],
+  subcategories?: { id: string; name: string; sort_order?: number }[],
+): Array<{ id: string | null; name: string | null; items: T[] }> {
+  const subs = [...(subcategories || [])].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+  const validIds = new Set(subs.map(s => s.id))
+
+  const ungrouped: T[] = []
+  const bySub: Record<string, T[]> = {}
+  for (const it of items) {
+    const sid = it.subcategory_id
+    if (sid && validIds.has(sid)) (bySub[sid] ||= []).push(it)
+    else ungrouped.push(it)   // null OR orphan → ungrouped
+  }
+
+  const out: Array<{ id: string | null; name: string | null; items: T[] }> = [
+    { id: null, name: null, items: ungrouped },
+  ]
+  for (const s of subs) out.push({ id: s.id, name: s.name, items: bySub[s.id] || [] })
+  return out
 }
 
 /**
