@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
+import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
@@ -21,7 +22,7 @@ import UserMenu from '@/components/dashboard/UserMenu'
 import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
@@ -4205,6 +4206,32 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
     }
   }
 
+  // ── Contact Details: validation (shared with the customer order screen) + the WhatsApp tick ──
+  const contactEmailErr = (form.contact_email || '').trim() !== '' && !isValidEmail(form.contact_email || '')
+  const contactPhoneErr = (form.contact_phone || '').trim() !== '' && !isValidUKPhone(form.contact_phone || '')
+  // Customer-facing `whatsapp` = the phone number WHEN "this number is on WhatsApp" is ticked; else null.
+  // (Distinct from whatsapp_sender, the Auto-replies/Connect integration — never touched here.)
+  const waFromPhone = (phone: string | null, isWa: boolean) => (isWa && (phone || '').trim() ? phone : null)
+
+  // Phone onBlur: persist phone AND keep `whatsapp` synced to it while the tick is on (no drift).
+  const saveContactPhone = () =>
+    saveFormField({ whatsapp: waFromPhone(form.contact_phone, !!form.phone_is_whatsapp) })
+
+  // Tick toggle: set the flag + sync/clear `whatsapp`. On UNTICK, if WhatsApp was the preferred method
+  // it falls back to a valid one (can't keep preferred=whatsapp with no WhatsApp number).
+  const togglePhoneIsWhatsapp = (checked: boolean) => {
+    const wa = waFromPhone(form.contact_phone, checked)
+    setForm(p => ({ ...p, phone_is_whatsapp: checked, whatsapp: wa }))
+    saveFormField({ phone_is_whatsapp: checked, whatsapp: wa })
+    if (!checked && preferredContact === 'whatsapp') {
+      const fallback = (form.contact_email || '').trim() ? 'email' : ((form.contact_phone || '').trim() ? 'phone' : '')
+      setPreferredContact(fallback)
+      saveSetting('preferred_contact_method', fallback || null)
+    }
+  }
+  // True when WhatsApp is a usable customer contact method (ticked + a phone present).
+  const whatsappUsable = !!form.phone_is_whatsapp && !!(form.contact_phone || '').trim()
+
   const handleDisplayModeChange = async (value: 'list' | 'grid') => {
     setDisplayMode(value)
     try { await api('update_truck', { data: { display_mode: value } }) }
@@ -4347,11 +4374,17 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
           <p className="text-base font-bold text-slate-800">Contact Details</p>
           <p className="text-xs text-slate-400 mt-0.5">How customers reach you about their order (shown on order confirmations) and where you receive new-order alerts. For your personal account details, go to Team → My profile.</p>
         </div>
-        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" />
+        <Input label="Email" required type="email" value={form.contact_email || ''} onChange={v => setForm(p => ({...p, contact_email: v}))} onBlur={() => saveFormField()} placeholder="hello@yourtruck.com" error={contactEmailErr ? 'Please enter a valid email (e.g. hello@yourtruck.com)' : undefined} />
         <p className="text-xs text-slate-400 -mt-1.5">Where you receive new-order notifications — and shown to customers on their confirmation when “Email” is the preferred method below.</p>
-        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={() => saveFormField()} placeholder="07700 900123" />
+        <Input label="Phone" required type="tel" value={form.contact_phone || ''} onChange={v => setForm(p => ({...p, contact_phone: v}))} onBlur={saveContactPhone} placeholder="07700 900123" error={contactPhoneErr ? 'Please enter a valid UK phone (e.g. 07700 900123)' : undefined} />
+        {/* "This number is on WhatsApp" — ties the customer-facing `whatsapp` to the phone (no double
+            entry) and gates WhatsApp as a preferred method below. */}
+        <label className="flex items-center gap-2 text-sm text-slate-600 -mt-1 cursor-pointer">
+          <input type="checkbox" checked={!!form.phone_is_whatsapp} onChange={e => togglePhoneIsWhatsapp(e.target.checked)} className="w-4 h-4 accent-orange-600 cursor-pointer" />
+          This number is on WhatsApp
+        </label>
 
-        {/* Preferred contact method — gated on the email/phone above + whatsapp_sender (Online presence) */}
+        {/* Preferred contact method — WhatsApp gated on the tick above (customer-facing whatsapp = phone) */}
         <div className="pt-3 border-t border-slate-100">
           {['facebook', 'messenger', 'instagram'].includes(preferredContact) && (
             <p className="text-xs text-slate-500 italic mb-2">Your previous contact method is no longer available. Please select a new one.</p>
@@ -4370,15 +4403,15 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               <option value="">Not specified</option>
               {(!!form.contact_email?.trim() || preferredContact === 'email') && <option value="email">Email</option>}
               {(!!form.contact_phone?.trim() || preferredContact === 'phone') && <option value="phone">Phone</option>}
-              {(!!whatsappSender?.trim() || preferredContact === 'whatsapp') && <option value="whatsapp">WhatsApp</option>}
+              {(whatsappUsable || preferredContact === 'whatsapp') && <option value="whatsapp">WhatsApp</option>}
             </select>
           </div>
           <p className="text-xs text-slate-400 mt-1.5">How customers should contact you about their order — shown on their confirmation email.</p>
-          {!form.contact_email?.trim() && !form.contact_phone?.trim() && !whatsappSender?.trim() && (
-            <p className="text-xs text-slate-400 mt-1">Add an email or phone above (or a WhatsApp number in Online presence &amp; social) to offer a contact method.</p>
+          {!form.contact_email?.trim() && !form.contact_phone?.trim() && (
+            <p className="text-xs text-slate-400 mt-1">Add an email or phone above to offer a contact method.</p>
           )}
-          {preferredContact === 'whatsapp' && !whatsappSender?.trim() && (
-            <p className="text-xs text-amber-600 mt-1">⚠️ Add your WhatsApp number in Online presence &amp; social</p>
+          {preferredContact === 'whatsapp' && !whatsappUsable && (
+            <p className="text-xs text-amber-600 mt-1">⚠️ Tick “This number is on WhatsApp” on the Phone field to use WhatsApp.</p>
           )}
         </div>
 

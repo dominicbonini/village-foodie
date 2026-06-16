@@ -524,6 +524,9 @@ export async function POST(req: NextRequest) {
       'name', 'description', 'cuisine_type', 'contact_email', 'contact_phone',
       'social_instagram', 'social_facebook', 'auto_accept', 'logo_storage_path',
       'website', 'allergen_info_url', 'allergen_info_text', 'truck_emoji',
+      // Customer-facing WhatsApp (the phone number, when the operator ticks "this number is on
+      // WhatsApp") + the tick flag. SEPARATE from whatsapp_sender (Auto-replies/Connect) — not written here.
+      'whatsapp', 'phone_is_whatsapp',
     ]
     const safeData = Object.fromEntries(
       Object.entries(body).filter(([key, val]) => ALLOWED.includes(key) && val !== undefined)

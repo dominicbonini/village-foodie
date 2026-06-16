@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
+import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
@@ -834,9 +835,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   //  - email: plausible x@y.z (one @, a dot in the domain). Empty ⇒ invalid (it's required).
   //  - phone: empty is fine; if given, strip spaces/dashes/brackets then accept a UK-ish number
   //    (0… or +44/44… followed by 9–11 digits). Permissive on purpose.
-  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-  const phoneDigits = phone.replace(/[^\d+]/g, '')
-  const phoneValid = phone.trim() === '' || /^(\+?44|0)\d{9,11}$/.test(phoneDigits)
+  const emailValid = isValidEmail(email)
+  const phoneValid = phone.trim() === '' || isValidUKPhone(phone)
   // Inline-error visibility: only nag once the field has invalid CONTENT (never on empty).
   const emailError = email.trim() !== '' && !emailValid
   const phoneError = phone.trim() !== '' && !phoneValid
