@@ -24,7 +24,7 @@ import AppHeader from '@/components/shared/AppHeader'
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
-interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
+interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
@@ -1370,6 +1370,27 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                   <option value="">No category</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
+              </div>
+
+              {/* Sub-category (optional, display-only) — groups the item under a heading within its
+                  category on the order screens. Blank → null (the input clears to ''; saved as null
+                  by upsert_item). Datalist suggests sub-categories already used in THIS category. */}
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Sub-category <span className="text-slate-400 font-normal">(optional)</span></label>
+                <input
+                  list="subcategory-suggestions"
+                  value={editingItem.subcategory || ''}
+                  onChange={e => setEditingItem(p => ({...p!, subcategory: e.target.value.trim() === '' ? null : e.target.value}))}
+                  placeholder="e.g. Meat Lovers, Veggie"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                <datalist id="subcategory-suggestions">
+                  {[...new Set(
+                    localItems
+                      .filter(i => i.category_id === editingItem.category_id && (i.subcategory || '').trim())
+                      .map(i => (i.subcategory as string).trim())
+                  )].map(sc => <option key={sc} value={sc} />)}
+                </datalist>
+                <p className="text-xs text-slate-400 mt-1">Groups this item under a heading within its category on the order screens — e.g. Meat Lovers, Veggie. Leave blank for none.</p>
               </div>
 
               {/* Photo */}

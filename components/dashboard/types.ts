@@ -99,6 +99,7 @@ export interface MenuItem {
   description?: string
   price: number
   category: string
+  subcategory?: string | null
   available?: boolean
   stock_remaining?: number | null
   default_stock?: number | null

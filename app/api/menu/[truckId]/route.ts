@@ -307,6 +307,7 @@ export async function GET(
         description: i.description || '',
         price: i.price,
         category: (i.menu_categories as any)?.name || 'Uncategorized',
+        subcategory: (i as any).subcategory ?? null,
         available: isAvailable,
         stock_remaining: stockRemaining,
         default_stock: i.default_stock ?? null,

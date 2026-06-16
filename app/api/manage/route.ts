@@ -248,10 +248,12 @@ export async function POST(req: NextRequest) {
 
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info } = body
+    const { id, name, description, price, category_id, subcategory, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info } = body
+    // Display-only sub-grouping label — blank normalises to null (never "").
+    const subcat = (typeof subcategory === 'string' && subcategory.trim()) ? subcategory.trim() : null
     if (id) {
       const { data, error } = await supabase.from('menu_items_db')
-        .update({ name, description, price, category_id, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
+        .update({ name, description, price, category_id, subcategory: subcat, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -259,7 +261,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
-        .insert({ truck_id: truck.id, name, description, price, category_id, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
+        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory: subcat, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
