@@ -18,7 +18,7 @@ import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/s
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
-    .from('trucks').select('*').eq('dashboard_token', token).eq('active', true).single()
+    .from('trucks').select('*').eq('dashboard_token', token).single()
   if (!truck) return null
   if (truck.dashboard_pin && truck.dashboard_pin !== pin) return null
   return truck

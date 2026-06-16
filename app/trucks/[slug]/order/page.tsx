@@ -1380,7 +1380,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <div key={group.id ?? '__ungrouped'}>
                 {/* Sub-category heading — only a NAMED group with items (Phase 3 order-screen rule);
                     the ungrouped (null) group renders no heading, and empty sub-cats are not shown. */}
-                {group.name && <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mt-2 mb-1 px-0.5">{cap(group.name)}</p>}
+                {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider mt-2 mb-1 px-0.5">{cap(group.name)}</p>}
                 <div className="divide-y divide-slate-100">
                 {group.items.map(item => {
                   const qty = getQty(item.name)

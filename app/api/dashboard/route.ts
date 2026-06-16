@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
     .from('trucks')
     .select('*')
     .eq('dashboard_token', token)
-    .eq('active', true)
     .single()
 
   if (error || !truck) {

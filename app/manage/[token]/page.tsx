@@ -590,9 +590,11 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
   const [localSubcats, setLocalSubcats] = useState<Subcategory[]>(subcategories)
   const prevSubcatsRef = useRef(subcategories)
   if (prevSubcatsRef.current !== subcategories) { prevSubcatsRef.current = subcategories; setLocalSubcats(subcategories) }
-  const [newSubcatCat, setNewSubcatCat] = useState<string | null>(null)   // category_id with an open "+ add" input
   const [newSubcatName, setNewSubcatName] = useState('')
   const [addingSubcatInModal, setAddingSubcatInModal] = useState(false)   // inline create in the item modal
+  const [subcatModalCat, setSubcatModalCat] = useState<string | null>(null)   // category_id whose "Manage sub-categories" modal is open
+  const [editingSubcatId, setEditingSubcatId] = useState<string | null>(null) // sub-category row in tap-to-rename mode
+  const [editingSubcatName, setEditingSubcatName] = useState('')              // rename text buffer
 
   // Sub-categories for a given category, sorted by sort_order.
   const subcatsFor = (categoryId: string | null | undefined) =>
@@ -635,6 +637,18 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
       await api('update_subcategory_order', { id: a.id, sort_order: b.sort_order })
       await api('update_subcategory_order', { id: b.id, sort_order: a.sort_order })
     } catch (e: any) { showToast(e.message || 'Failed to reorder', 'error') }
+  }
+
+  // Rename a sub-category by id, refresh local state. Same upsert action as create (edit-by-id).
+  const renameSubcategory = async (sc: Subcategory, name: string) => {
+    const trimmed = name.trim()
+    if (!trimmed || trimmed === sc.name) { setEditingSubcatId(null); return }
+    try {
+      const res = await api('upsert_subcategory', { id: sc.id, name: trimmed })
+      const updated = res.subcategory as Subcategory
+      if (updated) setLocalSubcats(prev => prev.map(s => s.id === updated.id ? updated : s))
+    } catch (e: any) { showToast(e.message || 'Failed to rename sub-category', 'error') }
+    setEditingSubcatId(null)
   }
   const [importStep, setImportStep] = useState<ImportStep>('idle')
   const [importFile, setImportFile] = useState<File | null>(null)
@@ -1069,46 +1083,14 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                   </div>
                 </div>
 
-                {/* Sub-categories — display-only headings within this category (Phase 2 management;
-                    grouping the item list/order screens by these is Phase 3). Empty ones persist. */}
+                {/* Sub-categories — display-only headings within this category. Managed in a modal
+                    (create/delete/rename/reorder are immediate); grouping is handled elsewhere. */}
                 <div className="mt-3 pt-3 border-t border-slate-100">
-                  <p className="text-xs font-bold text-slate-600 mb-2">Sub-categories <span className="text-slate-400 font-normal">(optional — group items under headings)</span></p>
-                  <div className="space-y-1.5">
-                    {subcatsFor(cat.id).map((sc, i, arr) => {
-                      const itemCount = localItems.filter(it => it.subcategory_id === sc.id).length
-                      return (
-                        <div key={sc.id} className="flex items-center gap-2 bg-slate-50 rounded-lg px-2.5 py-1.5">
-                          <div className="flex flex-col leading-none">
-                            <button type="button" disabled={i === 0} onClick={() => moveSubcat(cat.id, sc.id, -1)} className="text-slate-400 hover:text-slate-700 disabled:opacity-25 text-[10px]" title="Move up">▲</button>
-                            <button type="button" disabled={i === arr.length - 1} onClick={() => moveSubcat(cat.id, sc.id, 1)} className="text-slate-400 hover:text-slate-700 disabled:opacity-25 text-[10px]" title="Move down">▼</button>
-                          </div>
-                          <span className="flex-1 text-sm text-slate-700 truncate">{sc.name}</span>
-                          <span className="text-[10px] text-slate-400 flex-shrink-0">{itemCount} item{itemCount === 1 ? '' : 's'}</span>
-                          <button type="button" onClick={() => deleteSubcategory(sc)} className="text-slate-400 hover:text-red-500 text-sm flex-shrink-0" title="Delete sub-category">🗑</button>
-                        </div>
-                      )
-                    })}
-                    {subcatsFor(cat.id).length === 0 && <p className="text-xs text-slate-400">No sub-categories yet.</p>}
-                  </div>
-                  {newSubcatCat === cat.id ? (
-                    <div className="flex items-center gap-2 mt-2">
-                      <input autoFocus value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)}
-                        onKeyDown={async e => {
-                          if (e.key === 'Enter' && newSubcatName.trim()) { await createSubcategory(cat.id, newSubcatName); setNewSubcatName(''); setNewSubcatCat(null) }
-                          else if (e.key === 'Escape') { setNewSubcatCat(null); setNewSubcatName('') }
-                        }}
-                        placeholder="Sub-category name"
-                        className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                      <button type="button" disabled={!newSubcatName.trim()}
-                        onClick={async () => { await createSubcategory(cat.id, newSubcatName); setNewSubcatName(''); setNewSubcatCat(null) }}
-                        className="flex-shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-orange-600 text-white disabled:opacity-40">Add</button>
-                      <button type="button" onClick={() => { setNewSubcatCat(null); setNewSubcatName('') }}
-                        className="flex-shrink-0 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-500">Cancel</button>
-                    </div>
-                  ) : (
-                    <button type="button" onClick={() => { setNewSubcatName(''); setNewSubcatCat(cat.id) }}
-                      className="mt-2 text-xs font-bold text-orange-600 hover:text-orange-700">+ Add sub-category</button>
-                  )}
+                  <button type="button"
+                    onClick={() => { setNewSubcatName(''); setEditingSubcatId(null); setSubcatModalCat(cat.id) }}
+                    className="inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+                    Manage sub-categories ({subcatsFor(cat.id).length})
+                  </button>
                 </div>
               </div>
             )}
@@ -1121,7 +1103,7 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                     heading. Display-only (Phase 3); "+ Add item" stays category-level below. */}
                 {groupBySubcategory(catItems, subcatsFor(cat.id)).map(group => (
                 <div key={group.id ?? '__ungrouped'}>
-                  {group.name && <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider px-4 pt-2.5 pb-1">{group.name}{group.items.length === 0 ? ' · empty' : ''}</p>}
+                  {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider px-4 pt-2.5 pb-1">{group.name}{group.items.length === 0 ? ' · empty' : ''}</p>}
                   {group.items.map(item => (
                   <div key={item.id} className="flex items-center gap-3 px-4 py-3 border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
                     {/* Item image */}
@@ -1439,6 +1421,65 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
           </div>
         </div>
       )}
+
+      {/* Manage sub-categories modal — create/delete/rename/reorder are all immediate (no save step).
+          Reads from localSubcats via subcatsFor(), so it re-renders live as the handlers update state. */}
+      {subcatModalCat && (() => {
+        const modalCat = categories.find(c => c.id === subcatModalCat)
+        const modalSubcats = subcatsFor(subcatModalCat)
+        return (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setSubcatModalCat(null)}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 className="font-black text-slate-900 mb-4">Sub-categories — {modalCat?.name}</h3>
+            <div className="space-y-1.5">
+              {modalSubcats.map((sc, i, arr) => {
+                const itemCount = localItems.filter(it => it.subcategory_id === sc.id).length
+                return (
+                  <div key={sc.id} className="flex items-center gap-2 bg-slate-50 rounded-lg px-2.5 py-1.5">
+                    <div className="flex items-center gap-1">
+                      <button type="button" disabled={i === 0} onClick={() => moveSubcat(subcatModalCat, sc.id, -1)}
+                        className="border border-slate-200 rounded px-2 py-1 text-slate-600 hover:bg-slate-50 disabled:opacity-30" title="Move up">↑</button>
+                      <button type="button" disabled={i === arr.length - 1} onClick={() => moveSubcat(subcatModalCat, sc.id, 1)}
+                        className="border border-slate-200 rounded px-2 py-1 text-slate-600 hover:bg-slate-50 disabled:opacity-30" title="Move down">↓</button>
+                    </div>
+                    {editingSubcatId === sc.id ? (
+                      <input autoFocus value={editingSubcatName}
+                        onChange={e => setEditingSubcatName(e.target.value)}
+                        onBlur={() => renameSubcategory(sc, editingSubcatName)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') { renameSubcategory(sc, editingSubcatName) }
+                          else if (e.key === 'Escape') { setEditingSubcatId(null) }
+                        }}
+                        className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                    ) : (
+                      <button type="button" onClick={() => { setEditingSubcatId(sc.id); setEditingSubcatName(sc.name) }}
+                        className="flex-1 text-left text-sm text-slate-700 truncate hover:text-orange-600" title="Tap to rename">{sc.name}</button>
+                    )}
+                    <span className="text-[10px] text-slate-400 flex-shrink-0">{itemCount === 0 ? 'empty' : `${itemCount} item${itemCount === 1 ? '' : 's'}`}</span>
+                    <button type="button" onClick={() => deleteSubcategory(sc)} className="text-slate-400 hover:text-red-500 text-sm flex-shrink-0" title="Delete sub-category">🗑</button>
+                  </div>
+                )
+              })}
+              {modalSubcats.length === 0 && <p className="text-xs text-slate-400">No sub-categories yet</p>}
+            </div>
+            <div className="flex items-center gap-2 mt-3">
+              <input value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)}
+                onKeyDown={async e => {
+                  if (e.key === 'Enter' && newSubcatName.trim()) { await createSubcategory(subcatModalCat, newSubcatName); setNewSubcatName('') }
+                }}
+                placeholder="Sub-category name"
+                className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+              <button type="button" disabled={!newSubcatName.trim()}
+                onClick={async () => { await createSubcategory(subcatModalCat, newSubcatName); setNewSubcatName('') }}
+                className="flex-shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-orange-600 text-white disabled:opacity-40">+ Add sub-category</button>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <Btn label="Done" colour="slate" onClick={() => setSubcatModalCat(null)} />
+            </div>
+          </div>
+        </div>
+        )
+      })()}
 
       {/* Edit Item Modal */}
       {editingItem && (

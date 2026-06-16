@@ -822,7 +822,7 @@ setItemModal({ item, modGroups, editCartKey })
             </p>
             {groupBySubcategory(items, truckMenu?.categories?.find(c => c.name === cat)?.subcategories).filter(g => g.items.length > 0).map(group => (
             <div key={group.id ?? '__ungrouped'} className="mb-2 last:mb-0">
-              {group.name && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">{group.name}</p>}
+              {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider mb-1.5">{group.name}</p>}
               <div className="flex flex-wrap gap-2">
               {group.items.map(item => {
                 const isSoldOut = !(item.available ?? true)
@@ -891,7 +891,7 @@ setItemModal({ item, modGroups, editCartKey })
             </div>
             {groupBySubcategory(items, truckMenu?.categories?.find(c => c.name === cat)?.subcategories).filter(g => g.items.length > 0).map(group => (
             <div key={group.id ?? '__ungrouped'}>
-              {group.name && <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide px-1 pt-1 pb-0.5">{group.name}</p>}
+              {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider px-1 pt-1 pb-0.5">{group.name}</p>}
               <div>
               {group.items.map(item => {
                 const isSoldOut = !(item.available ?? true)
