@@ -278,34 +278,38 @@ export function AddOrderPanel({
     return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
   }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot, eventTz, manualEvent])
 
-  // "Ready around" MIRRORS the ASAP dropdown: source the sub-label's "around HH:MM" + "~N mins"
-  // from adjustedAsapSlot — the SAME backward-fit collection slot the dropdown shows, whose
-  // window already bakes prep into the slot time. The old queue-batch estimate (queueAware) used
-  // `now + finalBatch×secs`, which re-cooked the already-queued items from now and landed a prep
-  // cycle late (16:10 vs the dropdown's 16:05). Fall back to the queue-batch / calcReadyTime
-  // estimate ONLY when there's no capacity data or no backward-fit slot to source from — the same
-  // role customerAsapTime plays behind backwardAsap on the customer page.
-  // Only source from the fit slot once there's actually a basket — an empty order "fits"
-  // every slot, so without this the sub-label would show with nothing in the cart (it was
-  // hidden before, via the empty calcReadyTime). Same basket guard queueAware uses.
+  // "Ready around" (DISPLAY-ONLY readout for the truck — NOT placement): the HONEST now+prep estimate,
+  // CLAMPED so it never reads LATER than the authoritative collection slot.
+  //  • queueAware = now + prep (ungridded): under a light/empty queue it lands EARLIER than the
+  //    grid-rounded slot (17:08 + 5-min prep ⇒ ~17:13 vs the 17:15 slot) — the honest-early readout.
+  //  • fitReadyTime = the engine's BACKWARD-FIT collection slot (adjustedAsapSlot), already PROVEN
+  //    "ready by T" via CONCURRENT placement. queueAware models the queue SERIALLY (drain all, then
+  //    cook this order), which OVERESTIMATES under load and would land later than the slot — nonsensical,
+  //    since the engine guaranteed ready-by-slot. So we CAP the honest estimate at the slot.
+  //  ⇒ readyTime = the EARLIER of (queueAware, fitReadyTime). Light queue ⇒ queueAware (honest early);
+  //    under load ⇒ the slot (never later). The dropdown/submit slot (adjustedAsapSlot, :504/:591) stays
+  //    authoritative and UNCHANGED — only this readout clamps.
+  // fitReadyTime is taken only once there's a basket — an empty order "fits" every slot, so without this
+  // the sub-label would show with nothing in the cart. No capacity data / no fit slot ⇒ no ceiling to
+  // clamp to ⇒ fall back to queueAware (or calcReadyTime) UNCLAMPED.
   const hasBasketForReady = manualItems.length > 0 || appliedDeals.length > 0
   const fitReadyTime = (hasBasketForReady && capacityInputs) ? (adjustedAsapSlot?.collection_time || null) : null
-  // Sub-label (DISPLAY-ONLY): show the HONEST ungridded now+prep estimate (queueAware) as the
-  // headline — NOT the grid-rounded slot gap (fitReadyTime), which inflates the minutes by rounding
-  // now→next-5-min slot (e.g. "~12 mins · 19:10" at 18:58 with 10-min prep, when food is really ready
-  // ~19:08). The bookable slot stays gridded and is shown separately in the ASAP dropdown (:591) and
-  // submitted via adjustedAsapSlot (:504) — both unaffected. Fall back to the gridded fit slot /
-  // calcReadyTime only when there's no queue-aware estimate (empty basket / totalSecs 0).
-  const readyTime = queueAware.readyTime || fitReadyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
-  // "~N mins" wait — from the SAME source as `readyTime` so the two stay consistent.
+  const readyToMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
+  // CLAMP: earlier of the honest estimate and the authoritative slot. Unclamped fallback when either
+  // side is absent (no fit slot ⇒ queueAware; no queueAware ⇒ slot; neither ⇒ calcReadyTime).
+  const readyTime = (queueAware.readyTime && fitReadyTime)
+    ? (readyToMins(queueAware.readyTime) <= readyToMins(fitReadyTime) ? queueAware.readyTime : fitReadyTime)
+    : (queueAware.readyTime || fitReadyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs))
+  // "~N mins" wait — derived from the CLAMPED readyTime so the number agrees with the shown time (never
+  // more minutes than the slot implies). When the honest estimate won, reuse queueAware's sub-minute-
+  // precise count; when clamped to the slot (or a calcReadyTime fallback), compute from that HH:MM.
   // (Only rendered on the same-day branch; future-day shows a date label, not a wait.)
-  const readyMinsFromNow = queueAware.readyTime
+  const readyMinsFromNow = (readyTime && readyTime === queueAware.readyTime)
     ? queueAware.minsFromNow
-    : fitReadyTime
+    : readyTime
     ? (() => {
-        const [h, m] = fitReadyTime.split(':').map(Number)
         const nowM = new Date().getHours() * 60 + new Date().getMinutes()
-        return Math.max(0, (h || 0) * 60 + (m || 0) - nowM)
+        return Math.max(0, readyToMins(readyTime) - nowM)
       })()
     : queueAware.minsFromNow
 
