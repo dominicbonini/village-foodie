@@ -49,6 +49,10 @@ export interface Order {
 export interface Slot {
   collection_time: string
   production_slot: string
+  /** WINDOW key the WRITE stored load under (= timeMap[collection_time] || collection_time), pre-resolved
+   *  server-side so the day-load dots (buildSlotIndicators) read the SAME key the write used. Optional —
+   *  absent ⇒ buildSlotIndicators falls back to collection_time (empty-collection_times truck). */
+  production_window_key?: string
   current_orders: number
   max_orders: number
   available: boolean

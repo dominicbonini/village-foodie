@@ -143,10 +143,21 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ truc
   const eventStart = todayEvent?.start_time || paramStart
   const eventEnd   = todayEvent?.end_time   || paramEnd
   const GRACE_MINS = 30
-  const times =
+  const rawTimes =
     eventStart && eventEnd && intervalMins > 0
       ? generateCollectionTimes(eventStart, eventEnd, intervalMins, slotDurationMins, GRACE_MINS)
       : (staticTimes ?? [])
+
+  // WINDOW-KEY MAP: collection_time → production_slot from the static collection_times table — the
+  // EXACT source the WRITE keys production_slot_usage by (slot-bookings.ts fetchCollectionTimeMap).
+  // Pre-resolve the per-slot window key here (= timeMap[ct] || ct) so the day-load dots read the SAME
+  // key the write stored under. Empty collection_times ⇒ empty map ⇒ key degenerates to ct (= write key).
+  const timeMap: Record<string, string> = {}
+  ;(staticTimes ?? []).forEach(r => { timeMap[r.collection_time] = r.production_slot })
+  const times = rawTimes.map(t => ({
+    ...t,
+    production_window_key: timeMap[t.collection_time] || t.collection_time,
+  }))
 
   // ── Build category config map (always needed for ASAP calculation) ────────
   const catConfigs: Record<string, CatConfig> = {}

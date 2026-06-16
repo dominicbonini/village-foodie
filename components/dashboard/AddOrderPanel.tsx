@@ -833,8 +833,13 @@ setItemModal({ item, modGroups, editCartKey })
               {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider mb-1.5">{group.name}</p>}
               <div className="flex flex-wrap gap-2">
               {group.items.map(item => {
-                const isSoldOut = !(item.available ?? true)
                 const stock = itemStocks.find(s => s.name === item.name)
+                // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
+                // (item.available — standing Settings availability) OR per-event override OFF
+                // (stock.available — the sold-out-for-tonight toggle). Read from the SAME optimistically-
+                // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
+                // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
+                const isSoldOut = !(item.available ?? true) || stock?.available === false
                 const catSt = categoryStocks.find(s => s.category === cat)
                 const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
                 const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
@@ -902,8 +907,13 @@ setItemModal({ item, modGroups, editCartKey })
               {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider px-1 pt-1 pb-0.5">{group.name}</p>}
               <div>
               {group.items.map(item => {
-                const isSoldOut = !(item.available ?? true)
                 const stock = itemStocks.find(s => s.name === item.name)
+                // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
+                // (item.available — standing Settings availability) OR per-event override OFF
+                // (stock.available — the sold-out-for-tonight toggle). Read from the SAME optimistically-
+                // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
+                // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
+                const isSoldOut = !(item.available ?? true) || stock?.available === false
                 const catSt = categoryStocks.find(s => s.category === cat)
                 const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
                 const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)

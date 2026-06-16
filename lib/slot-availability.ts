@@ -18,11 +18,20 @@ import { getLocalDateInTz } from '@/lib/time-utils'
 export interface CollectionTimeRow {
   collection_time: string
   production_slot: string
+  /** WINDOW key the WRITE stores load under = `timeMap[collection_time] || collection_time`. Pre-resolved
+   *  by the route (where collection_times/timeMap is available) and passed through to the row so the
+   *  DISPLAY (buildSlotIndicators) can mirror the write. Absent ⇒ buildSlotIndicators falls back to
+   *  collection_time. NOTE: the capacity ENGINE reads in THIS file still key by collection_time/
+   *  production_slot — see the audit note; they need a deeper re-key (parseMins can't read a range key). */
+  production_window_key?: string
 }
 
 export interface SlotAvailabilityRow {
   collection_time: string
   production_slot: string
+  /** Pre-resolved window key (= write key) carried through to the client so the day-load dots
+   *  (buildSlotIndicators) read the SAME key the write used. See CollectionTimeRow.production_window_key. */
+  production_window_key: string
   /** Items used against the BINDING constraint (global ceiling or a category cohort). */
   current_orders: number
   /** Capacity of the binding constraint (items). 999 = unlimited. */
@@ -47,7 +56,15 @@ const UNLIMITED = 999
 const RANK: Record<SlotTone, number> = { green: 0, amber: 1, red: 2 }
 
 function parseMins(hhmm: string): number {
-  const [h, m] = hhmm.split(':').map(Number)
+  // Accept a production_slot_usage WINDOW key (range "19:20-19:30") as well as a plain HH:MM. The
+  // backward-fit engine iterates the usage map and parses each key as the bucket-START deadline
+  // (projectBackwardOccupancy:"bucket START = ready-by deadline"); window SIZE comes from
+  // capacityWindowMins + prep cadence, never the range end — so the START is the complete semantic.
+  // Split on '-' FIRST: a range yields its start ("19:20-19:30" → "19:20"); a single key has no '-'
+  // so split('-')[0] returns it unchanged. WITHOUT this, Number("20-19") = NaN dropped windowed load
+  // from the projection → the engine under-read a full window and over-accepted (the windowed-truck bug).
+  const start = hhmm.split('-')[0]
+  const [h, m] = start.split(':').map(Number)
   return (h || 0) * 60 + (m || 0)
 }
 
@@ -163,6 +180,9 @@ export function buildSlotAvailability(params: {
     return {
       collection_time: s.collection_time,
       production_slot: s.production_slot,
+      // Pass through the route-resolved window key (= write key) for the display read. Fall back to
+      // collection_time when the route didn't attach one (empty-collection_times truck ⇒ write also keys by ct).
+      production_window_key: s.production_window_key ?? s.collection_time,
       current_orders: bindCurrent,
       max_orders: bindCap,
       soft_max: bindCap,

@@ -24,6 +24,12 @@ export interface SlotIndicator {
 interface SlotInput {
   collection_time: string
   production_slot: string
+  /** The WINDOW key the WRITE stored load under = `timeMap[collection_time] || collection_time`
+   *  (collection_times.production_slot, e.g. "19:20-19:30", collapsing two 5-min collection times
+   *  into one shared 10-min capacity window). Pre-resolved server-side (the client has no DB access)
+   *  and surfaced per-slot so the read mirrors the write on windowed trucks. Absent ⇒ falls back to
+   *  collection_time (empty-collection_times trucks, where the write also keys by collection_time). */
+  production_window_key?: string
   too_soon?: boolean
 }
 
@@ -70,14 +76,15 @@ export function buildSlotIndicators(
   const EPS = 1e-6
 
   for (const s of slots) {
-    // THE COLLECTION-SLOT TOTAL: the FULL load the operator committed to this collection time. Keyed by
-    // s.collection_time — the SAME key storage uses: buildUnitsFromOrders books each order at
-    // `timeMap[order.slot] || order.slot` (the collection time), so production_slot_usage rows are
-    // collection-time keyed (each order's whole load at ITS own slot — independent / non-overlapping).
-    // NOT s.production_slot: generateCollectionTimes collapses production_slot onto the slot_duration_mins
-    // grid (e.g. slot_duration 10 vs interval 5 → 12:05's production_slot is "12:00"), which would read
-    // the PREVIOUS slot's total (the off-by-one). DISPLAY ONLY; the capacity ENGINE is unchanged.
-    const units = productionSlotUnits[s.collection_time] || {}
+    // THE COLLECTION-SLOT TOTAL: the FULL load the operator committed to this slot's production window.
+    // Keyed by the WINDOW key — the EXACT expression the WRITE uses (slot-bookings.ts:223/317/349):
+    // `timeMap[collection_time] || collection_time`, pre-resolved server-side into s.production_window_key.
+    // On a truck WITH collection_times window data this is the range key (e.g. "19:20-19:30") so two
+    // collection times sharing a 10-min window share their load (and the read MATCHES the windowed write).
+    // On an empty-collection_times truck production_window_key is absent ⇒ we fall back to s.collection_time,
+    // which is ALSO what the write keys by there (timeMap empty ⇒ ct) — identical to the V7.5 #3 fix, so the
+    // off-by-one (reading s.production_slot, the grid-collapsed value) is NOT reintroduced. DISPLAY ONLY.
+    const units = productionSlotUnits[s.production_window_key ?? s.collection_time] || {}
 
     // Tone from the FULL total: each cooking (prep) category full/over its batch ⇒ red, partial ⇒
     // amber (worst wins, tie-break higher load); plus the global ceiling on capacity-counting items.

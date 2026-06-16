@@ -178,10 +178,16 @@ export async function GET(req: NextRequest) {
   const eventEndMins   = selectedEvent?.end_time   ? toMins(selectedEvent.end_time)   : null
 
   // Generate slots only from event data — no static fallback
+  // WINDOW-KEY MAP: collection_time → production_slot from the static collection_times table — the
+  // EXACT source the WRITE keys production_slot_usage by. Pre-resolve the per-slot window key so the
+  // day-load dots (buildSlotIndicators) read the SAME key the write stored under (= timeMap[ct] || ct).
+  const timeMap: Record<string, string> = {}
+  ;(staticTimes ?? []).forEach(r => { timeMap[r.collection_time] = r.production_slot })
   const slots =
-    selectedEvent?.start_time && selectedEvent?.end_time && intervalMins > 0
+    (selectedEvent?.start_time && selectedEvent?.end_time && intervalMins > 0
       ? generateCollectionTimes(selectedEvent.start_time, selectedEvent.end_time, intervalMins, slotDurationMins, GRACE_MINS)
       : []
+    ).map(s => ({ ...s, production_window_key: timeMap[s.collection_time] || s.collection_time }))
 
   const [{ data: categories }, { data: menuItemsForMap }] = await Promise.all([
     supabase
@@ -219,6 +225,7 @@ export async function GET(req: NextRequest) {
   let slotsWithCapacity: {
     collection_time: string
     production_slot: string
+    production_window_key: string
     current_orders: number
     max_orders: number
     available: boolean
@@ -301,15 +308,17 @@ export async function GET(req: NextRequest) {
     }).map(s => ({
       collection_time: s.collection_time,
       production_slot: s.production_slot,
+      production_window_key: s.production_window_key,
       current_orders: s.current_orders,
       max_orders: s.max_orders,
       available: s.available,
       is_past: s.is_past,
       is_grace: s.is_grace,
-      // The day-load strip's tone + label reflect the FULL collection-slot total (buildSlotIndicators
-      // now reads production_slot_usage[production_slot] directly), so the strip and the operator Add
-      // Order / Edit dots agree. Falls back to buildSlotAvailability's tone only if the indicator is
-      // missing. buildSlotAvailability's own tone/available (customer-facing) is unchanged.
+      // The day-load strip's tone + label reflect the FULL collection-slot total. buildSlotIndicators
+      // reads production_slot_usage by the WINDOW key (production_window_key = timeMap[ct] || ct — the
+      // EXACT key the write stores under), so on a windowed truck the strip matches the real load instead
+      // of showing green. Falls back to buildSlotAvailability's tone only if the indicator is missing.
+      // buildSlotAvailability's own tone/available (customer-facing) is unchanged.
       tone: dayIndicators.get(s.collection_time)?.tone ?? s.tone,
       label: dayIndicators.get(s.collection_time)?.label ?? '',
     }))
@@ -318,6 +327,7 @@ export async function GET(req: NextRequest) {
     slotsWithCapacity = (slots || []).map(s => ({
       collection_time: s.collection_time,
       production_slot: s.production_slot,
+      production_window_key: s.production_window_key,
       current_orders: 0,
       max_orders: 999,
       available: true,
