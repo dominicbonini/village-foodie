@@ -4555,9 +4555,9 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         <p className="text-base font-bold text-slate-800">Your schedule</p>
         <div className="space-y-2">
           {([
-            { value: 'manual', label: "I'll add events myself", desc: 'You add your own events.' },
-            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval." },
-          ] as { value: 'auto' | 'manual'; label: string; desc: string }[]).map(opt => {
+            { value: 'manual', label: "I'll add events myself" },
+            { value: 'auto',   label: 'Find my events automatically',    desc: "Tell us where you post your schedule and we'll check it for you, sending any events we find for your approval. This needs to be your own website — not a Facebook or Instagram page." },
+          ] as { value: 'auto' | 'manual'; label: string; desc?: string }[]).map(opt => {
             const pref = form.scraper_preference ?? 'manual'
             const selected = pref === opt.value || (opt.value === 'auto' && pref === 'both')
             return (
@@ -4576,7 +4576,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{opt.label}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>
+                    {opt.desc && <p className="text-xs text-slate-500 mt-0.5">{opt.desc}</p>}
                   </div>
                 </div>
               </button>

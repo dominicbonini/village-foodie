@@ -6,6 +6,8 @@ import { extractScheduleEvents } from '@/lib/schedule-extract'
 // If timeouts recur at scale, move to a background job (GitHub Actions / queue)
 // rather than increasing this further. Fine for trial scale (< 10 trucks).
 export const maxDuration = 60
+// Chromium needs the Node runtime (not Edge). Memory is bumped to 1024 MB for this route in vercel.json.
+export const runtime = 'nodejs'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -36,6 +38,9 @@ async function getTruck(token: string) {
 
 // ── Puppeteer launch — works locally (puppeteer) and on Vercel (puppeteer-core + @sparticuz/chromium)
 async function launchBrowser() {
+  // VERCEL path: @sparticuz/chromium (now a direct dep, Chrome 148 matching puppeteer-core 24.43.1)
+  // provides a deterministic serverless Chromium binary. LOCAL path: the serverless launch throws
+  // (or @sparticuz can't run on a dev machine) → catch → full puppeteer's bundled Chrome.
   try {
     const chromium = require('@sparticuz/chromium')
     const puppeteer = require('puppeteer-core')
@@ -45,7 +50,10 @@ async function launchBrowser() {
       executablePath: await chromium.executablePath(),
       headless: chromium.headless,
     })
-  } catch {
+  } catch (serverlessErr: any) {
+    // Log the serverless-launch failure (the cause was previously invisible — bare catch). If the
+    // fallback ALSO throws, that error propagates to the POST handler (logged there too).
+    console.error('[verify] @sparticuz/puppeteer-core launch failed, falling back to full puppeteer:', serverlessErr?.message || serverlessErr)
     const puppeteer = require('puppeteer')
     return await puppeteer.launch({ headless: true })
   }
@@ -161,9 +169,12 @@ export async function POST(req: NextRequest) {
   try {
     try {
       browser = await launchBrowser()
-    } catch {
+    } catch (launchErr: any) {
       // OUR infra (Puppeteer/Chromium couldn't launch) — not the customer's URL. Distinct reason so
-      // the client shows "temporarily unavailable", never "check the URL".
+      // the client shows "temporarily unavailable", never "check the URL". Log the REAL cause (was a
+      // bare catch — the original failure was invisible) so Vercel logs show e.g. "Could not find
+      // Chrome" / "Cannot find module" / a version mismatch.
+      console.error('[verify] launchBrowser failed:', launchErr?.message || launchErr)
       return NextResponse.json({ found: false, reason: 'launch_failed' })
     }
 
