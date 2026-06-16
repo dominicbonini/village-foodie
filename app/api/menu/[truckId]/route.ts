@@ -163,7 +163,11 @@ export async function GET(
     }
   }
 
-  if (effectiveEventId) {
+  // event_deals.active is the CUSTOMER visibility toggle (per-event "show this deal"). It must NOT
+  // gate the OPERATOR add-order list — the operator can always see/add any deal regardless of whether
+  // it's live to customers. So this filter runs for the customer surface only (!isDashboard); the
+  // operator (dashboard=1) keeps the full bundle list. Customer behaviour is unchanged.
+  if (effectiveEventId && !isDashboard) {
     const { data: eventDeals } = await supabase
       .from('event_deals')
       .select('bundle_id, active')

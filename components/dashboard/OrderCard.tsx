@@ -352,30 +352,34 @@ export function OrderCard({
            px-3 py-2 for KDS grid density; Solo keeps its roomier px-4 py-3 (gate is 'window'-only). */
         <div className={`w-full text-left ${viewMode === 'window' ? 'px-3 py-2' : 'px-4 py-3'} ${headerCls}`}>
           {viewMode === 'solo' ? (
-            /* Solo (mobile): two-row layout with status badge */
+            /* Solo (dashboard + mobile): two-row header. Row 1 clusters #order + the status badge on
+               the left (the badge fills what used to be a wasted middle gap) with time/lateness right.
+               Row 2 gives the customer NAME the flex space (flex-1 min-w-0) so it shows in full and
+               only ellipsis-truncates as a last resort — Contact + price are flex-shrink-0 so they
+               keep their size and never crowd the name out (the old "Dom"→"D…" clip). */
             <>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold">#{order.id}</span>
-                <div className="flex items-center gap-2 font-medium text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold flex-shrink-0">#{order.id}</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
+                <div className="flex items-center gap-2 font-medium text-sm ml-auto flex-shrink-0">
                   {timeLabel && <span>{timeLabel}</span>}
                   {offsetLabel !== null && <span className="opacity-70">· {offsetLabel}</span>}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${s.bg} ${s.text}`}>{s.label}</span>
-                <span className="text-sm opacity-70 truncate max-w-[160px]">{order.customer_name}</span>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm opacity-70 truncate min-w-0 flex-1">{order.customer_name}</span>
                 {(order.customer_email || order.customer_phone) && (
                   <span
                     role="button"
                     tabIndex={0}
                     onClick={(e) => { e.stopPropagation(); setShowContact(v => !v) }}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); setShowContact(v => !v) } }}
-                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors cursor-pointer">
+                    className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors cursor-pointer flex-shrink-0">
                     Contact
                   </span>
                 )}
-                <span className="ml-auto font-bold text-sm">£{Number(order.total).toFixed(2)}</span>
+                <span className="font-bold text-sm flex-shrink-0">£{Number(order.total).toFixed(2)}</span>
               </div>
             </>
           ) : (
@@ -579,30 +583,31 @@ export function OrderCard({
             </div>
           )}
 
-          {/* Action buttons — the primary action (Mark paid & done / Ready / Confirm+Reject) is
-              prominent on its own full-width row; Edit + Cancel are de-emphasised on a secondary
-              row beneath (lighter, smaller — but still full-tap-width and iPad-friendly). Behaviour
-              is unchanged: same onEdit / onAction('cancel') / loading. */}
+          {/* Action buttons — rarely-used Edit/Cancel sit ABOVE as de-emphasised GHOST buttons
+              (transparent, light border, muted text — visually quiet but kept full-width + py-2.5
+              so they stay iPad-tappable). The primary action (Mark paid & done / Ready / Confirm+
+              Reject) is the prominent full-width button at the BOTTOM — the most-reachable target.
+              Behaviour unchanged: same onEdit / onAction('cancel') / loading. */}
           <div className="flex flex-col gap-2 mt-auto">
-            <div className="flex gap-2">
-              {renderButtons()}
-            </div>
             {viewMode === 'solo' && (['pending', 'confirmed', 'modified'].includes(order.status) || ['confirmed', 'modified', 'ready'].includes(order.status)) && (
               <div className="flex gap-2">
                 {['pending', 'confirmed', 'modified'].includes(order.status) && (
                   <button onClick={() => onEdit(order)}
-                    className="flex-1 font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 py-2.5 rounded-lg transition-colors active:scale-95">
+                    className="flex-1 font-semibold text-xs text-slate-500 bg-transparent border border-slate-200 hover:bg-slate-50 py-2.5 rounded-lg transition-colors active:scale-95">
                     ✏ Edit
                   </button>
                 )}
                 {['confirmed', 'modified', 'ready'].includes(order.status) && (
                   <button onClick={() => onAction('cancel', order.order_key)} disabled={isLoading('cancel')}
-                    className="flex-1 font-bold text-xs text-red-500 bg-red-50 hover:bg-red-100 py-2.5 rounded-lg transition-colors active:scale-95 disabled:opacity-50">
+                    className="flex-1 font-semibold text-xs text-red-400 bg-transparent border border-red-100 hover:bg-red-50 py-2.5 rounded-lg transition-colors active:scale-95 disabled:opacity-50">
                     {isLoading('cancel') ? '...' : '✕ Cancel'}
                   </button>
                 )}
               </div>
             )}
+            <div className="flex gap-2">
+              {renderButtons()}
+            </div>
           </div>
 
         </div>
