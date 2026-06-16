@@ -87,7 +87,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[lastRefresh,setLastRefresh]=useState(new Date())
   const[activeTab,setActiveTab]=useState<'orders'|'add'|'stock'>('orders')
   const[actionLoading,setActionLoading]=useState<string|null>(null)
-  const[toast,setToast]=useState<{msg:string;type:'success'|'error'}|null>(null)
+  const[toast,setToast]=useState<{msg:string;type:'success'|'error';action?:{label:string;run:()=>void}}|null>(null)
+  const toastTimer=useRef<ReturnType<typeof setTimeout>|null>(null)
   const[extraWaitMins,setExtraWaitMins]=useState(0)
   const[extraWaitStartedAt,setExtraWaitStartedAt]=useState<string|null>(null)
   const[waitTick,setWaitTick]=useState(0)
@@ -249,7 +250,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return Math.max(0,Math.ceil(extraWaitMins-elapsed))
   },[extraWaitMins,extraWaitStartedAt,waitTick])
 
-  const showToast=(msg:string,type:'success'|'error'='success')=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)}
+  const showToast=(msg:string,type:'success'|'error'='success',opts?:{action?:{label:string;run:()=>void};duration?:number})=>{
+    if(toastTimer.current)clearTimeout(toastTimer.current)
+    setToast({msg,type,action:opts?.action})
+    toastTimer.current=setTimeout(()=>setToast(null),opts?.duration??3500)
+  }
   const handleSignOut=async()=>{await supabaseBrowser.auth.signOut();window.location.href='/login'}
 
   const saveProfile=async()=>{
@@ -729,7 +734,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
-      showToast(`Order #${done?.id??''} ${labels[action]||action}`)
+      // "Mark paid & done" → an Undo toast (reuses the existing undo_collected action, which reverts
+      // collected→confirmed AND re-books capacity). setToast(null) on tap dismisses it first so it
+      // can't be double-tapped. Other actions keep the plain confirmation toast.
+      if(action==='collected'){
+        showToast(`Order #${done?.id??''} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>{setToast(null);doAction('undo_collected',orderKey)}}})
+      }else{
+        showToast(`Order #${done?.id??''} ${labels[action]||action}`)
+      }
       // Auto-clear prep board on collected (solo operator workflow)
       if(action==='collected'||action==='ready'){
         if(done){
@@ -1590,6 +1602,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         {o.notes&&<p className="text-orange-500 text-xs truncate">📝 {o.notes}</p>}
                       </div>
                       <div className="shrink-0 ml-3 flex items-center gap-2">
+                        {/* Later-recovery Undo — collected orders only (not cancelled/rejected). Reuses
+                            the same undo_collected action as the toast: reverts to confirmed + re-books. */}
+                        {o.status==='collected'&&(
+                          <button onClick={()=>doAction('undo_collected',o.order_key)} disabled={actionLoading===`undo_collected-${o.order_key}`}
+                            className="text-xs font-bold text-slate-500 hover:text-orange-600 border border-slate-200 hover:border-orange-300 rounded-lg px-3 py-2 transition-colors active:scale-95 disabled:opacity-50">
+                            ↩ Undo
+                          </button>
+                        )}
                         <span className="font-black text-slate-600 text-sm">£{Number(o.total).toFixed(2)}</span>
                       </div>
                     </div>
@@ -2405,7 +2425,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      {toast&&<div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold text-center shadow-xl z-50 ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600 text-white'}`}>{toast.msg}</div>}
+      {toast&&(
+        <div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold shadow-xl z-50 flex items-center gap-3 ${toast.action?'justify-between':'justify-center text-center'} ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600 text-white'}`}>
+          <span className="min-w-0">{toast.msg}</span>
+          {toast.action&&(
+            <button onClick={toast.action.run}
+              className="flex-shrink-0 bg-white/20 hover:bg-white/30 rounded-lg px-4 py-2 font-black transition-colors active:scale-95">
+              {toast.action.label}
+            </button>
+          )}
+        </div>
+      )}
 
       {showQRFullscreen&&(
         <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center" onClick={()=>setShowQRFullscreen(false)}>
