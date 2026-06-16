@@ -514,16 +514,30 @@ export async function POST(req: NextRequest) {
 
   // ── SETTINGS ──────────────────────────────────────────────
   if (action === 'update_settings') {
-    const { name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept, logo_storage_path, website, allergen_info_url, allergen_info_text, truck_emoji } = body
-    const { data, error } = await supabase.from('trucks').update({
-      name, description, cuisine_type, contact_email, contact_phone, social_instagram, social_facebook, auto_accept,
-      ...(logo_storage_path !== undefined ? { logo_storage_path } : {}),
-      ...(website !== undefined ? { website } : {}),
-      ...(allergen_info_url !== undefined ? { allergen_info_url } : {}),
-      ...(allergen_info_text !== undefined ? { allergen_info_text } : {}),
-      ...(truck_emoji !== undefined ? { truck_emoji } : {}),
-    }).eq('id', truck.id).select().single()
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    // ALLOWLIST the writable columns (mirrors update_truck below) so ONE unknown / schema-drifted
+    // field can never poison the whole multi-field UPDATE. (The trucks.website incident: `website`
+    // wasn't a column, so PostgREST 400'd the entire statement, silently reverting cuisine/contact/
+    // social together. saveFormField also spreads the full truck form — id, dashboard_token, plan,
+    // etc. — which the allowlist now drops instead of attempting to write.) Only keys PRESENT in the
+    // body are written, so a partial save never nulls omitted fields.
+    const ALLOWED = [
+      'name', 'description', 'cuisine_type', 'contact_email', 'contact_phone',
+      'social_instagram', 'social_facebook', 'auto_accept', 'logo_storage_path',
+      'website', 'allergen_info_url', 'allergen_info_text', 'truck_emoji',
+    ]
+    const safeData = Object.fromEntries(
+      Object.entries(body).filter(([key, val]) => ALLOWED.includes(key) && val !== undefined)
+    )
+    if (Object.keys(safeData).length === 0) {
+      return NextResponse.json({ truck: null })
+    }
+    const { data, error } = await supabase.from('trucks').update(safeData).eq('id', truck.id).select().single()
+    if (error) {
+      // Log the real cause server-side (schema drift, constraint, etc.); show the operator a clear,
+      // non-cryptic message instead of the raw "column ... does not exist".
+      console.error('[update_settings] write failed:', error.message, '| fields:', Object.keys(safeData).join(', '))
+      return NextResponse.json({ error: "Couldn't save settings — please try again." }, { status: 400 })
+    }
     return NextResponse.json({ truck: data })
   }
 
