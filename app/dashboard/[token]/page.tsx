@@ -30,6 +30,7 @@ function fmtVenue(venueName?: string | null, town?: string | null): string {
 }
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
+import { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
@@ -1182,6 +1183,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             ):(
               <>
+              {/* Day-load sidebar (desktop) sits right of the order list on lg+; the order
+                  content stays in the flex-1 left column. Mobile renders the strip variant
+                  inline below the summary (lg:hidden) — two presentations, one data source. */}
+              <div className="lg:flex lg:gap-5 lg:items-start">
+              <div className="lg:flex-1 lg:min-w-0">
               {/* Prep time banner */}
             {showPrepTimeBanner&&(
               <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
@@ -1234,6 +1240,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex gap-1.5 sm:ml-2 sm:shrink-0">
                 <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
               </div>
+            </div>
+            <div className="lg:hidden">
+              <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="strip" />
             </div>
             {(pendingOrders.length>0||confirmedOrders.length>0)&&(()=>{
               const allActive=eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status))
@@ -1572,6 +1581,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <p className="text-slate-300 text-xs mt-3">Updated {lastRefresh.toLocaleTimeString()}</p>
               </div>
             )}
+              </div>
+              <aside className="hidden lg:block lg:w-44 lg:flex-shrink-0 lg:sticky lg:top-[120px]">
+                <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
+              </aside>
+              </div>
               </>
             )}
           </div>

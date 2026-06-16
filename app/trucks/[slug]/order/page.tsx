@@ -828,10 +828,25 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }
 
   // ── Submit ──────────────────────────────────────────────────────────────────
+  // Light, permissive contact-format validation (Part B). Email stays REQUIRED; phone stays
+  // OPTIONAL (we don't send SMS, so requiring it is friction for data we can't act on). We only
+  // block on a CLEARLY-invalid format — err toward accepting edge cases, no double-entry.
+  //  - email: plausible x@y.z (one @, a dot in the domain). Empty ⇒ invalid (it's required).
+  //  - phone: empty is fine; if given, strip spaces/dashes/brackets then accept a UK-ish number
+  //    (0… or +44/44… followed by 9–11 digits). Permissive on purpose.
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+  const phoneDigits = phone.replace(/[^\d+]/g, '')
+  const phoneValid = phone.trim() === '' || /^(\+?44|0)\d{9,11}$/.test(phoneDigits)
+  // Inline-error visibility: only nag once the field has invalid CONTENT (never on empty).
+  const emailError = email.trim() !== '' && !emailValid
+  const phoneError = phone.trim() !== '' && !phoneValid
+
   const handleSubmitClick = () => submitOrder({})
 
   const submitOrder = async (extra: { upsellEvents?: any[] } = {}) => {
     if (!truck || !menu || !name || !email || !hasItems || !event) return
+    // Block a clearly-invalid email or (if provided) phone — permissive format guard (Part B).
+    if (!emailValid || !phoneValid) return
     // ASAP (asapChosen) is a genuine active choice — it submits slot=null and the
     // server resolves the earliest ready window. A specific time requires selectedSlot.
     if (truck.mode === 'village' && !selectedSlot && !asapChosen) return
@@ -1674,8 +1689,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <Sec title="Your details">
           <div className="space-y-3">
             <Fld label="Name" required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label="Email" required note="confirmation sent here"><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
+            <Fld label="Email" required note="confirmation sent here"><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">Please enter a valid email (e.g. sarah@email.com)</p>}</Fld>
+            <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">Please enter a valid UK mobile (e.g. 07700 900123)</p>}</Fld>
             <Fld label="Special instructions" note="optional"><textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
@@ -1799,7 +1814,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           )}
 
           <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
-            disabled={submitting || isOrderingBlocked || !hasItems || !name || !email || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+            disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
             {submitting ? 'Sending order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
           </button>
