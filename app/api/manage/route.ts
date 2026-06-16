@@ -486,7 +486,7 @@ export async function POST(req: NextRequest) {
       // truck has exactly one active van, assign it so capacity etc. can resolve.
       // Multi-van trucks leave van selection to the operator (van_id stays null).
       const resolvedVanId = van_id ?? await getSoleActiveVanId(supabase, targetTruckId)
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null }).select().single()
+      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
 

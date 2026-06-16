@@ -290,10 +290,18 @@ export function AddOrderPanel({
   // hidden before, via the empty calcReadyTime). Same basket guard queueAware uses.
   const hasBasketForReady = manualItems.length > 0 || appliedDeals.length > 0
   const fitReadyTime = (hasBasketForReady && capacityInputs) ? (adjustedAsapSlot?.collection_time || null) : null
-  const readyTime = fitReadyTime || queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
-  // "~N mins" wait — derived from the SAME slot time as `readyTime` so the two stay consistent.
+  // Sub-label (DISPLAY-ONLY): show the HONEST ungridded now+prep estimate (queueAware) as the
+  // headline — NOT the grid-rounded slot gap (fitReadyTime), which inflates the minutes by rounding
+  // now→next-5-min slot (e.g. "~12 mins · 19:10" at 18:58 with 10-min prep, when food is really ready
+  // ~19:08). The bookable slot stays gridded and is shown separately in the ASAP dropdown (:591) and
+  // submitted via adjustedAsapSlot (:504) — both unaffected. Fall back to the gridded fit slot /
+  // calcReadyTime only when there's no queue-aware estimate (empty basket / totalSecs 0).
+  const readyTime = queueAware.readyTime || fitReadyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs)
+  // "~N mins" wait — from the SAME source as `readyTime` so the two stay consistent.
   // (Only rendered on the same-day branch; future-day shows a date label, not a wait.)
-  const readyMinsFromNow = fitReadyTime
+  const readyMinsFromNow = queueAware.readyTime
+    ? queueAware.minsFromNow
+    : fitReadyTime
     ? (() => {
         const [h, m] = fitReadyTime.split(':').map(Number)
         const nowM = new Date().getHours() * 60 + new Date().getMinutes()

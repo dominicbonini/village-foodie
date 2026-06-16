@@ -33,7 +33,7 @@ import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { calculateOrderTotal } from '@/lib/order-calculations'
-import { adjustQuantity, cleanupDealsForItem, groupByCategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
+import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
@@ -1883,7 +1883,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         </div>
 
                         <div className="space-y-1.5 ml-2">
-                          {items.map(item=>{
+                          {groupBySubcategory(items, catObj?.subcategories)
+                            .filter(g=>g.items.length>0)
+                            .map(group=>(
+                            <div key={group.id ?? '__ungrouped'} className="space-y-1.5">
+                              {group.name&&<p className="text-xs font-black text-orange-500 uppercase tracking-wider">{group.name}</p>}
+                              {group.items.map(item=>{
                             const stock=itemStocks.find(s=>s.name===item.name)
                             // isAvailable: check itemStocks first (override), then fall back to menu
                             const isAvailable = stock ? (stock.available ?? true) : (item.available ?? true)
@@ -1935,6 +1940,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                               </div>
                             )
                           })}
+                            </div>
+                            ))}
                         </div>
                         {/* Modifier options for this category */}
                         {(()=>{
