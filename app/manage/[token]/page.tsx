@@ -4209,9 +4209,12 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   // ── Contact Details: validation (shared with the customer order screen) + the WhatsApp tick ──
   const contactEmailErr = (form.contact_email || '').trim() !== '' && !isValidEmail(form.contact_email || '')
   const contactPhoneErr = (form.contact_phone || '').trim() !== '' && !isValidUKPhone(form.contact_phone || '')
-  // Customer-facing `whatsapp` = the phone number WHEN "this number is on WhatsApp" is ticked; else null.
-  // (Distinct from whatsapp_sender, the Auto-replies/Connect integration — never touched here.)
-  const waFromPhone = (phone: string | null, isWa: boolean) => (isWa && (phone || '').trim() ? phone : null)
+  // Customer-facing `whatsapp` = the phone number WHEN "this number is on WhatsApp" is ticked; else ''.
+  // Cleared value is '' (NOT null) because trucks.whatsapp is NOT NULL with a '' default — writing null
+  // 400s the settings save on untick. '' and null read identically (nothing reads this column for
+  // null-vs-empty; the WhatsApp gate uses phone_is_whatsapp && contact_phone). Distinct from
+  // whatsapp_sender (Auto-replies/Connect) — never touched here.
+  const waFromPhone = (phone: string | null, isWa: boolean) => (isWa && (phone || '').trim() ? phone : '')
 
   // Phone onBlur: persist phone AND keep `whatsapp` synced to it while the tick is on (no drift).
   const saveContactPhone = () =>
