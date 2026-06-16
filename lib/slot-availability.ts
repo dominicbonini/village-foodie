@@ -141,7 +141,7 @@ export function buildSlotAvailability(params: {
     let bindCap: number
     if (hasBasket) {
       // Operator/customer placing THIS order: does it fit the backward windows ending at S?
-      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins, capWindow, nowClamp)
+      const fit = fitOrderBackward(back, slotMins, basket, catConfigs, kitchenCapacity, eventStartMins, capWindow, nowClamp, productionSlotUnits[s.collection_time] || {})
       tone = fit.tone
       boundBy = fit.bound_by
       bindCurrent = 0
@@ -707,6 +707,13 @@ export function fitOrderBackward(
   // can't borrow elapsed oven windows (the bug that made large-order ASAP impossibly early). Pass -Inf
   // for a FUTURE-date event (mins-of-day would otherwise mis-compare across days). See the front floor below.
   nowMins: number = Number.NEGATIVE_INFINITY,
+  // EXISTING committed total at THIS collection slot (production_slot_usage[slot]) by category. The
+  // front-floor / pre-open-lead check below is judged on (existing + new), not the new order alone —
+  // so a slot already AT its ceiling can't take more: cooking can't start before the event opens beyond
+  // the single first-batch-at-open window, and a slot whose committed load already needs >1 pre-open
+  // window rejects new load. Default {} = legacy (new order only) for callers that don't pass it; an
+  // EMPTY slot is unchanged either way (existing 0 ⇒ nwCombined == nw).
+  existingAtSlot: QtyByCat = {},
 ): { tone: SlotTone; bound_by: string | null; fits: boolean } {
   // Order's COOKING load on the PREP grid (drives per-category batch tones) + its concurrency
   // intervals; counted-instant items are tallied for capacity-cadence placement below.
@@ -732,13 +739,17 @@ export function fitOrderBackward(
     const prep = Math.max(1, Math.round(cfg.secs / 60))
     batchOf[cat] = batch
     const nw = Math.ceil(M / batch)
-    // Front floor = max(eventStart pre-open allowance, NOW). eventStart keeps its one pre-open window
+    // Front floor = max(eventStart pre-open allowance, NOW). eventStart keeps its ONE pre-open window
     // (`- prep`, the batch-1-ready-AT-start pre-prep credit, Manual s.6); NOW has NO allowance — you
-    // can't cook in an elapsed window. So the earliest required window-start (slotMins − nw*prep) must
-    // be ≥ max(eventStartMins - prep, nowMins). For a started event (eventStart < now) this is `nowMins`,
-    // making ASAP(N) = now + ceil(N/batch)*prep (grid-rounded) — physically achievable. nowMins = -Inf
-    // (future event) → reduces to the legacy eventStart-only clamp.
-    if (slotMins - nw * prep < Math.max(eventStartMins - prep, nowMins)) runsOffFront = true
+    // can't cook in an elapsed window. CRITICAL: the lead is judged on the COMBINED load that must be
+    // ready by T — this slot's EXISTING committed total for the category PLUS the new order — not the
+    // new order alone. So nwCombined windows are needed; the earliest required window-start
+    // (slotMins − nwCombined*prep) must be ≥ max(eventStartMins - prep, nowMins). A slot already at its
+    // ceiling (its committed load already needs >1 pre-open window) therefore rejects more, while an
+    // EMPTY slot is unchanged (existing 0 ⇒ nwCombined == nw). The per-window batch/ceiling checks below
+    // still seat only the new order's `nw` windows (existing windowed load is folded via back.byStart).
+    const nwCombined = Math.ceil(((Number(existingAtSlot[cat]) || 0) + M) / batch)
+    if (slotMins - nwCombined * prep < Math.max(eventStartMins - prep, nowMins)) runsOffFront = true
     for (let i = 0; i < nw; i++) {
       // The order COOKS in the windows ENDING at the collection slot T: latest/adjacent window
       // [T−prep, T) keyed T−prep (i=0), stepping back … T−nw*prep. Mirrors projectBackwardOccupancy.
@@ -827,7 +838,7 @@ export function earliestBackwardFitSlot(
   for (const t of sorted) {
     const m = parseMins(t.collection_time)
     if (m < fromMins) continue
-    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, nowMins).fits) {
+    if (fitOrderBackward(back, m, orderByCat, catConfigs, kitchenCapacity, eventStartMins, capacityWindowMins, nowMins, productionSlotUnits[t.collection_time] || {}).fits) {
       return t.collection_time
     }
   }

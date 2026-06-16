@@ -772,7 +772,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     void nowTick
     const nowClamp = eventDateIso === getLocalDateInTz(eventTz) ? getNowMinsInTz(eventTz) : Number.NEGATIVE_INFINITY
     for (const s of availableSlots) {
-      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp)
+      const fit = fitOrderBackward(back, toMins(s.collection_time), basketByCat, serverCatConfigs, capacityInputs.kitchenCapacity, capacityInputs.eventStartMins, capacityInputs.capacityWindowMins ?? 5, nowClamp, (capacityInputs.productionSlotUnits || {})[s.collection_time] || {})
       if (!fit.fits) out.add(s.collection_time)
     }
     return out
