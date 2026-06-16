@@ -4,7 +4,7 @@
 // dots/labels can never diverge (DRY — see Fix E). The projection→tone/label mapping
 // lives ONLY here; do not re-derive a count ratio at a call site.
 
-import { projectBackwardOccupancy, backwardWindowStepMins, type WindowOccupancy } from '@/lib/slot-availability'
+import type { WindowOccupancy } from '@/lib/slot-availability'
 import type { CatConfig } from '@/lib/prep-utils'
 import type { QtyByCat } from '@/lib/slot-capacity'
 import type { SlotTone } from '@/lib/slot-indicator'
@@ -49,14 +49,16 @@ export function buildSlotIndicators(
   productionSlotUnits: Record<string, QtyByCat>,
   catConfigs: Record<string, CatConfig>,
   kitchenCapacity: number | null,
-  eventStartMins: number,
+  // eventStartMins + capacityWindowMins are no longer read (the dot now reflects the stored
+  // collection-slot TOTAL, not a backward cooking-window projection). Kept in the signature so the
+  // existing call sites (AddOrderPanel, the Edit picker, /api/dashboard) need no change.
+  _eventStartMins: number,
   /** Category names in MENU order (menu_categories.sort_order asc) — the same list/source the
    *  catConfigs come from. Used ONLY to order the composition label ("1 Pizza, 2 Others")
    *  so it matches the menu order the operator set. Categories absent from this list sort to
-   *  the end (stable). Display-only: tone/engine/occ are unaffected. */
+   *  the end (stable). Display-only: tone/engine are unaffected. */
   categoryOrder: string[] = [],
-  /** The global ceiling's own window cadence (capacity_window_mins). Default 5. */
-  capacityWindowMins: number = 5,
+  _capacityWindowMins: number = 5,
 ): Map<string, SlotIndicator> {
   const out = new Map<string, SlotIndicator>()
   if (!slots.length) return out
@@ -64,73 +66,70 @@ export function buildSlotIndicators(
   // name(lowercase) → menu rank. Unknown categories → Infinity ⇒ sort to end, stable.
   const catRank = new Map(categoryOrder.map((name, i) => [name.toLowerCase(), i] as const))
   const rankOf = (cat: string) => catRank.get(cat.toLowerCase()) ?? Infinity
-
-  const toMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
-  const back = projectBackwardOccupancy(productionSlotUnits, catConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
-  // The dot on collection slot T = collectability there = the cooking window ENDING at T
-  // (keyed T−step), not the window starting at T (the off-by-one that showed the block one
-  // slot early). step = finest prep cadence (exact for single-cadence; see helper note).
-  const step = backwardWindowStepMins(catConfigs)
-  // Composition shows the PHYSICAL booked load per window (ALL categories, every order source —
-  // "what's in the slot"), independent of the capacity TONE. The capacity map (`back`) omits
-  // unticked no-prep categories (they don't gate), so it can't answer "what's physically booked".
-  // We re-project with every category forced counts_toward_capacity, which additionally seats the
-  // unticked no-prep cats (e.g. Drinks) into their collection-adjacent window. Same
-  // productionSlotUnits + prep cadences ⇒ identical step + window keys (T−step), so the
-  // composition describes EXACTLY the window whose colour is shown. Tone/occ still read `back`
-  // (capacity), so walk-up bypass keeps the colour unchanged — only the text widens. Note: items
-  // never booked into productionSlotUnits (e.g. a walk-up with no resolved event_id) are absent
-  // from BOTH maps — a booking-scope gap, not fixable in the indicator.
-  const physicalConfigs: Record<string, CatConfig> = {}
-  for (const [cat, cfg] of Object.entries(catConfigs)) physicalConfigs[cat] = { ...cfg, countsToCapacity: true }
-  const physical = projectBackwardOccupancy(productionSlotUnits, physicalConfigs, eventStartMins, kitchenCapacity, capacityWindowMins)
+  const RANK: Record<SlotTone, number> = { green: 0, amber: 1, red: 2 }
+  const EPS = 1e-6
 
   for (const s of slots) {
-    const w = back.byStart.get(toMins(s.collection_time) - step) ?? null
-    const pw = physical.byStart.get(toMins(s.collection_time) - step) ?? null
-    // Tone comes ONLY from real cooking-window load (byCat-backed amber/red from the backward
-    // projection / global ceiling). No load ⇒ green. The old too_soon→amber fold was REMOVED: too_soon
-    // is a TIME/lead constraint ("can't collect that early"), not oven load, and painting it amber gave
-    // a bare amber dot with no "X/Y" label over an empty oven. too_soon still exists server-side and
-    // still drives the CUSTOMER picker filter (order/page.tsx !s.too_soon); it just no longer affects
-    // the display TONE. So amber/red now ALWAYS carry real byCat load + a composition label.
-    const tone: SlotTone = w?.tone ?? 'green'
+    // THE COLLECTION-SLOT TOTAL: production_slot_usage[production_slot] is the FULL load the operator
+    // committed to this collection time (storage is collection-slot keyed — each order's whole load
+    // sits at ITS own slot, no spreading across windows, so each dot is independent / non-overlapping).
+    // The dot reads this stored total directly instead of the backward adjacent-cooking-window remainder
+    // (which under-read a multi-window order — showed "1" when 5 are committed). DISPLAY ONLY; the
+    // capacity ENGINE (buildSlotAvailability / fitOrderBackward / placement) is unchanged.
+    const units = productionSlotUnits[s.production_slot] || {}
+
+    // Tone from the FULL total: each cooking (prep) category full/over its batch ⇒ red, partial ⇒
+    // amber (worst wins, tie-break higher load); plus the global ceiling on capacity-counting items.
+    // Empty ⇒ green. So 5 pizzas at a batch-4 slot ⇒ "5 Pizzas" RED (truthful: over one batch).
+    let tone: SlotTone = 'green'
+    let bound_by: string | null = null
+    let bindRank = -1
+    let bindUsed = -1
+    let capTotal = 0
+    for (const [catRaw, rawN] of Object.entries(units)) {
+      const cat = catRaw.toLowerCase()
+      const n = Number(rawN) || 0
+      if (n <= 0) continue
+      const cfg = catConfigs[cat]
+      // Capacity-counting items feed the global ceiling: cooking cats always, instant cats only if
+      // the operator ticked counts_toward_capacity (mirrors the engine's ceiling membership).
+      if (cfg && (cfg.secs || cfg.countsToCapacity)) capTotal += n
+      // Per-category batch tone — only cooking (prep) categories carry a batch denominator.
+      if (cfg && cfg.secs) {
+        const batch = Math.max(1, cfg.batch)
+        const t: SlotTone = n >= batch - EPS ? 'red' : 'amber'
+        const r = RANK[t]
+        if (r > bindRank || (r === bindRank && n > bindUsed)) {
+          bindRank = r; bindUsed = n
+          tone = t; bound_by = `${capWord(cat)} ${Math.round(n)}/${Math.round(batch)}`
+        }
+      }
+    }
+    if (kitchenCapacity != null && capTotal >= kitchenCapacity - EPS) {
+      tone = 'red'; bound_by = 'global ceiling'
+    }
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
-    // Label = the window's per-category COMPOSITION as plain counts ("4 Pizzas, 2 Others"), shown
-    // on ALL tones — the colour conveys fullness, the text says what's PHYSICALLY in the window.
-    // Built from the PHYSICAL projection (pw.byCat): every booked category incl. unticked no-prep
-    // (Drinks) and every order source, NOT the capacity-seated w.byCat. Same window key (T−step)
-    // as the tone. No denominators. Empty window (no load) → '' so nothing odd renders. (A too_soon
-    // slot over an empty oven is now plain green with no label — no bare amber dot.)
-    const label = pw
-      ? Object.entries(pw.byCat)
-          .filter(([, n]) => Math.round(n) > 0)
-          // Order by the category's menu sort_order (ascending) so the composition reads in the
-          // same order as the menu/settings ("1 Pizza, 2 Others"), not object-key order. Array
-          // .sort is stable, so unknown categories (rank Infinity) hold their order at the end.
-          .sort(([a], [b]) => rankOf(a) - rankOf(b))
-          .map(([cat, n]) => {
-            const count = Math.round(n)
-            const word = capWord(cat)
-            // Pluralise when count != 1 (naive +s); singular at 1 ("1 Pizza"). Skip names that
-            // are already plural ("Sides", "Drinks") so we don't produce "Sidess".
-            const display = count === 1 || word.endsWith('s') ? word : `${word}s`
-            return `${count} ${display}`
-          })
-          .join(', ')
-      : ''
-    // Reconstruct a WindowOccupancy-shaped `occ` for back-compat (the SlotIndicator type;
-    // no live reader dereferences it today). rate = batch per category in this window.
-    const occ: WindowOccupancy | null = w ? {
-      collection_time: s.collection_time,
-      production_slot: s.production_slot,
-      tone: w.tone,
-      bound_by: w.bound_by,
-      cookingByCat: w.byCat,
-      rateByCat: Object.fromEntries(Object.keys(w.byCat).map(c => [c, back.batchByCat[c] ?? w.byCat[c]])),
-      totalCooking: w.total,
-    } : null
-    out.set(s.collection_time, { tone, emoji, label, occ })
+
+    // Label = the slot's full per-category composition as plain counts ("5 Pizzas, 2 Others"),
+    // menu-ordered (ALL booked categories incl. unticked no-prep like Drinks, since storage already
+    // holds every booked item). Empty slot ⇒ '' (renders as a quiet green dot).
+    const label = Object.entries(units)
+      .filter(([, n]) => Math.round(Number(n)) > 0)
+      .sort(([a], [b]) => rankOf(a) - rankOf(b))
+      .map(([cat, rawN]) => {
+        const count = Math.round(Number(rawN))
+        const word = capWord(cat)
+        // Pluralise when count != 1 (naive +s); singular at 1 ("1 Pizza"). Skip already-plural
+        // names ("Sides", "Drinks") so we don't produce "Sidess".
+        const display = count === 1 || word.endsWith('s') ? word : `${word}s`
+        return `${count} ${display}`
+      })
+      .join(', ')
+
+    // occ retained for the SlotIndicator shape only — no live reader dereferences it (the dot/strip
+    // read tone/emoji/label). Null is correct now the backward window is no longer computed here.
+    void bound_by
+    out.set(s.collection_time, { tone, emoji, label, occ: null as WindowOccupancy | null })
   }
   return out
 }

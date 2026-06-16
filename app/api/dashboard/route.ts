@@ -307,7 +307,11 @@ export async function GET(req: NextRequest) {
       available: s.available,
       is_past: s.is_past,
       is_grace: s.is_grace,
-      tone: s.tone,
+      // The day-load strip's tone + label reflect the FULL collection-slot total (buildSlotIndicators
+      // now reads production_slot_usage[production_slot] directly), so the strip and the operator Add
+      // Order / Edit dots agree. Falls back to buildSlotAvailability's tone only if the indicator is
+      // missing. buildSlotAvailability's own tone/available (customer-facing) is unchanged.
+      tone: dayIndicators.get(s.collection_time)?.tone ?? s.tone,
       label: dayIndicators.get(s.collection_time)?.label ?? '',
     }))
   } catch (slotErr) {
