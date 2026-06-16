@@ -16,7 +16,7 @@ June 2026
 
 ## V7.5 — June 2026
 
-Operator-dashboard overhaul + capacity-engine corrections (16 Jun 2026). Headline: the **complete→undo capacity orphan** fix (rebuild-on-both) + the **day-load/dot DISPLAY** now showing the collection-slot TOTAL (with an off-by-one grid-key regression found+fixed) + the **ASAP/picker over-capacity** fix (combined-load front floor) + a broad **operator dashboard UI overhaul** (undo for "Mark paid & done", day-load strip, reject-reason, layout). Most items BUILT + tsc-clean; live-test status noted per item. Status tags: **[LIVE-VERIFIED]** real device; **[BUILT]** tsc-clean, pending live; **[DATA FIX]** SQL; **[CONFIRMED]** verified-correct by audit.
+Full-session V7.5 (16 Jun 2026): capacity-engine corrections + operator-dashboard overhaul + settings/contact saving fixes + the schedule-verify pipeline rebuild + Gusto onboarding + Manage-console mobile UX. Headline: the **complete→undo capacity orphan** fix (rebuild-on-both) + the **day-load/dot DISPLAY** now = the collection-slot TOTAL (with an off-by-one grid-key regression found+fixed) + the **ASAP/picker over-capacity** fix (combined-load front floor) + the **settings phantom-column** fix (`update_settings` allowlist) + the **WhatsApp-contact** tick + the **verify Chromium-on-Vercel** determinism fix (@sparticuz). Most items BUILT + tsc-clean; live-test status noted per item. Status tags: **[LIVE-VERIFIED]** real device; **[BUILT]** tsc-clean, pending live; **[DATA FIX]** SQL; **[CONFIRMED]** verified-correct by audit.
 
 ### Capacity engine — the day's core fixes
 
@@ -77,6 +77,33 @@ Operator-dashboard overhaul + capacity-engine corrections (16 Jun 2026). Headlin
 
 **Deals-on-operator fix.** `event_deals.active` controls CUSTOMER visibility only. The /api/menu/[truckId] deal filter ran unconditionally → wrongly hid off-deals from the operator. Fixed: gated `if (effectiveEventId && !isDashboard)` — operator (dashboard=1) sees ALL deals incl. toggled-off; the customer branch is byte-for-byte unchanged.
 
+### Settings — saving + the phantom-column CLASS
+
+**6. Settings not saving (multiple fields) — FIXED. [VERIFIED saving].** Multiple unrelated fields reverted on save. NOT RLS (the write is already server-side service-role via /api/manage). ROOT: `update_settings` did ONE multi-field UPDATE conditionally including `website`, but `trucks.website` did NOT exist (only on venues/discovery_trucks). Once an operator entered a website, every save included `{ website }` → PostgREST rejected the WHOLE statement → cuisine/contact/social all failed together (explains the "multiple unrelated fields" + intermittence — fine until a website is typed). FIX: (a) migration `ALTER TABLE trucks ADD COLUMN IF NOT EXISTS website text` + add to the Truck type; (b) DURABLE — `update_settings` now ALLOWLISTS writable columns (mirrors `update_truck`), built from `Object.entries(body).filter(allowed && val !== undefined)`, so an unknown/phantom field is DROPPED, not fatal — one bad field can never poison the whole multi-field UPDATE again; (c) clearer error (operator sees "Couldn't save settings — please try again", raw Postgres error logged server-side).
+
+**7. WhatsApp contact method — tick-gated. [LIVE-TEST PENDING — needs migrations].** Disconnect: "Preferred method: WhatsApp" was selectable with no field tying it to a number; the operator's phone usually IS their WhatsApp; the `whatsapp` column existed but nothing wrote it (`whatsapp_sender` = the separate auto-reply Connect integration). FIX: a "This number is on WhatsApp" tick under Phone (`phone_is_whatsapp`, new column). Tick ON → `whatsapp` = the phone number (synced; phone onBlur re-syncs so they don't drift) + WhatsApp becomes selectable as preferred method. Tick OFF → `whatsapp` cleared + WhatsApp not selectable + if preferred was 'whatsapp' it falls back (no orphaned preferred=whatsapp). The customer-facing WhatsApp number lives in the `whatsapp` column; `whatsapp_sender`/Connect (auto-replies) kept entirely separate. Email + Phone got light validation reusing the customer-order-screen helpers (extracted to `lib/contact-validation.ts`: `isValidEmail`, `isValidUKPhone` — shared, no fork). PHONE-RULE OPEN ITEM: validation reuses the customer screen's PERMISSIVE rule (`(\+?44|0)` + 9–11 digits), not strict-11. Dominic asked for "11 digits"; the shared helper keeps both surfaces identical. DECISION OPEN: keep permissive (accepts +44) or tighten to strict-11 (one change in lib/contact-validation.ts, both surfaces follow).
+
+**8. Untick "couldn't save settings" 400 — FIXED. [LIVE-TEST PENDING — needs migration].** Unticking "This number is on WhatsApp" 400'd (brief red toast). ROOT: untick cleared `whatsapp` to `null`, but `trucks.whatsapp` is NOT NULL (dashboard-created, '' default) → the `update_settings` write violated the constraint. (Tick works = string; normal saves carry ''; only untick forced null. Preferred-fallback was a red herring — separate `update_truck` endpoint.) FIX (both, complementary): (a) app-side — `waFromPhone` returns '' not null for the cleared case (matches the '' default, covers both callers); (b) DB — `ALTER TABLE trucks ALTER COLUMN whatsapp DROP NOT NULL` (makes it nullable like the other contact fields, so no path can 400 on null). Confirmed nothing reads `whatsapp` expecting null-vs-'' (the gate checks `phone_is_whatsapp && contact_phone`, not the column value).
+
+### Schedule-verify pipeline — three-layer fix (the "verify" saga)
+
+**9. Verify "Couldn't reach this website" — three distinct bugs, all FIXED. [LIVE-TEST PENDING — needs Vercel deploy Ready].** The Verify button (Find-my-events-automatically → "Where do you post your schedule?") failed on a valid live site (pizzeriagusto.co.uk). Three layered causes, fixed in sequence:
+- **(a) Bot user-agent.** The verify route was the ONLY place using a bot UA ('HatchGrabBot/1.0'); hosted-builder/Cloudflare sites instantly 403 a bot UA while serving real browsers. FIX: use the same realistic Chrome UA as the working scrapers (a named `BROWSER_UA` constant) + browser Accept headers.
+- **(b) Misleading messaging (3 failures collapsed into one).** Launch-failure, bot-block-empty, and genuine-unreachable all returned "Couldn't reach this website". FIX: capture the nav response (was discarded via `.catch` swallow) and branch the outcome — `launch_failed` ("temporarily unavailable" — our infra), `blocked` (4xx/5xx — site blocking automated checks), `no_content`, `no_events`, `unreachable` (only genuine DNS/cert/connection → "check the URL"). This honest messaging then REVEALED bug (c).
+- **(c) Chromium never launched on Vercel (the real blocker).** RECONCILED via Dominic's evidence (it DID work before — 1-2 min single-URL results) + audit: the in-function Puppeteer route IS what serviced the working test; it was NEVER robust — full puppeteer's Chrome lived in an unmanaged `~/.cache/puppeteer` that build-cache luck preserved; a recent redeploy dropped it → `launch_failed`. (Not a scraper regression; not Actions/local; the messaging fix's deploy coincided with the break + made it report honestly.) DECISION: Option (a) — make in-function Chrome DETERMINISTIC (keep the synchronous, single-URL, ~1-2 min UX that worked). FIX: add `@sparticuz/chromium@148.0.0` + `puppeteer-core@24.43.1` (EXACT-pinned — both target Chrome major 148; mismatch = cryptic launch error; exact-pin prevents drift) as direct deps; `vercel.json` memory 1024 for the route; `runtime='nodejs'`; `serverExternalPackages: ['@sparticuz/chromium','puppeteer-core']` (App-Router bundling gotcha); error logging on both previously-bare catches. Full `puppeteer` kept for local-dev fallback. Daily scraper (Actions, `PUPPETEER_EXECUTABLE_PATH`) untouched. REQUIRES Vercel redeploy + Ready before testing.
+
+### Gusto onboarding (Pizzeria Gusto, id 'pizzeria-gusto' — text id, NOT a uuid)
+- **Plan:** set to `trial`, `trial_expires_at` = 2026-10-17 (4 months from 17 Jun; stored 22:59:59+00 = end-of-day 17 Oct BST).
+- **Van created:** `truck_vans` row — Van1, `kitchen_capacity=5`, `capacity_window_mins=5`, active (mirrors Test Kitchen; Gusto had NO van → the capacity engine had nothing to enforce). Grid config 10/5 (matches Test Kitchen — today's grid-key + ASAP fixes apply identically).
+- **Manage console URL:** `hatchgrab.com/manage/{dashboard_token}` → Gusto = `hatchgrab.com/manage/gusto-3d87b5d15a6f`. (Order QR/custom domain → `hatchgrab.com/trucks/pizzeria-gusto/order`.)
+- **`trucks.active = false`** — operator-side testing fine; the customer order page needs `active=true` to be visible (flag if the customer link won't load).
+- Menu + schedule built via the UI by Dominic (operator-added events, which HatchGrab should show). Event-source rule: HatchGrab shows only operator-added events; VF currently shows events as-is, switching to approved-only once Gusto confirms.
+
+### Mobile UX (Manage console) — [LIVE-TEST PENDING]
+- **Reports order-history:** the mobile breakpoint switches the overflowing table to compact rows (#N · date/time + total) with tap-to-expand for type/name/items/qty/price; desktop table unchanged; date/id overlap fixed.
+- **Settings kitchen-capacity:** dropdowns narrowed to fit mobile; helper text "below" → "across the selected categories"; example rewritten plain-English to match the model (ceiling = total per window across the selected categories; each cooked category's batch caps that category; example uses ceiling 5); the "cooked — always counts" caption removed from Pizza; Limit-applies-to checkboxes laid side-by-side (wrapping).
+- **Schedule copy:** removed the duplicate "You add your own events." sub-line; added a "must be your own website, not Facebook/Instagram" note to the "Find my events automatically" description (the below-URL helper kept as the intentional second mention).
+
 ### Reference clarifications (banked this session)
 - **`max_orders` / "/5" = `kitchen_capacity`** (legacy/misleading field name) — a concurrency ceiling (= 5 for the one active van), NOT a per-slot order cap. Not a bug.
 - **Miso Cheesy Garlic Bread IS a pizza-category item** (counts as a pizza unit for capacity).
@@ -84,10 +111,21 @@ Operator-dashboard overhaul + capacity-engine corrections (16 Jun 2026). Headlin
 - **Time engine confirmed sound** (event-tz-pinned, BST-aware via Intl Europe/London; DB UTC vs operator BST is pure display, zero engine impact). Latent pre-multi-tz backlog (non-engine `new Date().getHours()` spots) unchanged — not pre-trial.
 - **Offline = deliverability only** (post-trial, native Capacitor app) — unchanged from prior.
 
-### Outstanding (post-V7.5)
-- **EDIT-path rebuild** (decision pending — same drift class as undo #1, one-line fix, higher value than undo since editing is more common).
-- **Slot-mismatch re-test** on the deployed build (the one outstanding confirmation — a fresh ASAP first order files at the resolved slot).
-- Cancel-email HTML-escape; pre-multi-tz device-local `getHours()` conversions; coarser-grid multi-collection-per-`production_slot` caveat (#3); the day's LIVE-TEST-PENDING items above.
+### SYSTEMIC THEME worth carrying (banked)
+The prod `trucks` schema has columns/constraints the CODE doesn't always match. This session: `truck_events.name` doesn't exist; `trucks.website` didn't exist (added); `trucks.whatsapp` is NOT NULL (the code sent null); the UI "WhatsApp" maps to `whatsapp_sender`, not `whatsapp`. Prior: `is_test` phantom refs. STRUCTURAL GUARD: the `update_settings` allowlist now drops unknown fields so a phantom column can't poison a multi-field write — worth extending the allowlist pattern to other multi-field writes (backlog). When onboarding/working in prod, expect schema-vs-code mismatches; allowlist + IF-NOT-EXISTS migrations + honest error logging are the defences.
+
+### Migrations to run (Supabase SQL editor) — confirm each before testing the dependent feature
+1. `ALTER TABLE trucks ADD COLUMN IF NOT EXISTS website text; NOTIFY pgrst, 'reload schema';` (#6 — likely already run)
+2. `ALTER TABLE trucks ADD COLUMN IF NOT EXISTS phone_is_whatsapp boolean DEFAULT false; NOTIFY pgrst, 'reload schema';` (#7 — likely already run)
+3. `ALTER TABLE trucks ALTER COLUMN whatsapp DROP NOT NULL; NOTIFY pgrst, 'reload schema';` (#8 — pending)
+
+### Open decisions / backlog (post-V7.5)
+- **Phone-validation rule:** permissive UK vs strict-11 (#7) — DECISION OPEN.
+- **Edit-path capacity rebuild** (#1 backlog) — DECISION OPEN; same drift class as undo, higher value than undo since editing is more common.
+- **Extend the allowlist pattern** to other multi-field writes (systemic guard).
+- **Verify (#9) live-confirm** post-deploy; the day's other LIVE-TEST-PENDING items.
+- **Slot-mismatch re-test** on the deployed build (a fresh ASAP first order files at the resolved slot).
+- (Carried) cancel-email HTML-escape; pre-multi-tz device-local `getHours()` conversions; offline-protection via native + multi-van (post-trial); WhatsApp deals/attention notifications; `is_test` phantom-ref cleanup; coarser-grid multi-collection-per-`production_slot` caveat (#3).
 
 ## V7.4 — June 2026
 
