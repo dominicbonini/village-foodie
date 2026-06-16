@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
   const [
     { data: categories },
     { data: items },
+    { data: subcategories },
     { data: modifierGroups },
     { data: modifierOptions },
     { data: categoryModGroups },
@@ -76,6 +77,7 @@ export async function GET(req: NextRequest) {
   ] = await Promise.all([
     supabase.from('menu_categories').select('*').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
     supabase.from('menu_items_db').select('*').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
+    supabase.from('menu_subcategories').select('id, category_id, name, sort_order').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
     supabase.from('modifier_groups').select('*').eq('truck_id', truck.id),
     supabase.from('modifier_options').select('*').in('group_id',
       (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map(g => g.id) || []
@@ -127,6 +129,7 @@ export async function GET(req: NextRequest) {
     truck,
     categories: categories || [],
     items: items || [],
+    subcategories: subcategories || [],
     modifierGroups: modifierGroups || [],
     modifierOptions: modifierOptions || [],
     categoryModGroups: categoryModGroups || [],
@@ -181,6 +184,7 @@ export async function POST(req: NextRequest) {
   // Staff gate for all write actions except update_member (staff can edit themselves)
   const staffBlockedActions = [
     'upsert_event', 'upsert_item', 'upsert_category', 'delete_item', 'delete_category', 'bulk_delete_items',
+    'upsert_subcategory', 'delete_subcategory',
     'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
     'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
@@ -219,6 +223,73 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  // ── SUB-CATEGORY CRUD (display-only labels; NO capacity/stock/prep) ──────────
+  if (action === 'upsert_subcategory') {
+    const { id, category_id, name } = body
+    const trimmed = (typeof name === 'string' ? name.trim() : '')
+    if (!trimmed) return NextResponse.json({ error: 'Name required' }, { status: 400 })
+
+    // Edit existing by id
+    if (id) {
+      const { data, error } = await supabase.from('menu_subcategories')
+        .update({ name: trimmed }).eq('id', id).eq('truck_id', truck.id).select().single()
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ subcategory: data })
+    }
+
+    if (!category_id) return NextResponse.json({ error: 'Category required' }, { status: 400 })
+
+    // Dedupe IN-APP (no DB unique): case-insensitive name match within this category+truck.
+    // ACTIVE same-name → return it (no dup). SOFT-DELETED same-name → reactivate-and-reuse (mirrors
+    // the commit-menu fix — avoids a swallowed collision / orphaned re-add).
+    const { data: sameName, error: lookupErr } = await supabase.from('menu_subcategories')
+      .select('id, category_id, name, sort_order, is_active')
+      .eq('truck_id', truck.id).eq('category_id', category_id).ilike('name', trimmed)
+    if (lookupErr) return NextResponse.json({ error: lookupErr.message }, { status: 400 })
+
+    const existing = (sameName || []).find(s => (s.name || '').trim().toLowerCase() === trimmed.toLowerCase())
+    if (existing && existing.is_active) {
+      return NextResponse.json({ subcategory: existing })
+    }
+    if (existing && !existing.is_active) {
+      const { data, error } = await supabase.from('menu_subcategories')
+        .update({ is_active: true, name: trimmed }).eq('id', existing.id).eq('truck_id', truck.id).select().single()
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ subcategory: data })
+    }
+
+    // No same-name row → insert with next sort_order for this category
+    const maxOrder = await supabase.from('menu_subcategories')
+      .select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).eq('is_active', true)
+      .order('sort_order', { ascending: false }).limit(1)
+    const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
+    const { data, error } = await supabase.from('menu_subcategories')
+      .insert({ truck_id: truck.id, category_id, name: trimmed, sort_order: nextOrder, is_active: true })
+      .select().single()
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ subcategory: data })
+  }
+
+  if (action === 'delete_subcategory') {
+    const { id } = body
+    // EMPTY-GUARD: refuse to delete a sub-category that still has active items.
+    const { count } = await supabase.from('menu_items_db')
+      .select('id', { count: 'exact', head: true })
+      .eq('truck_id', truck.id).eq('subcategory_id', id).eq('is_active', true)
+    if ((count ?? 0) > 0) {
+      // Soft guard — 200 so the client reads { error:'not_empty', count } directly (api() throws on non-2xx).
+      return NextResponse.json({ ok: false, error: 'not_empty', count: count ?? 0 })
+    }
+    await supabase.from('menu_subcategories').update({ is_active: false }).eq('id', id).eq('truck_id', truck.id)
+    return NextResponse.json({ ok: true })
+  }
+
+  if (action === 'update_subcategory_order') {
+    const { id, sort_order } = body
+    await supabase.from('menu_subcategories').update({ sort_order }).eq('id', id).eq('truck_id', truck.id)
+    return NextResponse.json({ success: true })
+  }
+
   if (action === 'bulk_delete_items') {
     const { category_id } = body
     await supabase
@@ -248,12 +319,13 @@ export async function POST(req: NextRequest) {
 
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, subcategory, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info } = body
-    // Display-only sub-grouping label — blank normalises to null (never "").
-    const subcat = (typeof subcategory === 'string' && subcategory.trim()) ? subcategory.trim() : null
+    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info } = body
+    // Managed sub-category reference (nullable; null = ungrouped). The legacy text `subcategory`
+    // column is the rollback source — no longer WRITTEN here (we write only subcategory_id now).
+    const subcatId = (typeof subcategory_id === 'string' && subcategory_id) ? subcategory_id : null
     if (id) {
       const { data, error } = await supabase.from('menu_items_db')
-        .update({ name, description, price, category_id, subcategory: subcat, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
+        .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -261,7 +333,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
-        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory: subcat, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
+        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory_id: subcatId, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })

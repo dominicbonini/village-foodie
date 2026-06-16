@@ -49,6 +49,7 @@ export async function GET(
   const [
     { data: categories, error: catError },
     { data: items, error: itemsError },
+    { data: subcategories },
     { data: bundles },
     { data: upsellRules },
     { data: codes },
@@ -70,6 +71,13 @@ export async function GET(
       .eq('truck_id', truck.id)
       .eq('is_active', true)
       .order('name'),
+
+    supabase
+      .from('menu_subcategories')
+      .select('id, category_id, name, sort_order')
+      .eq('truck_id', truck.id)
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true }),
 
     supabase
       .from('bundles_db')
@@ -276,6 +284,12 @@ export async function GET(
     groupMap[cmg.category_id].push({ id: group.id, name: group.name, options })
   })
 
+  // Sub-categories grouped by category_id (display-only labels, sorted by sort_order).
+  const subcatMap: Record<string, { id: string; name: string; sort_order: number }[]> = {}
+  for (const s of (subcategories || [])) {
+    ;(subcatMap[s.category_id] ||= []).push({ id: s.id, name: s.name, sort_order: s.sort_order ?? 0 })
+  }
+
   // Build menu response
   const menu = {
     categories: (categories || []).map(c => ({
@@ -287,6 +301,7 @@ export async function GET(
       default_stock: c.default_stock ?? null,
       counts_toward_capacity: c.counts_toward_capacity ?? false,
       modifierGroups: groupMap[c.id] || [],
+      subcategories: subcatMap[c.id] || [],
     })),
     
     items: (items || []).map(i => {
@@ -307,7 +322,7 @@ export async function GET(
         description: i.description || '',
         price: i.price,
         category: (i.menu_categories as any)?.name || 'Uncategorized',
-        subcategory: (i as any).subcategory ?? null,
+        subcategory_id: (i as any).subcategory_id ?? null,
         available: isAvailable,
         stock_remaining: stockRemaining,
         default_stock: i.default_stock ?? null,

@@ -20,7 +20,7 @@ import { isModifierAvailable } from '@/lib/modifier-utils';
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description?: string; price: number; available?: boolean; category: string; subcategory?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]
+  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]
 }
 interface UpsellRule {
   id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean

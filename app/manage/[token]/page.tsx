@@ -24,7 +24,8 @@ import AppHeader from '@/components/shared/AppHeader'
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
-interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
+interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
+interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
@@ -164,6 +165,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [truck, setTruck] = useState<Truck | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
   const [items, setItems] = useState<Item[]>([])
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([])
   const [modifierGroups, setModifierGroups] = useState<ModifierGroup[]>([])
   const [modifierOptions, setModifierOptions] = useState<ModifierOption[]>([])
   const [categoryModGroups, setCategoryModGroups] = useState<{category_id:string;group_id:string}[]>([])
@@ -203,6 +205,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setCurrentUserId(data.currentUserId || null)
       setCategories(data.categories)
       setItems(data.items)
+      setSubcategories(data.subcategories || [])
       setModifierGroups(data.modifierGroups)
       setModifierOptions(data.modifierOptions)
       setCategoryModGroups(data.categoryModGroups)
@@ -445,7 +448,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} token={token} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
@@ -566,8 +569,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // ══════════════════════════════════════════════════════════════
 type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'prep' | 'saving' | 'done'
 
-function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
-  truck: Truck; categories: Category[]; items: Item[]; token: string
+function MenuTab({ truck, categories, items, subcategories, token, api, reload, showToast }: {
+  truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [editingCat, setEditingCat] = useState<Partial<Category> | null>(categories[0] ? categories[0] as any : null)
@@ -580,6 +583,58 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
   const [localItems, setLocalItems] = useState<Item[]>(items)
   const prevItemsRef = useRef(items)
   if (prevItemsRef.current !== items) { prevItemsRef.current = items; setLocalItems(items) }
+
+  // Optimistic local sub-category state — mirrors `subcategories` prop, updated instantly on
+  // add/delete/reorder (display-only labels; no capacity/stock/prep).
+  const [localSubcats, setLocalSubcats] = useState<Subcategory[]>(subcategories)
+  const prevSubcatsRef = useRef(subcategories)
+  if (prevSubcatsRef.current !== subcategories) { prevSubcatsRef.current = subcategories; setLocalSubcats(subcategories) }
+  const [newSubcatCat, setNewSubcatCat] = useState<string | null>(null)   // category_id with an open "+ add" input
+  const [newSubcatName, setNewSubcatName] = useState('')
+  const [addingSubcatInModal, setAddingSubcatInModal] = useState(false)   // inline create in the item modal
+
+  // Sub-categories for a given category, sorted by sort_order.
+  const subcatsFor = (categoryId: string | null | undefined) =>
+    !categoryId ? [] : localSubcats.filter(s => s.category_id === categoryId).sort((a, b) => a.sort_order - b.sort_order)
+
+  // Create (or reactivate) a sub-category in a category, refresh local state, return the saved row.
+  const createSubcategory = async (categoryId: string, name: string): Promise<Subcategory | null> => {
+    const trimmed = name.trim()
+    if (!trimmed || !categoryId) return null
+    try {
+      const res = await api('upsert_subcategory', { category_id: categoryId, name: trimmed })
+      const sc = res.subcategory as Subcategory
+      if (sc) setLocalSubcats(prev => prev.some(s => s.id === sc.id) ? prev.map(s => s.id === sc.id ? sc : s) : [...prev, sc])
+      return sc ?? null
+    } catch (e: any) { showToast(e.message || 'Failed to add sub-category', 'error'); return null }
+  }
+
+  // Delete a sub-category (empty-guarded server-side); show a clear message when it has items.
+  const deleteSubcategory = async (sc: Subcategory) => {
+    try {
+      const res = await api('delete_subcategory', { id: sc.id })
+      if (res?.ok === false && res.error === 'not_empty') {
+        showToast(`Move or remove its ${res.count} item${res.count === 1 ? '' : 's'} first`, 'error'); return
+      }
+      setLocalSubcats(prev => prev.filter(s => s.id !== sc.id))
+    } catch (e: any) {
+      showToast(e.message || 'Failed to delete sub-category', 'error')
+    }
+  }
+
+  // Reorder by swapping an adjacent pair's sort_order (one update_subcategory_order call per row).
+  const moveSubcat = async (categoryId: string, scId: string, dir: -1 | 1) => {
+    const list = subcatsFor(categoryId)
+    const idx = list.findIndex(s => s.id === scId)
+    const swapIdx = idx + dir
+    if (idx < 0 || swapIdx < 0 || swapIdx >= list.length) return
+    const a = list[idx], b = list[swapIdx]
+    setLocalSubcats(prev => prev.map(s => s.id === a.id ? { ...s, sort_order: b.sort_order } : s.id === b.id ? { ...s, sort_order: a.sort_order } : s))
+    try {
+      await api('update_subcategory_order', { id: a.id, sort_order: b.sort_order })
+      await api('update_subcategory_order', { id: b.id, sort_order: a.sort_order })
+    } catch (e: any) { showToast(e.message || 'Failed to reorder', 'error') }
+  }
   const [importStep, setImportStep] = useState<ImportStep>('idle')
   const [importFile, setImportFile] = useState<File | null>(null)
   const [importText, setImportText] = useState('')
@@ -1012,6 +1067,48 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
                     <p className="text-[10px] text-slate-400 mt-0.5">Category-wide limit</p>
                   </div>
                 </div>
+
+                {/* Sub-categories — display-only headings within this category (Phase 2 management;
+                    grouping the item list/order screens by these is Phase 3). Empty ones persist. */}
+                <div className="mt-3 pt-3 border-t border-slate-100">
+                  <p className="text-xs font-bold text-slate-600 mb-2">Sub-categories <span className="text-slate-400 font-normal">(optional — group items under headings)</span></p>
+                  <div className="space-y-1.5">
+                    {subcatsFor(cat.id).map((sc, i, arr) => {
+                      const itemCount = localItems.filter(it => it.subcategory_id === sc.id).length
+                      return (
+                        <div key={sc.id} className="flex items-center gap-2 bg-slate-50 rounded-lg px-2.5 py-1.5">
+                          <div className="flex flex-col leading-none">
+                            <button type="button" disabled={i === 0} onClick={() => moveSubcat(cat.id, sc.id, -1)} className="text-slate-400 hover:text-slate-700 disabled:opacity-25 text-[10px]" title="Move up">▲</button>
+                            <button type="button" disabled={i === arr.length - 1} onClick={() => moveSubcat(cat.id, sc.id, 1)} className="text-slate-400 hover:text-slate-700 disabled:opacity-25 text-[10px]" title="Move down">▼</button>
+                          </div>
+                          <span className="flex-1 text-sm text-slate-700 truncate">{sc.name}</span>
+                          <span className="text-[10px] text-slate-400 flex-shrink-0">{itemCount} item{itemCount === 1 ? '' : 's'}</span>
+                          <button type="button" onClick={() => deleteSubcategory(sc)} className="text-slate-400 hover:text-red-500 text-sm flex-shrink-0" title="Delete sub-category">🗑</button>
+                        </div>
+                      )
+                    })}
+                    {subcatsFor(cat.id).length === 0 && <p className="text-xs text-slate-400">No sub-categories yet.</p>}
+                  </div>
+                  {newSubcatCat === cat.id ? (
+                    <div className="flex items-center gap-2 mt-2">
+                      <input autoFocus value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)}
+                        onKeyDown={async e => {
+                          if (e.key === 'Enter' && newSubcatName.trim()) { await createSubcategory(cat.id, newSubcatName); setNewSubcatName(''); setNewSubcatCat(null) }
+                          else if (e.key === 'Escape') { setNewSubcatCat(null); setNewSubcatName('') }
+                        }}
+                        placeholder="Sub-category name"
+                        className="flex-1 border border-slate-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                      <button type="button" disabled={!newSubcatName.trim()}
+                        onClick={async () => { await createSubcategory(cat.id, newSubcatName); setNewSubcatName(''); setNewSubcatCat(null) }}
+                        className="flex-shrink-0 text-xs font-bold px-2.5 py-1.5 rounded-lg bg-orange-600 text-white disabled:opacity-40">Add</button>
+                      <button type="button" onClick={() => { setNewSubcatCat(null); setNewSubcatName('') }}
+                        className="flex-shrink-0 text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-500">Cancel</button>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={() => { setNewSubcatName(''); setNewSubcatCat(cat.id) }}
+                      className="mt-2 text-xs font-bold text-orange-600 hover:text-orange-700">+ Add sub-category</button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -1365,31 +1462,61 @@ function MenuTab({ truck, categories, items, token, api, reload, showToast }: {
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-600 mb-1">Category</label>
-                <select value={editingItem.category_id || ''} onChange={e => setEditingItem(p => ({...p!, category_id: e.target.value || null}))}
+                <select value={editingItem.category_id || ''} onChange={e => {
+                    const newCat = e.target.value || null
+                    // If the current sub-category doesn't belong to the new category, clear it.
+                    setEditingItem(p => {
+                      const stillValid = p?.subcategory_id && subcatsFor(newCat).some(s => s.id === p.subcategory_id)
+                      return { ...p!, category_id: newCat, subcategory_id: stillValid ? p!.subcategory_id : null }
+                    })
+                    setAddingSubcatInModal(false)
+                  }}
                   className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
                   <option value="">No category</option>
                   {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
 
-              {/* Sub-category (optional, display-only) — groups the item under a heading within its
-                  category on the order screens. Blank → null (the input clears to ''; saved as null
-                  by upsert_item). Datalist suggests sub-categories already used in THIS category. */}
+              {/* Sub-category (optional, display-only) — a managed label that groups this item under a
+                  heading within its category on the order screens. Dropdown of the selected category's
+                  sub-categories (+ inline create). null = ungrouped. Phase 3 does the actual grouping. */}
               <div>
                 <label className="block text-xs font-bold text-slate-600 mb-1">Sub-category <span className="text-slate-400 font-normal">(optional)</span></label>
-                <input
-                  list="subcategory-suggestions"
-                  value={editingItem.subcategory || ''}
-                  onChange={e => setEditingItem(p => ({...p!, subcategory: e.target.value.trim() === '' ? null : e.target.value}))}
-                  placeholder="e.g. Meat Lovers, Veggie"
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                <datalist id="subcategory-suggestions">
-                  {[...new Set(
-                    localItems
-                      .filter(i => i.category_id === editingItem.category_id && (i.subcategory || '').trim())
-                      .map(i => (i.subcategory as string).trim())
-                  )].map(sc => <option key={sc} value={sc} />)}
-                </datalist>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={editingItem.subcategory_id || ''}
+                    onChange={e => setEditingItem(p => ({...p!, subcategory_id: e.target.value || null}))}
+                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                    <option value="">— None —</option>
+                    {subcatsFor(editingItem.category_id).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                  <button type="button" disabled={!editingItem.category_id}
+                    onClick={() => { setNewSubcatName(''); setAddingSubcatInModal(true) }}
+                    className="flex-shrink-0 text-xs font-bold px-2.5 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    + New
+                  </button>
+                </div>
+                {addingSubcatInModal && editingItem.category_id && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <input autoFocus value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)}
+                      onKeyDown={async e => {
+                        if (e.key === 'Enter') {
+                          const sc = await createSubcategory(editingItem.category_id!, newSubcatName)
+                          if (sc) { setEditingItem(p => ({...p!, subcategory_id: sc.id})); setAddingSubcatInModal(false) }
+                        } else if (e.key === 'Escape') { setAddingSubcatInModal(false) }
+                      }}
+                      placeholder="New sub-category name"
+                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                    <button type="button" disabled={!newSubcatName.trim()}
+                      onClick={async () => {
+                        const sc = await createSubcategory(editingItem.category_id!, newSubcatName)
+                        if (sc) { setEditingItem(p => ({...p!, subcategory_id: sc.id})); setAddingSubcatInModal(false) }
+                      }}
+                      className="flex-shrink-0 text-xs font-bold px-2.5 py-2 rounded-xl bg-orange-600 text-white disabled:opacity-40">Add</button>
+                    <button type="button" onClick={() => setAddingSubcatInModal(false)}
+                      className="flex-shrink-0 text-xs px-2.5 py-2 rounded-xl border border-slate-200 text-slate-500">Cancel</button>
+                  </div>
+                )}
                 <p className="text-xs text-slate-400 mt-1">Groups this item under a heading within its category on the order screens — e.g. Meat Lovers, Veggie. Leave blank for none.</p>
               </div>
 
