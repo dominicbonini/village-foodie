@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
+import { buildSlotIndicators } from '@/lib/slot-display'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
 
@@ -225,6 +226,7 @@ export async function GET(req: NextRequest) {
     is_past: boolean
     is_grace: boolean
     tone?: 'green' | 'amber' | 'red'
+    label?: string
   }[] = []
 
   // Hoisted so they can be returned for the dashboard's capacity card (single source —
@@ -273,6 +275,19 @@ export async function GET(req: NextRequest) {
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     // For the truck: don't show slots before event start (use eventStartMins as minimum)
     const earliestMins = eventStartMins !== null ? eventStartMins : nowMins
+    // Per-slot per-category composition wording ("2 Pizzas, 1 Other") — the SAME buildSlotIndicators
+    // the Add Order / Edit dots use (identical backward projection), surfaced so the day-load strip
+    // can show the dots' wording on desktop instead of the opaque current_orders/max_orders ratio.
+    // No new capacity formula — reuses the dots' own function with the menu category order.
+    const dayIndicators = buildSlotIndicators(
+      slots || [],
+      productionSlotUnits,
+      catConfigs,
+      kitchenCapacity,
+      eventStartMins ?? 0,
+      categoryOrder,
+      capacityWindowMins,
+    )
     slotsWithCapacity = buildSlotAvailability({
       times: slots || [],
       productionSlotUnits,
@@ -293,6 +308,7 @@ export async function GET(req: NextRequest) {
       is_past: s.is_past,
       is_grace: s.is_grace,
       tone: s.tone,
+      label: dayIndicators.get(s.collection_time)?.label ?? '',
     }))
   } catch (slotErr) {
     console.error('[dashboard] slot capacity error:', slotErr)
@@ -305,6 +321,7 @@ export async function GET(req: NextRequest) {
       is_past: false,
       is_grace: false,
       tone: 'green' as const,
+      label: '',
     }))
   }
 

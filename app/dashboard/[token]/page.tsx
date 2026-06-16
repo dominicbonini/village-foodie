@@ -1223,6 +1223,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <option value={30}>+30 min</option>
                 </select>
               )}
+              {/* Mobile-only: Prep shares the extra-wait controls row so it no longer takes a full
+                  line below the summary. On sm+ the summary keeps its own Prep button (desktop intact). */}
+              <button onClick={()=>setShowPrepList(p=>!p)} className={`sm:hidden shrink-0 font-bold text-xs px-3 py-2.5 rounded-xl border transition-colors ${showPrepList?'bg-amber-100 text-amber-700 border-amber-300':'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
             </div>
             {paused&&pauseUntilEffective&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{pauseReason==='offline'?' (device offline)':''}{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>
               {/* Prominent inline Resume — one tap, no hunting in the ··· menu. Clears BOTH paused_until
@@ -1237,7 +1240,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <div key={s.label} className="bg-white rounded-xl p-2.5 text-center border border-slate-200 shadow-sm"><p className={`text-xl font-black ${s.colour}`}>{s.value}</p><p className="text-slate-500 text-[11px] font-medium mt-0.5">{s.label}</p></div>
                 ))}
               </div>
-              <div className="flex gap-1.5 sm:ml-2 sm:shrink-0">
+              <div className="hidden sm:flex gap-1.5 sm:ml-2 sm:shrink-0">
                 <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
               </div>
             </div>
@@ -1582,7 +1585,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
               </div>
-              <aside className="hidden lg:block lg:w-44 lg:flex-shrink-0 lg:sticky lg:top-[120px]">
+              <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0 lg:sticky lg:top-[120px]">
                 <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
               </aside>
               </div>

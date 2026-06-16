@@ -64,6 +64,10 @@ export interface Slot {
   tone?: 'green' | 'amber' | 'red'
   /** Which constraint/category bound the slot (null when green). Diagnostic only. */
   bound_by?: string | null
+  /** Per-category composition wording for this slot's cooking window ("2 Pizzas, 1 Other") —
+   *  the SAME buildSlotIndicators label the Add Order / Edit dots show, surfaced by /api/dashboard
+   *  so the day-load strip can reuse it on desktop. '' when the window is empty. Display-only. */
+  label?: string
 }
 
 export type CrewMode = 'solo' | 'full'
