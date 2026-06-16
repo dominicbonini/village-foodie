@@ -10,6 +10,7 @@ import {
   buildItemCatMap,
   normaliseOrderLines,
   deriveProductionSlot,
+  rebuildProductionSlotUsage,
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
@@ -195,21 +196,14 @@ export async function POST(req: NextRequest) {
       const now = new Date().toISOString()
       const { data: order } = await supabase.from('orders').select('slot, event_date, event_id, status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now }).eq('order_key', orderKey).eq('truck_id', truck.id)
-      // Gap 1: free kitchen usage on collect. Fire for ANY still-booked prior state
-      // — including cooking/ready, which the old {pending,confirmed,modified} guard
-      // skipped, leaking units forever. Excluding terminal states (cancelled/rejected/
-      // collected) keeps it idempotent: those are already unbooked, and a second
-      // subtract would wrongly remove co-located orders' items from the slot total.
-      const BOOKED_STATES = ['pending', 'confirmed', 'modified', 'cooking', 'ready']
-      if (order?.event_date && BOOKED_STATES.includes(order.status)) {
-        const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
-        if (full.data) {
-          const itemCatMap = await buildItemCatMap(supabase, truck.id)
-          await removeOrderFromProductionSlot(
-            supabase, truck.id, order.event_id, order.slot,
-            normaliseOrderLines(full.data.items || [], full.data.deals), itemCatMap
-          )
-        }
+      // Free kitchen usage on collect by REBUILDING the date's production_slot_usage from the live
+      // orders (deterministic), not an incremental subtract. The order is now 'collected' so the
+      // rebuild (buildUnitsFromOrders filters pending/confirmed/modified) excludes it → its capacity
+      // is freed AND co-located orders in the same slot are preserved exactly. This replaces the old
+      // removeOrderFromProductionSlot, whose read-only reseed could wipe co-located orders and drift.
+      // Idempotent: re-firing (or completing an already-collected order) yields the same state.
+      if (order?.event_date) {
+        await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       }
       return NextResponse.json({ success: true, status: 'collected' })
     }
@@ -218,16 +212,13 @@ export async function POST(req: NextRequest) {
     if (action === 'undo_collected') {
       const { data: order } = await supabase.from('orders').select('slot, event_date, event_id').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // Re-book on undo by REBUILDING the date's production_slot_usage from the live orders, not an
+      // incremental add. The order is now 'confirmed' so the rebuild includes it → re-booked exactly.
+      // This replaces the old unguarded addOrderToProductionSlot, which re-booked unconditionally and
+      // double-counted on a re-fire (we surface two undo entry points — toast + completed list). A
+      // rebuild from live orders is naturally idempotent: firing it twice gives the identical slot state.
       if (order?.event_date) {
-        // re-book on undo; order.slot may be null (ASAP) → event-start window
-        const full = await supabase.from('orders').select('items, deals').eq('order_key', orderKey).single()
-        if (full.data) {
-          const itemCatMap = await buildItemCatMap(supabase, truck.id)
-          await addOrderToProductionSlot(
-            supabase, truck.id, order.event_id, order.slot,
-            normaliseOrderLines(full.data.items || [], full.data.deals), itemCatMap
-          )
-        }
+        await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }

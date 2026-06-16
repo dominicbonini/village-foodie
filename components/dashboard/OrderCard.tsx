@@ -352,20 +352,24 @@ export function OrderCard({
            px-3 py-2 for KDS grid density; Solo keeps its roomier px-4 py-3 (gate is 'window'-only). */
         <div className={`w-full text-left ${viewMode === 'window' ? 'px-3 py-2' : 'px-4 py-3'} ${headerCls}`}>
           {viewMode === 'solo' ? (
-            /* Solo (dashboard + mobile): two-row header. Row 1 clusters #order + the status badge on
-               the left (the badge fills what used to be a wasted middle gap) with time/lateness right.
-               Row 2 gives the customer NAME the flex space (flex-1 min-w-0) so it shows in full and
-               only ellipsis-truncates as a last resort — Contact + price are flex-shrink-0 so they
-               keep their size and never crowd the name out (the old "Dom"→"D…" clip). */
+            /* Solo (dashboard + mobile): two-row header. Row 1 is the identity+WHEN cluster — #order
+               and the collection TIME together and prominent (the time is key info, so it sits beside
+               the big order#, not demoted), then the status badge; offset/✓ go right. Row 2 gives the
+               customer NAME the flex space (flex-1 min-w-0) so it shows in full and only ellipsis-
+               truncates as a last resort — Contact + PRICE are flex-shrink-0 so they keep their size
+               and never crowd the name out (the "Dom"→"D…" fix). Price is now the only number on the
+               right of row 2, so time and price are no longer stacked in the same corner. */
             <>
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold flex-shrink-0">#{order.id}</span>
+                {timeLabel && <span className="text-lg font-bold flex-shrink-0">· {timeLabel}</span>}
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
-                <div className="flex items-center gap-2 font-medium text-sm ml-auto flex-shrink-0">
-                  {timeLabel && <span>{timeLabel}</span>}
-                  {offsetLabel !== null && <span className="opacity-70">· {offsetLabel}</span>}
-                  {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
-                </div>
+                {(offsetLabel !== null || allStruck) && (
+                  <div className="flex items-center gap-1.5 font-medium text-sm ml-auto flex-shrink-0">
+                    {offsetLabel !== null && <span className="opacity-70">{offsetLabel}</span>}
+                    {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-2 mt-1">
                 <span className="text-sm opacity-70 truncate min-w-0 flex-1">{order.customer_name}</span>
