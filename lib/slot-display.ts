@@ -70,13 +70,14 @@ export function buildSlotIndicators(
   const EPS = 1e-6
 
   for (const s of slots) {
-    // THE COLLECTION-SLOT TOTAL: production_slot_usage[production_slot] is the FULL load the operator
-    // committed to this collection time (storage is collection-slot keyed — each order's whole load
-    // sits at ITS own slot, no spreading across windows, so each dot is independent / non-overlapping).
-    // The dot reads this stored total directly instead of the backward adjacent-cooking-window remainder
-    // (which under-read a multi-window order — showed "1" when 5 are committed). DISPLAY ONLY; the
-    // capacity ENGINE (buildSlotAvailability / fitOrderBackward / placement) is unchanged.
-    const units = productionSlotUnits[s.production_slot] || {}
+    // THE COLLECTION-SLOT TOTAL: the FULL load the operator committed to this collection time. Keyed by
+    // s.collection_time — the SAME key storage uses: buildUnitsFromOrders books each order at
+    // `timeMap[order.slot] || order.slot` (the collection time), so production_slot_usage rows are
+    // collection-time keyed (each order's whole load at ITS own slot — independent / non-overlapping).
+    // NOT s.production_slot: generateCollectionTimes collapses production_slot onto the slot_duration_mins
+    // grid (e.g. slot_duration 10 vs interval 5 → 12:05's production_slot is "12:00"), which would read
+    // the PREVIOUS slot's total (the off-by-one). DISPLAY ONLY; the capacity ENGINE is unchanged.
+    const units = productionSlotUnits[s.collection_time] || {}
 
     // Tone from the FULL total: each cooking (prep) category full/over its batch ⇒ red, partial ⇒
     // amber (worst wins, tie-break higher load); plus the global ceiling on capacity-counting items.
