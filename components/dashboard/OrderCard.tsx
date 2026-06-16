@@ -579,14 +579,29 @@ export function OrderCard({
             </div>
           )}
 
-          {/* Action buttons */}
-          <div className="flex gap-2 flex-wrap mt-auto">
-            {renderButtons()}
-            {viewMode === 'solo' && ['pending', 'confirmed', 'modified'].includes(order.status) && (
-              <Btn label="✏ Edit" colour="orange" loading={false} onClick={() => onEdit(order)} />
-            )}
-            {viewMode === 'solo' && ['confirmed', 'modified', 'ready'].includes(order.status) && (
-              <Btn label="✕ Cancel" colour="red" loading={isLoading('cancel')} onClick={() => onAction('cancel', order.order_key)} />
+          {/* Action buttons — the primary action (Mark paid & done / Ready / Confirm+Reject) is
+              prominent on its own full-width row; Edit + Cancel are de-emphasised on a secondary
+              row beneath (lighter, smaller — but still full-tap-width and iPad-friendly). Behaviour
+              is unchanged: same onEdit / onAction('cancel') / loading. */}
+          <div className="flex flex-col gap-2 mt-auto">
+            <div className="flex gap-2">
+              {renderButtons()}
+            </div>
+            {viewMode === 'solo' && (['pending', 'confirmed', 'modified'].includes(order.status) || ['confirmed', 'modified', 'ready'].includes(order.status)) && (
+              <div className="flex gap-2">
+                {['pending', 'confirmed', 'modified'].includes(order.status) && (
+                  <button onClick={() => onEdit(order)}
+                    className="flex-1 font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 py-2.5 rounded-lg transition-colors active:scale-95">
+                    ✏ Edit
+                  </button>
+                )}
+                {['confirmed', 'modified', 'ready'].includes(order.status) && (
+                  <button onClick={() => onAction('cancel', order.order_key)} disabled={isLoading('cancel')}
+                    className="flex-1 font-bold text-xs text-red-500 bg-red-50 hover:bg-red-100 py-2.5 rounded-lg transition-colors active:scale-95 disabled:opacity-50">
+                    {isLoading('cancel') ? '...' : '✕ Cancel'}
+                  </button>
+                )}
+              </div>
             )}
           </div>
 

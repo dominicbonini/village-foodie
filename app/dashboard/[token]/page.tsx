@@ -1281,22 +1281,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="lg:hidden">
               <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="strip" />
             </div>
-            {(pendingOrders.length>0||confirmedOrders.length>0)&&(()=>{
-              const allActive=eventOrders.filter(o=>['pending','confirmed','modified'].includes(o.status))
-              const counts=getAllDayCounts(allActive)
-              const entries=Object.entries(counts).sort((a,b)=>b[1]-a[1])
-              if(!entries.length)return null
-              return(
-                <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 mb-3 flex items-center gap-2 overflow-x-auto">
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-wide shrink-0">To make</span>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {entries.map(([name,qty])=>(
-                      <span key={name} className="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full whitespace-nowrap">{qty}× {name}</span>
-                    ))}
-                  </div>
-                </div>
-              )
-            })()}
+            {/* "To make" aggregate box removed (2026-06) — a cook-per-order truck doesn't work from a
+                day-wide item total. getAllDayCounts is retained (still used by the completed-order
+                summary line and the KDS all-day counts). */}
             {showPrepList&&(()=>{
               const todayStr=localTodayIso() // LOCAL date (s.7) — pairs with local order-time batching
               // "Start by" = collection slot − cook time, with NO extra grace buffer (the old +2min
@@ -1569,13 +1556,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid lg:grid-cols-2 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -1619,7 +1606,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
               </div>
-              <aside className="hidden lg:block lg:w-56 lg:flex-shrink-0 lg:sticky lg:top-[120px]">
+              <aside className="hidden lg:block lg:w-48 lg:flex-shrink-0 lg:sticky lg:top-[120px]">
                 <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
               </aside>
               </div>
