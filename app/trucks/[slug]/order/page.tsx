@@ -174,9 +174,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [summaryExpanded, setSummaryExpanded] = useState(false)
   // STAGE 2 (commit): the order FORM opens as a bottom-sheet overlay only at commit. Default closed.
   const [formSheetOpen, setFormSheetOpen] = useState(false)
-  // The form sheet's own review-summary collapse state — COLLAPSED by default so a large order can't
-  // push the name/email/time fields off-screen (checkout pattern). Separate from the footer peek.
-  const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(false)
+  // The form sheet's own review-summary state — EXPANDED by default so the customer sees what they're
+  // confirming on open (food-truck orders are small). A max-h cap on the summary (see render) keeps a
+  // rare large order from burying the form. Customer can still collapse it. Separate from footer peek.
+  const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(true)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
 
@@ -1667,7 +1668,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       </svg>
                     </div>
                   </button>
-                  {sheetSummaryExpanded && <div className="mt-2">{orderBreakdownEl}</div>}
+                  {/* Height cap (sheet ONLY): a small 2–4 item order shows fully with no scroll; a
+                      large order scrolls WITHIN this 40vh box so the collection-time + name/email
+                      fields stay reachable below. The footer peek is uncapped (unchanged). */}
+                  {sheetSummaryExpanded && <div className="mt-2 max-h-[40vh] overflow-y-auto">{orderBreakdownEl}</div>}
                 </div>
               )}
 
