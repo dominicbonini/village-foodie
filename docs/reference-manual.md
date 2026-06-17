@@ -29,7 +29,7 @@ Full-session V7.5 (16 Jun 2026): capacity-engine corrections + operator-dashboar
 - STATUS: built, tsc-clean, **LIVE-TEST PENDING** (verify collect→undo nets zero; undo re-fire idempotent; co-located orders survive).
 - BACKLOG: the EDIT path (action/route.ts ~:285-293) has the SAME incremental-drift class (`removeOrderFromProductionSlot(old)` + `addOrderToProductionSlot(new)`). The same one-line `rebuildProductionSlotUsage` swap would fix it. NOT YET APPLIED (decision pending) — editing is more common in service than undo, so this is the higher-value remaining drift fix.
 
-**2. Day-load / slot dot DISPLAY — now shows the collection-slot TOTAL.**
+**2. Day-load / slot dot DISPLAY — now shows the collection-slot TOTAL.** ⚠️ **SUPERSEDED (17 Jun 2026) — see § "THE SLOT & CAPACITY ENGINE — canonical model" (Section 31).** This mid-saga "collection-slot total" approach was a WRONG turn: the dots now READ the engine's backward cooking occupancy (`back.byStart.get(slotMins − step)`, same source as `buildSlotAvailability`), NOT the raw collection total. A 3-pizza order at 17:05 shows 17:00=2 (red) / 17:05=1 (amber), not 17:05=3. The entry below is retained as historical record only — defer to the canonical spec.
 - CHANGE: `buildSlotIndicators` (slot-display.ts) now derives count/label/tone from the stored collection-slot total (`productionSlotUnits[s.collection_time]`), NOT the backward-projected adjacent cooking window.
 - WHY: the backward-window read under-reported — a multi-window order showed only the remainder at its collection dot (e.g. 5 pizzas committed at 12:00 displayed as "1" because 4 sat in an invisible pre-open window). Principle: show what's COMMITTED to the slot (the DB value), per category.
 - TONE: reflects the full total — a category at/over batch → red; partial → amber (worst wins); plus the global kitchen-capacity ceiling; empty → green. RED = a ceiling reached (batch OR kitchen capacity).
@@ -2798,7 +2798,101 @@ The override can only **RESTRICT** — it can never re-enable an item the Settin
 
 A deal hides on the customer page when its slot's only item is sold out — and as of V6.5 that resolves **per-event** through the sparse-override read, not truck-wide (Section 8 / Section 17).
 
-# 29. Closing note
+# 31. Slot & Capacity Engine — CANONICAL MODEL (AUTHORITATIVE — read before touching)
+
+<!-- ============================================================ -->
+<!-- SLOT & CAPACITY ENGINE — CANONICAL SPEC                       -->
+<!-- Added after the 16-17 Jun 2026 capacity saga.                -->
+<!-- READ THIS BEFORE TOUCHING: slot-bookings, slot-availability,  -->
+<!-- slot-display, slot-generation, collection_times,             -->
+<!-- production_slot_usage, ASAP, traffic-lights, or ready-time.   -->
+<!-- This section is AUTHORITATIVE. If code contradicts it, the    -->
+<!-- code is wrong. If a prior chat's reasoning contradicts it,    -->
+<!-- the reasoning is wrong.                                       -->
+<!-- ============================================================ -->
+
+## THE SLOT & CAPACITY ENGINE — canonical model (do not reinterpret)
+
+### The one-paragraph model
+5-minute **collection slots are a SELECTION CONVENIENCE ONLY** — easy times for the customer/operator to pick. They are NOT cooking units. **Cooking capacity is the ENGINE's job**, handled by a rolling backward-fit/sweep-line over prep-length windows, constrained by two ceilings (batch + kitchen capacity). **There are NO fixed production windows.** A collection slot of 17:05 does not mean "cook in the 17:00–17:10 box"; it means "the customer collects at 17:05, and the engine ensures the food can be cooked to be ready by then."
+
+### The two ceilings (this is the whole capacity model)
+Every rolling cooking window (length = prep time, e.g. 5 min) is constrained by BOTH, independently:
+1. **Batch (per-category):** max of ONE category per window. E.g. pizza batch 2 = max 2 pizzas cooking at once.
+2. **Kitchen capacity (cross-category total):** max TOTAL items of any kind per window. E.g. kitchen capacity 4 = max 4 items total, any mix.
+
+A window is FULL when EITHER ceiling is hit. Both always apply.
+
+**Worked example** (pizza batch 2, dessert batch 3, kitchen capacity 4, prep 5):
+- 2 pizzas + 2 desserts = 4 total ✓ (pizza at batch 2; total at capacity 4) — full.
+- 1 pizza + 3 desserts = 4 total ✓ (total at capacity 4; dessert at batch 3) — full.
+- 2 pizzas + 3 desserts = 5 total ✗ — REJECTED by kitchen capacity (4), even though NEITHER category exceeds its own batch. The cross-category total is what catches this.
+- 3 pizzas = ✗ — REJECTED by pizza batch (2), even though 3 < capacity 4. The per-category batch catches this.
+
+### Backward cooking-spread (how an order occupies the oven)
+An order's items spread BACKWARD across cooking windows from its collection time, at batch cadence. The engine (`projectBackwardOccupancy`, slot-availability.ts) computes this; it's the authoritative occupancy.
+
+**Worked example** — 3 pizzas, batch 2, prep 5, collected at 17:05:
+- numWindows = ceil(3/2) = 2.
+- Window ending 17:05 holds the remainder (1 pizza); window ending 17:00 holds a full batch (2 pizzas).
+- So: cooking window ending 17:00 = 2 pizzas, window ending 17:05 = 1 pizza.
+- The food for all 3 is ready by the 17:05 collection time. The 2 cooked "early" (by 17:00) wait; the engine just ensures throughput.
+
+### STORAGE: production_slot_usage is COLLECTION-SLOT keyed (single times, never ranges)
+`buildUnitsFromOrders` (slot-bookings.ts) writes each order's FULL load at its OWN collection_time: `productionSlot = timeMap[ct] || ct`. With `collection_times` empty/identity, the key = the collection_time itself (a single HH:MM like "17:05").
+- Correct keys: `17:00`, `17:05`, `17:10` — single times. Each slot's row is independent.
+- The backward cooking-spread is a DISPLAY/ENGINE concern computed at READ time from this storage — it is NOT stored. Storage holds "this order, N items, at collection_time T." The engine spreads it backward when computing occupancy/availability.
+
+### collection_times MUST be empty or identity (NEVER range-pooled)
+- Correct: `collection_times` EMPTY (like Test Kitchen) → timeMap empty → single-time keys. OR identity (production_slot = collection_time).
+- **WRONG (the bug that caused the 16-17 Jun saga):** `collection_times.production_slot` holding RANGE strings like `"17:00-17:10"` that POOL two collection times (17:00 and 17:05) into one row. This pooling is NOT part of the model and must never exist. It made the write produce pooled range keys, breaking ASAP and traffic-lights.
+- No in-repo code writes `collection_times` (verified by six audits, 16-17 Jun). It is externally/manually managed. The original Gusto range data (2026-05-06, event_id null, 48 rows) was a one-off stale seed, NOT produced by the scrape OR verify path (both proven to leave collection_times empty). If range data ever reappears, something external seeded it — DELETE it, do not write code to accommodate it.
+
+### TRAFFIC-LIGHT DOTS: read the engine's occupancy, do NOT re-derive
+The day-load / slot dots (`buildSlotIndicators`, slot-display.ts) MUST read the engine's backward occupancy — `back.byStart.get(slotMins - step)` where back = projectBackwardOccupancy(...) and step = backwardWindowStepMins(catConfigs). This is the SAME source `buildSlotAvailability` uses, so dots, ASAP, capacity veto, and availability all AGREE.
+- Dot tone: category at/over batch ⇒ RED; partial ⇒ AMBER; empty ⇒ GREEN; kitchen-capacity ceiling hit ⇒ RED.
+- **Worked example** — 3 pizzas collected at 17:05 (batch 2): dots show 17:00 = 2 (RED, batch ceiling), 17:05 = 1 (AMBER, room for 1), 17:10 = 0 (GREEN). NOT 17:05 = 3.
+- **WRONG:** showing raw collection load (17:05 = 3) — that's collection-load, not cooking-load. The dots show what's IN THE OVEN per window, not what's collected per slot.
+
+### ASAP: the engine's load+ceiling-aware earliest slot
+ASAP (`earliestBackwardFitSlot` → `fitOrderBackward`) finds the earliest collection slot where the order fits given ALL existing load AND both ceilings. It judges the pre-open lead on COMBINED load (`nwCombined = ceil((existing+new)/batch)`), not the new order alone.
+- It accounts for the full queue + both ceilings — so the ASAP slot is the truthful earliest-ready time.
+
+### READY-TIME ("Ready around"): must AGREE with the ASAP slot
+"Ready around" is a DISPLAY readout of the actual ready time. It MUST be ≈ the ASAP slot, NEVER later, NEVER contradicting it. Rule (AddOrderPanel.tsx):
+- readyTime is anchored to the engine slot (`fitReadyTime` = adjustedAsapSlot.collection_time).
+- Show the honest-early ungridded estimate (`queueAware`) ONLY when `queueAwareGridSlot === fitReadyTime` — i.e. the slot is later than the honest estimate purely by GRIDDING (food genuinely done before the gridded mark).
+- When load/ceiling pushed the slot later (queueAwareGridSlot ≠ fitReadyTime), ready FOLLOWS the slot.
+- **Worked examples:**
+  - Empty kitchen, 2 pizzas at 17:08, prep 5 → food done ~17:13, slot gridded to 17:15 → "Ready around 17:13" (honest-early, gridding gap). ✓
+  - 17:00 & 17:05 full, add 2 pizzas + 7 desserts → 7th dessert trips kitchen capacity, slot pushes to 17:15 → "Ready around 17:15" (follows slot, NOT the load-blind 17:10). ✓
+- **WRONG:** `queueAware` is BLIND to the kitchen-capacity ceiling (it models per-category batch only). Never let "Ready around" show queueAware's value when the engine slot was pushed by load/ceiling — it under-estimates and contradicts the slot.
+
+### THE RECURRING STRUCTURAL LESSON (why this kept breaking)
+Every break in this saga was the SAME mistake: a PARALLEL model maintained alongside the engine, which drifted and contradicted it.
+- Dots had their own distribution → drifted → wrong dots.
+- collection_times pooling was a parallel "production window" model → wrong storage keys.
+- queueAware has its own queue model missing the kitchen-capacity ceiling → wrong ready-time.
+**THE RULE: the engine (projectBackwardOccupancy / fitOrderBackward) is the SINGLE SOURCE OF TRUTH for capacity, occupancy, and timing. Displays must READ the engine, never re-derive or maintain a parallel calculation.** Any time you find display logic computing capacity/occupancy/timing independently of the engine, that's a bug waiting to happen — make it read the engine instead.
+
+### EXPLICIT "DO NOT" LIST (the exact wrong turns a prior chat took)
+- Do NOT introduce "production windows" / range keys / pooling of collection times. There are no fixed production windows.
+- Do NOT make traffic-light dots show raw collection load — they show cooking occupancy (engine-derived, backward-spread).
+- Do NOT let "Ready around" use queueAware when the slot was pushed by load/ceiling — it's ceiling-blind.
+- Do NOT add a parallel capacity/occupancy calculation in display code — read the engine.
+- Do NOT write code to "handle" range collection_times data — if it appears, it's bad data; delete it.
+- Do NOT trust "tsc-clean" as done — capacity behaviour must be live-verified with real orders against the worked examples above.
+
+### FILES (the engine vs the displays that read it)
+- ENGINE (source of truth): `lib/slot-availability.ts` — projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot, the sweep-line (concurrencyAt/maxConcurrentCount) enforcing kitchen_capacity.
+- WRITE: `lib/slot-bookings.ts` — buildUnitsFromOrders (timeMap[ct]||ct, single-time keys), rebuildProductionSlotUsage.
+- DISPLAYS (must read the engine): `lib/slot-display.ts` buildSlotIndicators (dots), AddOrderPanel.tsx (ASAP label + ready-time).
+- GRID GEN (display-only, never persisted): `lib/slot-generation.ts` generateCollectionTimes.
+<!-- ============================================================ -->
+<!-- END SLOT & CAPACITY ENGINE SPEC -->
+<!-- ============================================================ -->
+
+# 32. Closing note
 
 This manual is living documentation. Update it whenever a new rule is established, a feature behaviour is decided, a DRY violation is identified and fixed, a plan tier feature changes, or a coding convention shifts.
 

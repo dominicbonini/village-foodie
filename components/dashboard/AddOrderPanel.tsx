@@ -16,7 +16,7 @@ import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
-import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, groupBySubcategory } from '@/lib/basket-utils'
+import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -114,6 +114,8 @@ export function AddOrderPanel({
   const [manualPhone, setManualPhone] = useState('')
   const [manualNotes, setManualNotes] = useState('')
   const [manualSlot, setManualSlot] = useState('')
+  // Operator Add Order: which top-level category tab is selected (null ⇒ default to the first).
+  const [activeMenuCat, setActiveMenuCat] = useState<string | null>(null)
   const [manualItems, setManualItems] = useState<BasketItem[]>([])
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
   const [loading, setLoading] = useState(false)
@@ -829,155 +831,160 @@ setItemModal({ item, modGroups, editCartKey })
     </div>
   )
 
-  const menuGrid = (
-    <div className="space-y-4">
-      {[
-        ...categoryOrder.filter(cat => menuGroups[cat]?.length),
-        ...Object.keys(menuGroups).filter(cat => !categoryOrder.includes(cat) && menuGroups[cat]?.length),
-      ].map(cat => {
-        const items = menuGroups[cat]
-        if (!items?.length) return null
-        return (
-          <div key={cat}>
-            <p className="text-xs font-black text-orange-600 uppercase tracking-wide mb-2">
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
-            </p>
-            {groupBySubcategory(items, truckMenu?.categories?.find(c => c.name === cat)?.subcategories).filter(g => g.items.length > 0).map(group => (
-            <div key={group.id ?? '__ungrouped'} className="mb-2 last:mb-0">
-              {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider mb-1.5">{group.name}</p>}
-              <div className="flex flex-wrap gap-2">
-              {group.items.map(item => {
-                const stock = itemStocks.find(s => s.name === item.name)
-                // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
-                // (item.available — standing Settings availability) OR per-event override OFF
-                // (stock.available — the sold-out-for-tonight toggle). Read from the SAME optimistically-
-                // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
-                // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
-                const isSoldOut = !(item.available ?? true) || stock?.available === false
-                const catSt = categoryStocks.find(s => s.category === cat)
-                const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
-                const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
-                const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
-                const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
-                const catModGroups = truckMenu?.categories?.find(c => c.name === cat)?.modifierGroups || []
-                const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
-                const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
-                if (isSoldOut) return (
-                  <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
-                    <span className="text-xs text-slate-500 line-through">{item.name}</span>
-                    <span className="text-[10px] text-red-400 font-bold">sold out</span>
-                  </div>
-                )
-                return (
-                  <button
-                    key={item.name}
-                    onClick={() => !atStockLimit && addManualItem(item)}
-                    disabled={atStockLimit}
-                    className={`flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
-                      atStockLimit ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
-                      : totalInBasket > 0 ? 'bg-orange-600 border-orange-600 text-white active:scale-95'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-white active:scale-95'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5">
-                      {totalInBasket > 0 && <span className={atStockLimit ? 'text-slate-500' : 'text-orange-200'}>{totalInBasket}×</span>}
-                      <span>{item.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
-                      {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
-                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">({effectiveRem} left)</span>}
-                    </div>
-                  </button>
-                )
-              })}
-              </div>
-            </div>
-            ))}
-          </div>
-        )
-      })}
+  // ── Operator Add Order menu navigation ──────────────────────────────────────
+  // Top-level category TABS (no long scroll) + FLAT alphabetical items. Subcategory headings are
+  // NOT used on THIS screen (the customer order page + Menu & Stock editor still group by subcategory
+  // — that feature/data is untouched). Same category ordering both render paths used.
+  const menuCats = [
+    ...categoryOrder.filter(cat => menuGroups[cat]?.length),
+    ...Object.keys(menuGroups).filter(cat => !categoryOrder.includes(cat) && menuGroups[cat]?.length),
+  ]
+  // Default to the first category; self-heal if the active tab disappears (menu reload / now-empty cat).
+  const selectedMenuCat = (activeMenuCat && menuCats.includes(activeMenuCat)) ? activeMenuCat : (menuCats[0] ?? null)
+  // FLAT sort, structured for a FUTURE "featured / bestseller" tier: items with a higher `sort_priority`
+  // (or a `featured` flag) float to the TOP in priority order; the REST are alphabetical by name. No such
+  // column exists on menu_items_db today, so both read undefined ⇒ priority 0 for all ⇒ PURE ALPHABETICAL
+  // now (the current ask). To enable later: add `sort_priority int` (or `featured boolean`) to
+  // menu_items_db, surface it on the MenuItem type + /api/menu select — the comparator already honours it,
+  // featured floats up, the rest stay alphabetical, NO re-architecting.
+  const sortMenuItems = (items: MenuItem[]) => {
+    const priorityOf = (i: MenuItem) => {
+      const f = i as { sort_priority?: number; featured?: boolean }
+      return Number(f.sort_priority ?? (f.featured ? 1 : 0)) || 0
+    }
+    return [...items].sort((a, b) => priorityOf(b) - priorityOf(a) || a.name.localeCompare(b.name))
+  }
+  // Sticky, finger-sized (≥44px) category tab bar. Horizontal-scrolls on a narrow width — never off-screen.
+  const categoryTabs = menuCats.length > 1 ? (
+    <div className="sticky top-0 z-10 bg-white pb-2 mb-2 border-b border-slate-100">
+      <div className="flex gap-1.5 overflow-x-auto">
+        {menuCats.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveMenuCat(cat)}
+            className={`shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 rounded-xl text-sm font-black uppercase tracking-wide transition-colors active:scale-95 ${
+              cat === selectedMenuCat ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+  ) : null
 
+  const menuGrid = (
+    <div>
+      {categoryTabs}
+      {selectedMenuCat && (
+        <div className="flex flex-wrap gap-2">
+          {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
+            const stock = itemStocks.find(s => s.name === item.name)
+            // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
+            // (item.available — standing Settings availability) OR per-event override OFF
+            // (stock.available — the sold-out-for-tonight toggle). Read from the SAME optimistically-
+            // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
+            // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
+            const isSoldOut = !(item.available ?? true) || stock?.available === false
+            const catSt = categoryStocks.find(s => s.category === selectedMenuCat)
+            const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
+            const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
+            const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
+            const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
+            const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
+            const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
+            if (isSoldOut) return (
+              <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
+                <span className="text-xs text-slate-500 line-through">{item.name}</span>
+                <span className="text-[10px] text-red-400 font-bold">sold out</span>
+              </div>
+            )
+            return (
+              <button
+                key={item.name}
+                onClick={() => !atStockLimit && addManualItem(item)}
+                disabled={atStockLimit}
+                className={`flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
+                  atStockLimit ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
+                  : totalInBasket > 0 ? 'bg-orange-600 border-orange-600 text-white active:scale-95'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-white active:scale-95'
+                }`}
+              >
+                <div className="flex items-center gap-1.5">
+                  {totalInBasket > 0 && <span className={atStockLimit ? 'text-slate-500' : 'text-orange-200'}>{totalInBasket}×</span>}
+                  <span>{item.name}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
+                  {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
+                  {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">({effectiveRem} left)</span>}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 
   const menuList = (
     <div>
-      {[
-        ...categoryOrder.filter(cat => menuGroups[cat]?.length),
-        ...Object.keys(menuGroups).filter(cat => !categoryOrder.includes(cat) && menuGroups[cat]?.length),
-      ].map(cat => {
-        const items = menuGroups[cat]
-        if (!items?.length) return null
-        return (
-          <div key={cat}>
-            <div className="sticky top-0 bg-white z-10 py-2 border-b border-slate-100">
-              <p className="text-xs font-black text-orange-600 uppercase tracking-wide">
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </p>
-            </div>
-            {groupBySubcategory(items, truckMenu?.categories?.find(c => c.name === cat)?.subcategories).filter(g => g.items.length > 0).map(group => (
-            <div key={group.id ?? '__ungrouped'}>
-              {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider px-1 pt-1 pb-0.5">{group.name}</p>}
-              <div>
-              {group.items.map(item => {
-                const stock = itemStocks.find(s => s.name === item.name)
-                // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
-                // (item.available — standing Settings availability) OR per-event override OFF
-                // (stock.available — the sold-out-for-tonight toggle). Read from the SAME optimistically-
-                // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
-                // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
-                const isSoldOut = !(item.available ?? true) || stock?.available === false
-                const catSt = categoryStocks.find(s => s.category === cat)
-                const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
-                const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
-                const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
-                const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
-                const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
-                const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
-                return (
-                  <div key={item.name} className={`flex items-center gap-3 py-3 border-b border-slate-50 ${isSoldOut ? 'opacity-50' : ''}`}>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
-                        {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
-                        {atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
-                        {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
-                      </div>
-                    </div>
-                    {!isSoldOut && (
-                      totalInBasket > 0 ? (
-                        <div className="flex items-center gap-2 shrink-0">
-                          <button
-                            onClick={() => adjustManualQty(item.name, -1)}
-                            className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-lg leading-none active:scale-90"
-                          >−</button>
-                          <span className="text-sm font-bold text-slate-800 w-4 text-center">{totalInBasket}</span>
-                          <button
-                            onClick={() => !atStockLimit && addManualItem(item)}
-                            disabled={atStockLimit}
-                            className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-600 text-white active:scale-90'}`}
-                          >+</button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => !atStockLimit && addManualItem(item)}
-                          disabled={atStockLimit}
-                          className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-100 text-orange-600 active:scale-90'}`}
-                        >+</button>
-                      )
-                    )}
+      {categoryTabs}
+      {selectedMenuCat && (
+        <div>
+          {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
+            const stock = itemStocks.find(s => s.name === item.name)
+            // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
+            // (item.available — standing Settings availability) OR per-event override OFF
+            // (stock.available — the sold-out-for-tonight toggle). Read from the SAME optimistically-
+            // updated itemStocks slice the stock count uses, so a toggle reflects instantly instead of
+            // lagging the 60s menu poll. No event override row ⇒ stock.available undefined ⇒ menu flag wins.
+            const isSoldOut = !(item.available ?? true) || stock?.available === false
+            const catSt = categoryStocks.find(s => s.category === selectedMenuCat)
+            const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
+            const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
+            const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
+            const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
+            const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
+            const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
+            return (
+              <div key={item.name} className={`flex items-center gap-3 py-3 border-b border-slate-50 ${isSoldOut ? 'opacity-50' : ''}`}>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
+                    {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
+                    {atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
+                    {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
                   </div>
-                )
-              })}
+                </div>
+                {!isSoldOut && (
+                  totalInBasket > 0 ? (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => adjustManualQty(item.name, -1)}
+                        className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-lg leading-none active:scale-90"
+                      >−</button>
+                      <span className="text-sm font-bold text-slate-800 w-4 text-center">{totalInBasket}</span>
+                      <button
+                        onClick={() => !atStockLimit && addManualItem(item)}
+                        disabled={atStockLimit}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-600 text-white active:scale-90'}`}
+                      >+</button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => !atStockLimit && addManualItem(item)}
+                      disabled={atStockLimit}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-100 text-orange-600 active:scale-90'}`}
+                    >+</button>
+                  )
+                )}
               </div>
-            </div>
-            ))}
-          </div>
-        )
-      })}
-
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 
