@@ -170,7 +170,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [submittedRequestedSlot, setSubmittedRequestedSlot] = useState<string | null>(null)
   const [submittedSlotChanged, setSubmittedSlotChanged] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [summaryExpanded, setSummaryExpanded] = useState(true)
+  // STAGE 1 (basket peek) starts COLLAPSED — it expands on demand rather than starting open.
+  const [summaryExpanded, setSummaryExpanded] = useState(false)
+  // STAGE 2 (commit): the order FORM opens as a bottom-sheet overlay only at commit. Default closed.
+  const [formSheetOpen, setFormSheetOpen] = useState(false)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
 
@@ -1557,6 +1560,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
 
 
+        {/* STAGE 2 — the order FORM as a bottom-sheet overlay (commit step). Reuses the item-modal
+            idiom; renders only when formSheetOpen, at z-[60] ABOVE the z-50 footer (the backdrop
+            covers the footer). The form JSX is unchanged — bound to top-level state, so it works
+            anywhere. Opening/closing only toggles formSheetOpen; basket + field values are untouched. */}
+        {formSheetOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setFormSheetOpen(false)} />
+          <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto" style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+            <div className="px-5 pt-5 pb-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-black text-slate-900 text-lg leading-snug">Complete your order</h3>
+                <button onClick={() => setFormSheetOpen(false)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
+              </div>
+
         {/* COLLECTION TIME */}
         {truck?.mode === 'village' && (
           <Sec title="Collection time">
@@ -1726,6 +1743,37 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           </div>
         </Sec>
 
+              {/* Submit-time notices (paused 423 / lock 409 / stock 409) — co-located with the
+                  place-order action so they surface INSIDE the sheet (the footer is hidden behind it
+                  during submit). Non-destructive: basket kept, customer retries in place. */}
+              {pauseNotice && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
+                  <p className="flex-1 text-amber-800 text-sm font-medium">⏸ {pauseNotice}</p>
+                  <button onClick={() => setPauseNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
+                </div>
+              )}
+
+              {stockNotice && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mt-4 flex items-start gap-2">
+                  <p className="flex-1 text-amber-800 text-sm font-medium">Sorry — {stockNotice} now. We&apos;ve updated your order — please review and confirm.</p>
+                  <button onClick={() => setStockNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
+                </div>
+              )}
+
+              {/* PLACE ORDER — the actual submit. Carries the SAME full validation gate that was on
+                  the footer button (name/email/phone/slot etc.), relocated verbatim. */}
+              <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
+                disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+                className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
+                {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : 'Place order'}
+              </button>
+              <p className="text-center text-slate-400 text-xs mt-2">Pay at the truck on collection · No card details needed</p>
+
+            </div>
+          </div>
+        </div>
+        )}
+
         </>)}{/* end event-scoped ordering UI */}
 
       </div>{/* end ordering_available wrapper */}
@@ -1823,24 +1871,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
           {!hasItems && <p className="text-center text-slate-400 text-xs font-medium mb-2">Add items from the menu to place an order</p>}
 
-          {pauseNotice && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-2 flex items-start gap-2">
-              <p className="flex-1 text-amber-800 text-sm font-medium">⏸ {pauseNotice}</p>
-              <button onClick={() => setPauseNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
-            </div>
-          )}
-
-          {stockNotice && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-2 flex items-start gap-2">
-              <p className="flex-1 text-amber-800 text-sm font-medium">Sorry — {stockNotice} now. We&apos;ve updated your order — please review and confirm.</p>
-              <button onClick={() => setStockNotice(null)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none mt-0.5">✕</button>
-            </div>
-          )}
-
-          <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
-            disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
+          {/* STAGE 2 trigger — the footer button now OPENS the form sheet (commit step). Gated ONLY
+              on hasItems + ordering-not-blocked; name/email/slot are filled INSIDE the sheet, so they
+              no longer gate here. The pause/stock submit-notices and the actual place-order button
+              moved into the sheet (the footer is hidden behind it during submit). */}
+          <button onClick={e => { e.preventDefault(); setFormSheetOpen(true) }}
+            disabled={isOrderingBlocked || !hasItems || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {submitting ? 'Sending order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'}`}
+            {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'} →`}
           </button>
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
