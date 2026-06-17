@@ -278,31 +278,41 @@ export function AddOrderPanel({
     return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
   }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot, eventTz, manualEvent])
 
-  // "Ready around" (DISPLAY-ONLY readout for the truck — NOT placement): the HONEST now+prep estimate,
-  // CLAMPED so it never reads LATER than the authoritative collection slot.
-  //  • queueAware = now + prep (ungridded): under a light/empty queue it lands EARLIER than the
-  //    grid-rounded slot (17:08 + 5-min prep ⇒ ~17:13 vs the 17:15 slot) — the honest-early readout.
-  //  • fitReadyTime = the engine's BACKWARD-FIT collection slot (adjustedAsapSlot), already PROVEN
-  //    "ready by T" via CONCURRENT placement. queueAware models the queue SERIALLY (drain all, then
-  //    cook this order), which OVERESTIMATES under load and would land later than the slot — nonsensical,
-  //    since the engine guaranteed ready-by-slot. So we CAP the honest estimate at the slot.
-  //  ⇒ readyTime = the EARLIER of (queueAware, fitReadyTime). Light queue ⇒ queueAware (honest early);
-  //    under load ⇒ the slot (never later). The dropdown/submit slot (adjustedAsapSlot, :504/:591) stays
-  //    authoritative and UNCHANGED — only this readout clamps.
-  // fitReadyTime is taken only once there's a basket — an empty order "fits" every slot, so without this
-  // the sub-label would show with nothing in the cart. No capacity data / no fit slot ⇒ no ceiling to
-  // clamp to ⇒ fall back to queueAware (or calcReadyTime) UNCLAMPED.
+  // "Ready around" (DISPLAY-ONLY readout — NOT placement): must ALWAYS agree with the ASAP slot, which
+  // is the engine's load + kitchen-capacity-ceiling-aware earliest-ready (adjustedAsapSlot →
+  // earliestBackwardFitSlot). So ready is ANCHORED to that slot (fitReadyTime), shown honest-early ONLY
+  // when the slot is late purely by GRIDDING (food genuinely done before the gridded mark, light queue).
+  //  • fitReadyTime = the engine's backward-fit collection slot — load + ceiling aware, the authoritative
+  //    earliest the food can ACTUALLY be ready. Taken only once there's a basket (an empty order "fits"
+  //    every slot).
+  //  • queueAware = ungridded now+prep / eventStart+push. It models per-category batch throughput but is
+  //    BLIND to the global concurrency ceiling, so under load it UNDER-counts (e.g. a 7th dessert trips
+  //    the ceiling → the slot moves 17:10→17:15 but queueAware stays 17:10). It is therefore only safe to
+  //    surface when it AGREES with the engine's reasoning.
+  // DISCRIMINATOR (gridding vs load): grid queueAware UP to its own collection slot. If that equals the
+  // engine slot, the gap is PURE GRIDDING ⇒ show honest-early (the ungridded queueAware, ≤ the slot). If
+  // the engine slot is LATER than gridded-queueAware, something queueAware can't see (existing load OR the
+  // order's own size tripping a window/capacity ceiling) pushed the slot ⇒ ready FOLLOWS the slot. Either
+  // way ready ≈ the slot and NEVER exceeds it. The dropdown/submit slot (:504/:591) is unchanged — this
+  // only changes what the readout READS. Fallback to queueAware/calcReadyTime only when there's no fit slot.
   const hasBasketForReady = manualItems.length > 0 || appliedDeals.length > 0
   const fitReadyTime = (hasBasketForReady && capacityInputs) ? (adjustedAsapSlot?.collection_time || null) : null
   const readyToMins = (t: string) => { const [h, m] = t.split(':').map(Number); return (h || 0) * 60 + (m || 0) }
-  // CLAMP: earlier of the honest estimate and the authoritative slot. Unclamped fallback when either
-  // side is absent (no fit slot ⇒ queueAware; no queueAware ⇒ slot; neither ⇒ calcReadyTime).
-  const readyTime = (queueAware.readyTime && fitReadyTime)
-    ? (readyToMins(queueAware.readyTime) <= readyToMins(fitReadyTime) ? queueAware.readyTime : fitReadyTime)
-    : (queueAware.readyTime || fitReadyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs))
-  // "~N mins" wait — derived from the CLAMPED readyTime so the number agrees with the shown time (never
-  // more minutes than the slot implies). When the honest estimate won, reuse queueAware's sub-minute-
-  // precise count; when clamped to the slot (or a calcReadyTime fallback), compute from that HH:MM.
+  // The collection slot that gridding the honest queueAware estimate UP lands on (earliest slot ≥ it).
+  const queueAwareGridSlot = queueAware.readyTime
+    ? (manualSlots
+        .map(s => s.collection_time)
+        .filter(t => readyToMins(t) >= readyToMins(queueAware.readyTime))
+        .sort((a, b) => readyToMins(a) - readyToMins(b))[0] ?? null)
+    : null
+  const readyTime = !fitReadyTime
+    ? (queueAware.readyTime || calcReadyTime(manualItems, waitMinutes * 60, truckMenu?.items, categoryConfigs))
+    : (queueAware.readyTime && queueAwareGridSlot === fitReadyTime)
+      ? queueAware.readyTime   // gridding-only gap ⇒ honest-early (food done before the gridded slot)
+      : fitReadyTime           // load/ceiling pushed the slot past queueAware ⇒ ready follows the slot
+  // "~N mins" wait — derived from the now-consistent readyTime so the number agrees with the shown time
+  // (never more minutes than the slot implies). When honest-early won, reuse queueAware's sub-minute-
+  // precise count; when ready followed the engine slot (or a calcReadyTime fallback), compute from that HH:MM.
   // (Only rendered on the same-day branch; future-day shows a date label, not a wait.)
   const readyMinsFromNow = (readyTime && readyTime === queueAware.readyTime)
     ? queueAware.minsFromNow
@@ -642,10 +652,10 @@ setItemModal({ item, modGroups, editCartKey })
         const dateLabel = isFutureDay
           ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
           : null
-        // Sub-label time + minutes both come from `readyTime`/`readyMinsFromNow`, which mirror
-        // the ASAP dropdown's backward-fit slot (adjustedAsapSlot) when capacity data exists, so
-        // "Ready around" == the dropdown ASAP time. Falls back to the queue-batch estimate only
-        // when there's no backward-fit slot to source from.
+        // Sub-label time + minutes come from `readyTime`/`readyMinsFromNow`, anchored to the engine's
+        // ASAP slot (adjustedAsapSlot): ready ALWAYS agrees with the dropdown slot — equal to it when
+        // load/ceiling set the slot, or honest-early (the ungridded estimate ≤ the slot) only when the
+        // slot is late purely by gridding. Falls back to the queue-batch estimate when there's no fit slot.
         const m = readyMinsFromNow
         const wait = m < 60
           ? `~${m} min${m !== 1 ? 's' : ''}`
