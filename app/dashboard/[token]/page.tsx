@@ -1170,7 +1170,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {/* Event bar — Orders, Add Order, and Menu & Stock tabs */}
       {(activeTab==='orders'||activeTab==='add'||activeTab==='stock')&&(
-        <div className="bg-slate-800 border-b border-slate-700 sticky top-[95px] z-30 relative">
+        <div id="dashboard-event-bar" className="bg-slate-800 border-b border-slate-700 sticky top-[95px] z-30 relative">
           <div className="max-w-5xl mx-auto px-4 py-2 flex items-center gap-2">
             {activeEvent?(
               <>

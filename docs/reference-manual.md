@@ -784,6 +784,8 @@ Colour constants live in lib/brand.ts: HEADER_BG, PAGE_BG, and TABS_BG, all slat
 
 Sticky layout contract: AppHeader is sticky top-0 z-50 (51px tall). The tabs bar is sticky top-[51px] z-40. On the dashboard, the event bar is sticky top-[95px] z-30 and shows on the Orders and Add Order tabs only. On the manage page the tabs are sticky top-[51px] z-40; the Billing tab's plan/price header is sticky top-[95px] z-30 (V6.5, Section 4). Any new operator page must reuse AppHeader and slate-900 tabs rather than re-deriving these values.
 
+> **MEASURED offset — Add Order mobile category tabs (V7.5+).** The Add Order menu's category tabs (`AddOrderPanel.tsx`, mobile/window-scroll path) pin BELOW the event bar using a **measured** offset, NOT a hardcoded `top-[Npx]`. An effect in AddOrderPanel reads the live `getBoundingClientRect().bottom` of the event bar (`id="dashboard-event-bar"` — the lowest chrome element) and publishes it to a CSS var `--addorder-sticky-top` on `:root`; the tabs pin to `top:var(--addorder-sticky-top,145px)` (the `145px` is the first-paint seed/fallback) with `md:top-0` for the desktop internal-scroll column. A `ResizeObserver` on the event bar plus `resize`/`orientationchange` re-measure on every height change (one- vs two-line event bar, font load, future banners), so the tabs self-adjust and never drift. NOTE: the dashboard chrome's own offsets (top-0/51/95) and Village Foodie's date-header offsets (`app/page.tsx`, `sticky top-[158px] md:top-[142px]`) **remain hardcoded** — a future systemic "measured sticky stack" pass could adopt the same CSS-variable mechanism (backlog, Section 27).
+
 ### Single order-line renderer (V4)
 
 components/dashboard/OrderLineItem.tsx renders a priced line item across all surfaces. Variant prop (operator | customer) controls rendering. Props include nameSuffix for the Edit/Customise button slot and rightSlot for the price editor.
@@ -1087,6 +1089,8 @@ In the Add Order panel, the ASAP collection time is the later of (now + prep) an
 
 ### Oven-occupancy capacity engine (V6.4 — replaces the V6.3 directional model)
 
+> ⚠️ **SUPERSEDED — see Section 31 (canonical, authoritative).** The function described in this V6.4 subsection (`projectOvenOccupancy`) and its continuous FIFO rate model (`rate = batch_size × windowSecs/prep_secs`) were REPLACED by the V6.7 concurrency rebuild (below) and the canonical spec in Section 31. The LIVE engine is `projectBackwardOccupancy` / `fitOrderBackward` (sweep-line `maxConcurrentCount`), and occupancy is a batch-cadence BACKWARD SPREAD, not a continuous FIFO carry. For the correct model, function names, and worked examples, defer to Section 31. This subsection is retained as historical record only.
+
 > **MODEL** — `projectOvenOccupancy` (lib/slot-availability.ts) is a continuous per-category FIFO simulation across production windows. For each window: occupancy = items still cooking (carried forward from earlier windows) + items starting in this window. Per-window throughput is `rate = batch_size × (windowSecs / prep_secs)`. When window == prep (e.g. 5-min window, 5-min prep) the rate is exactly `batch_size`; a slower category (10-min prep on 5-min windows → rate = batch_size/2) spreads a batch across multiple windows. `prep_secs == 0` (instant items: drinks, dips) never occupies the oven.
 
 > **RULE — kitchen_capacity counts ITEMS, not batches.** kitchen_capacity is a per-window cross-category ceiling on total items cooking. TWO constraints bind a window: (a) the global item ceiling (total items in the window ≤ kitchen_capacity — a cross-category backstop), and (b) cumulative per-category throughput (the FIFO rate above). The per-category math lives in `calcReadySecsByCat` / `calcQueuePushSecsByCat` (lib/prep-utils.ts) — one formula, no fork.
@@ -1374,14 +1378,14 @@ Priority: (1) an event happening now today; (2) an upcoming event today; (3) the
 
 > **RULE** — too_soon is its own slot-availability field (lib/slot-availability.ts), no longer conflated into is_past.
 
-- **Operator (dashboard / Add Order)** — sees every slot except genuinely past ones, each with a traffic-light state driven by `projectOvenOccupancy` (Section 6): green (empty), amber (partial — shows the binding per-category count, e.g. "Pizza 2/4"), red ("Full").
+- **Operator (dashboard / Add Order)** — sees every slot except genuinely past ones, each with a traffic-light state driven by the engine's backward occupancy (`projectBackwardOccupancy`, read as `back.byStart.get(slotMins − step)` — see Section 31, the authoritative source; the older `projectOvenOccupancy` name in pre-V6.7 notes is superseded): green (empty), amber (partial — shows the binding per-category count, e.g. "Pizza 2/4"), red ("Full").
 - **Customer order page** — NO traffic-light. Only cleanly-available slots are shown; full and too-soon slots are HIDDEN.
 
 > **PRECISE ITEMS-BASED DISPLAY (V6.4).** The dots are driven by the items-based oven-occupancy projection; kitchen_capacity counts ITEMS. RED reads just "Full"; AMBER reads the per-category count ("Pizza 2/4"); GREEN has no label. The leading "·" separator was removed. The internal `bound_by` reason is computed for diagnostics but not shown for red.
 
 > **CAPACITY COPY SIMPLIFICATION PENDING (V6.8).** The `KITCHEN_CAPACITY_DESC` copy (lib/kitchen-capacity.ts) is to be shortened to plainer English ("the most items you can make at once, across the categories you tick", one short example, "leave blank for no limit"). Exact wording not yet finalised — when set, update the string AND this manual reference together so the quoted copy doesn't drift. The old "5-minute window" hardcode in the copy is WRONG post-V6.7 (the window is the configurable `capacity_window_mins`).
 
-> **RULE — operator dots and customer availability use different reads.** The operator dots and ASAP placement run through `projectOvenOccupancy`. The legacy `getSlotIndicator` / `lib/slot-indicator.ts` and `buildSlotAvailability`'s indicator path now serve ONLY the customer available/unavailable flags. Candidates for removal post-trial (Section 27).
+> **RULE — operator dots and customer availability use different reads.** The operator dots (`buildSlotIndicators`, slot-display.ts) and ASAP placement run through the engine — `projectBackwardOccupancy` / `fitOrderBackward` — NOT a parallel calculation (Section 31). The pre-V6.7 `projectOvenOccupancy` name is superseded. The legacy `getSlotIndicator` / `lib/slot-indicator.ts` and `buildSlotAvailability`'s indicator path now serve ONLY the customer available/unavailable flags. Candidates for removal post-trial (Section 27).
 
 ## Confirm order button
 
