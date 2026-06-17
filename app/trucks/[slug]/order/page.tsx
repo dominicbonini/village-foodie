@@ -1450,8 +1450,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
                           <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
-                        ) : opensModal ? (
-                          // Extras OR upsells OR notes → open the modal (surfaces all three).
+                        ) : hasModifiers ? (
+                          // MODIFIER items → modal button (variant selection needs the modal); the
+                          // per-variant +/− rows below handle quantity. No-modifier items (even with
+                          // upsells/notes) fall through to the stepper so they get full +/− quantity.
                           <button
                             onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups, itemUpsells)}
                             disabled={isOrderingBlocked || atStockLimit}
@@ -1479,7 +1481,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                             )}
                           </>
                         ) : (
-                          <button onClick={() => !isOrderingBlocked && addItem(item)} disabled={isOrderingBlocked}
+                          // qty 0 → first add. For a no-modifier upsell/notes item, open the modal
+                          // ONCE so the upsell/notes prompt surfaces on entry; otherwise add directly.
+                          // After this (qty > 0) the stepper above takes over — subsequent +/− adjust
+                          // the base item quantity directly, never re-prompting the upsell per unit.
+                          <button onClick={() => !isOrderingBlocked && (opensModal ? openItemModal(item, catModGroups, itemUpsells) : addItem(item))} disabled={isOrderingBlocked}
                             className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
                             {isOrderingBlocked ? (isClosed ? 'Closed' : 'Paused') : 'Add'}
                           </button>
