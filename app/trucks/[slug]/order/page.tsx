@@ -708,7 +708,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       {appliedDeals.map((deal, i) => (
         <div key={i}>
           <div className="flex justify-between text-xs">
-            <span className="text-slate-600">🎁 {deal.bundle.name}</span>
+            <span className="font-semibold uppercase tracking-wide text-slate-500">🎁 {deal.bundle.name}</span>
             <span className="text-slate-700 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
           </div>
           {Object.keys(deal.slots).sort().map(slotKey => {
@@ -718,7 +718,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             const note = deal.slotNotes?.[slotKey]
             return (
               <div key={slotKey}>
-                <div className="pl-3 text-[10px] text-slate-400">{itemName}</div>
+                <div className="pl-3 text-xs text-slate-600">{itemName}</div>
                 {mods.map(m => (
                   <div key={m.name} className="flex justify-between pl-6 text-[10px] text-slate-400">
                     <span>{m.name}</span>
