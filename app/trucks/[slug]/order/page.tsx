@@ -1203,12 +1203,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <Image
               src={truck.logo}
               alt={truck.name || ''}
-              width={80}
-              height={80}
-              className="w-20 h-20 object-contain rounded-full border border-slate-200 shadow-md bg-white mx-auto mb-3"
+              width={96}
+              height={96}
+              className="w-24 h-24 object-contain rounded-full border border-slate-200 shadow-md bg-white mx-auto mb-4"
             />
           ) : (
-            <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-4xl shadow-md mx-auto mb-3">🚚</div>
+            <div className="w-24 h-24 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-4xl shadow-md mx-auto mb-4">🚚</div>
           )}
           <h1 className="text-2xl font-black text-slate-900">
             Order from {truck?.name}
