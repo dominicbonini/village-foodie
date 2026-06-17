@@ -744,19 +744,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         ]
         return orderedCats.map(cat => (
           <div key={cat}>
-            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">{cat}</p>
-            {byCat.get(cat)!.map(b => (
-              <OrderLineItem
-                key={b.cartKey}
-                name={b.menuItem.name}
-                quantity={b.quantity}
-                unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
-                basePrice={b.menuItem.price}
-                modifiers={b.modifiers}
-                specialInstructions={b.specialInstructions}
-                variant="customer"
-              />
-            ))}
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">{cat}</p>
+            <div className="pl-3">
+              {byCat.get(cat)!.map(b => (
+                <OrderLineItem
+                  key={b.cartKey}
+                  name={b.menuItem.name}
+                  quantity={b.quantity}
+                  unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
+                  basePrice={b.menuItem.price}
+                  modifiers={b.modifiers}
+                  specialInstructions={b.specialInstructions}
+                  variant="customer"
+                />
+              ))}
+            </div>
           </div>
         ))
       })()}
