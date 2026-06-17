@@ -1377,8 +1377,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               {groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0).map(group => (
               <div key={group.id ?? '__ungrouped'}>
                 {/* Sub-category heading — only a NAMED group with items (Phase 3 order-screen rule);
-                    the ungrouped (null) group renders no heading, and empty sub-cats are not shown. */}
-                {group.name && <p className="text-xs font-black text-orange-500 uppercase tracking-wider mt-2 mb-1 px-0.5">{cap(group.name)}</p>}
+                    the ungrouped (null) group renders no heading, and empty sub-cats are not shown.
+                    STICKY (B1): pins directly beneath the category tab bar as you scroll within a
+                    category, swapping to the next subcategory as it arrives (native nested-sticky —
+                    each header's containing block is its own group <div>, so when a group scrolls out
+                    its header leaves with it and the next group's header takes over). Offset = 60 (the
+                    fixed h-[60px] page header) + 61 (the tab bar: py-2=16 + min-h-[44px] button + 1px
+                    border) = top-[121px]. When there's ONE category the tab bar isn't rendered, so the
+                    header pins flush under the page header at top-[60px]. z-20 sits BELOW the tab bar
+                    (z-30) and the page header bars (z-40) and ABOVE the items. -mx-4 px-4 + bg-white
+                    make it an opaque full-bleed band (matching the tab bar) so items don't bleed through. */}
+                {group.name && (
+                  <p className={`sticky ${menuCategories.length > 1 ? 'top-[121px]' : 'top-[60px]'} z-20 -mx-4 px-4 py-1.5 bg-white text-xs font-black text-orange-500 uppercase tracking-wider`}>
+                    {cap(group.name)}
+                  </p>
+                )}
                 <div className="divide-y divide-slate-100">
                 {group.items.map(item => {
                   const qty = getQty(item.name)

@@ -466,11 +466,54 @@ export function OrderCard({
               ))}
             </div>
           ) : (
-            /* Window / solo: Section 1 (standalone items by category) + Deals divider + Section 2 (deal blocks) */
+            /* Window / solo: DEALS FIRST (deal blocks + leading "Deals" divider) THEN the standalone
+               items by category. Cook view is untouched — it DISSOLVES deals into category batches via
+               itemGroups (Section 8); this deals-first reorder is operator-order-card only. */
             <div className="mb-2">
+              {standaloneGroups.length > 0 && (order.deals ?? []).length > 0 && (
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Deals</span>
+                  <div className="flex-1 h-px bg-slate-200" />
+                </div>
+              )}
+
+              {(order.deals ?? []).map((deal, di) => (
+                <div key={di} className="mb-2">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-sm font-normal text-slate-900 flex-1">🎁 {deal.name}</span>
+                    <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">
+                      {deal.price != null ? `£${Number(deal.price).toFixed(2)}` : ''}
+                    </span>
+                  </div>
+                  {Object.entries(deal.slots).filter(([, v]) => v).map(([slotCat, itemName]) => {
+                    const mods = (deal.slotModifiers ?? {})[slotCat] ?? []
+                    const note = (deal.slotNotes ?? {})[slotCat]
+                    return (
+                      <div key={slotCat} className="pl-4 mt-0.5">
+                        <div className="flex items-baseline justify-between gap-2 text-sm">
+                          <span className="flex-1 font-normal text-slate-900">1× {itemName}</span>
+                          <span className="w-16 flex-shrink-0" />
+                        </div>
+                        {(mods.length > 0 || note) && (
+                          <div className="pl-3 flex flex-col gap-y-0.5">
+                            {mods.map(m => (
+                              <div key={m.name} className="flex items-baseline justify-between gap-2">
+                                <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
+                                {m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
+                              </div>
+                            ))}
+                            {note && <span className="text-xs text-slate-500 italic">📝 {note}</span>}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
+
               {standaloneGroups.map(({ cat, lines }, gi) => (
                 <div key={cat}>
-                  <div className={`flex items-center gap-2 mb-1 ${gi > 0 ? 'mt-3' : ''}`}>
+                  <div className={`flex items-center gap-2 mb-1 ${gi > 0 || (order.deals ?? []).length > 0 ? 'mt-3' : ''}`}>
                     <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">
                       {cat === '__other__' ? 'Other' : cat}
                     </span>
@@ -513,47 +556,6 @@ export function OrderCard({
                             {line.specialInstructions && (
                               <span className="text-xs text-slate-500 italic">📝 {line.specialInstructions}</span>
                             )}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              ))}
-
-              {standaloneGroups.length > 0 && (order.deals ?? []).length > 0 && (
-                <div className="flex items-center gap-2 mt-3 mb-1">
-                  <span className="text-xs font-bold text-slate-700 uppercase tracking-widest">Deals</span>
-                  <div className="flex-1 h-px bg-slate-200" />
-                </div>
-              )}
-
-              {(order.deals ?? []).map((deal, di) => (
-                <div key={di} className="mb-2">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-sm font-normal text-slate-900 flex-1">🎁 {deal.name}</span>
-                    <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-900">
-                      {deal.price != null ? `£${Number(deal.price).toFixed(2)}` : ''}
-                    </span>
-                  </div>
-                  {Object.entries(deal.slots).filter(([, v]) => v).map(([slotCat, itemName]) => {
-                    const mods = (deal.slotModifiers ?? {})[slotCat] ?? []
-                    const note = (deal.slotNotes ?? {})[slotCat]
-                    return (
-                      <div key={slotCat} className="pl-4 mt-0.5">
-                        <div className="flex items-baseline justify-between gap-2 text-sm">
-                          <span className="flex-1 font-normal text-slate-900">1× {itemName}</span>
-                          <span className="w-16 flex-shrink-0" />
-                        </div>
-                        {(mods.length > 0 || note) && (
-                          <div className="pl-3 flex flex-col gap-y-0.5">
-                            {mods.map(m => (
-                              <div key={m.name} className="flex items-baseline justify-between gap-2">
-                                <span className="flex-1 text-xs text-slate-500">+ {m.name}</span>
-                                {m.price > 0 && <span className="text-right tabular-nums w-16 flex-shrink-0 text-sm text-slate-700">+£{m.price.toFixed(2)}</span>}
-                              </div>
-                            ))}
-                            {note && <span className="text-xs text-slate-500 italic">📝 {note}</span>}
                           </div>
                         )}
                       </div>
