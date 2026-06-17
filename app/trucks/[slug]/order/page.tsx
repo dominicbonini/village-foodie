@@ -613,9 +613,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     const suggestions: MenuItem[] = []
     for (const rule of rules) {
       const matchedItems = menu.items.filter(i =>
+        // Show ALL configured available upsells every time, regardless of basket contents (NO
+        // basket-wide exclusion — that depleted the list across parents). The modal's modalUpsells
+        // staged toggle starts empty per open and is basket-independent, so an upsell already in the
+        // basket (from another pizza or the Dips tab) shows UNSELECTED here; toggling never touches
+        // other lines. Per-parent staged choice, committed as normal basket lines on close.
         i.category === rule.suggest_category &&
-        i.available &&
-        !basket.find(b => b.menuItem.name === i.name)
+        i.available
       ).slice(0, rule.max_suggestions)
       suggestions.push(...matchedItems)
     }
