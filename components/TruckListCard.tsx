@@ -1,5 +1,6 @@
 'use client';
 
+import { ReactNode } from 'react';
 import { VillageEvent } from '@/types';
 import Link from 'next/link';
 import { getVenueSlug } from '@/lib/utils';
@@ -12,6 +13,13 @@ interface TruckListCardProps {
   /** Suppress the Order/Pre-order CTA — used on the order page's selected-event header, where the
    *  customer is already ordering for this event (the button would deep-link back to itself). */
   hideOrderButton?: boolean;
+  /** COMPACT density+layout variant (order-page selected card). Default off → profile + chooser
+   *  render the original card. When on: tighter padding, horizontal on mobile too (date/time left,
+   *  venue/postcode right), no internal divider — roughly half the height. */
+  compact?: boolean;
+  /** Optional node pinned to the card's top-right corner (e.g. a "Change event" link). Default
+   *  undefined → nothing rendered. Only used with `compact` on the order page. */
+  cornerAction?: ReactNode;
 }
 
 const renderTextWithLinks = (text: string) => {
@@ -50,7 +58,7 @@ function isEventLive(status?: string): boolean {
   return status === 'open';
 }
 
-export default function TruckListCard({ event, slug, hideOrderButton }: TruckListCardProps) {
+export default function TruckListCard({ event, slug, hideOrderButton, compact, cornerAction }: TruckListCardProps) {
   const liveNow = isEventLive(event.status);
   // Secondary "area" line under the venue name: village (only if not already in the name) + the
   // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
@@ -59,11 +67,13 @@ export default function TruckListCard({ event, slug, hideOrderButton }: TruckLis
   const areaLine = [showVillage ? event.village : null, event.postcode].filter(Boolean).join(' · ');
 
   return (
-    <div className="bg-white p-3.5 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-3 hover:border-orange-200 transition-colors">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4">
-            
+    <div className={`bg-white rounded-xl shadow-sm border border-slate-200 hover:border-orange-200 transition-colors ${compact ? 'relative px-3 py-2 mb-2' : 'p-3.5 sm:p-4 mb-3'}`}>
+        {/* Top-right corner slot (compact variant) — e.g. "Change event". Inert when not provided. */}
+        {cornerAction && <div className="absolute top-2 right-2 z-10">{cornerAction}</div>}
+        <div className={compact ? 'flex flex-row items-center gap-3' : 'flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4'}>
+
             {/* DATE AND TIME */}
-            <div className="flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0.5 shrink-0 sm:w-[140px]">
+            <div className={compact ? 'flex flex-col items-start gap-0.5 shrink-0 w-[112px]' : 'flex flex-row sm:flex-col items-center sm:items-start gap-2 sm:gap-0.5 shrink-0 sm:w-[140px]'}>
                 {/* Date in normal case (was ALL-CAPS) — softer; keeps the orange accent. */}
                 <span className="text-[13px] sm:text-sm font-bold text-orange-600 leading-none">
                     {formatStandardDate(event.date)}
@@ -85,7 +95,7 @@ export default function TruckListCard({ event, slug, hideOrderButton }: TruckLis
                 two lines (line-clamp-2) within its own width while the button stays right-aligned,
                 vertically centred, and never gets pushed off-screen or clipped against the button.
                 The mobile separator (border-t/pt/mt, sm-cleared) now spans the whole name+button row. */}
-            <div className="flex-1 min-w-0 flex flex-row items-center justify-between gap-3 border-t border-slate-100 sm:border-t-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0">
+            <div className={`flex-1 min-w-0 flex flex-row items-center justify-between gap-3 ${compact ? 'pr-20' : 'border-t border-slate-100 sm:border-t-0 pt-1.5 sm:pt-0 mt-1 sm:mt-0'}`}>
 
                 {/* VENUE NAME AND VILLAGE */}
                 <div className="flex-1 min-w-0">
@@ -94,8 +104,9 @@ export default function TruckListCard({ event, slug, hideOrderButton }: TruckLis
                         className="group block min-w-0 cursor-pointer"
                         title={`View venue details for ${event.venueName}`}
                     >
-                        {/* Line 1: venue NAME (primary). line-clamp-2 wraps a long name; ellipsis beyond. */}
-                        <h3 className="text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight line-clamp-2 group-hover:text-orange-600 transition-colors">
+                        {/* Line 1: venue NAME (primary). Compact uses line-clamp-1 (single tight row);
+                            default uses line-clamp-2. */}
+                        <h3 className={`text-slate-800 text-[14px] sm:text-[15px] font-bold leading-tight group-hover:text-orange-600 transition-colors ${compact ? 'line-clamp-1' : 'line-clamp-2'}`}>
                             {event.venueName}
                         </h3>
                         {/* Line 2: area · postcode (SMALLER + MUTED, de-emphasised). Hidden when empty. */}

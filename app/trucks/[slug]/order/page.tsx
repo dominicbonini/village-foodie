@@ -1229,16 +1229,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // using the SAME card as the truck profile (TruckListCard) — DRY, identical look — with
                 // the CTA hidden (already ordering for this event). "Change" returns to the profile
                 // chooser when there are alternatives.
-                <div>
-                  {events.length > 1 && (
-                    <div className="flex justify-end mb-1">
-                      <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold hover:underline">
-                        Change event
-                      </Link>
-                    </div>
+                <TruckListCard
+                  event={eventToVillage(event, truck?.name || '')}
+                  slug={slug}
+                  hideOrderButton
+                  compact
+                  cornerAction={events.length > 1 && (
+                    <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold hover:underline">
+                      Change event
+                    </Link>
                   )}
-                  <TruckListCard event={eventToVillage(event, truck?.name || '')} slug={slug} hideOrderButton />
-                </div>
+                />
               ) : (
                 // No event selected → the ORDER-ENTRY SCHEDULE: pick a confirmed event. The SAME
                 // TruckListCard as the truck profile; its Pre-order / Order now CTA deep-links to
