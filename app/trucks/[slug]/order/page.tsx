@@ -1490,7 +1490,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               Keyed off viewportH (not the active category), so no layout tick is needed. */}
           <div style={{ minHeight: menuMinHeight }}>
           {groupedMenu.filter(([category]) => selectedCategory == null || category === selectedCategory).map(([category, items]) => (
-            <div key={category} className="mb-4 last:mb-0">
+            // divide-y here borders BETWEEN subcategory group wrappers, so the last item before a
+            // subcategory header gets a separator (the per-group divide-y below only draws between
+            // items WITHIN a group, dropping the boundary line). No leading line (first group) and no
+            // trailing line (category's final item) — divide-y only borders between siblings.
+            <div key={category} className="mb-4 last:mb-0 divide-y divide-slate-200">
               {groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0).map(group => (
               <div key={group.id ?? '__ungrouped'}>
                 {/* Sub-category heading — only a NAMED group with items (Phase 3 order-screen rule);
@@ -1509,7 +1513,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     {cap(group.name)}
                   </p>
                 )}
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-slate-200">
                 {group.items.map(item => {
                   const qty = getQty(item.name)
                   const isSoldOut = !(item.available ?? true)
