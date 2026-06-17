@@ -1469,7 +1469,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               horizontal-scroll on narrow. -mx-4 px-4 makes the white bar span the menu card's padding. */}
           {menuCategories.length > 1 && (
             <div className="sticky top-[60px] z-30 -mx-4 px-4 py-2 mb-2 bg-white border-b border-slate-100">
-              <div className="flex gap-1.5 overflow-x-auto">
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
                 {menuCategories.map(cat => (
                   <button
                     key={cat}
@@ -1530,7 +1530,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     {/* py-3 item-content wrapper (Option B): a TOP LINE, then a FULL-WIDTH description
                         + chips block below it, so the description escapes the narrow flex-1 column. */}
                     <div className="py-3">
-                    {/* TOP LINE — thumbnail + name/badges + price + Add (unchanged). */}
+                    {/* TOP LINE — thumbnail + name/badges only (price + Add moved to the bottom baseline). */}
                     <div className="flex items-center gap-3">
                       {item.photo_url && (
                         <img
@@ -1552,7 +1552,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           )}
                         </div>
                       </div>
-                      <span className={`font-bold text-sm shrink-0 ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
+                    </div>
+                    {/* FULL-WIDTH description + chips (Option B) — span the whole row so the description
+                        wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
+                        is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
+                    {item.description && <p className="text-slate-400 text-xs mt-1 leading-snug">{item.description}</p>}
+                    {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0) && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {item.dietary?.map((d: string) => (
+                          <span key={d} className="text-[0.625rem] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
+                        ))}
+                        {item.allergens?.map((a: string) => (
+                          <span key={a} className="text-[0.625rem] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium">{a}</span>
+                        ))}
+                      </div>
+                    )}
+                    {/* BOTTOM BASELINE (canonical food-app layout) — PRICE left, Add/stepper right.
+                        A left-aligned price on its own line gives a clean, consistent edge down the
+                        list (vs a ragged right-aligned price beside variable-length names). Add/stepper
+                        logic is UNCHANGED — only relocated off the top line. */}
+                    <div className="flex items-center justify-between mt-2">
+                      <span className={`font-bold text-sm ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
                           <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
@@ -1598,20 +1618,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         )}
                       </div>
                     </div>
-                    {/* FULL-WIDTH description + chips (Option B) — span the whole row so the description
-                        wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
-                        is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
-                    {item.description && <p className="text-slate-400 text-xs mt-1 leading-snug">{item.description}</p>}
-                    {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0) && (
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {item.dietary?.map((d: string) => (
-                          <span key={d} className="text-[0.625rem] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
-                        ))}
-                        {item.allergens?.map((a: string) => (
-                          <span key={a} className="text-[0.625rem] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium">{a}</span>
-                        ))}
-                      </div>
-                    )}
                     </div>{/* end py-3 item-content wrapper */}
 
                     {/* Per-variant basket rows (only for modifier items) */}

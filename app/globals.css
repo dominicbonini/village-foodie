@@ -52,3 +52,13 @@ textarea {
 details[open] > summary .details-arrow {
   transform: rotate(90deg);
 }
+
+/* Hide a horizontal scrollbar track without disabling scroll/swipe (e.g. the customer order page
+   category tab row). Cross-browser: Firefox, old Edge/IE, and WebKit (iOS Safari / Chrome). */
+.scrollbar-hide {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* old Edge / IE */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;                /* iOS Safari / Chrome */
+}

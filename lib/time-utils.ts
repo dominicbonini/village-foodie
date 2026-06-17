@@ -42,6 +42,20 @@ export function getLocalDateInTz(tz: string = 'Europe/London'): string {
   return `${get('year')}-${get('month')}-${get('day')}`
 }
 
+/** Calendar date 'YYYY-MM-DD' of an ARBITRARY instant (Date or ISO string) in the given timezone.
+ *  Same tz-aware Intl pattern as getLocalDateInTz — just formatting a passed-in instant instead of
+ *  now — so the two produce directly comparable strings (e.g. a log row's created_at vs today's
+ *  local date). The shared primitive: never hand-roll a parallel Intl call / UTC-offset math at the
+ *  call site (Section 7 UTC-vs-local discipline). */
+export function localDateOfInstant(instant: Date | string, tz: string = 'Europe/London'): string {
+  const d = typeof instant === 'string' ? new Date(instant) : instant
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(d)
+  const get = (t: string) => parts.find(p => p.type === t)?.value ?? ''
+  return `${get('year')}-${get('month')}-${get('day')}`
+}
+
 // LOCAL calendar date (yyyy-mm-dd). Section 7: never use toISOString() (UTC) to decide whether an
 // event date is "today". Now a thin BACKWARD-COMPAT wrapper over getLocalDateInTz('Europe/London')
 // — existing callers keep working; new tz-aware code calls getLocalDateInTz(eventTz) directly.

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { canAccess } from '@/lib/features'
 import { generateWhatsAppReply } from '@/lib/whatsapp-classifier'
 import { sendMetaWhatsApp } from '@/lib/meta-whatsapp'
+import { getLocalDateInTz, localDateOfInstant } from '@/lib/time-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -86,6 +87,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true })
     }
 
+    // FOLLOW-UP GREETING — greet ONCE per calendar day per sender (timezone-correct, never UTC-date).
+    // Single tz swap point: → truck.timezone ?? 'Europe/London' once that column exists.
+    const truckTz = 'Europe/London'
+    // Read the most-recent PRIOR REPLIED row for this sender+truck. response_sent IS NOT NULL means a
+    // reply actually went out, so an IGNORE/gibberish (logged, unreplied) does NOT suppress the
+    // greeting on a later real question. Runs BEFORE the :116 log insert, so this message's own row
+    // isn't present → no self-suppression. FAIL-OPEN: any error → greet (extra greeting is benign;
+    // a wrongly-suppressed greeting reads as the bot acting mid-conversation when it isn't).
+    let isFollowUp = false
+    try {
+      const { data: prior } = await supabase
+        .from('whatsapp_logs')
+        .select('created_at')
+        .eq('customer_number', from)
+        .eq('truck_id', truck.id)
+        .not('response_sent', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      isFollowUp = !!prior && localDateOfInstant(prior.created_at, truckTz) === getLocalDateInTz(truckTz)
+    } catch (err) {
+      console.error('[webhook/meta-whatsapp] follow-up read failed (greeting):', err)
+      isFollowUp = false
+    }
+
     const today = new Date().toISOString().split('T')[0]
     const { data: events } = await supabase
       .from('truck_events')
@@ -105,9 +131,8 @@ export async function POST(req: NextRequest) {
       events:          events ?? [],
       scheduleUrl:     truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
       orderUrl:        truck.slug ? `${hgUrl}/trucks/${truck.slug}/order` : '',
-      // DORMANT until whatsapp_logs is live in prod (then: existence check → isFollowUp). False
-      // today, so every reply greets exactly as before.
-      isFollowUp:      false,
+      // Greet only on the sender's FIRST replied message of the day (computed above, fail-open).
+      isFollowUp,
     })
 
     console.log('[webhook/meta-whatsapp] classification:', classification, 'reply:', reply)
