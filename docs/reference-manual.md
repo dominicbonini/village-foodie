@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V7.5
+HatchGrab Engineering Reference Manual · V7.6
 
 **HatchGrab**
 
@@ -6,13 +6,24 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 7.5**
+**Version 7.6**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V7.6 — June 2026
+
+Customer order-screen UX overhaul, op order round-trip on a real device is LIVE-TEST PENDING and gates the trial (Section 26). The order-page logo fallback (Section 14), the false-404 `useVillageData` hardening (Section 25), and the measured Add-Order sticky tabs (Section 3) already landed as V7.5 notes — not repeated here. Status tags as prior.
+
+- **Customer order page — category TABS + subcategories (BUILT).** The customer menu keeps category tabs with subcategory section headers, in the truck's MENU ORDER — DELIBERATELY divergent from the operator's flat-alphabetical Add Order panel. A future chat must NOT unify them. Sticky subcategory headers (swap-not-stack), postcode on the event card, a compact event card on the chooser, a two-stage form bottom-sheet, a shared order-summary element, and a tab-switch scroll-to-menu. See Section 7.
+- **Quantity stepper regression FIXED (high severity).** A widened `opensModal` condition silently killed the +/− stepper on plain menu items (removal became impossible for upsell/notes items). Decouple: the quantity stepper gates on `hasModifiers`, modal-on-first-add gates on `opensModal && !hasModifiers`. See Section 7.
+- **Operator order card — deals render FIRST** (OrderCard window/solo branch only; cook view's deal-dissolving untouched). See Section 8.
+- **Price input string-buffer fix** (Manage → Extras & Upsells → Edit Option) — kills the stuck-leading-zero bug. See Section 23.
+- **WhatsApp auto-reply repoint (testing).** Sender-routing is a testing convenience valid only because of one shared test number; go-live needs recipient-routing. A plan-gate file discrepancy was flagged. See Section 20 / Section 27.
+- **Order-page logo fallback (DONE, already in Section 14 V7.5 note); false-404 hardening (DONE, Section 25 V7.5 note); measured Add-Order sticky tabs (DONE, Section 3 V7.5+ note)** — listed for completeness.
 
 ## V7.5 — June 2026
 
@@ -790,6 +801,12 @@ Sticky layout contract: AppHeader is sticky top-0 z-50 (51px tall). The tabs bar
 
 components/dashboard/OrderLineItem.tsx renders a priced line item across all surfaces. Variant prop (operator | customer) controls rendering. Props include nameSuffix for the Edit/Customise button slot and rightSlot for the price editor.
 
+### Shared discovery/list card + order-summary element (V7.6)
+
+> **RULE (V7.6)** — `components/TruckListCard.tsx` is the SINGLE card used by the truck profile, the event chooser, AND the customer order page's event display. It gained two ADDITIVE, opt-in props this session — `compact?: boolean` (denser flex-row layout: date-left, venue-right, divider removed, venue line-clamped) and `cornerAction?: ReactNode` (an absolute top-right slot, used for the order page's "Change event" link, gated to `events.length > 1`). Both default OFF so the profile and chooser render byte-for-byte identical. Never fork this card for the order page. It renders the area line as "village · POSTCODE" via `areaLine` — which is why the postcode data-gap fix lived in `/api/events` (Section 7), not in the card.
+
+> **RULE (V7.6)** — the customer order page's order breakdown is a SINGLE shared element `orderBreakdownEl`, rendered in BOTH the footer basket-peek and the form bottom-sheet, so the two can never drift. `lib/image-utils.ts` `formatImageUrl` (extracted V7.5) is likewise the one logo-URL formatter shared by `/api/discovery/events` and `/api/menu` (Section 14).
+
 ### Shared column class constants (V4)
 
 When rendering multi-column list views (Reports Orders/Items, future surfaces), shared Tailwind class constants must be defined once at the top of the component. See Section 19.
@@ -1175,6 +1192,31 @@ In the menu API, prep_secs and batch_size return null when unset, NOT 0. Consume
 
 On the customer order page, ASAP is auto-selected by default (asapChosen initialises to true). ASAP and Choose Time remain mutually exclusive.
 
+## Category tabs + subcategories — DELIBERATELY divergent from the operator (V7.6)
+
+> **DO-NOT-UNIFY (V7.6).** The customer order page (`app/trucks/[slug]/order/page.tsx`) shows category TABS with subcategory section headers, ordered by the truck's MENU ORDER (subcategories like Taste of the Month / Classics / Meat Lovers under Pizza). The operator Add Order panel is intentionally the OPPOSITE — flat ALPHABETICAL, no subcategory headers (Section 10). These two are deliberately divergent; do NOT unify them.
+
+- **Sticky category tab bar** uses a robust hardcoded offset, deliberately NOT the operator's measured `--addorder-sticky-top` mechanism (which measures `#dashboard-event-bar`, a thing that doesn't exist on the customer page).
+- **Sticky subcategory headers (CONFIRMED WORKING)** pin at `top-[121px]` (60 header + 61 tab bar), z-20, as an opaque full-bleed white band (`-mx-4 px-4`). Swap-not-stack: each header lives in its own group `<div>`, the window is the scroll container, no transform/overflow trap. A single-category menu pins its header at `top-[60px]`. The header text is `text-sm`/`py-2`. NOTE: `top-[121px]` depends on what's ABOVE the header (header + tab bar), NOT on the header's own height — do not "recalculate" it when only the subcategory font changes.
+
+## Tab-switch scroll — scroll to the menu anchor, not the top (V7.6)
+
+> **RULE (V7.6)** — on a category-tab change, scroll to the MENU anchor (`menuTopRef.getBoundingClientRect().top + scrollY − 60`), NOT `document` top. Scrolling to the top would re-show the event card and the deals block, which must stay hidden after the customer has started browsing. The window stays the scroll container (this does NOT disturb the sticky subcategory work). First-mount is guarded; scroll is `behavior:'auto'` (instant); `Math.max(0, …)`.
+
+## Item quantity stepper — decouple "change quantity" from "opens a modal" (V7.6)
+
+> **BUG FIXED (V7.6, high severity).** The +/− quantity stepper on plain menu cards disappeared — removal became impossible for any item with an upsell or notes. ROOT CAUSE: `opensModal` had been WIDENED from extras-only to `hasModifiers || itemUpsells.length > 0 || catAllowNotes`, which pulled the modal-only "qty · Add" control onto plain menu items and suppressed the inline stepper. FIX: gate the quantity stepper on `hasModifiers` (NOT `opensModal`); on the qty===0 Add branch, open the modal only for upsell/notes-but-no-modifier items on the FIRST add (`opensModal && !hasModifiers ? openItemModal : addItem`), with subsequent +/− as plain increments. Extras/upsells (add/remove-one inside the modal), the modifier popup, and per-variant +/− are UNTOUCHED. **LESSON: a condition controlling "this opens a modal" must NEVER also gate "can the quantity change."**
+
+## Form bottom-sheet — two-stage commit (V7.6)
+
+> **RULE (V7.6)** — checkout is a two-stage commit. Stage 1 = a footer basket peek (`summaryExpanded`, default COLLAPSED). Stage 2 = a form bottom-sheet (`formSheetOpen`): the Collection-time and Your-details sections are lifted into an overlay (the item-modal idiom — `fixed inset-0 z-[60]`, `bg-black/40` backdrop, `rounded-t-2xl max-h-[90vh] overflow-y-auto`, ✕). The Place-order button moved INTO the sheet with the full validation gate verbatim ("Place order"). The footer button was RE-ROLED to OPEN the sheet (gate dropped to hasItems / not-blocked), reworded "Review & order →". The error / paused-423 / 409-lock / 409-stock notices were RELOCATED into the sheet, above the place-order button. Success → receipt supersedes; a hard error → the error page; a 403-ended event disables the sheet button. Closing the sheet keeps the basket. (Android hardware-back is not wired — matches the existing item modal.)
+
+> **RULE (V7.6)** — the order summary inside the sheet renders the shared `orderBreakdownEl` (Section 3), default EXPANDED (`sheetSummaryExpanded`) with a sheet-only `max-h-[40vh] overflow-y-auto` cap; the footer peek renders the same element but uncapped and collapsed-by-default. DECISION: expanded-by-default beats the Deliveroo collapsed default because truck orders are small; the cap protects the rare large order. The chevron tracks state (`rotate-180`).
+
+## Event card on the chooser — compact + postcode (V7.6)
+
+> **RULE (V7.6)** — the order page renders its event display via the shared `TruckListCard` with `compact` + a `cornerAction="Change event"` link (gated `events.length > 1`); the old standalone Change-event row was deleted. **POSTCODE data-gap fix:** `/api/events` was omitting `postcode` from its SELECT and map — added to the select, the map, the `EventData` type, and `eventToVillage`. `TruckListCard` already rendered "village · POSTCODE" via `areaLine`, so no card change was needed.
+
 ## ASAP button visual states
 
 - Deselected, available: white background, slate border, orange ASAP text and time.
@@ -1273,6 +1315,8 @@ The menu API supports ?operator=true: operators receive all deals with a stock_w
 ### Window view (and solo)
 - Deal renders as a SINGLE priced line: "🎁 Lunch Deal £12.00". Constituent items indented below, no individual base prices. Modifier upcharges still shown. Standalone items render in category groups ABOVE the deals block.
 
+> **RULE (V7.6) — deals render FIRST on the operator order card** (OrderCard window/solo branch ONLY). The deals divider + deal blocks were moved ABOVE the standalone category groups (was after the category loop). The leading divider's top margin was dropped; the deals-only header gate is kept; first-group spacing accounts for a leading deals block. The COOK view (`viewMode==='cook'`, which dissolves deals into category groups per this section) is byte-for-byte UNCHANGED — it's a disjoint branch.
+
 ### Cook view
 - No deal labels, no yellow border, no prices. All items merged into category groups and sorted.
 
@@ -1346,6 +1390,8 @@ The dashboard Menu & Stock tab edits category prep and batch inline on the categ
 ## Purpose
 
 For operators to manually enter orders — walk-ups at the hatch and phone/Facebook pre-orders. Used frequently; must be fast.
+
+- **The customer order page uses category TABS + subcategory headers in MENU order; the operator Add Order panel is flat ALPHABETICAL with no subcategory headers. These are deliberately divergent — do NOT unify them (Section 7 / Section 10). The customer sticky subcategory header pins at top-[121px] (header + tab bar above it), not by its own height.**
 
 ## Layout
 
@@ -2099,6 +2145,10 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V6.3 — whatsapp_lo
 
 > **RULE** — WhatsApp runs on the Meta Cloud API, not Twilio. The live handler is app/api/webhooks/meta/whatsapp/route.ts; the send helper is lib/meta-whatsapp.ts (sendMetaWhatsApp). The Meta app sits under the Village Foodie Meta Business Account. Env: META_WHATSAPP_APP_SECRET, META_WHATSAPP_PHONE_NUMBER_ID, META_WHATSAPP_ACCESS_TOKEN, META_WEBHOOK_VERIFY_TOKEN, META_WHATSAPP_BUSINESS_ACCOUNT_ID.
 
+> **RULE (V7.6) — sender-routing is a testing convenience; go-live needs recipient-routing.** The auto-reply binding is `trucks.whatsapp_sender` (a single TEXT column, ONE number at a time, stored bare `447…`). The webhook (`app/api/webhooks/meta/whatsapp/route.ts`) matches the inbound SENDER's number against `whatsapp_sender` and replies to that sender. This works ONLY because there is ONE shared US Meta test number during testing — swapping which test phone is "live" means re-pointing `whatsapp_sender` (one number at a time). GO-LIVE MODEL (banked, blocker): customers message the truck's OWN WhatsApp Business number → route by RECIPIENT (`phone_number_id` → truck), reply to sender. Requires per-truck WhatsApp Business number provisioning (not done — the truck-page number is an unconnected US placeholder) + a webhook change from sender-match to recipient-match (Section 27). NOTE: `trucks.whatsapp_sender` (the auto-reply binding) is DISTINCT from `trucks.whatsapp` (the customer-contact number). In Meta dev mode every test sender number must be on the recipient allowlist or delivery silently fails.
+
+> **FEATURE-GATE DISCREPANCY (V7.6, backlog bug).** `whatsapp_replies` is granted as a MAX-tier feature in `lib/features.ts` (max/trial/tester/override only — NOT Pro/Starter), but the marketing table `lib/plan-features.ts` lists it as Pro+Max. The webhook obeys `features.ts`, so a Pro truck would get SILENT no-reply despite the pricing matrix promising it. (Gusto is on trial → granted, so unaffected.) Reconcile the two files (Section 27).
+
 > **RULE** — The Twilio handler at /api/webhooks/whatsapp is DORMANT, not deleted. Do not overwrite it. formatWhatsAppOrder is dead code (delete when Twilio is retired — Section 27).
 
 > **PENDING (V6.3)** — the four-bucket smoke tests have NOT been run; whatsapp_logs does not exist in prod. Run the migration and smoke tests before relying on WhatsApp at trial.
@@ -2180,6 +2230,10 @@ When a chat hits its limit, open a fresh one, re-prime with file paths and the t
 - Keep an applied-vs-file reconciliation.
 
 # 23. Mobile UX patterns (V4)
+
+### Price inputs — string-buffer while editing (V7.6)
+
+> **RULE (V7.6)** — a price/number input must NOT be bound straight to a NUMBER state seeded at 0 and coerced on every keystroke (`parseFloat(v) || 0`) — that produces a stuck leading zero (can't clear "0", `1.50` becomes `01.50`). Hold the editing value as a STRING buffer (`priceInput`): empty-while-editing, `"0"` placeholder, `type=text inputMode=decimal`, coerced to a number only on SAVE (`Number.isFinite` guard, empty → 0/free). "0 = free" is preserved; the stored type is unchanged. The sibling price inputs (menu, deal, original) use a milder `|| ''` pattern with no stuck-zero and were left unchanged; standardising all price inputs on the string-buffer pattern is on the backlog (Section 27).
 
 ## Dashboard avatar dropdown
 
@@ -2572,6 +2626,12 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 ## Important — before public launch
 
+- **WhatsApp recipient-routing for go-live (V7.6)** — replace sender-match with recipient-match (`phone_number_id` → truck), and provision per-truck WhatsApp Business numbers. Sender-routing works only with one shared test number (Section 20).
+- **whatsapp_replies plan-gate discrepancy (V7.6)** — `plan-features.ts` markets it as Pro+Max; `features.ts` grants Max/trial/tester/override only; the webhook obeys `features.ts` → silent no-reply on Pro. Reconcile (Section 20).
+- **Standardise all price inputs on the string-buffer pattern (V7.6)** — the menu/deal/original price inputs still use the milder `|| ''` pattern; move them onto the dedicated-string-state pattern used for the Extras price adjustment (Section 23).
+- **Customer basket-peek remove affordance (V7.6)** — the inline menu-card stepper now restores removal-to-zero, but the footer basket PEEK is display-only; decide whether the peek itself needs a remove control (Section 7).
+- **Nested sticky subcategory headers (V7.6, post-trial)** — a Deliveroo-style swap of subcategory headers within a sticky category band; lower value at truck menu scale and a third sticky layer is fragile. The simple per-subcategory sticky header WAS built (Section 7); this is the richer nested version only.
+
 - **Venue matcher enhancements — `venue_id` is now in place (V6.6); two enhancements remain** — (1) a **confidence flag SURFACED in the approval queue** so a `venue_match_confidence='low'` guess is flagged to the truck at approval; (2) a **history-prior tie-breaker** — rank candidates by the truck's prior CONFIRMED venues (village wins → history → best-pick), with a ≥2-visit floor and anti-reinforcement (confirmed = event-approved, NOT venue-validated; only `venue_id_source IN (operator,manual)` should count as validated). `venue_id` also unlocks trusted-anchor reuse and rename-safety. The single highest-leverage matcher follow-up (Section 25).
 
 - **Venue dedup on venue_id (V6.6)** — the bridge still dedups on the venue_name STRING, so an operator editing venue_name post-confirm can spawn a near-duplicate. Move to dedup on `(truck_id, event_date, venue_id)` with a name fallback (Section 25).
@@ -2908,4 +2968,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V7.5
+HatchGrab Engineering Reference Manual · V7.6

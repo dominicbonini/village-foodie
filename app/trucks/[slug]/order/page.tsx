@@ -180,6 +180,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(true)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
+  // Viewport height (SSR-guarded), updated on resize/orientationchange in the window-listener effect
+  // below. Drives the menu min-height so even a SHORT category has enough scrollable content beneath
+  // it to scroll its tabs to the very top (window is the scroll container). See menuMinHeight.
+  const [viewportH, setViewportH] = useState(() => (typeof window !== 'undefined' ? window.innerHeight : 800))
   // Anchor at the menu region's natural top (rendered just above the sticky tab bar) + a first-mount
   // guard, used by the tab-change scroll effect below.
   const menuTopRef = useRef<HTMLDivElement>(null)
@@ -220,9 +224,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   }, [])
 
   useEffect(() => {
-    const fn = () => setIsScrolled(window.scrollY > 120)
-    window.addEventListener('scroll', fn, { passive: true })
-    return () => window.removeEventListener('scroll', fn)
+    const onScroll = () => setIsScrolled(window.scrollY > 120)
+    const onResize = () => setViewportH(window.innerHeight)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onResize)
+    window.addEventListener('orientationchange', onResize)
+    onResize() // sync once on mount (covers the SSR seed / first paint)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onResize)
+      window.removeEventListener('orientationchange', onResize)
+    }
   }, [])
 
   const [basket, setBasket] = useState<BasketItem[]>([])
@@ -678,6 +690,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
+  // Min-height for the menu list so a SHORT category still has enough scrollable content beneath the
+  // tabs to pin them at the very top. 121 = fixed header (60) + tab bar (61); over-generous is invisible
+  // (you can't scroll past content end), under-padding reintroduces the bug — so stay at the 121 floor.
+  const menuMinHeight = Math.max(0, viewportH - 121)
 
   // Shared order breakdown (deal lines + item lines + discount + total). Rendered in BOTH the footer
   // basket peek AND the form-sheet review summary so the two can never drift. DISPLAY-ONLY — no
@@ -1468,6 +1484,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
             </div>
           )}
+          {/* MIN-HEIGHT wrapper (V7.6): pads a SHORT category out to ~a viewport so the tab-switch
+              scroll can pin the tabs to the very top (window is the scroll container). Self-cancelling
+              — inert once the category's content exceeds it, so NO blank gap on long categories.
+              Keyed off viewportH (not the active category), so no layout tick is needed. */}
+          <div style={{ minHeight: menuMinHeight }}>
           {groupedMenu.filter(([category]) => selectedCategory == null || category === selectedCategory).map(([category, items]) => (
             <div key={category} className="mb-4 last:mb-0">
               {groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0).map(group => (
@@ -1654,6 +1675,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               ))}
             </div>
           ))}
+          </div>{/* end min-height wrapper */}
         </div>
 
 
