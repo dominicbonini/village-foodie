@@ -174,6 +174,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [summaryExpanded, setSummaryExpanded] = useState(false)
   // STAGE 2 (commit): the order FORM opens as a bottom-sheet overlay only at commit. Default closed.
   const [formSheetOpen, setFormSheetOpen] = useState(false)
+  // The form sheet's own review-summary collapse state — COLLAPSED by default so a large order can't
+  // push the name/email/time fields off-screen (checkout pattern). Separate from the footer peek.
+  const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(false)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
 
@@ -656,6 +659,71 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const hasItems = basket.length > 0 || appliedDeals.length > 0
   const totalItems = basket.reduce((s, b) => s + b.quantity, 0)
+
+  // Shared order breakdown (deal lines + item lines + discount + total). Rendered in BOTH the footer
+  // basket peek AND the form-sheet review summary so the two can never drift. DISPLAY-ONLY — no
+  // add/remove here; quantity edits happen on the menu cards (close the sheet to change).
+  const orderBreakdownEl = (
+    <div className="bg-slate-50 rounded-xl p-3 mb-2 space-y-1.5 border border-slate-100">
+      {/* Deals first */}
+      {appliedDeals.map((deal, i) => (
+        <div key={i}>
+          <div className="flex justify-between text-xs">
+            <span className="text-slate-600">🎁 {deal.bundle.name}</span>
+            <span className="text-slate-700 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
+          </div>
+          {Object.keys(deal.slots).sort().map(slotKey => {
+            const itemName = deal.slots[slotKey]
+            if (!itemName) return null
+            const mods = deal.slotModifiers?.[slotKey] || []
+            const note = deal.slotNotes?.[slotKey]
+            return (
+              <div key={slotKey}>
+                <div className="pl-3 text-[10px] text-slate-400">{itemName}</div>
+                {mods.map(m => (
+                  <div key={m.name} className="flex justify-between pl-6 text-[10px] text-slate-400">
+                    <span>{m.name}</span>
+                    {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
+                  </div>
+                ))}
+                {note && <div className="pl-6 text-[10px] text-slate-400 italic">📝 {note}</div>}
+              </div>
+            )
+          })}
+        </div>
+      ))}
+      {/* Items sorted by menu category order */}
+      {(() => {
+        const catOrder = menu?.categories?.map(c => c.name) ?? []
+        const sorted = [...basket].sort((a, b) => {
+          const ai = catOrder.indexOf(a.menuItem.category)
+          const bi = catOrder.indexOf(b.menuItem.category)
+          return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
+        })
+        return sorted.map(b => (
+          <OrderLineItem
+            key={b.cartKey}
+            name={b.menuItem.name}
+            quantity={b.quantity}
+            unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
+            basePrice={b.menuItem.price}
+            modifiers={b.modifiers}
+            specialInstructions={b.specialInstructions}
+            variant="customer"
+          />
+        ))
+      })()}
+      {discountAmt > 0 && (
+        <div className="flex justify-between text-xs">
+          <span className="text-green-600">Code: {appliedCode?.code}</span>
+          <span className="text-green-600 font-medium">-£{discountAmt.toFixed(2)}</span>
+        </div>
+      )}
+      <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
+        <span>Total</span><span>£{total.toFixed(2)}</span>
+      </div>
+    </div>
+  )
 
   // ── Queue-aware ASAP time (pre-order, queue-aware) ───────────────────────────
   // Uses same batch logic as truck dashboard calcQueueAwareReadyTime.
@@ -1580,6 +1648,29 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <button onClick={() => setFormSheetOpen(false)} aria-label="Close" className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none">✕</button>
               </div>
 
+              {/* ORDER REVIEW SUMMARY — COLLAPSED by default so a large order can't bury the form
+                  fields below. One-line "{N} items · £{total} ⌄"; tap to reveal the full list (the
+                  same shared orderBreakdownEl as the footer peek). Display-only. */}
+              {hasItems && (
+                <div className="mb-4">
+                  <button
+                    onClick={() => setSheetSummaryExpanded(e => !e)}
+                    className="w-full flex items-center justify-between group"
+                  >
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                      {(() => { const n = totalItems + appliedDeals.length; return `${n} item${n !== 1 ? 's' : ''}` })()}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-black text-slate-900 text-sm">£{total.toFixed(2)}</span>
+                      <svg className={`w-4 h-4 text-slate-400 transition-transform ${sheetSummaryExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </button>
+                  {sheetSummaryExpanded && <div className="mt-2">{orderBreakdownEl}</div>}
+                </div>
+              )}
+
         {/* COLLECTION TIME */}
         {truck?.mode === 'village' && (
           <Sec title="Collection time">
@@ -1810,68 +1901,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 </div>
               </button>
 
-              {/* Expanded breakdown */}
-              {summaryExpanded && (
-                <div className="bg-slate-50 rounded-xl p-3 mb-2 space-y-1.5 border border-slate-100">
-                  {/* Deals first */}
-                  {appliedDeals.map((deal, i) => (
-                    <div key={i}>
-                      <div className="flex justify-between text-xs">
-                        <span className="text-slate-600">🎁 {deal.bundle.name}</span>
-                        <span className="text-slate-700 font-medium">£{deal.bundle.bundle_price.toFixed(2)}</span>
-                      </div>
-                      {Object.keys(deal.slots).sort().map(slotKey => {
-                        const itemName = deal.slots[slotKey]
-                        if (!itemName) return null
-                        const mods = deal.slotModifiers?.[slotKey] || []
-                        const note = deal.slotNotes?.[slotKey]
-                        return (
-                          <div key={slotKey}>
-                            <div className="pl-3 text-[10px] text-slate-400">{itemName}</div>
-                            {mods.map(m => (
-                              <div key={m.name} className="flex justify-between pl-6 text-[10px] text-slate-400">
-                                <span>{m.name}</span>
-                                {m.price > 0 && <span>+£{m.price.toFixed(2)}</span>}
-                              </div>
-                            ))}
-                            {note && <div className="pl-6 text-[10px] text-slate-400 italic">📝 {note}</div>}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  ))}
-                  {/* Items sorted by menu category order */}
-                  {(() => {
-                    const catOrder = menu?.categories?.map(c => c.name) ?? []
-                    const sorted = [...basket].sort((a, b) => {
-                      const ai = catOrder.indexOf(a.menuItem.category)
-                      const bi = catOrder.indexOf(b.menuItem.category)
-                      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-                    })
-                    return sorted.map(b => (
-                      <OrderLineItem
-                        key={b.cartKey}
-                        name={b.menuItem.name}
-                        quantity={b.quantity}
-                        unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
-                        basePrice={b.menuItem.price}
-                        modifiers={b.modifiers}
-                        specialInstructions={b.specialInstructions}
-                        variant="customer"
-                      />
-                    ))
-                  })()}
-                  {discountAmt > 0 && (
-                    <div className="flex justify-between text-xs">
-                      <span className="text-green-600">Code: {appliedCode?.code}</span>
-                      <span className="text-green-600 font-medium">-£{discountAmt.toFixed(2)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm font-black text-slate-900 border-t border-slate-200 pt-1.5">
-                    <span>Total</span><span>£{total.toFixed(2)}</span>
-                  </div>
-                </div>
-              )}
+              {/* Expanded breakdown — shared element (see orderBreakdownEl), also used in the sheet. */}
+              {summaryExpanded && orderBreakdownEl}
             </div>
           )}
 
@@ -1884,7 +1915,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <button onClick={e => { e.preventDefault(); setFormSheetOpen(true) }}
             disabled={isOrderingBlocked || !hasItems || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : `Send order to ${truck?.name || 'truck'} →`}
+            {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : 'Review & order →'}
           </button>
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
