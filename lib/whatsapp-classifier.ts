@@ -150,13 +150,13 @@ SPECIFIC_QUERY — asking about schedule, location, dates, times, or where the t
 Examples: "where are you this weekend", "are you in Cambridge tomorrow", "when are you next near me", "are you trading today"
 Triggers: any mention of tomorrow, tonight, today, a day of the week, this week, next week, weekend, near, village, town, location, where, when, schedule, trading
 
-ALLERGEN_QUERY — asking specifically about allergens, ingredients, or dietary requirements for safety reasons.
-Examples: "do any of your items contain nuts", "is your food gluten free", "what allergens are in your pizza", "my child has a dairy allergy"
-Triggers: allerg, gluten, nuts, peanut, dairy, milk, egg, soy, wheat, celiac, coeliac, intoleran, ingredient, contain
+ALLERGEN_QUERY — allergy / intolerance / coeliac or other SAFETY-framed questions, and "free from" / "safe for" / "suitable for" / "contain" questions.
+Examples: "is your food gluten free", "my child has a dairy allergy", "is the pizza safe for a nut allergy", "does it contain any nuts"
+Triggers: allerg, intoleran, celiac, coeliac, free from, gluten free, safe for, suitable for, contain
 
-MENU_QUERY — asking about food, the menu, what's available, pricing, or dietary options (vegetarian, vegan, halal etc).
-Examples: "what's on the menu", "how much are your pizzas", "do you do vegetarian", "what do you sell", "what food do you have"
-Triggers: menu, food, eat, dish, price, cost, how much, vegetarian, halal, kosher, options, what do you do, what do you serve
+MENU_QUERY — asking about food, the menu, what's available, pricing, dietary options (vegetarian, vegan, halal etc), OR presence/ingredient questions like "does it have X" / "is there X in it" / "what's in it" — including a bare allergen NAME with no safety/free word.
+Examples: "what's on the menu", "how much are your pizzas", "do you do vegetarian", "does the tiramisu have gluten", "is there dairy in it", "what's in the pizza"
+Triggers: menu, food, eat, dish, price, cost, how much, vegetarian, halal, kosher, options, what do you serve, does it have, what's in, gluten, nuts, peanut, dairy, milk, egg, soy, wheat, ingredient
 
 IGNORE — spam, gibberish, complaints, requests to book the truck for events, or completely unrelated messages.
 Examples: "can you cater my wedding", "you were late last time", "asdfghjkl"
@@ -182,6 +182,16 @@ Reply with exactly one word: SPECIFIC_QUERY, MENU_QUERY, ALLERGEN_QUERY, or IGNO
   }
 
   if (classification === 'IGNORE') return { reply: null, classification: 'IGNORE' }
+
+  // DETERMINISTIC ALLERGEN/SAFETY FLOOR — runs regardless of bucket, BEFORE any branch and before
+  // any of the three callGemini sites. Any message tripping an absence/safety token (allerg, free,
+  // free from, safe for, suitable for, intoleran, coeliac, gf/df) redirects to the fixed allergen
+  // page, so the LLM classifier can NEVER be the safety boundary. The in-branch MENU_QUERY check
+  // (below) is intentionally LEFT in place as belt-and-braces. The ALLERGEN_QUERY branch redirects
+  // unconditionally anyway, so this floor only changes MENU/SPECIFIC mis-classifications.
+  if (mentionsAllergen(customerMessage)) {
+    return { reply: allergenRedirect(truckName, truckEmoji, orderUrl, greetingPrefix), classification }
+  }
 
   // ── MENU_QUERY ─────────────────────────────────────────────────────────────
   if (classification === 'MENU_QUERY') {
