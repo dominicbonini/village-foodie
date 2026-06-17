@@ -180,6 +180,24 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [sheetSummaryExpanded, setSheetSummaryExpanded] = useState(true)
   const [footerHeight, setFooterHeight] = useState(0)
   const footerRef = useRef<HTMLDivElement>(null)
+  // Anchor at the menu region's natural top (rendered just above the sticky tab bar) + a first-mount
+  // guard, used by the tab-change scroll effect below.
+  const menuTopRef = useRef<HTMLDivElement>(null)
+  const categoryScrollMounted = useRef(false)
+
+  // On a user TAB CHANGE (activeCategory), pin the tab bar under the fixed header and start the new
+  // category's list at the top — WITHOUT scrolling the page to document-top (the event card + meal
+  // deals above the menu anchor must stay scrolled away). We scroll so the menu anchor sits at y=60
+  // (just under the h-[60px] header), i.e. exactly where the sticky tabs pin. Skipped on first mount
+  // (initial default category) so the page doesn't auto-scroll-down on load. Instant ('auto') — a tap
+  // should land at the category immediately; 'smooth' lags between far-apart categories.
+  useEffect(() => {
+    if (!categoryScrollMounted.current) { categoryScrollMounted.current = true; return }
+    const el = menuTopRef.current
+    if (!el) return
+    const menuTop = el.getBoundingClientRect().top + window.scrollY
+    window.scrollTo({ top: Math.max(0, menuTop - 60), behavior: 'auto' })
+  }, [activeCategory])
 
   // Sync padding synchronously after every render — fires before paint so the
   // expanded footer and the updated paddingBottom are always drawn together.
@@ -1425,6 +1443,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </button>
             )}
           </div>
+          {/* Anchor at the MENU region's natural top (just above the sticky tab bar). Non-sticky, so
+              its document position is stable even when the tabs are pinned — used by the tab-change
+              scroll effect to pin the tabs under the header without scrolling the page to the top
+              (the event card + deals above this anchor stay scrolled away). */}
+          <div ref={menuTopRef} aria-hidden="true" />
           {/* Top-level category tabs — sticky below the page header (h-[60px]). Tap to filter to one
               category; subcategory headers (below) are preserved within it. Finger-sized (≥44px),
               horizontal-scroll on narrow. -mx-4 px-4 makes the white bar span the menu card's padding. */}

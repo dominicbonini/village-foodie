@@ -70,11 +70,11 @@ function Btn({ label, colour = 'orange', size = 'md', loading = false, disabled 
     </button>
   )
 }
-function Input({ label, value, onChange, onBlur, type = 'text', placeholder, required, hint, error }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; placeholder?: string; required?: boolean; hint?: string; error?: string }) {
+function Input({ label, value, onChange, onBlur, type = 'text', inputMode, placeholder, required, hint, error }: { label: string; value: string | number; onChange: (v: string) => void; onBlur?: () => void; type?: string; inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode']; placeholder?: string; required?: boolean; hint?: string; error?: string }) {
   return (
     <div>
       <label className="block text-xs font-bold text-slate-600 mb-1">{label}{required && <span className="text-red-400 ml-0.5">*</span>}</label>
-      <input type={type} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
+      <input type={type} inputMode={inputMode} value={value} onChange={e => onChange(e.target.value)} onBlur={onBlur} placeholder={placeholder}
         className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${error ? 'border-red-400 bg-red-50' : 'border-slate-200'}`} />
       {hint && <p className="text-slate-400 text-xs mt-0.5">{hint}</p>}
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
@@ -2069,6 +2069,10 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
 
   // Option modal
   const [editingOption, setEditingOption] = useState<Partial<ModifierOption> | null>(null)
+  // Price adjustment is edited as a STRING buffer (clean decimal entry, no stuck leading zero / can
+  // hold "1." mid-type / can be empty). Seeded when the option editor opens; coerced to a number only
+  // on save. Empty/malformed → 0 (free). See saveOption + the Price adjustment Input.
+  const [priceInput, setPriceInput] = useState('')
   const [savingOption, setSavingOption] = useState(false)
 
   // Expanded card
@@ -2161,9 +2165,13 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
   // ── Option save ─────────────────────────────────────────────────────────────
   const saveOption = async () => {
     if (!editingOption?.name || !editingOption.group_id) return
+    // Coerce the price STRING buffer → number here (the only place). Empty or malformed → 0 (free),
+    // preserving the "0 = free" semantics; never write NaN. Stored format (number) is unchanged.
+    const parsedPrice = parseFloat(priceInput)
+    const price_adjustment = Number.isFinite(parsedPrice) ? parsedPrice : 0
     setSavingOption(true)
     try {
-      await api('upsert_modifier_option', editingOption)
+      await api('upsert_modifier_option', { ...editingOption, price_adjustment })
       showToast(editingOption.id ? 'Option updated' : 'Option added')
       const keepOpen = editingOption.group_id
       setEditingOption(null)
@@ -2274,12 +2282,12 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                       <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${opt.type === 'remove' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>{opt.type}</span>
                       <span className="flex-1 text-sm text-slate-800 font-medium">{opt.name}</span>
                       <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? `+£${opt.price_adjustment.toFixed(2)}` : opt.price_adjustment < 0 ? `-£${Math.abs(opt.price_adjustment).toFixed(2)}` : 'Free'}</span>
-                      <button onClick={() => setEditingOption(opt)} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>
+                      <button onClick={() => { setEditingOption(opt); setPriceInput(opt.price_adjustment ? String(opt.price_adjustment) : '') }} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>
                       <button onClick={async () => { const gid = opt.group_id; await api('delete_modifier_option', { id: opt.id }); await reload(); setExpandedGroup(gid); showToast('Option removed') }} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>
                     </div>
                   ))}
                   <button
-                    onClick={() => setEditingOption({ group_id: group.id, type: 'add', price_adjustment: 0, sort_order: opts.length })}
+                    onClick={() => { setEditingOption({ group_id: group.id, type: 'add', price_adjustment: 0, sort_order: opts.length }); setPriceInput('') }}
                     className="text-xs text-orange-600 font-bold hover:text-orange-700 mt-1"
                   >
                     + Add option
@@ -2349,7 +2357,7 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                     <option value="remove">Remove</option>
                   </select>
                 </div>
-                <Input label="Price adjustment (£)" type="number" value={editingOption.price_adjustment ?? 0} onChange={v => setEditingOption(p => ({...p!, price_adjustment: parseFloat(v) || 0}))} placeholder="0.00" hint="0 = free" />
+                <Input label="Price adjustment (£)" type="text" inputMode="decimal" value={priceInput} onChange={setPriceInput} placeholder="0" hint="0 = free" />
               </div>
             </div>
             <div className="flex gap-2 mt-4">
