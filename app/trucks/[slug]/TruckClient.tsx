@@ -33,10 +33,10 @@ export default function TruckClient({ slug }: { slug: string }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const { loading, mapEvents, allTrucks } = useVillageData(null, {
-    date: 'unlimited', 
+  const { loading, loadError, refetch, mapEvents, allTrucks } = useVillageData(null, {
+    date: 'unlimited',
     cuisine: 'all',
-    distance: '1000' 
+    distance: '1000'
   });
 
   const truckInfo = useMemo(() => {
@@ -244,13 +244,28 @@ export default function TruckClient({ slug }: { slug: string }) {
       <div className="flex-1 w-full max-w-6xl mx-auto p-4 pb-24 relative z-0">
         {loading ? (
           <div className="p-12 text-center text-slate-500 animate-pulse">Loading schedule...</div>
+        ) : loadError ? (
+          // FETCH FAILED (after bounded retries) — an HONEST error+retry, NOT "Truck not found". A
+          // transient /api/discovery/events blip must never tell a customer a real truck doesn't exist.
+          <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">📡</div>
+            <h2 className="text-xl font-bold text-slate-800">Couldn&apos;t load</h2>
+            <p className="text-slate-500 mt-2 max-w-sm">We couldn&apos;t load the schedule just now — this is usually a brief hiccup. Please try again.</p>
+            <button
+              onClick={refetch}
+              className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
+            >
+              Retry
+            </button>
+          </div>
         ) : !truckInfo ? (
+          // Fetch SUCCEEDED and the slug genuinely isn't in the list → real not-found (only here).
           <div className="p-12 flex flex-col items-center text-center animate-in fade-in duration-500">
             <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-2xl mb-4">🤷‍♂️</div>
             <h2 className="text-xl font-bold text-slate-800">Truck not found</h2>
             <p className="text-slate-500 mt-2 max-w-sm">We couldn't find any details for this food truck. They might have moved or updated their profile.</p>
-            <Link 
-              href="/trucks" 
+            <Link
+              href="/trucks"
               className="mt-6 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl shadow-sm hover:bg-orange-700 transition-transform hover:scale-105"
             >
               View all trucks

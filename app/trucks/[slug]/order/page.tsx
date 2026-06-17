@@ -2115,8 +2115,8 @@ function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: 
           <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${scrolled ? 'opacity-100' : 'opacity-0'}`}>
             <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[90px] sm:px-0 w-full">
               {truck.logo
-                ? <Image src={truck.logo} alt={truck.name} width={24} height={24} className="w-6 h-6 sm:w-7 sm:h-7 object-contain rounded-full bg-white shadow-sm shrink-0" />
-                : <div className="w-6 h-6 sm:w-7 sm:h-7 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-[10px] shrink-0">🚚</div>
+                ? <Image src={truck.logo} alt={truck.name} width={48} height={48} className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full bg-white shadow-sm shrink-0" />
+                : <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-base shrink-0">🚚</div>
               }
               <h1 className="text-[13px] sm:text-[15px] font-bold sm:font-black tracking-tight leading-tight truncate max-w-[110px] sm:max-w-xs">
                 {truck.name}

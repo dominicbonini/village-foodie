@@ -9,44 +9,71 @@ export function useVillageData(
   const [events, setEvents] = useState<VillageEvent[]>([]);
   const [allTrucks, setAllTrucks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  // Distinguishes a FETCH FAILURE (non-200 / network / 10s abort / JSON parse) from a successful
+  // fetch that simply returned no matching row. Consumers must NOT render a "doesn't exist" state on
+  // loadError — a transient /api/discovery/events blip would otherwise show a false "Truck not found"
+  // (same class as the V7.1 silent-blank customer-page fix: never fail-closed a transient error to a
+  // wrong state). Surfaced ONLY after bounded auto-retries are exhausted.
+  const [loadError, setLoadError] = useState(false);
+  // Bumped by refetch() to re-run the fetch effect (manual Retry button fallback).
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    let controller: AbortController | null = null;
+    // Bounded retry: a single cold-start / deploy-window blip self-recovers without a reload; we only
+    // surface loadError after all attempts fail. Backoff before retries 2 and 3.
+    const MAX_ATTEMPTS = 3;
+    const BACKOFF_MS = [400, 1200];
 
-    const fetchData = async () => {
+    const attemptFetch = async (attempt: number): Promise<void> => {
+      controller = new AbortController();
+      const localController = controller;
+      const timeoutId = setTimeout(() => localController.abort(), 10000);
       try {
         const res = await fetch(`/api/discovery/events?t=${Date.now()}`, {
-          signal: controller.signal,
+          signal: localController.signal,
           cache: 'no-store' as RequestCache,
         });
         clearTimeout(timeoutId);
         if (!res.ok) throw new Error('Failed to fetch discovery data');
         const { events: rawEvents, trucks: rawTrucks } = await res.json();
-        if (isMounted) {
-          setEvents(rawEvents || []);
-          setAllTrucks(rawTrucks || []);
-          setLoading(false);
-        }
+        if (!isMounted) return;
+        setEvents(rawEvents || []);
+        setAllTrucks(rawTrucks || []);
+        setLoadError(false);
+        setLoading(false);
       } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('VillageData Sync Error:', error);
+        clearTimeout(timeoutId);
+        // Unmounted (incl. the cleanup abort) → bail silently, never set state or retry.
+        if (!isMounted) return;
+        // Not yet exhausted → wait a short backoff and retry (covers cold-start/deploy blips + the
+        // 10s timeout-abort, which fires while still mounted).
+        if (attempt < MAX_ATTEMPTS) {
+          await new Promise(r => setTimeout(r, BACKOFF_MS[attempt - 1] ?? 1200));
+          if (!isMounted) return;
+          return attemptFetch(attempt + 1);
         }
-        if (isMounted) {
-          setLoading(false);
-        }
+        // Retries exhausted → surface an HONEST error state (NOT an empty result). allTrucks is left
+        // as-is so any previously-loaded data isn't wiped.
+        console.error('VillageData Sync Error (after retries):', error);
+        setLoadError(true);
+        setLoading(false);
       }
     };
 
-    fetchData();
+    // Reset error/loading at the start of each fetch cycle (covers manual refetch).
+    setLoadError(false);
+    setLoading(true);
+    attemptFetch(1);
 
     return () => {
         isMounted = false;
-        controller.abort();
-        clearTimeout(timeoutId);
+        controller?.abort();
     };
-  }, []);
+  }, [reloadKey]);
+
+  const refetch = () => setReloadKey(k => k + 1);
 
   const { groupedEvents, mapEvents, dynamicCuisineOptions } = useMemo(() => {
     const today = new Date();
@@ -175,6 +202,8 @@ export function useVillageData(
 
   return {
       loading,
+      loadError,
+      refetch,
       groupedEvents,
       mapEvents,
       dynamicCuisineOptions,
