@@ -9,6 +9,9 @@ import { formatTimeRange } from '@/lib/time-utils';
 interface TruckListCardProps {
   event: VillageEvent;
   slug: string;
+  /** Suppress the Order/Pre-order CTA — used on the order page's selected-event header, where the
+   *  customer is already ordering for this event (the button would deep-link back to itself). */
+  hideOrderButton?: boolean;
 }
 
 const renderTextWithLinks = (text: string) => {
@@ -47,7 +50,7 @@ function isEventLive(status?: string): boolean {
   return status === 'open';
 }
 
-export default function TruckListCard({ event, slug }: TruckListCardProps) {
+export default function TruckListCard({ event, slug, hideOrderButton }: TruckListCardProps) {
   const liveNow = isEventLive(event.status);
   // Secondary "area" line under the venue name: village (only if not already in the name) + the
   // event's postcode, de-emphasised. Null-safe — filter drops missing parts, so a null postcode
@@ -110,7 +113,7 @@ export default function TruckListCard({ event, slug }: TruckListCardProps) {
                     excluded). Deep-links the order FORM scoped to this exact event. Pending/unconfirmed
                     events never reach here (the discovery feed only returns confirmed/open operator
                     events). px-4 py-2 keeps a sensible tap target even when not full-width. */}
-                {isHatchGrab() && event.source === 'operator' && (
+                {!hideOrderButton && isHatchGrab() && event.source === 'operator' && (
                     <a
                         href={`/trucks/${slug}/order?event_id=${event.id}`}
                         // Equal-width (min-w + justify-center) so the card layout doesn't shift between

@@ -171,7 +171,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [modifierOptions, setModifierOptions] = useState<ModifierOption[]>([])
   const [categoryModGroups, setCategoryModGroups] = useState<{category_id:string;group_id:string}[]>([])
   const [bundles, setBundles] = useState<Bundle[]>([])
-  const [operatorTrucks, setOperatorTrucks] = useState<{ id: string; name: string; dashboard_token: string }[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
   const [currentUserName, setCurrentUserName] = useState<string | null>(null)
@@ -211,7 +210,6 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setModifierOptions(data.modifierOptions)
       setCategoryModGroups(data.categoryModGroups)
       setBundles(data.bundles)
-      setOperatorTrucks(data.operatorTrucks || [])
       setPendingEmailChange(data.pendingEmailChange || null)
     } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
     finally { setLoading(false) }
@@ -453,7 +451,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} operatorTrucks={operatorTrucks} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} />
+        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -2607,9 +2605,8 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
   return { start_time: newStart, end_time: currentEnd }
 }
 
-function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTrucks, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount }: {
+function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount }: {
   isActive: boolean; truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
-  operatorTrucks: { id: string; name: string; dashboard_token: string }[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   onSwitchTab: (tab: Tab) => void
   pendingVerifyEvents?: any[] | null
@@ -2630,7 +2627,6 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [editSaving, setEditSaving] = useState(false)
   const [vans, setVans] = useState<{ id: string; name: string }[]>([])
-  const [scheduleFilterTruckId, setScheduleFilterTruckId] = useState<string>('')
   const [addMode, setAddMode] = useState<'manual' | 'upload'>('manual')
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [uploadText, setUploadText] = useState('')
@@ -2760,7 +2756,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
       address: event.address || '',
       notes: '',
       van_id: event.van_id || null,
-      truck_id: operatorTrucks.length === 1 ? operatorTrucks[0].id : (event.truck_id || ''),
+      truck_id: truck.id,
     })
     setFormErrors({})
     setTimeout(() => {
@@ -2774,7 +2770,6 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
     if (!form.venue_name?.trim()) errors.venue_name = 'Venue name is required'
     if (!form.start_time) errors.start_time = 'Start time is required'
     if (!form.end_time) errors.end_time = 'End time is required'
-    if (operatorTrucks.length > 1 && !form.truck_id) errors.truck_id = 'Please select a truck'
     if (vans.length > 1 && !form.van_id) errors.van_id = 'Please select a truck'
     return errors
   }
@@ -3046,11 +3041,6 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
               <p className="text-sm font-semibold text-slate-700 mt-0.5">
                 {event.start_time && event.end_time && `${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
                 {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
-                {operatorTrucks.length > 1 && (
-                  <span className="ml-1 text-orange-600 font-semibold">
-                    {operatorTrucks.find(t => t.id === event.truck_id)?.name ?? truck.name}
-                  </span>
-                )}
               </p>
               {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
             </div>
@@ -3219,11 +3209,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
   // DB status is never auto-written after event ends — all past detection is client-side
   const isPastEvent = (e: TruckEvent) =>
     e.end_time ? now > new Date(`${e.event_date}T${e.end_time}`) : new Date(e.event_date) < today
-  const filteredEvents = scheduleFilterTruckId
-    ? events.filter(e => e.truck_id === scheduleFilterTruckId)
-    : events
-  const upcoming = filteredEvents.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
-  const past = filteredEvents.filter(e => isPastEvent(e) || e.status === 'cancelled')
+  // Single-truck console: events are already token-scoped to this truck (events/manage). No truck filter.
+  const upcoming = events.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
+  const past = events.filter(e => isPastEvent(e) || e.status === 'cancelled')
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
   const scraperUnconfirmed = unconfirmedEvents.filter(e => e.source === 'scraper')
   const operatorUnconfirmed = unconfirmedEvents.filter(e => e.source !== 'scraper')
@@ -3762,18 +3750,6 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
           <p className="text-slate-400 text-sm">{upcoming.length} upcoming</p>
         </div>
         <div className="flex items-center gap-2">
-          {operatorTrucks.length > 1 && (
-            <select
-              value={scheduleFilterTruckId}
-              onChange={e => setScheduleFilterTruckId(e.target.value)}
-              className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
-            >
-              <option value="">All trucks</option>
-              {operatorTrucks.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-          )}
           <div className="flex flex-col items-end gap-0.5">
             <button onClick={() => setShowImportModal(true)}
               className="flex items-center gap-2 px-4 py-2 border border-orange-200 text-orange-600 text-sm font-medium rounded-xl hover:bg-orange-50 transition-colors">
@@ -3785,7 +3761,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
             <Btn label="+ Add event" onClick={() => {
               const lastEv = [...events].filter(e => e.start_time && e.end_time).sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime())[0]
               setFormErrors({})
-              setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: operatorTrucks.length === 1 ? operatorTrucks[0].id : '' })
+              setEditingEvent({ venue_name: '', town: '', postcode: '', address: '', event_date: '', start_time: lastEv?.start_time?.substring(0, 5) || '', end_time: lastEv?.end_time?.substring(0, 5) || '', notes: '', truck_id: truck.id })
               setAddMode('manual'); setExtractedEvents([])
             }} />
           </div>
@@ -3919,22 +3895,6 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, operatorTruc
             {/* Manual form */}
             {(editingEvent.id || addMode === 'manual') && (
               <div id="add-event-form" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {operatorTrucks.length > 1 && (
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Truck <span className="text-red-500">*</span></label>
-                    <select
-                      value={editingEvent.truck_id || ''}
-                      onChange={e => { setEditingEvent(p => ({ ...p!, truck_id: e.target.value })); if (formErrors.truck_id) setFormErrors(p => ({ ...p, truck_id: '' })) }}
-                      className={`w-full border rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${formErrors.truck_id ? 'border-red-400 bg-red-50' : 'border-slate-200'}`}
-                    >
-                      <option value="">Select a truck</option>
-                      {operatorTrucks.map(t => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
-                      ))}
-                    </select>
-                    {formErrors.truck_id && <p className="text-xs text-red-500 mt-1">{formErrors.truck_id}</p>}
-                  </div>
-                )}
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-slate-600 mb-1">Date<span className="text-red-400 ml-0.5">*</span></label>
                   <div className="relative">

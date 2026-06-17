@@ -38,20 +38,21 @@ export async function GET(req: NextRequest) {
   // they are always 'owner' regardless of any truck_users crew entry.
   let userRole: 'owner' | 'manager' | 'staff' = 'owner'
   let currentUserId: string | null = null
+  // The AUTHED session operator (account scope) — used to scope account-level data (pending email
+  // change) to the logged-in user, NOT the truck's operator_id (which can pool multiple trucks).
+  let currentOperatorId: string | null = null
   try {
     const supabaseAuth = await createSupabaseServerClient()
     const { data: { user } } = await supabaseAuth.auth.getUser()
     if (user) {
       currentUserId = user.id
-      const isOperator = truck.operator_id
-        ? (await supabase
-            .from('operators')
-            .select('id')
-            .eq('auth_user_id', user.id)
-            .eq('id', truck.operator_id)
-            .maybeSingle()
-          ).data !== null
-        : false
+      const { data: sessionOperator } = await supabase
+        .from('operators')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .maybeSingle()
+      currentOperatorId = sessionOperator?.id ?? null
+      const isOperator = !!(sessionOperator && truck.operator_id && sessionOperator.id === truck.operator_id)
       if (!isOperator) {
         const { data: truckUser } = await supabase
           .from('truck_users')
@@ -104,20 +105,26 @@ export async function GET(req: NextRequest) {
     return { ...b, stock_warning: unavailableSlot ? `No available items in "${unavailableSlot}"` : null }
   })
 
+  // SECURITY: never return another truck's dashboard_token (an auth credential) to the client.
+  // Only id + name (non-sensitive) — and even those are unused by the operator console now that the
+  // multi-truck Schedule picker is removed (single-truck console). Kept minimal for back-compat.
   const { data: operatorTrucks } = truck.operator_id
     ? await supabase
         .from('trucks')
-        .select('id, name, dashboard_token')
+        .select('id, name')
         .eq('operator_id', truck.operator_id)
         .eq('active', true)
         .order('name')
     : { data: [] }
 
-  const { data: pendingEmailChange } = truck.operator_id
+  // SECURITY: scope to the AUTHED operator (account-level), NOT truck.operator_id — a shared/pooled
+  // operator_id must not surface another context's pending email change in this truck's console.
+  // Logged-out (token-only) access ⇒ no session operator ⇒ no banner (email-change requires login).
+  const { data: pendingEmailChange } = currentOperatorId
     ? await supabase
         .from('operator_email_changes')
         .select('id, new_email, requested_at, expires_at')
-        .eq('operator_id', truck.operator_id)
+        .eq('operator_id', currentOperatorId)
         .is('verified_at', null)
         .gte('expires_at', new Date().toISOString())
         .order('requested_at', { ascending: false })
@@ -463,17 +470,10 @@ export async function POST(req: NextRequest) {
     const { id, venue_name, town, postcode, address, event_date, start_time, end_time, notes, latitude, longitude, van_id } = body
     let savedEvent: Record<string, unknown> | null = null
 
-    // Allow a sibling truck (same operator) to be targeted, but default to current truck
-    let targetTruckId = truck.id
-    if (body.truck_id && body.truck_id !== truck.id && truck.operator_id) {
-      const { data: siblingTruck } = await supabase
-        .from('trucks')
-        .select('id')
-        .eq('id', body.truck_id)
-        .eq('operator_id', truck.operator_id)
-        .single()
-      if (siblingTruck) targetTruckId = siblingTruck.id
-    }
+    // SECURITY (tenant isolation): events are ALWAYS written to the TOKEN's truck. A token-scoped
+    // operator console must never write another truck's events — body.truck_id is ignored (the prior
+    // operator_id-gated sibling-write branch is removed).
+    const targetTruckId = truck.id
 
     if (id) {
       const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', targetTruckId).select().single()

@@ -9,6 +9,8 @@ import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
+import TruckListCard from '@/components/TruckListCard';
+import type { VillageEvent } from '@/types';
 import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
 import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
@@ -103,13 +105,21 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
   return parts.length > 0 ? `${itemName}::${parts.join('::')}` : itemName
 }
 
-// LIVE-REDEFINITION (V7.0): "live" = operator STARTED the event (status==='open', set by the Start
-// button OR auto-event-scheduler), NOT the published clock window. So a future-dated event the
-// operator opens early reads LIVE to customers (matching the dashboard); a 'confirmed' (not-yet-
-// started) event reads Pre-order; a 'closed' event is past. Published start_time/end_time are
-// DISPLAY-only now. Past events are already filtered out before display.
-function isEventLiveNow(e: { status?: string }): boolean {
-  return e.status === 'open'
+// Adapter: order-page EventData → the shared VillageEvent shape TruckListCard renders, so the order
+// page's event cards match the truck profile page exactly (DRY — one card component, one look).
+function eventToVillage(e: EventData, truckName: string): VillageEvent {
+  return {
+    id: e.id,
+    date: e.date,                 // dd/mm/yyyy — what TruckListCard's formatStandardDate expects
+    startTime: e.start_time,
+    endTime: e.end_time,
+    truckName,
+    venueName: e.venue_name,
+    village: e.village || undefined,
+    status: e.status,             // 'open' ⇒ the "● Live" badge
+    notes: e.notes || undefined,
+    source: 'operator',           // /api/events returns confirmed/open OPERATOR events
+  }
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -1080,10 +1090,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     return nowMins > endH * 60 + endM
   })()
 
-  // LIVE = operator-started (status==='open'), not the clock window (live-redefinition). Header tag
-  // mirrors the dashboard's "● Live" so an event opened early reads Live before its published start.
-  const isOpenNow = event?.status === 'open'
-
   // Closed = clock backstop (isEventClosed, past published end) OR status-driven (eventEnded, operator
   // finished — possibly early). Either blocks ordering, matching the server's status guard + the
   // finished-early promise.
@@ -1208,64 +1214,29 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           ) : events.length > 0 ? (
             <div className="mt-3 text-left">
               {event ? (
-                // Scoped to ONE event (deep-linked ?event_id, or the only event). Single-event
-                // card; "Change" returns to the profile/schedule page (the event chooser) when there
-                // are alternatives — the order-page picker is redundant now.
-                <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3.5">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="font-semibold text-slate-800 text-base leading-tight">
-                      📍 {event.venue_name}{event.village ? `, ${event.village}` : ''}
-                    </p>
-                    {events.length > 1 && (
-                      <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold shrink-0 mt-0.5 hover:underline">
-                        Change
+                // Scoped to ONE event (deep-linked ?event_id, or the only event). Single-event header
+                // using the SAME card as the truck profile (TruckListCard) — DRY, identical look — with
+                // the CTA hidden (already ordering for this event). "Change" returns to the profile
+                // chooser when there are alternatives.
+                <div>
+                  {events.length > 1 && (
+                    <div className="flex justify-end mb-1">
+                      <Link href={`/trucks/${slug}`} className="text-orange-600 text-xs font-bold hover:underline">
+                        Change event
                       </Link>
-                    )}
-                  </div>
-                  <p className="text-slate-600 text-sm mt-1.5 flex items-center gap-2 flex-wrap">
-                    <span>{event.date_friendly}{event.start_time && event.end_time ? ` · ${formatTime(event.start_time)}–${formatTime(event.end_time)}` : ''}</span>
-                    {isOpenNow ? (
-                      <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-orange-600 text-xs font-semibold">Pre-order</span>
-                    )}
-                  </p>
+                    </div>
+                  )}
+                  <TruckListCard event={eventToVillage(event, truck?.name || '')} slug={slug} hideOrderButton />
                 </div>
               ) : (
-                // No event selected → the ORDER-ENTRY SCHEDULE: pick a confirmed event. Each row
-                // deep-links to ?event_id=<truck_events.id> (real id from /api/events) and is
-                // tagged Live vs Pre-order. Only confirmed/open events are returned by /api/events.
+                // No event selected → the ORDER-ENTRY SCHEDULE: pick a confirmed event. The SAME
+                // TruckListCard as the truck profile; its Pre-order / Order now CTA deep-links to
+                // ?event_id=<truck_events.id>. Only confirmed/open events are returned by /api/events.
                 <>
                   <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
-                  <div className="space-y-2">
-                    {events.map((e) => {
-                      const live = isEventLiveNow(e)
-                      return (
-                        <Link
-                          key={e.id}
-                          href={`/trucks/${slug}/order?event_id=${e.id}`}
-                          className="flex items-center justify-between gap-3 w-full text-left px-4 py-3.5 rounded-xl border bg-white border-slate-200 hover:border-orange-300 transition-all"
-                        >
-                          {/* Left: venue / date·time / status. Right: compact boxed Order button. */}
-                          <div className="min-w-0">
-                            <p className="font-black text-slate-900 text-base leading-tight truncate">{e.venue_name}{e.village ? `, ${e.village}` : ''}</p>
-                            <p className="text-slate-400 text-xs mt-1">{e.date_friendly}{e.start_time && e.end_time ? ` · ${formatTime(e.start_time)}–${formatTime(e.end_time)}` : ''}</p>
-                            {/* Green "● Live" tag ONLY when live (status==='open'); the button carries
-                                the Pre-order/Order now CTA otherwise. */}
-                            {live && (
-                              <span className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-green-600">
-                                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />Live
-                              </span>
-                            )}
-                          </div>
-                          {/* Equal-width so the card doesn't shift between Pre-order/Order now states. */}
-                          <span className="shrink-0 w-[104px] text-center bg-orange-600 text-white font-bold px-4 py-2 rounded-lg text-sm">{live ? 'Order now' : 'Pre-order'}</span>
-                        </Link>
-                      )
-                    })}
-                  </div>
+                  {events.map((e) => (
+                    <TruckListCard key={e.id} event={eventToVillage(e, truck?.name || '')} slug={slug} />
+                  ))}
                 </>
               )}
             </div>

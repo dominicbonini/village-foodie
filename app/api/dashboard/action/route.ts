@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     if (action === 'confirm') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey)
+      await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (order.customer_email) {
         // Resolve the venue strictly by the order's OWN event_id (cross-event fix): an
         // event_date+maybeSingle lookup returns null/the wrong row on multi-event dates,
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       // Dedicated rejection_reason column (NOT cancellation_reason — a rejected order isn't cancelled).
-      await supabase.from('orders').update({ status: 'rejected', rejection_reason: rejectionReason || null }).eq('order_key', orderKey)
+      await supabase.from('orders').update({ status: 'rejected', rejection_reason: rejectionReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (order.event_date) {
         // order.slot may be null (ASAP) — removeOrderFromProductionSlot resolves
         // it to the same event-start window the booking used, so it unbooks cleanly.
@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
       const { cancellationReason } = body
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey)
+      await supabase.from('orders').update({ status: 'cancelled', cancellation_reason: cancellationReason || null }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (order.event_date) {
         // order.slot may be null (ASAP) — resolved to the event-start window so it unbooks.
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
     if (action === 'ready') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-      await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey)
+      await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (order.customer_email) {
         await notifyCustomer(order.customer_email, `Your order is ready`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
