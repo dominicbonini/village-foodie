@@ -1461,7 +1461,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     (z-30) and the page header bars (z-40) and ABOVE the items. -mx-4 px-4 + bg-white
                     make it an opaque full-bleed band (matching the tab bar) so items don't bleed through. */}
                 {group.name && (
-                  <p className={`sticky ${menuCategories.length > 1 ? 'top-[121px]' : 'top-[60px]'} z-20 -mx-4 px-4 py-1.5 bg-white text-xs font-black text-orange-500 uppercase tracking-wider`}>
+                  <p className={`sticky ${menuCategories.length > 1 ? 'top-[121px]' : 'top-[60px]'} z-20 -mx-4 px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider`}>
                     {cap(group.name)}
                   </p>
                 )}
