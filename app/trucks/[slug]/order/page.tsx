@@ -1527,7 +1527,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   const atStockLimit = item.stock_remaining != null && qty >= item.stock_remaining
                   return (
                     <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
-                    <div className={`flex items-center gap-3 py-3`}>
+                    {/* py-3 item-content wrapper (Option B): a TOP LINE, then a FULL-WIDTH description
+                        + chips block below it, so the description escapes the narrow flex-1 column. */}
+                    <div className="py-3">
+                    {/* TOP LINE — thumbnail + name/badges + price + Add (unchanged). */}
+                    <div className="flex items-center gap-3">
                       {item.photo_url && (
                         <img
                           src={item.photo_url}
@@ -1539,25 +1543,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className={`font-bold text-sm leading-snug ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
                           {isSoldOut && (
-                            <span className="text-[10px] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">Sold out</span>
+                            <span className="text-[0.625rem] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">Sold out</span>
                           )}
                           {!isSoldOut && item.stock_remaining != null && item.stock_remaining <= 10 && (
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${item.stock_remaining <= 3 ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
+                            <span className={`text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border ${item.stock_remaining <= 3 ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
                               {item.stock_remaining <= 3 ? `Only ${item.stock_remaining} left!` : `${item.stock_remaining} left`}
                             </span>
                           )}
                         </div>
-                        {item.description && <p className="text-slate-400 text-xs mt-0.5 leading-snug">{item.description}</p>}
-                        {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0) && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {item.dietary?.map((d: string) => (
-                              <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
-                            ))}
-                            {item.allergens?.map((a: string) => (
-                              <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium">{a}</span>
-                            ))}
-                          </div>
-                        )}
                       </div>
                       <span className={`font-bold text-sm shrink-0 ${isSoldOut ? 'text-slate-400' : 'text-slate-700'}`}>£{item.price.toFixed(2)}</span>
                       <div className="flex items-center gap-2 shrink-0">
@@ -1605,6 +1598,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         )}
                       </div>
                     </div>
+                    {/* FULL-WIDTH description + chips (Option B) — span the whole row so the description
+                        wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
+                        is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
+                    {item.description && <p className="text-slate-400 text-xs mt-1 leading-snug">{item.description}</p>}
+                    {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0) && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {item.dietary?.map((d: string) => (
+                          <span key={d} className="text-[0.625rem] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
+                        ))}
+                        {item.allergens?.map((a: string) => (
+                          <span key={a} className="text-[0.625rem] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium">{a}</span>
+                        ))}
+                      </div>
+                    )}
+                    </div>{/* end py-3 item-content wrapper */}
 
                     {/* Per-variant basket rows (only for modifier items) */}
                     {hasModifiers && itemVariants.length > 0 && (
