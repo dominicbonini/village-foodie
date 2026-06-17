@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createSlug } from '@/lib/utils'
 import { isHatchGrabHost } from '@/lib/brand'
+import { formatImageUrl } from '@/lib/image-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,13 +10,6 @@ const supabase = createClient(
 )
 
 export const revalidate = 300
-
-function formatImageUrl(rawPath: string | null, defaultFolder: string): string {
-  if (!rawPath) return ''
-  const cleanPath = rawPath.trim()
-  if (cleanPath.startsWith('http') || cleanPath.startsWith('/')) return cleanPath
-  return `/${defaultFolder}/${cleanPath}`
-}
 
 function toddmmyyyy(isoDate: string): string {
   const [y, m, d] = isoDate.split('-')

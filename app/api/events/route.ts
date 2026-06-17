@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
     .from('truck_events')
     // status + opened_at expose the operator-STARTED signal so customer surfaces derive "live" from
     // status==='open' (live-redefinition), not the published clock window. Times stay DISPLAY-only.
-    .select('id, event_date, start_time, end_time, venue_name, town, notes, status, opened_at')
+    .select('id, event_date, start_time, end_time, venue_name, town, postcode, notes, status, opened_at')
     .eq('truck_id', truck.id)
     .in('status', ['confirmed', 'open'])
     .gte('event_date', today)
@@ -98,6 +98,7 @@ export async function GET(req: NextRequest) {
       truck_name:    truck.name,
       venue_name:    e.venue_name || '',
       village:       e.town || '',
+      postcode:      e.postcode || '',
       notes:         e.notes || '',
       status:        e.status || 'confirmed', // 'open' = operator-started/auto-opened = LIVE
       opened_at:     e.opened_at || null,

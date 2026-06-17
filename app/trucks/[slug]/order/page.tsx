@@ -51,6 +51,7 @@ interface EventData {
   end_time: string
   venue_name: string
   village: string
+  postcode?: string
   notes: string
   status?: string       // 'open' = operator-started/auto-opened = LIVE; else Pre-order. From /api/events.
   opened_at?: string | null
@@ -116,6 +117,7 @@ function eventToVillage(e: EventData, truckName: string): VillageEvent {
     truckName,
     venueName: e.venue_name,
     village: e.village || undefined,
+    postcode: e.postcode || undefined,   // "village · POSTCODE" line — matches the profile card
     status: e.status,             // 'open' ⇒ the "● Live" badge
     notes: e.notes || undefined,
     source: 'operator',           // /api/events returns confirmed/open OPERATOR events
@@ -134,6 +136,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   const [menu, setMenu] = useState<TruckMenu | null>(null)
+  const [activeCategory, setActiveCategory] = useState<string | null>(null)  // customer menu category tab
+
   const [showAllergenModal, setShowAllergenModal] = useState(false)
   const [events, setEvents] = useState<EventData[]>([])
   const [event, setEvent] = useState<EventData | null>(null)
@@ -556,6 +560,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (!menu) return []
     return groupByCategory(menu.items, menu.categories?.map(c => c.name))
   }, [menu])
+
+  // Top-level category TABS (customer browse): tap a tab to show only that category. Subcategory
+  // grouping/headers STAY within the selected category (groupBySubcategory below is untouched) — the
+  // customer is browsing, the subcategory merchandising is intentional. Menu order preserved.
+  const menuCategories = useMemo(() => groupedMenu.map(([cat]) => cat), [groupedMenu])
+  // Default to the first category; self-heal if the active tab disappears (menu reload / now-empty cat).
+  const selectedCategory = (activeCategory && menuCategories.includes(activeCategory)) ? activeCategory : (menuCategories[0] ?? null)
 
   // ── Upsells ─────────────────────────────────────────────────────────────────
   // Inline upsells — item-specific, shown immediately when a matching item is in basket
@@ -1341,12 +1352,28 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </button>
             )}
           </div>
-          {groupedMenu.map(([category, items]) => (
-            <div key={category} className="mb-4 last:mb-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-black text-orange-600 uppercase tracking-wider">{cap(category)}</span>
-                <div className="flex-1 h-px bg-orange-100" />
+          {/* Top-level category tabs — sticky below the page header (h-[60px]). Tap to filter to one
+              category; subcategory headers (below) are preserved within it. Finger-sized (≥44px),
+              horizontal-scroll on narrow. -mx-4 px-4 makes the white bar span the menu card's padding. */}
+          {menuCategories.length > 1 && (
+            <div className="sticky top-[60px] z-30 -mx-4 px-4 py-2 mb-2 bg-white border-b border-slate-100">
+              <div className="flex gap-1.5 overflow-x-auto">
+                {menuCategories.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`shrink-0 inline-flex items-center justify-center min-h-[44px] px-4 rounded-xl text-sm font-black uppercase tracking-wide transition-colors active:scale-95 ${
+                      cat === selectedCategory ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {cap(cat)}
+                  </button>
+                ))}
               </div>
+            </div>
+          )}
+          {groupedMenu.filter(([category]) => selectedCategory == null || category === selectedCategory).map(([category, items]) => (
+            <div key={category} className="mb-4 last:mb-0">
               {groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0).map(group => (
               <div key={group.id ?? '__ungrouped'}>
                 {/* Sub-category heading — only a NAMED group with items (Phase 3 order-screen rule);
