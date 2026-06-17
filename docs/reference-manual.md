@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V7.6
+HatchGrab Engineering Reference Manual · V7.7
 
 **HatchGrab**
 
@@ -6,13 +6,24 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 7.6**
+**Version 7.7**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V7.7 — June 2026
+
+WhatsApp auto-reply safety + greeting fixes, customer order-row layout rebuild, and the whatsapp_logs migration finally applied to prod. Headline: the allergen answering path was realigned so PRESENCE questions ("does the tiramisu have gluten") reach the presence-confirm path while ABSENCE/SAFETY questions ("gluten free", "safe for") are redirected — with the deterministic guard hoisted to a bucket-independent floor so the classifier can never be the safety boundary. Plus once-per-day-per-sender greeting detection (timezone-correct), and the customer item row moved to the canonical food-app layout (name → description → chips → price-left/Add-right baseline). Most items BUILT + tsc-clean, live-test PENDING; whatsapp_logs migration APPLIED; order-row layout operator-confirmed on device.
+
+- **WhatsApp allergen routing realigned (BUILT, live-test pending) — SAFETY-CRITICAL.** See Section 20.
+- **WhatsApp greeting: once per calendar day per sender (BUILT, live-test pending).** Timezone-correct via the truck's resolved tz. See Section 20.
+- **whatsapp_logs migration APPLIED to prod (20260605_whatsapp_logs.sql).** Was never applied (Section 27 backlog) — now live; logging inserts succeed. See Section 16; struck from Section 27.
+- **Customer item row → canonical food-app layout (operator-confirmed on device).** Name top, description + chips full-width, price-left/Add-right baseline. See Section 7.
+- **Customer menu polish (BUILT, live-test pending):** min-height on the menu list so short categories pin tabs to the top; hidden tab-bar scrollbar; subcategory-boundary divider fix; divider prominence slate-100→slate-200; allergen/dietary chips now scale with OS font (text-[0.625rem]). See Section 7.
+- **New shared helper localDateOfInstant(instant, tz) in lib/time-utils.ts.** See Section 3 / Section 6.
 
 ## V7.6 — June 2026
 
@@ -721,7 +732,7 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/ratelimit.ts** (V6.3) — Upstash Redis rate-limit configuration and tier helpers. See Section 28.
 
-- **lib/time-utils.ts** (V4, extended V6.4) — canonical time formatter. formatTime(t) strips seconds from HH:MM:SS to HH:MM. localTodayIso() (V6.4) is the single local-Y-M-D helper used by every "is this event today / has this slot passed" floor (never toISOString — Section 6). These are the only implementations; never inline t.slice(0,5) or a parallel date floor.
+- **lib/time-utils.ts** (V4, extended V6.4) — canonical time formatter. formatTime(t) strips seconds from HH:MM:SS to HH:MM. localTodayIso() (V6.4) is the single local-Y-M-D helper used by every "is this event today / has this slot passed" floor (never toISOString — Section 6). These are the only implementations; never inline t.slice(0,5) or a parallel date floor. **localDateOfInstant(instant: Date|string, tz='Europe/London') (V7.7)** — returns the LOCAL 'YYYY-MM-DD' date of an ARBITRARY instant in tz (getLocalDateInTz only handles "now"). Mirrors getLocalDateInTz's Intl pattern so the two produce directly comparable strings; used by the WhatsApp once-per-day greeting (Section 20). The shared primitive for "what local day did this timestamp fall on" — never hand-roll a parallel Intl call.
 
 - **lib/modifier-utils.ts** (V4) — client-safe modifier helpers. isModifierAvailable(opt) returns opt.available !== false. Used to filter modifier options in both the customer page and the operator Add Order panel. undefined and null mean available — backward-compatible against rows where the column wasn't set.
 
@@ -1216,6 +1227,12 @@ On the customer order page, ASAP is auto-selected by default (asapChosen initial
 ## Event card on the chooser — compact + postcode (V7.6)
 
 > **RULE (V7.6)** — the order page renders its event display via the shared `TruckListCard` with `compact` + a `cornerAction="Change event"` link (gated `events.length > 1`); the old standalone Change-event row was deleted. **POSTCODE data-gap fix:** `/api/events` was omitting `postcode` from its SELECT and map — added to the select, the map, the `EventData` type, and `eventToVillage`. `TruckListCard` already rendered "village · POSTCODE" via `areaLine`, so no card change was needed.
+
+## Item row — canonical food-app layout (V7.7)
+
+> **ITEM ROW (V7.7, supersedes the earlier Option-B row note; operator-confirmed on device).** The item row now reads top-to-bottom, full width: (1) top line = optional thumbnail + name + inline badges only; (2) description full-width; (3) dietary/allergen chips full-width; (4) a bottom baseline (`flex justify-between`) = PRICE left, Add button / quantity stepper right. This is the Deliveroo/Uber-Eats pattern — the price gets a stable left edge (consistent down the list regardless of name length), the Add buttons align right. Rows are ~one taller than the prior crowded layout (~one fewer item per screen) — an ACCEPTED tradeoff for tidiness, not a regression. The thumbnail slot (`w-16 h-16`, `flex-shrink-0`, conditional on `item.photo_url`) stays on the top line beside the name; when absent it reserves NO width (so text-only rows use full width). PHOTO LAYOUT DECISION: left-thumbnail chosen over full-width-top photos deliberately — it adds no vertical height and degrades gracefully for a mixed photo/no-photo menu (full-width photos punish missing/amateur operators). Trial launches with NO photos uploaded (cleanest consistent state); photos are post-trial polish.
+
+> **MENU LIST POLISH (V7.7, BUILT, live-test pending unless noted):** (a) the menu list carries a `min-height` of roughly `innerHeight − 121` (header 60 + tab bar 61), measured from a `viewportH` state updated on resize/orientationchange, so a SHORT category (e.g. Dips & Sauces, 3 items) has enough scroll distance to pin its tabs to the top — the earlier tab-switch-scroll fix couldn't pin short categories because the page bottomed out first; min-height is self-cancelling (inert for long categories, no blank gap). (b) the category tab bar's horizontal scrollbar is hidden via a `.scrollbar-hide` utility (`scrollbar-width`/`-ms-overflow-style`/`::-webkit-scrollbar`) — swipe-scroll still works; the intentional `border-b` separator below the tabs is untouched. (c) the subcategory-boundary divider was fixed: `divide-y` on a per-group wrapper dropped the line at the last item before a subcategory header; adding `divide-y` to the category container draws a separator above each subsequent subcategory header (no stray line at category top or after the final item). (d) divider colour lifted slate-100 → slate-200 (clearer but still subtle; both the per-group and category-container declarations matched). (e) allergen/dietary chips converted text-[10px] → text-[0.625rem] so they SCALE with the OS "Larger Text"/Dynamic Type setting (name/description already scaled via rem; chips were the only hardcoded-px type in the row).
 
 ## ASAP button visual states
 
@@ -1836,7 +1853,7 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 - **event_item_stock (V6.5, +no_item_cap V6.6)** — per-event item stock OVERRIDE. PK `(event_id, item_name)`. Columns: event_id (uuid, FK truck_events(id) on delete cascade), item_name (text — matches menu_items_db.name and the frozen order-line name), stock_count (int nullable — the per-event ceiling override), available (boolean nullable — per-event sold-out override), **no_item_cap (V6.6, boolean default false — true = no individual cap this event → ceiling resolves to null → follows the category pool; distinct from stock_count=null which means "use default")**. A row exists ONLY when the dashboard has edited that item's stock for that event; absence means "read the live Settings default". RLS service-role only. See Section 30.
 - **event_category_stock (V6.5)** — per-event category stock OVERRIDE. PK `(event_id, category)`. Columns: event_id (uuid, FK), category (text), stock_count (int nullable). Same sparse-override semantics. RLS service-role only. See Section 30.
 - **collection_times / slot_capacity** — fixed slot definitions and per-slot capacity rows.
-- **whatsapp_logs** — (V6.3 — migration never applied to prod; does not exist; writes fail silently — Section 27).
+- **whatsapp_logs** — APPLIED V7.7 (20260605_whatsapp_logs.sql). Columns: id, truck_id (text FK trucks), customer_number (text, digits-only sender), message_in, classification, events_found (int), response_sent (text), possible_miss (bool), created_at (timestamptz default now()). RLS on, service-role only, no anon policy. The webhook insert writes 7 columns (all but id/created_at). No (customer_number, created_at) index — optional, low volume (Section 27).
 - **kds_sessions** — active KDS device sessions.
 - **discovery_trucks / discovery_events** — scraped discovery data; `visibility` enum (public|hg_only|hidden) controls public/HG exposure (the load-bearing gate for operator-event visibility, Section 15). discovery_trucks.hatchgrab_truck_id (FK to trucks.id — text) links a discovery truck to its HatchGrab account. discovery_trucks.logo_url is the profile-page logo source (Section 14). Set via the admin "Link HG truck" dropdown.
 - **scraper_run_log (V6.2)** — id, truck_id (text), run_at, day_of_week (0–6), events_found, events_changed, rule_used. RLS service-role only. Pruned to 90 days — the ONLY pruned table.
@@ -1885,6 +1902,7 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 20260604_scraper_preference.sql
 20260604_scraper_adaptive.sql
 20260604_exclusion_terms.sql
+20260605_whatsapp_logs.sql
 20260607_order_key_per_event.sql
 20260608_booking_locks.sql
 20260608_production_slot_usage_event_key.sql
@@ -1901,7 +1919,7 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 
 > **NOTE (V6.3)** — A full-file paste into the SQL editor can silently run nothing. Run large migrations in CHUNKS and verify each (PK, column existence, function existence) before moving on.
 
-> **APPLIED-MIGRATIONS DRIFT (V6.3)** — 20260529_checkout_upsells.sql (upsell_events) and the whatsapp_logs migration were never applied to prod. Reconcile the applied-vs-file list; assume others from that era may also be missing.
+> **APPLIED-MIGRATIONS DRIFT (V6.3; whatsapp_logs RESOLVED V7.7)** — 20260605_whatsapp_logs.sql is now APPLIED (V7.7). 20260529_checkout_upsells.sql (upsell_events) is STILL not applied to prod. Reconcile the applied-vs-file list; assume others from that era may also be missing.
 
 ### 20260607_order_key_per_event.sql (V6.3)
 
@@ -2139,7 +2157,7 @@ Queries truck_events for the truck (resolved by whatsapp_sender), confirmed/open
 
 ## Interaction logging
 
-Every interaction logs to whatsapp_logs (fire-and-forget). (V6.3 — whatsapp_logs does NOT exist in prod; logging silently failing — Section 27.) possible_miss = SPECIFIC_QUERY with events_found = 0.
+Every interaction logs to whatsapp_logs (fire-and-forget). (V7.7 — whatsapp_logs migration APPLIED to prod; logging inserts now succeed — Section 16.) possible_miss = SPECIFIC_QUERY with events_found = 0.
 
 ## Provider — Meta Cloud API (V6.3, replaces Twilio)
 
@@ -2149,9 +2167,13 @@ Every interaction logs to whatsapp_logs (fire-and-forget). (V6.3 — whatsapp_lo
 
 > **FEATURE-GATE DISCREPANCY (V7.6, backlog bug).** `whatsapp_replies` is granted as a MAX-tier feature in `lib/features.ts` (max/trial/tester/override only — NOT Pro/Starter), but the marketing table `lib/plan-features.ts` lists it as Pro+Max. The webhook obeys `features.ts`, so a Pro truck would get SILENT no-reply despite the pricing matrix promising it. (Gusto is on trial → granted, so unaffected.) Reconcile the two files (Section 27).
 
+> **ALLERGEN ROUTING — presence-confirm vs absence-redirect, with a bucket-independent floor (V7.7, BUILT, live-test pending). SAFETY-CRITICAL.** Two layers were realigned so they agree. (1) The deterministic `mentionsAllergen` guard was HOISTED to run immediately after classification, before ANY branch and before all three callGemini sites (between the IGNORE return and the MENU_QUERY branch in `generateWhatsAppReply`). It redirects on any absence/safety token, regardless of which bucket Gemini chose — so the probabilistic classifier can NEVER be the safety boundary; the deterministic guard is the floor on every path. The pre-existing in-branch check is left as belt-and-braces. (2) The classifier's ALLERGEN_QUERY trigger list was realigned: PRESENCE tokens (gluten, nuts, peanut, dairy, milk, egg, soy, wheat, ingredient) MOVED to MENU_QUERY (→ the presence-confirm path, which CONFIRMS a tagged allergen via the HAS/CONTAINS rule + the deterministic caveat-append, and DEFERS-never-DENIES for an untagged one); SAFETY tokens (allerg, celiac, coeliac, intoleran, free from, gluten free, safe for, suitable for) and `contain` stay ALLERGEN_QUERY → fixed redirect. `contain` deliberately KEPT as ALLERGEN_QUERY (resolves the ambiguous "does it contain any nuts" toward safety — a wrongly-redirected presence question is a mild helpfulness miss; an absence question reaching the LLM is the dangerous error). NET: "does the tiramisu have gluten" → MENU_QUERY → confirms (tiramisu is tagged Gluten) + caveat; "is the tiramisu gluten free" → guard redirect, no LLM; "does it have sesame" (untagged) → defers, never "no". RESIDUAL RISK: the untagged-defer ("never says no") is a PROMPT-STRENGTH guarantee (DEFER-never-DENY), not deterministic — the floor and the caveat-append ARE code-guaranteed. If an untagged item ever returns "no/free of", tighten the prompt; it is not a floor failure.
+
+> **GREETING — once per calendar day per sender (V7.7, BUILT, live-test pending).** Previously isFollowUp was hardcoded false → "Hey there 👋" fired on every message. Now the webhook reads whatsapp_logs for the most recent prior REPLIED row (`response_sent is not null`) for this sender (`customer_number`, digits-only exact) + truck, and sets `isFollowUp = prior exists && localDateOfInstant(prior.created_at, truckTz) === getLocalDateInTz(truckTz)` — i.e. greet on the first replied message of the local day, suppress for the rest of that day. The `response_sent is not null` filter means an IGNORE/gibberish message (logged, unreplied) does NOT suppress the greeting on a later real question the same day. The day boundary is computed in `truckTz` — a single const = 'Europe/London' today, swappable to `truck.timezone ?? 'Europe/London'` in one line when that column exists (the multi-country requirement). DST-safe (both date strings go through Intl tz formatting; no manual UTC-offset math). The read runs BEFORE the message's own log insert (no self-suppression) and is FAIL-OPEN (a read error → greet, never block the reply). The downstream greeting machinery (greetingPrefix/greetingInstruction) was already correct and unchanged. (Supersedes the earlier "greeting follow-up detection gated on the whatsapp_logs migration" note — the migration is applied and detection is wired.)
+
 > **RULE** — The Twilio handler at /api/webhooks/whatsapp is DORMANT, not deleted. Do not overwrite it. formatWhatsAppOrder is dead code (delete when Twilio is retired — Section 27).
 
-> **PENDING (V6.3)** — the four-bucket smoke tests have NOT been run; whatsapp_logs does not exist in prod. Run the migration and smoke tests before relying on WhatsApp at trial.
+> **PENDING (V6.3, partly resolved V7.7)** — whatsapp_logs migration is now APPLIED (V7.7, Section 16). The four-bucket smoke tests + the V7.7 allergen-routing/greeting live tests have NOT yet been run on-device — run them before relying on WhatsApp at trial.
 
 ## Platform compliance and tone
 
@@ -2542,7 +2564,7 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 - **PHONE-BACKGROUNDING false pause**: a backgrounded/locked phone stops heartbeating and looks offline → monitor may pause when the operator just glanced at another app. No full software fix (a locked phone can't ping); answer is visibility-detection tuning + operator EDUCATION (let them knowingly disable protection with a clear notice). Design + UX, post-trial.
 - **OPERATOR FAQ/HELP section**: draft once the trial feature set is frozen and behaviours are live-verified (the manual is the raw material; needs translating to operator-facing plain English). Near-end task.
 - **STRAY FILE**: delete `app/manage/[token]/page 2.tsx` — a duplicate copy of the live `page.tsx` (with its own `ScheduleTab`); a footgun where a future edit could land in the dead file. Delete separately.
-- (carried) WhatsApp grounded-allergen answers (gated on allergen-data restructure: persist structured extraction + required per-item entry + "confirmed none" ≠ NULL); WhatsApp greeting follow-up detection (gated on `whatsapp_logs` prod migration; tier-3 greeting consistency + isFollowUp flag already built, detection query pending); per-item spice level (nullable, NULL=absent not mild).
+- (carried) WhatsApp grounded-allergen answers (gated on allergen-data restructure: persist structured extraction + required per-item entry + "confirmed none" ≠ NULL); ~~WhatsApp greeting follow-up detection~~ RESOLVED V7.7 (migration applied + detection wired, Section 20); per-item spice level (nullable, NULL=absent not mild).
 - **DEALS in WhatsApp (scoped, build later)**: the bot is deal-blind (no fetch / payload field / classifier trigger). Deals live in `bundles_db` (the deal: name, bundle_price, slot_N_category, start_time/end_time window, apply_to_new_events) + `event_deals` (per-event `active` join). EVENT-SCOPED — active per event, NOT standing offers. MUST be event-aware: resolve deals against the next confirmed/open event, REUSING the menu API's resolution (`/api/menu` ~:114-178 — effectiveEventId → `event_deals.active` → `apply_to_new_events` fallback → stock → per-deal time-window; do NOT re-implement, or WhatsApp and the order page diverge). Scope a deal to its event ("at Friday's event: 2 pizzas for £15"); if no event resolves, say "no deals right now" — NEVER list all bundles (the menu API's no-event branch over-promises). Add deal/offer to the MENU_QUERY triggers + a `deals` array to the payload.
 - **WhatsApp ATTENTION notifications (scoped, decide mechanism later)**: notify the truck when a message NEEDS A HUMAN. TRIGGER (narrow to start): genuine can't-answer (unbucketed/fallback) + explicit human-wanted ("call me", complaints, order changes); widen later. MECHANISM (operator's choice, deferred): a dashboard "needs attention" inbox (reads `whatsapp_logs` — `message_in`/`classification`/`possible_miss` already logged) AND an external channel (email/SMS/WhatsApp-to-operator), operator-selectable. External channel = new infra (operator contact + send mechanism + opt-in). The notification should carry the message + customer number + a way to reply, not just an alert.
 - **LIVE-REDEFINITION follow-up**: the "closed/past" DISPLAY filters (order page ~:305 etc.) were left CLOCK-based as a backstop — decide later whether they should also be status-driven (mirror of the live fix).
@@ -2580,7 +2602,10 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 - **Auth-attempt rate limiting** (public-data anti-scraping rate limiting is done — Section 28).
 
-- **Run the whatsapp_logs migration in prod (V6.3)** — the table does not exist, so logging is silently failing; then run the WhatsApp four-bucket smoke tests (Section 20).
+- ~~**Run the whatsapp_logs migration in prod (V6.3)**~~ — RESOLVED V7.7 (20260605_whatsapp_logs.sql applied; logging inserts now succeed, Section 16). The WhatsApp four-bucket smoke tests + the V7.7 allergen-routing/greeting on-device live tests are still outstanding (Section 20).
+- **whatsapp_logs index (V7.7, post-trial)** — add a `(truck_id, customer_number, created_at)` (or `(customer_number, created_at)`) index if WhatsApp volume grows; the once-per-day greeting read is unindexed (fine at trial volume) (Section 20).
+- **Allergen untagged-defer is prompt-strength, not deterministic (V7.7)** — the floor (redirect) and caveat-append ARE code-guaranteed, but "an untagged item never says no/free of" is a DEFER-never-DENY prompt rule; if live testing shows an untagged item ever returns "no/free of", tighten the prompt (Section 20).
+- **Customer item-row photos are post-trial (V7.7)** — the row reserves a `w-16 h-16` left thumbnail only when `item.photo_url` is set; trial launches photo-free. Before enabling photos, verify on-device rendering (aspect-ratio / object-cover / non-square handling) (Section 7).
 
 - **Applied-migrations reconciliation (V6.3)** — upsell_events (20260529_checkout_upsells) and whatsapp_logs were never applied to prod; audit the full applied-vs-file list.
 
@@ -2968,4 +2993,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V7.6
+HatchGrab Engineering Reference Manual · V7.7

@@ -727,25 +727,37 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           })}
         </div>
       ))}
-      {/* Items sorted by menu category order */}
+      {/* Standalone items GROUPED by category — category headings in the truck's configured order
+          (menu.categories), items within each group in basket tap/insertion order. Unknown
+          categories (not in config) trail at the end so no item is ever dropped. */}
       {(() => {
         const catOrder = menu?.categories?.map(c => c.name) ?? []
-        const sorted = [...basket].sort((a, b) => {
-          const ai = catOrder.indexOf(a.menuItem.category)
-          const bi = catOrder.indexOf(b.menuItem.category)
-          return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi)
-        })
-        return sorted.map(b => (
-          <OrderLineItem
-            key={b.cartKey}
-            name={b.menuItem.name}
-            quantity={b.quantity}
-            unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
-            basePrice={b.menuItem.price}
-            modifiers={b.modifiers}
-            specialInstructions={b.specialInstructions}
-            variant="customer"
-          />
+        const byCat = new Map<string, BasketItem[]>()
+        for (const b of basket) {
+          const cat = b.menuItem.category
+          if (!byCat.has(cat)) byCat.set(cat, [])
+          byCat.get(cat)!.push(b)
+        }
+        const orderedCats = [
+          ...catOrder.filter(c => byCat.has(c)),
+          ...[...byCat.keys()].filter(c => !catOrder.includes(c)),
+        ]
+        return orderedCats.map(cat => (
+          <div key={cat}>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1">{cat}</p>
+            {byCat.get(cat)!.map(b => (
+              <OrderLineItem
+                key={b.cartKey}
+                name={b.menuItem.name}
+                quantity={b.quantity}
+                unitPrice={b.menuItem.price + b.modifiers.reduce((s, m) => s + m.price, 0)}
+                basePrice={b.menuItem.price}
+                modifiers={b.modifiers}
+                specialInstructions={b.specialInstructions}
+                variant="customer"
+              />
+            ))}
+          </div>
         ))
       })()}
       {discountAmt > 0 && (
