@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { resolveTruckLogo } from '@/lib/truck-logo'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { getSoleActiveVanId } from '@/lib/van-utils'
@@ -132,8 +133,13 @@ export async function GET(req: NextRequest) {
         .maybeSingle()
     : { data: null }
 
+  // Header logo: operator upload → Village Foodie discovery fallback (shared resolver, Section 14/27).
+  // `logo_storage_path` stays raw on the truck for the Settings upload card (the operator's OWN logo);
+  // `logo` is the resolved DISPLAY url the header uses, so it matches the dashboard + customer surfaces.
+  const logo = await resolveTruckLogo(supabase, truck.id, truck.logo_storage_path)
+
   return NextResponse.json({
-    truck,
+    truck: { ...truck, logo },
     categories: categories || [],
     items: items || [],
     subcategories: subcategories || [],

@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { resolveTruckLogo } from '@/lib/truck-logo'
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { buildSlotIndicators } from '@/lib/slot-display'
@@ -338,6 +339,9 @@ export async function GET(req: NextRequest) {
     }))
   }
 
+  // Header logo: operator upload → Village Foodie discovery fallback (shared resolver, Section 14/27).
+  const truckLogo = await resolveTruckLogo(supabase, truck.id, truck.logo_storage_path)
+
   return NextResponse.json({
     currentUserName,
     userRole,
@@ -358,9 +362,7 @@ export async function GET(req: NextRequest) {
       plan:                (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max' | 'trial',
       trial_expires_at:    truck.trial_expires_at ?? null,
       feature_overrides:   (truck.feature_overrides ?? null) as Record<string, boolean> | null,
-      logo: truck.logo_storage_path
-        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
-        : null,
+      logo: truckLogo,
       qr_code_style: (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
       truck_emoji:   truck.truck_emoji ?? null,
       slug:          truck.slug ?? null,

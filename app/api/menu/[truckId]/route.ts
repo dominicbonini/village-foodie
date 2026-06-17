@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { calcStockRemaining } from '@/lib/stock-utils'
 import { getLiveItemCounts } from '@/lib/stock-availability'
-import { formatImageUrl } from '@/lib/image-utils'
+import { resolveTruckLogo } from '@/lib/truck-logo'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
@@ -368,22 +368,8 @@ export async function GET(
 
   console.log('[MENU API] Returning menu with', menu.items.length, 'items')
 
-  // Logo resolution (Section 14/27): prefer the operator's own uploaded logo (truck-media bucket).
-  // When the operator hasn't uploaded one, fall back to the linked Village Foodie discovery logo so
-  // the order page shows a brand mark instead of a blank — matching what the profile page already
-  // renders for the same truck. The discovery_trucks query runs ONLY when logo_storage_path is null,
-  // so trucks WITH an operator logo incur no extra query (no regression).
-  let logo: string | null = truck.logo_storage_path
-    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
-    : null
-  if (!logo) {
-    const { data: discoveryTruck } = await supabase
-      .from('discovery_trucks')
-      .select('logo_url')
-      .eq('hatchgrab_truck_id', truck.id)
-      .maybeSingle()
-    logo = formatImageUrl(discoveryTruck?.logo_url ?? null, 'logos') || null
-  }
+  // Logo: operator upload → Village Foodie discovery fallback (shared resolver, Section 14/27).
+  const logo = await resolveTruckLogo(supabase, truck.id, truck.logo_storage_path)
 
   return NextResponse.json({
     truck: {
