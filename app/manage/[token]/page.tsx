@@ -4384,6 +4384,21 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
     }
   }
 
+  // Auto-replies WhatsApp sender — saves on blur (like the rest of Settings) AND on the button.
+  // The ref guards the blur→click double-fire (clicking the button blurs the input first) and skips
+  // pointless writes when nothing changed, so the operator gets exactly one success toast.
+  const lastSavedSender = useRef(truck.whatsapp_sender ?? '')
+  const saveWhatsappSender = async () => {
+    if (whatsappSender === lastSavedSender.current) return
+    try {
+      await api('update_truck', { data: { whatsapp_sender: whatsappSender } })
+      lastSavedSender.current = whatsappSender
+      showToast('WhatsApp number saved')
+    } catch (e: any) {
+      showToast(e.message, 'error')
+    }
+  }
+
   const saveFormField = async (overrides?: Record<string, unknown>) => {
     try {
       await api('update_settings', { ...form, ...overrides })
@@ -4664,41 +4679,48 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
 
           <div className="space-y-3">
             {/* WhatsApp */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-slate-600 w-20 flex-shrink-0">WhatsApp</label>
-              {can('whatsapp_replies') ? (
-                <>
-                  <input
-                    type="tel"
-                    value={whatsappSender}
-                    onChange={e => setWhatsappSender(e.target.value)}
-                    placeholder="+447700900000"
-                    className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  />
-                  <button
-                    onClick={() => saveSetting('whatsapp_sender', whatsappSender)}
-                    className="flex-shrink-0 text-xs px-2.5 py-1.5 bg-teal-600 text-white font-medium rounded-xl"
-                  >
-                    Connect
-                  </button>
-                </>
-              ) : (
-                <>
-                  <input
-                    type="tel"
-                    disabled
-                    placeholder="+447700900000"
-                    className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
-                  />
-                  <FeatureGate
-                    feature="whatsapp_replies"
-                    plan={truck.plan}
-                    overrides={truck.feature_overrides}
-                    trialExpiresAt={truck.trial_expires_at}
-                    showUpgrade={true}
-                  />
-                </>
-              )}
+            <div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-slate-600 w-20 flex-shrink-0">WhatsApp</label>
+                {can('whatsapp_replies') ? (
+                  <>
+                    <input
+                      type="tel"
+                      value={whatsappSender}
+                      onChange={e => setWhatsappSender(e.target.value)}
+                      onBlur={saveWhatsappSender}
+                      placeholder="+447700900000"
+                      className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                    <button
+                      onClick={saveWhatsappSender}
+                      className="flex-shrink-0 text-xs px-2.5 py-1.5 bg-teal-600 text-white font-medium rounded-xl"
+                    >
+                      Save
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <input
+                      type="tel"
+                      disabled
+                      placeholder="+447700900000"
+                      className="flex-1 min-w-0 truncate border border-slate-200 rounded-xl px-3 py-2 text-sm bg-slate-50 text-slate-400 cursor-not-allowed"
+                    />
+                    <FeatureGate
+                      feature="whatsapp_replies"
+                      plan={truck.plan}
+                      overrides={truck.feature_overrides}
+                      trialExpiresAt={truck.trial_expires_at}
+                      showUpgrade={true}
+                    />
+                  </>
+                )}
+              </div>
+              {/* Distinguishes this from the customer-facing contact number (Contact Details → Phone). */}
+              <p className="text-xs text-slate-400 mt-1.5 sm:pl-[5.5rem]">
+                The WhatsApp Business number used to send automated replies to customers (set up with the WhatsApp Business API). This is separate from your contact number above.
+              </p>
             </div>
 
             {/* Messenger */}
