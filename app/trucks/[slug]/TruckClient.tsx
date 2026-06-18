@@ -132,11 +132,15 @@ export default function TruckClient({ slug }: { slug: string }) {
             <div 
               className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'}`}
             >
-              <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[90px] sm:px-0 w-full">
+              {/* px-[115px] sm:px-[145px] reserves ≥ the VF logo width (110px mobile / 140px sm) so the
+                  centred block can never overlap the left logo. Logo capped to FIXED px (w-[40px]/[48px],
+                  its current size) so it no longer scales with OS text and grows into the VF zone.
+                  (Duplicate of the order-page Hdr — DRY consolidation backlogged; keep both in sync.) */}
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[115px] sm:px-[145px] w-full">
                 {truckInfo.logo ? (
-                    <Image src={truckInfo.logo} alt={truckInfo.name} width={48} height={48} className="w-10 h-10 sm:w-12 sm:h-12 object-contain rounded-full bg-white shadow-sm shrink-0" />
+                    <Image src={truckInfo.logo} alt={truckInfo.name} width={48} height={48} className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] object-contain rounded-full bg-white shadow-sm shrink-0" />
                 ) : (
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-base shrink-0">🚚</div>
+                    <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-base shrink-0">🚚</div>
                 )}
                 <h1 className="text-[13px] sm:text-[15px] font-bold sm:font-black tracking-tight leading-tight truncate max-w-[110px] sm:max-w-xs">
                   {truckInfo.name}
