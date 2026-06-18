@@ -1135,14 +1135,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             submittedAutoAccepted && submittedConfirmedSlot ? (
               <div className={`rounded-xl p-3 mb-4 text-sm text-center border ${(submittedSlotChanged || asapMoved) ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
                 {submittedSlotChanged && submittedRequestedSlot ? (
+                  // Time-moved: collection time is the prominent headline; the reason is small supporting
+                  // text. Subtle amber (not error) — it's a confirmed order at a slightly different time.
                   <>
-                    <p className="font-bold text-amber-800 mb-0.5">Sorry, your {submittedRequestedSlot} slot was taken.</p>
-                    <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span>.</p>
+                    <p className="font-black text-amber-900 text-base">Ready at {submittedConfirmedSlot}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">Your {submittedRequestedSlot} slot was just taken — this is the next available time.</p>
                   </>
                 ) : asapMoved ? (
                   <>
-                    <p className="font-bold text-amber-800 mb-0.5">The {formatTime(submittedAsapEstimate!)} we estimated wasn&apos;t available.</p>
-                    <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span> instead.</p>
+                    <p className="font-black text-amber-900 text-base">Ready at {submittedConfirmedSlot}</p>
+                    <p className="text-amber-700 text-xs mt-0.5">Slightly later than the {formatTime(submittedAsapEstimate!)} we estimated.</p>
                   </>
                 ) : (
                   <>
@@ -1153,12 +1155,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
             ) : (selectedSlot || submittedConfirmedSlot) ? (
               <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
-                {asapMoved ? (
-                  <p className="font-bold text-orange-700 mb-0.5">The {formatTime(submittedAsapEstimate!)} we estimated wasn&apos;t available — we&apos;ve put you down for {submittedConfirmedSlot}.</p>
-                ) : (
-                  <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot || submittedConfirmedSlot}</p>
+                {/* Preferred (pending) collection time is the prominent headline; the moved reason +
+                    "truck will confirm" are smaller supporting lines. Reads as confirmed-at-a-time, not error. */}
+                <p className="font-black text-orange-800 text-base">Preferred collection: {asapMoved ? submittedConfirmedSlot : (selectedSlot || submittedConfirmedSlot)}</p>
+                {asapMoved && (
+                  <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(submittedAsapEstimate!)} we estimated.</p>
                 )}
-                <p className="text-orange-600 text-xs">{truck?.name} will confirm your collection time when they accept your order.</p>
+                <p className="text-orange-600 text-xs mt-0.5">{truck?.name} will confirm your collection time when they accept your order.</p>
               </div>
             ) : null
           )}

@@ -1957,6 +1957,8 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
   const [loading, setLoading] = useState(true)
   const [newTrigger, setNewTrigger] = useState('')
   const [newSuggest, setNewSuggest] = useState('')
+  // When set, the inline form is editing this existing rule (vs. adding a new one).
+  const [editingId, setEditingId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
@@ -1968,14 +1970,28 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
 
   useEffect(() => { load() }, [load])
 
-  const addRule = async () => {
+  const saveRule = async () => {
     if (!newTrigger || !newSuggest || newTrigger === newSuggest) return
+    const editing = editingId ? rules.find(r => r.id === editingId) : undefined
     try {
-      const data = await api('upsert_upsell_rule', { trigger_category: newTrigger, suggest_category: newSuggest, max_suggestions: 3, show_at_checkout: true })
-      setRules(prev => [...prev, data.rule])
-      setNewTrigger(''); setNewSuggest(''); setAdding(false)
-      showToast('Upsell rule added')
+      const data = await api('upsert_upsell_rule', {
+        id: editingId ?? undefined,
+        trigger_category: newTrigger,
+        suggest_category: newSuggest,
+        max_suggestions: editing?.max_suggestions ?? 3,
+        show_at_checkout: editing?.show_at_checkout ?? true,
+      })
+      setRules(prev => editingId ? prev.map(r => r.id === editingId ? data.rule : r) : [...prev, data.rule])
+      setNewTrigger(''); setNewSuggest(''); setEditingId(null); setAdding(false)
+      showToast(editingId ? 'Upsell rule updated' : 'Upsell rule added')
     } catch (e: any) { showToast(e.message, 'error') }
+  }
+
+  const startEdit = (rule: UpsellRule) => {
+    setNewTrigger(rule.trigger_category)
+    setNewSuggest(rule.suggest_category)
+    setEditingId(rule.id)
+    setAdding(true)
   }
 
   const deleteRule = async (rule: UpsellRule) => {
@@ -2015,8 +2031,8 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
             </div>
           </div>
           <div className="flex gap-2">
-            <Btn label="Cancel" colour="slate" onClick={() => { setAdding(false); setNewTrigger(''); setNewSuggest('') }} />
-            <Btn label="Add rule" onClick={addRule} />
+            <Btn label="Cancel" colour="slate" onClick={() => { setAdding(false); setNewTrigger(''); setNewSuggest(''); setEditingId(null) }} />
+            <Btn label={editingId ? 'Save changes' : 'Add rule'} onClick={saveRule} />
           </div>
         </div>
       )}
@@ -2037,6 +2053,10 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
               </div>
               {/* show_at_checkout column exists in DB but is unused — all rules are inline */}
               <div className="flex items-center gap-2 shrink-0">
+                <button onClick={() => startEdit(rule)}
+                  className="text-slate-400 hover:text-orange-500 text-sm px-1.5 py-1 rounded hover:bg-orange-50">
+                  ✏️
+                </button>
                 <button onClick={() => deleteRule(rule)}
                   className="text-slate-400 hover:text-red-500 text-sm px-1.5 py-1 rounded hover:bg-red-50">
                   🗑
@@ -2206,7 +2226,7 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
         </div>
         <Btn label="+ Add customisation" onClick={() => { setShowNewGroup(true); setNewGroupName('') }} />
       </div>
-      <p className="text-xs text-slate-400 mb-4">Create a group of options and assign it to a menu category. All items in that category will offer those options when customers order. Individual item overrides can be set from the Menu tab.</p>
+      <p className="text-xs text-slate-400 mb-4">Create a group of options and assign it to a menu category. All items in that category will offer those options when customers order.</p>
 
       <div className="space-y-4">
       {modifierGroups.length === 0 && (
@@ -5486,9 +5506,10 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               isCurrent(p) ? 'text-orange-600' : 'text-slate-900'
             }`}>{px(PLAN_PRICES[p])}</p>
             <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
-              {p === 'trial' && truck.trial_expires_at
-                ? `until ${formatDate(truck.trial_expires_at)}`
-                : 'per truck / month'}
+              {/* Trial column: render the placeholder invisibly so the column keeps the same
+                  height as Starter/Pro/Max and its bottom border stays aligned. The trial end
+                  date is shown elsewhere (the reminder banner + the "won't be charged until" line). */}
+              <span className={p === 'trial' ? 'invisible' : ''}>per truck / month</span>
             </p>
           </div>
         ))}

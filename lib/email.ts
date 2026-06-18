@@ -125,7 +125,7 @@ export function formatConfirmationEmail(params: {
           ? `<strong style="font-size:16px">Your collection time has been updated</strong><br><span style="font-size:17px;font-weight:800">${params.slot}</span><br><span style="font-size:13px;opacity:0.85">Previously: ${params.slotAdjustedFrom}</span>`
           : params.autoAccepted
             ? params.slotChanged && (params.requestedSlot ?? params.slot)
-              ? `<strong style="font-size:16px">Sorry, your ${params.requestedSlot ?? params.slot} slot was taken.</strong><br><span style="font-size:13px">Your order will be ready at <strong>${params.slot}</strong>.</span>`
+              ? `<strong style="font-size:17px;font-weight:800">Ready at ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">Your ${params.requestedSlot ?? params.slot} slot was just taken — this is the next available time.</span>`
               : `<strong style="font-size:17px">Collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">See you at the hatch!</span>`
             : `<strong style="font-size:16px">Preferred collection time: ${params.slot}</strong><br><span style="font-size:13px;opacity:0.85">We'll confirm your collection time when we accept your order.</span>`
         }
@@ -266,7 +266,7 @@ export function formatConfirmationEmail(params: {
       ? `Collection time updated to ${params.slot} (was ${params.slotAdjustedFrom}).`
       : params.autoAccepted && params.slot
         ? params.slotChanged && params.requestedSlot
-          ? `Sorry, your ${params.requestedSlot} slot was taken. Your order will be ready at ${params.slot}.`
+          ? `Ready at ${params.slot}. Your ${params.requestedSlot} slot was just taken — this is the next available time.`
           : `Collection time: ${params.slot}. See you at the hatch!`
         : params.slot ? `Preferred collection: ${params.slot} — we'll confirm when we accept your order.` : '',
     params.notes ? `Notes: ${params.notes}` : '',
