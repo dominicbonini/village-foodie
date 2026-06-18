@@ -426,7 +426,7 @@ export async function POST(req: NextRequest) {
       // impossible. The ONLY oversell is a deliberate, INFORMED override — the check still RUNS
       // (the operator was shown the real remaining); override just inserts past the reported
       // shortfall. Contended past the retry budget → bail WITHOUT inserting (never unguarded).
-      const haveLock = await acquireEventLock(truck.id, eventDate)
+      const haveLock = (await acquireEventLock(truck.id, eventDate)).ok
       let newOrderId = ''
       let manualOrderKey = ''
       try {

@@ -134,7 +134,10 @@ async function readProductionSlotUnits(
   // includes the just-inserted order), the table went non-empty, so the subsequent
   // addOrderToProductionSlot read returned reseeded:false and merged the order ON TOP → first-order
   // double-count. A read-only reseed leaves the table empty until the single authoritative write.
-  persistReseed: boolean = true
+  persistReseed: boolean = true,
+  // Forwarded to buildUnitsFromOrders on BOTH reseed paths (degraded fallback + empty-cache). Opt-in;
+  // ONLY the submit fit-read passes it (the placing order's order_key). Default undefined → no filter.
+  excludeOrderKey?: string | null
 ): Promise<{ units: ProductionSlotUnits; reseeded: boolean }> {
   // No event → order/view belongs to no event; nothing pooled, empty usage.
   if (!eventId) return { units: {}, reseeded: false }
@@ -147,7 +150,7 @@ async function readProductionSlotUnits(
   if (error) {
     // Degraded fallback (SELECT failed): rebuild but DON'T claim reseeded, so the
     // incremental caller still merges+persists its order (unchanged prior behaviour).
-    return { units: await buildUnitsFromOrders(supabase, truckId, eventId), reseeded: false }
+    return { units: await buildUnitsFromOrders(supabase, truckId, eventId, excludeOrderKey), reseeded: false }
   }
 
   if (!data?.length) {
@@ -156,7 +159,7 @@ async function readProductionSlotUnits(
     // it tells a write-caller "this order is already booked, skip your merge" — so claiming it without
     // persisting would drop the order entirely (zero-count). Pure reads (persistReseed=false) never
     // persist and never claim reseeded; the write path (default true) persists and skips its merge.
-    const built = await buildUnitsFromOrders(supabase, truckId, eventId)
+    const built = await buildUnitsFromOrders(supabase, truckId, eventId, excludeOrderKey)
     let didPersist = false
     if (persistReseed) {
       const { eventDate } = await getEventMeta(supabase, eventId)
@@ -177,30 +180,41 @@ async function readProductionSlotUnits(
 export async function getProductionSlotUnits(
   supabase: SupabaseClient,
   truckId: string,
-  eventId: string | null
+  eventId: string | null,
+  // OPT-IN: only the submit fit-read passes the placing order's order_key so the reseed excludes it
+  // (Option B self-count fix). Default undefined → full occupancy for every other reader.
+  excludeOrderKey?: string | null
 ): Promise<ProductionSlotUnits> {
   // persistReseed=false → READ-ONLY reseed: never write the table from a pure read (the submit
   // fit-check uses this). The single authoritative write is addOrderToProductionSlot (BUG 1 fix).
-  return (await readProductionSlotUnits(supabase, truckId, eventId, false)).units
+  return (await readProductionSlotUnits(supabase, truckId, eventId, false, excludeOrderKey)).units
 }
 
 async function buildUnitsFromOrders(
   supabase: SupabaseClient,
   truckId: string,
-  eventId: string
+  eventId: string,
+  // OPT-IN fit-read exclusion: the submit fit passes the PLACING order's own order_key so the reseed
+  // doesn't count it against itself (it's inserted pending+null-slot BEFORE the fit, so it would
+  // otherwise self-occupy the event-start window and over-yield one slot). Default undefined → NO
+  // filter → full occupancy. NEVER passed by the write/rebuild/reader paths (they must count all).
+  excludeOrderKey?: string | null
 ): Promise<ProductionSlotUnits> {
+  // Event-scoped: this event's orders only. event_id IS NULL orders (which belong to no event) are
+  // excluded by the eq filter, so they pool into nothing. null-slot (ASAP) orders are still included —
+  // they book into the event-start window below.
+  let ordersQuery = supabase
+    .from('orders')
+    .select('slot, items, deals')
+    .eq('truck_id', truckId)
+    .eq('event_id', eventId)
+    .in('status', ['pending', 'confirmed', 'modified'])
+  if (excludeOrderKey) ordersQuery = ordersQuery.neq('order_key', excludeOrderKey)
+
   const [timeMap, meta, { data: orders }, { data: menuItems }, { data: categories }] = await Promise.all([
     fetchCollectionTimeMap(supabase, truckId),
     getEventMeta(supabase, eventId),
-    supabase
-      .from('orders')
-      // Event-scoped: this event's orders only. event_id IS NULL orders (which belong to
-      // no event) are excluded by the eq filter, so they pool into nothing. null-slot
-      // (ASAP) orders are still included — they book into the event-start window below.
-      .select('slot, items, deals')
-      .eq('truck_id', truckId)
-      .eq('event_id', eventId)
-      .in('status', ['pending', 'confirmed', 'modified']),
+    ordersQuery,
     supabase.from('menu_items_db').select('name, category_id').eq('truck_id', truckId),
     supabase.from('menu_categories').select('id, name').eq('truck_id', truckId),
   ])

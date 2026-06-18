@@ -14,18 +14,30 @@ import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 // already includes EVERY prior booking on the event. Acquire = INSERT (PK conflict = held);
 // stale rows older than the TTL are reclaimed first so a leaked lock self-heals.
 const LOCK_TTL_MS = 10_000      // a leaked lock self-heals after this
-const LOCK_MAX_WAIT_MS = 1_000  // total acquire budget (absorbs the timing blip) before bail
+// Total acquire budget. Raised 1s → 3s (V7.7): A's heavy first-order critical section (stock re-check
+// + empty-cache reseed + insert + fit + slot persist + addOrderToProductionSlot) can approach ~1s
+// under real latency, so a 1s budget expired before A released → spurious "handling a lot of orders"
+// message on normal 2-order contention. 3s comfortably absorbs a single concurrent order's hold, so
+// contention resolves SILENTLY into the already-working next-slot fit; a timeout now = genuine overload.
+const LOCK_MAX_WAIT_MS = 3_000
 const LOCK_RETRY_MS = 150
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+// Result of acquireEventLock. ok=true → held (caller MUST release in finally). ok=false carries WHY,
+// so the caller can tell a genuine failure from contention — though with the 3s budget BOTH are now
+// "genuine" (a DB error, or a hold that outlasted the full budget = sustained overload) and warrant
+// the last-resort message. The reason is surfaced for clarity/logging; the LOCK MECHANISM is unchanged.
+export type LockResult = { ok: true } | { ok: false; reason: 'error' | 'contention' }
 
 /**
  * Acquire the per-event booking lock. Acquire = INSERT into booking_locks; a PK conflict (23505)
  * means it's held — retry within the budget. Stale rows (older than LOCK_TTL_MS) are reclaimed
  * first, and the sweep only deletes rows OLDER than the TTL so a fresh lock is never stolen.
- * Returns true if acquired (caller MUST release in finally); false if contended past the budget
- * or errored — caller must then NOT insert (the no-oversell guarantee depends on holding it).
+ * Returns { ok:true } if acquired (caller MUST release in finally); { ok:false, reason } if a real DB
+ * error ('error') or contended past the full budget ('contention') — caller must then NOT insert
+ * (the no-oversell guarantee depends on holding it).
  */
-export async function acquireEventLock(truckId: string, eventDate: string): Promise<boolean> {
+export async function acquireEventLock(truckId: string, eventDate: string): Promise<LockResult> {
   const deadline = Date.now() + LOCK_MAX_WAIT_MS
   for (;;) {
     await supabase
@@ -37,12 +49,12 @@ export async function acquireEventLock(truckId: string, eventDate: string): Prom
     const { error } = await supabase
       .from('booking_locks')
       .insert({ truck_id: truckId, event_date: eventDate })
-    if (!error) return true
+    if (!error) return { ok: true }
     if (error.code !== '23505') {
       console.warn('[booking_locks] acquire error (failing safe — no insert):', error.message)
-      return false
+      return { ok: false, reason: 'error' }
     }
-    if (Date.now() >= deadline) return false
+    if (Date.now() >= deadline) return { ok: false, reason: 'contention' }
     await sleep(LOCK_RETRY_MS)
   }
 }

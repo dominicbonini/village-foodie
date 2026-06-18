@@ -204,6 +204,9 @@ async function placeOrderInSlotLocked(
   slotDurationMins?: number,
   kitchenCapacity?: number | null,
   capacityWindowMins?: number,
+  // The PLACING order's own order_key — excluded from the fit's occupancy reseed so it can't count
+  // itself (it's inserted pending+null-slot before this fit). Opt-in; only the submit path passes it.
+  excludeOrderKey?: string | null,
 ): Promise<{ finalSlot: string | null; booked: boolean }> {
   // event_id scopes the production_slot_usage read/write so same-date events don't pool.
   {
@@ -244,8 +247,9 @@ async function placeOrderInSlotLocked(
       return { finalSlot: startSlot, booked: true }
     }
 
-    // One FRESH read under the event lock — we are the sole writer for its duration.
-    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
+    // One FRESH read under the event lock — we are the sole writer for its duration. excludeOrderKey
+    // drops THIS order from the empty-cache reseed so it doesn't self-occupy the start window (Option B).
+    const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId, excludeOrderKey)
     const eventEndMins = eventEndTime ? timeToMins(eventEndTime) : Number.POSITIVE_INFINITY
     const eventStartMins = eventStartTime ? timeToMins(eventStartTime) : 0
 
@@ -523,7 +527,8 @@ export async function POST(req: NextRequest) {
     // acquireEventLock's retry budget (which absorbs the timing blip); only if the budget is
     // genuinely exhausted do we bail WITHOUT inserting and ask the client to retry — we never
     // fall back to a non-atomic insert.
-    const haveLock = await acquireEventLock(resolvedTruckId, orderEventDate)
+    const lock = await acquireEventLock(resolvedTruckId, orderEventDate)
+    const haveLock = lock.ok
     let order: any = null
     let orderId = ''
     const requestedSlot = slot ?? null
@@ -531,10 +536,12 @@ export async function POST(req: NextRequest) {
     let autoAccepted = false
     let slotChanged = false
     try {
-      // Lock not acquired within the retry budget (sustained overload, not a blip). We must NOT
-      // insert without the lock — overselling would be possible. Bail non-destructively; the
-      // client re-submits (basket kept). This is rare: the budget already absorbs normal waits.
+      // Lock not acquired: either a real DB error or contention that outlasted the FULL 3s budget —
+      // both genuine (the long budget absorbs normal 2-order contention, which now resolves silently
+      // into the next-slot fit without ever reaching here). We must NOT insert without the lock —
+      // overselling would be possible. Bail non-destructively; the client re-submits (basket kept).
       if (!haveLock) {
+        console.warn(`[submit] lock not acquired (${lock.ok ? '' : lock.reason}) for ${resolvedTruckId} / ${orderEventDate}`)
         return NextResponse.json(
           { error: 'We are handling a lot of orders right now — please try again', retry: true },
           { status: 409 },
@@ -609,6 +616,7 @@ export async function POST(req: NextRequest) {
           truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
           kitchenCapacity,
           capacityWindowMins,
+          order.order_key,   // exclude THIS just-inserted order from its own fit reseed (Option B)
         )
         const update: Record<string, unknown> = {}
         if (claim.booked && claim.finalSlot) {

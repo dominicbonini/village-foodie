@@ -169,6 +169,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [submittedConfirmedSlot, setSubmittedConfirmedSlot] = useState<string | null>(null)
   const [submittedRequestedSlot, setSubmittedRequestedSlot] = useState<string | null>(null)
   const [submittedSlotChanged, setSubmittedSlotChanged] = useState(false)
+  // The ASAP estimate the customer SAW on screen at submit ("Around HH:MM"), captured for ASAP orders
+  // so the confirmation can say "the HH:MM we estimated wasn't available" when the booked slot differs.
+  const [submittedAsapEstimate, setSubmittedAsapEstimate] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   // STAGE 1 (basket peek) starts COLLAPSED — it expands on demand rather than starting open.
   const [summaryExpanded, setSummaryExpanded] = useState(false)
@@ -1065,6 +1068,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
       setSubmittedConfirmedSlot(data.slot ?? null)
       setSubmittedRequestedSlot(data.requestedSlot ?? (selectedSlot || null))
       setSubmittedSlotChanged(!!data.slotChanged)
+      // ASAP only: capture the on-screen estimate (same precedence as the ASAP button) so the
+      // confirmation can flag a silent bump (server has no "requested" slot for ASAP → slotChanged=false).
+      setSubmittedAsapEstimate(asapChosen ? (backwardAsap || asapSlot || customerAsapTime || null) : null)
       setSubmitted(true)
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.')
@@ -1102,6 +1108,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     )
   }
 
+  // ASAP silently bumped: the customer chose ASAP (no chosen slot, so server slotChanged=false), but
+  // the booked slot differs from the "Around HH:MM" estimate they saw. Compare via formatTime so a
+  // seconds/format mismatch doesn't false-trigger. Drives the "your estimate wasn't available" note.
+  const asapMoved =
+    !!submittedAsapEstimate && !!submittedConfirmedSlot &&
+    formatTime(submittedAsapEstimate) !== formatTime(submittedConfirmedSlot)
+
   if (submitted) return (
     <Shell><Hdr slug={slug} truck={truck} scrolled={false} showBack={false} />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
@@ -1120,11 +1133,16 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {/* Collection time — promoted above the receipt */}
           {(submittedConfirmedSlot || selectedSlot) && (
             submittedAutoAccepted && submittedConfirmedSlot ? (
-              <div className={`rounded-xl p-3 mb-4 text-sm text-center border ${submittedSlotChanged ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
+              <div className={`rounded-xl p-3 mb-4 text-sm text-center border ${(submittedSlotChanged || asapMoved) ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
                 {submittedSlotChanged && submittedRequestedSlot ? (
                   <>
                     <p className="font-bold text-amber-800 mb-0.5">Sorry, your {submittedRequestedSlot} slot was taken.</p>
                     <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span>.</p>
+                  </>
+                ) : asapMoved ? (
+                  <>
+                    <p className="font-bold text-amber-800 mb-0.5">The {formatTime(submittedAsapEstimate!)} we estimated wasn&apos;t available.</p>
+                    <p className="text-amber-700 text-xs">Your order will be ready at <span className="font-bold">{submittedConfirmedSlot}</span> instead.</p>
                   </>
                 ) : (
                   <>
@@ -1135,7 +1153,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
             ) : (selectedSlot || submittedConfirmedSlot) ? (
               <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 mb-4 text-sm text-left">
-                <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot || submittedConfirmedSlot}</p>
+                {asapMoved ? (
+                  <p className="font-bold text-orange-700 mb-0.5">The {formatTime(submittedAsapEstimate!)} we estimated wasn&apos;t available — we&apos;ve put you down for {submittedConfirmedSlot}.</p>
+                ) : (
+                  <p className="font-bold text-orange-700 mb-0.5">Preferred collection: {selectedSlot || submittedConfirmedSlot}</p>
+                )}
                 <p className="text-orange-600 text-xs">{truck?.name} will confirm your collection time when they accept your order.</p>
               </div>
             ) : null
