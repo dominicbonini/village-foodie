@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V7.7
+HatchGrab Engineering Reference Manual · V7.8
 
 **HatchGrab**
 
@@ -6,13 +6,46 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 7.7**
+**Version 7.8**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V7.8 — June 2026
+
+Extended pre-trial hardening session covering the **auth / account-resolution subsystem**, the capacity engine's **first-order self-count bug**, **booking-lock UX**, **header overlaps**, **order-confirmation hierarchy**, and **operator-settings clarity** — plus prod **data/config changes** to prepare Pizzeria Gusto for handover. Status: **the operator has LIVE-VERIFIED all feature work below on real devices** — including the **two-device concurrent oversell test** (winner takes the slot, loser silently bumps with the moved-note, no double-book) and the **WhatsApp allergen + greeting flow** (Meta number now whitelisted). Tags: **[LIVE-VERIFIED]** operator-confirmed on device; **[DATA/CONFIG — applied]** prod data change made this session.
+
+**1. Capacity engine — first-order-into-empty-cache SELF-COUNT bug + fix (Option B). [LIVE-VERIFIED].** MECHANISM: the order is INSERTED (pending, null-slot for ASAP) BEFORE the fit runs; when `production_slot_usage` cache is EMPTY, the occupancy read lazily reseeds from the orders table (`buildUnitsFromOrders`) INCLUDING pending + null-slot orders — so the order counts ITSELF at the event-start window, sees the target slot full, and over-yields one slot forward (placed 16:05, leaving 16:00 empty). Concurrency only made it visible; a single first-of-event ASAP order reproduced it. FIX: an OPT-IN `excludeOrderKey` param (defaults `undefined` = no exclusion = full occupancy) threaded ONLY through the fit-read path (submit `placeOrderInSlotLocked` → `getProductionSlotUnits` → `readProductionSlotUnits` → `buildUnitsFromOrders`), adding `.neq('order_key', excludeOrderKey)` when present. The placing order excludes ITSELF (by `order_key`, the UUID PK) but counts all others. Live-verified: single order lands at 16:00; order #11 round-trip placed successfully; AND the two-device concurrent oversell test passed — winner takes the contested slot, loser silently bumps to the next available with the moved-note, no double-book. CRITICAL INVARIANT (now in the Section 31 DO-NOT list): the exclude key is passed ONLY on the submit fit-read; the authoritative write (`addOrderToProductionSlot`, `persistReseed=true`), the full rebuild (`rebuildProductionSlotUsage`), and all readers (dashboard/slots/batch) must NEVER pass it — excluding there would undercount and risk an OVERSELL. Orthogonal to the earlier "BUG 1" read-only-reseed fix (which stays). Exclude by `order_key`, never the per-event display id.
+
+**2. Booking-lock silent-bump + confirmation hierarchy. [LIVE-VERIFIED].**
+- (a) Lock-acquire budget `LOCK_MAX_WAIT_MS` raised 1000→3000ms (`lib/stock-guard.ts`); retry 150ms, TTL 10s UNCHANGED. Reason: A's heavy first-order critical section can approach ~1s under latency, so B's old 1s budget expired before A released → spurious "handling a lot of orders" contention message on what should be a brief wait. 3s absorbs a single concurrent order's hold so normal contention resolves silently into the already-working next-slot fit. Serialisation (acquire=INSERT, 23505=held, stale-reclaim) UNCHANGED — only the budget constant + return semantics. `acquireEventLock` now returns a reason (`{ok:true} | {ok:false; reason:'error'|'contention'}`) so the 409 message is reserved for genuine failure / sustained overload.
+- (b) ASAP "your time moved" confirmation note (web): captured `submittedAsapEstimate` (the client's displayed "Around HH:MM"), compares to the assigned slot; if moved, shows it.
+- (c) Confirmation HIERARCHY inverted (web + email, `lib/email.ts`): the COLLECTION TIME is now the prominent line; the "slot was taken / estimated time wasn't available" is smaller supporting text; gentle wording ("next available time" / "slightly later than"), not an apology-led error. Applies to chosen-slot + ASAP-moved (web), chosen-slot (email).
+- BACKLOG: the ASAP-moved note is NOT in the email (the ASAP estimate is client-only; the server-rendered email never receives it) — adding it needs the server to pass the resolved ASAP target into email params. Email's collection time is correct, just lacks the "moved" context.
+
+**3. Auth / account-resolution subsystem (the session's largest thread). [LIVE-VERIFIED].**
+- `/dashboard` ROUTER hardened: added an admin branch at the top — `operators.is_admin` (via `.maybeSingle()`) → `redirect('/admin')` BEFORE the operator owner-path, so an admin never goes down owner resolution. All `.single()` calls hardened: trucks-by-operator+active and truck_users-by-auth_user_id changed from `.single()` (which returns null on 0-or-2+ rows → silent fall-through → `/login` bounce) to LIST + deterministic pick (0 → fall through, 1 → that one, 2+ → first by `created_at`, with a comment that a proper multi-truck PICKER is backlogged). operators-by-auth_user_id → `.maybeSingle()`. `/api/dashboard` operators/truck_users → `.maybeSingle()`.
+- ROOT CAUSE of the blank-dashboard saga (for posterity): an operator owning 2+ ACTIVE trucks hit the trucks-by-operator+active `.single()` → null → fell through → `/login` bounce (surfaced as blank). NOT data corruption (operators/auth were clean). Admin identity (`operators.is_admin`) was never consulted in the router.
+- `/api/dashboard` ADMIN BYPASS: added `is_admin` to the operators select; an admin is now authorized (`isOwner || operator.is_admin`) → `userRole='owner'` (owner-equivalent interim) → no more "Access denied" on trucks they don't own. No new `'admin'` role value (backlogged). `/api/manage` already permits via token-possession (looser model — backlogged as an auth-consistency question).
+- PASSWORD-SET forced sign-out (`app/reset-password`, token path): on success now signs out the current session (browser client + hard redirect, clears SSR cookie) then → `/login`, preventing the half-state blank when another user was logged in on the device. Reuses the email-change sign-out pattern.
+- STAFF ACCESS MODEL CORRECTION (Section 12): staff CAN access the orders dashboard `/dashboard/[token]` (to place orders); staff CANNOT access `/manage`; a one-van staff is auto-routed to KDS on login but can navigate to the dashboard. The old "staff → KDS-only" wording was WRONG — corrected in Section 12.
+- KDS → dashboard back-link added (`kds/page.tsx`): "← Dashboard" → `/dashboard/${token}`, unconditional, collapses to ← on narrow. (Backlog: whether to pass `?pin=` to avoid re-prompt.)
+
+**4. Header overlap fixes. [LIVE-VERIFIED].**
+- AppHeader (operator pages): name bounded (`min-w-0`/`truncate`/`max-w`) + zone reservation, for large-text overlap. (Earlier in session.)
+- CUSTOMER headers (order-page `Hdr` + `TruckClient`): the TRUCK LOGO (`w-10`/`w-12`, rem) scaled unbounded on large OS text and overlapped the VF logo → fixed px (`w-[40px]`/`sm:w-[48px]`, same visual size, no longer scales) + widened centre reservation (`px-[115px]`/`sm:px-[145px]`) to clear the VF logo. Truck logo has visual priority; VF yields; name already truncated.
+- BACKLOG (HIGH): the THREE near-identical headers (order `Hdr`, `TruckClient`, AppHeader) are duplicated copies — the same bug class was fixed separately in each this session, proving the DRY debt. Consolidate into one shared header component (parameterised for the differing right-slots). Real DRY-debt, not optional.
+
+**5. Operator settings — WhatsApp field clarity + billing-table alignment. [LIVE-VERIFIED].** The "Auto-replies → WhatsApp" field (`whatsapp_sender`) was indistinguishable from the Contact Phone field (`contact_phone`) — two unlabelled WhatsApp-number inputs. Added: save-on-blur (matching the rest of Settings), a scoped success toast (`saveWhatsappSender` handler + ref guard against the blur→button double-fire), helper text distinguishing it ("WhatsApp Business number for automated replies… separate from your contact number above"), and relabelled the button "Connect"→"Save" (no real Meta linking yet; Messenger/Instagram keep "Connect / Coming soon"). The field always saved correctly — the issue was feedback + confusion. Billing table: the "Free trial" label given `whitespace-nowrap` so the TRIAL column's selected-plan bottom border aligns with the others on mobile (the two-word label was wrapping in the narrow column and dropping the border).
+
+**6. PROD DATA / CONFIG changes (applied this session). [DATA/CONFIG — applied].**
+- Account role split for handover: `dominicbonini@hotmail.com` → `is_admin=false`, owns ONLY Pizzeria Gusto (Test Kitchen deactivated, `active=false`). `dominic@villagefoodie.co.uk` → `is_admin=true`, owns no trucks (the platform admin). The stale Gusto staff `truck_users` row for villagefoodie was removed. Handover plan: hand the cleaned hotmail account to Gusto's owners via the existing verified email-change flow (renaming the single-truck account), NOT an ownership-transfer feature.
+- Gusto `whatsapp_sender` changed `447941042253` → `07380736226` (operator's number, replacing the platform/test sender; format to be normalised later). WhatsApp auto-reply testing now routes against `07380736226`.
+
+Backlog additions from this session are logged in Section 27.
 
 ## V7.7 — June 2026
 
@@ -1556,11 +1589,13 @@ navigator.wakeLock: Chrome since v84, Firefox Android since 72, Samsung Internet
 ## Operator and staff accounts
 
 - Operators authenticate via Supabase Auth. The operators table holds account-level data; auth_user_id links to the auth user.
-- Staff are invited via the Team tab and stored in truck_users (owner/manager/staff). Dashboard access is granted if the user is the truck owner OR a truck_users member. Staff are redirected to their vehicle KDS on login and cannot access the Manage page.
+- Staff are invited via the Team tab and stored in truck_users (owner/manager/staff). Dashboard access is granted if the user is the truck owner OR a truck_users member. A one-van staff member is auto-routed to their vehicle KDS on login, but CAN navigate to the orders dashboard `/dashboard/[token]` to place orders. Staff CANNOT access the Manage page (`/manage`).
+
+> **CORRECTION (V7.8)** — the earlier "staff → KDS-only" wording was WRONG. Staff CAN reach the orders dashboard (to take orders); the KDS auto-route on login is a default landing, not a restriction. The only hard block for staff is `/manage`.
 
 ## Four permission levels (V6)
 
-1. **Staff** — redirected to their vehicle KDS; cannot access Manage.
+1. **Staff** — default-landed on their vehicle KDS, but CAN reach the orders dashboard to place orders; cannot access Manage. (Corrected V7.8 — was mis-stated as "KDS-only".)
 2. **Manager** — all Manage tabs except Billing; edits/invites staff only.
 3. **Owner** — full access including Billing.
 4. **Admin (platform-level)** — operators.is_admin = true. A platform role, NOT a truck role.
@@ -2556,6 +2591,17 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## Logged this session (V7.8)
+
+- **HIGH — ownership-transfer / `operator_id`-separation feature.** Handover is currently done via account-rename (the verified email-change flow on a single-truck account). Build a proper transfer if multi-truck / multi-owner scaling needs it.
+- **HIGH — `remove_team_member` leaves ORPHANS.** It deletes only the `truck_users` row, NOT the `operators` row / auth user / `truck_user_vans` / `password_reset_tokens` the invite created. Didn't bite this session (data was clean) but WILL on real invite/remove cycles. Fix BEFORE onboarding the real Gusto owners. Related smells: the invite creates an `operators` row for a non-owner invitee (model smell), and `/dashboard`'s `truck_users` resolution would mis-handle a user in 2+ trucks (now first-picks; a proper PICKER is the real fix).
+- **HIGH — DRY: consolidate the three header components** (order `Hdr`, `TruckClient`, AppHeader) into one shared, parameterised header. The same overlap bug class was fixed separately in each this session (V7.8 §4) — proof of the duplication debt.
+- **MED — multi-owner feature**: owner-invitable role + server guard + display + billing-access model. Manager is currently NOT elevated to billing access (left as-is).
+- **MED — `/api/manage` auth-consistency**: token-possession defaults to owner-level (looser than `/api/dashboard`). Decide whether to tighten.
+- **MED — proper distinct `'admin'` role/view** vs the current owner-equivalent bypass (`/api/dashboard` authorizes admins as `userRole='owner'` interim).
+- **LOW** — ASAP-moved note in the confirmation email (V7.8 §2 backlog: server must pass the resolved ASAP target into email params). KDS back-link `?pin=` pass-through decision (avoid re-prompt). Dead-code cleanup (`upsellSuggestions`, `calculateDealOriginalPrice`, `HOURS`, `applyCode`, + the ~18/10 unused-locals Cursor flagged across `order/page.tsx`).
+- **RESOLVED** — `whatsapp_logs` migration applied to prod earlier this session.
+
 ## Logged this session (V7.0)
 
 - **LIVE-REDEFINITION (status-driven "live") — ✅ BUILT this session (Section 15).** "live" = `status='open'` (operator-started), not the clock window, across the monitor AND customer surfaces; the over-pause fix is preserved (future events are `confirmed`, never selected) and the future-event offline gap is closed (protected from when STARTED). Cron health GREEN-LIT it (`heartbeat-monitor` 30s + `auto-event-scheduler` 60s both succeeding in `cron.job_run_details`; Vault-secret regression NOT recurred). NEEDS DEPLOY: REDEPLOY heartbeat-monitor (gate + logging inert until then).
@@ -2974,6 +3020,7 @@ Every break in this saga was the SAME mistake: a PARALLEL model maintained along
 - Do NOT let "Ready around" use queueAware when the slot was pushed by load/ceiling — it's ceiling-blind.
 - Do NOT add a parallel capacity/occupancy calculation in display code — read the engine.
 - Do NOT write code to "handle" range collection_times data — if it appears, it's bad data; delete it.
+- Do NOT pass the submit fit-read's `excludeOrderKey` anywhere but the submit fit-read (V7.8). The placing order excludes ITSELF (by `order_key`, the UUID PK) ONLY on the fit-read path (`placeOrderInSlotLocked` → `getProductionSlotUnits` → `readProductionSlotUnits` → `buildUnitsFromOrders`, adding `.neq('order_key', excludeOrderKey)`), to stop the first-order-into-empty-cache SELF-COUNT (the order, inserted pending/null-slot before the fit, lazily reseeds and counts itself → over-yields one slot). The authoritative write (`addOrderToProductionSlot`, `persistReseed=true`), the full rebuild (`rebuildProductionSlotUsage`), and ALL readers (dashboard/slots/batch) must NEVER pass it — excluding there would UNDERCOUNT and risk an OVERSELL. The param defaults `undefined` (no exclusion = full occupancy). Exclude by `order_key`, never the per-event display id. Orthogonal to the BUG-1 read-only-reseed fix (which stays).
 - Do NOT trust "tsc-clean" as done — capacity behaviour must be live-verified with real orders against the worked examples above.
 
 ### FILES (the engine vs the displays that read it)
@@ -2993,4 +3040,4 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V7.7
+HatchGrab Engineering Reference Manual · V7.8

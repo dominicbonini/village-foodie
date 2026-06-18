@@ -468,7 +468,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} />}
+        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
       </main>
 
@@ -4221,12 +4221,15 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
 // ══════════════════════════════════════════════════════════════
 // SETTINGS TAB
 // ══════════════════════════════════════════════════════════════
-function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories }: {
+function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, onTruckUpdate }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   onVerifySuccess: (events: any[]) => void
   onSwitchTab: (tab: Tab) => void
   categories: Category[]
+  // Push a freshly-saved value up to the parent `truck` so a remount (tab-switch / reload spinner)
+  // re-seeds `form` and the local mirrors from the NEW value instead of the stale original.
+  onTruckUpdate: (partial: Partial<Truck>) => void
 }) {
   const [form, setForm] = useState({ ...truck })
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -4379,6 +4382,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   const saveSetting = async (key: string, value: string | boolean | number | null) => {
     try {
       await api('update_truck', { data: { [key]: value } })
+      // update_truck returns only { ok }, so merge the just-written key/value into the parent `truck`
+      // locally (it's exactly what the server accepted) — keeps it fresh so a remount re-seeds the
+      // local mirrors (preferredContact / allowCancellation / cancellationCutoff …) from the NEW value.
+      onTruckUpdate({ [key]: value } as Partial<Truck>)
     } catch (e: any) {
       showToast(e.message, 'error')
     }
@@ -4393,6 +4400,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
     try {
       await api('update_truck', { data: { whatsapp_sender: whatsappSender } })
       lastSavedSender.current = whatsappSender
+      onTruckUpdate({ whatsapp_sender: whatsappSender })
       showToast('WhatsApp number saved')
     } catch (e: any) {
       showToast(e.message, 'error')
@@ -4401,7 +4409,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
 
   const saveFormField = async (overrides?: Record<string, unknown>) => {
     try {
-      await api('update_settings', { ...form, ...overrides })
+      // update_settings returns the updated row ({ truck }); push it up so the parent `truck` is
+      // authoritative-fresh and a remount doesn't revert the field to the stale original value.
+      const res = await api('update_settings', { ...form, ...overrides })
+      if (res?.truck) onTruckUpdate(res.truck)
     } catch (e: any) {
       showToast(e.message, 'error')
     }
