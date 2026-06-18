@@ -65,7 +65,14 @@ function ResetPasswordForm() {
         return
       }
 
-      router.push('/login?message=password_reset')
+      // FORCE a clean sign-out of any EXISTING session on this device (e.g. the owner was still
+      // signed in) before sending the new user to login — otherwise the device is left in a confused
+      // half-state (set-password creates no session, but the old one lingers → blank/broken screen).
+      // Same forced-sign-out pattern as the email-change flow (Section 12): browser client + HARD
+      // redirect, which properly clears the SSR cookie (plain client sign-out alone does not).
+      const { createSupabaseBrowserClient } = await import('@/lib/supabase/client')
+      await createSupabaseBrowserClient().auth.signOut()
+      window.location.href = '/login?message=password_reset'
       return
     }
 
