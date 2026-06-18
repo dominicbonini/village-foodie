@@ -45,13 +45,16 @@ export async function GET(req: NextRequest) {
   if (user) {
     const { data: operator } = await supabase
       .from('operators')
-      .select('id, name, email')
+      .select('id, name, email, is_admin')
       .eq('auth_user_id', user.id)
       .maybeSingle()
 
     const isOwner = !!(operator && truck.operator_id && truck.operator_id === operator.id)
 
-    if (isOwner) {
+    // Admins (operators.is_admin) get owner-equivalent ALL-ACCESS to any truck's dashboard, regardless
+    // of ownership/membership (interim — a distinct "admin view" role is backlogged). Folding it into
+    // the owner branch means the non-member 403 below is never reached for an admin.
+    if (isOwner || operator?.is_admin) {
       currentUserName = operator!.name || operator!.email || null
       userRole = 'owner'
     } else {
