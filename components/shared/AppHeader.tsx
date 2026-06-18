@@ -31,9 +31,12 @@ export default function AppHeader({ truckName, truckLogoUrl, subtitle, children 
             />
           </Link>
 
-          {/* Centre: truck logo + name + subtitle — absolutely positioned */}
+          {/* Centre: truck logo + name + subtitle — absolutely positioned. The inner row reserves
+              horizontal space (px-[90px] mobile, cleared at sm:) for the left VF logo + right slot
+              so the centre can't expand over them, and the name is width-bounded + truncated (below)
+              — mirrors the customer order-page header so a scaling/long name can never overlap. */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2 px-[90px] sm:px-0 w-full">
               {truckLogoUrl && (
                 <img
                   src={truckLogoUrl}
@@ -41,10 +44,12 @@ export default function AppHeader({ truckName, truckLogoUrl, subtitle, children 
                   className="w-9 h-9 rounded-full object-cover bg-white shadow-sm shrink-0"
                 />
               )}
-              <div>
-                <p className="font-black text-sm text-white leading-none">{truckName}</p>
+              <div className="min-w-0 max-w-[110px] sm:max-w-xs">
+                {/* text-sm (rem) still scales for accessibility; max-w + truncate bound the WIDTH so a
+                    larger font grows the text size but truncates with ellipsis — never overlaps. */}
+                <p className="font-black text-sm text-white leading-none truncate">{truckName}</p>
                 {subtitle && (
-                  <p className="text-slate-400 text-[11px] mt-0.5">{subtitle}</p>
+                  <p className="text-slate-400 text-[11px] mt-0.5 truncate">{subtitle}</p>
                 )}
               </div>
             </div>
