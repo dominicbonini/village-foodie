@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
       .from('operators')
       .select('id, name, email')
       .eq('auth_user_id', user.id)
-      .single()
+      .maybeSingle()
 
     const isOwner = !!(operator && truck.operator_id && truck.operator_id === operator.id)
 
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
         .select('name, email, role')
         .eq('auth_user_id', user.id)
         .eq('truck_id', truck.id)
-        .single()
+        .maybeSingle()
 
       if (truckUser) {
         currentUserName = truckUser.name || truckUser.email || null
