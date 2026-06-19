@@ -10,7 +10,7 @@ export const ratelimit = new Ratelimit({
 
 export const strictRatelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(3, '1 m'),
+  limiter: Ratelimit.slidingWindow(60, '1 m'),
   analytics: true,
   prefix: 'vf_rl_strict',
 })

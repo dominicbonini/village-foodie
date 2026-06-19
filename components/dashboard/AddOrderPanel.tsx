@@ -8,7 +8,7 @@ import type {
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { isSlotPast } from '@/lib/slot-utils'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { earliestBackwardFitSlot } from '@/lib/slot-availability'
+import { earliestBackwardFitSlot, projectBackwardOccupancy, fitOrderBackward } from '@/lib/slot-availability'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
@@ -553,9 +553,65 @@ setItemModal({ item, modGroups, editCartKey })
   // returns 409 {stock} WITHOUT inserting — we show the real remaining and let the operator
   // choose. override=true (resubmit after "Proceed anyway"): the operator has SEEN the shortfall
   // and deliberately oversells — the server still runs the check, then inserts past it.
-  const submitManual = async (override = false) => {
+  const submitManual = async (override = false, skipFitCheck = false) => {
     if (!hasItems) return
     const effectiveSlot = manualSlot || adjustedAsapSlot?.collection_time || null
+
+    // ── Confirm-time LIVE capacity check (advisory — never blocks) ───────────────
+    // FRESH /api/slots read (no-store) → run the SAME backward-fit engine the customer
+    // page uses (projectBackwardOccupancy + fitOrderBackward, mirroring its `unfittableSlots`
+    // memo) against the CHOSEN slot for THIS exact basket. The manual path books-as-chosen by
+    // design, so this is purely advisory: if the basket doesn't fit, warn so the operator can
+    // override (book anyway, maybe moving another customer) or cancel and re-pick. The check
+    // fetch is for the CHECK ONLY — it does NOT touch the visible slot state (the post-submit
+    // refetch below still refreshes the dots). FAILS OPEN — a flaky/missing check never stops a
+    // manual order. skipFitCheck re-entry (the "use anyway" path + the stock-override re-entry)
+    // avoids re-looping the prompt. Null/ASAP-unresolved slot → nothing to check.
+    if (!skipFitCheck && effectiveSlot && manualEvent) {
+      try {
+        const p = new URLSearchParams({ date: manualEvent.event_date })
+        if (manualEvent.start_time) p.set('start', manualEvent.start_time)
+        if (manualEvent.end_time) p.set('end', manualEvent.end_time)
+        if (manualEvent.id) p.set('event_id', manualEvent.id)
+        const checkRes = await fetch(`/api/slots/${truck.id}?${p}`, { cache: 'no-store' })
+        const checkData = await checkRes.json()
+        const ci = checkData.capacityInputs
+        const freshCfgs = checkData.catConfigs || {}
+        if (ci) {
+          const back = projectBackwardOccupancy(
+            ci.productionSlotUnits || {},
+            freshCfgs,
+            ci.eventStartMins,
+            ci.kitchenCapacity ?? null,
+            ci.capacityWindowMins ?? 5,
+          )
+          // SAME now-clamp rule the panel/customer page use: now-mins for a today event,
+          // -Infinity for a future-dated event (mins-of-day would mis-compare across days).
+          const nowClamp = manualEvent.event_date === getLocalDateInTz(eventTz)
+            ? getNowMinsInTz(eventTz)
+            : Number.NEGATIVE_INFINITY
+          const fit = fitOrderBackward(
+            back,
+            readyToMins(effectiveSlot),
+            basketByCat,
+            freshCfgs,
+            ci.kitchenCapacity ?? null,
+            ci.eventStartMins,
+            ci.capacityWindowMins ?? 5,
+            nowClamp,
+            (ci.productionSlotUnits || {})[effectiveSlot] || {},
+          )
+          if (!fit.fits) {
+            const proceed = window.confirm(
+              `This slot is already booked up for what you're adding.\n\nUse it anyway? You may need to move another customer's slot.\n\nOK = book at ${effectiveSlot} anyway   ·   Cancel = pick another slot`
+            )
+            if (proceed) { await submitManual(override, true); return }
+            return // Cancel — keep the basket, operator re-picks the slot
+          }
+        }
+      } catch { /* FAIL OPEN — a flaky check must never block a manual order */ }
+    }
+
     setLoading(true)
     try {
       const res = await fetch('/api/dashboard/action', {
@@ -600,7 +656,9 @@ setItemModal({ item, modGroups, editCartKey })
           ? shortItems.map(s => `${s.name}: only ${s.remaining} left`).join('\n')
           : 'Some items are low on stock'
         const proceed = window.confirm(`${detail}\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order`)
-        if (proceed) { await submitManual(true); return }
+        // skipFitCheck=true: the fit check already ran (and passed/was overridden) before this
+        // POST — re-entry for the stock override must not re-prompt the fit modal.
+        if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel for adjustment, not inserted
       }
       if (!res.ok) throw new Error(data.error)
