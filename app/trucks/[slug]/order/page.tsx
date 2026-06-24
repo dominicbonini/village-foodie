@@ -10,19 +10,22 @@ import Image from 'next/image';
 import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from '@/lib/order-calculations';
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
 import TruckListCard from '@/components/TruckListCard';
+import { SpiceLevel } from '@/components/SpiceLevel';
 import type { VillageEvent } from '@/types';
-import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils';
+import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils';
+import { OptionStockBadge } from '@/components/OptionStockBadge';
 import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
 import { formatTime, localTodayIso, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils';
 import { isModifierAvailable } from '@/lib/modifier-utils';
+import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst } from '@/lib/modifier-rules';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]
+  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]; spiciness?: number | null; modifierGroups?: ModifierGroup[]; preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | null
 }
 interface UpsellRule {
   id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean
@@ -38,8 +41,8 @@ interface Bundle {
   slot_5_category: string | null; slot_6_category: string | null
 }
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
-interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean }
-interface ModifierGroup { id: string; name: string; options: ModifierOption[] }
+interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
+interface ModifierGroup { id: string; name: string; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
 interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean }
 interface EventData {
@@ -60,7 +63,7 @@ interface EventData {
 interface BasketItem {
   menuItem: MenuItem
   quantity: number
-  modifiers: { name: string; price: number }[]
+  modifiers: { name: string; price: number; allergens?: string[]; dietary?: string[] }[]
   specialInstructions: string
   cartKey: string
 }
@@ -96,6 +99,23 @@ function calcDealOriginalPrice(deal: AppliedDeal, menuItems: MenuItem[]): number
 const HOURS = Array.from({ length: 13 }, (_, i) => String(i + 9).padStart(2, '0'))
 const MINUTES = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55']
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+// Shared pre-order label for a GROUP (category or sub-category): returns the label only when EVERY
+// available item in the group is an enabled pre-order item of the SAME state. Config is global so the
+// per-item strings are identical — the group label is just that shared string. null ⇒ render per-item
+// labels only. Sold-out (available:false) items are hidden, so they don't block the group label.
+function groupPreorderLabel(
+  items: Array<{ available?: boolean }>,
+): { label: string; state: 'before' | 'closed_pending' } | null {
+  const avail = items.filter(it => (it.available ?? true))
+  if (avail.length === 0) return null
+  const read = (it: unknown) => it as { preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | null }
+  const label = read(avail[0]).preorderLabel ?? null
+  const state = read(avail[0]).preorderState ?? null
+  if (!label || !state) return null
+  const allSame = avail.every(it => (read(it).preorderLabel ?? null) === label && (read(it).preorderState ?? null) === state)
+  return allSame ? { label, state } : null
+}
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -245,7 +265,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [dealModalOpen, setDealModalOpen] = useState(false)
   const [selectedBundleForModal, setSelectedBundleForModal] = useState<Bundle | null>(null)
   const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[]; upsells: MenuItem[] } | null>(null)
-  const [modalMods, setModalMods] = useState<{ name: string; price: number }[]>([])
+  const [modalMods, setModalMods] = useState<{ name: string; price: number; allergens?: string[]; dietary?: string[] }[]>([])
   const [modalNotes, setModalNotes] = useState('')
   // Upsells STAGED in the modal (like modalMods) — selected names, committed on "Add to basket".
   const [modalUpsells, setModalUpsells] = useState<string[]>([])
@@ -498,7 +518,23 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   // ── Basket ──────────────────────────────────────────────────────────────────
 
-  const addItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '', source: 'direct' | 'upsell' = 'direct') => {
+  // Option shared-pool gate (D2): would one more of `optNames` exceed any option's BASKET-WIDE pool?
+  // Returns the blocked option name (else null). Untracked options never block. Customer cannot
+  // oversell (no override) — same as item stock; the submit-time atomic draw is the hard backstop.
+  const optionAddBlocked = (optNames: string[]): string | null => {
+    if (!optNames.length) return null
+    const tally = tallyBasketOptionQtys(basket.map(b => ({ quantity: b.quantity, modifiers: b.modifiers })))
+    const stockMap = buildOptionStockByName((menu?.items as any[]) || [])
+    return optionDrawBlocked(tally, optNames, stockMap, 1)
+  }
+
+  // Basket-aware remaining for a modal option pill (display agrees with the §28 gate). null = untracked.
+  const optionRemainingFor = (optName: string, stockCount: number | null | undefined): number | null =>
+    optionRemaining(stockCount, tallyBasketOptionQtys(basket.map(b => ({ quantity: b.quantity, modifiers: b.modifiers })))[optName] || 0)
+
+  const addItem = (item: MenuItem, mods: { name: string; price: number; allergens?: string[]; dietary?: string[] }[] = [], notes = '', source: 'direct' | 'upsell' = 'direct') => {
+    // Option pool guard (basket-wide) — no-op if a chosen option's shared pool is exhausted.
+    if (optionAddBlocked(mods.map(m => m.name))) return
     const key = makeCartKey(item.name, mods, notes)
     setBasket(prev => {
       const ex = prev.find(b => b.cartKey === key)
@@ -569,11 +605,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setModalUpsells([])
   }
 
-  const toggleModalMod = (opt: ModifierOption) => {
-    setModalMods(prev => {
-      const has = prev.some(m => m.name === opt.name)
-      return has ? prev.filter(m => m.name !== opt.name) : [...prev, { name: opt.name, price: opt.price_adjustment }]
-    })
+  // Group-aware toggle: single-select groups (max_choices===1) deselect siblings (radio), multi
+  // respects any max cap — all via the shared lib/modifier-rules helper (one source of truth).
+  const toggleModalMod = (opt: ModifierOption, group: ModifierGroup) => {
+    setModalMods(prev => toggleWithGroupRules(prev, opt, group))
   }
 
   // Toggle a staged upsell (select/deselect) — mirrors toggleModalMod; committed on confirm.
@@ -583,6 +618,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const confirmAddFromModal = () => {
     if (!itemModal) return
+    // Required-group gate (A1): block add until every required group has its min selections.
+    // Defense-in-depth — the Add button is also disabled while unmet (the render surfaces which).
+    if (validateModifierSelection(itemModal.modGroups, modalMods).unmetGroupIds.length > 0) return
     addItem(itemModal.item, modalMods, modalNotes)
     // Commit selected upsells ONCE here (not on tap) — each as its OWN-category basket line
     // (capacity-correct: drink ≠ pizza windows), tagged source:'upsell'.
@@ -594,6 +632,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     setModalNotes('')
     setModalUpsells([])
   }
+
+  // Required-group enforcement for the open item modal (recomputed each render off the live
+  // selection). Drives both the per-group "unmet" highlight and the Add-to-basket disable.
+  const modalUnmetGroupIds = itemModal
+    ? validateModifierSelection(itemModal.modGroups, modalMods).unmetGroupIds
+    : []
 
   // ── Grouped menu ────────────────────────────────────────────────────────────
   const groupedMenu = useMemo(() => {
@@ -1396,7 +1440,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 <>
                   <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
                   {events.map((e) => (
-                    <TruckListCard key={e.id} event={eventToVillage(e, truck?.name || '')} slug={slug} />
+                    <TruckListCard key={e.id} event={eventToVillage(e, truck?.name || '')} slug={slug} forceOrderButton />
                   ))}
                 </>
               )}
@@ -1532,13 +1576,28 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               — inert once the category's content exceeds it, so NO blank gap on long categories.
               Keyed off viewportH (not the active category), so no layout tick is needed. */}
           <div style={{ minHeight: menuMinHeight }}>
-          {groupedMenu.filter(([category]) => selectedCategory == null || category === selectedCategory).map(([category, items]) => (
+          {groupedMenu.filter(([category]) => selectedCategory == null || category === selectedCategory).map(([category, items]) => {
+            const subGroups = groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0)
+            // Category-level pre-order label — only when the category is FLAT (no named sub-category
+            // headings to carry it), so the category + sub-category sites never double up. Shared
+            // string when every available item in the category is an enabled pre-order item.
+            const catPreorder = subGroups.some(g => g.name) ? null : groupPreorderLabel(items)
+            return (
             // divide-y here borders BETWEEN subcategory group wrappers, so the last item before a
             // subcategory header gets a separator (the per-group divide-y below only draws between
             // items WITHIN a group, dropping the boundary line). No leading line (first group) and no
             // trailing line (category's final item) — divide-y only borders between siblings.
             <div key={category} className="mb-4 last:mb-0 divide-y divide-slate-200">
-              {groupBySubcategory(items, menu?.categories?.find(c => c.name === category)?.subcategories).filter(g => g.items.length > 0).map(group => (
+              {catPreorder && (
+                <div className="flex flex-wrap items-center gap-2 mb-1">
+                  <span className="text-xs font-bold text-slate-500">{cap(category)}</span>
+                  {/* Group cue pill — matches the per-item pill style; flex-wrap drops it below on narrow screens. */}
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap ${catPreorder.state === 'closed_pending' ? 'bg-amber-100 text-amber-800' : 'bg-amber-50 text-amber-700'}`}>
+                    {catPreorder.label}
+                  </span>
+                </div>
+              )}
+              {subGroups.map(group => (
               <div key={group.id ?? '__ungrouped'}>
                 {/* Sub-category heading — only a NAMED group with items (Phase 3 order-screen rule);
                     the ungrouped (null) group renders no heading, and empty sub-cats are not shown.
@@ -1554,6 +1613,14 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 {group.name && (
                   <p className={`sticky ${menuCategories.length > 1 ? 'top-[121px]' : 'top-[60px]'} z-20 -mx-4 px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider`}>
                     {cap(group.name)}
+                    {/* Sub-category pre-order pill — shown when every available item in THIS group is an
+                        enabled pre-order item (shared global string). inline-block + whitespace-nowrap so
+                        it wraps below the name as an intact unit on narrow screens. normal-case (the
+                        heading is uppercase; the pill reads as a note). Matches the per-item pill style. */}
+                    {(() => {
+                      const gp = groupPreorderLabel(group.items)
+                      return gp ? <span className={`ml-2 inline-block align-middle normal-case tracking-normal rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap ${gp.state === 'closed_pending' ? 'bg-amber-100 text-amber-800' : 'bg-amber-50 text-amber-700'}`}>{gp.label}</span> : null
+                    })()}
                   </p>
                 )}
                 <div className="divide-y divide-slate-200">
@@ -1563,7 +1630,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   // Cross-category upsells for this item (resolved regardless of qty so they show
                   // in the modal as you add). Rendered ONLY in the item modal now (not inline).
                   const itemUpsells = getItemUpsells(item)
-                  const catModGroups = menu?.categories?.find(c => c.name === item.category)?.modifierGroups || []
+                  // Stage B: per-item groups are the SOLE source (kills the fragile category name-match).
+                  // The grouped item is typed by basket-utils' MenuItem (no modifierGroups) — the menu
+                  // API attaches them at runtime, so read via a localized cast (same as spiciness below).
+                  const catModGroups = (item as { modifierGroups?: ModifierGroup[] }).modifierGroups || []
                   const hasModifiers = catModGroups.length > 0
                   const catAllowNotes = menu?.categories?.find(c => c.name.toLowerCase() === item.category.toLowerCase())?.allowNotes ?? false
                   // Open the modal when the category has EXTRAS or UPSELLS or NOTES — so a
@@ -1572,6 +1642,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   const itemVariants = basket.filter(b => b.menuItem.name === item.name)
                   const directEntry = !hasModifiers ? itemVariants.find(b => b.modifiers.length === 0) : undefined
                   const atStockLimit = item.stock_remaining != null && qty >= item.stock_remaining
+                  // Display-only heat rating. The grouped item is typed by basket-utils' MenuItem (no
+                  // spiciness, deliberately — it must not enter basket/order shapes); read the runtime
+                  // value the menu API carries via a localized cast.
+                  const itemSpiciness = (item as { spiciness?: number | null }).spiciness ?? null
+                  // Pre-order label — server-computed (event-tz, GLOBAL config). Read via a localized
+                  // cast (same as spiciness): the grouped item is basket-utils' MenuItem, the menu API
+                  // attaches the field at runtime. NO client-side time — render the string as-is.
+                  const itemPreorderLabel = (item as { preorderLabel?: string | null }).preorderLabel ?? null
+                  const itemPreorderState = (item as { preorderState?: 'before' | 'closed_pending' | null }).preorderState ?? null
                   return (
                     <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
                     {/* py-3 item-content wrapper (Option B): a TOP LINE, then a FULL-WIDTH description
@@ -1587,8 +1666,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         />
                       )}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex flex-wrap items-center gap-2">
                           <p className={`font-bold text-sm leading-snug ${isSoldOut ? 'text-slate-400 line-through' : 'text-slate-900'}`}>{item.name}</p>
+                          {/* Pre-order pill (server-computed label, §51) — PROMINENT beside the name.
+                              flex-wrap drops it to its own line on narrow screens; whitespace-nowrap keeps
+                              "Pre-order by 16:30, Sat 27 Jun" intact (wraps as a unit, never mid-text).
+                              'before' reuses the allergen-tag amber (bg-amber-50 text-amber-700) to sit in
+                              the warm tag family. NOTE: 'closed_pending' is a DARKER amber (bg-amber-100
+                              text-amber-800) — moot today (global action is sold_out, so the item vanishes
+                              and no closed_pending label shows), but kept distinct so it won't read as
+                              identical to 'before' if force_pending is re-enabled. */}
+                          {itemPreorderLabel && (
+                            <span className={`rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap ${itemPreorderState === 'closed_pending' ? 'bg-amber-100 text-amber-800' : 'bg-amber-50 text-amber-700'}`}>
+                              {itemPreorderLabel}
+                            </span>
+                          )}
                           {isSoldOut && (
                             <span className="text-[0.625rem] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">Sold out</span>
                           )}
@@ -1604,8 +1696,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
                         is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
                     {item.description && <p className="text-slate-400 text-xs mt-1 leading-snug">{item.description}</p>}
-                    {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0) && (
+                    {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0 || (itemSpiciness ?? 0) > 0) && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
+                        <SpiceLevel value={itemSpiciness} />
                         {item.dietary?.map((d: string) => (
                           <span key={d} className="text-[0.625rem] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
                         ))}
@@ -1614,6 +1707,37 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         ))}
                       </div>
                     )}
+                    {/* REQUIRED-group preview (display-only teaser) — shows the choices a customer will
+                        pick in the modal, with the option's delta price + LIVE STANDING stock ("N left",
+                        NOT basket-aware — the item isn't in the basket yet; basket-aware lives in the modal
+                        §29). Required groups ONLY (optional extras stay hidden until the modal). Tapping Add
+                        still opens the modal; this never lets you select from the list. */}
+                    {(() => {
+                      // Required groups only; AVAILABLE options only (filter sold-out like the modal —
+                      // a struck-through option on a teaser line is noise). A group whose options are ALL
+                      // sold out renders no line (no dangling "Protein:"). Standing stock, not basket-aware.
+                      const previewGroups = sortGroupsRequiredFirst(catModGroups)
+                        .filter(g => minRequiredForGroup(g) > 0)
+                        .map(g => ({ ...g, options: g.options.filter(isModifierAvailable) }))
+                        .filter(g => g.options.length > 0)
+                      if (previewGroups.length === 0) return null
+                      return (
+                        <div className="mt-1.5 space-y-0.5">
+                          {previewGroups.map(g => (
+                            <p key={g.id} className="text-[0.625rem] text-slate-400 leading-snug flex flex-wrap items-center gap-x-1 gap-y-0.5">
+                              <span className="font-semibold text-slate-500">{g.name}:</span>
+                              {g.options.map((opt, i) => (
+                                <span key={opt.id} className="inline-flex items-center gap-1">
+                                  {i > 0 && <span className="text-slate-300">·</span>}
+                                  <span>{opt.name}{opt.price_adjustment > 0 ? ` +£${opt.price_adjustment.toFixed(2)}` : ''}</span>
+                                  <OptionStockBadge remaining={opt.stock_count ?? null} />
+                                </span>
+                              ))}
+                            </p>
+                          ))}
+                        </div>
+                      )
+                    })()}
                     {/* BOTTOM BASELINE (canonical food-app layout) — PRICE left, Add/stepper right.
                         A left-aligned price on its own line gives a clean, consistent edge down the
                         list (vs a ragged right-aligned price beside variable-length names). Add/stepper
@@ -1674,17 +1798,22 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           const modSum = v.modifiers.reduce((s, m) => s + m.price, 0)
                           const modLabel = formatModifiers(v.modifiers)
                           const subLabel = [modLabel, v.specialInstructions].filter(Boolean).join(' · ')
+                          // Option shared-pool gate (D2): disable "+" if one more of this variant's
+                          // options would exceed the basket-wide pool (in addition to the item gate).
+                          const optBlockedName = optionAddBlocked(v.modifiers.map(m => m.name))
+                          const plusBlocked = isOrderingBlocked || atStockLimit || !!optBlockedName
                           return (
                             <div key={v.cartKey} className="flex items-center gap-2 bg-orange-50 rounded-xl px-3 py-2 border border-orange-100">
                               <div className="flex items-center gap-1 shrink-0">
                                 <button onClick={() => !isOrderingBlocked && removeItem(v.cartKey)} disabled={isOrderingBlocked} className="w-6 h-6 rounded-full bg-white border border-orange-200 flex items-center justify-center font-bold text-orange-600 hover:bg-orange-100 text-sm leading-none disabled:opacity-40">−</button>
                                 <span className="w-5 text-center font-black text-slate-900 text-sm">{v.quantity}</span>
-                                <button onClick={() => !isOrderingBlocked && !atStockLimit && addItem(v.menuItem, v.modifiers, v.specialInstructions)} disabled={isOrderingBlocked || atStockLimit}
+                                <button onClick={() => !plusBlocked && addItem(v.menuItem, v.modifiers, v.specialInstructions)} disabled={plusBlocked}
                                   className="w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center font-bold text-white hover:bg-orange-700 text-sm leading-none disabled:opacity-40">+</button>
                               </div>
                               <span className={`flex-1 text-xs truncate ${subLabel ? 'text-slate-600' : catAllowNotes ? 'text-slate-400 italic' : ''}`}>
                                 {subLabel || (catAllowNotes ? 'Standard' : '')}
                               </span>
+                              {optBlockedName && <span className="text-[10px] font-bold text-orange-600 shrink-0">{buildOptionStockByName((menu?.items as any[]) || [])[optBlockedName]} {optBlockedName} left</span>}
                               <span className="text-xs font-bold text-slate-700 shrink-0">£{((item.price + modSum) * v.quantity).toFixed(2)}</span>
                             </div>
                           )
@@ -1735,7 +1864,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
               ))}
             </div>
-          ))}
+            )
+          })}
           </div>{/* end min-height wrapper */}
         </div>
 
@@ -2034,9 +2164,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
       {/* Item Modal — modifier selection before adding to basket */}
       {itemModal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setItemModal(null)} />
-          <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl pb-safe">
+          <div className="relative bg-white rounded-2xl w-full max-w-lg shadow-2xl pb-safe max-h-[90vh] overflow-y-auto">
             <div className="px-5 pt-5 pb-4">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -2047,25 +2177,49 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               </div>
 
               <div className="space-y-4">
-                {itemModal.modGroups.map(group => (
-                  <div key={group.id}>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{group.name}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {group.options.filter(isModifierAvailable).map(opt => {
-                        const selected = modalMods.some(m => m.name === opt.name)
-                        return (
-                          <button key={opt.id} onClick={() => toggleModalMod(opt)}
-                            className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 ${
-                              selected ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'
-                            }`}>
-                            <span>{opt.name}</span>
-                            {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
-                          </button>
-                        )
-                      })}
+                {sortGroupsRequiredFirst(itemModal.modGroups).map(group => {
+                  const isSingle = (group.max_choices ?? 99) === 1
+                  const isRequired = minRequiredForGroup(group) > 0
+                  const isUnmet = modalUnmetGroupIds.includes(group.id)
+                  // Rule hint beside the group name. Required+unmet turns the hint amber so the
+                  // customer sees WHICH group still needs an answer when Add is blocked.
+                  const ruleHint = isRequired
+                    ? `Required${isSingle ? ' · choose one' : ''}`
+                    : (isSingle ? 'Choose one' : null)
+                  return (
+                    <div key={group.id}>
+                      <p className="text-xs font-black uppercase tracking-wider mb-2">
+                        <span className="text-slate-500">{group.name}</span>
+                        {ruleHint && (
+                          <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}{isUnmet ? ' (required)' : ''}</span>
+                        )}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {group.options.filter(isModifierAvailable).map(opt => {
+                          const selected = modalMods.some(m => m.name === opt.name)
+                          // Basket-aware remaining (§28 gate, mirrored). Sold-out (pool drawn to 0 by the
+                          // basket) → unselectable; a SELECTED option stays toggleable so it can be deselected.
+                          const rem = optionRemainingFor(opt.name, opt.stock_count)
+                          const soldOut = rem != null && rem <= 0
+                          const lock = soldOut && !selected
+                          return (
+                            <button key={opt.id} onClick={() => { if (!lock) toggleModalMod(opt, group) }} disabled={lock}
+                              className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 transition-all active:scale-95 border-2 rounded-xl ${
+                                selected ? 'bg-orange-600 border-orange-600 text-white' : lock ? 'bg-slate-50 border-slate-200 text-slate-400 line-through cursor-not-allowed opacity-60' : `bg-white text-slate-700 hover:border-orange-300 ${isUnmet ? 'border-amber-300' : 'border-slate-200'}`
+                              }`}>
+                              <span>{opt.name}</span>
+                              {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                              {/* "N left" / sold-out (basket-aware) — shared badge, same thresholds as item stock. */}
+                              <OptionStockBadge remaining={rem} />
+                              {/* Allergen chip removed from selection (V7.8 §31) — a single named ingredient is
+                                  self-evidently its allergen; the data still travels to the order + email (§25). */}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
 
                 {/* GOES WELL WITH — cross-category upsells, added as STANDARD own-category basket
                     items (not modifiers). Same compact pill style as PIZZA EXTRAS above (only the
@@ -2100,12 +2254,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
             <div className="px-5 pb-5 pt-2 border-t border-slate-100">
               <button onClick={confirmAddFromModal}
-                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98]">
-                Add to basket · £{(
-                  itemModal.item.price
-                  + modalMods.reduce((s, m) => s + m.price, 0)
-                  + itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0)
-                ).toFixed(2)}
+                disabled={modalUnmetGroupIds.length > 0}
+                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+                {modalUnmetGroupIds.length > 0
+                  ? 'Choose required options'
+                  : `Add to basket · £${(
+                      itemModal.item.price
+                      + modalMods.reduce((s, m) => s + m.price, 0)
+                      + itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0)
+                    ).toFixed(2)}`}
               </button>
             </div>
           </div>

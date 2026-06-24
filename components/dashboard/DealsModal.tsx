@@ -3,6 +3,10 @@
 // Unified deal selection modal for both truck dashboard and customer ordering
 
 import { useState } from 'react'
+import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, type ModRuleGroup, type ModRuleOption } from '@/lib/modifier-rules'
+import { tallyBasketOptionQtys, optionRemaining } from '@/lib/basket-utils'
+import { OptionStockBadge } from '@/components/OptionStockBadge'
+import { isModifierAvailable } from '@/lib/modifier-utils'
 
 interface Bundle {
   name: string
@@ -19,11 +23,18 @@ interface Bundle {
   end_time?: string | null
 }
 
+// Slot option/group shapes ALIAS the shared rule types (lib/modifier-rules) so the required/
+// single-select machinery + per-option stock/allergen display work exactly like the item modal.
+type SlotModifierOption = ModRuleOption
+type SlotModifierGroup = ModRuleGroup
+
 interface MenuItem {
   name: string
   category: string
   price: number
   available?: boolean
+  // Stage B: per-item modifier groups (sole resolution source — replaces the retired category path).
+  modifierGroups?: SlotModifierGroup[]
 }
 
 interface BasketItem {
@@ -35,9 +46,7 @@ interface BasketItem {
   specialInstructions?: string
 }
 
-interface SlotModifierOption { id: string; name: string; price_adjustment: number }
-interface SlotModifierGroup { id: string; name: string; options: SlotModifierOption[] }
-interface MenuCategory { name: string; allowNotes?: boolean; modifierGroups?: SlotModifierGroup[] }
+interface MenuCategory { name: string; allowNotes?: boolean }
 
 function getBundleSlotCats(bundle: Bundle): string[] {
   return [
@@ -74,7 +83,7 @@ export function DealsModal({
     slotNotes: Record<string, string>
   ) => void
   onClose: () => void
-  existingDeals?: Array<{ bundle: Bundle; slots: Record<string, string>; itemsTakenFromBasket?: string[] }>
+  existingDeals?: Array<{ bundle: Bundle; slots: Record<string, string>; itemsTakenFromBasket?: string[]; slotModifiers?: Record<string, { name: string; price: number }[]> }>
 }) {
   const [selectedDeal, setSelectedDeal] = useState<Bundle | null>(bundles.length === 1 ? bundles[0] : null)
   const [slotSelections, setSlotSelections] = useState<Record<string, string>>({})
@@ -85,12 +94,24 @@ export function DealsModal({
   // Strip ::unit{n} suffix added internally for per-unit dedup — callers never see it
   const stripUnit = (key: string) => key.replace(/::unit\d+$/, '')
 
+  // Stage B per-item resolution (the §21 regression fix): groups live on the ITEM now, not the
+  // category (category.modifierGroups was emptied to []). Reads the same per-item groups the
+  // standalone item modal uses, so required/single-select + stock/allergens all flow.
   const getModGroups = (itemName: string): SlotModifierGroup[] => {
-    if (!menuCategories) return []
-    const item = menuItems.find(m => m.name === itemName)
-    if (!item) return []
-    return menuCategories.find(c => c.name === item.category)?.modifierGroups || []
+    return sortGroupsRequiredFirst(menuItems.find(m => m.name === itemName)?.modifierGroups || [])
   }
+
+  // BASKET-WIDE draw of each option — must match the §28 submit enforcement (which counts ALL
+  // standalone items + ALL deals). Sums: (a) committed standalone basket, (b) every ALREADY-APPLIED
+  // deal's slotModifiers, (c) THIS deal's other slots (excluding `excludeSlot` so a pill reads
+  // remaining BEFORE its own pick). Without (b) the display under-counts across multiple deals
+  // (showed "3 left" again on a 2nd deal) and disagreed with the gate.
+  const dealOptionTally = (excludeSlot?: string): Record<string, number> =>
+    tallyBasketOptionQtys([
+      ...basketItems.map(b => ({ quantity: b.quantity, modifiers: b.modifiers })),
+      ...existingDeals.flatMap(d => Object.values(d.slotModifiers || {}).map(mods => ({ quantity: 1, modifiers: mods }))),
+      ...Object.entries(slotMods).filter(([k]) => k !== excludeSlot).map(([, mods]) => ({ quantity: 1, modifiers: mods })),
+    ])
 
   const getAllowNotes = (itemName: string): boolean => {
     if (!menuCategories) return false
@@ -125,23 +146,25 @@ export function DealsModal({
     setSlotNotes(prefillNotes)
   }
 
-  const toggleSlotMod = (slotKey: string, opt: SlotModifierOption) => {
-    setSlotMods(prev => {
-      const cur = prev[slotKey] || []
-      const already = cur.some(m => m.name === opt.name)
-      return {
-        ...prev,
-        [slotKey]: already
-          ? cur.filter(m => m.name !== opt.name)
-          : [...cur, { name: opt.name, price: opt.price_adjustment }],
-      }
-    })
+  // Group-aware toggle (DRY) — single-select groups behave as RADIO (a required "choose one"
+  // protein deselects siblings), multi respects any cap. Same shared helper the item modals use.
+  const toggleSlotMod = (slotKey: string, opt: SlotModifierOption, group: SlotModifierGroup) => {
+    setSlotMods(prev => ({ ...prev, [slotKey]: toggleWithGroupRules(prev[slotKey] || [], opt, group) }))
   }
 
   const applyDeal = () => {
     if (!selectedDeal) return
     const cats = getBundleSlotCats(selectedDeal)
     if (!cats.every((_, i) => slotSelections[String(i)])) return
+    // Required-modifier gate (defense-in-depth; the button is also disabled). A filled slot whose
+    // item has an unmet required group blocks apply — the operator/customer must choose first.
+    if (cats.some((_, index) => {
+      const raw = slotSelections[String(index)]
+      const isExisting = raw.startsWith('USE_EXISTING:')
+      const id = stripUnit(raw.replace('USE_EXISTING:', ''))
+      const itemName = isExisting ? (basketItems.find(b => itemKey(b) === id)?.name || id) : id
+      return validateModifierSelection(getModGroups(itemName), slotMods[String(index)] || []).unmetGroupIds.length > 0
+    })) return
 
     const cleanSlots: Record<string, string> = {}
     const rawSlots: Record<string, string> = {}
@@ -196,6 +219,19 @@ export function DealsModal({
       buttonPrice += (slotMods[slotKey] || []).reduce((s, m) => s + m.price, 0)
     })
   }
+
+  // Required-modifier gate (mirrors the item modal's modalUnmetGroupIds): a FILLED slot whose
+  // chosen item has a required group not yet satisfied blocks "Apply deal". Shared lib/modifier-rules.
+  const allSlotsFilled = !!selectedDeal && getBundleSlotCats(selectedDeal).every((_, i) => slotSelections[String(i)])
+  const dealHasUnmetRequired = !!selectedDeal && getBundleSlotCats(selectedDeal).some((_, index) => {
+    const slotKey = String(index)
+    const raw = slotSelections[slotKey]
+    if (!raw) return false
+    const isExisting = raw.startsWith('USE_EXISTING:')
+    const id = stripUnit(raw.replace('USE_EXISTING:', ''))
+    const itemName = isExisting ? (basketItems.find(b => itemKey(b) === id)?.name || id) : id
+    return validateModifierSelection(getModGroups(itemName), slotMods[slotKey] || []).unmetGroupIds.length > 0
+  })
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4"
@@ -343,35 +379,51 @@ export function DealsModal({
                     ))}
                   </select>
 
-                  {/* Inline modifier upsells — compact chips */}
+                  {/* Inline modifiers (incl. REQUIRED groups) — radio for single-select, gate below. */}
                   {isFilled && modGroups.length > 0 && (
                     <div className="mt-2.5 space-y-2.5">
-                      {modGroups.map(group => (
-                        <div key={group.id}>
-                          {modGroups.length > 1 && (
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-wide mb-1.5">{group.name}</p>
-                          )}
-                          <div className="flex flex-wrap gap-2">
-                            {group.options.map(opt => {
-                              const isSelected = currentSlotMods.some(m => m.name === opt.name)
-                              return (
-                                <button
-                                  key={opt.id}
-                                  type="button"
-                                  onClick={() => toggleSlotMod(slotKey, opt)}
-                                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-medium transition-all active:scale-95 ${
-                                    isSelected
-                                      ? 'border-orange-500 bg-orange-500 text-white'
-                                      : 'border-slate-200 bg-white text-slate-700 hover:border-orange-300'
-                                  }`}>
-                                  <span>{opt.name}</span>
-                                  <span className={isSelected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>
-                                </button>
-                              )
-                            })}
+                      {modGroups.map(group => {
+                        const isSingle = (group.max_choices ?? 99) === 1
+                        const isRequired = minRequiredForGroup(group) > 0
+                        const unmet = validateModifierSelection([group], currentSlotMods).unmetGroupIds.length > 0
+                        const ruleHint = isRequired ? `Required${isSingle ? ' · choose one' : ''}` : (isSingle ? 'Choose one' : null)
+                        // Basket-aware draw EXCLUDING this slot — so a pill reads remaining before this slot picks it.
+                        const tally = dealOptionTally(slotKey)
+                        return (
+                          <div key={group.id}>
+                            <p className="text-[10px] font-black uppercase tracking-wide mb-1.5">
+                              <span className="text-slate-400">{group.name}</span>
+                              {ruleHint && <span className={`ml-2 font-bold ${unmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}{unmet ? ' (required)' : ''}</span>}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {group.options.filter(isModifierAvailable).map(opt => {
+                                const isSelected = currentSlotMods.some(m => m.name === opt.name)
+                                const rem = optionRemaining(opt.stock_count, tally[opt.name] || 0)
+                                const soldOut = rem != null && rem <= 0
+                                const lock = soldOut && !isSelected
+                                return (
+                                  <button
+                                    key={opt.id}
+                                    type="button"
+                                    onClick={() => { if (!lock) toggleSlotMod(slotKey, opt, group) }}
+                                    disabled={lock}
+                                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-sm font-medium transition-all active:scale-95 ${
+                                      isSelected ? 'border-orange-500 bg-orange-500 text-white'
+                                      : lock ? 'border-slate-200 bg-slate-50 text-slate-400 line-through cursor-not-allowed opacity-60'
+                                      : `bg-white text-slate-700 hover:border-orange-300 ${unmet ? 'border-amber-300' : 'border-slate-200'}`
+                                    }`}>
+                                    <span>{opt.name}</span>
+                                    {opt.price_adjustment > 0 && <span className={isSelected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                                    <OptionStockBadge remaining={rem} />
+                                    {/* Allergen chip removed from selection (V7.8 §31) — the allergen still
+                                        travels on the modifier (toggleWithGroupRules→selectedFromOption) to the order/email. */}
+                                  </button>
+                                )
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
 
@@ -424,9 +476,9 @@ export function DealsModal({
                 {bundles.length > 1 ? 'Back' : 'Cancel'}
               </button>
               <button onClick={applyDeal}
-                disabled={!getBundleSlotCats(selectedDeal).every((_, i) => slotSelections[String(i)])}
+                disabled={!allSlotsFilled || dealHasUnmetRequired}
                 className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-40">
-                Apply deal · £{buttonPrice.toFixed(2)}
+                {allSlotsFilled && dealHasUnmetRequired ? 'Choose required options' : `Apply deal · £${buttonPrice.toFixed(2)}`}
               </button>
             </div>
           </div>

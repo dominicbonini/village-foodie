@@ -6,6 +6,10 @@ import { supabase } from '@/lib/supabase'
 import { calcStockRemaining } from '@/lib/stock-utils'
 import { getLiveItemCounts } from '@/lib/stock-availability'
 import { resolveTruckLogo } from '@/lib/truck-logo'
+import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
+import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel } from '@/lib/preorder'
+import { canAccess } from '@/lib/features'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
@@ -56,7 +60,7 @@ export async function GET(
     { data: codes },
     { data: modifierGroups },
     { data: modifierOptions },
-    { data: categoryModGroups },
+    { data: itemModGroups },
   ] = await Promise.all([
     supabase
       .from('menu_categories')
@@ -98,20 +102,23 @@ export async function GET(
 
     supabase
       .from('modifier_groups')
-      .select('id, name')
+      .select('id, name, is_required, min_choices, max_choices')
       .eq('truck_id', truck.id),
 
     supabase
       .from('modifier_options')
-      .select('id, group_id, name, price_adjustment, available')
+      .select('id, group_id, name, price_adjustment, available, allergens, dietary_info, stock_count')
       .in('group_id',
         (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map((g: { id: string }) => g.id) || []
       )
       .order('sort_order', { ascending: true }),
 
+    // Stage B: per-item modifier-group links are now the SOLE source of truth for resolution.
+    // category_modifier_groups is RETIRED here — item_modifier_groups(menu_item_id, group_id)
+    // drives which groups each dish carries.
     supabase
-      .from('category_modifier_groups')
-      .select('category_id, group_id'),
+      .from('item_modifier_groups')
+      .select('menu_item_id, group_id'),
   ])
 
   console.log('[MENU API] Query results:')
@@ -212,17 +219,26 @@ export async function GET(
   // EVENT-scoped extra-wait (replaces truck.extra_wait_*). Captured here from the resolved event.
   let eventExtraWaitMins = 0
   let eventExtraWaitStartedAt: string | null = null
+  // PRE-ORDER (Stage 3): the resolved event's start (→ minutes-of-day, event-tz) + local date, fed to
+  // isPreorderDeadlinePassed. Null when no event resolves ⇒ the deadline term stays inert.
+  let preorderEventStartMins: number | null = null
+  let preorderEventDate: string | null = null
 
   if (effectiveEventId) {
     const { data: ev } = await supabase
       .from('truck_events')
-      .select('van_id, paused_until, online_paused_until, offline_protection_override, extra_wait_mins, extra_wait_started_at')
+      .select('van_id, paused_until, online_paused_until, offline_protection_override, extra_wait_mins, extra_wait_started_at, start_time, event_date')
       .eq('id', effectiveEventId)
       .single()
 
     if (ev) {
       eventExtraWaitMins = ev.extra_wait_mins ?? 0
       eventExtraWaitStartedAt = ev.extra_wait_started_at ?? null
+      if (ev.start_time) {
+        const [sh, sm] = String(ev.start_time).split(':').map(Number)
+        preorderEventStartMins = (sh || 0) * 60 + (sm || 0)
+      }
+      preorderEventDate = ev.event_date ?? null
       let vanAutoPause = false
       if (ev.van_id) {
         const { data: van } = await supabase
@@ -268,21 +284,47 @@ export async function GET(
     })
   }
 
-  // Build category → modifier groups map
-  const groupMap: Record<string, { id: string; name: string; options: { id: string; name: string; price_adjustment: number }[] }[]> = {}
-  ;(categories || []).forEach(c => { groupMap[c.id] = [] })
-  ;(categoryModGroups || []).forEach(cmg => {
-    const group = (modifierGroups || []).find(g => g.id === cmg.group_id)
-    if (!group || !groupMap[cmg.category_id]) return
+  // Build a resolved group object (with its options) for a given group id. Shared by the per-item
+  // map below. Returns null if the group isn't found.
+  type ResolvedGroup = { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number; options: { id: string; name: string; price_adjustment: number; allergens: string[]; dietary: string[]; available: boolean; stock_count: number | null }[] }
+  const resolveGroup = (groupId: string): ResolvedGroup | null => {
+    const group = (modifierGroups || []).find(g => g.id === groupId)
+    if (!group) return null
     const options = (modifierOptions || [])
       .filter(o => o.group_id === group.id && (isDashboard || o.available !== false))
       .map(o => ({
         id: o.id,
         name: o.name,
         price_adjustment: o.price_adjustment ?? 0,
-        ...(isDashboard && { available: o.available !== false }),
+        // Per-option allergens/dietary (Stage C) — independent of the dish's own allergens.
+        // Surfaced at selection + carried onto the basket line/ticket/email (safety field).
+        allergens: (o.allergens as string[]) || [],
+        dietary: (o.dietary_info as string[]) || [],
+        // available emitted to CUSTOMERS too (Stage D1) — fixes the display gap where a sold-out
+        // option still showed to customers (isModifierAvailable defaulted undefined→true). Both
+        // modals already filter on `available`; they just weren't receiving it on the customer read.
+        available: o.available !== false,
+        stock_count: (o.stock_count as number) ?? null,
       }))
-    groupMap[cmg.category_id].push({ id: group.id, name: group.name, options })
+    return {
+      id: group.id,
+      name: group.name,
+      // Selection rules — consumed by the customer modal (A1) + operator modal (A2). Defaults
+      // mirror the column defaults (not required, multi-select) so an un-set group behaves as today.
+      is_required: (group as any).is_required ?? false,
+      min_choices: (group as any).min_choices ?? 0,
+      max_choices: (group as any).max_choices ?? 99,
+      options,
+    }
+  }
+
+  // Stage B: per-ITEM modifier-group map keyed by menu_item_id (the SOLE resolution source).
+  // Each dish carries its OWN groups; category_modifier_groups no longer participates.
+  const itemGroupMap: Record<string, ResolvedGroup[]> = {}
+  ;(itemModGroups || []).forEach(link => {
+    const g = resolveGroup(link.group_id)
+    if (!g) return
+    ;(itemGroupMap[link.menu_item_id] ||= []).push(g)
   })
 
   // Sub-categories grouped by category_id (display-only labels, sorted by sort_order).
@@ -290,6 +332,39 @@ export async function GET(
   for (const s of (subcategories || [])) {
     ;(subcatMap[s.category_id] ||= []).push({ id: s.id, name: s.name, sort_order: s.sort_order ?? 0 })
   }
+
+  // PRE-ORDER (Stage 3) — read-time context for the sold-out term. Event-tz now (NEVER device-local
+  // new Date().getHours()), and the plan gate: when the truck isn't on advance_preordering, the term
+  // is inert (a Pro→Starter downgrade stops stored config applying). tz defaults to 'Europe/London'
+  // (the documented current state until per-truck trucks.timezone lands).
+  const preorderTz = (truck as any).timezone || 'Europe/London'
+  const preorderNowMins = getNowMinsInTz(preorderTz)
+  const preorderNowDate = getLocalDateInTz(preorderTz)
+  const preorderFeatureOn = canAccess(
+    truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null
+  )
+  // MASTER toggle (V7.8): truck-level preorders_enabled gates ALL pre-order effects. !== false so a
+  // null/pre-migration column reads as ENABLED (existing trucks unaffected). Per-item config is NOT
+  // cleared when off — this gates at READ time only; the config persists ("saved but disabled").
+  const preorderActive = preorderFeatureOn && preorderEventDate != null && preorderEventStartMins != null
+    && (truck as any).preorders_enabled !== false
+
+  // CUSTOMER-FACING pre-order label (V7.8) — computed ONCE, server-side, in event-tz. GLOBAL config:
+  // the deadline clock is the ONE truck-level rule (trucks.preorder_*), identical for every enabled
+  // item, so the "before" string is shared. Per-item enablement only flips whether an item GETS a
+  // label (below). null when the feature/event gate is off ⇒ no labels anywhere. Reuses the helper's
+  // cross-day math (preorderDeadlineClock) — NO client-side time, NO duplicated date arithmetic.
+  let preorderBeforeLabel: string | null = null
+  if (preorderActive) {
+    const clock = preorderDeadlineClock(
+      { enabled: true, deadlineType: (truck as any).preorder_deadline_type,
+        deadlineValue: (truck as any).preorder_deadline_value, pastAction: (truck as any).preorder_past_action },
+      preorderEventDate as string, preorderEventStartMins as number,
+    )
+    if (clock) preorderBeforeLabel = formatPreorderLabel('before', clock.mins, clock.date, preorderEventDate as string)
+  }
+  // The post-cutoff force-pending string is config-independent (the helper ignores mins/date for it).
+  const preorderClosedLabel = formatPreorderLabel('closed_pending', 0, '', '')
 
   // Build menu response
   const menu = {
@@ -301,7 +376,9 @@ export async function GET(
       allowNotes: c.allow_notes ?? false,
       default_stock: c.default_stock ?? null,
       counts_toward_capacity: c.counts_toward_capacity ?? false,
-      modifierGroups: groupMap[c.id] || [],
+      // RETIRED for resolution (Stage B): groups now live on each item. Kept as an empty array so
+      // any lingering category-level reader degrades to "no groups" rather than crashing.
+      modifierGroups: [],
       subcategories: subcatMap[c.id] || [],
     })),
     
@@ -315,14 +392,47 @@ export async function GET(
       // can't represent "unset"): Settings is_available propagates (a Settings-disabled item stays
       // disabled everywhere), a per-event override can only RESTRICT (available=false = per-event
       // sold-out), never force-available. Stock exhaustion also marks unavailable.
+      // PRE-ORDER sold-out (Stage 3): past a 'sold_out' pre-order deadline ⇒ hide like a manual
+      // sold-out. Read-time only (no stored write, auto-reverts), via the shared Stage-2 helper so
+      // display (here) and submit enforcement (Stage 4) can't diverge. Inert when the feature is off
+      // or no event resolved (preorderActive false), or the item isn't a configured pre-order item.
+      // GLOBAL config (V7.8): `enabled` (inclusion) is per-ITEM; the deadline type/value/action are the
+      // ONE truck-level rule (trucks.preorder_*), applied to every included item. Helper untouched.
+      const pre = preorderActive
+        ? isPreorderDeadlinePassed(
+            { enabled: (i as any).preorder_enabled, deadlineType: (truck as any).preorder_deadline_type,
+              deadlineValue: (truck as any).preorder_deadline_value, pastAction: (truck as any).preorder_past_action },
+            preorderEventDate as string, preorderEventStartMins as number, preorderNowDate, preorderNowMins,
+          )
+        : { isPreorder: false, passed: false, pastAction: null as null | 'sold_out' | 'force_pending' }
+      const preorderSoldOut = pre.isPreorder && pre.passed && pre.pastAction === 'sold_out'
+      // Customer-facing label/state for THIS item (reusing the SAME `pre` verdict — one verdict source).
+      // 'before' = deadline not passed; 'closed_pending' = passed & force_pending (still orderable,
+      // kitchen approves). passed & sold_out ⇒ null (the item is available:false/hidden, no label).
+      // Non-enabled item ⇒ pre.isPreorder false ⇒ both null. The strings come from the global compute.
+      let preorderState: 'before' | 'closed_pending' | null = null
+      let preorderLabel: string | null = null
+      if (pre.isPreorder) {
+        if (!pre.passed) { preorderState = 'before'; preorderLabel = preorderBeforeLabel }
+        else if (pre.pastAction === 'force_pending') { preorderState = 'closed_pending'; preorderLabel = preorderClosedLabel }
+      }
       const isAvailable = (i.is_available !== false)
         && (override ? override.available !== false : true)
         && (stockRemaining === null || stockRemaining > 0)
+        // Sold-out if a REQUIRED group has no selectable option left (e.g. all proteins out) — there's
+        // a mandatory choice with nothing to pick, so the item is unorderable. Single source: this
+        // flag propagates to the customer list, operator tiles, and the modal (a sold-out item never
+        // opens orderable). Keys only on required groups (validateModifierSelection skips the group).
+        && !hasUnsatisfiableRequiredGroup(itemGroupMap[i.id] || [])
+        && !preorderSoldOut          // ← pre-order past 'sold_out' deadline (read-time, plan-gated)
       return {
         name: i.name,
         description: i.description || '',
         price: i.price,
         category: (i.menu_categories as any)?.name || 'Uncategorized',
+        // Stage B: per-item modifier groups (SOLE resolution source). Customer modal + operator
+        // AddOrderPanel read item.modifierGroups directly (no more category name-match).
+        modifierGroups: itemGroupMap[i.id] || [],
         subcategory_id: (i as any).subcategory_id ?? null,
         available: isAvailable,
         stock_remaining: stockRemaining,
@@ -332,6 +442,14 @@ export async function GET(
           : null,
         allergens: (i.allergens as string[]) || [],
         dietary: (i.dietary_info as string[]) || [],
+        spiciness: (i.spiciness as number) ?? null,
+        // Operator-only routing flag — read so the Manage editor reflects the saved value.
+        // NOT consumed by the customer page (invisible to customers).
+        auto_accept: (i.auto_accept as boolean) ?? true,
+        // Customer-facing pre-order label (server-computed, event-tz). null when the item isn't an
+        // enabled pre-order item or the feature/event gate is off. The customer page renders it as-is.
+        preorderState,
+        preorderLabel,
       }
     }),
     

@@ -6,8 +6,12 @@ import { Toggle } from '@/components/dashboard/OrderCard'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 
 interface UserMenuProps {
-  truckName: string | null
+  // Account/session control — the identity block shows the LOGGED-IN USER (name + email), NOT the
+  // viewed truck (the truck is identified by the central AppHeader). truckName is no longer used by
+  // the identity block; kept optional for back-compat with callers that still pass it.
+  truckName?: string | null
   operatorName: string | null
+  userEmail?: string | null
   token: string
   // Context flags — control which items appear
   showScreenToggle?: boolean    // dashboard only
@@ -28,6 +32,7 @@ interface UserMenuProps {
 export default function UserMenu({
   truckName,
   operatorName,
+  userEmail,
   token,
   showScreenToggle,
   showOrderUtilities,
@@ -42,8 +47,11 @@ export default function UserMenu({
   onOpenKDS,
 }: UserMenuProps) {
   const [open, setOpen] = useState(false)
-  const initial = operatorName ? operatorName.charAt(0).toUpperCase() : '?'
-  const operatorFirstName = operatorName ? operatorName.split(' ')[0] : null
+  // Identity = the LOGGED-IN USER: prefer their name, fall back to their email. Avatar initial
+  // follows whichever we show.
+  const displayName = (operatorName && operatorName.trim()) || null
+  const identityLabel = displayName || userEmail || null
+  const initial = (identityLabel || '?').charAt(0).toUpperCase()
 
   const handleSignOut = async () => {
     const supabase = createSupabaseBrowserClient()
@@ -79,10 +87,13 @@ export default function UserMenu({
           {/* Dropdown */}
           <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-lg border border-slate-100 z-50 overflow-hidden">
 
-            {/* Identity block — always at top */}
+            {/* Identity block — the LOGGED-IN USER (not the viewed truck). Line 1 = their name
+                (or email if no name), line 2 = their email (omitted when it would duplicate line 1). */}
             <div className="px-4 py-3 border-b border-slate-100">
-              <p className="text-sm font-semibold text-slate-800 truncate">{truckName || '—'}</p>
-              <p className="text-xs text-slate-400 truncate mt-0.5">{operatorFirstName || operatorName || '—'}</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">{identityLabel || '—'}</p>
+              {displayName && userEmail && (
+                <p className="text-xs text-slate-400 truncate mt-0.5">{userEmail}</p>
+              )}
             </div>
 
             {/* Screen on — dashboard only, mobile only */}

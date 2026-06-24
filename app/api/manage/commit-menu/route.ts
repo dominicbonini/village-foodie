@@ -140,6 +140,8 @@ export async function POST(req: NextRequest) {
           description: item.description || null,
           allergens: item.allergens || [],
           dietary_info: item.dietary || [],
+          spiciness: item.spiciness ?? null,
+          auto_accept: item.auto_accept ?? true,
         })
         .eq('id', existing.id)
       if (reItemErr) {
@@ -172,6 +174,8 @@ export async function POST(req: NextRequest) {
         sort_order: itemSortOrder,
         allergens: item.allergens || [],
         dietary_info: item.dietary || [],
+        spiciness: item.spiciness ?? null,
+        auto_accept: item.auto_accept ?? true,
       })
     if (itemErr) {
       console.error('[commit-menu] item insert failed', { truck_id: truck.id, name: item.name }, itemErr.message)

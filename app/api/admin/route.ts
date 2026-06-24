@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,is_test,lifetime_discount_pct,lifetime_discount_note')
+    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note')
     .order('name')
   return NextResponse.json({ trucks: trucks || [] })
 }

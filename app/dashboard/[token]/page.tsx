@@ -1,7 +1,7 @@
 'use client'
 // app/dashboard/[token]/page.tsx
 
-import { useState, useEffect, useCallback, useRef, useMemo, use } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo, use, Fragment } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature } from '@/lib/features'
@@ -37,7 +37,8 @@ import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategor
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
@@ -80,6 +81,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // blur/Enter, reverted on Escape, then cleared (input falls back to the optimistically-updated state).
   const[stockDrafts,setStockDrafts]=useState<Record<string,string>>({})
   const[catStockDrafts,setCatStockDrafts]=useState<Record<string,string>>({})
+  // Standing option-stock number-input drafts (keyed by option id) — same live-edit guard pattern.
+  const[optStockDrafts,setOptStockDrafts]=useState<Record<string,string>>({})
   // Set by Escape so the blur it triggers reverts the draft instead of committing it.
   const skipStockBlurRef=useRef(false)
   const[loading,setLoading]=useState(true)
@@ -837,19 +840,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     catch(err){console.warn('[updateCategoryStock] write failed (will re-sync on next refresh):',err)}
   }
 
-  const updateModifierOptionAvailable=async(optionId:string,available:boolean)=>{
-    // Optimistic update in truckMenu state
+  // Stage B re-source: options now live on item.modifierGroups (category.modifierGroups was emptied),
+  // so the optimistic patch walks the ITEM groups. One shared option appears on multiple items — patch
+  // every copy so the deduped Options list reflects the change immediately.
+  const patchOption=(optionId:string,patch:Partial<ModifierOption>)=>{
     setTruckMenu(prev=>{
       if(!prev)return prev
-      return{...prev,categories:prev.categories?.map(cat=>({
-        ...cat,
-        modifierGroups:cat.modifierGroups?.map(grp=>({
+      return{...prev,items:prev.items.map(it=>it.modifierGroups?{
+        ...it,
+        modifierGroups:it.modifierGroups.map(grp=>({
           ...grp,
-          options:grp.options?.map(opt=>opt.id===optionId?{...opt,available}:opt)
+          options:grp.options?.map(opt=>opt.id===optionId?{...opt,...patch}:opt)
         }))
-      }))}
+      }:it)}
     })
+  }
+  const updateModifierOptionAvailable=async(optionId:string,available:boolean)=>{
+    patchOption(optionId,{available}) // optimistic
     await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_available',optionId,available})})
+  }
+  // STANDING shared-pool count (NOT per-event). Writes modifier_options.stock_count via the new
+  // service-time action. null = untracked/unlimited. Optimistic-then-POST, mirroring updateStock.
+  const updateModifierOptionStock=async(optionId:string,stockCount:number|null)=>{
+    patchOption(optionId,{stock_count:stockCount}) // optimistic
+    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_stock',optionId,stockCount})})}
+    catch(err){console.warn('[updateModifierOptionStock] write failed (will re-sync on next refresh):',err)}
   }
 
   const openEvent=async(eventId:string)=>{
@@ -1126,8 +1141,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           </div>
         </button>
         <UserMenu
-          truckName={truck?.name||null}
-          operatorName={currentUserFirstName || currentUserName?.split(' ')[0] || ''}
+          operatorName={currentUserName || currentUserFirstName || ''}
+          userEmail={currentUserEmail}
           token={token}
           showScreenToggle
           showOrderUtilities
@@ -1703,63 +1718,100 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {activeEvent&&(
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
                 <div>
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
-                    {activeEvent.van_id&&activeVanName&&(
-                      <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5">🚐 {activeVanName}</span>
-                    )}
-                    <select
-                      value={kitchenCapacity??''}
-                      disabled={!activeEvent.van_id}
-                      onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
-                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 w-32 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                      <option value="">No limit</option>
-                      {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                        <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                      ))}
-                    </select>
-                    {/* The ceiling's OWN window cadence — how often the kitchen completes a cycle.
-                        Independent of any category's prep. Disabled until van + capacity are set. */}
-                    <span className="text-sm text-slate-500">every</span>
-                    <select
-                      value={capacityWindowMins}
-                      disabled={!activeEvent.van_id||kitchenCapacity==null}
-                      onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
-                      className="border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 flex-shrink-0 w-28 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                      {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                        <option key={n} value={n}>{n} min</option>
-                      ))}
-                    </select>
-                  </div>
-                  {!activeEvent.van_id&&(
-                    <p className="text-xs text-amber-600 font-medium mt-1.5">⚠ Assign a truck to this event before setting kitchen capacity.</p>
-                  )}
+                  <p className="text-sm font-semibold text-slate-800 tracking-wide mb-3">Kitchen capacity</p>
+                  {/* Prep / Items(batch) / capacity-membership AND the Total-capacity ceiling — aligned
+                      to ONE shared 4-column template (V7.8 §42): CATEGORY · PREP · ITEMS · COUNTS TO
+                      TOTAL CAPACITY. The category grid and the Total-capacity grid use the SAME
+                      grid-template-columns (same container ⇒ identical widths) so the ceiling row lines
+                      up under the category rows. ALL writes unchanged: updateCategoryField
+                      (prep_secs/batch_size), toggleCatCapacityDash (counts_toward_capacity),
+                      saveKitchenCapacity, saveCapacityWindow. Cooking cats (prep>0) lock-checked; instant
+                      cats toggle once a capacity is set. PrepTimeSelect + off-grid preservation unchanged.
+                      The window select stays PLAIN MINUTES (capacity window ≠ a prep time). */}
                   {truckMenu?.categories&&truckMenu.categories.length>0&&(
-                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-                      <span className="text-xs text-slate-400">Limit applies to:</span>
-                      {truckMenu.categories.map(cat=>{
+                    <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 gap-y-2 items-center">
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+                      {truckMenu.categories.map(catObj=>{
                         const hasCap=kitchenCapacity!=null
-                        const locked=(cat.prep_secs??0)>0
-                        const disabled=locked||!hasCap||!activeEvent.van_id
+                        const locked=(catObj.prep_secs??0)>0
+                        const capDisabled=locked||!hasCap||!activeEvent.van_id
                         return(
-                          <label key={cat.id??cat.name}
-                            title={locked
-                              ? 'Cooked — always counts (its prep & batch set the pace)'
-                              : !hasCap ? 'Set a capacity to choose which categories count'
-                              : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
-                            className={`flex items-center gap-1.5 text-sm ${disabled?'text-slate-400 cursor-not-allowed':'text-slate-700 cursor-pointer'}`}>
-                            <input type="checkbox"
-                              checked={locked?true:!!cat.counts_toward_capacity}
-                              disabled={disabled}
-                              onChange={()=>{if(!locked&&hasCap&&cat.id)toggleCatCapacityDash(cat.id,!cat.counts_toward_capacity)}}
-                              className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"/>
-                            <span>{cat.name}</span>
-                            {locked&&<span className="text-[10px] text-slate-400">cooked — always counts</span>}
-                          </label>
+                          <Fragment key={catObj.id??catObj.name}>
+                            <span className="min-w-0 truncate text-slate-700 font-medium text-sm">{catObj.name}</span>
+                            <PrepTimeSelect
+                              valueSecs={catObj.prep_secs}
+                              ariaLabel={`${catObj.name} prep time`}
+                              onChange={secs=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:secs}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',secs)}}
+                              className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                            {/* ITEMS = batch_size, now a dropdown with "N items" labels. ∞ = no batch
+                                limit (null), unchanged write (updateCategoryField 'batch_size'). */}
+                            <select
+                              aria-label={`${catObj.name} items per batch`}
+                              value={(!catObj.batch_size||catObj.batch_size===0)?'':catObj.batch_size}
+                              onChange={e=>{const val=e.target.value===''?null:parseInt(e.target.value);setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:val??undefined}:c)}:prev);updateCategoryField(catObj.id??'','batch_size',val)}}
+                              className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                              <option value="">∞</option>
+                              {Array.from({length:20},(_,i)=>i+1).concat((catObj.batch_size&&catObj.batch_size>20)?[catObj.batch_size]:[]).map(n=>(
+                                <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                              ))}
+                            </select>
+                            <label className={`flex items-center justify-center ${capDisabled?'cursor-not-allowed':'cursor-pointer'}`}
+                              title={locked
+                                ? 'Cooked — always counts (its prep & batch set the pace)'
+                                : !hasCap ? 'Set a capacity to choose which categories count'
+                                : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}>
+                              <input type="checkbox"
+                                checked={locked?true:!!catObj.counts_toward_capacity}
+                                disabled={capDisabled}
+                                onChange={()=>{if(!locked&&hasCap&&catObj.id)toggleCatCapacityDash(catObj.id,!catObj.counts_toward_capacity)}}
+                                className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"/>
+                            </label>
+                          </Fragment>
                         )
                       })}
                     </div>
                   )}
+                  {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories.
+                      PREP column holds the WINDOW (plain whole minutes — NOT PrepTimeSelect; the engine
+                      reads capacity_window_mins as minutes), ITEMS column holds the kitchen_capacity
+                      ceiling. Same saveCapacityWindow / saveKitchenCapacity writes. */}
+                  <div className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-sm font-semibold text-slate-800">Total capacity</span>
+                      {activeEvent.van_id&&activeVanName&&(
+                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5 flex-shrink-0">🚐 {activeVanName}</span>
+                      )}
+                    </div>
+                    <select
+                      value={capacityWindowMins}
+                      aria-label="Capacity window (minutes)"
+                      disabled={!activeEvent.van_id||kitchenCapacity==null}
+                      onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
+                      className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                      {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
+                        <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={kitchenCapacity??''}
+                      aria-label="Total capacity (items)"
+                      disabled={!activeEvent.van_id}
+                      onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
+                      className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                      <option value="">∞</option>
+                      {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                        <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                      ))}
+                    </select>
+                    <span/>
+                  </div>
+                  {!activeEvent.van_id&&(
+                    <p className="text-xs text-amber-600 font-medium mt-1.5">⚠ Assign a truck to this event before setting kitchen capacity.</p>
+                  )}
+                  {/* The per-category "Counts" tick boxes now live in the grid above (one aligned column). */}
                   {kitchenCapacity==null&&activeEvent.van_id&&truckMenu?.categories&&truckMenu.categories.length>0&&(
                     <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
                   )}
@@ -1772,8 +1824,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Stock & availability</p>
-              <p className="text-slate-500 text-xs mb-4">Set category totals, add item-level limits, or toggle availability. Changes take effect immediately.</p>
+              <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Items — this event</p>
+              <p className="text-slate-500 text-xs mb-4">Category totals, item limits and availability for the selected event — these reset each event. Changes take effect immediately.</p>
               {truckMenu&&stockLoading?(
                 // This event's stock hasn't resolved yet (never-viewed) — skeleton, NOT empty/stale rows.
                 <div className="space-y-2 animate-pulse">
@@ -1795,37 +1847,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                           {/* Line 1 (mobile) / full row (desktop) */}
                           <div className="flex items-center gap-2">
                             <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">({catOrdered} sold)</span>}</p>
-                            {/* Prep + Batch: hidden on mobile, shown on sm+ */}
-                            {catObj&&(
-                              <div className="hidden sm:flex items-center gap-2 text-sm">
-                                <div className="flex items-center gap-1">
-                                  <span className="text-slate-500 text-sm">Prep</span>
-                                  <input type="number" min={0} placeholder="0"
-                                    value={Math.floor((catObj.prep_secs??0)/60)}
-                                    onChange={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:v*60+secs30}:c)}:prev)}}
-                                    onBlur={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;updateCategoryField(catObj.id??'','prep_secs',v*60+secs30)}}
-                                    className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                                  <span className="text-slate-500 text-sm">m</span>
-                                  <select
-                                    value={(catObj.prep_secs??0)%60>=30?30:0}
-                                    onChange={e=>{const mins=Math.floor((catObj.prep_secs??0)/60);const s30=parseInt(e.target.value);setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:mins*60+s30}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',mins*60+s30)}}
-                                    className="border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
-                                    <option value={0}>0s</option>
-                                    <option value={30}>30s</option>
-                                  </select>
-                                </div>
-                                <div className="flex flex-col items-center gap-0.5">
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-slate-500 text-sm">Batch</span>
-                                    <input type="number" min={1} placeholder="∞"
-                                      value={(!catObj.batch_size||catObj.batch_size===0)?'':catObj.batch_size}
-                                      onChange={e=>{const v=e.target.value===''||e.target.value==='0'?undefined:parseInt(e.target.value)||undefined;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
-                                      onBlur={e=>{const val=e.target.value===''||e.target.value==='0'?null:parseInt(e.target.value);updateCategoryField(catObj.id??'','batch_size',val)}}
-                                      className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
+                            {/* Prep & batch moved to the "Total capacity" section (V7.8 §42) — this card is per-event STOCK only. */}
                             <div className="flex items-center gap-2">
                               {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
                               <div className="flex flex-col items-center gap-0.5">
@@ -1849,37 +1871,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                               <span className="text-slate-600 font-medium text-xs">total</span>
                             </div>
                           </div>
-                          {/* Line 2: Prep + Batch — mobile only */}
-                          {catObj&&(
-                            <div className="flex sm:hidden items-center gap-3 mt-1.5 text-sm">
-                              <div className="flex items-center gap-1">
-                                <span className="text-slate-500 text-sm">Prep</span>
-                                <input type="number" min={0} placeholder="0"
-                                  value={Math.floor((catObj.prep_secs??0)/60)}
-                                  onChange={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:v*60+secs30}:c)}:prev)}}
-                                  onBlur={e=>{const v=parseInt(e.target.value)||0;const secs30=(catObj.prep_secs??0)%60;updateCategoryField(catObj.id??'','prep_secs',v*60+secs30)}}
-                                  className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                                <span className="text-slate-500 text-sm">m</span>
-                                <select
-                                  value={(catObj.prep_secs??0)%60>=30?30:0}
-                                  onChange={e=>{const mins=Math.floor((catObj.prep_secs??0)/60);const s30=parseInt(e.target.value);setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:mins*60+s30}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',mins*60+s30)}}
-                                  className="border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400">
-                                  <option value={0}>0s</option>
-                                  <option value={30}>30s</option>
-                                </select>
-                              </div>
-                              <div className="flex flex-col items-center gap-0.5">
-                                <div className="flex items-center gap-1">
-                                  <span className="text-slate-500 text-sm">Batch</span>
-                                  <input type="number" min={1} placeholder="∞"
-                                    value={(!catObj.batch_size||catObj.batch_size===0)?'':catObj.batch_size}
-                                    onChange={e=>{const v=e.target.value===''||e.target.value==='0'?undefined:parseInt(e.target.value)||undefined;setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:v}:c)}:prev)}}
-                                    onBlur={e=>{const val=e.target.value===''||e.target.value==='0'?null:parseInt(e.target.value);updateCategoryField(catObj.id??'','batch_size',val)}}
-                                    className="w-12 text-center border border-slate-200 rounded-lg px-1.5 py-1 text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </div>
 
                         <div className="space-y-1.5 ml-2">
@@ -1943,42 +1934,84 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             </div>
                             ))}
                         </div>
-                        {/* Modifier options for this category */}
-                        {(()=>{
-                          const catMods=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())?.modifierGroups??[]
-                          const allOpts=catMods.flatMap(g=>g.options??[])
-                          if(allOpts.length===0)return null
-                          return(
-                            <div className="mt-2 ml-2">
-                              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wide mb-1.5">Modifier options</p>
-                              <div className="space-y-1">
-                                {catMods.map(grp=>(
-                                  <div key={grp.id}>
-                                    {catMods.length>1&&<p className="text-[10px] font-medium text-slate-600 mb-0.5 pl-1">{grp.name}</p>}
-                                    {(grp.options??[]).map(opt=>{
-                                      const isOptOn=opt.available!==false
-                                      return(
-                                        <div key={opt.id} className={`flex items-center gap-2 p-2 rounded-xl border ${!isOptOn?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
-                                          <div className="flex-1 min-w-0">
-                                            <p className={`text-sm font-medium ${!isOptOn?'text-red-500':'text-slate-700'}`}>{opt.name}{opt.price_adjustment!==0&&<span className="text-xs text-slate-600 font-normal ml-1.5">{opt.price_adjustment>0?`+£${opt.price_adjustment.toFixed(2)}`:`-£${Math.abs(opt.price_adjustment).toFixed(2)}`}</span>}</p>
-                                          </div>
-                                          {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">OFF</span>}
-                                          <Toggle on={isOptOn} onToggle={()=>updateModifierOptionAvailable(opt.id,!isOptOn)}/>
-                                        </div>
-                                      )
-                                    })}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        })()}
                       </div>
                     )
                   })}
                 </div>
               ):<p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
             </div>
+
+            {/* ── OPTIONS — STANDING shared-pool stock (item 3) ───────────────────────────
+                Re-sourced from item.modifierGroups (Stage B emptied category.modifierGroups) and
+                deduped by opt.id so a shared option (e.g. prawn) on many dishes shows ONCE. This
+                stock is STANDING — it spans the whole service and does NOT reset per event (unlike
+                the item stock above). Toggling sold-out / setting "N left" applies across ALL dishes
+                that use the option, instantly. */}
+            {truckMenu&&(()=>{
+              // Dedupe options by id, bucketed by their group (in item/group encounter order).
+              const seen=new Set<string>()
+              const buckets:{id:string;name:string;options:ModifierOption[]}[]=[]
+              const byId:Record<string,{id:string;name:string;options:ModifierOption[]}>={}
+              for(const it of (truckMenu.items||[])){
+                for(const g of ((it as MenuItem).modifierGroups||[])){
+                  let b=byId[g.id]
+                  if(!b){b={id:g.id,name:g.name,options:[]};byId[g.id]=b;buckets.push(b)}
+                  for(const o of (g.options||[])){
+                    if(seen.has(o.id))continue
+                    seen.add(o.id)
+                    b.options.push(o)
+                  }
+                }
+              }
+              const total=buckets.reduce((n,b)=>n+b.options.length,0)
+              if(total===0)return null
+              return(
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mt-4">
+                  <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Options — standing stock</p>
+                  <p className="text-slate-500 text-xs mb-4">Shared across all dishes that use them. This count does <span className="font-semibold">not</span> reset per event — it&apos;s a running total for the whole service.</p>
+                  <div className="space-y-3">
+                    {buckets.map(grp=>(
+                      <div key={grp.id} className="space-y-1.5">
+                        {buckets.length>1&&<p className="text-xs font-black text-orange-500 uppercase tracking-wider">{grp.name}</p>}
+                        {grp.options.map(opt=>{
+                          const isOptOn=opt.available!==false
+                          const optCount=opt.stock_count??null // null = untracked/unlimited (standing)
+                          return(
+                            <div key={opt.id} className={`flex items-center gap-2 p-2 rounded-xl border ${!isOptOn?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className={`font-bold text-sm ${!isOptOn?'text-red-500':'text-slate-800'}`}>{opt.name}{opt.price_adjustment!==0&&<span className="text-slate-600 font-normal ml-1.5">{opt.price_adjustment>0?`+£${opt.price_adjustment.toFixed(2)}`:`-£${Math.abs(opt.price_adjustment).toFixed(2)}`}</span>}</p>
+                                  {!isOptOn&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
+                                  {isOptOn&&optCount!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${optCount<=3?'text-red-600 bg-red-100':optCount<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{optCount} left</span>}
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-center gap-0.5">
+                                <input type="number" inputMode="numeric" min="0" placeholder="∞"
+                                  value={optStockDrafts[opt.id] ?? (optCount??'').toString()}
+                                  onFocus={()=>setOptStockDrafts(d=>({...d,[opt.id]:(optCount??'').toString()}))}
+                                  onChange={e=>setOptStockDrafts(d=>({...d,[opt.id]:e.target.value}))}
+                                  onKeyDown={e=>{if(e.key==='Enter')e.currentTarget.blur();else if(e.key==='Escape'){skipStockBlurRef.current=true;e.currentTarget.blur()}}}
+                                  onBlur={()=>{
+                                    const raw=optStockDrafts[opt.id]; const skip=skipStockBlurRef.current; skipStockBlurRef.current=false
+                                    setOptStockDrafts(d=>{const n={...d};delete n[opt.id];return n})
+                                    if(skip||raw===undefined)return
+                                    const trimmed=raw.trim()
+                                    const p=trimmed===''?null:parseInt(trimmed,10)
+                                    const next=p!==null&&!isNaN(p)?Math.max(0,p):null // blank = untracked/unlimited
+                                    if(next!==optCount)updateModifierOptionStock(opt.id,next)
+                                  }}
+                                  className="w-16 border border-slate-200 rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" title="Standing stock — blank = unlimited"/>
+                              </div>
+                              <Toggle on={isOptOn} onToggle={()=>updateModifierOptionAvailable(opt.id,!isOptOn)}/>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
             {truckMenu&&Object.keys(menuGroups).length>0&&(
             <div className="space-y-4">
             <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1 mt-4">

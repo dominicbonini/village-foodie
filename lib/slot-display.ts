@@ -83,8 +83,13 @@ export function buildSlotIndicators(
   const step = backwardWindowStepMins(catConfigs)
 
   for (const s of slots) {
-    // The cooking window ENDING at this collection time (keyed startMins = T − step). Null ⇒ empty oven.
-    const w = back.byStart.get(toMins(s.collection_time) - step) ?? null
+    const slotM = toMins(s.collection_time)
+    // §31 EVENT-START PILE-UP: the event-start slot reads the RAW piled total from the engine's
+    // display-only pileByStart (keyed by eventStartMins ⇒ hits ONLY the event-start collection slot)
+    // — the SAME field the API dot (buildSlotAvailability) reads, so the strip and API can't diverge.
+    // Every other slot uses the cooking window ENDING at this collection time (keyed startMins =
+    // T − step). Null ⇒ empty oven.
+    const w = back.pileByStart.get(slotM) ?? back.byStart.get(slotM - step) ?? null
     const tone: SlotTone = w?.tone ?? 'green'   // engine's tone: batch denominator + capacity ceiling
     const emoji = tone === 'red' ? '🔴' : tone === 'amber' ? '🟡' : '🟢'
 

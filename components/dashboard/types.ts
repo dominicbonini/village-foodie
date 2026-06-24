@@ -7,7 +7,7 @@ export interface OrderItem {
   name: string
   quantity: number
   unit_price: number
-  modifiers?: { name: string; price: number }[]
+  modifiers?: { name: string; price: number; allergens?: string[]; dietary?: string[] }[]
   specialInstructions?: string
 }
 
@@ -93,7 +93,6 @@ export interface TruckData {
   plan: Plan
   trial_expires_at: string | null
   feature_overrides: Record<string, boolean> | null
-  is_test?: boolean
   qr_code_style?: 'standard' | 'branded'
   truck_emoji?: string
 }
@@ -108,6 +107,8 @@ export interface MenuItem {
   stock_remaining?: number | null
   default_stock?: number | null
   image?: string | null
+  /** Stage B: per-item modifier groups (sole resolution source — replaces category name-match). */
+  modifierGroups?: ModifierGroup[]
 }
 
 export interface ModifierOption {
@@ -115,12 +116,18 @@ export interface ModifierOption {
   name: string
   price_adjustment: number
   available?: boolean
+  allergens?: string[]
+  dietary?: string[]
+  stock_count?: number | null
 }
 
 export interface ModifierGroup {
   id: string
   name: string
   options: ModifierOption[]
+  is_required?: boolean
+  min_choices?: number
+  max_choices?: number
 }
 
 export interface TruckMenu {
@@ -150,7 +157,7 @@ export interface BasketItem {
   name: string
   quantity: number
   unit_price: number
-  modifiers?: { name: string; price: number }[]
+  modifiers?: { name: string; price: number; allergens?: string[]; dietary?: string[] }[]
   specialInstructions?: string
   cartKey?: string
 }

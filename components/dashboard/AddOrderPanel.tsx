@@ -14,9 +14,11 @@ import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
+import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst } from '@/lib/modifier-rules'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
-import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
+import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
+import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -158,7 +160,7 @@ export function AddOrderPanel({
 
   // ── item modifier modal ─────────────────────────────────────────────────────
   const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[]; editCartKey?: string } | null>(null)
-  const [modalMods, setModalMods] = useState<{ name: string; price: number }[]>([])
+  const [modalMods, setModalMods] = useState<{ name: string; price: number; allergens?: string[]; dietary?: string[] }[]>([])
   const [modalNotes, setModalNotes] = useState('')
 
   // ── deal modal ──────────────────────────────────────────────────────────────
@@ -255,10 +257,10 @@ export function AddOrderPanel({
   // the earliest collection slot whose cooking windows have room for this order, via the SAME
   // fitOrderBackward engine the picker/server use (no forward tail). The one place the
   // in-progress basket influences the display, and it now agrees with what the picker offers.
-  const adjustedAsapSlot = useMemo(() => {
-    if (!manualSlots.length || !capacityInputs) return manualAsapSlot
+  const asapResult = useMemo(() => {
+    if (!manualSlots.length || !capacityInputs) return { slot: manualAsapSlot, noFit: false }
     const asapStart = manualAsapSlot?.collection_time ?? manualSlots.find(s => !s.is_grace)?.collection_time
-    if (!asapStart) return manualAsapSlot
+    if (!asapStart) return { slot: manualAsapSlot, noFit: false }
     const [sh, sm] = asapStart.split(':').map(Number)
     // NOW-CLAMP (today only — mins-of-day would mis-compare for a future-date event): the operator
     // ASAP can't place cooking windows before now, so a large order pushes out by its real cook span.
@@ -277,8 +279,19 @@ export function AddOrderPanel({
       nowClamp,
     )
     const fitSlot = fitTime ? manualSlots.find(s => s.collection_time === fitTime) : null
-    return fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot
+    // noFit = there IS a basket but the engine found NO genuinely-fitting slot all day (truly full /
+    // over capacity). With the window-scoped ceiling fix this is rare (only a genuinely full day),
+    // not the old "any earlier breach reds out everything". The placement slot still falls back so the
+    // operator can override ONTO it (the override confirm fires), but the DISPLAY must tell the truth —
+    // never a basket-blind "ASAP — 16:40".
+    const hasBasket = Object.keys(basketByCat).length > 0
+    return {
+      slot: fitSlot ?? manualSlots.find(s => !s.is_grace && s.available) ?? manualAsapSlot,
+      noFit: hasBasket && !fitSlot,
+    }
   }, [manualSlots, capacityInputs, serverCatConfigs, basketByCat, manualAsapSlot, eventTz, manualEvent])
+  const adjustedAsapSlot = asapResult.slot
+  const asapNoFit = asapResult.noFit
 
   // "Ready around" (DISPLAY-ONLY readout — NOT placement): must ALWAYS agree with the ASAP slot, which
   // is the engine's load + kitchen-capacity-ceiling-aware earliest-ready (adjustedAsapSlot →
@@ -481,7 +494,23 @@ export function AddOrderPanel({
   }, [manualEvent?.id, manualEvent?.event_date, manualEvent?.start_time, manualEvent?.end_time, fetchManualSlots, isActive])
 
   // ── item manipulation ───────────────────────────────────────────────────────
-  const addManualItem = (item: MenuItem, mods: { name: string; price: number }[] = [], notes = '') => {
+  // Option shared-pool pre-warning (D2): would drawing one more of `optNames` exceed any option's
+  // BASKET-WIDE pool? Returns the blocked option name (else null). Untracked options never block.
+  // The submit-time atomic draw is the real guard; this is the iPhone-settings-style pre-warn.
+  const optionAddBlocked = (optNames: string[]): string | null => {
+    if (!optNames.length) return null
+    const tally = tallyBasketOptionQtys(manualItems.map(i => ({ quantity: i.quantity, modifiers: i.modifiers })))
+    const stockMap = buildOptionStockByName(truckMenu?.items || [])
+    return optionDrawBlocked(tally, optNames, stockMap, 1)
+  }
+
+  // Basket-aware remaining for a modal option pill (display agrees with the §28 gate). null = untracked.
+  const optionRemainingFor = (optName: string, stockCount: number | null | undefined): number | null =>
+    optionRemaining(stockCount, tallyBasketOptionQtys(manualItems.map(i => ({ quantity: i.quantity, modifiers: i.modifiers })))[optName] || 0)
+
+  const addManualItem = (item: MenuItem, mods: { name: string; price: number; allergens?: string[]; dietary?: string[] }[] = [], notes = '') => {
+    const blocked = optionAddBlocked(mods.map(m => m.name))
+    if (blocked) { showToast(`Only ${buildOptionStockByName(truckMenu?.items || [])[blocked]} ${blocked} left — shared across all dishes`, 'error'); return }
     const key = makeCartKey(item.name, mods, notes)
     const unitPrice = item.price + mods.reduce((s, m) => s + m.price, 0)
     setManualItems(prev => {
@@ -492,8 +521,13 @@ export function AddOrderPanel({
   }
 
   const adjustManualQty = (cartKey: string, delta: number) => {
+    if (delta > 0) {
+      const line = manualItems.find(i => (i.cartKey || i.name) === cartKey)
+      const blocked = optionAddBlocked((line?.modifiers || []).map(m => m.name))
+      if (blocked) { showToast(`Only ${buildOptionStockByName(truckMenu?.items || [])[blocked]} ${blocked} left — shared across all dishes`, 'error'); return }
+    }
     setManualItems(prev =>
-      prev.map(i => i.cartKey === cartKey ? { ...i, quantity: i.quantity + delta } : i).filter(i => i.quantity > 0)
+      prev.map(i => (i.cartKey || i.name) === cartKey ? { ...i, quantity: i.quantity + delta } : i).filter(i => i.quantity > 0)
     )
   }
 
@@ -504,15 +538,36 @@ setItemModal({ item, modGroups, editCartKey })
     setModalNotes(existing?.specialInstructions || '')
   }
 
-  const toggleModalMod = (opt: ModifierOption) => {
-    setModalMods(prev => prev.some(m => m.name === opt.name)
-      ? prev.filter(m => m.name !== opt.name)
-      : [...prev, { name: opt.name, price: opt.price_adjustment }]
-    )
+  // Required-modifier gate at the ADD point: an item with a REQUIRED group MUST go through the modal
+  // (where the A2 gate runs) — a bare quick-add would bypass it and land an unsatisfied line. OPTIONAL
+  // extras still quick-add (the modal is not forced for them). Mirrors the customer page, which always
+  // opens the modal for modifier items. modifierGroups is per-item (Stage B), available on the tile.
+  const addOrCustomise = (item: MenuItem) => {
+    const groups = item.modifierGroups || []
+    const hasRequired = groups.some(g => g.is_required || (g.min_choices ?? 0) >= 1)
+    if (hasRequired) openManualItemModal(item, groups) // fresh add (no editCartKey)
+    else addManualItem(item)
   }
+
+  // Group-aware toggle (A2) — single-select groups deselect siblings (radio), multi respects any
+  // max cap, via the SAME shared lib/modifier-rules helper the customer modal uses (A1). One source
+  // of truth — no duplicated rule logic.
+  const toggleModalMod = (opt: ModifierOption, group: ModifierGroup) => {
+    setModalMods(prev => toggleWithGroupRules(prev, opt, group))
+  }
+
+  // Required-group enforcement for the open modal (recomputed each render off the live selection) —
+  // drives the per-group "unmet" highlight AND the Add/Save disable. Applies to BOTH add and edit-save.
+  const modalUnmetGroupIds = itemModal
+    ? validateModifierSelection(itemModal.modGroups, modalMods).unmetGroupIds
+    : []
 
   const confirmAddFromModal = () => {
     if (!itemModal) return
+    // Required-group gate (A2) — blocks both a new add AND an edit re-save (a line saved before a
+    // group became required seeds empty → unmet → operator must choose before saving). Defense-in-
+    // depth; the Add/Save button is also disabled while unmet.
+    if (validateModifierSelection(itemModal.modGroups, modalMods).unmetGroupIds.length > 0) return
     const newKey = makeCartKey(itemModal.item.name, modalMods, modalNotes)
     const newUnitPrice = itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)
     if (itemModal.editCartKey) {
@@ -661,6 +716,14 @@ setItemModal({ item, modGroups, editCartKey })
         if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel for adjustment, not inserted
       }
+      // Option shared-pool shortfall (D2): a tracked modifier option ran out. SHARED POOL — overriding
+      // oversells it across ALL dishes that use it (not just this one). Same override→re-submit shape.
+      if (res.status === 409 && data?.optionStock) {
+        const opt = data.optionName || 'an option'
+        const proceed = window.confirm(`Only a limited amount of "${opt}" left — and it's shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order`)
+        if (proceed) { await submitManual(true, true); return }
+        return // Edit/Cancel — keep the order in the panel
+      }
       if (!res.ok) throw new Error(data.error)
       showToast(`Order #${data.orderId} confirmed`)
       if (manualItems.length) {
@@ -700,7 +763,7 @@ setItemModal({ item, modGroups, editCartKey })
         >
           {/* Show the concrete earliest-fitting time ONLY once the basket has items — empty-basket
               "earliest" (event open) is misleading and jumps as soon as an item is added. Display-only. */}
-          <option value="">⚡ ASAP{(hasItems && adjustedAsapSlot) ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
+          <option value="">⚡ ASAP{asapNoFit ? ' — over capacity (no slot fits)' : (hasItems && adjustedAsapSlot) ? ` — ${adjustedAsapSlot.collection_time}` : ''}</option>
           {/* PAST = the SINGLE live source of truth isSlotPast(eventTz) — never the cached server
               is_past flag (stale once the clock advances; on Vercel it's UTC, an hour off in BST).
               Operators see every slot from NOW including the imminent next one (isSlotPast excludes
@@ -737,7 +800,11 @@ setItemModal({ item, modGroups, editCartKey })
       {/* ASAP-only: the ready estimate is meaningless once a specific slot is picked
           (manualSlot set). manualSlot === '' is the ASAP/default state (the "ASAP — {time}"
           option's value=""), the same truth the dropdown uses — no new source. */}
-      {!manualSlot && readyTime && (() => {
+      {!manualSlot && asapNoFit ? (
+        // Engine found NO genuinely-fitting slot all day (truly over capacity). Tell the truth — do
+        // NOT show a basket-blind "around 16:40". The operator can still pick a specific slot + override.
+        <p className="text-xs text-red-600 font-semibold mt-1.5">⚠ Over capacity — no slot fits this order</p>
+      ) : !manualSlot && readyTime && (() => {
         const isFutureDay = manualEvent && manualEvent.event_date > localTodayIso()
         const dateLabel = isFutureDay
           ? new Date(manualEvent!.event_date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -878,15 +945,22 @@ setItemModal({ item, modGroups, editCartKey })
               const rowKey = item.cartKey || item.name
               const hasMods = (item.modifiers || []).length > 0
               const catAllowNotes = categoryAllowNotes[cat.toLowerCase()] ?? false
-              const itemCatModGroups = truckMenu?.categories?.find(c => c.name === (truckMenu?.items.find(m => m.name === item.name)?.category || ''))?.modifierGroups || []
               const fullMenuItem = truckMenu?.items.find(m => m.name === item.name)
+              // Stage B: per-item groups are the sole source (replaces category name-match).
+              const itemCatModGroups = fullMenuItem?.modifierGroups || []
               const showCustomise = itemCatModGroups.length > 0 && fullMenuItem
+              // Option shared-pool gate (D2): disable "+" if one more of this line's options would
+              // exceed the basket-wide pool. Reuses the item "max" affordance.
+              const optBlocked = optionAddBlocked((item.modifiers || []).map(m => m.name))
               return (
                 <div key={rowKey} className="flex items-start gap-2 py-1">
                   <div className="flex items-center gap-1 shrink-0 mt-0.5">
                     <button onClick={() => adjustManualQty(rowKey, -1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 text-sm leading-none">−</button>
                     <span className="w-5 text-center font-black text-sm text-slate-900">{item.quantity}</span>
-                    <button onClick={() => adjustManualQty(rowKey, 1)} className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-orange-100 hover:text-orange-600 text-sm leading-none">+</button>
+                    {/* Option-pool limit feedback is the DISABLED "+" + its tooltip (consistent with how
+                        items behave on the basket line — no static "max" label on this confirmation surface;
+                        the count lives in the add modal §29). V7.8 §32 removed the basket-line "max" badge. */}
+                    <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? `Only ${buildOptionStockByName(truckMenu?.items || [])[optBlocked]} ${optBlocked} left (shared)` : undefined} className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-sm leading-none ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
                   </div>
                   <div className="flex-1 min-w-0">
                     <OrderLineItem
@@ -990,7 +1064,7 @@ setItemModal({ item, modGroups, editCartKey })
             return (
               <button
                 key={item.name}
-                onClick={() => !atStockLimit && addManualItem(item)}
+                onClick={() => !atStockLimit && addOrCustomise(item)}
                 disabled={atStockLimit}
                 className={`flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
                   atStockLimit ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
@@ -1055,14 +1129,14 @@ setItemModal({ item, modGroups, editCartKey })
                       >−</button>
                       <span className="text-sm font-bold text-slate-800 w-4 text-center">{totalInBasket}</span>
                       <button
-                        onClick={() => !atStockLimit && addManualItem(item)}
+                        onClick={() => !atStockLimit && addOrCustomise(item)}
                         disabled={atStockLimit}
                         className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-600 text-white active:scale-90'}`}
                       >+</button>
                     </div>
                   ) : (
                     <button
-                      onClick={() => !atStockLimit && addManualItem(item)}
+                      onClick={() => !atStockLimit && addOrCustomise(item)}
                       disabled={atStockLimit}
                       className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-100 text-orange-600 active:scale-90'}`}
                     >+</button>
@@ -1213,9 +1287,9 @@ setItemModal({ item, modGroups, editCartKey })
 
       {/* ── Item modifier modal ── */}
       {itemModal && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40" onClick={() => setItemModal(null)} />
-          <div className="relative bg-white rounded-t-2xl w-full max-w-lg shadow-2xl">
+          <div className="relative bg-white rounded-2xl w-full max-w-lg shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="px-5 pt-5 pb-4">
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -1225,23 +1299,46 @@ setItemModal({ item, modGroups, editCartKey })
                 <button onClick={() => setItemModal(null)} className="text-slate-400 hover:text-slate-600 text-xl font-bold leading-none ml-4 mt-0.5">✕</button>
               </div>
               <div className="space-y-4">
-                {itemModal.modGroups.map(group => (
-                  <div key={group.id}>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">{group.name}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {group.options.filter(isModifierAvailable).map((opt: ModifierOption) => {
-                        const selected = modalMods.some(m => m.name === opt.name)
-                        return (
-                          <button key={opt.id} onClick={() => toggleModalMod(opt)}
-                            className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 rounded-xl border-2 transition-all active:scale-95 ${selected ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-200 text-slate-700 hover:border-orange-300'}`}>
-                            <span>{opt.name}</span>
-                            {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
-                          </button>
-                        )
-                      })}
+                {sortGroupsRequiredFirst(itemModal.modGroups).map(group => {
+                  const isSingle = (group.max_choices ?? 99) === 1
+                  const isRequired = minRequiredForGroup(group) > 0
+                  const isUnmet = modalUnmetGroupIds.includes(group.id)
+                  const ruleHint = isRequired
+                    ? `Required${isSingle ? ' · choose one' : ''}`
+                    : (isSingle ? 'Choose one' : null)
+                  return (
+                    <div key={group.id}>
+                      <p className="text-xs font-black uppercase tracking-wider mb-2">
+                        <span className="text-slate-500">{group.name}</span>
+                        {ruleHint && (
+                          <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}{isUnmet ? ' (required)' : ''}</span>
+                        )}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {group.options.filter(isModifierAvailable).map((opt: ModifierOption) => {
+                          const selected = modalMods.some(m => m.name === opt.name)
+                          // Basket-aware remaining (§28 gate, mirrored to display). Sold-out when the
+                          // basket already drew the pool to 0 — unselectable, but a SELECTED option stays
+                          // toggleable so it can be deselected.
+                          const rem = optionRemainingFor(opt.name, opt.stock_count)
+                          const soldOut = rem != null && rem <= 0
+                          const lock = soldOut && !selected
+                          return (
+                            <button key={opt.id} onClick={() => { if (!lock) toggleModalMod(opt, group) }} disabled={lock}
+                              className={`flex items-center gap-1.5 text-sm font-bold px-3.5 py-2 transition-all active:scale-95 border-2 rounded-xl ${selected ? 'bg-orange-600 border-orange-600 text-white' : lock ? 'bg-slate-50 border-slate-200 text-slate-400 line-through cursor-not-allowed opacity-60' : `bg-white text-slate-700 hover:border-orange-300 ${isUnmet ? 'border-amber-300' : 'border-slate-200'}`}`}>
+                              <span>{opt.name}</span>
+                              {opt.price_adjustment > 0 && <span className={selected ? 'text-orange-200' : 'text-orange-500'}>+£{opt.price_adjustment.toFixed(2)}</span>}
+                              {/* "N left" / sold-out (basket-aware) — shared badge, same thresholds as item stock. */}
+                              <OptionStockBadge remaining={rem} />
+                              {/* Per-option allergens (Stage C) NOT shown on the operator selection (V7.8 §25) —
+                                  the operator knows their menu; still carried onto the line for the email. */}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
                 {(truckMenu?.categories?.find(c => c.name === itemModal.item.category)?.allowNotes ?? false) && (
                   <div>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Note <span className="font-normal normal-case text-slate-400">— optional</span></p>
@@ -1255,8 +1352,11 @@ setItemModal({ item, modGroups, editCartKey })
             </div>
             <div className="px-5 pb-5 pt-2 border-t border-slate-100">
               <button onClick={confirmAddFromModal}
-                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98]">
-                {itemModal.editCartKey ? 'Save changes' : 'Add'} · £{(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)).toFixed(2)}
+                disabled={modalUnmetGroupIds.length > 0}
+                className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+                {modalUnmetGroupIds.length > 0
+                  ? 'Choose required options'
+                  : `${itemModal.editCartKey ? 'Save changes' : 'Add'} · £${(itemModal.item.price + modalMods.reduce((s, m) => s + m.price, 0)).toFixed(2)}`}
               </button>
             </div>
           </div>

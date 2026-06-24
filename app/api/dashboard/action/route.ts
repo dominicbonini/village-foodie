@@ -13,8 +13,10 @@ import {
   rebuildProductionSlotUsage,
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
+import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
+import { releaseOptionStock, drawOptionStock, findSoldOutOption, compensateOptionDraws } from '@/lib/option-stock'
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -123,6 +125,11 @@ export async function POST(req: NextRequest) {
           normaliseOrderLines(order.items || [], order.deals), itemCatMap
         )
       }
+      // D2: re-credit the option shared pool — only if this order was NOT already cancelled/rejected
+      // (double-reversal guard: those statuses already released, or never drew).
+      if (order.status !== 'cancelled' && order.status !== 'rejected') {
+        await releaseOptionStock(supabase, truck.id, order.items || [], order.deals || [])
+      }
       if (order.customer_email) {
         // Mirrors the cancel email's reasonLine — the operator's reason, escaped, shown to the customer.
         const reasonLine = rejectionReason ? `<p style="color:#475569">Reason: ${escapeHtml(rejectionReason)}</p>` : ''
@@ -151,6 +158,11 @@ export async function POST(req: NextRequest) {
           supabase, truck.id, order.event_id, order.slot,
           normaliseOrderLines(order.items || [], order.deals), itemCatMap
         )
+      }
+      // D2: re-credit the option shared pool — guarded against double-reversal (skip if already
+      // cancelled/rejected, which already released or never drew).
+      if (order.status !== 'cancelled' && order.status !== 'rejected') {
+        await releaseOptionStock(supabase, truck.id, order.items || [], order.deals || [])
       }
       if (order.customer_email) {
         const reasonLine = cancellationReason ? `<p style="color:#475569">${cancellationReason}</p>` : ''
@@ -386,6 +398,84 @@ export async function POST(req: NextRequest) {
       if (!items?.length && !deals?.length) {
         return NextResponse.json({ error: 'Items required' }, { status: 400 })
       }
+
+      // ── Required-modifier completeness guard (operator backstop; mirrors the §15 customer-submit
+      // guard) ───────────────────────────────────────────────────────────────────────────────────
+      // The operator UI now forces required items through the modal (addOrCustomise); this is the
+      // SERVER net for that path — operator orders submit here, NOT via /api/orders/submit, so they
+      // skip §15. Resolves each line's required groups PER-ITEM (Stage B: name → id → item_modifier_
+      // groups) and runs the shared validateModifierSelection. Standalone `items` only (deal-slot
+      // constituents are out of scope, same as §15). FAIL-SAFE: any INTERNAL error → log + PROCEED
+      // (never block a valid operator order on the guard's own bug); unknown/renamed names skipped.
+      try {
+        const requiredUnmet = await (async () => {
+          const { data: groupsRaw } = await supabase
+            .from('modifier_groups')
+            .select('id, name, is_required, min_choices, max_choices')
+            .eq('truck_id', truck.id)
+          const requiredIds = new Set((groupsRaw || [])
+            .filter(g => g.is_required || (g.min_choices ?? 0) >= 1)
+            .map(g => g.id))
+          if (requiredIds.size === 0) return null // no required groups → nothing to enforce
+
+          const [{ data: itemLinks }, { data: optsRaw }, { data: itemRows }] = await Promise.all([
+            supabase.from('item_modifier_groups').select('menu_item_id, group_id'),
+            supabase.from('modifier_options').select('id, group_id, name, price_adjustment, available, stock_count').in('group_id', Array.from(requiredIds)),
+            supabase.from('menu_items_db').select('id, name').eq('truck_id', truck.id),
+          ])
+          const itemIdByName: Record<string, string> = {}
+          ;(itemRows || []).forEach(i => { itemIdByName[i.name] = i.id })
+          const groupsById = new Map((groupsRaw || []).map(g => [g.id, { ...g, options: (optsRaw || []).filter(o => o.group_id === g.id) }]))
+          const reqGroupsByItemId: Record<string, any[]> = {}
+          ;(itemLinks || []).forEach(link => {
+            if (!requiredIds.has(link.group_id)) return
+            const g = groupsById.get(link.group_id); if (!g) return
+            ;(reqGroupsByItemId[link.menu_item_id] ||= []).push(g)
+          })
+          for (const it of (items || [])) {
+            const itemId = itemIdByName[it.name]
+            if (!itemId) continue // unknown/renamed item → can't resolve → skip (never fail on a name miss)
+            const groups = reqGroupsByItemId[itemId] || []
+            if (groups.length === 0) continue
+            // §36 backstop: a required group with no selectable option → item is sold out (unorderable).
+            if (hasUnsatisfiableRequiredGroup(groups)) return { item: it.name, soldOut: true }
+            const selected = Array.isArray(it.modifiers) ? it.modifiers : []
+            const { unmetGroupNames } = validateModifierSelection(groups, selected)
+            if (unmetGroupNames.length > 0) return { item: it.name, group: unmetGroupNames[0] }
+          }
+          // DEAL-SLOT items (§29 fix): a slot item with a required group must have it satisfied via
+          // deal.slotModifiers[slotKey] — same resolution as standalone, validated per slot.
+          for (const d of (deals || [])) {
+            const slots = d?.slots || {}
+            const slotMods = d?.slotModifiers || {}
+            for (const slotKey of Object.keys(slots)) {
+              const itemId = itemIdByName[slots[slotKey]]
+              if (!itemId) continue // unknown/renamed slot item → skip (never fail on a name miss)
+              const groups = reqGroupsByItemId[itemId] || []
+              if (groups.length === 0) continue
+              if (hasUnsatisfiableRequiredGroup(groups)) return { item: slots[slotKey], soldOut: true }
+              const selected = Array.isArray(slotMods[slotKey]) ? slotMods[slotKey] : []
+              const { unmetGroupNames } = validateModifierSelection(groups, selected)
+              if (unmetGroupNames.length > 0) return { item: slots[slotKey], group: unmetGroupNames[0] }
+            }
+          }
+          return null
+        })()
+        if (requiredUnmet) {
+          return NextResponse.json(
+            {
+              error: requiredUnmet.soldOut
+                ? `Sorry, ${requiredUnmet.item} is sold out.`
+                : `Please choose ${requiredUnmet.group} for ${requiredUnmet.item}.`,
+              requiredModifier: true,
+            },
+            { status: 400 },
+          )
+        }
+      } catch (err) {
+        console.error('[manual] required-modifier guard error — proceeding (fail-safe):', err)
+      }
+
       const eventDate = passedEventDate || new Date().toISOString().split('T')[0]
       // Resolve event_id: prefer the explicit ID from the panel; fall back to a
       // truck_id + event_date lookup ONLY when exactly one event matches that date
@@ -429,6 +519,11 @@ export async function POST(req: NextRequest) {
       const haveLock = (await acquireEventLock(truck.id, eventDate)).ok
       let newOrderId = ''
       let manualOrderKey = ''
+      // Option shared-pool draw (D2) — mirrors the customer /api/orders/submit path. `placed` flips
+      // true once the order row is inserted; the finally re-credits any draw that did NOT end up on a
+      // placed order (no leak on a non-placed order).
+      let optionDraws: { id: string; qty: number }[] = []
+      let placed = false
       try {
         if (!haveLock) {
           return NextResponse.json(
@@ -446,6 +541,31 @@ export async function POST(req: NextRequest) {
           if (shortfall) {
             return NextResponse.json({ error: 'Not enough stock', stock: true, items: shortfall }, { status: 409 })
           }
+        }
+
+        // (a2) OPTION SHARED-POOL DRAW (D2) — the oversell gate for tracked modifier options, mirroring
+        //      the customer path (/api/orders/submit). Atomic per option (conditional RPC), all-or-nothing,
+        //      basket-wide per option (tallies across all lines + deal slots). Untracked (null stock) skipped.
+        //      NON-override: findSoldOutOption (manual sold-out / stock-0 backstop) then drawOptionStock —
+        //      a shortfall → 409 with the option name so the client shows the shared-pool override confirm.
+        //      OVERRIDE (informed oversell): still ATTEMPT the atomic draw (decrements what's available);
+        //      an all-or-nothing shortfall just isn't blocked (the pool floors — can't go negative). Either
+        //      way `optionDraws` holds what actually drew, for compensation if the order doesn't place.
+        if (!override) {
+          const soldOut = await findSoldOutOption(supabase, truck.id, items, deals)
+          if (soldOut) {
+            return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true, optionName: soldOut }, { status: 409 })
+          }
+          const draw = await drawOptionStock(supabase, truck.id, items, deals)
+          if (!draw.ok) {
+            return NextResponse.json({ error: `Sorry, ${draw.soldOutName} just sold out.`, optionStock: true, optionName: draw.soldOutName }, { status: 409 })
+          }
+          optionDraws = draw.drawn
+        } else {
+          // Informed oversell: attempt the draw; an insufficiency isn't blocked (drawn=[] on all-or-nothing
+          // shortfall — the pool stays put, the order places past it, same flooring as item-stock override).
+          const draw = await drawOptionStock(supabase, truck.id, items, deals)
+          optionDraws = draw.drawn
         }
 
         // (b) Display number (per-event, restarts at 1) — under the lock. order_key UUID is set
@@ -475,12 +595,20 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
         }
         manualOrderKey = manualOrderRow.order_key
+        placed = true   // order row exists → the option draw is now legitimately consumed (keep it)
 
-        // (d) Occupy the oven window — under the lock. slot may be null (manual ASAP) → booked
-        //     into this event's start window. orderEventId null → addOrderToProductionSlot skips.
-        await addOrderToProductionSlot(supabase, truck.id, orderEventId, slot, manualLines, itemCatMap)
+        // (d) Occupy the oven window — REBUILD from orders (deterministic; the SAME path cancel/reject/
+        //     collect use) instead of the old incremental read-merge-blind-SET (clobber/drift vector).
+        //     Recomputes the slot total = the true sum of this event's orders (incl. the just-inserted
+        //     one; an override order PUSHES the total further over capacity, never clobbers). Under the
+        //     SAME event lock. Null event → nothing to rebuild (matches the old addOrderToProductionSlot
+        //     skip; a null-event walk-up isn't counted by buildUnitsFromOrders anyway). Event-date-scoped.
+        if (orderEventId) await rebuildProductionSlotUsage(supabase, truck.id, eventDate)
       } finally {
         if (haveLock) await releaseEventLock(truck.id, eventDate)
+        // Compensate any option draw that did NOT end up on a placed order (insert error / throw /
+        // contention bail after the draw). A successfully-inserted order keeps its draw.
+        if (optionDraws.length && !placed) await compensateOptionDraws(supabase, optionDraws)
       }
 
       // Venue strictly by the resolved orderEventId (cross-event fix) — date+maybeSingle
@@ -664,6 +792,24 @@ export async function POST(req: NextRequest) {
         const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
         if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         await supabase.from('modifier_options').update({ available: available !== false }).eq('id', optionId)
+      }
+      return NextResponse.json({ success: true })
+    }
+
+    // ── SET MODIFIER-OPTION STOCK — STANDING shared pool (item 3, D2 axis) ─────
+    // Operator service-time write of the STANDING count: modifier_options.stock_count spans the
+    // whole service (NOT per-event — that's event_item_stock, for menu items only). NULL/blank =
+    // untracked/unlimited (consistent with D1). This is the operator SET; the D2 decrement RPCs are
+    // the separate order-time draw. Same group→truck guard as set_modifier_option_available.
+    if (action === 'set_modifier_option_stock') {
+      const { optionId, stockCount } = body
+      if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
+      const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
+      if (opt) {
+        const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
+        if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        const next = (stockCount === null || stockCount === undefined || stockCount === '') ? null : Math.max(0, parseInt(String(stockCount), 10) || 0)
+        await supabase.from('modifier_options').update({ stock_count: next }).eq('id', optionId)
       }
       return NextResponse.json({ success: true })
     }

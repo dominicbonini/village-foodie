@@ -363,7 +363,17 @@ export function OrderCard({
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold flex-shrink-0">#{order.id}</span>
                 {timeLabel && <span className="text-lg font-bold flex-shrink-0">· {timeLabel}</span>}
-                <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
+                {/* Solo (dashboard) sits under a status SECTION HEADING ("New — action needed" /
+                    "Confirmed"), so the badge is redundant for those baseline statuses AND it pushes
+                    the useful "in Xm" readout off the right edge. Suppress it for 'confirmed' (the
+                    "Confirmed" heading says it; header colour is age-based, not status) and 'pending'
+                    (the "New" heading says it). KEEP it for 'modified' — its ONLY signal (heading
+                    says "Confirmed", header colour is age-based) — and for 'cooking'/'ready' (the
+                    explicit word helps; header top-border colour also signals them). KDS (window/cook)
+                    never render this badge. */}
+                {!['confirmed', 'pending'].includes(order.status) && (
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
+                )}
                 {(offsetLabel !== null || allStruck) && (
                   <div className="flex items-center gap-1.5 font-medium text-sm ml-auto flex-shrink-0">
                     {offsetLabel !== null && <span className="opacity-70">{offsetLabel}</span>}

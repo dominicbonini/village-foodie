@@ -10,6 +10,7 @@ import { resolveTruckLogo } from '@/lib/truck-logo'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { getSoleActiveVanId } from '@/lib/van-utils'
+import { canAccess } from '@/lib/features'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -73,6 +74,7 @@ export async function GET(req: NextRequest) {
     { data: modifierGroups },
     { data: modifierOptions },
     { data: categoryModGroups },
+    { data: itemModGroups },
     { data: bundles },
     { data: codes },
     { data: events },
@@ -85,6 +87,11 @@ export async function GET(req: NextRequest) {
       (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map(g => g.id) || []
     ).order('sort_order'),
     supabase.from('category_modifier_groups').select('*'),
+    // Stage B: per-item links so the dish-picker (Part 2) + item editor reverse-view (Part 4) can
+    // render current state. Scoped to THIS truck's groups (cross-truck links can't exist anyway).
+    supabase.from('item_modifier_groups').select('menu_item_id, group_id').in('group_id',
+      (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map(g => g.id) || []
+    ),
     supabase.from('bundles_db').select('*').eq('truck_id', truck.id).order('sort_order'),
     supabase.from('discount_codes_db').select('*').eq('truck_id', truck.id),
     supabase.from('truck_events').select('*').eq('truck_id', truck.id)
@@ -118,6 +125,17 @@ export async function GET(req: NextRequest) {
         .order('name')
     : { data: [] }
 
+  // Owner identity for the Team page owner row — the truck's ACTUAL operator (trucks.operator_id),
+  // resolved to email + auth_user_id so the client renders the REAL owner and only badges "(you)"
+  // when the viewer IS the owner (not just any admin viewing). Null when the truck is unclaimed.
+  const { data: ownerOperator } = truck.operator_id
+    ? await supabase
+        .from('operators')
+        .select('email, auth_user_id')
+        .eq('id', truck.operator_id)
+        .maybeSingle()
+    : { data: null }
+
   // SECURITY: scope to the AUTHED operator (account-level), NOT truck.operator_id — a shared/pooled
   // operator_id must not surface another context's pending email change in this truck's console.
   // Logged-out (token-only) access ⇒ no session operator ⇒ no banner (email-change requires login).
@@ -146,11 +164,14 @@ export async function GET(req: NextRequest) {
     modifierGroups: modifierGroups || [],
     modifierOptions: modifierOptions || [],
     categoryModGroups: categoryModGroups || [],
+    itemModGroups: itemModGroups || [],
     bundles: stockCheckedBundles,
     codes: codes || [],
     events: events || [],
     userRole,
     currentUserId,
+    ownerEmail: ownerOperator?.email ?? null,
+    ownerAuthUserId: ownerOperator?.auth_user_id ?? null,
     operatorTrucks: operatorTrucks || [],
     pendingEmailChange: pendingEmailChange || null,
   })
@@ -201,6 +222,7 @@ export async function POST(req: NextRequest) {
     'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
     'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
+    'set_item_modifier_group', 'set_item_modifier_groups_bulk', 'set_item_preorder_bulk',
     'upsert_upsell_rule', 'delete_upsell_rule',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
@@ -332,13 +354,18 @@ export async function POST(req: NextRequest) {
 
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info } = body
+    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info, spiciness, auto_accept, preorder_enabled } = body
     // Managed sub-category reference (nullable; null = ungrouped). The legacy text `subcategory`
     // column is the rollback source — no longer WRITTEN here (we write only subcategory_id now).
     const subcatId = (typeof subcategory_id === 'string' && subcategory_id) ? subcategory_id : null
+    // PRE-ORDER (V7.8 global-config): per-item stores ONLY `preorder_enabled` (inclusion). The
+    // deadline type/value/action live ONCE on the truck row (trucks.preorder_*), read by both effects
+    // — never written per-item (single-source). The per-item type/value/action columns remain in the
+    // DB but inert (never written/read). enabled `?? null` only when present (partial saves untouched).
+    const preorderCols = preorder_enabled === undefined ? {} : { preorder_enabled: preorder_enabled ?? null }
     if (id) {
       const { data, error } = await supabase.from('menu_items_db')
-        .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, updated_at: new Date().toISOString() })
+        .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -346,7 +373,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
-        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory_id: subcatId, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [] })
+        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory_id: subcatId, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [], spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -417,12 +444,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'upsert_modifier_option') {
-    const { id, group_id, name, price_adjustment, type, sort_order } = body
+    const { id, group_id, name, price_adjustment, type, sort_order, allergens, dietary_info, available, stock_count } = body
     if (id) {
-      const { data } = await supabase.from('modifier_options').update({ name, price_adjustment, type, sort_order }).eq('id', id).select().single()
+      const { data } = await supabase.from('modifier_options').update({ name, price_adjustment, type, sort_order, allergens: allergens ?? [], dietary_info: dietary_info ?? [], available: available ?? true, stock_count: stock_count ?? null }).eq('id', id).select().single()
       return NextResponse.json({ option: data })
     } else {
-      const { data, error } = await supabase.from('modifier_options').insert({ group_id, name, price_adjustment: price_adjustment || 0, type: type || 'add', sort_order: sort_order || 0 }).select().single()
+      const { data, error } = await supabase.from('modifier_options').insert({ group_id, name, price_adjustment: price_adjustment || 0, type: type || 'add', sort_order: sort_order || 0, allergens: allergens ?? [], dietary_info: dietary_info ?? [], available: available ?? true, stock_count: stock_count ?? null }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ option: data })
     }
@@ -443,6 +470,66 @@ export async function POST(req: NextRequest) {
     const { category_id, group_id } = body
     await supabase.from('category_modifier_groups').delete().eq('category_id', category_id).eq('group_id', group_id)
     return NextResponse.json({ success: true })
+  }
+
+  // ── PER-ITEM modifier-group links (Stage B) ───────────────────────────────
+  // item_modifier_groups(menu_item_id, group_id) is the SOLE resolution source. Both writes are
+  // token-scoped: the group AND every item must belong to THIS truck or the write is rejected
+  // (no cross-truck link writes).
+  if (action === 'set_item_modifier_group') {
+    const { group_id, menu_item_id, attached } = body
+    // Verify the group belongs to this truck.
+    const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
+    if (!grp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+    // Verify the item belongs to this truck.
+    const { data: itm } = await supabase.from('menu_items_db').select('id').eq('id', menu_item_id).eq('truck_id', truck.id).maybeSingle()
+    if (!itm) return NextResponse.json({ error: 'Item not found for this truck' }, { status: 403 })
+    if (attached) {
+      await supabase.from('item_modifier_groups').upsert({ menu_item_id, group_id }, { onConflict: 'menu_item_id,group_id', ignoreDuplicates: true })
+    } else {
+      await supabase.from('item_modifier_groups').delete().eq('menu_item_id', menu_item_id).eq('group_id', group_id)
+    }
+    return NextResponse.json({ success: true })
+  }
+
+  if (action === 'set_item_modifier_groups_bulk') {
+    const { group_id, menu_item_ids, attached } = body as { group_id: string; menu_item_ids: string[]; attached: boolean }
+    const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
+    if (!grp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+    // Restrict to items that genuinely belong to this truck (filters out any spoofed ids).
+    const { data: ownItems } = await supabase.from('menu_items_db').select('id').eq('truck_id', truck.id).in('id', menu_item_ids || [])
+    const validIds = (ownItems || []).map(i => i.id)
+    if (validIds.length === 0) return NextResponse.json({ success: true })
+    if (attached) {
+      await supabase.from('item_modifier_groups').upsert(validIds.map(menu_item_id => ({ menu_item_id, group_id })), { onConflict: 'menu_item_id,group_id', ignoreDuplicates: true })
+    } else {
+      await supabase.from('item_modifier_groups').delete().eq('group_id', group_id).in('menu_item_id', validIds)
+    }
+    return NextResponse.json({ success: true })
+  }
+
+  // PRE-ORDER (Stage 5): bulk-apply ONE pre-order config to several items (or clear, when clear=true
+  // sets all 4 to null). Mirrors set_item_modifier_groups_bulk: truck-ownership filter on the ids,
+  // then a single bulk UPDATE of the 4 menu_items_db columns. Writes only those 4 columns.
+  if (action === 'set_item_preorder_bulk') {
+    // Server-side plan gate (defense-in-depth): pre-orders is Pro (advance_preordering). The READ
+    // effects (menu sold-out / submit force-pending) already gate, so off-plan config is inert — but
+    // reject the dedicated bulk WRITE at the source too. (Per-row edits use a 1-element bulk → same gate.)
+    if (!canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at)) {
+      return NextResponse.json({ error: 'Pre-orders requires the Pro plan' }, { status: 403 })
+    }
+    // SINGLE-SOURCE (V7.8 global-config): this action sets ONLY the per-item inclusion flag
+    // (preorder_enabled). The deadline type/value/action live ONCE on the truck row (update_truck) and
+    // are read by both effects — never written per-item. clear:true (or enabled false) = excluded.
+    const { menu_item_ids, clear, preorder_enabled } =
+      body as { menu_item_ids: string[]; clear?: boolean; preorder_enabled?: boolean | null }
+    const { data: ownItems } = await supabase.from('menu_items_db').select('id').eq('truck_id', truck.id).in('id', menu_item_ids || [])
+    const validIds = (ownItems || []).map(i => i.id)
+    if (validIds.length === 0) return NextResponse.json({ success: true })
+    const patch = clear ? { preorder_enabled: null } : { preorder_enabled: preorder_enabled ?? null }
+    const { error } = await supabase.from('menu_items_db').update(patch).eq('truck_id', truck.id).in('id', validIds)
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ success: true, count: validIds.length })
   }
 
   if (action === 'update_category_order') {
@@ -635,7 +722,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )

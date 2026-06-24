@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { calculateOrderTotal, validateOrderTotals } from '@/lib/order-calculations'
 import {
-  addOrderToProductionSlot,
+  computeEventUnitRows,
   getProductionSlotUnits,
   buildItemCatMap,
   normaliseOrderLines,
@@ -16,10 +16,13 @@ import { earliestBackwardFitSlot } from '@/lib/slot-availability'
 import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
+import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
+import { resolveOptionDraws, findSoldOutOption } from '@/lib/option-stock'
 import type { CatConfig } from '@/lib/prep-utils'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { isPreorderDeadlinePassed, type PreorderConfig } from '@/lib/preorder'
+import { canAccess } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
-import { nextOrderId } from '@/lib/order-utils'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
 
@@ -423,8 +426,28 @@ export async function POST(req: NextRequest) {
     // ── Server-side total validation ──────────────────────────────────────────
     const { data: menuItems } = await supabase
       .from('menu_items_db')
-      .select('name, price')
+      .select('name, price, auto_accept, preorder_enabled')
       .eq('truck_id', resolvedTruckId)
+
+    // Per-item auto-accept rollup (reuses the read above — no extra fetch). An item flagged
+    // auto_accept=false forces the WHOLE order into manual review even when the truck auto-accepts.
+    // Keyed by name (same join basis as buildItemCatMap); an unknown/renamed name defaults to
+    // allow (true) — never fail an order over a name miss (documented name-join limitation).
+    const autoAcceptByName: Record<string, boolean> = {}
+    ;(menuItems || []).forEach(m => { autoAcceptByName[m.name] = m.auto_accept !== false })
+
+    // PRE-ORDER (Stage 4): per-item pre-order config, keyed by name (same basis as autoAcceptByName).
+    // A past-deadline 'force_pending' item behaves like auto_accept=false for the rollup below — it
+    // forces the WHOLE order pending. Evaluated event-tz at the rollup (where eventRow is resolved).
+    // GLOBAL config (V7.8): `enabled` (inclusion) is per-ITEM; deadline type/value/action are the ONE
+    // truck-level rule (trucks.preorder_*), constant across items. Helper untouched.
+    const preorderByName: Record<string, PreorderConfig> = {}
+    ;(menuItems || []).forEach((m: any) => {
+      preorderByName[m.name] = {
+        enabled: m.preorder_enabled, deadlineType: (truck as any).preorder_deadline_type,
+        deadlineValue: (truck as any).preorder_deadline_value, pastAction: (truck as any).preorder_past_action,
+      }
+    })
 
     const { data: bundles } = await supabase
       .from('bundles_db')
@@ -517,6 +540,98 @@ export async function POST(req: NextRequest) {
       eventRow = data
     }
 
+    // ── Required-modifier completeness guard (A2, safety net) ──────────────────────────────
+    // Belt-and-braces BEHIND the order modals: reject if a standalone line is missing a required
+    // modifier-group selection (baskets persist across sessions; a group can become required after
+    // an item was already added). Reuses lib/modifier-rules (validateModifierSelection) — no rule
+    // logic reimplemented. FAIL-SAFE: any error resolving groups → log + PROCEED (the modal gate is
+    // the primary enforcement; this guard must never reject a valid order due to its own failure).
+    // Standalone `items` only — deal-slot constituents are out of A2 scope.
+    try {
+      const unmet = await (async () => {
+        const { data: groupsRaw } = await supabase
+          .from('modifier_groups')
+          .select('id, name, is_required, min_choices, max_choices')
+          .eq('truck_id', resolvedTruckId)
+        const requiredIds = new Set((groupsRaw || [])
+          .filter(g => g.is_required || (g.min_choices ?? 0) >= 1)
+          .map(g => g.id))
+        if (requiredIds.size === 0) return null // truck has no required groups → nothing to enforce
+
+        // Stage B: resolve required groups PER-ITEM via item_modifier_groups (menu_item_id → groups),
+        // replacing the retired category_modifier_groups lookup. name→id keeps the same rename caveat
+        // (a renamed dish can't be resolved → skipped, never a false reject). The link select is global
+        // but filtered by requiredIds (truck-scoped) + this truck's item ids, so no cross-truck leak.
+        const [{ data: itemLinks }, { data: optsRaw }, { data: itemRows }] = await Promise.all([
+          supabase.from('item_modifier_groups').select('menu_item_id, group_id'),
+          supabase.from('modifier_options').select('id, group_id, name, price_adjustment, available, stock_count').in('group_id', Array.from(requiredIds)),
+          supabase.from('menu_items_db').select('id, name').eq('truck_id', resolvedTruckId),
+        ])
+        const itemIdByName: Record<string, string> = {}
+        ;(itemRows || []).forEach(i => { itemIdByName[i.name] = i.id })
+        const groupsById = new Map((groupsRaw || []).map(g => [g.id, { ...g, options: (optsRaw || []).filter(o => o.group_id === g.id) }]))
+        const reqGroupsByItemId: Record<string, any[]> = {}
+        ;(itemLinks || []).forEach(link => {
+          if (!requiredIds.has(link.group_id)) return
+          const g = groupsById.get(link.group_id); if (!g) return
+          ;(reqGroupsByItemId[link.menu_item_id] ||= []).push(g)
+        })
+        for (const it of (items || [])) {
+          const itemId = itemIdByName[it.name]
+          if (!itemId) continue // unknown/renamed item → can't resolve → skip (never fail on a name miss)
+          const groups = reqGroupsByItemId[itemId] || []
+          if (groups.length === 0) continue
+          // §36 backstop: a required group with no selectable option → item is sold out (unorderable).
+          if (hasUnsatisfiableRequiredGroup(groups)) return { item: it.name, soldOut: true }
+          const selected = Array.isArray(it.modifiers) ? it.modifiers : []
+          const { unmetGroupNames } = validateModifierSelection(groups, selected)
+          if (unmetGroupNames.length > 0) return { item: it.name, group: unmetGroupNames[0] }
+        }
+        // DEAL-SLOT items (§29 fix): a slot item with a required group must have it satisfied via
+        // deal.slotModifiers[slotKey] — same resolution as standalone, validated per slot.
+        for (const d of (deals || [])) {
+          const slots = d?.slots || {}
+          const slotMods = d?.slotModifiers || {}
+          for (const slotKey of Object.keys(slots)) {
+            const itemId = itemIdByName[slots[slotKey]]
+            if (!itemId) continue // unknown/renamed slot item → skip (never fail on a name miss)
+            const groups = reqGroupsByItemId[itemId] || []
+            if (groups.length === 0) continue
+            if (hasUnsatisfiableRequiredGroup(groups)) return { item: slots[slotKey], soldOut: true }
+            const selected = Array.isArray(slotMods[slotKey]) ? slotMods[slotKey] : []
+            const { unmetGroupNames } = validateModifierSelection(groups, selected)
+            if (unmetGroupNames.length > 0) return { item: slots[slotKey], group: unmetGroupNames[0] }
+          }
+        }
+        return null
+      })()
+      if (unmet) {
+        return NextResponse.json(
+          {
+            error: unmet.soldOut
+              ? `Sorry, ${unmet.item} is sold out.`
+              : `Please choose ${unmet.group} for ${unmet.item}.`,
+            requiredModifier: true,
+          },
+          { status: 400 },
+        )
+      }
+    } catch (err) {
+      console.error('[submit] required-modifier guard error — proceeding (fail-safe):', err)
+    }
+
+    // ── Option sold-out backstop (D2) ──────────────────────────────────────────────────────
+    // Catches a MANUALLY sold-out option (available=false) — which the atomic stock decrement below
+    // does NOT (it only checks stock_count). The decrement remains the real oversell guard for the
+    // shared count; this backstop covers manual sold-out + a stock-0 race. FAIL-OPEN (findSoldOutOption
+    // returns null on its own error). Standalone-items + deal-slots, all selected options.
+    {
+      const soldOut = await findSoldOutOption(supabase, resolvedTruckId, items, deals)
+      if (soldOut) {
+        return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true }, { status: 409 })
+      }
+    }
+
     // ── Atomic stock guard + slot placement under ONE per-event lock (Stage 2, Option B) ──
     // The booking_locks mutex is HOISTED here (it used to live inside claimAvailableSlot) so the
     // stock re-check, the order INSERT, and the slot claim all run under a SINGLE lock — two
@@ -529,7 +644,7 @@ export async function POST(req: NextRequest) {
     // fall back to a non-atomic insert.
     const lock = await acquireEventLock(resolvedTruckId, orderEventDate)
     const haveLock = lock.ok
-    let order: any = null
+    let order: { order_key: string } | null = null
     let orderId = ''
     const requestedSlot = slot ?? null
     let confirmedSlot: string | null = requestedSlot   // what the customer email shows (null = ASAP)
@@ -538,7 +653,7 @@ export async function POST(req: NextRequest) {
     try {
       // Lock not acquired: either a real DB error or contention that outlasted the FULL 3s budget —
       // both genuine (the long budget absorbs normal 2-order contention, which now resolves silently
-      // into the next-slot fit without ever reaching here). We must NOT insert without the lock —
+      // into the next-slot fit without ever reaching here). We must NOT place without the lock —
       // overselling would be possible. Bail non-destructively; the client re-submits (basket kept).
       if (!haveLock) {
         console.warn(`[submit] lock not acquired (${lock.ok ? '' : lock.reason}) for ${resolvedTruckId} / ${orderEventDate}`)
@@ -549,10 +664,9 @@ export async function POST(req: NextRequest) {
       }
 
       // (a) STOCK RE-CHECK — event-scoped, deal-inclusive (orderLines already flattens deal-slot
-      //     constituents). Skipped when no resolved event (no event to scope live counts to).
-      //     Customer HARD STOP: any requested qty over remaining → 409, NO insert. Atomic: we
-      //     hold the lock through [check → insert], so a concurrent submit waits and then sees
-      //     this order's insert in its own check.
+      //     constituents). Skipped when no resolved event. Customer HARD STOP: any requested qty over
+      //     remaining → 409, NO row persisted (this is BEFORE the atomic RPC). Atomic: we hold the
+      //     lock through [check → RPC], so a concurrent submit waits and then sees this order's insert.
       if (eventRow?.id) {
         const shortfall = await checkStockShortfall(resolvedTruckId, eventRow.id, orderEventDate, orderLines, itemCatMap)
         if (shortfall) {
@@ -563,50 +677,15 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // (b) Display number (per-event, restarts at 1) — under the lock, which also serialises
-      //     the per-event counter. order_key (UUID) is generated by the column default.
-      orderId = await nextOrderId(eventRow?.id ?? null, resolvedTruckId)
-
-      // (c) INSERT — the first irreversible write, only after stock passed.
-      const insertRes = await supabase
-        .from('orders')
-        .insert({
-          id:             orderId,
-          truck_id:       resolvedTruckId,
-          customer_name:  customerName,
-          customer_email: customerEmail,
-          customer_phone: customerPhone,
-          slot:           slot ?? null,
-          order_type:     'collection',
-          event_date:     orderEventDate,
-          event_id:       eventRow?.id ?? null,
-          van_id:         eventRow?.van_id ?? null,
-          items,
-          deals:          deals ?? null,
-          discount_code:  discountCode ?? null,
-          subtotal:       subtotal ?? total,
-          discount_amt:   discountAmt ?? 0,
-          total,
-          notes:          notes ?? null,
-          status:         'pending',
-          payment_status: 'unpaid',
-        })
-        .select()
-        .single()
-
-      if (insertRes.error || !insertRes.data) {
-        console.error('Order insert error:', insertRes.error)
-        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
-      }
-      order = insertRes.data
-
-      // (d) Capacity-safe slot placement (customer path, Section 5/7). Customers only ever get
-      // an AVAILABLE slot: not red → use it; full → reassign to the first available later slot;
-      // all full → pending. Never rejected. We hold the lock here, so placeOrderInSlotLocked
-      // (the lock-free body) runs its read-decide-write safely.
+      // (b) RESOLVE the slot (READ-ONLY; nothing is inserted yet, so NO self-exclude — the fit sees
+      //     the true current occupancy WITHOUT this order, exactly as the old exclude-the-pre-insert
+      //     workaround achieved). placeOrderInSlotLocked RESOLVES { booked, finalSlot } and files
+      //     NOTHING — the atomic RPC does the single write. Never rejects: full → pending/unbooked.
+      let finalSlot: string | null = requestedSlot
+      let booked = false
       if (eventDate) {
-        // Live kitchen_capacity (items) from the event's van — same source as the operator
-        // traffic light, so customer placement and the dot agree on "full".
+        // Live kitchen_capacity (items) from the event's van — same source as the operator traffic
+        // light, so customer placement and the dot agree on "full".
         const { kitchenCapacity, capacityWindowMins } = await eventKitchenCapacity(resolvedTruckId, eventDate, eventRow?.id ?? null)
         const claim = await placeOrderInSlotLocked(
           resolvedTruckId, eventDate, eventRow?.id ?? null, requestedSlot, orderLines, itemCatMap, catConfigs,
@@ -616,54 +695,127 @@ export async function POST(req: NextRequest) {
           truck.slot_duration_mins ?? (truck.collection_interval_mins ?? 0),
           kitchenCapacity,
           capacityWindowMins,
-          order.order_key,   // exclude THIS just-inserted order from its own fit reseed (Option B)
+          // NO excludeOrderKey: no order exists pre-resolve now (insert + book are atomic in the RPC).
         )
-        const update: Record<string, unknown> = {}
         if (claim.booked && claim.finalSlot) {
-          // ALWAYS persist the SERVER-resolved placement boundary to order.slot — for EVERY booked
-          // order, chosen AND ASAP (including ASAP that books into the start window). The server is
-          // authoritative for placement (it knows if the requested slot was full and bumped forward),
-          // so order.slot is never null: the operator display, the incremental production_slot_usage
-          // booking, and a later rebuild (order.slot || eventStart) all read the SAME real slot —
-          // closing the null-slot display drift AND the incremental-vs-rebuild capacity divergence
-          // (was: incremental filed 10:05, rebuild re-filed 10:00 from the null fallback).
-          update.slot = claim.finalSlot
+          booked = true
+          // The SERVER-resolved boundary is authoritative (it knows if the requested slot was full and
+          // bumped forward). It becomes order.slot (in the RPC) AND the production_slot_usage key, and
+          // the customer-facing confirmedSlot — never null for a booked order.
+          finalSlot = claim.finalSlot
           if (requestedSlot) {
             // Chosen slot: slotChanged drives the slotAdjustedFrom email box (Section 18 — reused).
             confirmedSlot = claim.finalSlot
             slotChanged = claim.finalSlot !== requestedSlot
           } else {
-            // ASAP: order.slot is persisted above regardless. confirmedSlot is the CUSTOMER-FACING
-            // value (on-screen confirmation, email, submit response). ASAP is only a SELECTION
-            // shortcut — once placed, the order has a concrete allocated boundary and the customer
-            // must SEE it (when to collect), exactly as the operator does. So confirmedSlot is ALWAYS
-            // the concrete finalSlot, never null — whether booked at the start window or bumped to a
-            // later one. (slotChanged stays false: requestedSlot is null for ASAP, so the "your slot
-            // was taken" amber path never fires — the customer just sees "Collection time: HH:MM".)
+            // ASAP: confirmedSlot is the CUSTOMER-FACING value (on-screen, email, response). ASAP is
+            // only a SELECTION shortcut — once placed, the order has a concrete allocated boundary and
+            // the customer must SEE it. (slotChanged stays false: requestedSlot is null for ASAP, so
+            // the "your slot was taken" amber path never fires.)
             confirmedSlot = claim.finalSlot
           }
-          if (truck.auto_accept) {
+          // Auto-confirm ONLY when the truck auto-accepts AND every basket item allows it. A single
+          // item flagged auto_accept=false forces the whole order to stay `pending` (manual review) —
+          // reusing the same state an auto-accept-off truck produces. autoAccepted stays false, so the
+          // customer "Order received! … will confirm shortly" messaging + email tone apply unchanged.
+          const allItemsAutoAccept = orderLines.every(l => autoAcceptByName[l.name] !== false)
+          // PRE-ORDER force-pending (Stage 4): a line whose item is past a 'force_pending' pre-order
+          // deadline forces the order pending — the SAME effect as auto_accept=false, via the SAME
+          // helper Stage 3 uses for the menu sold-out (display ⟷ enforcement can't diverge). Event-tz
+          // now (NEVER device-local); plan-gated server-side (a downgraded truck's config is inert).
+          // tz defaults to 'Europe/London' (the documented current state until per-truck tz lands).
+          const preorderTz = (truck as any).timezone || 'Europe/London'
+          const preorderFeatureOn = canAccess(
+            truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null
+          )
+          let eventStartMins: number | null = null
+          if (eventRow?.start_time) {
+            const [sh, sm] = String(eventRow.start_time).split(':').map(Number)
+            eventStartMins = (sh || 0) * 60 + (sm || 0)
+          }
+          // MASTER toggle (V7.8): truck-level preorders_enabled gates ALL pre-order effects. !== false
+          // so null/pre-migration reads as ENABLED. Read-time gate only — per-item config persists.
+          const preorderActive = preorderFeatureOn && eventStartMins != null
+            && (truck as any).preorders_enabled !== false
+          const preNowMins = getNowMinsInTz(preorderTz)
+          const preNowDate = getLocalDateInTz(preorderTz)
+          const anyForcesPending = preorderActive && orderLines.some(l => {
+            const cfg = preorderByName[l.name]
+            if (!cfg) return false
+            const pre = isPreorderDeadlinePassed(cfg, orderEventDate, eventStartMins as number, preNowDate, preNowMins)
+            return pre.isPreorder && pre.passed && pre.pastAction === 'force_pending'
+          })
+          if (truck.auto_accept && allItemsAutoAccept && !anyForcesPending) {
             autoAccepted = true
-            update.status = 'confirmed'
           }
         }
-        // !claim.booked -> event full / lock contended -> leave pending at requested
-        // (or ASAP/null), unbooked. Never rejected, never overfilled.
-        if (Object.keys(update).length) {
-          await supabase.from('orders').update(update).eq('order_key', order.order_key)
-        }
-        // BOOK capacity ONLY AFTER order.slot = finalSlot is persisted above. placeOrderInSlotLocked
-        // now RESOLVES the placement but no longer files — so the single authoritative book runs here,
-        // under the same event lock, once the order row carries the real placed boundary. This closes
-        // the first-order-after-clear ASAP mis-file: addOrderToProductionSlot's lazy reseed
-        // (buildUnitsFromOrders) reads order.slot and used to see the NULL insert value → eventStart
-        // fallback (10:00). It now reads the resolved finalSlot (e.g. 16:30) → files at the right slot.
-        if (claim.booked && claim.finalSlot) {
-          await addOrderToProductionSlot(supabase, resolvedTruckId, eventRow?.id ?? null, claim.finalSlot, orderLines, itemCatMap)
-        }
+        // !claim.booked -> event full / lock contended -> finalSlot stays requestedSlot (or ASAP/null),
+        // unbooked (p_unit_rows null below). Never rejected, never overfilled.
       }
+
+      // (c) STATUS — pending unless auto-accepted above (only reachable when booked).
+      const status = autoAccepted ? 'confirmed' : 'pending'
+
+      // (d) OPTION-DRAW RESOLUTION — READ-ONLY name→[{id,qty}] (no decrement). The atomic decrement +
+      //     its oversell RAISE happen INSIDE place_order_atomic, so a rollback auto-restores the pool
+      //     (no compensation dance). Manual/zero sold-out was already caught pre-lock (findSoldOutOption).
+      const drawList = await resolveOptionDraws(supabase, resolvedTruckId, items, deals)
+
+      // (e) UNIT ROWS — the production_slot_usage rows for THIS event AS IF this order were committed,
+      //     computed by the EXISTING helpers (computeEventUnitRows → buildUnitsFromOrders), byte-
+      //     identical to the old insert→rebuild. ONLY when booked + has event. Unbooked / no-event →
+      //     NULL (NOT []) so the RPC's step-4 guard SKIPS the usage write → order persists unbooked,
+      //     exactly like the old full-but-pending path.
+      const unitRows = (booked && eventRow?.id)
+        ? await computeEventUnitRows(supabase, resolvedTruckId, eventRow.id, { slot: finalSlot, items, deals: deals ?? null })
+        : null
+
+      // (f) ATOMIC PLACEMENT — option draw + display number + order INSERT + usage book in ONE
+      //     transaction (place_order_atomic). Any failure RAISES → the WHOLE txn rolls back: no ghost
+      //     order, no leaked option stock, no counter gap. p_order carries ONLY the plain order columns
+      //     (id/slot/status/event_id/event_date/order_key are RPC params or DB defaults). Totals are
+      //     numbers (RPC casts ::numeric); items/deals are jsonb; van_id is uuid-string-or-empty.
+      const p_order = {
+        customer_name:  customerName,
+        customer_email: customerEmail,
+        customer_phone: customerPhone,
+        order_type:     'collection',
+        items,
+        deals:          deals ?? null,
+        discount_code:  discountCode ?? null,
+        subtotal:       subtotal ?? total,
+        discount_amt:   discountAmt ?? 0,
+        total,
+        notes:          notes ?? null,
+        van_id:         eventRow?.van_id ?? null,
+        payment_status: 'unpaid',
+      }
+      const { data: rpcData, error: rpcErr } = await supabase.rpc('place_order_atomic', {
+        p_order,
+        p_final_slot: finalSlot,
+        p_status:     status,
+        p_event_id:   eventRow?.id ?? null,
+        p_truck_id:   resolvedTruckId,
+        p_event_date: orderEventDate,
+        p_unit_rows:  unitRows,
+        p_draw_list:  drawList,
+      })
+      if (rpcErr || !rpcData) {
+        // Rolled back — NOTHING persisted (no order, no usage, option stock restored, counter not
+        // advanced). Mirrors the old "Failed to save order" 500; the client retries on a clean slate.
+        console.error('place_order_atomic failed (rolled back, nothing persisted):', rpcErr)
+        return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
+      }
+      orderId = String((rpcData as any).order_number)
+      order = { order_key: (rpcData as any).order_key }
     } finally {
       if (haveLock) await releaseEventLock(resolvedTruckId, orderEventDate)
+    }
+
+    // Defensive narrowing: the only path to here is a successful RPC (every failure returned above),
+    // so `order` is set — this guard satisfies the type and never fires in practice.
+    if (!order) {
+      return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
     }
 
     // ── Record upsell events ──────────────────────────────────────────────────
@@ -722,43 +874,50 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Email to customer ─────────────────────────────────────────────────────
-    const dealsWithPrice = (deals ?? []).map((d: AppliedDeal) => {
-      const bundle = bundles?.find(b => b.name === d.name)
-      return { ...d, price: bundle?.bundle_price }
-    })
-    const { subject, html, text } = formatConfirmationEmail({
-      orderId,
-      orderKey:     order.order_key,
-      truckName:    truck.name,
-      customerName,
-      slot:         confirmedSlot,
-      requestedSlot,
-      slotChanged,
-      items,
-      deals:        dealsWithPrice,
-      discountAmt:  discountAmt ?? 0,
-      total,
-      notes:        notes ?? null,
-      autoAccepted,
-      venueName:              eventRow?.venue_name ?? null,
-      venueTown:              eventRow?.town ?? null,
-      venuePostcode:          eventRow?.postcode ?? null,
-      preferredContactMethod: truck.preferred_contact_method ?? null,
-      contactPhone:           truck.contact_phone ?? null,
-      whatsappSender:         truck.whatsapp_sender ?? null,
-      socialFacebook:         truck.social_facebook ?? null,
-      socialInstagram:        truck.social_instagram ?? null,
-      contactEmail:           truck.contact_email ?? null,
-      allowCancellation:      truck.allow_customer_cancellation ?? true,
-      cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
-      baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
-      truckSlug:              truck.slug ?? undefined,
-    })
-
+    // BEST-EFFORT (post-save): the order is already SAVED (and booked) above, so the request MUST
+    // succeed from the customer's view. Confirmation-email FORMATTING (dealsWithPrice +
+    // formatConfirmationEmail) and SENDING must never 500 a saved order — a throw here would hit the
+    // outer catch and tell the customer "Something went wrong" while the order sits on the dashboard
+    // (duplicate-order / divergence hazard). Wrapped to mirror the operator-email block (above) and
+    // the send below: log and continue to the success response. (Pre-save failures still 500 — only
+    // POST-save steps are best-effort. Does NOT touch placement/booking/slot-usage/rollup.)
     try {
+      const dealsWithPrice = (deals ?? []).map((d: AppliedDeal) => {
+        const bundle = bundles?.find(b => b.name === d.name)
+        return { ...d, price: bundle?.bundle_price }
+      })
+      const { subject, html, text } = formatConfirmationEmail({
+        orderId,
+        orderKey:     order.order_key,
+        truckName:    truck.name,
+        customerName,
+        slot:         confirmedSlot,
+        requestedSlot,
+        slotChanged,
+        items,
+        deals:        dealsWithPrice,
+        discountAmt:  discountAmt ?? 0,
+        total,
+        notes:        notes ?? null,
+        autoAccepted,
+        venueName:              eventRow?.venue_name ?? null,
+        venueTown:              eventRow?.town ?? null,
+        venuePostcode:          eventRow?.postcode ?? null,
+        preferredContactMethod: truck.preferred_contact_method ?? null,
+        contactPhone:           truck.contact_phone ?? null,
+        whatsappSender:         truck.whatsapp_sender ?? null,
+        socialFacebook:         truck.social_facebook ?? null,
+        socialInstagram:        truck.social_instagram ?? null,
+        contactEmail:           truck.contact_email ?? null,
+        allowCancellation:      truck.allow_customer_cancellation ?? true,
+        cancellationCutoffMins: truck.cancellation_cutoff_mins ?? 30,
+        baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+        truckSlug:              truck.slug ?? undefined,
+      })
       await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
     } catch (emailErr) {
-      console.error('Customer email failed:', emailErr)
+      // Non-fatal: the order is saved/booked — never fail the request over the confirmation email.
+      console.error('Confirmation email failed (non-fatal, order saved):', emailErr)
     }
 
     // The truck's only operator-bound email per self-order is the 🔔 New order

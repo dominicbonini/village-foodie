@@ -42,3 +42,7 @@ next-env.d.ts
 
 # scraper logs
 /logs/
+
+# scratch / local dev artifacts
+_pretest.cjs
+devserver.log

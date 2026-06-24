@@ -6,7 +6,7 @@
 
 import React from 'react'
 
-interface Mod { name: string; price: number }
+interface Mod { name: string; price: number; allergens?: string[]; dietary?: string[] }
 
 interface Props {
   name: string
@@ -71,8 +71,11 @@ export function OrderLineItem({
             ? `${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`
             : `+ ${m.name}`}
           </span>
+          {/* Per-option allergens (Stage C) intentionally NOT shown on the basket summary (V7.8 §25) —
+              redundant once selected. STILL CARRIED on the modifier (m.allergens) so it freezes onto
+              the order and reaches the kitchen email; the customer SELECTION modal keeps the safety chip. */}
           {variant === 'customer' && m.price > 0 && (
-            <span>+£{(m.price * quantity).toFixed(2)}</span>
+            <span className="ml-auto">+£{(m.price * quantity).toFixed(2)}</span>
           )}
         </div>
       ))}

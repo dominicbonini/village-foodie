@@ -283,3 +283,64 @@ export function canAddItem(
   const current = getItemQuantity(basket, item.name)
   return current < item.stock_remaining
 }
+// ─────────────────────────────────────────────────────────────────────────────────────────────
+// OPTION SHARED-POOL helpers (D2). Modifier-option stock is a POOL: the add/increment gate is
+// BASKET-WIDE per option (total drawn across ALL lines), NOT per line. Mirrors the server tally in
+// lib/option-stock.ts (tallyOptionQtys) so the client pre-warns with the same arithmetic the
+// submit-time atomic draw enforces. Client-side only — pure functions, no I/O.
+// ─────────────────────────────────────────────────────────────────────────────────────────────
+
+interface OptionLineLike { quantity: number; modifiers?: { name: string }[] }
+
+/** option name → TOTAL quantity drawn across all basket lines (each line's qty × each modifier). */
+export function tallyBasketOptionQtys(lines: OptionLineLike[]): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const l of (lines || [])) {
+    const q = Number(l.quantity) || 0
+    for (const m of (l.modifiers || [])) out[m.name] = (out[m.name] || 0) + q
+  }
+  return out
+}
+
+/** option name → remaining standing pool (stock_count) across a menu's items' groups. null = untracked (no gate). */
+export function buildOptionStockByName(
+  items: Array<{ modifierGroups?: Array<{ options?: Array<{ name: string; stock_count?: number | null }> }> }>,
+): Record<string, number | null> {
+  const out: Record<string, number | null> = {}
+  for (const it of (items || [])) {
+    for (const g of (it.modifierGroups || [])) {
+      for (const o of (g.options || [])) {
+        if (o.stock_count != null) out[o.name] = o.stock_count       // tracked value wins
+        else if (!(o.name in out)) out[o.name] = null                 // untracked unless seen tracked elsewhere
+      }
+    }
+  }
+  return out
+}
+
+/**
+ * Would drawing `optionNames` `addQty` more times (on top of `currentTally`) exceed any option's pool?
+ * Returns the first exceeded option name, else null. `stockByOption` value null = untracked = no gate.
+ * BASKET-WIDE: pass the whole-basket tally as `currentTally`.
+ */
+export function optionDrawBlocked(
+  currentTally: Record<string, number>,
+  optionNames: string[],
+  stockByOption: Record<string, number | null>,
+  addQty = 1,
+): string | null {
+  for (const name of (optionNames || [])) {
+    const cap = stockByOption[name]
+    if (cap == null) continue // untracked → unlimited
+    if ((currentTally[name] || 0) + addQty > cap) return name
+  }
+  return null
+}
+
+/** Basket-aware remaining for one option: standing stock_count minus the basket-wide draw of it.
+ *  null stock_count = untracked → returns null (no gate, never sold-out). Used by the modal pills so
+ *  the DISPLAY agrees with the §28 gate (which blocks at the same basket-aware boundary). */
+export function optionRemaining(stockCount: number | null | undefined, basketDraw: number): number | null {
+  if (stockCount == null) return null
+  return stockCount - (basketDraw || 0)
+}

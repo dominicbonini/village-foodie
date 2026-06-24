@@ -10,7 +10,9 @@ import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { PrepTimeSelect } from '@/components/PrepTimeSelect'
+import { describePreorderDeadline } from '@/lib/preorder'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
@@ -20,15 +22,16 @@ import { formatTime } from '@/lib/time-utils'
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
 import UserMenu from '@/components/dashboard/UserMenu'
+import { SpiceLevel } from '@/components/SpiceLevel'
 import AppHeader from '@/components/shared/AppHeader'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; is_test?: boolean; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
-interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[] }
+interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
-interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number }
+interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
 interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
@@ -170,6 +173,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [modifierGroups, setModifierGroups] = useState<ModifierGroup[]>([])
   const [modifierOptions, setModifierOptions] = useState<ModifierOption[]>([])
   const [categoryModGroups, setCategoryModGroups] = useState<{category_id:string;group_id:string}[]>([])
+  // Stage B: per-item modifier-group links (menu_item_id, group_id) — sole resolution source.
+  const [itemModGroups, setItemModGroups] = useState<{menu_item_id:string;group_id:string}[]>([])
   const [bundles, setBundles] = useState<Bundle[]>([])
   const [loading, setLoading] = useState(true)
   const [toast, setToast] = useState<{msg:string;type:'success'|'error'}|null>(null)
@@ -180,6 +185,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [currentUserPhone, setCurrentUserPhone] = useState<string | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  // The truck's ACTUAL owner (trucks.operator_id → operators), so the Team owner row shows the
+  // real owner rather than the session viewer. ownerAuthUserId drives the conditional "(you)".
+  const [ownerEmail, setOwnerEmail] = useState<string | null>(null)
+  const [ownerAuthUserId, setOwnerAuthUserId] = useState<string | null>(null)
   const [pendingEmailChange, setPendingEmailChange] = useState<{ id: string; new_email: string; requested_at: string; expired_at: string } | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [editProfileName, setEditProfileName] = useState('')
@@ -203,12 +212,15 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setTruck(data.truck)
       setUserRole(data.userRole || 'owner')
       setCurrentUserId(data.currentUserId || null)
+      setOwnerEmail(data.ownerEmail || null)
+      setOwnerAuthUserId(data.ownerAuthUserId || null)
       setCategories(data.categories)
       setItems(data.items)
       setSubcategories(data.subcategories || [])
       setModifierGroups(data.modifierGroups)
       setModifierOptions(data.modifierOptions)
       setCategoryModGroups(data.categoryModGroups)
+      setItemModGroups(data.itemModGroups || [])
       setBundles(data.bundles)
       setPendingEmailChange(data.pendingEmailChange || null)
     } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
@@ -388,8 +400,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           ← Orders dashboard
         </a>
         <UserMenu
-          truckName={truck.name}
-          operatorName={currentUserFirstName || currentUserName?.split(' ')[0] || ''}
+          operatorName={currentUserName || currentUserFirstName || ''}
+          userEmail={currentUserEmail}
           token={token}
           showDashboardLink
           isAdmin={isAdmin}
@@ -447,8 +459,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} api={api} reload={load} showToast={showToast} />}
-        {activeTab === 'modifiers' && <ModifiersTab categories={categories} modifierGroups={modifierGroups} modifierOptions={modifierOptions} categoryModGroups={categoryModGroups} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} />
@@ -458,6 +470,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           currentUserLastName={currentUserLastName}
           currentUserPhone={currentUserPhone}
           currentUserId={currentUserId}
+          ownerEmail={ownerEmail}
+          ownerAuthUserId={ownerAuthUserId}
           userRole={userRole}
           initialPendingEmailChange={pendingEmailChange}
           onProfileSaved={(firstName, lastName, phone) => {
@@ -468,7 +482,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} />}
+        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
       </main>
 
@@ -564,12 +578,56 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 }
 
 // ══════════════════════════════════════════════════════════════
+// SHARED ALLERGEN / DIETARY TOGGLES (one source of truth — reused by the dish editor,
+// the modifier-option editor, and the AI-import review modal). Extracted from the previously
+// duplicated inline blocks so the vocabulary + styling can't drift.
+// ══════════════════════════════════════════════════════════════
+const ALLERGEN_VOCAB = ['Dairy', 'Lactose', 'Gluten', 'Eggs', 'Nuts', 'Soy', 'Fish', 'Shellfish', 'Celery', 'Mustard'] as const
+const DIETARY_VOCAB = ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten Free', 'Dairy Free'] as const
+
+function AllergenToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {ALLERGEN_VOCAB.map(allergen => {
+        const active = (value || []).includes(allergen)
+        return (
+          <button key={allergen} type="button"
+            onClick={() => onChange(active ? (value || []).filter(a => a !== allergen) : [...(value || []), allergen])}
+            className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+            {allergen}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function DietaryToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {DIETARY_VOCAB.map(diet => {
+        const active = (value || []).includes(diet)
+        return (
+          <button key={diet} type="button"
+            onClick={() => onChange(active ? (value || []).filter(d => d !== diet) : [...(value || []), diet])}
+            className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-green-50 border-green-300 text-green-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+            {diet}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ══════════════════════════════════════════════════════════════
 // MENU TAB
 // ══════════════════════════════════════════════════════════════
 type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'prep' | 'saving' | 'done'
 
-function MenuTab({ truck, categories, items, subcategories, token, api, reload, showToast }: {
+function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, itemModGroups, setItemModGroups, api, reload, showToast }: {
   truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
+  modifierGroups: ModifierGroup[]; itemModGroups: {menu_item_id:string;group_id:string}[]
+  setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string}[]>>
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   const [editingCat, setEditingCat] = useState<Partial<Category> | null>(categories[0] ? categories[0] as any : null)
@@ -577,6 +635,9 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
   const [deletingItem, setDeletingItem] = useState<Item | null>(null)
   const [saving, setSaving] = useState(false)
   const [uploadingItemPhoto, setUploadingItemPhoto] = useState(false)
+  // PRE-ORDER (V7.8 global-config): the item editor now has ONLY an include toggle (preorder_enabled);
+  // timing/action live globally in Settings → Pre-orders. No per-item bulk picker here anymore.
+  const preorderCan = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
 
   // Optimistic local item state — mirrors `items` prop but updates instantly on toggle/delete
   const [localItems, setLocalItems] = useState<Item[]>(items)
@@ -589,7 +650,6 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
   const prevSubcatsRef = useRef(subcategories)
   if (prevSubcatsRef.current !== subcategories) { prevSubcatsRef.current = subcategories; setLocalSubcats(subcategories) }
   const [newSubcatName, setNewSubcatName] = useState('')
-  const [addingSubcatInModal, setAddingSubcatInModal] = useState(false)   // inline create in the item modal
   const [subcatModalCat, setSubcatModalCat] = useState<string | null>(null)   // category_id whose "Manage sub-categories" modal is open
   const [editingSubcatId, setEditingSubcatId] = useState<string | null>(null) // sub-category row in tap-to-rename mode
   const [editingSubcatName, setEditingSubcatName] = useState('')              // rename text buffer
@@ -656,7 +716,20 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
 
   const [importResult, setImportResult] = useState<{
     categories: string[]
-    items: Array<{ name: string; description?: string; price: number; category: string; price_missing?: boolean; _skip?: boolean; allergens?: string[]; dietary?: string[] }>
+    items: Array<{
+      name: string; description?: string; price: number; category: string; price_missing?: boolean; _skip?: boolean;
+      allergens?: string[]; dietary?: string[]; spiciness?: number | null;
+      // Stage 1 (§26/§26a) per-item modifier-group proposal — operator-editable here, sent to commit-menu
+      // in the payload (Stage 3 writes it). Options carry AI-detected allergens/dietary (§26a).
+      modifierGroups?: Array<{
+        name: string
+        options: Array<{ name: string; price: number; allergens?: string[]; dietary?: string[]; _allergensChecked?: boolean }>
+        isRequired?: boolean; singleSelect?: boolean; _inferredFromVariants?: boolean
+      }>
+      // CLIENT-ONLY allergen-verification flag (§26a silent-gap gate). Not persisted; commit-menu
+      // ignores unknown fields. An empty allergen set with this unset reads as "NOT CHECKED".
+      _allergensChecked?: boolean
+    }>
     existing_categories: string[]
   } | null>(null)
 
@@ -687,8 +760,57 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
     }
   }
 
+  // ── AI-import review: proposal mutation helpers (Stage 2, client-side only) ──────────────────
+  // Every edit mirrors the existing _skip/price pattern: an immutable setImportResult patch by index.
+  const patchImportItem = (idx: number, patch: (it: any) => any) =>
+    setImportResult(prev => prev ? { ...prev, items: prev.items.map((it, i) => i === idx ? patch(it) : it) } : prev)
+  const patchGroup = (idx: number, gi: number, patch: (g: any) => any) =>
+    patchImportItem(idx, it => ({ ...it, modifierGroups: (it.modifierGroups || []).map((g: any, gj: number) => gj === gi ? patch(g) : g) }))
+  const patchOption = (idx: number, gi: number, oi: number, patch: (o: any) => any) =>
+    patchGroup(idx, gi, g => ({ ...g, options: g.options.map((o: any, oj: number) => oj === oi ? patch(o) : o) }))
+  // Touching an allergen set = it has been CHECKED (flips the silent-gap flag true).
+  const setItemAllergens = (idx: number, next: string[]) => patchImportItem(idx, it => ({ ...it, allergens: next, _allergensChecked: true }))
+  const confirmItemAllergens = (idx: number) => patchImportItem(idx, it => ({ ...it, _allergensChecked: true }))
+  const setOptionAllergens = (idx: number, gi: number, oi: number, next: string[]) => patchOption(idx, gi, oi, o => ({ ...o, allergens: next, _allergensChecked: true }))
+  const confirmOptionAllergens = (idx: number, gi: number, oi: number) => patchOption(idx, gi, oi, o => ({ ...o, _allergensChecked: true }))
+  // Ungroup an _inferredFromVariants group → replace the base item with one item per option
+  // (name = base + option, price = base + delta, option allergens merged into the new dish allergens).
+  const ungroupImportItem = (idx: number, gi: number) =>
+    setImportResult(prev => {
+      if (!prev) return prev
+      const base = prev.items[idx]
+      const grp = base.modifierGroups?.[gi]
+      if (!grp) return prev
+      const expanded = grp.options.map(o => ({
+        name: `${base.name} ${o.name}`.trim(),
+        description: base.description,
+        price: Number((base.price + (o.price || 0)).toFixed(2)),
+        category: base.category,
+        allergens: Array.from(new Set([...(base.allergens || []), ...(o.allergens || [])])),
+        dietary: Array.from(new Set([...(base.dietary || []), ...(o.dietary || [])])),
+        spiciness: base.spiciness ?? null,
+        modifierGroups: (base.modifierGroups || []).filter((_, gj) => gj !== gi),  // keep any OTHER groups
+        _allergensChecked: false,  // reconstructed items must be re-verified
+      }))
+      return { ...prev, items: [...prev.items.slice(0, idx), ...expanded, ...prev.items.slice(idx + 1)] }
+    })
+  // The silent-gap gate (§26a): the DANGEROUS state is an EMPTY allergen set that wasn't explicitly
+  // acknowledged (the AI silently missed a hidden allergen). A NON-empty set is already surfaced (the
+  // operator sees + can fix it — the accepted false-positive case). So "unverified" = empty AND not
+  // explicitly checked. Matches the per-row / per-option `notChecked` rendering exactly.
+  const allergenUnverified = (a: string[] | undefined, checked: boolean | undefined) => (a || []).length === 0 && checked !== true
+  const importUncheckedItems = (importResult?.items || []).filter(it => !it._skip).filter(it =>
+    allergenUnverified(it.allergens, it._allergensChecked) ||
+    (it.modifierGroups || []).some(g => g.options.some(o => allergenUnverified(o.allergens, o._allergensChecked))))
+
   const handleCommitMenu = async () => {
     if (!importResult) return
+    // ALLERGEN GATE (§26a): block commit while any non-skipped item (or its options) is unverified.
+    if (importUncheckedItems.length > 0) {
+      showToast(`Verify allergens first: ${importUncheckedItems.slice(0, 3).map(i => i.name).join(', ')}${importUncheckedItems.length > 3 ? ` +${importUncheckedItems.length - 3} more` : ''}`, 'error')
+      setImportStep('review')
+      return
+    }
     setImportStep('saving')
     try {
       const res = await fetch('/api/manage/commit-menu', {
@@ -821,6 +943,24 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
       }
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSaving(false) }
+  }
+
+  // ── Reverse view (Stage B, Part 4): toggle a modifier GROUP on/off for THIS dish ──
+  // Instant-save, no save button, optimistic — writes the same item_modifier_groups link the
+  // dish-picker uses, and patches the parent state so the Custom Extras picker reflects it.
+  const toggleGroupForItem = async (menu_item_id: string, group_id: string, currentlyAttached: boolean) => {
+    const attached = !currentlyAttached
+    setItemModGroups(prev => attached
+      ? [...prev, { menu_item_id, group_id }]
+      : prev.filter(x => !(x.menu_item_id === menu_item_id && x.group_id === group_id)))
+    try {
+      await api('set_item_modifier_group', { group_id, menu_item_id, attached })
+    } catch (e: any) {
+      setItemModGroups(prev => attached
+        ? prev.filter(x => !(x.menu_item_id === menu_item_id && x.group_id === group_id))
+        : [...prev, { menu_item_id, group_id }])
+      showToast(e.message, 'error')
+    }
   }
 
   // Expand a category and auto-load it into editingCat for inline settings
@@ -1054,13 +1194,16 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                 {/* Row 2: Prep time + Batch size + Default stock */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 mb-1">Prep time (mins)</label>
-                    <input type="number" min="0" max="60" placeholder="0 = instant"
-                      value={editingCat.prep_secs ? Math.round(editingCat.prep_secs / 60) : ''}
-                      onChange={e => setEditingCat(p => ({...p!, prep_secs: parseInt(e.target.value) * 60 || 0}))}
-                      onBlur={() => saveCat()}
+                    <label className="block text-xs font-bold text-slate-600 mb-1">Prep time</label>
+                    {/* Shared prep dropdown (V7.8 §42) — same control as the dashboard. prep_secs in
+                        SECONDS via saveCat({prep_secs}) (same upsert_category write); off-grid values
+                        preserved (no snap). */}
+                    <PrepTimeSelect
+                      valueSecs={editingCat.prep_secs}
+                      ariaLabel="Prep time"
+                      onChange={secs => { setEditingCat(p => ({...p!, prep_secs: secs})); saveCat({ prep_secs: secs }) }}
                       className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                    <p className="text-xs text-slate-400 mt-1">Set to 0 for instant items (drinks, dips). These won&apos;t count toward kitchen capacity.</p>
+                    <p className="text-xs text-slate-400 mt-1">Set to Instant for items like drinks or dips. These won&apos;t count toward kitchen capacity.</p>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
@@ -1127,8 +1270,15 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                         <span className="font-black text-orange-600 text-sm shrink-0">£{Number(item.price).toFixed(2)}</span>
                       </div>
                       {item.description && <p className="text-slate-400 text-xs truncate">{item.description}</p>}
-                      {(item.dietary_info?.length > 0 || item.allergens?.length > 0 || item.default_stock != null || item.stock_count != null) && (
+                      {(item.dietary_info?.length > 0 || item.allergens?.length > 0 || item.default_stock != null || item.stock_count != null || item.spiciness != null || item.auto_accept === false || item.preorder_enabled === true || itemModGroups.some(x => x.menu_item_id === item.id)) && (
                         <div className="flex flex-wrap gap-1 mt-1">
+                          <SpiceLevel value={item.spiciness} />
+                          {/* Operator-only routing flag. Shown ALWAYS when set (so the operator sees it
+                              persists), but dimmed when the truck's auto-accept is off (= set, not active
+                              right now). NEVER rendered on the customer order page. */}
+                          {item.auto_accept === false && (
+                            <span className={`text-[10px] px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100 ${truck.auto_accept ? '' : 'opacity-50'}`}>Manual review</span>
+                          )}
                           {item.dietary_info?.map(d => (
                             <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
                           ))}
@@ -1137,6 +1287,17 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                           ))}
                           {item.default_stock != null && <Badge label={`${item.default_stock} per event`} colour="slate" />}
                           {item.stock_count != null && <Badge label={`Stock: ${item.stock_count}`} colour="orange" />}
+                          {/* Pre-order inclusion flag (operator-only). Mirrors the "Manual review" dim
+                              pattern: shown when set, dimmed when the truck's master pre-orders toggle is
+                              OFF (included but globally inactive). Slate (NOT green — avoids the dietary clash). */}
+                          {item.preorder_enabled === true && (
+                            <span className={`text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-700 rounded-md border border-slate-200 ${truck.preorders_enabled !== false ? '' : 'opacity-50'}`}>Pre-order</span>
+                          )}
+                          {/* Custom-extras presence (count of attached option groups). itemModGroups is
+                              already in scope (no fetch). Indigo to stay clear of the green dietary tags. */}
+                          {itemModGroups.some(x => x.menu_item_id === item.id) && (
+                            <span className="text-[10px] px-1.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-md border border-indigo-100">Extras ({itemModGroups.filter(x => x.menu_item_id === item.id).length})</span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1182,11 +1343,13 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
               <Input label="Category name" required value={editingCat.name || ''} onChange={v => setEditingCat(p => ({...p!, name: v}))} placeholder="e.g. Pizza" />
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-600 mb-1">Prep time (mins)</label>
-                  <input type="number" min="0" max="60" placeholder="0 = instant" value={editingCat.prep_secs ? Math.round(editingCat.prep_secs / 60) : ""}
-                    onChange={e => setEditingCat(p => ({...p!, prep_secs: parseInt(e.target.value) * 60 || 0}))}
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Prep time</label>
+                  <PrepTimeSelect
+                    valueSecs={editingCat.prep_secs}
+                    ariaLabel="Prep time"
+                    onChange={secs => setEditingCat(p => ({...p!, prep_secs: secs}))}
                     className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
-                  <p className="text-xs text-slate-400 mt-1">Set to 0 for instant items (drinks, dips). These won&apos;t count toward kitchen capacity.</p>
+                  <p className="text-xs text-slate-400 mt-1">Set to Instant for items like drinks or dips. These won&apos;t count toward kitchen capacity.</p>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-600 mb-1">Batch size</label>
@@ -1487,12 +1650,36 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
             <div className="space-y-3">
               <Input label="Item name" required value={editingItem.name || ''} onChange={v => setEditingItem(p => ({...p!, name: v}))} placeholder="e.g. Margherita" />
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Ingredients <span className="text-slate-400 font-normal">(comma separated)</span></label>
-                <input value={editingItem.description || ''} onChange={e => setEditingItem(p => ({...p!, description: e.target.value}))}
-                  placeholder="e.g. Tomato, Mozzarella, Basil"
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                <p className="text-slate-400 text-xs mt-0.5">Shown to customers on the order page</p>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Category <span className="text-slate-400 font-normal">(optional)</span></label>
+                <select value={editingItem.category_id || ''} onChange={e => {
+                    const newCat = e.target.value || null
+                    // If the current sub-category doesn't belong to the new category, clear it.
+                    setEditingItem(p => {
+                      const stillValid = p?.subcategory_id && subcatsFor(newCat).some(s => s.id === p.subcategory_id)
+                      return { ...p!, category_id: newCat, subcategory_id: stillValid ? p!.subcategory_id : null }
+                    })
+                  }}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                  <option value="">No category</option>
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
               </div>
+
+              {/* Sub-category (optional, display-only) — a managed label that groups this item under a
+                  heading within its category on the order screens. Dropdown of the selected category's
+                  sub-categories. null = ungrouped. Phase 3 does the actual grouping. */}
+              <div>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Sub-category <span className="text-slate-400 font-normal">(optional)</span></label>
+                <select
+                  value={editingItem.subcategory_id || ''}
+                  onChange={e => setEditingItem(p => ({...p!, subcategory_id: e.target.value || null}))}
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
+                  <option value="">— None —</option>
+                  {subcatsFor(editingItem.category_id).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </select>
+                <p className="text-xs text-slate-400 mt-1">Groups this item under a heading within its category on the order screens — e.g. Meat Lovers, Veggie. Leave blank for none.</p>
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <Input label="Price" required type="number" value={editingItem.price || ''} onChange={v => setEditingItem(p => ({...p!, price: parseFloat(v) || 0}))} placeholder="10.00" />
                 <div>
@@ -1508,69 +1695,82 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                   <p className="text-[10px] text-slate-400 mt-0.5">Pre-fills stock in Menu & Stock each event</p>
                 </div>
               </div>
+
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Category</label>
-                <select value={editingItem.category_id || ''} onChange={e => {
-                    const newCat = e.target.value || null
-                    // If the current sub-category doesn't belong to the new category, clear it.
-                    setEditingItem(p => {
-                      const stillValid = p?.subcategory_id && subcatsFor(newCat).some(s => s.id === p.subcategory_id)
-                      return { ...p!, category_id: newCat, subcategory_id: stillValid ? p!.subcategory_id : null }
-                    })
-                    setAddingSubcatInModal(false)
-                  }}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                  <option value="">No category</option>
-                  {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                <label className="block text-xs font-bold text-slate-600 mb-1">Ingredients <span className="text-slate-400 font-normal">(optional)</span></label>
+                <input value={editingItem.description || ''} onChange={e => setEditingItem(p => ({...p!, description: e.target.value}))}
+                  placeholder="e.g. Tomato, Mozzarella, Basil"
+                  className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
+                <p className="text-slate-400 text-xs mt-0.5">Shown to customers on the order page</p>
               </div>
 
-              {/* Sub-category (optional, display-only) — a managed label that groups this item under a
-                  heading within its category on the order screens. Dropdown of the selected category's
-                  sub-categories (+ inline create). null = ungrouped. Phase 3 does the actual grouping. */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Sub-category <span className="text-slate-400 font-normal">(optional)</span></label>
-                <div className="flex items-center gap-2">
-                  <select
-                    value={editingItem.subcategory_id || ''}
-                    onChange={e => setEditingItem(p => ({...p!, subcategory_id: e.target.value || null}))}
-                    className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white">
-                    <option value="">— None —</option>
-                    {subcatsFor(editingItem.category_id).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                  <button type="button" disabled={!editingItem.category_id}
-                    onClick={() => { setNewSubcatName(''); setAddingSubcatInModal(true) }}
-                    className="flex-shrink-0 text-xs font-bold px-2.5 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
-                    + New
-                  </button>
-                </div>
-                {addingSubcatInModal && editingItem.category_id && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <input autoFocus value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)}
-                      onKeyDown={async e => {
-                        if (e.key === 'Enter') {
-                          const sc = await createSubcategory(editingItem.category_id!, newSubcatName)
-                          if (sc) { setEditingItem(p => ({...p!, subcategory_id: sc.id})); setAddingSubcatInModal(false) }
-                        } else if (e.key === 'Escape') { setAddingSubcatInModal(false) }
-                      }}
-                      placeholder="New sub-category name"
-                      className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" />
-                    <button type="button" disabled={!newSubcatName.trim()}
-                      onClick={async () => {
-                        const sc = await createSubcategory(editingItem.category_id!, newSubcatName)
-                        if (sc) { setEditingItem(p => ({...p!, subcategory_id: sc.id})); setAddingSubcatInModal(false) }
-                      }}
-                      className="flex-shrink-0 text-xs font-bold px-2.5 py-2 rounded-xl bg-orange-600 text-white disabled:opacity-40">Add</button>
-                    <button type="button" onClick={() => setAddingSubcatInModal(false)}
-                      className="flex-shrink-0 text-xs px-2.5 py-2 rounded-xl border border-slate-200 text-slate-500">Cancel</button>
+              {/* ── Custom Extras attached to THIS dish (reverse view, Stage B) — instant-save, no
+                  save button. Only for an existing dish (needs a saved id to link). Toggling here
+                  writes the same item_modifier_groups link the Custom Extras dish-picker uses. */}
+              {editingItem.id && modifierGroups.length > 0 && (() => {
+                const itemId = editingItem.id!
+                return (
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Custom Extras on this dish</label>
+                    <p className="text-xs text-slate-400 mt-0.5 mb-2">Choose which option groups customers can add to this dish.</p>
+                    <div className="flex flex-wrap gap-2">
+                      {modifierGroups.map(g => {
+                        const on = itemModGroups.some(x => x.menu_item_id === itemId && x.group_id === g.id)
+                        return (
+                          <button key={g.id} type="button"
+                            onClick={() => toggleGroupForItem(itemId, g.id, on)}
+                            className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all active:scale-95 ${on ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'}`}>
+                            {on ? '✓ ' : ''}{g.name}
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
-                )}
-                <p className="text-xs text-slate-400 mt-1">Groups this item under a heading within its category on the order screens — e.g. Meat Lovers, Veggie. Leave blank for none.</p>
+                )
+              })()}
+
+              {/* Spiciness — optional, display-only heat rating. None = null (renders nothing on the
+                  order page). 1-3 → that many chilis. Best-effort prefilled by the AI import; editable here. */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Spiciness</label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {([null, 1, 2, 3] as (number | null)[]).map(level => {
+                    const active = ((editingItem as any).spiciness ?? null) === level
+                    return (
+                      <button key={String(level)} type="button"
+                        onClick={() => setEditingItem(prev => prev ? { ...prev, spiciness: level } as any : prev)}
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-red-50 border-red-300 text-red-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
+                        {level === null ? 'None' : '🌶️'.repeat(level)}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Allergens */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
+                <p className="text-xs text-slate-400 mt-0.5 mb-2">Select all that apply</p>
+                <AllergenToggles
+                  value={(editingItem as any).allergens || []}
+                  onChange={next => setEditingItem(prev => prev ? { ...prev, allergens: next } as any : prev)}
+                />
+              </div>
+
+              {/* Dietary */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
+                <div className="mt-2">
+                  <DietaryToggles
+                    value={(editingItem as any).dietary_info || []}
+                    onChange={next => setEditingItem(prev => prev ? { ...prev, dietary_info: next } as any : prev)}
+                  />
+                </div>
               </div>
 
               {/* Photo */}
               <div>
-                <label className="block text-xs font-bold text-slate-600 mb-2">Photo</label>
+                <label className="block text-xs font-bold text-slate-600 mb-2">Photo <span className="text-slate-400 font-normal">(optional)</span></label>
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-16 rounded-xl border border-slate-200 overflow-hidden flex-shrink-0 bg-slate-50 flex items-center justify-center">
                     {editingItem.image_path
@@ -1593,48 +1793,33 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                 <p className="text-xs text-slate-400 mt-1">Square photos work best. JPG or PNG.</p>
               </div>
 
-              {/* Allergens */}
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
-                <p className="text-xs text-slate-400 mt-0.5 mb-2">Select all that apply</p>
-                <div className="flex flex-wrap gap-2">
-                  {['Dairy', 'Lactose', 'Gluten', 'Eggs', 'Nuts', 'Soy', 'Fish', 'Shellfish', 'Celery', 'Mustard'].map(allergen => {
-                    const active = ((editingItem as any).allergens || []).includes(allergen)
-                    return (
-                      <button key={allergen} type="button"
-                        onClick={() => {
-                          const current: string[] = (editingItem as any).allergens || []
-                          const updated = active ? current.filter(a => a !== allergen) : [...current, allergen]
-                          setEditingItem(prev => prev ? { ...prev, allergens: updated } as any : prev)
-                        }}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-amber-50 border-amber-300 text-amber-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-                        {allergen}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
+              {/* Auto-accept (per item) — UI control removed; menu_items.auto_accept column + the submit
+                  pipeline read (orders/submit) are intentionally retained. editingItem still carries the
+                  stored auto_accept value, so Save (upsert_item) preserves it untouched. Re-add the toggle
+                  here to restore editing. */}
 
-              {/* Dietary */}
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten Free', 'Dairy Free'].map(diet => {
-                    const active = ((editingItem as any).dietary_info || []).includes(diet)
-                    return (
-                      <button key={diet} type="button"
-                        onClick={() => {
-                          const current: string[] = (editingItem as any).dietary_info || []
-                          const updated = active ? current.filter(d => d !== diet) : [...current, diet]
-                          setEditingItem(prev => prev ? { ...prev, dietary_info: updated } as any : prev)
-                        }}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg border transition-colors ${active ? 'bg-green-50 border-green-300 text-green-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}>
-                        {diet}
+              {/* ── PRE-ORDERS include toggle (V7.8 global-config) — per-item stores ONLY preorder_enabled
+                  (inclusion). The deadline timing/action is the ONE global rule set in Settings → Pre-orders
+                  (trucks.preorder_*), so there are NO per-item timing controls here (single-source). Saved
+                  via the footer Save → upsert_item (preorder_enabled only). Plan-gated. */}
+              {preorderCan && (() => {
+                const pe = (editingItem as any).preorder_enabled === true
+                return (
+                  <div className="border-t border-slate-100 pt-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pre-order item</label>
+                        <p className="text-xs text-slate-400 mt-0.5">Include this item in pre-orders. Timing &amp; rule are set globally in Settings → Pre-orders.</p>
+                      </div>
+                      <button type="button" aria-pressed={pe}
+                        onClick={() => setEditingItem(prev => prev ? { ...prev, preorder_enabled: !pe } as any : prev)}
+                        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${pe ? 'bg-teal-500' : 'bg-slate-300'}`}>
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${pe ? 'translate-x-6' : 'translate-x-1'}`} />
                       </button>
-                    )
-                  })}
-                </div>
-              </div>
+                    </div>
+                  </div>
+                )
+              })()}
             </div>
             <div className="flex gap-2 mt-4">
               <Btn label="Cancel" colour="slate" onClick={() => setEditingItem(null)} />
@@ -1717,6 +1902,18 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                 {importResult.items.filter(i => !i._skip).length} items ready to add.{' '}
                 Uncheck any you don't want — you can edit details after importing.
               </p>
+              {/* Allergen-check summary (§26a) — at-a-glance silent-gap spotting. The AI MISSES hidden
+                  allergens (e.g. peanuts in Pad Thai), so an unverified item must be addressed before commit. */}
+              {importUncheckedItems.length > 0 ? (
+                <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2">
+                  <p className="text-xs font-bold text-amber-800">⚠ Allergens not verified on {importUncheckedItems.length} item{importUncheckedItems.length !== 1 ? 's' : ''} — the AI can miss hidden allergens (e.g. peanuts). Check each before saving:</p>
+                  <p className="text-[11px] text-amber-700 mt-0.5">{importUncheckedItems.map(i => i.name).join(', ')}</p>
+                </div>
+              ) : (
+                <div className="mt-2 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5">
+                  <p className="text-xs font-bold text-green-700">✓ Allergens verified on all items</p>
+                </div>
+              )}
             </div>
             <div className="overflow-y-auto flex-1 p-6 flex flex-col gap-6">
               {importResult.categories.map(cat => {
@@ -1755,16 +1952,91 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-semibold text-slate-900">{item.name}</p>
                               {item.description && <p className="text-xs text-slate-400 mt-0.5">{item.description}</p>}
-                              {((item.allergens ?? []).length > 0 || (item.dietary ?? []).length > 0) && (
-                                <div className="flex flex-wrap gap-1 mt-1.5">
-                                  {item.dietary?.map((d: string) => (
-                                    <span key={d} className="text-xs px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
-                                  ))}
-                                  {item.allergens?.map((a: string) => (
-                                    <span key={a} className="text-xs px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
-                                  ))}
+                              {(item.spiciness ?? 0) > 0 && <div className="mt-1"><SpiceLevel value={item.spiciness} /></div>}
+
+                              {/* DISH allergens — editable + silent-gap gate (§26a). Empty + unchecked
+                                  reads as "NOT CHECKED" (amber), distinct from a confirmed-none state. */}
+                              {(() => {
+                                const allergens = item.allergens || []
+                                const notChecked = allergens.length === 0 && item._allergensChecked !== true
+                                return (
+                                  <div className={`mt-2 rounded-lg border p-2 ${notChecked ? 'border-amber-300 bg-amber-50' : 'border-slate-100 bg-slate-50'}`}>
+                                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Allergens</span>
+                                      {notChecked
+                                        ? <span className="text-[11px] font-bold text-amber-700">⚠ NOT CHECKED — verify</span>
+                                        : <span className="text-[11px] font-medium text-green-600">{allergens.length ? 'checked ✓' : 'No allergens ✓'}</span>}
+                                    </div>
+                                    <AllergenToggles value={allergens} onChange={next => setItemAllergens(globalIdx, next)} />
+                                    <div className="mt-1.5">
+                                      <DietaryToggles value={item.dietary || []} onChange={next => patchImportItem(globalIdx, it => ({ ...it, dietary: next }))} />
+                                    </div>
+                                    {notChecked && (
+                                      <button type="button" onClick={() => confirmItemAllergens(globalIdx)}
+                                        className="mt-2 text-[11px] font-bold text-amber-700 underline">No allergens — confirm</button>
+                                    )}
+                                  </div>
+                                )
+                              })()}
+
+                              {/* MODIFIER GROUPS (options/variants) — editable proposal (Stage 2). */}
+                              {(item.modifierGroups || []).map((g, gi) => (
+                                <div key={gi} className="mt-2 rounded-lg border border-slate-200 bg-white p-2">
+                                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                                    <input value={g.name} onChange={e => patchGroup(globalIdx, gi, gg => ({ ...gg, name: e.target.value }))}
+                                      className="text-xs font-bold text-slate-800 bg-transparent border-b border-dashed border-slate-300 focus:outline-none focus:border-orange-400 flex-1 min-w-0" />
+                                    {g._inferredFromVariants && (
+                                      <button type="button" onClick={() => ungroupImportItem(globalIdx, gi)}
+                                        className="text-[10px] font-bold text-slate-500 hover:text-orange-600 border border-slate-200 rounded px-1.5 py-0.5 shrink-0">
+                                        Not the same dish — split
+                                      </button>
+                                    )}
+                                  </div>
+                                  {/* Required + single/multi — PROMINENT (a wrong required blocks live orders). */}
+                                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                                    <button type="button" onClick={() => patchGroup(globalIdx, gi, gg => ({ ...gg, isRequired: !gg.isRequired }))}
+                                      className={`text-[11px] font-bold px-2 py-1 rounded-lg border transition-colors ${g.isRequired ? 'bg-amber-100 border-amber-400 text-amber-800' : 'border-slate-200 text-slate-500'}`}>
+                                      {g.isRequired ? '● Required' : '○ Optional'}
+                                    </button>
+                                    <button type="button" onClick={() => patchGroup(globalIdx, gi, gg => ({ ...gg, singleSelect: !gg.singleSelect }))}
+                                      className="text-[11px] font-bold px-2 py-1 rounded-lg border border-slate-200 text-slate-500">
+                                      {g.singleSelect ? 'Choose one' : 'Choose many'}
+                                    </button>
+                                    {g.isRequired && <span className="text-[10px] font-bold text-amber-700">⚠ blocks ordering until the customer chooses</span>}
+                                  </div>
+                                  {/* Options — name + delta price + per-option allergen verification. */}
+                                  <div className="space-y-1.5">
+                                    {g.options.map((o, oi) => {
+                                      const oAllergens = o.allergens || []
+                                      const oNotChecked = oAllergens.length === 0 && o._allergensChecked !== true
+                                      return (
+                                        <div key={oi} className="rounded border border-slate-100 bg-slate-50 p-1.5">
+                                          <div className="flex items-center gap-1.5">
+                                            <input value={o.name} onChange={e => patchOption(globalIdx, gi, oi, oo => ({ ...oo, name: e.target.value }))}
+                                              className="flex-1 min-w-0 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-orange-400" />
+                                            <span className="text-[11px] text-slate-400">+£</span>
+                                            <input type="number" step="0.50" value={o.price || ''} onChange={e => patchOption(globalIdx, gi, oi, oo => ({ ...oo, price: parseFloat(e.target.value) || 0 }))}
+                                              className="w-14 text-xs text-right text-slate-700 bg-white border border-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-orange-400" />
+                                          </div>
+                                          <div className={`mt-1 rounded p-1.5 ${oNotChecked ? 'bg-amber-50 border border-amber-200' : ''}`}>
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-[10px] font-bold uppercase tracking-wide text-slate-400">Allergens</span>
+                                              {oNotChecked
+                                                ? <span className="text-[10px] font-bold text-amber-700">⚠ NOT CHECKED</span>
+                                                : <span className="text-[10px] font-medium text-green-600">{oAllergens.length ? 'checked ✓' : 'none ✓'}</span>}
+                                            </div>
+                                            <AllergenToggles value={oAllergens} onChange={next => setOptionAllergens(globalIdx, gi, oi, next)} />
+                                            {oNotChecked && (
+                                              <button type="button" onClick={() => confirmOptionAllergens(globalIdx, gi, oi)}
+                                                className="mt-1 text-[10px] font-bold text-amber-700 underline">No allergens — confirm</button>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
                                 </div>
-                              )}
+                              ))}
                             </div>
                             <div className="flex items-center flex-shrink-0">
                               {item.price_missing ? (
@@ -1800,8 +2072,14 @@ function MenuTab({ truck, categories, items, subcategories, token, api, reload, 
             <div className="p-5 border-t border-slate-100 flex gap-2">
               <Btn label="Back" colour="slate" onClick={() => setImportStep('upload')} />
               <Btn
-                label="Next →"
+                label={importUncheckedItems.length > 0 ? `Verify allergens (${importUncheckedItems.length}) →` : 'Next →'}
                 onClick={() => {
+                  // Allergen gate (§26a): keep the operator in review until every non-skipped item +
+                  // its options are verified (the controls live here). handleCommitMenu re-gates as a backstop.
+                  if (importUncheckedItems.length > 0) {
+                    showToast(`Verify allergens first: ${importUncheckedItems.slice(0, 3).map(i => i.name).join(', ')}${importUncheckedItems.length > 3 ? ` +${importUncheckedItems.length - 3} more` : ''}`, 'error')
+                    return
+                  }
                   const newCats = importResult.categories.filter(c => !importResult.existing_categories.includes(c))
                   const initPrep: Record<string, { prep_secs: number | null; batch_size: number | null }> = {}
                   newCats.forEach(cat => { initPrep[cat] = { prep_secs: null, batch_size: null } })
@@ -2073,9 +2351,13 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
 // ══════════════════════════════════════════════════════════════
 // MODIFIERS TAB
 // ══════════════════════════════════════════════════════════════
-function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryModGroups, api, reload, showToast }: {
-  categories: Category[]; modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]
-  categoryModGroups: {category_id:string;group_id:string}[]; api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
+function ModifiersTab({ categories, items, modifierGroups, modifierOptions, itemModGroups, setModifierGroups, setModifierOptions, setItemModGroups, api, reload, showToast }: {
+  categories: Category[]; items: Item[]; modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]
+  itemModGroups: {menu_item_id:string;group_id:string}[]
+  setModifierGroups: React.Dispatch<React.SetStateAction<ModifierGroup[]>>
+  setModifierOptions: React.Dispatch<React.SetStateAction<ModifierOption[]>>
+  setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string}[]>>
+  api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
 }) {
   // New-group creation modal (name only)
   const [newGroupName, setNewGroupName] = useState('')
@@ -2101,14 +2383,15 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
   // Upsell "add rule" form visibility — lifted from UpsellRulesSection for header button
   const [upsellAdding, setUpsellAdding] = useState(false)
 
-  // Optimistic category assignments — local copy, no reload on toggle
-  const [localCatMGs, setLocalCatMGs] = useState<{category_id:string;group_id:string}[]>(categoryModGroups)
-  const prevCatMGsRef = useRef(categoryModGroups)
-  if (prevCatMGsRef.current !== categoryModGroups) {
-    prevCatMGsRef.current = categoryModGroups
-    // Sync from parent only when parent reloads; don't clobber in-flight optimistic changes
-    setLocalCatMGs(categoryModGroups)
-  }
+  // Which group's dish-picker is open (group id) — a lightweight inline panel, not a modal.
+  const [pickerGroupId, setPickerGroupId] = useState<string | null>(null)
+
+  // §20 optimism now lives in the PARENT's state (modifierGroups/modifierOptions/itemModGroups).
+  // This tab is conditionally rendered (manage:461) → it UNMOUNTS on tab switch, which previously
+  // destroyed a local optimistic copy and re-seeded from a stale prop on remount (created groups
+  // vanished). The parent does NOT unmount, so writing optimistically to the parent here (no
+  // reload(), no spinner) keeps every create/edit/delete alive across tab switches. Handlers patch
+  // the parent setters directly and revert the parent on persist error.
 
   // ── Create new group ────────────────────────────────────────────────────────
   const createGroup = async () => {
@@ -2118,11 +2401,12 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
       const result = await api('upsert_modifier_group', {
         name: newGroupName.trim(), is_required: false, min_choices: 0, max_choices: 99,
       })
-      const newId = result.group?.id
+      const g = result.group
       setShowNewGroup(false)
       setNewGroupName('')
-      await reload()
-      if (newId) setExpandedGroup(newId)
+      // Optimistic append from the inserted row (has the server id) — no reload (which would close
+      // the box / flash the spinner). Open the new group.
+      if (g?.id) { setModifierGroups(gs => [...gs, g]); setExpandedGroup(g.id) }
       showToast('Group created')
     } catch (e: any) { showToast(e.message, 'error') }
     finally { setSavingGroup(false) }
@@ -2134,50 +2418,91 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
     setRenameValue(group.name)
   }
   const saveRename = async (group: ModifierGroup) => {
-    if (!renameValue.trim() || renameValue.trim() === group.name) { setRenamingGroupId(null); return }
+    const newName = renameValue.trim()
+    if (!newName || newName === group.name) { setRenamingGroupId(null); return }
     setSavingRename(true)
+    const prev = modifierGroups
+    // Optimistic patch + persist without reload (box stays open). Revert on error.
+    setModifierGroups(gs => gs.map(g => g.id === group.id ? { ...g, name: newName } : g))
+    setRenamingGroupId(null)
     try {
-      await api('upsert_modifier_group', { id: group.id, name: renameValue.trim(), is_required: group.is_required, min_choices: group.min_choices, max_choices: group.max_choices })
-      setRenamingGroupId(null)
-      await reload()
-      setExpandedGroup(group.id)
+      await api('upsert_modifier_group', { id: group.id, name: newName, is_required: group.is_required, min_choices: group.min_choices, max_choices: group.max_choices })
       showToast('Group renamed')
-    } catch (e: any) { showToast(e.message, 'error') }
+    } catch (e: any) { setModifierGroups(prev); showToast(e.message, 'error') }
     finally { setSavingRename(false) }
+  }
+
+  // ── Selection rules (Required + Choose one/many) ────────────────────────────
+  // Maps the operator-facing toggles to the flags: Required → is_required + min_choices (1 on /
+  // 0 off); Choose one/many → max_choices (1 / 99). min is clamped ≤ max. Persists via the
+  // existing upsert_modifier_group endpoint (already writes all three).
+  const saveGroupRules = async (group: ModifierGroup, next: { is_required?: boolean; max_choices?: number }) => {
+    const is_required = next.is_required ?? group.is_required
+    const max_choices = next.max_choices ?? group.max_choices ?? 99
+    let min_choices = is_required ? 1 : 0
+    if (min_choices > max_choices) min_choices = max_choices
+    const prev = modifierGroups
+    // Optimistic patch of just this group + persist WITHOUT reload — so the page never flips to its
+    // full-page spinner (which unmounts this tab and closes the expanded box). Revert on error.
+    setModifierGroups(gs => gs.map(g => g.id === group.id ? { ...g, is_required, min_choices, max_choices } : g))
+    try {
+      await api('upsert_modifier_group', { id: group.id, name: group.name, is_required, min_choices, max_choices })
+    } catch (e: any) { setModifierGroups(prev); showToast(e.message, 'error') }
   }
 
   // ── Delete group ────────────────────────────────────────────────────────────
   const deleteGroup = async (group: ModifierGroup) => {
     if (!window.confirm(`Delete "${group.name}"? All options will be removed and it will be unassigned from all categories.`)) return
+    const prevG = modifierGroups, prevO = modifierOptions
+    // Optimistic removal + persist without reload. Revert both on error.
+    setModifierGroups(gs => gs.filter(g => g.id !== group.id))
+    setModifierOptions(os => os.filter(o => o.group_id !== group.id))
+    setExpandedGroup(null)
     try {
       await api('delete_modifier_group', { id: group.id })
-      setExpandedGroup(null)
-      await reload()
       showToast('Group deleted')
-    } catch (e: any) { showToast(e.message, 'error') }
+    } catch (e: any) { setModifierGroups(prevG); setModifierOptions(prevO); showToast(e.message, 'error') }
   }
 
-  // ── Category pill toggle — optimistic, no reload ────────────────────────────
-  const toggleCatAssign = async (category_id: string, group_id: string, currentlyAssigned: boolean) => {
-    // Optimistic update
-    if (currentlyAssigned) {
-      setLocalCatMGs(prev => prev.filter(x => !(x.category_id === category_id && x.group_id === group_id)))
-    } else {
-      setLocalCatMGs(prev => [...prev, { category_id, group_id }])
-    }
+  // ── Per-dish toggle — optimistic, instant, no reload (Stage B) ──────────────
+  const isLinked = (menu_item_id: string, group_id: string) =>
+    itemModGroups.some(x => x.menu_item_id === menu_item_id && x.group_id === group_id)
+
+  const toggleItemAssign = async (menu_item_id: string, group_id: string, currentlyAttached: boolean) => {
+    const attached = !currentlyAttached
+    // Optimistic flip — single link in/out.
+    setItemModGroups(prev => attached
+      ? [...prev, { menu_item_id, group_id }]
+      : prev.filter(x => !(x.menu_item_id === menu_item_id && x.group_id === group_id)))
     try {
-      if (currentlyAssigned) {
-        await api('unassign_modifier_from_category', { category_id, group_id })
-      } else {
-        await api('assign_modifier_to_category', { category_id, group_id })
-      }
+      await api('set_item_modifier_group', { group_id, menu_item_id, attached })
     } catch (e: any) {
-      // Revert optimistic change
-      if (currentlyAssigned) {
-        setLocalCatMGs(prev => [...prev, { category_id, group_id }])
-      } else {
-        setLocalCatMGs(prev => prev.filter(x => !(x.category_id === category_id && x.group_id === group_id)))
+      // Revert just this toggle.
+      setItemModGroups(prev => attached
+        ? prev.filter(x => !(x.menu_item_id === menu_item_id && x.group_id === group_id))
+        : [...prev, { menu_item_id, group_id }])
+      showToast(e.message, 'error')
+    }
+  }
+
+  // ── Bulk select-all / clear-all for a set of dishes — one round-trip ────────
+  const bulkItemAssign = async (menu_item_ids: string[], group_id: string, attached: boolean) => {
+    if (menu_item_ids.length === 0) return
+    const prev = itemModGroups
+    // Optimistic: add the whole set (deduped) or remove it.
+    setItemModGroups(cur => {
+      if (attached) {
+        const have = new Set(cur.filter(x => x.group_id === group_id).map(x => x.menu_item_id))
+        const additions = menu_item_ids.filter(id => !have.has(id)).map(menu_item_id => ({ menu_item_id, group_id }))
+        return [...cur, ...additions]
       }
+      const remove = new Set(menu_item_ids)
+      return cur.filter(x => !(x.group_id === group_id && remove.has(x.menu_item_id)))
+    })
+    try {
+      await api('set_item_modifier_groups_bulk', { group_id, menu_item_ids, attached })
+    } catch (e: any) {
+      setItemModGroups(prev)
       showToast(e.message, 'error')
     }
   }
@@ -2190,14 +2515,18 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
     const parsedPrice = parseFloat(priceInput)
     const price_adjustment = Number.isFinite(parsedPrice) ? parsedPrice : 0
     setSavingOption(true)
+    const isEdit = !!editingOption.id
+    const prevO = modifierOptions
     try {
-      await api('upsert_modifier_option', { ...editingOption, price_adjustment })
-      showToast(editingOption.id ? 'Option updated' : 'Option added')
-      const keepOpen = editingOption.group_id
+      const result = await api('upsert_modifier_option', { ...editingOption, price_adjustment })
+      const saved = result.option
+      // Patch from the RESPONSE (a new option needs its server id) — no reload (box stays open;
+      // expandedGroup is untouched, so the group it was added to stays expanded).
+      if (isEdit) setModifierOptions(os => os.map(o => o.id === editingOption!.id ? { ...o, ...saved } : o))
+      else if (saved?.id) setModifierOptions(os => [...os, saved])
+      showToast(isEdit ? 'Option updated' : 'Option added')
       setEditingOption(null)
-      await reload()
-      if (keepOpen) setExpandedGroup(keepOpen)
-    } catch (e: any) { showToast(e.message, 'error') }
+    } catch (e: any) { setModifierOptions(prevO); showToast(e.message, 'error') }
     finally { setSavingOption(false) }
   }
 
@@ -2235,7 +2564,8 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
 
       {modifierGroups.map(group => {
         const opts = modifierOptions.filter(o => o.group_id === group.id).sort((a, b) => a.sort_order - b.sort_order)
-        const assignedCats = categories.filter(c => localCatMGs.some(cmg => cmg.category_id === c.id && cmg.group_id === group.id))
+        // Stage B: number of DISHES this group is attached to (replaces the category badges).
+        const attachedCount = itemModGroups.filter(x => x.group_id === group.id).length
         const isOpen = expandedGroup === group.id
         const isRenaming = renamingGroupId === group.id
 
@@ -2250,7 +2580,7 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                 {!isOpen && <p className="font-black text-slate-900">{group.name}</p>}
                 <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                   <span className="text-slate-400 text-xs">{opts.length} option{opts.length !== 1 ? 's' : ''}</span>
-                  {assignedCats.map(c => <Badge key={c.id} label={c.name} colour="green" />)}
+                  {attachedCount > 0 && <Badge label={`${attachedCount} dish${attachedCount !== 1 ? 'es' : ''}`} colour="green" />}
                 </div>
               </div>
               <span className={`transition-transform inline-block text-slate-400 text-xs flex-shrink-0 ${isOpen ? 'rotate-90' : ''}`}>▶</span>
@@ -2294,6 +2624,32 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                   </div>
                 </div>
 
+                {/* ── Selection rules: Required + Choose one/many ── */}
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={!!group.is_required}
+                      onChange={e => saveGroupRules(group, { is_required: e.target.checked })}
+                      className="w-4 h-4 accent-orange-500"
+                    />
+                    <span className="text-sm font-medium text-slate-700">Required</span>
+                    <span className="text-xs text-slate-400">(customer must choose)</span>
+                  </label>
+                  <div className="flex items-center gap-1">
+                    <span className="text-xs text-slate-400 mr-1">Selection:</span>
+                    {[{ label: 'Choose one', val: 1 }, { label: 'Choose many', val: 99 }].map(o => (
+                      <button key={o.val} type="button"
+                        onClick={() => saveGroupRules(group, { max_choices: o.val })}
+                        className={`text-xs font-bold px-2.5 py-1.5 rounded-lg border transition-colors ${
+                          (group.max_choices ?? 99) === o.val ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                        }`}>
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 {/* ── Options ── */}
                 <div>
                   <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Options</p>
@@ -2301,9 +2657,17 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                     <div key={opt.id} className="flex items-center gap-2 py-1.5">
                       <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${opt.type === 'remove' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-700'}`}>{opt.type}</span>
                       <span className="flex-1 text-sm text-slate-800 font-medium">{opt.name}</span>
+                      {/* Sold-out / stock at-a-glance (D1/D2). Sold out = manual (available=false) OR stock 0. */}
+                      {(opt.available === false || opt.stock_count === 0) && <span className="text-[10px] font-bold bg-red-50 text-red-600 px-1.5 py-0.5 rounded-full">Sold out</span>}
+                      {opt.available !== false && opt.stock_count != null && opt.stock_count > 0 && <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full">{opt.stock_count} left</span>}
                       <span className="text-sm font-bold text-orange-600">{opt.price_adjustment > 0 ? `+£${opt.price_adjustment.toFixed(2)}` : opt.price_adjustment < 0 ? `-£${Math.abs(opt.price_adjustment).toFixed(2)}` : 'Free'}</span>
                       <button onClick={() => { setEditingOption(opt); setPriceInput(opt.price_adjustment ? String(opt.price_adjustment) : '') }} className="text-slate-300 hover:text-orange-500 text-xs px-1.5 py-0.5 rounded hover:bg-orange-50">✏️</button>
-                      <button onClick={async () => { const gid = opt.group_id; await api('delete_modifier_option', { id: opt.id }); await reload(); setExpandedGroup(gid); showToast('Option removed') }} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>
+                      <button onClick={async () => {
+                        const prevO = modifierOptions
+                        setModifierOptions(os => os.filter(o => o.id !== opt.id)) // optimistic; no reload (box stays open)
+                        try { await api('delete_modifier_option', { id: opt.id }); showToast('Option removed') }
+                        catch (e: any) { setModifierOptions(prevO); showToast(e.message, 'error') }
+                      }} className="text-slate-300 hover:text-red-500 text-xs px-1.5 py-0.5 rounded hover:bg-red-50">🗑️</button>
                     </div>
                   ))}
                   <button
@@ -2314,23 +2678,76 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                   </button>
                 </div>
 
-                {/* ── Category assignment pills — optimistic, no reload ── */}
+                {/* ── Dish-picker: which dishes offer this group — instant-save, no reload (Stage B) ── */}
                 <div onClick={e => e.stopPropagation()}>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Assign to categories</p>
-                  <div className="flex flex-wrap gap-2">
-                    {categories.map(cat => {
-                      const assigned = localCatMGs.some(cmg => cmg.category_id === cat.id && cmg.group_id === group.id)
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => toggleCatAssign(cat.id, group.id, assigned)}
-                          className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all active:scale-95 ${assigned ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'}`}
-                        >
-                          {assigned ? '✓ ' : ''}{cat.name}
-                        </button>
-                      )
-                    })}
-                  </div>
+                  {(() => {
+                    const pickerOpen = pickerGroupId === group.id
+                    const linkedIds = new Set(itemModGroups.filter(x => x.group_id === group.id).map(x => x.menu_item_id))
+                    const allItemIds = items.map(i => i.id)
+                    const allOn = allItemIds.length > 0 && allItemIds.every(id => linkedIds.has(id))
+                    // Items grouped by category, in category sort order; uncategorized last.
+                    const cats = [
+                      ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
+                      { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+                    ].filter(g => g.items.length > 0)
+                    return (
+                      <>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Which dishes offer this group</p>
+                          <button
+                            onClick={() => setPickerGroupId(pickerOpen ? null : group.id)}
+                            className="text-xs font-bold text-orange-600 hover:text-orange-700"
+                          >
+                            {pickerOpen ? 'Done' : 'Choose dishes'}
+                          </button>
+                        </div>
+                        {!pickerOpen ? (
+                          <p className="text-xs text-slate-400">{linkedIds.size === 0 ? 'Not offered on any dish yet.' : `Offered on ${linkedIds.size} dish${linkedIds.size !== 1 ? 'es' : ''}.`}</p>
+                        ) : (
+                          <div className="space-y-3">
+                            {/* Select-all / clear-all across every dish */}
+                            <button
+                              onClick={() => bulkItemAssign(allItemIds, group.id, !allOn)}
+                              className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all active:scale-95 ${allOn ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'}`}
+                            >
+                              {allOn ? 'Clear all dishes' : 'Select all dishes'}
+                            </button>
+                            {cats.map(cat => {
+                              const catItemIds = cat.items.map(i => i.id)
+                              const catAllOn = catItemIds.every(id => linkedIds.has(id))
+                              return (
+                                <div key={cat.id}>
+                                  <div className="flex items-center gap-2 mb-1.5">
+                                    <p className="text-[11px] font-black text-slate-400 uppercase tracking-wide">{cat.name}</p>
+                                    <button
+                                      onClick={() => bulkItemAssign(catItemIds, group.id, !catAllOn)}
+                                      className="text-[10px] font-bold text-orange-600 hover:text-orange-700"
+                                    >
+                                      {catAllOn ? 'Clear all' : `Select all`}
+                                    </button>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {cat.items.map(it => {
+                                      const on = linkedIds.has(it.id)
+                                      return (
+                                        <button
+                                          key={it.id}
+                                          onClick={() => toggleItemAssign(it.id, group.id, on)}
+                                          className={`text-xs font-bold px-3 py-1.5 rounded-xl border transition-all active:scale-95 ${on ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-600 border-slate-200 hover:border-green-400'}`}
+                                        >
+                                          {on ? '✓ ' : ''}{it.name}
+                                        </button>
+                                      )
+                                    })}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </>
+                    )
+                  })()}
                 </div>
 
               </div>
@@ -2378,6 +2795,53 @@ function ModifiersTab({ categories, modifierGroups, modifierOptions, categoryMod
                   </select>
                 </div>
                 <Input label="Price adjustment (£)" type="text" inputMode="decimal" value={priceInput} onChange={setPriceInput} placeholder="0" hint="0 = free" />
+              </div>
+
+              {/* Sold-out + stock (Stage D1). Sold out → available=false → option hides for
+                  customers + operator (existing isModifierAvailable filter). Stock count is a shared
+                  pool (one supply across all dishes using this option); in D1 it is informational/
+                  editable only — the runtime decrement that consumes it is D2. */}
+              <div className="grid grid-cols-2 gap-3 items-start">
+                <label className="flex items-center gap-2 cursor-pointer pt-5">
+                  <input
+                    type="checkbox"
+                    checked={(editingOption as any).available === false}
+                    onChange={e => setEditingOption(p => ({ ...p!, available: !e.target.checked } as any))}
+                    className="w-4 h-4 accent-orange-500"
+                  />
+                  <span className="text-sm font-medium text-slate-700">Sold out</span>
+                </label>
+                <div>
+                  <label className="block text-xs font-bold text-slate-600 mb-1">Stock count <span className="text-slate-400 font-normal">(optional)</span></label>
+                  <input
+                    type="number" min="0" inputMode="numeric" placeholder="∞ untracked"
+                    value={(editingOption as any).stock_count ?? ''}
+                    onChange={e => setEditingOption(p => ({ ...p!, stock_count: e.target.value === '' ? null : parseInt(e.target.value) } as any))}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-0.5">Shared pool across all dishes using this option</p>
+                </div>
+              </div>
+
+              {/* Per-option allergens (Stage C) — INDEPENDENT of the dish; e.g. prawn = Shellfish.
+                  Shown to the customer at selection + carried to basket/ticket/email. Reuses the
+                  item-editor toggle pattern. */}
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
+                <p className="text-xs text-slate-400 mt-0.5 mb-2">This option's own allergens (separate from the dish)</p>
+                <AllergenToggles
+                  value={(editingOption as any).allergens || []}
+                  onChange={next => setEditingOption(prev => prev ? { ...prev, allergens: next } as any : prev)}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
+                <div className="mt-2">
+                  <DietaryToggles
+                    value={(editingOption as any).dietary_info || []}
+                    onChange={next => setEditingOption(prev => prev ? { ...prev, dietary_info: next } as any : prev)}
+                  />
+                </div>
               </div>
             </div>
             <div className="flex gap-2 mt-4">
@@ -4221,12 +4685,18 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
 // ══════════════════════════════════════════════════════════════
 // SETTINGS TAB
 // ══════════════════════════════════════════════════════════════
-function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, onTruckUpdate }: {
+function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   onVerifySuccess: (events: any[]) => void
   onSwitchTab: (tab: Tab) => void
   categories: Category[]
+  items: Item[]
+  subcategories: Subcategory[]
+  onItemsPatch: (ids: string[], patch: Partial<Item>) => void
+  // Partial-merge categories in the parent (§42 capacity grid) — sibling of onItemsPatch; optimistic
+  // per-row updates with NO reload() (reload→Spinner→unmounts this tab, the §23 "iPhone" violation).
+  onCategoriesPatch: (ids: string[], patch: Partial<Category>) => void
   // Push a freshly-saved value up to the parent `truck` so a remount (tab-switch / reload spinner)
   // re-seeds `form` and the local mirrors from the NEW value instead of the stale original.
   onTruckUpdate: (partial: Partial<Truck>) => void
@@ -4257,6 +4727,50 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   const [settingsExclusionList, setSettingsExclusionList] = useState<{ id: string; term: string }[]>([])
   const [verifying, setVerifying] = useState(false)
   const [verifyError, setVerifyError] = useState<string | null>(null)
+  // PRE-ORDERS (V7.8 global-config): single-source — the deadline rule lives ONCE on the truck row
+  // (gType/gVal/gAction → update_truck); per-item stores ONLY inclusion (preorder_enabled → the trimmed
+  // set_item_preorder_bulk). The popup is a pure inclusion picker.
+  const preorderCan = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+  const [poSel, setPoSel] = useState<Set<string>>(new Set())
+  const [poModalOpen, setPoModalOpen] = useState(false)
+  // MASTER toggle (§47): local mirror of truck.preorders_enabled, written via the update_truck path.
+  const [preordersOn, setPreordersOn] = useState<boolean>((truck as any).preorders_enabled !== false)
+  const saveMaster = async (v: boolean) => {
+    setPreordersOn(v) // optimistic
+    try { await api('update_truck', { data: { preorders_enabled: v } }); onTruckUpdate({ preorders_enabled: v } as any) }
+    catch (e: any) { setPreordersOn(!v); showToast(e.message, 'error') }
+  }
+  // GLOBAL config — the ONE rule on the truck row (trucks.preorder_*), read by both effects. Written
+  // via update_truck (single-source: never per-item). Local mirror initialised from the truck.
+  const [gType, setGType] = useState<'hours_before' | 'daily_cutoff'>(((truck as any).preorder_deadline_type as any) || 'hours_before')
+  const [gVal, setGVal] = useState<number>((truck as any).preorder_deadline_value ?? 2)
+  const [gAction, setGAction] = useState<'sold_out' | 'force_pending'>(((truck as any).preorder_past_action as any) || 'sold_out')
+  const saveGlobalCfg = async (patch: Partial<{ type: 'hours_before' | 'daily_cutoff'; value: number; action: 'sold_out' | 'force_pending' }>) => {
+    const type = patch.type ?? gType
+    const value = patch.value ?? (patch.type ? (patch.type === 'daily_cutoff' ? 720 : 2) : gVal)
+    const action = patch.action ?? gAction
+    setGType(type); setGVal(value); setGAction(action) // optimistic
+    try {
+      await api('update_truck', { data: { preorder_deadline_type: type, preorder_deadline_value: value, preorder_past_action: action } })
+      onTruckUpdate({ preorder_deadline_type: type, preorder_deadline_value: value, preorder_past_action: action } as any)
+    } catch (e: any) { showToast(e.message, 'error') }
+  }
+  // Item INCLUSION toggle — writes ONLY preorder_enabled (the trimmed bulk), then reload so page + item
+  // editor mirror. No per-item timing/action is ever written (single-source on the truck).
+  // OPTIMISTIC, no-refresh (§23 "iPhone" rule): patch the parent items in place so the checkbox flips
+  // instantly + the item editor mirrors — NO reload() (reload sets loading→Spinner→unmounts this tab,
+  // closing the popup). Background write; revert the patch + toast on error. Modal stays open.
+  const setItemIncluded = async (id: string, enabled: boolean) => {
+    onItemsPatch([id], { preorder_enabled: enabled })
+    try { await api('set_item_preorder_bulk', { menu_item_ids: [id], preorder_enabled: enabled }) }
+    catch (e: any) { onItemsPatch([id], { preorder_enabled: !enabled }); showToast(e.message, 'error') }
+  }
+  // Group select-all/deselect — optimistic patch of all the group's items, one bulk write, revert on error.
+  const setGroupIncluded = async (ids: string[], enabled: boolean) => {
+    onItemsPatch(ids, { preorder_enabled: enabled })
+    try { await api('set_item_preorder_bulk', { menu_item_ids: ids, preorder_enabled: enabled }) }
+    catch (e: any) { onItemsPatch(ids, { preorder_enabled: !enabled }); showToast(e.message, 'error') }
+  }
 
   useEffect(() => {
     api('get_vans').then(r => setVans(r.vans || [])).catch(() => {})
@@ -4519,17 +5033,44 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
     await api('update_van_settings', { vanId, [field]: value })
   }
 
-  // Toggle a NO-PREP category's "counts toward kitchen capacity" flag from the capacity
-  // tickbox list. Sends the full row + the new flag (upsert_category field update), then reload.
+  // Toggle a NO-PREP category's "counts toward kitchen capacity" flag from the capacity tickbox list.
+  // OPTIMISTIC (§23 "iPhone" rule): patch the parent categories state instantly, write in the
+  // background, revert on error — NO reload() (reload→Spinner→unmounts this tab). Payload unchanged.
   const toggleCatCapacity = async (cat: Category, newVal: boolean) => {
+    const prior = cat.counts_toward_capacity   // capture PRE-patch value for a clean revert
+    onCategoriesPatch([cat.id], { counts_toward_capacity: newVal })
     try {
       await api('upsert_category', {
         id: cat.id, name: cat.name, prep_secs: cat.prep_secs, batch_size: cat.batch_size,
         allow_notes: cat.allow_notes, default_stock: cat.default_stock, sort_order: cat.sort_order,
         counts_toward_capacity: newVal,
       })
-      reload()
-    } catch (e: any) { showToast(e.message, 'error') }
+    } catch (e: any) {
+      onCategoriesPatch([cat.id], { counts_toward_capacity: prior })
+      showToast(e.message, 'error')
+    }
+  }
+
+  // Per-category prep/batch write for the Kitchen-capacity grid (V7.8 §42) — SAME upsert_category
+  // payload (no new endpoint). OPTIMISTIC like toggleCatCapacity: patch the parent categories state
+  // instantly, write in the background, revert on error — NO reload(). prep_secs in SECONDS,
+  // batch_size as-is (0 = ∞, Manage convention). The payload + the revert both derive from cat.* (the
+  // pre-write prop row), so a failed write restores the prior value, not a post-patch one.
+  const updateCatField = async (cat: Category, patch: Partial<Category>) => {
+    // Prior values of ONLY the patched fields, read from the pre-patch prop row (for a clean revert).
+    const prior = Object.fromEntries(Object.keys(patch).map(k => [k, (cat as any)[k]])) as Partial<Category>
+    onCategoriesPatch([cat.id], patch)
+    try {
+      await api('upsert_category', {
+        id: cat.id, name: cat.name, prep_secs: cat.prep_secs, batch_size: cat.batch_size,
+        allow_notes: cat.allow_notes, default_stock: cat.default_stock, sort_order: cat.sort_order,
+        counts_toward_capacity: cat.counts_toward_capacity,
+        ...patch,
+      })
+    } catch (e: any) {
+      onCategoriesPatch([cat.id], prior)
+      showToast(e.message, 'error')
+    }
   }
 
   return (
@@ -5087,6 +5628,154 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         </div>
       </Card>
 
+      {/* ── PRE-ORDERS (V7.8 global-config) — plan-gated; hidden off-plan. SINGLE-SOURCE: the deadline
+          RULE lives ONCE on the truck (gType/gVal/gAction → update_truck), applied to every included
+          item; per-item stores ONLY inclusion (preorder_enabled → trimmed set_item_preorder_bulk).
+          PAGE = master toggle + the one global-config block (stable deadline control + radio action) +
+          a read-only list of included items + "Configure items". POPUP = category → sub-category → item
+          inclusion picker (select-all per level). No per-item timing anywhere. Reuses loaded items +
+          category sort_order; daily_cutoff = minutes-of-day (no UI tz math). */}
+      {preorderCan && (() => {
+        const groups = [
+          ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
+          { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+        ].filter(g => g.items.length > 0)
+        const includedCount = items.filter(i => i.preorder_enabled === true).length
+        const cutoffStr = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
+        const ruleSummary = `${describePreorderDeadline({ enabled: true, deadlineType: gType, deadlineValue: gVal, pastAction: gAction })} · ${gAction === 'force_pending' ? 'needs approval' : 'sold out'}`
+        return (
+          <Card className="p-4">
+            {/* Master toggle */}
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Pre-orders</p>
+                <p className="text-xs text-slate-400 mt-0.5">When off, all pre-order settings are paused but saved.</p>
+              </div>
+              <button type="button" aria-pressed={preordersOn} onClick={() => saveMaster(!preordersOn)}
+                className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${preordersOn ? 'bg-teal-500' : 'bg-slate-300'}`}>
+                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${preordersOn ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </div>
+
+            {/* GLOBAL CONFIG — the ONE rule (truck row via update_truck). Stable deadline control + radios. */}
+            <div className={`mt-4 ${preordersOn ? '' : 'opacity-50'}`}>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">Pre-order rule (applies to all included items)</p>
+              <label className="block text-xs font-bold text-slate-600 mb-1">Deadline</label>
+              <div className="flex items-center gap-2 mb-3">
+                <select value={gType} onChange={e => saveGlobalCfg({ type: e.target.value as any })}
+                  className="border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option value="hours_before">Hours before event</option>
+                  <option value="daily_cutoff">Daily cutoff time</option>
+                </select>
+                {/* fixed slot — both controls live here; only one shows → no reflow on type switch */}
+                <div className="w-32 flex-shrink-0">
+                  <select value={gVal} onChange={e => saveGlobalCfg({ value: parseInt(e.target.value) })}
+                    className={gType === 'hours_before' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'}>
+                    {Array.from({ length: 48 }, (_, i) => i + 1).map(h => <option key={h} value={h}>{h} hour{h !== 1 ? 's' : ''}</option>)}
+                  </select>
+                  <input type="time" value={cutoffStr(gVal)} onChange={e => { const [h, m] = e.target.value.split(':').map(Number); saveGlobalCfg({ value: (h || 0) * 60 + (m || 0) }) }}
+                    className={gType === 'daily_cutoff' ? 'w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400' : 'hidden'} />
+                </div>
+              </div>
+              <label className="block text-xs font-bold text-slate-600 mb-1">Past the deadline</label>
+              <div className="space-y-1.5">
+                {([['sold_out', 'Mark sold out', "Customers can't order it after the deadline."],
+                   ['force_pending', 'Allow, require approval', "Customers can still order, but the order needs your approval (won't auto-accept)."]] as const).map(([v, lbl, help]) => (
+                  <label key={v} className="flex items-start gap-2 cursor-pointer">
+                    <input type="radio" name="po_global_action" checked={gAction === v} onChange={() => saveGlobalCfg({ action: v })} className="mt-0.5 w-4 h-4 accent-orange-600" />
+                    <span className="text-sm"><span className="font-medium text-slate-700">{lbl}</span><span className="block text-xs text-slate-400">{help}</span></span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
+            <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <p className="text-sm font-semibold text-slate-800">Included items <span className="font-normal text-slate-400">({includedCount})</span></p>
+                <button type="button" onClick={() => setPoModalOpen(true)}
+                  className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
+              </div>
+              {includedCount === 0
+                ? <p className="text-xs text-slate-400">No items included yet — “Configure items” to add some. They’ll all use the rule above ({ruleSummary}).</p>
+                : (
+                  <>
+                    <p className="text-xs text-slate-400 mb-2">All included items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
+                    <div className="space-y-2">
+                      {groups.map(g => {
+                        const inc = g.items.filter(i => i.preorder_enabled === true)
+                        if (inc.length === 0) return null
+                        return (
+                          <div key={g.id}>
+                            <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
+                            <p className="text-sm text-slate-600 truncate">{inc.map(i => i.name).join(', ')}</p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
+            </div>
+
+            {/* POPUP — pure INCLUSION picker: category → sub-category → item, select-all per level.
+                Writes ONLY preorder_enabled via setItemIncluded / set_item_preorder_bulk (enabled-only). */}
+            {poModalOpen && (
+              <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={() => setPoModalOpen(false)}>
+                <div className="bg-white rounded-2xl p-5 w-full max-w-md shadow-2xl max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                  <h3 className="font-black text-slate-900 mb-1">Choose pre-order items</h3>
+                  <p className="text-xs text-slate-400 mb-4">Tick which items are pre-order. They all use the global rule ({ruleSummary}).</p>
+                  <div className="space-y-4">
+                    {groups.map(g => {
+                      const gIds = g.items.map(i => i.id)
+                      const gAllOn = gIds.length > 0 && g.items.every(i => i.preorder_enabled === true)
+                      const subGroups = groupBySubcategory(g.items, subcategories.filter(s => s.category_id === g.id))
+                      return (
+                        <div key={g.id}>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wide text-orange-600">{g.name}</span>
+                            <button type="button" onClick={() => setGroupIncluded(gIds, !gAllOn)}
+                              className="text-[11px] font-semibold text-orange-600">{gAllOn ? 'Deselect all' : 'Select all'}</button>
+                          </div>
+                          {subGroups.filter(sg => sg.items.length > 0).map(sg => {
+                            const sgIds = sg.items.map(i => i.id)
+                            const sgAllOn = sg.items.every(i => i.preorder_enabled === true)
+                            return (
+                              <div key={sg.id ?? '__none__'} className="mt-1.5 ml-1">
+                                {sg.name && (
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">{sg.name}</span>
+                                    <button type="button" onClick={() => setGroupIncluded(sgIds, !sgAllOn)}
+                                      className="text-[10px] font-semibold text-slate-400 hover:text-orange-600">{sgAllOn ? 'Deselect' : 'Select all'}</button>
+                                  </div>
+                                )}
+                                <div className="space-y-1 mt-1">
+                                  {sg.items.map(it => {
+                                    const on = it.preorder_enabled === true
+                                    return (
+                                      <label key={it.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                                        <input type="checkbox" checked={on} onChange={() => setItemIncluded(it.id, !on)} className="w-4 h-4 accent-orange-600" />
+                                        <span className="truncate text-slate-700">{it.name}</span>
+                                      </label>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="flex justify-end mt-5">
+                    <button type="button" onClick={() => setPoModalOpen(false)} className="text-sm font-semibold px-3 py-2 rounded-lg bg-slate-800 text-white">Done</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Card>
+        )
+      })()}
+
 
       {/* Your trucks */}
       <Card className="p-4">
@@ -5203,74 +5892,85 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 </button>
               </div>
 
-              {/* Kitchen capacity */}
-              {/* Capacity number + its category scope = ONE tight, left-aligned unit (max-w keeps it
-                  from stretching apart). Category list uses a quiet inline lead-in, NOT a third
-                  heading; copy sits muted below. Behaviour unchanged: cooked (prep>0) always count
-                  (checked+locked); instant categories toggle; all disabled until a capacity is set. */}
-              <div className="mt-3 max-w-md">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
-                  <p className="text-sm font-semibold text-slate-800">Kitchen capacity</p>
+              {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
+                  CATEGORY · PREP · ITEMS · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
+                  aligned under it via the SAME column template. Writes unchanged: updateCatField
+                  (prep_secs/batch_size via upsert_category), toggleCatCapacity (counts_toward_capacity),
+                  updateVanSetting (kitchen_capacity / capacity_window_mins). Cooking cats (prep>0)
+                  lock-checked; instant cats toggle once a capacity is set. Window stays plain minutes
+                  (engine reads capacity_window_mins as minutes). PrepTimeSelect off-grid-preserving. */}
+              <div className="mt-3">
+                <p className="text-sm font-semibold text-slate-800 mb-3">Kitchen capacity</p>
+                {categories.length > 0 && (
+                  <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 gap-y-2 items-center">
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+                    {categories.map(cat => {
+                      const hasCap = van.kitchen_capacity != null
+                      const locked = cat.prep_secs > 0
+                      const capDisabled = locked || !hasCap
+                      return (
+                        <Fragment key={cat.id}>
+                          <span className="min-w-0 truncate text-slate-700 font-medium text-sm">{cat.name}</span>
+                          <PrepTimeSelect
+                            valueSecs={cat.prep_secs}
+                            ariaLabel={`${cat.name} prep time`}
+                            onChange={secs => updateCatField(cat, { prep_secs: secs })}
+                            className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
+                          <select
+                            aria-label={`${cat.name} items per batch`}
+                            value={(!cat.batch_size||cat.batch_size===0)?'':cat.batch_size}
+                            onChange={e => updateCatField(cat, { batch_size: e.target.value === '' ? 0 : parseInt(e.target.value) })}
+                            className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                            <option value="">∞</option>
+                            {Array.from({length:20},(_,i)=>i+1).concat((cat.batch_size&&cat.batch_size>20)?[cat.batch_size]:[]).map(n=>(
+                              <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                            ))}
+                          </select>
+                          <label className={`flex items-center justify-center ${capDisabled?'cursor-not-allowed':'cursor-pointer'}`}
+                            title={locked
+                              ? 'Cooked — always counts (its prep & batch set the pace)'
+                              : !hasCap ? 'Set a capacity to choose which categories count'
+                              : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}>
+                            <input type="checkbox"
+                              checked={locked ? true : !!cat.counts_toward_capacity}
+                              disabled={capDisabled}
+                              onChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                              className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"/>
+                          </label>
+                        </Fragment>
+                      )
+                    })}
+                  </div>
+                )}
+                {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. PREP
+                    column = window (plain minutes), ITEMS column = kitchen_capacity ceiling. */}
+                <div className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
+                  <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
+                  <select
+                    value={van.capacity_window_mins ?? 5}
+                    aria-label="Capacity window (minutes)"
+                    disabled={van.kitchen_capacity == null}
+                    onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                    {Array.from({length:20},(_,i)=>i+1).concat(((van.capacity_window_mins??5)>20)?[van.capacity_window_mins as number]:[]).map(n=>(
+                      <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
+                    ))}
+                  </select>
                   <select
                     value={van.kitchen_capacity ?? ''}
-                    onChange={e => updateVanSetting(
-                      van.id,
-                      'kitchen_capacity',
-                      e.target.value === '' ? null : parseInt(e.target.value)
-                    )}
-                    className="border border-slate-200 rounded-xl px-2 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-24"
-                  >
-                    <option value="">No limit</option>
+                    aria-label="Total capacity (items)"
+                    onChange={e => updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
+                    className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                    <option value="">∞</option>
                     {Array.from({length:20},(_,i)=>i+1).map(n=>(
                       <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
                     ))}
                   </select>
-                  {/* The ceiling's OWN window cadence — how often the kitchen completes a cycle.
-                      Independent of any category's prep. Disabled until a capacity is set. */}
-                  <span className="text-sm text-slate-500">every</span>
-                  <select
-                    value={van.capacity_window_mins ?? 5}
-                    disabled={van.kitchen_capacity == null}
-                    onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
-                    className="border border-slate-200 rounded-xl px-2 py-2 text-sm text-slate-700 bg-white flex-shrink-0 w-20 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50"
-                  >
-                    {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                      <option key={n} value={n}>{n} min</option>
-                    ))}
-                  </select>
+                  <span/>
                 </div>
-                {categories.length > 0 && (
-                  <div className="mt-2">
-                    <span className="text-xs text-slate-400">Limit applies to:</span>
-                    {/* Side-by-side wrapping row — Pizza / Other / Drinks flow inline and wrap to the
-                        next row only if they don't fit. Even spacing; auto-selected cooked categories
-                        (Pizza) show checked + locked, no caption. */}
-                    <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-                      {categories.map(cat => {
-                        const hasCap = van.kitchen_capacity != null
-                        const locked = cat.prep_secs > 0
-                        const disabled = locked || !hasCap
-                        return (
-                          <label key={cat.id}
-                            title={locked
-                              ? 'Cooked — always counts (its prep & batch set the pace)'
-                              : !hasCap ? 'Set a capacity to choose which categories count'
-                              : 'Tick to include this instant category (e.g. sides, dips, drinks) in the shared per-window limit'}
-                            className={`flex items-center gap-1.5 text-sm ${disabled ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'}`}>
-                            <input
-                              type="checkbox"
-                              checked={locked ? true : !!cat.counts_toward_capacity}
-                              disabled={disabled}
-                              onChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
-                              className="w-4 h-4 accent-orange-600 cursor-pointer disabled:cursor-not-allowed"
-                            />
-                            <span>{cat.name}</span>
-                          </label>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
                 {van.kitchen_capacity == null && categories.length > 0 && (
                   <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
                 )}
@@ -6439,11 +7139,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
 // ── TeamTab ────────────────────────────────────────────────────
 type PendingEmailChange = { id: string; new_email: string; requested_at: string; expired_at: string }
 
-function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, currentUserId, userRole, initialPendingEmailChange, onProfileSaved }: {
+function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, currentUserFirstName, currentUserLastName, currentUserPhone, currentUserId, ownerEmail, ownerAuthUserId, userRole, initialPendingEmailChange, onProfileSaved }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: (m: string, t?: any) => void
   currentUserEmail: string | null; currentUserFirstName: string | null; currentUserLastName: string | null; currentUserPhone: string | null
-  currentUserId: string | null; userRole: 'owner' | 'manager' | 'staff'
+  currentUserId: string | null; ownerEmail: string | null; ownerAuthUserId: string | null; userRole: 'owner' | 'manager' | 'staff'
   initialPendingEmailChange: PendingEmailChange | null
   onProfileSaved: (firstName: string, lastName: string, phone: string | null) => void
 }) {
@@ -6648,6 +7348,11 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
     return false
   }
 
+  // True only when the SESSION viewer is the truck's actual owner (not an admin/other viewing).
+  // Drives the owner-row "(you)" badge AND whether the owner-row Edit (own-profile) button shows —
+  // a non-owner must not see/act on the owner's identity here.
+  const isViewerOwner = !!currentUserId && currentUserId === ownerAuthUserId
+
   const visibleMembers = teamMembers.filter(member => {
     if (userRole === 'owner' || userRole === 'manager') return true
     return member.auth_user_id === currentUserId
@@ -6681,24 +7386,34 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
         <div className="flex items-center justify-between py-2.5 border-b border-slate-100">
           <div>
             <p className="text-sm font-medium text-slate-900">
-              {currentUserFirstName && currentUserLastName
-                ? `${currentUserFirstName} ${currentUserLastName} (you)`
-                : `${currentUserEmail || truck.contact_email} (you)`}
+              {(() => {
+                // The owner row reflects the truck's ACTUAL owner (trucks.operator_id → ownerEmail),
+                // NOT the session viewer. "(you)" only when the viewer IS the owner. When the viewer
+                // is the owner we can show their full name; otherwise only the owner's email is known.
+                const display = isViewerOwner && currentUserFirstName && currentUserLastName
+                  ? `${currentUserFirstName} ${currentUserLastName}`
+                  : (ownerEmail || truck.contact_email || '—')
+                return `${display}${isViewerOwner ? ' (you)' : ''}`
+              })()}
             </p>
             <p className="text-xs text-slate-400">Owner · All vans</p>
           </div>
-          <button
-            onClick={() => {
-              setOwnProfileFirstName(currentUserFirstName || '')
-              setOwnProfileLastName(currentUserLastName || '')
-              setOwnProfilePhone(currentUserPhone || '')
-              setOwnProfileEmail(currentUserEmail || '')
-              setEditingOwnProfile(true)
-            }}
-            className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
-          >
-            Edit
-          </button>
+          {/* Edit (own-profile) shown ONLY to the owner — a non-owner viewer (e.g. admin) must not
+              act on the owner's identity, and this button edits the viewer's OWN profile. */}
+          {isViewerOwner && (
+            <button
+              onClick={() => {
+                setOwnProfileFirstName(currentUserFirstName || '')
+                setOwnProfileLastName(currentUserLastName || '')
+                setOwnProfilePhone(currentUserPhone || '')
+                setOwnProfileEmail(currentUserEmail || '')
+                setEditingOwnProfile(true)
+              }}
+              className="text-xs px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
+            >
+              Edit
+            </button>
+          )}
         </div>
 
         {pendingEmailChange && !editingOwnProfile && (

@@ -5,9 +5,8 @@
 
 /** Canonical kitchen-capacity description — identical on both surfaces. */
 export const KITCHEN_CAPACITY_DESC =
-  "The most items you can make in the chosen window, across the selected categories. " +
-  "Each cooked category also has its own batch size (e.g. pizzas in batches of 4) that " +
-  "limits how many of that item fit in a window. Set to No limit for none."
+  "The most items your kitchen can cook at once across the ticked categories — " +
+  "each cooked category's batch size still caps how many of that item fit in it."
 
 /** Canonical worked example — rendered as a second paragraph on both surfaces. */
 export const KITCHEN_CAPACITY_EXAMPLE =
@@ -48,4 +47,40 @@ export function kitchenCapacityNeedsPrepWarning(
 ): boolean {
   if (capacity == null) return false
   return (categories || []).some(categoryNeedsPrepConfig)
+}
+
+// ── Shared prep-time dropdown grid (V7.8 §42) ──────────────────────────────────
+// ONE source for the prep-time <select> on BOTH the dashboard Menu & Stock section and the Manage
+// category editor (replaces the old minutes-input + 0s/30s-select pair, and Manage's whole-minutes
+// input). VALUE = prep_secs in SECONDS — fed straight to the existing writes (updateCategoryField /
+// upsert_category) with NO payload change. Mirrors the SCHEDULE_TIME_OPTIONS pattern.
+//   30s steps 30s→5m (30,60,…,300), then 1m steps 6m→15m (360,420,…,900). ~20 options.
+export const PREP_TIME_OPTIONS: number[] = [
+  ...Array.from({ length: 10 }, (_, i) => (i + 1) * 30),   // 30,60,90,…,300  (30s … 5m)
+  ...Array.from({ length: 10 }, (_, i) => 360 + i * 60),    // 360,420,…,900   (6m … 15m)
+]
+
+/** Human label for a prep_secs value: "Instant" (0), "30s", "1m", "1m 30s", "2m", … "20m". */
+export function formatPrepSecs(secs: number | null | undefined): string {
+  const v = Number(secs) || 0
+  if (v <= 0) return 'Instant'
+  const m = Math.floor(v / 60)
+  const s = v % 60
+  if (m === 0) return `${s}s`
+  if (s === 0) return `${m}m`
+  return `${m}m ${s}s`
+}
+
+/**
+ * Options to render for a category's stored prep_secs, with OFF-GRID PRESERVATION: always includes
+ * 0 ("Instant") + the full grid, and if the stored value is a positive non-grid value (e.g. 330 =
+ * 5m30s, 450 = 7m30s, 1200 = 20m — reachable via the old inputs) it is added as a selectable extra
+ * so the dropdown can SELECT it without snapping. The component never writes on mount, so an
+ * untouched off-grid category keeps its exact prep_secs (the engine-safety guarantee). Sorted asc.
+ */
+export function prepTimeOptionsFor(storedSecs: number | null | undefined): { secs: number; label: string }[] {
+  const stored = Number(storedSecs) || 0
+  const set = new Set<number>([0, ...PREP_TIME_OPTIONS])
+  if (stored > 0) set.add(stored)                          // off-grid extra (no-op if already on grid)
+  return [...set].sort((a, b) => a - b).map(secs => ({ secs, label: formatPrepSecs(secs) }))
 }

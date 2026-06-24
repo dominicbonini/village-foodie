@@ -22,7 +22,6 @@ interface AdminTruck {
   contact_email: string | null
   onboarded_at: string | null
   operator_id: string | null
-  is_test: boolean
   lifetime_discount_pct: number | null
   lifetime_discount_note: string | null
   scraper_preference?: 'auto' | 'manual' | 'both' | null
@@ -181,7 +180,6 @@ export default function AdminPage() {
     setModalEdits({
       plan: truck.plan,
       active: truck.active,
-      is_test: truck.is_test,
       trial_expires_at: truck.trial_expires_at,
       feature_overrides: truck.feature_overrides ? { ...truck.feature_overrides } : {},
       lifetime_discount_pct: truck.lifetime_discount_pct,
@@ -240,6 +238,14 @@ export default function AdminPage() {
     expires.setMonth(expires.getMonth() + months)
     setModalEdits(prev => ({ ...prev, plan: 'trial', trial_expires_at: expires.toISOString() }))
   }
+  // Custom trial end date from the date picker. Sets it to end-of-day so the trial lasts
+  // THROUGH the chosen date. Selecting a date here makes neither month preset "active" (the
+  // preset highlight is computed from the stored expiry below), so the 1/3-month chips deselect.
+  const setModalTrialDate = (dateStr: string) => {
+    if (!dateStr) return
+    const expires = new Date(`${dateStr}T23:59:59`)
+    setModalEdits(prev => ({ ...prev, plan: 'trial', trial_expires_at: expires.toISOString() }))
+  }
 
   if (checkingSession) return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -275,6 +281,12 @@ export default function AdminPage() {
   const modalTrialDays = modalTrialExpiry
     ? Math.max(0, Math.ceil((modalTrialExpiry.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0
+  // Which preset (if any) the current expiry matches — drives the chip "selected" highlight.
+  // A custom picked date matches neither, so both chips show as deselected.
+  const presetYMD = (months: 1 | 3) => { const d = new Date(); d.setMonth(d.getMonth() + months); return d.toISOString().slice(0, 10) }
+  const modalExpiryYMD = modalTrialExpiry ? modalTrialExpiry.toISOString().slice(0, 10) : null
+  const isTrialPreset1 = !!modalExpiryYMD && modalExpiryYMD === presetYMD(1)
+  const isTrialPreset3 = !!modalExpiryYMD && modalExpiryYMD === presetYMD(3)
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -436,9 +448,6 @@ export default function AdminPage() {
                             💚 {truck.lifetime_discount_pct}% lifetime
                           </span>
                         )}
-                        {truck.is_test && (
-                          <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">Test</span>
-                        )}
                         {!truck.active && (
                           <span className="text-[10px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">Inactive</span>
                         )}
@@ -576,15 +585,25 @@ export default function AdminPage() {
                 ))}
               </div>
               {currentModalPlan === 'trial' && (
-                <div className="flex items-center gap-2 mt-2">
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <button onClick={() => setModalTrial(1)}
-                    className="text-xs bg-teal-50 text-teal-700 hover:bg-teal-100 font-bold px-2 py-1 rounded-lg transition-colors">
+                    className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${
+                      isTrialPreset1 ? 'bg-slate-900 text-white' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
+                    }`}>
                     1 month
                   </button>
                   <button onClick={() => setModalTrial(3)}
-                    className="text-xs bg-teal-50 text-teal-700 hover:bg-teal-100 font-bold px-2 py-1 rounded-lg transition-colors">
+                    className={`text-xs font-bold px-2 py-1 rounded-lg transition-colors ${
+                      isTrialPreset3 ? 'bg-slate-900 text-white' : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
+                    }`}>
                     3 months
                   </button>
+                  <input
+                    type="date"
+                    value={modalExpiryYMD ?? ''}
+                    onChange={e => setModalTrialDate(e.target.value)}
+                    className="text-xs border border-slate-200 rounded-lg px-2 py-1 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400"
+                  />
                   {modalTrialExpiry && (
                     <span className={`text-xs font-bold ${
                       modalTrialExpired ? 'text-red-500' : modalTrialDays <= 7 ? 'text-orange-500' : 'text-teal-600'
@@ -606,15 +625,6 @@ export default function AdminPage() {
                   className="w-4 h-4 accent-orange-500"
                 />
                 <span className="text-sm font-medium text-slate-700">Active</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={modalEdits.is_test ?? editingTruck.is_test}
-                  onChange={e => setModalEdits(prev => ({ ...prev, is_test: e.target.checked }))}
-                  className="w-4 h-4 accent-slate-500"
-                />
-                <span className="text-sm font-medium text-slate-700">Test account</span>
               </label>
             </div>
 

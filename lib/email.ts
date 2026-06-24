@@ -5,7 +5,7 @@ export interface EmailOrderItem {
   name: string
   quantity: number
   unit_price: number
-  modifiers?: { name: string; price: number }[]
+  modifiers?: { name: string; price: number; allergens?: string[]; dietary?: string[] }[]
   specialInstructions?: string
 }
 
@@ -28,7 +28,7 @@ export interface EmailDeal {
 export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]): string {
   const itemRows = (items || []).map(item => {
     const modRows = (item.modifiers || []).map(m =>
-      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+£${Number(m.price).toFixed(2)}</span>` : ''}</td></tr>`
+      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+£${Number(m.price).toFixed(2)}</span>` : ''}${(m.allergens && m.allergens.length) ? ` <span style="color:#b45309">— contains: ${m.allergens.join(', ')}</span>` : ''}</td></tr>`
     ).join('')
     const noteRow = item.specialInstructions
       ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
@@ -198,7 +198,9 @@ export function formatConfirmationEmail(params: {
   <div style="text-align:center;padding:20px 0 16px">
     <div style="width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px">✓</div>
     <h1 style="font-size:22px;font-weight:800;margin:0 0 4px">${heading}</h1>
-    <p style="color:#64748b;margin:0;font-size:14px">Thanks! We've received your order and we're getting it ready.</p>
+    <p style="color:#64748b;margin:0;font-size:14px">${params.autoAccepted
+      ? `Thanks! We've received your order and we're getting it ready.`
+      : `Thanks! We've received your order — we'll let you know once it's confirmed.`}</p>
   </div>
 
   ${slotSection}
@@ -239,7 +241,7 @@ export function formatConfirmationEmail(params: {
     '',
     params.items.map(i => {
       const lines = [`${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`]
-      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '')).join(', ')}`)
+      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '') + (m.allergens && m.allergens.length ? ` (contains: ${m.allergens.join(', ')})` : '')).join(', ')}`)
       if (i.specialInstructions) lines.push(`  📝 ${i.specialInstructions}`)
       return lines.join('\n')
     }).join('\n'),

@@ -190,6 +190,11 @@ export async function getProductionSlotUnits(
   return (await readProductionSlotUnits(supabase, truckId, eventId, false, excludeOrderKey)).units
 }
 
+/** An order shape this builder can fold in WITHOUT it being in the DB yet — same fields the DB read
+ *  selects (slot, items, deals). Used by computeEventUnitRows so the atomic-RPC path can produce the
+ *  post-insert units (committed orders + the placing order) through the IDENTICAL per-order loop. */
+type FoldableOrder = { slot: string | null; items: any[]; deals?: any[] | null }
+
 async function buildUnitsFromOrders(
   supabase: SupabaseClient,
   truckId: string,
@@ -198,7 +203,12 @@ async function buildUnitsFromOrders(
   // doesn't count it against itself (it's inserted pending+null-slot BEFORE the fit, so it would
   // otherwise self-occupy the event-start window and over-yield one slot). Default undefined → NO
   // filter → full occupancy. NEVER passed by the write/rebuild/reader paths (they must count all).
-  excludeOrderKey?: string | null
+  excludeOrderKey?: string | null,
+  // ADDITIVE (§45 atomic-RPC): in-memory orders to fold in alongside the DB-read orders, through the
+  // SAME per-order resolution below. Default [] → existing callers are byte-identical (they pass none).
+  // computeEventUnitRows passes the placing order here so the result equals a post-insert rebuild —
+  // without inserting first (the insert + this write happen atomically in the RPC).
+  extraOrders: FoldableOrder[] = []
 ): Promise<ProductionSlotUnits> {
   // Event-scoped: this event's orders only. event_id IS NULL orders (which belong to no event) are
   // excluded by the eq filter, so they pool into nothing. null-slot (ASAP) orders are still included —
@@ -227,7 +237,9 @@ async function buildUnitsFromOrders(
   })
 
   const out: ProductionSlotUnits = {}
-  ;(orders || []).forEach(order => {
+  // DB-read orders + any folded-in in-memory orders, processed by the IDENTICAL loop body (no logic
+  // change for existing callers — extraOrders is empty for them).
+  ;[...(orders || []), ...extraOrders].forEach(order => {
     // DEFENSIVE LEGACY FALLBACK: since the submit route now ALWAYS persists the resolved boundary to
     // order.slot (never null for new orders), `order.slot` is the real placed slot and the rebuild
     // reads the SAME ct the incremental booking used → no 10:05-vs-10:00 divergence. The `|| eventStart`
@@ -242,6 +254,25 @@ async function buildUnitsFromOrders(
     out[productionSlot] = mergeQtyByCat(out[productionSlot] || {}, delta)
   })
   return out
+}
+
+/**
+ * §45 atomic-RPC helper (PURE compute, NO write). Returns the production_slot_usage rows for THIS
+ * event AS IF the placing order were already committed — by folding it into buildUnitsFromOrders'
+ * identical per-order loop alongside the event's current orders. The atomic RPC then writes these
+ * rows (event-scoped delete+insert) in the SAME transaction as the order INSERT, so display and
+ * enforcement can't diverge and a failure rolls back both. Seating is byte-identical to the old
+ * insert→rebuildProductionSlotUsage path because the SAME helpers + inputs produce the units; only
+ * the WRITE moves into the RPC. `newOrder.slot` MUST be the resolved finalSlot (TS resolve output).
+ */
+export async function computeEventUnitRows(
+  supabase: SupabaseClient,
+  truckId: string,
+  eventId: string,
+  newOrder: FoldableOrder
+): Promise<{ production_slot: string; units_by_cat: QtyByCat }[]> {
+  const units = await buildUnitsFromOrders(supabase, truckId, eventId, undefined, [newOrder])
+  return Object.entries(units).map(([production_slot, units_by_cat]) => ({ production_slot, units_by_cat }))
 }
 
 // Returns the upsert error (or null) so the reconcile path can SURFACE a write failure instead of

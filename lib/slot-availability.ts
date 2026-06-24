@@ -164,9 +164,19 @@ export function buildSlotAvailability(params: {
       bindCurrent = 0
       bindCap = kitchenCapacity ?? UNLIMITED
     } else {
-      // No basket (customer initial view / dashboard list): the existing load in the cooking
-      // window ENDING at S (keyed S−step). A full window ⇒ red ⇒ hidden from the customer.
-      const w = back.byStart.get(slotMins - step) ?? null
+      // No basket (customer initial view / dashboard list). §31-COMPLIANT DISPLAY DOT = COOKING-WINDOW
+      // OCCUPANCY: read the SINGLE cooking window ENDING at this collection slot (keyed slotMins − step),
+      // EXACTLY as buildSlotIndicators does (slot-display.ts:87), so /api/slots's dot and the strip agree
+      // and both equal the engine's per-window occupancy. The dot shows "what's IN THE OVEN per window"
+      // (§31:3147), NOT a fit/lead verdict — that verdict belongs to the PICKER (the hasBasket branch
+      // above, via fitOrderBackward → loadRunsOffFront, §31:3149-3151). A parallel display calc (the
+      // §38 loadRunsOffFront + worst-window scan) is forbidden here (§31:3174, §31:3164-3168) and was
+      // reverted.
+      // §31 EVENT-START PILE-UP: the event-start slot's dot reads the RAW piled total from the engine's
+      // display-only pileByStart (keyed by eventStartMins ⇒ hits ONLY the event-start collection slot);
+      // every other slot keeps the §39 single-window occupancy read. ONE engine-computed field, also read
+      // by buildSlotIndicators (the strip), so the API dot and the strip cannot diverge.
+      const w = back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - step) ?? null
       tone = w?.tone ?? 'green'
       boundBy = w?.bound_by ?? null
       bindCurrent = Math.round(w?.total ?? 0)
@@ -440,6 +450,14 @@ export interface BackwardOccupancy {
   windows: BackwardWindow[]
   /** Same windows indexed by startMins for O(1) lookup. */
   byStart: Map<number, BackwardWindow>
+  /** DISPLAY-ONLY event-start pile-up (§31 "Event-start pre-open seating"). Keyed by eventStartMins
+   *  → a synthetic window whose byCat/total is the RAW committed load at the event-start COLLECTION
+   *  slot — the load that would otherwise spread into impossible pre-open windows (before the single
+   *  run-up window [eventStart−prep, eventStart)). Read ONLY by the dots (buildSlotAvailability
+   *  no-basket + buildSlotIndicators) so the event-start dot shows the raw piled total (6 pizzas →
+   *  red 6), NOT the adjacent-window remainder (2). NOT read by the picker — byStart/intervals are
+   *  untouched. Empty unless the event-start slot carries load. */
+  pileByStart: Map<number, BackwardWindow>
   /** Cohorts that can't fit because they'd need windows before event start (old (b)'s real job). */
   cantFit: CantFitFlag[]
   /** Per-category batch size seen (the "/Y" denominator) — for fit-checks/rate reconstruction. */
@@ -511,6 +529,38 @@ function concurrencyAt(intervals: CookInterval[], t: number): number {
     else if (iv.startMins === t) c += iv.items
   }
   return c
+}
+
+// WINDOW-SCOPED peak concurrency — the ceiling peak ONLY at instants the `focus` intervals (a NEW
+// order's cooking + its instant points) occupy, evaluated against the FULL `allIntervals` set. This
+// answers "does adding THIS order breach the ceiling in a window IT occupies?" — an unrelated earlier
+// over-capacity window (e.g. a prior override breach) the order doesn't touch must NOT block it
+// (the GLOBAL maxConcurrentCount red-ed out every slot post-breach → null ASAP everywhere). It
+// NARROWS the instant set ONLY: at each evaluated instant, concurrencyAt(allIntervals, t) still
+// counts the order PLUS every existing batch covering t (incl. boundary-spanning ones — the §31
+// sweep-line). Concurrency is piecewise-constant, rising only at interval STARTS, so the peak within
+// the order's cooking spans is hit at one of: the order's own interval starts (cooking + points), OR
+// any allIntervals start that falls inside an order COOKING span [oS,oE) — evaluating both catches a
+// spanning existing batch that begins mid-order-window (the no-oversell requirement).
+function windowScopedPeak(allIntervals: CookInterval[], focus: CookInterval[]): number {
+  if (!focus.length) return 0
+  const instants = new Set<number>()
+  const cookingSpans: Array<[number, number]> = []
+  for (const f of focus) {
+    if (f.items <= 0) continue
+    instants.add(f.startMins)                                  // order's own start (cooking) / point instant
+    if (f.endMins > f.startMins) cookingSpans.push([f.startMins, f.endMins])
+  }
+  if (!instants.size) return 0
+  for (const iv of allIntervals) {                            // existing/other starts within an order cooking span
+    if (iv.items <= 0) continue
+    for (const [oS, oE] of cookingSpans) {
+      if (iv.startMins >= oS && iv.startMins < oE) { instants.add(iv.startMins); break }
+    }
+  }
+  let peak = 0
+  for (const t of instants) { const c = concurrencyAt(allIntervals, t); if (c > peak) peak = c }
+  return peak
 }
 
 // Greedy backward placement of zero-prep COUNTED instant items as concurrency points. Instant
@@ -702,7 +752,108 @@ export function projectBackwardOccupancy(
 
   const byStart = new Map<number, BackwardWindow>()
   for (const w of windows) byStart.set(w.startMins, w)
-  return { windows, byStart, cantFit, batchByCat, intervals }
+
+  // ── DISPLAY-ONLY event-start pile-up (§31 "Event-start pre-open seating") ──
+  // At the event-start COLLECTION slot, cooking can begin at most ONE run-up window before open
+  // ([eventStart−prep, eventStart)); load needing to seat earlier than that has nowhere valid and
+  // PILES into the first slot. The seating loop / byStart / intervals above are UNCHANGED — the
+  // picker reads those and is already correct via its independent raw-load lead (loadRunsOffFront).
+  // This SEPARATE map lets the dots show the piled total for the event-start slot only.
+  //
+  // §31 (b) SEMANTICS: the pile sums ALL cooking seated in the PRE-OPEN windows (startMins <
+  // eventStartMins) — read from the engine's already-built `byStart` (which already sums across ALL
+  // orders, regardless of which slot they were collected at). The pre-open windows have NO collection
+  // dot of their own (no slot exists before event-start), so their load surfaces ONLY here. Reading
+  // productionSlotUnits[event-start slot] (collected-AT-event-start only) UNDER-reported: it missed
+  // cooking that a LATER-collected order seats backward into a pre-open window (e.g. 16:35 order's
+  // first batch cooking in the 16:25 run-up window). EXCLUDE startMins === eventStartMins — the
+  // window [eventStart, eventStart+step) IS read by the eventStart+step collection dot, so including
+  // it would double-count. We only READ byStart here (display-only) — byStart.byCat / intervals are
+  // not mutated, so the picker stays byte-identical. Mid-event slots get NO entry (§39 single-window).
+  const pileByStart = new Map<number, BackwardWindow>()
+  {
+    const byCat: Record<string, number> = {}
+    let total = 0
+    let preOpenCeilingRed = false
+    for (const w of windows) {
+      if (w.startMins >= eventStartMins) continue                          // pre-open windows ONLY
+      for (const [cat, n] of Object.entries(w.byCat)) {
+        const v = Number(n) || 0
+        if (v <= 0) continue
+        byCat[cat] = (byCat[cat] || 0) + v                                 // cooking sum (byStart.byCat = cooking cats)
+        total += v
+      }
+      if (w.tone === 'red' && w.bound_by === 'global ceiling') preOpenCeilingRed = true
+    }
+    if (Object.keys(byCat).length > 0 || preOpenCeilingRed) {
+      let tone: SlotTone = 'green'
+      let bound_by: string | null = null
+      let bindRank = -1
+      let bindUsed = -1
+      let overflowed = false
+      const remainingByCat: Record<string, number> = {}
+      for (const [cat, used] of Object.entries(byCat)) {
+        const batch = batchByCat[cat]
+        if (batch == null) continue
+        remainingByCat[cat] = batch - used
+        if (used > batch + EPS) overflowed = true                          // needs >1 window ⇒ true pile-up
+        const t: SlotTone = used >= batch - EPS ? 'red' : 'amber'
+        const r = RANK[t]
+        if (r > bindRank || (r === bindRank && used > bindUsed)) {
+          bindRank = r; bindUsed = used
+          tone = t; bound_by = `${capWord(cat)} ${Math.round(used)}/${Math.round(batch)}`
+        }
+      }
+      // Propagate red from any pre-open window already over the kitchen-capacity ceiling.
+      if (preOpenCeilingRed) { tone = 'red'; overflowed = true }
+      // RED via genuine overflow (load that can't fit the single run-up window) ⇒ the §31 wording.
+      if (tone === 'red' && overflowed) bound_by = 'over capacity at event-start'
+      pileByStart.set(eventStartMins, {
+        startMins: eventStartMins,
+        start: fmt(eventStartMins),
+        beforeEventStart: false,
+        byCat,
+        total,
+        remainingByCat,
+        remainingTotal: kitchenCapacity == null ? Infinity : kitchenCapacity - total,
+        tone,
+        bound_by,
+      })
+    }
+  }
+
+  return { windows, byStart, pileByStart, cantFit, batchByCat, intervals }
+}
+
+/**
+ * Shared lead/over-capacity predicate — the SINGLE source of the "can this cooking load be ready by
+ * its collection slot without starting a batch before the event opens?" verdict, used by BOTH the
+ * picker (fitOrderBackward) and the no-basket display dot so they can never disagree.
+ *
+ * Returns TRUE if any COOKING category's load `units` (by category), all due by `slotMins`, needs a
+ * cooking window that starts before the front floor max(eventStart − prep, now) — i.e. it can't fit
+ * before open ⇒ over capacity / "too soon". Mirrors the per-category lead check fitOrderBackward
+ * uses (nw = ceil(N/batch); earliest window start = slotMins − nw·prep). Instant/no-prep categories
+ * are skipped (their lead is enforced separately by placeInstantPoints).
+ */
+export function loadRunsOffFront(
+  units: QtyByCat,
+  catConfigs: Record<string, CatConfig>,
+  slotMins: number,
+  eventStartMins: number,
+  nowMins: number = Number.NEGATIVE_INFINITY,
+): boolean {
+  for (const [catRaw, rawN] of Object.entries(units || {})) {
+    const cat = catRaw.toLowerCase()
+    const cfg = catConfigs[cat]
+    const N = Number(rawN) || 0
+    if (!cfg?.secs || N <= 0) continue
+    const batch = Math.max(1, cfg.batch)
+    const prep = Math.max(1, Math.round(cfg.secs / 60))
+    const nw = Math.ceil(N / batch)
+    if (slotMins - nw * prep < Math.max(eventStartMins - prep, nowMins)) return true
+  }
+  return false
 }
 
 // ── Backward FIT check: can an order of `orderByCat` be placed at collection slot S? ──
@@ -768,8 +919,10 @@ export function fitOrderBackward(
     // ceiling (its committed load already needs >1 pre-open window) therefore rejects more, while an
     // EMPTY slot is unchanged (existing 0 ⇒ nwCombined == nw). The per-window batch/ceiling checks below
     // still seat only the new order's `nw` windows (existing windowed load is folded via back.byStart).
-    const nwCombined = Math.ceil(((Number(existingAtSlot[cat]) || 0) + M) / batch)
-    if (slotMins - nwCombined * prep < Math.max(eventStartMins - prep, nowMins)) runsOffFront = true
+    // Lead check via the shared verdict helper (ONE source with the no-basket display dot) — judged on
+    // the COMBINED load (this slot's committed total for the cat + the new order). Identical formula
+    // to the prior inline check (nw = ceil((existing+M)/batch); start = slotMins − nw·prep < floor).
+    if (loadRunsOffFront({ [cat]: (Number(existingAtSlot[cat]) || 0) + M }, catConfigs, slotMins, eventStartMins, nowMins)) runsOffFront = true
     for (let i = 0; i < nw; i++) {
       // The order COOKS in the windows ENDING at the collection slot T: latest/adjacent window
       // [T−prep, T) keyed T−prep (i=0), stepping back … T−nw*prep. Mirrors projectBackwardOccupancy.
@@ -804,14 +957,21 @@ export function fitOrderBackward(
     }
   }
 
-  // GLOBAL CEILING = EXACT sweep-line concurrency (the ONLY place it's judged). Cooking is fixed
-  // (existing ⊕ order intervals); if that alone peaks over the ceiling it's an unfixable collision
-  // ⇒ red. Otherwise greedily seat the order's counted-instant items as concurrency points on the
-  // capacity cadence — running off the event front (no headroom before open) ⇒ doesn't fit. Amber
-  // when the resulting peak sits exactly at the ceiling (parity with the old at-N amber).
+  // KITCHEN-CAPACITY CEILING = EXACT sweep-line concurrency, WINDOW-SCOPED to the windows THIS order
+  // occupies (§31: the ceiling is per cooking window; an unrelated earlier over-capacity window —
+  // e.g. a prior override breach — must NOT block a later genuinely-fitting slot). Cooking is fixed
+  // (existing ⊕ order intervals); if adding the order peaks over the ceiling in a window IT touches
+  // it's an unfixable collision ⇒ red. Otherwise greedily seat the order's counted-instant items as
+  // concurrency points on the capacity cadence — running off the event front (no headroom before
+  // open) ⇒ doesn't fit. Amber when the resulting peak (in the order's windows) sits exactly at the
+  // ceiling (parity with the old at-N amber). windowScopedPeak ≤ the old global maxConcurrentCount
+  // always, and EQUALS it whenever the binding window is one the order occupies — so the NON-breached
+  // case (no window over cap, or the order itself over cap) is byte-identical; only an unrelated
+  // breach-elsewhere stops red-ing every slot. Per-instant COUNT is unchanged (all covering batches,
+  // incl. boundary-spanning, still counted) — only the evaluated instant SET is narrowed.
   if (kitchenCapacity != null) {
     const realIntervals = [...back.intervals, ...orderCookIntervals]
-    const cookingPeak = maxConcurrentCount(realIntervals)
+    const cookingPeak = windowScopedPeak(realIntervals, orderCookIntervals)
     if (cookingPeak > kitchenCapacity + EPS) {
       consider('red', 'global ceiling')
     } else {
@@ -820,7 +980,9 @@ export function fitOrderBackward(
       if (instantOff) {
         consider('red', 'global ceiling')
       } else {
-        const peak = points.length ? maxConcurrentCount([...realIntervals, ...points]) : cookingPeak
+        const peak = points.length
+          ? windowScopedPeak([...realIntervals, ...points], [...orderCookIntervals, ...points])
+          : cookingPeak
         if (peak >= kitchenCapacity - EPS) consider('amber', 'global ceiling')
       }
     }

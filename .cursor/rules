@@ -561,7 +561,7 @@ The reason unconfirmed events exist: the scraper can be wrong. Showing unconfirm
 
 ### Core tables
 
-- `trucks` — plan, settings, `dashboard_token`, `operator_id`, `default_auto_open/close`, `is_test`, `qr_code_style` (V4).
+- `trucks` — plan, settings, `dashboard_token`, `operator_id`, `default_auto_open/close`, `qr_code_style` (V4). (There is NO `is_test` column — test trucks are kept off the public map via the discovery `visibility` enum `hg_only`, not a trucks flag.)
 - `operators` — `first_name`, `last_name`, `phone`, `email`, `auth_user_id`.
 - `truck_vans` — vehicles. `auto_pause_on_offline`, `show_cooking_step`, `kitchen_capacity`, `kds_token`.
 - `truck_users` — staff. `role` (owner/manager/staff), `invited_at`, `accepted_at`.
@@ -584,7 +584,7 @@ The reason unconfirmed events exist: the scraper can be wrong. Showing unconfirm
 | `trucks.plan` | text | `starter / pro / max / trial` |
 | `trucks.trial_expires_at` | timestamptz | Null if not on trial |
 | `trucks.feature_overrides` | jsonb | Per-truck feature grants/revocations |
-| `trucks.is_test` | boolean | Hides Billing tab; test truck flag |
+| `trucks.is_test` | — | DOES NOT EXIST — never a real column. Test trucks are excluded from the public map via the discovery `visibility` enum (`hg_only`), NOT a trucks flag. The old Billing-tab gate was removed (V6.0/V6.1) and must NOT return; test accounts get the full operator product. |
 | `trucks.time_selection_enabled` | boolean | Controls customer Choose Time dropdown |
 | `trucks.qr_code_style` | text | `standard` or `branded` (V4) |
 | `trucks.kds_mode` | boolean | Enables cooking intermediate state |
@@ -783,7 +783,7 @@ Truck name bold (`text-slate-800 font-semibold`), operator first name muted belo
 ### Dev setup
 
 - `localhost:3000` for local testing.
-- Test Kitchen test truck: `dashboard_token test-abc123def456`, `id test-truck`, `is_test true`.
+- Test Kitchen test truck: `dashboard_token test-abc123def456`, `id test-truck`. Kept off the public Village Foodie map by its discovery rows being `visibility=hg_only` (NOT a `trucks.is_test` column — that column does not exist).
 - iPad Air simulator for KDS; Safari responsive mode at tablet sizes; phone widths 375/414px.
 
 ### Pre-trial checklist
