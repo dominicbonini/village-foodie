@@ -16,8 +16,8 @@ import { earliestBackwardFitSlot } from '@/lib/slot-availability'
 import { getAsapSlot } from '@/lib/slot-utils'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import { buildCatConfigs } from '@/lib/prep-utils'
-import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
-import { resolveOptionDraws, findSoldOutOption } from '@/lib/option-stock'
+import { validateModifierSelection, hasUnsatisfiableRequiredGroup, selectedCountForGroup } from '@/lib/modifier-rules'
+import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 import type { CatConfig } from '@/lib/prep-utils'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { isPreorderDeadlinePassed, type PreorderConfig } from '@/lib/preorder'
@@ -548,44 +548,65 @@ export async function POST(req: NextRequest) {
     // the primary enforcement; this guard must never reject a valid order due to its own failure).
     // Standalone `items` only — deal-slot constituents are out of A2 scope.
     try {
-      const unmet = await (async () => {
+      const unmet: { item: string; soldOut?: boolean; group?: string; overMax?: number } | null = await (async () => {
         const { data: groupsRaw } = await supabase
           .from('modifier_groups')
           .select('id, name, is_required, min_choices, max_choices')
           .eq('truck_id', resolvedTruckId)
-        const requiredIds = new Set((groupsRaw || [])
-          .filter(g => g.is_required || (g.min_choices ?? 0) >= 1)
+        // Groups we must validate: REQUIRED (min ≥ 1) and/or CAPPED ("choose up to N", max_choices < 99).
+        // The 99 sentinel = "choose many" (unlimited) → nothing to enforce.
+        const enforceIds = new Set((groupsRaw || [])
+          .filter(g => g.is_required || (g.min_choices ?? 0) >= 1 || (g.max_choices ?? 99) < 99)
           .map(g => g.id))
-        if (requiredIds.size === 0) return null // truck has no required groups → nothing to enforce
+        if (enforceIds.size === 0) return null // no required/capped groups → nothing to enforce
 
-        // Stage B: resolve required groups PER-ITEM via item_modifier_groups (menu_item_id → groups),
+        // Stage B: resolve groups PER-ITEM via item_modifier_groups (menu_item_id → groups),
         // replacing the retired category_modifier_groups lookup. name→id keeps the same rename caveat
         // (a renamed dish can't be resolved → skipped, never a false reject). The link select is global
-        // but filtered by requiredIds (truck-scoped) + this truck's item ids, so no cross-truck leak.
+        // but filtered by enforceIds (truck-scoped) + this truck's item ids, so no cross-truck leak.
         const [{ data: itemLinks }, { data: optsRaw }, { data: itemRows }] = await Promise.all([
-          supabase.from('item_modifier_groups').select('menu_item_id, group_id'),
-          supabase.from('modifier_options').select('id, group_id, name, price_adjustment, available, stock_count').in('group_id', Array.from(requiredIds)),
+          supabase.from('item_modifier_groups').select('menu_item_id, group_id, excluded_option_ids'),
+          supabase.from('modifier_options').select('id, group_id, name, price_adjustment, available, stock_count').in('group_id', Array.from(enforceIds)),
           supabase.from('menu_items_db').select('id, name').eq('truck_id', resolvedTruckId),
         ])
         const itemIdByName: Record<string, string> = {}
         ;(itemRows || []).forEach(i => { itemIdByName[i.name] = i.id })
         const groupsById = new Map((groupsRaw || []).map(g => [g.id, { ...g, options: (optsRaw || []).filter(o => o.group_id === g.id) }]))
-        const reqGroupsByItemId: Record<string, any[]> = {}
+        const groupsByItemId: Record<string, any[]> = {}
         ;(itemLinks || []).forEach(link => {
-          if (!requiredIds.has(link.group_id)) return
+          if (!enforceIds.has(link.group_id)) return
           const g = groupsById.get(link.group_id); if (!g) return
-          ;(reqGroupsByItemId[link.menu_item_id] ||= []).push(g)
+          // Per-dish availability (model C): drop THIS dish's excluded options before any check, the
+          // same filter the menu API's resolveGroup applies (drop option whose id ∈ excluded_option_ids).
+          // A per-link copy avoids cross-contaminating other dishes that share the group. With this,
+          // hasUnsatisfiableRequiredGroup (a required group with all options excluded for this dish →
+          // options []), validateModifierSelection (min), and overMaxFor (max) all see the per-dish set.
+          const excluded = new Set((link as { excluded_option_ids?: string[] }).excluded_option_ids || [])
+          const scoped = excluded.size ? { ...g, options: (g.options as any[]).filter(o => !excluded.has(o.id)) } : g
+          ;(groupsByItemId[link.menu_item_id] ||= []).push(scoped)
         })
+        // Per-group MAX backstop ("choose up to N"): reject if a group has MORE than max_choices
+        // selected. The client caps via toggleWithGroupRules, but a crafted client could over-submit.
+        // Mirrors the required (min) guard; the 99 "many" sentinel is skipped.
+        const overMaxFor = (groups: any[], selected: any[]): { group: string; max: number } | null => {
+          for (const g of groups) {
+            const max = g.max_choices ?? 99
+            if (max < 99 && selectedCountForGroup(g, selected) > max) return { group: g.name, max }
+          }
+          return null
+        }
         for (const it of (items || [])) {
           const itemId = itemIdByName[it.name]
           if (!itemId) continue // unknown/renamed item → can't resolve → skip (never fail on a name miss)
-          const groups = reqGroupsByItemId[itemId] || []
+          const groups = groupsByItemId[itemId] || []
           if (groups.length === 0) continue
           // §36 backstop: a required group with no selectable option → item is sold out (unorderable).
           if (hasUnsatisfiableRequiredGroup(groups)) return { item: it.name, soldOut: true }
           const selected = Array.isArray(it.modifiers) ? it.modifiers : []
           const { unmetGroupNames } = validateModifierSelection(groups, selected)
           if (unmetGroupNames.length > 0) return { item: it.name, group: unmetGroupNames[0] }
+          const over = overMaxFor(groups, selected)
+          if (over) return { item: it.name, group: over.group, overMax: over.max }
         }
         // DEAL-SLOT items (§29 fix): a slot item with a required group must have it satisfied via
         // deal.slotModifiers[slotKey] — same resolution as standalone, validated per slot.
@@ -595,12 +616,14 @@ export async function POST(req: NextRequest) {
           for (const slotKey of Object.keys(slots)) {
             const itemId = itemIdByName[slots[slotKey]]
             if (!itemId) continue // unknown/renamed slot item → skip (never fail on a name miss)
-            const groups = reqGroupsByItemId[itemId] || []
+            const groups = groupsByItemId[itemId] || []
             if (groups.length === 0) continue
             if (hasUnsatisfiableRequiredGroup(groups)) return { item: slots[slotKey], soldOut: true }
             const selected = Array.isArray(slotMods[slotKey]) ? slotMods[slotKey] : []
             const { unmetGroupNames } = validateModifierSelection(groups, selected)
             if (unmetGroupNames.length > 0) return { item: slots[slotKey], group: unmetGroupNames[0] }
+            const over = overMaxFor(groups, selected)
+            if (over) return { item: slots[slotKey], group: over.group, overMax: over.max }
           }
         }
         return null
@@ -610,7 +633,9 @@ export async function POST(req: NextRequest) {
           {
             error: unmet.soldOut
               ? `Sorry, ${unmet.item} is sold out.`
-              : `Please choose ${unmet.group} for ${unmet.item}.`,
+              : unmet.overMax != null
+                ? `Please choose at most ${unmet.overMax} option${unmet.overMax !== 1 ? 's' : ''} for ${unmet.group} (${unmet.item}).`
+                : `Please choose ${unmet.group} for ${unmet.item}.`,
             requiredModifier: true,
           },
           { status: 400 },
@@ -626,7 +651,7 @@ export async function POST(req: NextRequest) {
     // shared count; this backstop covers manual sold-out + a stock-0 race. FAIL-OPEN (findSoldOutOption
     // returns null on its own error). Standalone-items + deal-slots, all selected options.
     {
-      const soldOut = await findSoldOutOption(supabase, resolvedTruckId, items, deals)
+      const soldOut = await findSoldOutOption(supabase, resolvedTruckId, items, deals, eventId)
       if (soldOut) {
         return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true }, { status: 409 })
       }
@@ -672,6 +697,15 @@ export async function POST(req: NextRequest) {
         if (shortfall) {
           return NextResponse.json(
             { error: 'Some items just sold out', stock: true, items: shortfall },
+            { status: 409 },
+          )
+        }
+        // Extras ceiling check (step 2) — SAME shared engine as items, no secondary axis. Pre-lock, like
+        // the item check. Reuses the optionStock 409 response shape the client already handles.
+        const optShort = await checkOptionCeilingShortfall(supabase, resolvedTruckId, eventRow.id, items, deals)
+        if (optShort && optShort.length) {
+          return NextResponse.json(
+            { error: `Sorry, ${optShort[0].name} just sold out.`, optionStock: true, optionName: optShort[0].name },
             { status: 409 },
           )
         }
@@ -756,12 +790,7 @@ export async function POST(req: NextRequest) {
       // (c) STATUS — pending unless auto-accepted above (only reachable when booked).
       const status = autoAccepted ? 'confirmed' : 'pending'
 
-      // (d) OPTION-DRAW RESOLUTION — READ-ONLY name→[{id,qty}] (no decrement). The atomic decrement +
-      //     its oversell RAISE happen INSIDE place_order_atomic, so a rollback auto-restores the pool
-      //     (no compensation dance). Manual/zero sold-out was already caught pre-lock (findSoldOutOption).
-      const drawList = await resolveOptionDraws(supabase, resolvedTruckId, items, deals)
-
-      // (e) UNIT ROWS — the production_slot_usage rows for THIS event AS IF this order were committed,
+      // (d) UNIT ROWS — the production_slot_usage rows for THIS event AS IF this order were committed,
       //     computed by the EXISTING helpers (computeEventUnitRows → buildUnitsFromOrders), byte-
       //     identical to the old insert→rebuild. ONLY when booked + has event. Unbooked / no-event →
       //     NULL (NOT []) so the RPC's step-4 guard SKIPS the usage write → order persists unbooked,
@@ -770,9 +799,10 @@ export async function POST(req: NextRequest) {
         ? await computeEventUnitRows(supabase, resolvedTruckId, eventRow.id, { slot: finalSlot, items, deals: deals ?? null })
         : null
 
-      // (f) ATOMIC PLACEMENT — option draw + display number + order INSERT + usage book in ONE
-      //     transaction (place_order_atomic). Any failure RAISES → the WHOLE txn rolls back: no ghost
-      //     order, no leaked option stock, no counter gap. p_order carries ONLY the plain order columns
+      // (e) ATOMIC PLACEMENT — display number + order INSERT + usage book in ONE transaction
+      //     (place_order_atomic). Any failure RAISES → the WHOLE txn rolls back: no ghost order, no
+      //     counter gap. (Option oversell is now the pre-lock CEILING check above — checkOptionCeiling-
+      //     Shortfall — not an in-RPC pool draw.) p_order carries ONLY the plain order columns
       //     (id/slot/status/event_id/event_date/order_key are RPC params or DB defaults). Totals are
       //     numbers (RPC casts ::numeric); items/deals are jsonb; van_id is uuid-string-or-empty.
       const p_order = {
@@ -798,7 +828,6 @@ export async function POST(req: NextRequest) {
         p_truck_id:   resolvedTruckId,
         p_event_date: orderEventDate,
         p_unit_rows:  unitRows,
-        p_draw_list:  drawList,
       })
       if (rpcErr || !rpcData) {
         // Rolled back — NOTHING persisted (no order, no usage, option stock restored, counter not
@@ -850,9 +879,12 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Email to truck ────────────────────────────────────────────────────────
+    // Gated by the operator's "Email me new orders" toggle (trucks.truck_order_email_enabled, default
+    // true). `!== false` so a null/legacy value keeps it ON. ONLY this truck-facing notification is
+    // gated — the customer confirmation below is untouched. Best-effort; never affects placement.
     try {
       const truckEmail = truck.contact_email
-      if (truckEmail) {
+      if (truckEmail && (truck as any).truck_order_email_enabled !== false) {
         const { subject, html, text } = formatNewOrderEmail({
           orderId,
           customerName,

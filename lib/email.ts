@@ -108,17 +108,23 @@ export function formatConfirmationEmail(params: {
   cancellationCutoffMins?: number
   baseUrl?: string
   truckSlug?: string
+  /** 'ready' reuses the confirmation layout (order lines, venue, contact) reworded as an "order ready
+   *  to collect" notification — drops the collection-time box + the cancel link. Default 'confirmation'. */
+  variant?: 'confirmation' | 'ready'
 }): { subject: string; html: string; text: string } {
-  const subject = params.autoAccepted
-    ? `Order #${params.orderId} confirmed`
-    : `Order #${params.orderId} received`
+  const isReady = params.variant === 'ready'
+  const subject = isReady
+    ? `Order #${params.orderId} is ready — ${params.truckName}`
+    : params.autoAccepted
+      ? `Order #${params.orderId} confirmed`
+      : `Order #${params.orderId} received`
 
   // Single-sourced line rendering (item + deal rows) — see renderOrderLinesHtml.
   const orderLinesHtml = renderOrderLinesHtml(params.items, params.deals)
 
   const discountRow = ''
 
-  const slotSection = params.slot ? `
+  const slotSection = (params.slot && !isReady) ? `
     <div style="background:${params.slotAdjustedFrom || !params.autoAccepted ? '#fff7ed' : '#f0fdf4'};border:1px solid ${params.slotAdjustedFrom || !params.autoAccepted ? '#fed7aa' : '#bbf7d0'};border-radius:10px;padding:14px 16px;margin-bottom:12px;text-align:center">
       <p style="margin:0;color:${params.slotAdjustedFrom || !params.autoAccepted ? '#92400e' : '#166534'}">
         ${params.slotAdjustedFrom
@@ -179,8 +185,8 @@ export function formatConfirmationEmail(params: {
     </div>`
   })()
 
-  // Cancellation link section
-  const cancellationSection = params.allowCancellation ? `
+  // Cancellation link section (omitted on the ready notification — too late to cancel a ready order)
+  const cancellationSection = (params.allowCancellation && !isReady) ? `
     <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0">
       <p style="margin:0;font-size:12px;color:#94a3b8">
         Need to cancel?
@@ -189,7 +195,7 @@ export function formatConfirmationEmail(params: {
       </p>
     </div>` : ''
 
-  const heading = params.autoAccepted ? 'Order confirmed!' : 'Order received!'
+  const heading = isReady ? 'Your order is ready! 🎉' : params.autoAccepted ? 'Order confirmed!' : 'Order received!'
 
   const html = `<!DOCTYPE html>
 <html>
@@ -198,9 +204,11 @@ export function formatConfirmationEmail(params: {
   <div style="text-align:center;padding:20px 0 16px">
     <div style="width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;line-height:56px">✓</div>
     <h1 style="font-size:22px;font-weight:800;margin:0 0 4px">${heading}</h1>
-    <p style="color:#64748b;margin:0;font-size:14px">${params.autoAccepted
-      ? `Thanks! We've received your order and we're getting it ready.`
-      : `Thanks! We've received your order — we'll let you know once it's confirmed.`}</p>
+    <p style="color:#64748b;margin:0;font-size:14px">${isReady
+      ? `Your order is ready for collection — come and collect from ${params.truckName}. Pay at the truck.`
+      : params.autoAccepted
+        ? `Thanks! We've received your order and we're getting it ready.`
+        : `Thanks! We've received your order — we'll let you know once it's confirmed.`}</p>
   </div>
 
   ${slotSection}
@@ -237,7 +245,9 @@ export function formatConfirmationEmail(params: {
 </html>`
 
   const text = [
-    `Order #${params.orderId} ${params.autoAccepted ? 'confirmed' : 'received'} — ${params.truckName}`,
+    isReady
+      ? `Order #${params.orderId} is ready to collect — ${params.truckName}`
+      : `Order #${params.orderId} ${params.autoAccepted ? 'confirmed' : 'received'} — ${params.truckName}`,
     '',
     params.items.map(i => {
       const lines = [`${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`]
@@ -264,7 +274,9 @@ export function formatConfirmationEmail(params: {
       return lines.join('\n')
     }).join('\n') : '',
     `Total: £${params.total.toFixed(2)}`,
-    params.slotAdjustedFrom && params.slot
+    isReady
+      ? `Your order is ready for collection — come and collect. Pay at the truck.`
+      : params.slotAdjustedFrom && params.slot
       ? `Collection time updated to ${params.slot} (was ${params.slotAdjustedFrom}).`
       : params.autoAccepted && params.slot
         ? params.slotChanged && params.requestedSlot

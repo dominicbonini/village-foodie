@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
+import { useToasts } from '@/lib/useToasts'
+import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
+import { ToastStack } from '@/components/ToastStack'
 import { getAllDayCounts } from '@/components/dashboard/helpers'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
@@ -140,9 +143,9 @@ export default function KdsPage() {
 
   // Per-DEVICE KDS prefs (localStorage, keyed by token so two trucks on one device don't collide):
   // restore the saved view/layout on mount, then persist on change. A restored 'cook' still passes
-  // through the activeView gate (can('cook_screen') && showCookingStep), so a step-off / non-Max device
-  // falls back to Window automatically — no extra guard needed. null overrides are never written, so a
-  // first-ever-mount default isn't clobbered.
+  // through the activeView gate (can('cook_screen'), Max-plan only — Stage 1 de-coupled it from
+  // show_cooking_step), so a non-Max device falls back to Window automatically — no extra guard needed.
+  // null overrides are never written, so a first-ever-mount default isn't clobbered.
   useEffect(() => {
     if (typeof window === 'undefined') return
     const v = localStorage.getItem(`hg_kds_view_${token}`)
@@ -332,25 +335,41 @@ export default function KdsPage() {
   }
   const confirmScreenOff = async () => { setShowScreenOffWarning(false); await applyKeepScreenOn(false) }
 
+  // Shared stacked-toast + ready-email-undo machinery (the SAME modules the dashboard uses). KDS passes
+  // NO onUndoRestore — it has no prep pills; undo just reverts status and the order re-appears in cookOrders
+  // on refetch. The hook's beforeunload/unmount sendBeacon flush runs on KDS's lifecycle for free.
+  const { toasts, showToast, dismissToast } = useToasts()
+  const { scheduleReadyEmail, undoReady } = useReadyEmailUndo({ token, pin, showToast, refetch: () => fetchAllRef.current() })
+
   const handleAction = useCallback(async (action: string, orderKey: string) => {
     setActionLoading(`${action}-${orderKey}`)
     try {
       const res = await fetch('/api/dashboard/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, pin, action, order_key: orderKey }),
+        // 'ready' defers the customer email so the undo toast can cancel it (mirrors the dashboard).
+        body: JSON.stringify({ token, pin, action, order_key: orderKey, ...(action === 'ready' ? { defer_email: true } : {}) }),
       })
       const data = await res.json()
       if (data?.queued) {
+        // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the email or show the
+        // undo toast (a phantom email must not fire 4s later for an uncommitted ready).
         setPendingSyncCount(c => c + 1)
         setPendingSync(prev => new Set(prev).add(orderKey))
         setActionLoading(null)
         return
       }
+      // Committed 'ready' → defer the email 4s + show a stacked undo toast (undo cancels the email +
+      // reverts the status; the order then re-appears in the cook list on refetch).
+      if (action === 'ready') {
+        const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
+        scheduleReadyEmail(orderKey)
+        showToast(`Order #${num} ready`, 'success', { duration: 4000, action: { label: '↩ Undo', run: () => undoReady(orderKey, num) } })
+      }
     } catch {}
     setActionLoading(null)
     fetchAllRef.current()
-  }, [token, pin])
+  }, [token, pin, orders, scheduleReadyEmail, undoReady, showToast])
 
   // Latest active-event id (assigned during render after activeEvent resolves below) so the pause/
   // extra-wait callbacks — defined before activeEvent — can read the current id without a TDZ ref.
@@ -507,10 +526,10 @@ export default function KdsPage() {
   const { can } = useFeatures(truck)
 
   // Session-only overrides — URL param / DB setting is the default.
-  // Cook screen requires BOTH the Max-plan feature (can('cook_screen')) AND the van's "Show cooking
-  // step" being ON — without the cooking step the 'cooking' status is unreachable and Cook is just a
-  // redundant Window. Either off ⇒ force Window (also neutralises a stale ?view=cook / viewOverride='cook').
-  const activeView: KdsView = can('cook_screen') && showCookingStep
+  // Stage 1 (order-ready redesign): the cooking step is now ALWAYS on, so the cook view is gated on the
+  // Max-plan feature ONLY — DE-COUPLED from show_cooking_step (was `can('cook_screen') && showCookingStep`).
+  // To re-add the "Show cooking step" toggle later, restore `&& showCookingStep` here (and at :629).
+  const activeView: KdsView = can('cook_screen')
     ? (viewOverride ?? kdsView)
     : 'window'
   const activeLayout = layoutOverride ?? displayMode
@@ -626,7 +645,9 @@ export default function KdsPage() {
           >
             Window
           </button>
-          {can('cook_screen') && showCookingStep && (
+          {/* Stage 1: Cook tab gated on the Max-plan feature ONLY (cooking always-on; de-coupled from
+              show_cooking_step — restore `&& showCookingStep` to re-add the toggle). */}
+          {can('cook_screen') && (
             <button
               onClick={() => setViewOverride('cook')}
               className={`text-xs px-3 py-1.5 rounded-md font-medium transition-colors ${
@@ -900,7 +921,7 @@ export default function KdsPage() {
               <h3 className="text-lg font-semibold text-slate-900">Allow screen to turn off?</h3>
               <p className="text-sm text-slate-500 mt-2">
                 {vansWithAutoPause.length > 0
-                  ? `${vansWithAutoPause.join(', ')} ${vansWithAutoPause.length === 1 ? 'has' : 'have'} offline detection enabled. If the screen turns off, the device may stop sending its online signal and automatically pause customer orders.`
+                  ? `${vansWithAutoPause.join(', ')} ${vansWithAutoPause.length === 1 ? 'has' : 'have'} offline detection enabled. If the screen turns off, the device may stop sending its online signal and customer ordering may be paused.`
                   : 'If the screen turns off, the device may stop sending its online signal.'
                 }
               </p>
@@ -961,6 +982,10 @@ export default function KdsPage() {
           {kdsToast}
         </div>
       )}
+
+      {/* Shared stacked toast system — the ready-undo toasts (the event-lifecycle kdsToast above stays
+          as-is; they rarely coincide). */}
+      <ToastStack toasts={toasts} dismissToast={dismissToast} />
     </div>
   )
 }

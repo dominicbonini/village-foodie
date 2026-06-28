@@ -95,6 +95,7 @@ export function OrderCard({
   viewMode = 'solo',
   kdsMode = false,
   showCookingStep = false,
+  effectiveOrderReady = false,
   pendingSync = false,
 }: {
   order: Order
@@ -111,6 +112,10 @@ export function OrderCard({
   /** Van "show cooking step" preference — when false the cook view skips the intermediate
    *  "Start cooking" stage (confirmed → ready directly). Defaults off. */
   showCookingStep?: boolean
+  /** Order-ready redesign (stage 3): resolved server-side (effectiveOrderReady = event override ?? van
+   *  default ?? false). Gates the orders-screen (solo) Ready button — NOT the email (model A: the email
+   *  always fires on ready). Defaults off. */
+  effectiveOrderReady?: boolean
   pendingSync?: boolean
 }) {
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
@@ -250,9 +255,10 @@ export function OrderCard({
 
     if (viewMode === 'cook') {
       if (['confirmed', 'modified'].includes(order.status)) {
-        // The intermediate "Start cooking" stage only exists when the van enables it
-        // (Settings → show cooking step). Otherwise the cook marks confirmed → ready directly.
-        return kdsMode && showCookingStep ? (
+        // Stage 1 (order-ready redesign): the cooking step is now ALWAYS on in cook mode — DE-COUPLED
+        // from show_cooking_step (was `kdsMode && showCookingStep`). To re-add the "Show cooking step"
+        // toggle later, restore `&& showCookingStep` here. Cook mode shows Start cooking → Ready.
+        return kdsMode ? (
           <>
             <Btn label="Start cooking" colour="amber" loading={isLoading('cooking')} onClick={() => onAction('cooking', order.order_key)} />
             <Btn label="Ready"         colour="green" loading={isLoading('ready')}   onClick={() => onAction('ready', order.order_key)} />
@@ -304,10 +310,15 @@ export function OrderCard({
       }
     }
 
-    // solo mode (default) — preserve isPub behaviour for backwards compat
+    // solo mode (default — the operator ORDERS screen). The order-READY step shows when pub mode OR the
+    // resolved order-ready setting is on (effectiveOrderReady = event override ?? van default, computed in
+    // /api/dashboard — stage 3 re-point off show_cooking_step). When enabled: confirmed → Ready (fires the
+    // customer ready-email — model A: email ALWAYS fires on ready, NOT gated) → "Mark paid & done". When
+    // off, the current one-tap complete is unchanged.
+    const readyStepEnabled = isPub || effectiveOrderReady
     if (['confirmed', 'modified'].includes(order.status)) {
-      return isPub
-        ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="blue" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
+      return readyStepEnabled
+        ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
         : <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (order.status === 'ready') {

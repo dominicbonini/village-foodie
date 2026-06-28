@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef, useMemo, use, Fragment } from
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature } from '@/lib/features'
+import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
 import { playDing, installAudioUnlock, primeAudio } from '@/lib/audio'
 
@@ -19,6 +20,9 @@ import {
   calcMinsFromNow, getAllDayCounts, resolveCollectionTime
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
+import { useToasts } from '@/lib/useToasts'
+import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
+import { ToastStack } from '@/components/ToastStack'
 
 /** "Village Hall — Wickhambrook", skip town if already in venue name */
 function fmtVenue(venueName?: string | null, town?: string | null): string {
@@ -39,6 +43,7 @@ import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
+import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
@@ -62,6 +67,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[authenticated,setAuthenticated]=useState(false)
   const[truck,setTruck]=useState<TruckData|null>(null)
   const[orders,setOrders]=useState<Order[]>([])
+  // The active event's van "Show cooking step" preference — REUSED (no new toggle) to also expose the
+  // order-READY step on the operator orders (solo) screen, alongside pub mode. Defaults off.
+  const[showCookingStep,setShowCookingStep]=useState(false)
+  // Order-ready redesign (stage 3): the resolved order-ready value (event override ?? van default ?? false,
+  // computed in /api/dashboard) — gates the orders-screen Ready button. Defaults off.
+  const[effectiveOrderReady,setEffectiveOrderReady]=useState(false)
   const[slots,setSlots]=useState<Slot[]>([])
   const[truckMenu,setTruckMenu]=useState<TruckMenu|null>(null)
   // Per-EVENT stock slices (keyed by event_id; '__none__' for the no-event case). Keeps each event's
@@ -90,8 +101,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[lastRefresh,setLastRefresh]=useState(new Date())
   const[activeTab,setActiveTab]=useState<'orders'|'add'|'stock'>('orders')
   const[actionLoading,setActionLoading]=useState<string|null>(null)
-  const[toast,setToast]=useState<{msg:string;type:'success'|'error';action?:{label:string;run:()=>void}}|null>(null)
-  const toastTimer=useRef<ReturnType<typeof setTimeout>|null>(null)
+  // Shared stacked-toast system (lib/useToasts) + the ready-email-undo machinery (lib/useReadyEmailUndo,
+  // wired below after fetchAll). Extracted so KDS + manage can reuse the SAME implementation.
+  const{toasts,showToast,dismissToast}=useToasts()
   const[extraWaitMins,setExtraWaitMins]=useState(0)
   const[extraWaitStartedAt,setExtraWaitStartedAt]=useState<string|null>(null)
   const[waitTick,setWaitTick]=useState(0)
@@ -107,6 +119,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
   const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
+  // Order-ready (master-switch model): the van DEFAULT (order_ready_enabled — the Settings master switch +
+  // seed for new events) + the per-event value (order_ready_override, concrete true/false). effectiveOrderReady
+  // resolves override ?? default ?? false server-side and gates the Ready button; the dashboard toggle reads it.
+  const[vanOrderReadyDefault,setVanOrderReadyDefault]=useState<boolean>(false)
+  const[eventOrderReadyOverride,setEventOrderReadyOverride]=useState<boolean|null>(null)
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
   const[capacityWindowMins,setCapacityWindowMins]=useState<number>(5)
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
@@ -253,11 +270,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return Math.max(0,Math.ceil(extraWaitMins-elapsed))
   },[extraWaitMins,extraWaitStartedAt,waitTick])
 
-  const showToast=(msg:string,type:'success'|'error'='success',opts?:{action?:{label:string;run:()=>void};duration?:number})=>{
-    if(toastTimer.current)clearTimeout(toastTimer.current)
-    setToast({msg,type,action:opts?.action})
-    toastTimer.current=setTimeout(()=>setToast(null),opts?.duration??3500)
-  }
+
   const handleSignOut=async()=>{await supabaseBrowser.auth.signOut();window.location.href='/login'}
 
   const saveProfile=async()=>{
@@ -326,7 +339,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
-      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots)
+      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
@@ -340,6 +353,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Real van offline-protection default (Settings value) — feeds the toggle/label when
       // there's no event override. Without this, vanAutoPause stayed hardcoded false.
       if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
+      if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
       setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
@@ -364,6 +378,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }catch{}
     } catch{if(!authenticatedRef.current)setError('Connection error')} finally{setLoading(false)}
   },[token,pin,fetchMenu,fetchStock])
+
+  // Ready-email-undo machinery (shared hook). onUndoRestore = the dashboard-specific revert: un-strike the
+  // prep pills the Ready click struck (KDS, the later consumer, passes none). Placed after fetchAll so it
+  // can pass it as `refetch`.
+  const{scheduleReadyEmail,undoReady}=useReadyEmailUndo({token,pin,showToast,refetch:fetchAll,onUndoRestore:(orderKey)=>{
+    const ord=orders.find(o=>o.order_key===orderKey)
+    if(ord)setStruckPrep(prev=>{const n=new Set(prev);ord.items.forEach(item=>{for(let u=0;u<item.quantity;u++)n.delete(`${orderKey}:${item.name}:${u}`)});return n})
+  }})
 
   useEffect(()=>{fetchAll()},[fetchAll])
 
@@ -396,10 +418,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // [upcomingEvents]) so a routine events poll no longer re-reads and CLOBBERS a just-set optimistic
     // toggle value mid-change. Query by id directly (not via upcomingEvents.find) so it doesn't need
     // that list. cancelled guard drops a stale in-flight read after a fast event switch.
-    if(!selectedEventId){setEventOfflineOverride(null);return}
+    if(!selectedEventId){setEventOfflineOverride(null);setEventOrderReadyOverride(null);return}
     let cancelled=false
-    supabaseBrowser.from('truck_events').select('offline_protection_override').eq('id',selectedEventId).single()
-      .then(({data})=>{if(!cancelled)setEventOfflineOverride(data?.offline_protection_override??null)})
+    supabaseBrowser.from('truck_events').select('offline_protection_override, order_ready_override').eq('id',selectedEventId).single()
+      .then(({data})=>{if(!cancelled){setEventOfflineOverride(data?.offline_protection_override??null);setEventOrderReadyOverride((data as any)?.order_ready_override??null)}})
     return()=>{cancelled=true}
   },[selectedEventId])
   useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
@@ -576,7 +598,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const sel=selectedEventRef.current; if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
     const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
-    setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots)
+    setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput,selectedEventRef.current?.id??null)}
   }
@@ -597,11 +619,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
     if(value===true){
-      const confirmed=window.confirm('Offline protection enabled.\n\nTo keep orders flowing, your screen must stay on. If this device loses connection, online orders will pause automatically.\n\nMake sure Screen On is enabled.')
+      const confirmed=window.confirm(OFFLINE_PROTECTION_ENABLE_CONFIRM)
       if(!confirmed)return
       if(!keepScreenOn)applyKeepScreenOn(true)
     }else{
-      const confirmed=window.confirm('Disable offline protection for this event?\n\nIf this device loses connection, online orders will continue — customers may place orders you cannot see. Only disable if you have a reliable connection.')
+      const confirmed=window.confirm(OFFLINE_PROTECTION_DISABLE_CONFIRM)
       if(!confirmed)return
     }
     // SERVICE-ROLE write (was a direct supabaseBrowser anon update → RLS silently no-op'd it, so the
@@ -616,6 +638,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(value===false)setVanOnlinePausedUntil(null)
     }catch{
       setEventOfflineOverride(prev) // revert optimistic on failure
+    }
+  }
+
+  // Per-event order-ready on/off (master-switch model: writes a concrete order_ready_override=true|false,
+  // NEVER null). Optimistic on effectiveOrderReady (what the toggle + Ready button read), then refetch to
+  // confirm the server-resolved value. Mirrors toggleOfflineProtection's per-event write.
+  const setOrderReadyOverride=async(value:boolean)=>{
+    if(!activeEvent)return
+    const prevOverride=eventOrderReadyOverride
+    const prevEffective=effectiveOrderReady
+    setEventOrderReadyOverride(value)
+    setEffectiveOrderReady(value)
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_order_ready_override',value,eventId:activeEvent.id})})
+      if(!res.ok)throw new Error('write failed')
+      fetchAll() // re-resolve effectiveOrderReady (override ?? default) so the Ready button updates
+    }catch{
+      setEventOrderReadyOverride(prevOverride); setEffectiveOrderReady(prevEffective) // revert optimistic on failure
     }
   }
 
@@ -733,17 +773,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(action==='reject'){const ord=orders.find(o=>o.order_key===orderKey)??null;setRejectingOrder(ord);setShowRejectModal(true);return}
     setActionLoading(`${action}-${orderKey}`)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,order_key:orderKey})})
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})})})
       const data=await res.json(); if(!res.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
-      // "Mark paid & done" → an Undo toast (reuses the existing undo_collected action, which reverts
-      // collected→confirmed AND re-books capacity). setToast(null) on tap dismisses it first so it
-      // can't be double-tapped. Other actions keep the plain confirmation toast.
+      const num=done?.id??''
+      // "Mark paid & done" → a 7s Undo toast (undo_collected reverts collected→confirmed AND re-books).
+      // "Ready" → status commits now but the customer email is DEFERRED 4s (defer_email above): an Undo
+      // within 4s cancels the email (clears the per-order timer) AND reverts the status. The toast's tap
+      // auto-dismisses it (handled in the render), so the run handlers only do the action.
       if(action==='collected'){
-        showToast(`Order #${done?.id??''} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>{setToast(null);doAction('undo_collected',orderKey)}}})
+        showToast(`Order #${num} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
+      }else if(action==='ready'){
+        scheduleReadyEmail(orderKey)
+        showToast(`Order #${num} ready`,'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
       }else{
-        showToast(`Order #${done?.id??''} ${labels[action]||action}`)
+        showToast(`Order #${num} ${labels[action]||action}`)
       }
       // Auto-clear prep board on collected (solo operator workflow)
       if(action==='collected'||action==='ready'){
@@ -855,15 +900,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }:it)}
     })
   }
+  // PER-EVENT override (extras stock-scoping fix): writes event_option_stock for the SELECTED event
+  // (same event_id source as updateStock), NOT the shared modifier_options template. Optimistic patch of
+  // the menu copy; a refresh re-pulls /api/menu?event_id=… which resolves the event override.
   const updateModifierOptionAvailable=async(optionId:string,available:boolean)=>{
+    const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{available}) // optimistic
-    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_available',optionId,available})})
+    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_available',optionId,available,event_id})})
   }
-  // STANDING shared-pool count (NOT per-event). Writes modifier_options.stock_count via the new
-  // service-time action. null = untracked/unlimited. Optimistic-then-POST, mirroring updateStock.
   const updateModifierOptionStock=async(optionId:string,stockCount:number|null)=>{
+    const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{stock_count:stockCount}) // optimistic
-    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_stock',optionId,stockCount})})}
+    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_stock',optionId,stockCount,event_id})})}
     catch(err){console.warn('[updateModifierOptionStock] write failed (will re-sync on next refresh):',err)}
   }
 
@@ -1583,13 +1631,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false}/>)}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -1701,10 +1749,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Offline protection</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Pauses online orders if this device goes offline, so customers can&apos;t order when you can&apos;t see them.</p>
-                  <p className="text-xs text-amber-600 mt-1">Keep this screen on — if it turns off or loses connection, online orders pause automatically.</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
                 </div>
                 <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
+              </div>
+            )}
+            {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
+                order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
+                master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
+                Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
+                consistency with Offline protection / Auto-accept above. */}
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Order-ready notifications</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
+                </div>
+                <Toggle on={effectiveOrderReady} onToggle={()=>setOrderReadyOverride(!effectiveOrderReady)}/>
               </div>
             )}
             {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
@@ -1719,8 +1781,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
                 <div>
                   <p className="text-sm font-semibold text-slate-800 tracking-wide mb-3">Kitchen capacity</p>
-                  {/* Prep / Items(batch) / capacity-membership AND the Total-capacity ceiling — aligned
-                      to ONE shared 4-column template (V7.8 §42): CATEGORY · PREP · ITEMS · COUNTS TO
+                  {/* Items(batch) / Prep / capacity-membership AND the Total-capacity ceiling — aligned
+                      to ONE shared 4-column template (V7.8 §42): CATEGORY · ITEMS · PREP · COUNTS TO
                       TOTAL CAPACITY. The category grid and the Total-capacity grid use the SAME
                       grid-template-columns (same container ⇒ identical widths) so the ceiling row lines
                       up under the category rows. ALL writes unchanged: updateCategoryField
@@ -1731,8 +1793,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {truckMenu?.categories&&truckMenu.categories.length>0&&(
                     <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 gap-y-2 items-center">
                       <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
                       <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
+                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
                       <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
                       {truckMenu.categories.map(catObj=>{
                         const hasCap=kitchenCapacity!=null
@@ -1741,23 +1803,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         return(
                           <Fragment key={catObj.id??catObj.name}>
                             <span className="min-w-0 truncate text-slate-700 font-medium text-sm">{catObj.name}</span>
+                            {/* ITEMS = batch_size — shared <BatchSizeSelect> atom (∞ + 1..20 + off-grid).
+                                ∞ = no batch limit (null), unchanged write (updateCategoryField 'batch_size'). */}
+                            <BatchSizeSelect
+                              ariaLabel={`${catObj.name} items per batch`}
+                              valueSize={catObj.batch_size}
+                              onChange={val=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:val??undefined}:c)}:prev);updateCategoryField(catObj.id??'','batch_size',val)}}
+                              className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400" />
                             <PrepTimeSelect
                               valueSecs={catObj.prep_secs}
                               ariaLabel={`${catObj.name} prep time`}
                               onChange={secs=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:secs}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',secs)}}
                               className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
-                            {/* ITEMS = batch_size, now a dropdown with "N items" labels. ∞ = no batch
-                                limit (null), unchanged write (updateCategoryField 'batch_size'). */}
-                            <select
-                              aria-label={`${catObj.name} items per batch`}
-                              value={(!catObj.batch_size||catObj.batch_size===0)?'':catObj.batch_size}
-                              onChange={e=>{const val=e.target.value===''?null:parseInt(e.target.value);setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:val??undefined}:c)}:prev);updateCategoryField(catObj.id??'','batch_size',val)}}
-                              className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                              <option value="">∞</option>
-                              {Array.from({length:20},(_,i)=>i+1).concat((catObj.batch_size&&catObj.batch_size>20)?[catObj.batch_size]:[]).map(n=>(
-                                <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                              ))}
-                            </select>
                             <label className={`flex items-center justify-center ${capDisabled?'cursor-not-allowed':'cursor-pointer'}`}
                               title={locked
                                 ? 'Cooked — always counts (its prep & batch set the pace)'
@@ -1775,9 +1832,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     </div>
                   )}
                   {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories.
-                      PREP column holds the WINDOW (plain whole minutes — NOT PrepTimeSelect; the engine
-                      reads capacity_window_mins as minutes), ITEMS column holds the kitchen_capacity
-                      ceiling. Same saveCapacityWindow / saveKitchenCapacity writes. */}
+                      ITEMS column holds the kitchen_capacity ceiling, PREP column holds the WINDOW
+                      (plain whole minutes — NOT PrepTimeSelect; the engine reads capacity_window_mins
+                      as minutes). Same saveKitchenCapacity / saveCapacityWindow writes. */}
                   <div className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-semibold text-slate-800">Total capacity</span>
@@ -1785,16 +1842,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                         <span className="text-[10px] font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded px-1.5 py-0.5 flex-shrink-0">🚐 {activeVanName}</span>
                       )}
                     </div>
-                    <select
-                      value={capacityWindowMins}
-                      aria-label="Capacity window (minutes)"
-                      disabled={!activeEvent.van_id||kitchenCapacity==null}
-                      onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
-                      className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                      {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
-                        <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
-                      ))}
-                    </select>
                     <select
                       value={kitchenCapacity??''}
                       aria-label="Total capacity (items)"
@@ -1804,6 +1851,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       <option value="">∞</option>
                       {Array.from({length:20},(_,i)=>i+1).map(n=>(
                         <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={capacityWindowMins}
+                      aria-label="Capacity window (minutes)"
+                      disabled={!activeEvent.van_id||kitchenCapacity==null}
+                      onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
+                      className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                      {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
+                        <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
                       ))}
                     </select>
                     <span/>
@@ -2465,17 +2522,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      {toast&&(
-        <div className={`fixed bottom-6 left-4 right-4 max-w-sm mx-auto rounded-xl px-4 py-3 text-sm font-bold shadow-xl z-50 flex items-center gap-3 ${toast.action?'justify-between':'justify-center text-center'} ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600 text-white'}`}>
-          <span className="min-w-0">{toast.msg}</span>
-          {toast.action&&(
-            <button onClick={toast.action.run}
-              className="flex-shrink-0 bg-white/20 hover:bg-white/30 rounded-lg px-4 py-2 font-black transition-colors active:scale-95">
-              {toast.action.label}
-            </button>
-          )}
-        </div>
-      )}
+      <ToastStack toasts={toasts} dismissToast={dismissToast}/>
 
       {showQRFullscreen&&(
         <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center" onClick={()=>setShowQRFullscreen(false)}>

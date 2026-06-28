@@ -391,6 +391,15 @@ if (TARGET_NAME) {
     console.log("\n🚀 Starting Smart Scrape (Full Database Sync)...");
 }
 
+// SCRAPE_MODE splits the two passes (slice iii) so they run on separate crons:
+//   'discovery' → Pass A only (global Sheet scrape, daily_scrape.yml @ 1×/day)
+//   'hatchgrab' → Pass B only (HatchGrab trucks, hatchgrab_scrape.yml @ every 4h)
+//   unset       → BOTH passes (local runs + manual workflow_dispatch stay a whole scrape)
+const MODE = (process.env.SCRAPE_MODE || '').toLowerCase();
+const RUN_DISCOVERY = MODE !== 'hatchgrab';
+const RUN_HATCHGRAB = MODE !== 'discovery';
+if (MODE) console.log(`   🔀 SCRAPE_MODE=${MODE} → discovery:${RUN_DISCOVERY} hatchgrab:${RUN_HATCHGRAB}`);
+
 if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
   throw new Error("Missing Credentials in .env.local");
 }
@@ -486,19 +495,25 @@ const modelHeavy = genAI.getGenerativeModel({
     generationConfig: { responseMimeType: "application/json", temperature: 0 } 
 });
 
+// Accumulators for the discovery (Pass A) outputs — declared OUTSIDE the gate so the trailing
+// append-to-Sheets blocks can still read them (they self-skip when empty, e.g. in hatchgrab mode).
+const newRowsToAdd = [];
+const newVenuesDetected = new Map();
+const newTrucksDetected = new Map();
+
+// --- DATE LIMITER ---
+const todayZeroed = new Date();
+todayZeroed.setHours(0, 0, 0, 0);
+
+// ── PASS A: global Google-Sheets discovery scrape (every truck + venue website). Runs unless
+//    SCRAPE_MODE=hatchgrab, on its own 1×/day cron (daily_scrape.yml) — never tripled by the frequent
+//    Pass-B cron. (slice iii)
+if (RUN_DISCOVERY) {
 const browser = await puppeteer.launch({
   executablePath: CHROME_PATH,
   headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox', '--ignore-certificate-errors', '--allow-running-insecure-content', '--disable-web-security'],
 });
-
-const newRowsToAdd = [];
-const newVenuesDetected = new Map();
-const newTrucksDetected = new Map(); 
-
-// --- DATE LIMITER ---
-const todayZeroed = new Date();
-todayZeroed.setHours(0, 0, 0, 0);
 
 for (const [index, site] of sitesToScrape.entries()) {
   let page;
@@ -896,6 +911,7 @@ for (const [index, site] of sitesToScrape.entries()) {
 }
 
 await browser.close();
+} // end if (RUN_DISCOVERY) — Pass A global discovery scrape
 
 // ── HatchGrab-linked truck scraping ──────────────────────────────────────────
 
@@ -916,6 +932,45 @@ function shouldRunToday(truck) {
   return false;
 }
 
+// Frequency gate — has enough time elapsed since this truck's last scrape for its rate?
+// intervalHours = 24 / scrape_times_per_day minus a 3h SLACK → 1→21h, 2→9h, 3→5h. The 3h slack is tuned
+// to the FIXED daily slots (08/14/20 local, see isScrapeSlotNow): the two daytime slots are only 6h apart,
+// so a 3×/day truck scraped at 08:00 must clear the interval by 14:00 (6h elapsed). 24/3=8h would skip it
+// (8h>6h) → only 2×/day; subtracting 3h gives a 5h interval so the 6h gap passes and a 3×/day truck takes
+// ALL three slots. 2×/day (9h) takes 08+20 (skips the 6h-away 14:00); 1×/day (21h) takes one slot/day.
+// NULL last-run (never scraped) → due. Composed AND with shouldRunToday + isScrapeSlotNow at the loop gate.
+function dueByFrequency(truck) {
+  if (!truck.scraper_last_run_at) return true;
+  const perDay = truck.scrape_times_per_day || 1;
+  const intervalMs = ((24 / perDay) - 3) * 60 * 60 * 1000;
+  const elapsed = Date.now() - new Date(truck.scraper_last_run_at).getTime();
+  return elapsed >= intervalMs;
+}
+
+// The three FIXED daily scrape slots, expressed in each truck's OWN local timezone (so a UK truck scrapes
+// at 08/14/20 UK time; a truck in another country scrapes at 08/14/20 THEIR local time). Because the slots
+// are evaluated in local time via Intl, DST is handled automatically (no UTC drift). The workflow cron
+// fires at every UTC hour that could be one of these local slots for the timezones in use; this gate then
+// lets only the truck whose LOCAL hour is a slot actually scrape this run.
+const SCRAPE_SLOT_HOURS = [8, 14, 20];
+function localHourNow(tz) {
+  try {
+    return parseInt(new Intl.DateTimeFormat('en-GB', { timeZone: tz || 'Europe/London', hour: '2-digit', hourCycle: 'h23' }).format(new Date()), 10);
+  } catch {
+    return parseInt(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hourCycle: 'h23' }).format(new Date()), 10);
+  }
+}
+function isScrapeSlotNow(truck) {
+  return SCRAPE_SLOT_HOURS.includes(localHourNow(truck.timezone));
+}
+
+// Pre-Gemini skip (slice iv): hash the RAW scraped page text. If it's identical to last time, the
+// schedule can't have changed, so we skip the expensive Gemini extract + inbound POST entirely —
+// keeping unchanged 3×/day re-scrapes cheap (Puppeteer-only).
+function hashText(text) {
+  return createHash('md5').update(text || '').digest('hex');
+}
+
 function hashEvents(events) {
   const sorted = [...events]
     .map(e => `${e.event_date}|${e.venue_name}`)
@@ -928,11 +983,12 @@ async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ru
   const now = new Date();
   const dayOfWeek = now.getDay();
 
-  if (!truck.scraper_first_run_at) {
-    await supabase.from('trucks')
-      .update({ scraper_first_run_at: now.toISOString() })
-      .eq('id', truck.id);
-  }
+  // Always stamp last-run (slice ii — feeds dueByFrequency); set first-run too if this is the first scrape.
+  const truckUpdates = { scraper_last_run_at: now.toISOString() };
+  if (!truck.scraper_first_run_at) truckUpdates.scraper_first_run_at = now.toISOString();
+  await supabase.from('trucks')
+    .update(truckUpdates)
+    .eq('id', truck.id);
 
   await supabase.from('scraper_run_log').insert({
     truck_id: truck.id,
@@ -1046,12 +1102,14 @@ async function pruneScraperRunLog(supabase) {
 
 // ── Per-truck scrape loop ──────────────────────────────────────────────────────
 
-if (HATCHGRAB_API_URL && INBOUND_SECRET) {
+// ── PASS B: HatchGrab-linked truck scraping. Runs unless SCRAPE_MODE=discovery, on its own every-4h
+//    cron (hatchgrab_scrape.yml); the slice-(ii) due-check gates which trucks scrape each run. (slice iii)
+if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
   console.log('\n🏪 Starting HatchGrab-linked truck schedule scraping...');
 
   const { data: hgTrucks } = await supabase
     .from('trucks')
-    .select('id, name, schedule_url, scraper_preference, scraper_rule, scraper_last_hash, scraper_learning_complete, scraper_update_day, scraper_first_run_at, scraper_last_empty_notify_at, dashboard_token, operator_id')
+    .select('id, name, schedule_url, scraper_preference, scraper_rule, scraper_last_hash, scraper_last_text_hash, scraper_learning_complete, scraper_update_day, scraper_first_run_at, scraper_last_empty_notify_at, scrape_times_per_day, scraper_last_run_at, timezone, dashboard_token, operator_id')
     .in('scraper_preference', ['auto', 'both'])
     .not('schedule_url', 'is', null);
 
@@ -1083,9 +1141,20 @@ if (HATCHGRAB_API_URL && INBOUND_SECRET) {
     for (const hgTruck of hgTrucks) {
       if (!hgTruck.schedule_url) continue;
 
-      // Adaptive scheduling gate
+      // Three AND-composed gates — a truck scrapes this run only if ALL pass:
+      //  (1) shouldRunToday  — learned-DAY window (new trucks pass every day);
+      //  (2) isScrapeSlotNow — the truck's LOCAL hour is one of the fixed slots (08/14/20 local);
+      //  (3) dueByFrequency  — enough time elapsed for its rate (caps how many of the 3 slots it takes).
       if (!shouldRunToday(hgTruck)) {
         console.log(`\n⏭️  Skipping ${hgTruck.name} — not scheduled for today (learned day: ${hgTruck.scraper_update_day})`);
+        continue;
+      }
+      if (!isScrapeSlotNow(hgTruck)) {
+        console.log(`\n⏭️  Skipping ${hgTruck.name} — not a scrape slot in its timezone (${hgTruck.timezone || 'Europe/London'}: local hour ${localHourNow(hgTruck.timezone)}, slots ${SCRAPE_SLOT_HOURS.join('/')})`);
+        continue;
+      }
+      if (!dueByFrequency(hgTruck)) {
+        console.log(`\n⏭️  Skipping ${hgTruck.name} — not due yet (frequency: ${hgTruck.scrape_times_per_day || 1}×/day, last run ${hgTruck.scraper_last_run_at})`);
         continue;
       }
 
@@ -1119,6 +1188,17 @@ if (HATCHGRAB_API_URL && INBOUND_SECRET) {
 
         if (!winningText || winningText.length < 50) {
           console.log(`   ❌ Empty page for ${hgTruck.name}. Skipping.`);
+          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
+          continue;
+        }
+
+        // Pre-Gemini text-hash skip (slice iv): if the raw page text is byte-identical to the last
+        // successful extract, the schedule is unchanged — skip Gemini + the inbound POST. Still stamps
+        // last-run (recordRunAndLearn) so the frequency gate stays accurate. The stored hash is only
+        // written AFTER a successful extract (below), so a page that fails Gemini is retried, not cached.
+        const currentTextHash = hashText(winningText);
+        if (currentTextHash === hgTruck.scraper_last_text_hash) {
+          console.log(`   ⏩ Page text unchanged — skipping Gemini for ${hgTruck.name}`);
           await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
           continue;
         }
@@ -1209,6 +1289,13 @@ ${winningText.slice(0, 100000)}`;
         const result = await res.json();
         console.log(`   ✅ Sent to inbound-schedule: ${result.bridged ?? 0} bridged, ${result.inserted ?? 0} discovery`);
 
+        // Store the page-text hash AFTER a successful extract + POST (slice iv) so the next run can skip
+        // an unchanged page. Only on success — a Gemini/POST failure leaves the old hash, so the changed
+        // page is retried rather than wrongly cached.
+        await supabase.from('trucks')
+          .update({ scraper_last_text_hash: currentTextHash })
+          .eq('id', hgTruck.id);
+
         await recordRunAndLearn(supabase, hgTruck, hgEvents.length, eventsChanged, winningRule);
       } catch (err) {
         console.error(`   ❌ Error scraping ${hgTruck.name}:`, err.message);
@@ -1223,10 +1310,15 @@ ${winningText.slice(0, 100000)}`;
   // Part 5 — prune run log once per daily run
   await pruneScraperRunLog(supabase);
 
-} else {
+} else if (RUN_HATCHGRAB) {
   console.log('\n⚠️  HATCHGRAB_API_URL or INBOUND_SCHEDULE_SECRET not set — skipping HatchGrab truck scraping.');
+} else {
+  console.log('\n⏭️  SCRAPE_MODE=discovery — skipping HatchGrab truck scraping (Pass B).');
 }
 
+// ── PASS A outputs — append discovery results to the Sheets. Gated to discovery mode (these maps are
+//    empty in hatchgrab mode anyway, but gate explicitly so the hatchgrab run never touches the Sheet).
+if (RUN_DISCOVERY) {
 // --- APPEND NEW TRUCKS ---
 if (newTrucksDetected.size > 0) {
   console.log(`\n🚚 Adding ${newTrucksDetected.size} new trucks to the Trucks tab...`);
@@ -1335,5 +1427,6 @@ if (newVenuesDetected.size > 0) {
       console.error("❌ Geocoder Failed:", error.message);
   }
 }
+} // end if (RUN_DISCOVERY) — Pass A discovery appends
 }
 main();

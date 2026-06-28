@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at')
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -253,6 +253,12 @@ export async function GET(req: NextRequest) {
   // setting and the cook step shows regardless of the toggle. Defaults off (matches the
   // Settings toggle's default) when the van has no value.
   let vanShowCookingStep: boolean = false
+  // Order-ready (master-switch model): effectiveOrderReady = the SELECTED event's order_ready_override ??
+  // the van's global default ?? false (resolved SERVER-SIDE — gates the orders-screen Ready button). Events
+  // carry a concrete override (seeded at creation + bulk-set by the Settings master switch); the ?? chain
+  // is the legacy-null safety net. vanOrderReadyDefault = the raw van default, still returned to the client.
+  let effectiveOrderReady: boolean = false
+  let vanOrderReadyDefault: boolean = false
   // Pause is now EVENT-scoped (truck_events). Sourced from the SELECTED event below and returned
   // under these (legacy-named) keys so the client computes paused state from the SAME fields the
   // customer menu checks. (Kept the key names to avoid churning the client read path.)
@@ -270,7 +276,7 @@ export async function GET(req: NextRequest) {
     if (capacityEvent?.van_id) {
       const { data: van } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, show_cooking_step')
+        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, show_cooking_step, order_ready_enabled')
         .eq('id', capacityEvent.van_id)
         .single()
       kitchenCapacity = van?.kitchen_capacity ?? null
@@ -278,6 +284,9 @@ export async function GET(req: NextRequest) {
       activeVanName = van?.name ?? null
       vanAutoPause = van?.auto_pause_on_offline ?? false   // van offline-protection DEFAULT (toggle label)
       vanShowCookingStep = van?.show_cooking_step ?? false
+      // event override ?? van global default ?? false (mirrors the offline ?? chain).
+      vanOrderReadyDefault = van?.order_ready_enabled ?? false
+      effectiveOrderReady = (capacityEvent as any)?.order_ready_override ?? vanOrderReadyDefault
     }
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
@@ -380,6 +389,8 @@ export async function GET(req: NextRequest) {
     activeVanName,
     vanAutoPause,
     vanShowCookingStep,
+    effectiveOrderReady,                          // event override ?? van default ?? false (gates the Ready button)
+    vanOrderReadyDefault,                          // raw van default (seed for new events; the Settings master switch)
     vanPausedUntil: eventPausedUntil,            // event-scoped (key kept for the client)
     vanOnlinePausedUntil: eventOnlinePausedUntil, // event-scoped (key kept for the client)
     lastOfflinePauseAt: eventLastOfflinePauseAt, // durable offline-pause marker (popup trigger)

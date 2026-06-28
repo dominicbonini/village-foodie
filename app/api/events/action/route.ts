@@ -204,5 +204,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, cancelledOrders })
   }
 
+  // ── RESTORE REJECTED (undo a scraped-event reject) ───────────
+  // Reverses the `cancel`+`suppress` reject: status 'cancelled' → 'unconfirmed' (back into the pending
+  // queue) AND deletes the suppress-signature. The DELETE is MANDATORY — inbound-schedule skips any event
+  // whose signature is in rejected_event_signatures, so without it the event re-vanishes on the next
+  // scrape, defeating the undo. Status-only otherwise (a rejected scraped event never booked slots).
+  if (action === 'restore_rejected') {
+    const { data: eventRow } = await supabase
+      .from('truck_events')
+      .select('venue_name, event_date, scraped_signature')
+      .eq('id', eventId)
+      .eq('truck_id', truck.id)
+      .single()
+    if (!eventRow) return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+
+    const { error } = await supabase
+      .from('truck_events')
+      .update({ status: 'unconfirmed', cancellation_note: null, updated_at: now })
+      .eq('id', eventId)
+      .eq('truck_id', truck.id)
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    // Delete the exact suppress-signature the reject inserted (same key derivation as the cancel insert).
+    const { error: sigErr } = await supabase
+      .from('rejected_event_signatures')
+      .delete()
+      .eq('truck_id', truck.id)
+      .eq('event_date', eventRow.event_date)
+      .eq('scraped_signature', eventRow.scraped_signature || eventRow.venue_name || '')
+    if (sigErr) console.warn('[restore_rejected] signature delete failed:', sigErr.message)
+
+    return NextResponse.json({ ok: true })
+  }
+
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 }

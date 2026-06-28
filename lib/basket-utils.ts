@@ -201,21 +201,25 @@ export function groupByCategory(
   // If ordered categories provided, use that order
   if (orderedCategories && orderedCategories.length > 0) {
     const result: Array<[string, MenuItem[]]> = []
-    
-    // First add categories in the specified order
+    const seen = new Set<string>()
+
+    // First add categories in the specified order. DEDUP by name: a truck with two category rows of the
+    // SAME NAME would otherwise emit the merged group (groups is keyed by name) twice — a duplicate that
+    // surfaces as React's "two children with the same key" warning on the menu render + the category tabs.
     orderedCategories.forEach(cat => {
-      if (groups[cat]) {
+      if (groups[cat] && !seen.has(cat)) {
+        seen.add(cat)
         result.push([cat, groups[cat]])
       }
     })
-    
-    // Then add any remaining categories not in the ordered list
+
+    // Then add any remaining categories not already emitted
     Object.entries(groups).forEach(([cat, items]) => {
-      if (!orderedCategories.includes(cat)) {
+      if (!seen.has(cat)) {
         result.push([cat, items])
       }
     })
-    
+
     return result
   }
   

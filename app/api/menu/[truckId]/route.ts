@@ -118,7 +118,7 @@ export async function GET(
     // drives which groups each dish carries.
     supabase
       .from('item_modifier_groups')
-      .select('menu_item_id, group_id'),
+      .select('menu_item_id, group_id, excluded_option_ids'),
   ])
 
   console.log('[MENU API] Query results:')
@@ -284,28 +284,59 @@ export async function GET(
     })
   }
 
+  // Per-event EXTRA (modifier-option) overrides — mirrors eventItemOverride. Keyed by option_id. Both
+  // columns are NULLABLE (NULL = inherit the template) because the dashboard sets stock + available via
+  // two independent toggles, so each must inherit independently. resolveGroup resolves
+  // event_option_stock ?? modifier_options per column. Empty until a dashboard edit (sparse override).
+  const eventOptionOverride: Record<string, { stock_count: number | null; available: boolean | null }> = {}
+  if (effectiveEventId) {
+    const { data: eos } = await supabase
+      .from('event_option_stock')
+      .select('option_id, stock_count, available')
+      .eq('truck_id', truck.id)
+      .eq('event_id', effectiveEventId)
+    ;(eos || []).forEach((o: any) => {
+      eventOptionOverride[o.option_id] = { stock_count: o.stock_count ?? null, available: o.available ?? null }
+    })
+  }
+
   // Build a resolved group object (with its options) for a given group id. Shared by the per-item
   // map below. Returns null if the group isn't found.
   type ResolvedGroup = { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number; options: { id: string; name: string; price_adjustment: number; allergens: string[]; dietary: string[]; available: boolean; stock_count: number | null }[] }
-  const resolveGroup = (groupId: string): ResolvedGroup | null => {
+  const resolveGroup = (groupId: string, excludedOptionIds?: string[] | null): ResolvedGroup | null => {
     const group = (modifierGroups || []).find(g => g.id === groupId)
     if (!group) return null
+    // Per-dish availability (model C): drop options this dish excludes for this group. The exclusion
+    // comes from THIS link's excluded_option_ids and is applied to BOTH customer + dashboard reads
+    // (it's "not offered on this dish", a hard hide — unlike `available`, which is dashboard-visible).
+    // A fresh options array is built per call, so two dishes sharing a group don't cross-contaminate.
+    const excluded = new Set(excludedOptionIds || [])
+    // Per-option effective values = event_option_stock(this event) ?? modifier_options template.
+    const effOption = (o: any) => {
+      const ov = eventOptionOverride[o.id]
+      return {
+        available: (ov && ov.available != null) ? ov.available : (o.available !== false),
+        stock_count: (ov && ov.stock_count != null) ? ov.stock_count : ((o.stock_count as number) ?? null),
+      }
+    }
     const options = (modifierOptions || [])
-      .filter(o => o.group_id === group.id && (isDashboard || o.available !== false))
-      .map(o => ({
-        id: o.id,
-        name: o.name,
-        price_adjustment: o.price_adjustment ?? 0,
-        // Per-option allergens/dietary (Stage C) — independent of the dish's own allergens.
-        // Surfaced at selection + carried onto the basket line/ticket/email (safety field).
-        allergens: (o.allergens as string[]) || [],
-        dietary: (o.dietary_info as string[]) || [],
-        // available emitted to CUSTOMERS too (Stage D1) — fixes the display gap where a sold-out
-        // option still showed to customers (isModifierAvailable defaulted undefined→true). Both
-        // modals already filter on `available`; they just weren't receiving it on the customer read.
-        available: o.available !== false,
-        stock_count: (o.stock_count as number) ?? null,
-      }))
+      .filter(o => o.group_id === group.id && (isDashboard || effOption(o).available) && !excluded.has(o.id))
+      .map(o => {
+        const eff = effOption(o)
+        return {
+          id: o.id,
+          name: o.name,
+          price_adjustment: o.price_adjustment ?? 0,
+          // Per-option allergens/dietary (Stage C) — independent of the dish's own allergens.
+          // Surfaced at selection + carried onto the basket line/ticket/email (safety field).
+          allergens: (o.allergens as string[]) || [],
+          dietary: (o.dietary_info as string[]) || [],
+          // available emitted to CUSTOMERS too (Stage D1). Now EVENT-SCOPED: a sold-out-for-this-event
+          // override hides it from customers (filter above) and reflects on the dashboard display.
+          available: eff.available,
+          stock_count: eff.stock_count,
+        }
+      })
     return {
       id: group.id,
       name: group.name,
@@ -322,7 +353,7 @@ export async function GET(
   // Each dish carries its OWN groups; category_modifier_groups no longer participates.
   const itemGroupMap: Record<string, ResolvedGroup[]> = {}
   ;(itemModGroups || []).forEach(link => {
-    const g = resolveGroup(link.group_id)
+    const g = resolveGroup(link.group_id, (link as { excluded_option_ids?: string[] }).excluded_option_ids)
     if (!g) return
     ;(itemGroupMap[link.menu_item_id] ||= []).push(g)
   })
@@ -440,8 +471,12 @@ export async function GET(
         photo_url: i.image_path
           ? `${supabaseUrl}/storage/v1/object/public/truck-media/${i.image_path}`
           : null,
-        allergens: (i.allergens as string[]) || [],
-        dietary: (i.dietary_info as string[]) || [],
+        // SAFETY (allergen invariant): an item whose allergens are NOT verified (allergens_verified === false,
+        // e.g. AI-detected on import + not yet human-confirmed) must NOT show its allergen/dietary data to
+        // customers as if reliable — emit empty so no chips render. true/null (confirmed or legacy) show as
+        // before. The truck-level `allergensVerified` flag (below) drives the customer "ask staff" caveat.
+        allergens: (i.allergens_verified === false) ? [] : ((i.allergens as string[]) || []),
+        dietary: (i.allergens_verified === false) ? [] : ((i.dietary_info as string[]) || []),
         spiciness: (i.spiciness as number) ?? null,
         // Operator-only routing flag — read so the Manage editor reflects the saved value.
         // NOT consumed by the customer page (invisible to customers).
@@ -511,6 +546,10 @@ export async function GET(
       allergen_info_url: truck.allergen_info_url ?? null,
       allergen_info_text: truck.allergen_info_text ?? null,
       ordering_available: orderingAvailable,
+      // Truck-level allergen-verification flag: false when ANY live menu item is unverified
+      // (allergens_verified === false). Drives the customer "allergen info not verified — ask staff"
+      // safety notice. true when every item is verified/legacy (no false) → no notice (e.g. Gusto).
+      allergensVerified: !(items || []).some((i: any) => i.allergens_verified === false),
     },
     menu,
   })

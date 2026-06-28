@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml } from '@/lib/email'
+import { getVanOrderReadyDefault } from '@/lib/van-utils'
 import {
   addOrderToProductionSlot,
   removeOrderFromProductionSlot,
@@ -16,7 +17,7 @@ import { nextOrderId } from '@/lib/order-utils'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
-import { releaseOptionStock, drawOptionStock, findSoldOutOption, compensateOptionDraws } from '@/lib/option-stock'
+import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -48,6 +49,46 @@ async function notifyCustomer(email: string, subject: string, html: string, truc
       }),
     })
   } catch (err) { console.error('Email failed:', err) }
+}
+
+// Build + send the customer "order ready" email (variant:'ready'). Extracted so BOTH the synchronous path
+// (KDS / non-deferred 'ready') and the deferred path ('send_ready_email', fired ~4s after the dashboard
+// Ready click if not undone) share ONE implementation. Resolves the venue by the order's own event_id.
+async function deliverReadyEmail(order: any, truck: any) {
+  if (!order.customer_email) return
+  let eventQuery = supabase
+    .from('truck_events')
+    .select('venue_name, town, postcode')
+    .eq('truck_id', truck.id)
+  eventQuery = order.event_id
+    ? eventQuery.eq('id', order.event_id)
+    : eventQuery.eq('event_date', order.event_date).neq('status', 'cancelled')
+  const { data: eventRow } = await eventQuery.maybeSingle()
+  const { subject, html, text } = formatConfirmationEmail({
+    variant: 'ready',
+    orderId: order.id,
+    orderKey: order.order_key,
+    customerName: order.customer_name,
+    truckName: truck.name,
+    items: order.items || [],
+    deals: order.deals || [],
+    slot: order.slot ?? null,
+    discountAmt: order.discount_amt ?? 0,
+    total: Number(order.total),
+    notes: order.notes ?? null,
+    venueName: eventRow?.venue_name ?? null,
+    venueTown: eventRow?.town ?? null,
+    venuePostcode: eventRow?.postcode ?? null,
+    preferredContactMethod: truck.preferred_contact_method ?? null,
+    contactPhone: truck.contact_phone ?? null,
+    whatsappSender: truck.whatsapp_sender ?? null,
+    socialFacebook: truck.social_facebook ?? null,
+    socialInstagram: truck.social_instagram ?? null,
+    contactEmail: truck.contact_email ?? null,
+    baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
+    truckSlug: truck.slug ?? undefined,
+  })
+  await sendConfirmationEmail({ to: order.customer_email, subject, html, text, senderName: truck.name })
 }
 
 export async function POST(req: NextRequest) {
@@ -125,11 +166,9 @@ export async function POST(req: NextRequest) {
           normaliseOrderLines(order.items || [], order.deals), itemCatMap
         )
       }
-      // D2: re-credit the option shared pool — only if this order was NOT already cancelled/rejected
-      // (double-reversal guard: those statuses already released, or never drew).
-      if (order.status !== 'cancelled' && order.status !== 'rejected') {
-        await releaseOptionStock(supabase, truck.id, order.items || [], order.deals || [])
-      }
+      // Ceiling model (step 3): NO option-stock reversal needed — nothing was decremented at placement
+      // (the ceiling is computed live from active orders), so removing this order from the live set on
+      // reject IS the credit-back. Was: releaseOptionStock (the decrement pool, removed).
       if (order.customer_email) {
         // Mirrors the cancel email's reasonLine — the operator's reason, escaped, shown to the customer.
         const reasonLine = rejectionReason ? `<p style="color:#475569">Reason: ${escapeHtml(rejectionReason)}</p>` : ''
@@ -159,11 +198,8 @@ export async function POST(req: NextRequest) {
           normaliseOrderLines(order.items || [], order.deals), itemCatMap
         )
       }
-      // D2: re-credit the option shared pool — guarded against double-reversal (skip if already
-      // cancelled/rejected, which already released or never drew).
-      if (order.status !== 'cancelled' && order.status !== 'rejected') {
-        await releaseOptionStock(supabase, truck.id, order.items || [], order.deals || [])
-      }
+      // Ceiling model (step 3): NO option-stock reversal — cancelling removes this order from the live
+      // ceiling tally automatically (was: releaseOptionStock, the removed decrement pool).
       if (order.customer_email) {
         const reasonLine = cancellationReason ? `<p style="color:#475569">${cancellationReason}</p>` : ''
         const refundLine = order.paid_at ? `<p>Your refund will be processed automatically within 3–5 working days.</p>` : ''
@@ -182,20 +218,39 @@ export async function POST(req: NextRequest) {
     }
 
     // ── READY ─────────────────────────────────────────────────────────────────
+    // Sets status='ready'. The customer "ready" email is sent INLINE for non-deferred callers (KDS cook
+    // screen — body.defer_email falsy), but DEFERRED for the main dashboard (body.defer_email === true):
+    // the client shows a 4s undo toast and fires `send_ready_email` only after the window closes, so an
+    // undo within 4s sends no email. Either way the email always fires for a ready (model A) — KDS
+    // immediately, dashboard after the undo window.
     if (action === 'ready') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey).eq('truck_id', truck.id)
-      if (order.customer_email) {
-        await notifyCustomer(order.customer_email, `Your order is ready`,
-          `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
-            <h2>Your order is ready! 🎉</h2>
-            <p>Order #${order.id} from <strong>${truck.name}</strong> is ready for collection.</p>
-            <p>Come and collect now — pay at the truck.</p>
-            <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
-          </body>`, truck.name)
+      if (!body.defer_email) {
+        await deliverReadyEmail(order, truck)
       }
       return NextResponse.json({ success: true, status: 'ready' })
+    }
+
+    // ── SEND READY EMAIL (deferred) ─────────────────────────────────────────────
+    // Fired by the dashboard ~4s after a Ready click if it wasn't undone. GUARDED on status==='ready' so a
+    // raced undo (status back to 'confirmed') sends nothing. Double-send is prevented client-side (the 4s
+    // timer is cleared whenever the flush path fires), with this status guard as the server backstop.
+    if (action === 'send_ready_email') {
+      const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      if (order.status !== 'ready') return NextResponse.json({ success: true, skipped: 'not ready' })
+      await deliverReadyEmail(order, truck)
+      return NextResponse.json({ success: true })
+    }
+
+    // ── UNDO READY ──────────────────────────────────────────────────────────────
+    // Reverts status ready→confirmed (the dashboard undo). Status-only: unlike undo_collected, marking
+    // ready never freed a production slot, so there is NO production_slot_usage rebuild here.
+    if (action === 'undo_ready') {
+      await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      return NextResponse.json({ success: true, status: 'confirmed' })
     }
 
     // ── COLLECTED ─────────────────────────────────────────────────────────────
@@ -385,8 +440,11 @@ export async function POST(req: NextRequest) {
           .eq('id', event_id)
           .eq('truck_id', truck.id)
       } else {
+        // Seed order_ready_override from the van's current default (master-switch model — new events
+        // start matching the Settings default).
+        const seededOrderReady = await getVanOrderReadyDefault(supabase, truck.id)
         await supabase.from('truck_events')
-          .insert({ truck_id: truck.id, event_date: date, start_time, end_time, source: 'manual' })
+          .insert({ truck_id: truck.id, event_date: date, start_time, end_time, order_ready_override: seededOrderReady, source: 'manual' })
       }
       return NextResponse.json({ success: true })
     }
@@ -425,7 +483,26 @@ export async function POST(req: NextRequest) {
           ])
           const itemIdByName: Record<string, string> = {}
           ;(itemRows || []).forEach(i => { itemIdByName[i.name] = i.id })
-          const groupsById = new Map((groupsRaw || []).map(g => [g.id, { ...g, options: (optsRaw || []).filter(o => o.group_id === g.id) }]))
+          // Stage-2 follow-up: event-scope the option availability/stock used by this required-group
+          // guard (event_option_stock(this event) ?? template), so an operator-placed order honours a
+          // per-event sold-out/stock-0 extra like the customer path (findSoldOutOption / the menu read).
+          let optList = optsRaw || []
+          if (passedEventId && optList.length) {
+            const { data: ovRows } = await supabase
+              .from('event_option_stock')
+              .select('option_id, stock_count, available')
+              .eq('truck_id', truck.id)
+              .eq('event_id', passedEventId)
+              .in('option_id', optList.map(o => o.id))
+            const ovById: Record<string, { stock_count: number | null; available: boolean | null }> = {}
+            ;(ovRows as any[] | null || []).forEach(r => { ovById[r.option_id] = { stock_count: r.stock_count ?? null, available: r.available ?? null } })
+            optList = optList.map(o => {
+              const x = ovById[o.id]
+              if (!x) return o
+              return { ...o, available: x.available != null ? x.available : o.available, stock_count: x.stock_count != null ? x.stock_count : o.stock_count }
+            })
+          }
+          const groupsById = new Map((groupsRaw || []).map(g => [g.id, { ...g, options: optList.filter(o => o.group_id === g.id) }]))
           const reqGroupsByItemId: Record<string, any[]> = {}
           ;(itemLinks || []).forEach(link => {
             if (!requiredIds.has(link.group_id)) return
@@ -519,11 +596,6 @@ export async function POST(req: NextRequest) {
       const haveLock = (await acquireEventLock(truck.id, eventDate)).ok
       let newOrderId = ''
       let manualOrderKey = ''
-      // Option shared-pool draw (D2) — mirrors the customer /api/orders/submit path. `placed` flips
-      // true once the order row is inserted; the finally re-credits any draw that did NOT end up on a
-      // placed order (no leak on a non-placed order).
-      let optionDraws: { id: string; qty: number }[] = []
-      let placed = false
       try {
         if (!haveLock) {
           return NextResponse.json(
@@ -541,31 +613,25 @@ export async function POST(req: NextRequest) {
           if (shortfall) {
             return NextResponse.json({ error: 'Not enough stock', stock: true, items: shortfall }, { status: 409 })
           }
+          // Extras ceiling check (step 2) — SAME shared engine as items (no secondary axis), so operator
+          // orders honour the per-event option ceiling too. !override only: an informed override skips it
+          // (like the item check). The decrement-pool draw below still runs (additive — removed in step 3).
+          const optShort = await checkOptionCeilingShortfall(supabase, truck.id, orderEventId, items, deals)
+          if (optShort && optShort.length) {
+            return NextResponse.json({ error: `Sorry, ${optShort[0].name} just sold out.`, optionStock: true, optionName: optShort[0].name }, { status: 409 })
+          }
         }
 
-        // (a2) OPTION SHARED-POOL DRAW (D2) — the oversell gate for tracked modifier options, mirroring
-        //      the customer path (/api/orders/submit). Atomic per option (conditional RPC), all-or-nothing,
-        //      basket-wide per option (tallies across all lines + deal slots). Untracked (null stock) skipped.
-        //      NON-override: findSoldOutOption (manual sold-out / stock-0 backstop) then drawOptionStock —
-        //      a shortfall → 409 with the option name so the client shows the shared-pool override confirm.
-        //      OVERRIDE (informed oversell): still ATTEMPT the atomic draw (decrements what's available);
-        //      an all-or-nothing shortfall just isn't blocked (the pool floors — can't go negative). Either
-        //      way `optionDraws` holds what actually drew, for compensation if the order doesn't place.
+        // (a2) OPTION available=false HARD-OFF backstop (ceiling model). The QUANTITY ceiling is the (a)
+        //      check above (checkOptionCeilingShortfall, event-scoped via the shared engine); this catches
+        //      a MANUAL sold-out / stock-0 the count math wouldn't. !override only (an informed override
+        //      proceeds past it). The decrement-pool draw was REMOVED (step 3) — nothing is decremented;
+        //      the ceiling is computed live from active orders.
         if (!override) {
-          const soldOut = await findSoldOutOption(supabase, truck.id, items, deals)
+          const soldOut = await findSoldOutOption(supabase, truck.id, items, deals, passedEventId)
           if (soldOut) {
             return NextResponse.json({ error: `Sorry, ${soldOut} just sold out.`, optionStock: true, optionName: soldOut }, { status: 409 })
           }
-          const draw = await drawOptionStock(supabase, truck.id, items, deals)
-          if (!draw.ok) {
-            return NextResponse.json({ error: `Sorry, ${draw.soldOutName} just sold out.`, optionStock: true, optionName: draw.soldOutName }, { status: 409 })
-          }
-          optionDraws = draw.drawn
-        } else {
-          // Informed oversell: attempt the draw; an insufficiency isn't blocked (drawn=[] on all-or-nothing
-          // shortfall — the pool stays put, the order places past it, same flooring as item-stock override).
-          const draw = await drawOptionStock(supabase, truck.id, items, deals)
-          optionDraws = draw.drawn
         }
 
         // (b) Display number (per-event, restarts at 1) — under the lock. order_key UUID is set
@@ -595,7 +661,6 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
         }
         manualOrderKey = manualOrderRow.order_key
-        placed = true   // order row exists → the option draw is now legitimately consumed (keep it)
 
         // (d) Occupy the oven window — REBUILD from orders (deterministic; the SAME path cancel/reject/
         //     collect use) instead of the old incremental read-merge-blind-SET (clobber/drift vector).
@@ -606,9 +671,8 @@ export async function POST(req: NextRequest) {
         if (orderEventId) await rebuildProductionSlotUsage(supabase, truck.id, eventDate)
       } finally {
         if (haveLock) await releaseEventLock(truck.id, eventDate)
-        // Compensate any option draw that did NOT end up on a placed order (insert error / throw /
-        // contention bail after the draw). A successfully-inserted order keeps its draw.
-        if (optionDraws.length && !placed) await compensateOptionDraws(supabase, optionDraws)
+        // (Ceiling model — no option-draw compensation: nothing is decremented at placement, so a
+        // non-placed order leaves no pool draw to credit back. Was: compensateOptionDraws.)
       }
 
       // Venue strictly by the resolved orderEventId (cross-event fix) — date+maybeSingle
@@ -661,10 +725,11 @@ export async function POST(req: NextRequest) {
         await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
       }
 
-      if (truck.contact_email) {
+      if (truck.contact_email && (truck as any).truck_order_email_enabled !== false) {
         // Truck gets the canonical 🔔 New order notification (shared builder) — the
         // SAME email the customer self-order path sends the truck. Never a copy of the
-        // customer confirmation. The customer email above is unchanged.
+        // customer confirmation. The customer email above is unchanged. Gated by the
+        // "Email me new orders" toggle (trucks.truck_order_email_enabled, default true).
         const { subject, html, text } = formatNewOrderEmail({
           orderId: newOrderId,
           customerName: customerName || 'Walk-up',
@@ -782,34 +847,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, stocks, categoryStocks })
     }
 
-    // ── SET MODIFIER OPTION AVAILABILITY ─────────────────────────────────────
+    // ── SET MODIFIER OPTION AVAILABILITY — PER-EVENT (extras stock-scoping fix, stage 1) ───────────
+    // Was an UPDATE on the SHARED modifier_options row (leaked to manage + every event). Now writes a
+    // PER-EVENT override row in event_option_stock (mirrors set_stock / event_item_stock for menu items).
+    // modifier_options.available stays the TEMPLATE (set in manage). NOTE: order-time DECREMENT is still
+    // template (stage 2) — only the dashboard write + customer read are event-scoped this stage.
     if (action === 'set_modifier_option_available') {
-      const { optionId, available } = body
+      const { optionId, available, event_id } = body
       if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
+      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
       // Verify the option belongs to this truck via its group
       const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
       if (opt) {
         const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
         if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-        await supabase.from('modifier_options').update({ available: available !== false }).eq('id', optionId)
+        await supabase.from('event_option_stock').upsert({
+          truck_id: truck.id, event_id, option_id: optionId, available: available !== false,
+        }, { onConflict: 'event_id,option_id' })
       }
       return NextResponse.json({ success: true })
     }
 
-    // ── SET MODIFIER-OPTION STOCK — STANDING shared pool (item 3, D2 axis) ─────
-    // Operator service-time write of the STANDING count: modifier_options.stock_count spans the
-    // whole service (NOT per-event — that's event_item_stock, for menu items only). NULL/blank =
-    // untracked/unlimited (consistent with D1). This is the operator SET; the D2 decrement RPCs are
-    // the separate order-time draw. Same group→truck guard as set_modifier_option_available.
+    // ── SET MODIFIER-OPTION STOCK — PER-EVENT (extras stock-scoping fix, stage 1) ───────────────────
+    // Was an UPDATE on the SHARED modifier_options row (leaked to manage + every event). Now writes a
+    // PER-EVENT override row in event_option_stock (mirrors set_stock / event_item_stock). NULL/blank =
+    // inherit the template (modifier_options.stock_count, set in manage). NOTE: the order-time DECREMENT
+    // still draws the shared template pool (stage 2 — the §54 atomic hot path); only the dashboard write
+    // + customer read are event-scoped this stage. Same group→truck guard.
     if (action === 'set_modifier_option_stock') {
-      const { optionId, stockCount } = body
+      const { optionId, stockCount, event_id } = body
       if (!optionId) return NextResponse.json({ error: 'optionId required' }, { status: 400 })
+      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
       const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', optionId).single()
       if (opt) {
         const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).single()
         if (!grp) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         const next = (stockCount === null || stockCount === undefined || stockCount === '') ? null : Math.max(0, parseInt(String(stockCount), 10) || 0)
-        await supabase.from('modifier_options').update({ stock_count: next }).eq('id', optionId)
+        await supabase.from('event_option_stock').upsert({
+          truck_id: truck.id, event_id, option_id: optionId, stock_count: next,
+        }, { onConflict: 'event_id,option_id' })
       }
       return NextResponse.json({ success: true })
     }
@@ -972,6 +1048,22 @@ export async function POST(req: NextRequest) {
       const patch: Record<string, unknown> = { offline_protection_override: value }
       if (value === false) patch.online_paused_until = null // disabling clears the offline pause too
       const { error } = await supabase.from('truck_events').update(patch).eq('id', eventId).eq('truck_id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true })
+    }
+
+    // ── set_order_ready_override ── EVENT-scoped order_ready_override (truck_events) ────────────────
+    // Per-event order-ready on/off. value: true (on) / false (off). The dashboard toggle only ever sends
+    // true/false (master-switch model — every event has a concrete value); null is still accepted as a
+    // legacy/no-op input. Governs ONLY the orders-screen Ready button (model A — the ready email is never
+    // gated). effectiveOrderReady resolves from this in /api/dashboard, so a refetch picks up the new value.
+    if (action === 'set_order_ready_override') {
+      const { value, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'eventId required' }, { status: 400 })
+      if (value !== true && value !== false && value !== null) {
+        return NextResponse.json({ error: 'value must be true, false, or null' }, { status: 400 })
+      }
+      const { error } = await supabase.from('truck_events').update({ order_ready_override: value }).eq('id', eventId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })
     }

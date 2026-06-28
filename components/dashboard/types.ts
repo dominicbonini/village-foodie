@@ -223,5 +223,9 @@ export interface TruckEvent {
   notes: string | null
   source: string | null
   van_id: string | null
+  // Order-ready (master-switch model): per-event on/off for the order-ready step/notifications. Concrete
+  // true/false (seeded at creation + bulk-set by the Settings master switch); a legacy NULL falls back to
+  // the van's order_ready_enabled default server-side → effectiveOrderReady.
+  order_ready_override?: boolean | null
   event_deals?: { id?: string; bundle_id: string; active: boolean; overridden: boolean }[]
 }

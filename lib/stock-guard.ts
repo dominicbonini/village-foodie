@@ -68,6 +68,56 @@ export async function releaseEventLock(truckId: string, eventDate: string): Prom
   if (error) console.warn('[booking_locks] release failed (self-heals via TTL):', error.message)
 }
 
+// ── SHARED ceiling-shortfall engine (source-agnostic) ─────────────────────────
+// The pure shortfall math, extracted from checkStockShortfall so items, categories, and (later) modifier
+// options all run ONE model and can't drift. Given the order's lines, a live "sold" tally (by primary
+// key), a primary ceiling resolver, and an OPTIONAL secondary axis (key-of + ceiling — e.g. category),
+// returns the lines whose requested qty exceeds the EFFECTIVE remaining = min(primary, secondary), or
+// null if all fit. Reject if a line alone exceeds its effective remaining OR its secondary key's TOTAL
+// requested exceeds the secondary remaining (shared-axis overflow across basket lines). null ceiling =
+// unlimited (never blocks). Pure/sync — the caller fetches the tally + builds the resolvers.
+export function checkCeilingShortfall(
+  lines: { name: string; quantity: number }[],
+  primaryTally: Record<string, number>,
+  primaryCeiling: (name: string) => number | null,
+  secondary?: { keyOf: (name: string) => string; ceiling: (key: string) => number | null },
+): { name: string; remaining: number }[] | null {
+  // Secondary-axis "sold" — re-bucket the primary tally through keyOf (empty key = not on the axis).
+  const soldBySecondary: Record<string, number> = {}
+  if (secondary) {
+    for (const [name, qty] of Object.entries(primaryTally)) {
+      const k = secondary.keyOf(name)
+      if (k) soldBySecondary[k] = (soldBySecondary[k] || 0) + (qty as number)
+    }
+  }
+  // Requested per primary key & per secondary key from the order lines.
+  const reqByItem: Record<string, number> = {}
+  const reqBySecondary: Record<string, number> = {}
+  for (const l of lines) {
+    reqByItem[l.name] = (reqByItem[l.name] || 0) + l.quantity
+    if (secondary) {
+      const k = secondary.keyOf(l.name)
+      if (k) reqBySecondary[k] = (reqBySecondary[k] || 0) + l.quantity
+    }
+  }
+
+  const shortfall: { name: string; remaining: number }[] = []
+  for (const [name, reqQty] of Object.entries(reqByItem)) {
+    const k = secondary ? secondary.keyOf(name) : ''
+    const itemRem = calcStockRemaining(primaryCeiling(name), primaryTally[name] || 0)
+    const catRem = secondary ? calcStockRemaining(secondary.ceiling(k), soldBySecondary[k] || 0) : null
+    const eff = calcEffectiveRemaining(itemRem, catRem)
+    // Reject if this line alone exceeds its effective remaining, OR its secondary key's TOTAL requested
+    // exceeds the secondary remaining (shared-axis overflow across basket lines).
+    const catOver = catRem != null && (reqBySecondary[k] || 0) > catRem
+    if ((eff != null && reqQty > eff) || catOver) {
+      const cap = Math.min(eff ?? Infinity, catRem ?? Infinity)
+      shortfall.push({ name, remaining: Number.isFinite(cap) ? Math.max(0, cap) : 0 })
+    }
+  }
+  return shortfall.length ? shortfall : null
+}
+
 /**
  * Atomic stock guard. Given the order's DEAL-INCLUSIVE lines (normaliseOrderLines — deal-slot
  * constituents already flattened in), return the items whose requested qty exceeds the CURRENT
@@ -119,35 +169,13 @@ export async function checkStockShortfall(
   const catCeiling = (cat: string): number | null =>
     cat in catOverride ? catOverride[cat] : (catDefault[cat] ?? null)
 
-  // Sold per category (deal-inclusive — every ordered item, mapped to its category).
-  const soldByCat: Record<string, number> = {}
-  for (const [name, qty] of Object.entries(sold)) {
-    const c = (itemCatMap[name] || '').toLowerCase()
-    if (c) soldByCat[c] = (soldByCat[c] || 0) + (qty as number)
-  }
-
-  // Requested per item & per category from the deal-inclusive lines.
-  const reqByItem: Record<string, number> = {}
-  const reqByCat: Record<string, number> = {}
-  for (const l of orderLines) {
-    reqByItem[l.name] = (reqByItem[l.name] || 0) + l.quantity
-    const c = (itemCatMap[l.name] || '').toLowerCase()
-    if (c) reqByCat[c] = (reqByCat[c] || 0) + l.quantity
-  }
-
-  const shortfall: { name: string; remaining: number }[] = []
-  for (const [name, reqQty] of Object.entries(reqByItem)) {
-    const cat = (itemCatMap[name] || '').toLowerCase()
-    const itemRem = calcStockRemaining(itemCeiling(name), sold[name] || 0)
-    const catRem = calcStockRemaining(catCeiling(cat), soldByCat[cat] || 0)
-    const eff = calcEffectiveRemaining(itemRem, catRem)
-    // Reject if this item alone exceeds its effective remaining, OR its category's TOTAL
-    // requested exceeds the category remaining (shared-category overflow across basket lines).
-    const catOver = catRem != null && (reqByCat[cat] || 0) > catRem
-    if ((eff != null && reqQty > eff) || catOver) {
-      const cap = Math.min(eff ?? Infinity, catRem ?? Infinity)
-      shortfall.push({ name, remaining: Number.isFinite(cap) ? Math.max(0, cap) : 0 })
-    }
-  }
-  return shortfall.length ? shortfall : null
+  // Run the SHARED engine: items are the primary axis (sold + itemCeiling), CATEGORY is the secondary
+  // axis (key = the item's lowercased category, ceiling = catCeiling). The derivation (soldByCat /
+  // reqByCat) + the shortfall math now live ONCE in checkCeilingShortfall — behaviour is byte-identical.
+  return checkCeilingShortfall(
+    orderLines,
+    sold,
+    itemCeiling,
+    { keyOf: (name) => (itemCatMap[name] || '').toLowerCase(), ceiling: catCeiling },
+  )
 }

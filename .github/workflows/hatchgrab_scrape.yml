@@ -1,8 +1,17 @@
-name: Daily Food Truck Scrape
+name: HatchGrab Truck Schedule Scrape
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    # FIXED daily slots PER TRUCK TIMEZONE: 08:00 / 14:00 / 20:00 in each truck's OWN local time.
+    # GitHub cron is UTC-only + DST-unaware, so we fire at every UTC hour that could be one of those local
+    # slots for the timezones in use, and run-scraper.js's isScrapeSlotNow() lets only the truck whose
+    # LOCAL hour is 08/14/20 actually scrape (DST handled via Intl, no UTC drift). The hours below cover
+    # the UK year-round: BST(UTC+1) → 07/13/19 UTC = 08/14/20 local; GMT(UTC+0) → 08/14/20 UTC = local.
+    # → adding a truck in a NEW timezone? Add that zone's local-08/14/20 UTC hours here; the per-truck gate
+    #   does the rest. (Or switch to '0 * * * *' hourly for zero cron maintenance, at higher CI cost.)
+    # The per-truck dueByFrequency gate (5h interval for 3×/day) then caps how many of the 3 slots each
+    # truck takes: 3×/day → all three, 2×/day → 08+20, 1×/day → one.
+    - cron: '0 7,8,13,14,19,20 * * *'
   workflow_dispatch:
     inputs:
       scrape_truck_id:
@@ -42,9 +51,8 @@ jobs:
 
     - name: Run Scraper
       env:
-        # Pass A only — the global Sheet discovery scrape stays exactly 1×/day (cron above).
-        # Pass B (HatchGrab trucks) runs on its own every-4h cron in hatchgrab_scrape.yml.
-        SCRAPE_MODE: discovery
+        # Pass B only — HatchGrab-linked trucks. Pass A (global discovery) stays on daily_scrape.yml.
+        SCRAPE_MODE: hatchgrab
         SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}

@@ -107,6 +107,27 @@ export function sortGroupsRequiredFirst<T extends ModRuleGroup>(groups: T[]): T[
   return [...groups].sort((a, b) => (minRequiredForGroup(b) > 0 ? 1 : 0) - (minRequiredForGroup(a) > 0 ? 1 : 0))
 }
 
+/** Canonical group-rule label shown across the manage modal AND both order screens (ONE source so they
+ *  never drift). Required-ness via minRequiredForGroup; the cap from max_choices (1 / 2–10 / 99=unlimited)
+ *  — ONE determination, only the cap PHRASING branches by audience:
+ *   - 'customer' (order screens): "Choose one" / "Choose up to N" — instructs the diner.
+ *   - 'operator' (manage modal): "Customer chooses one" / "Customer can choose up to N" — describes what
+ *     the customer can do (so an operator doesn't misread "Choose up to N" as their own limit).
+ *  The base ("Required"/"Optional") is audience-agnostic. Examples: "Required · Choose up to 2"
+ *  (customer) vs "Required · Customer can choose up to 2" (operator); "Optional" in both. The amber
+ *  unmet cue on the order screens is separate styling, not part of this label. */
+export function groupRuleLabel(group: ModRuleGroup, audience: 'customer' | 'operator' = 'customer'): string {
+  const required = minRequiredForGroup(group) > 0
+  const max = group.max_choices ?? 99
+  const cap = max === 1
+    ? (audience === 'operator' ? 'Customer chooses one' : 'Choose one')
+    : (max > 1 && max < 99)
+      ? (audience === 'operator' ? `Customer can choose up to ${max}` : `Choose up to ${max}`)
+      : null
+  const base = required ? 'Required' : 'Optional'
+  return cap ? `${base} · ${cap}` : base
+}
+
 /**
  * True if ANY REQUIRED group has ZERO selectable options (all manual-sold-out or stock-0). Such an
  * item is UNORDERABLE — there's a mandatory choice with nothing to pick — so callers mark it SOLD OUT

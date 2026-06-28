@@ -20,7 +20,7 @@ import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-u
 import { hasFeature } from '@/lib/features';
 import { formatTime, localTodayIso, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils';
 import { isModifierAvailable } from '@/lib/modifier-utils';
-import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst } from '@/lib/modifier-rules';
+import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -44,7 +44,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
 interface ModifierGroup { id: string; name: string; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean; allergensVerified?: boolean }
 interface EventData {
   id: string            // truck_events.id — the event the customer is ordering against
   date: string          // dd/mm/yyyy
@@ -1533,6 +1533,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           </div>
         )}
 
+        {/* SAFETY: allergen data not verified for this menu → a clear "ask staff" notice (not a block —
+            customers can still order, just informed). Unverified per-item allergen chips are already hidden
+            server-side (menu API), so nothing unreliable is shown alongside this. */}
+        {truck?.allergensVerified === false && (
+          <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl px-4 py-3 mb-4 flex items-start gap-3">
+            <span className="text-amber-500 text-lg shrink-0 leading-none mt-0.5">⚠️</span>
+            <p className="text-sm text-amber-900 font-medium">
+              Allergen information has not been verified for this menu. If you have a food allergy or intolerance, please speak to the staff before ordering.
+            </p>
+          </div>
+        )}
+
         {/* MENU — grouped by category */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-4 mb-4">
           <div className="flex items-center justify-between mb-3">
@@ -2178,20 +2190,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
               <div className="space-y-4">
                 {sortGroupsRequiredFirst(itemModal.modGroups).map(group => {
-                  const isSingle = (group.max_choices ?? 99) === 1
-                  const isRequired = minRequiredForGroup(group) > 0
                   const isUnmet = modalUnmetGroupIds.includes(group.id)
-                  // Rule hint beside the group name. Required+unmet turns the hint amber so the
-                  // customer sees WHICH group still needs an answer when Add is blocked.
-                  const ruleHint = isRequired
-                    ? `Required${isSingle ? ' · choose one' : ''}`
-                    : (isSingle ? 'Choose one' : null)
+                  // Rule label beside the group name — shared groupRuleLabel (ONE source across the manage
+                  // modal + both order screens): "Required · Choose up to N" / "Required" / "Optional · …" /
+                  // "Optional". Required+unmet turns it AMBER (the sole unmet cue); the cap wording is
+                  // unchanged from before.
+                  const ruleHint = groupRuleLabel(group)
                   return (
                     <div key={group.id}>
                       <p className="text-xs font-black uppercase tracking-wider mb-2">
                         <span className="text-slate-500">{group.name}</span>
                         {ruleHint && (
-                          <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}{isUnmet ? ' (required)' : ''}</span>
+                          <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}</span>
                         )}
                       </p>
                       <div className="flex flex-wrap gap-2">

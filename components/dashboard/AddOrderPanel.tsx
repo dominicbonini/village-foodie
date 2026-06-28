@@ -14,7 +14,7 @@ import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
-import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst } from '@/lib/modifier-rules'
+import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
 import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
@@ -1300,18 +1300,16 @@ setItemModal({ item, modGroups, editCartKey })
               </div>
               <div className="space-y-4">
                 {sortGroupsRequiredFirst(itemModal.modGroups).map(group => {
-                  const isSingle = (group.max_choices ?? 99) === 1
-                  const isRequired = minRequiredForGroup(group) > 0
                   const isUnmet = modalUnmetGroupIds.includes(group.id)
-                  const ruleHint = isRequired
-                    ? `Required${isSingle ? ' · choose one' : ''}`
-                    : (isSingle ? 'Choose one' : null)
+                  // Shared groupRuleLabel (ONE source across manage modal + both order screens). Amber
+                  // colour is the sole unmet cue (mirrors the customer order page).
+                  const ruleHint = groupRuleLabel(group)
                   return (
                     <div key={group.id}>
                       <p className="text-xs font-black uppercase tracking-wider mb-2">
                         <span className="text-slate-500">{group.name}</span>
                         {ruleHint && (
-                          <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}{isUnmet ? ' (required)' : ''}</span>
+                          <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}</span>
                         )}
                       </p>
                       <div className="flex flex-wrap gap-2">

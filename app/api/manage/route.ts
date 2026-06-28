@@ -9,7 +9,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
-import { getSoleActiveVanId } from '@/lib/van-utils'
+import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { canAccess } from '@/lib/features'
 
 const supabase = createClient(
@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
     supabase.from('category_modifier_groups').select('*'),
     // Stage B: per-item links so the dish-picker (Part 2) + item editor reverse-view (Part 4) can
     // render current state. Scoped to THIS truck's groups (cross-truck links can't exist anyway).
-    supabase.from('item_modifier_groups').select('menu_item_id, group_id').in('group_id',
+    supabase.from('item_modifier_groups').select('menu_item_id, group_id, excluded_option_ids').in('group_id',
       (await supabase.from('modifier_groups').select('id').eq('truck_id', truck.id)).data?.map(g => g.id) || []
     ),
     supabase.from('bundles_db').select('*').eq('truck_id', truck.id).order('sort_order'),
@@ -222,7 +222,7 @@ export async function POST(req: NextRequest) {
     'update_truck', 'update_settings', 'add_van', 'rename_van', 'delete_van',
     'invite_team_member', 'remove_team_member', 'upsert_bundle', 'delete_bundle',
     'upsert_modifier_group', 'delete_modifier_group', 'upsert_modifier_option', 'delete_modifier_option',
-    'set_item_modifier_group', 'set_item_modifier_groups_bulk', 'set_item_preorder_bulk',
+    'set_item_modifier_group', 'set_item_modifier_groups_bulk', 'set_item_group_excluded_options', 'set_item_preorder_bulk',
     'upsert_upsell_rule', 'delete_upsell_rule',
   ]
   if (staffBlockedActions.includes(action) && requestingUserRole === 'staff') {
@@ -354,7 +354,7 @@ export async function POST(req: NextRequest) {
 
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info, spiciness, auto_accept, preorder_enabled } = body
+    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info, spiciness, auto_accept, preorder_enabled, allergens_verified } = body
     // Managed sub-category reference (nullable; null = ungrouped). The legacy text `subcategory`
     // column is the rollback source — no longer WRITTEN here (we write only subcategory_id now).
     const subcatId = (typeof subcategory_id === 'string' && subcategory_id) ? subcategory_id : null
@@ -363,9 +363,12 @@ export async function POST(req: NextRequest) {
     // — never written per-item (single-source). The per-item type/value/action columns remain in the
     // DB but inert (never written/read). enabled `?? null` only when present (partial saves untouched).
     const preorderCols = preorder_enabled === undefined ? {} : { preorder_enabled: preorder_enabled ?? null }
+    // §69: only write allergens_verified when present (partial saves untouched). Editing allergens in
+    // the modal passes true → clears the "allergens not set" flag.
+    const verifiedCol = allergens_verified === undefined ? {} : { allergens_verified: allergens_verified === true }
     if (id) {
       const { data, error } = await supabase.from('menu_items_db')
-        .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols, updated_at: new Date().toISOString() })
+        .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols, ...verifiedCol, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -373,7 +376,7 @@ export async function POST(req: NextRequest) {
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
-        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory_id: subcatId, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], dietary_info: dietary_info ?? [], spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols })
+        .insert({ truck_id: truck.id, name, description, price, category_id, subcategory_id: subcatId, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], allergens_verified: allergens_verified ?? true, dietary_info: dietary_info ?? [], spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       return NextResponse.json({ item: data })
@@ -508,6 +511,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true })
   }
 
+  // ── Per-DISH option exclusions (model C, phase 1 persistence) ──────────────
+  // Sets item_modifier_groups.excluded_option_ids for ONE (menu_item_id, group_id) link — the options
+  // this dish does NOT offer from the shared group. Default '{}' = all offered. Token-scoped like the
+  // link writes above: group AND item must belong to THIS truck, and the ids are filtered to options
+  // that actually belong to the group (drops spoofed/stale ids → clean data). The phase-2 matrix UI
+  // calls this. Upsert so it also creates the link if missing (excluding implies the dish has the group).
+  if (action === 'set_item_group_excluded_options') {
+    const { group_id, menu_item_id, excluded_option_ids } = body as { group_id: string; menu_item_id: string; excluded_option_ids: string[] }
+    const { data: grp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
+    if (!grp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+    const { data: itm } = await supabase.from('menu_items_db').select('id').eq('id', menu_item_id).eq('truck_id', truck.id).maybeSingle()
+    if (!itm) return NextResponse.json({ error: 'Item not found for this truck' }, { status: 403 })
+    const { data: groupOpts } = await supabase.from('modifier_options').select('id').eq('group_id', group_id)
+    const validOptIds = new Set((groupOpts || []).map(o => o.id))
+    const cleaned = Array.from(new Set((excluded_option_ids || []).filter(id => validOptIds.has(id))))
+    const { error } = await supabase.from('item_modifier_groups').upsert({ menu_item_id, group_id, excluded_option_ids: cleaned }, { onConflict: 'menu_item_id,group_id' })
+    if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+    return NextResponse.json({ success: true })
+  }
+
   // PRE-ORDER (Stage 5): bulk-apply ONE pre-order config to several items (or clear, when clear=true
   // sets all 4 to null). Mirrors set_item_modifier_groups_bulk: truck-ownership filter on the ids,
   // then a single bulk UPDATE of the 4 menu_items_db columns. Writes only those 4 columns.
@@ -579,7 +602,10 @@ export async function POST(req: NextRequest) {
       // truck has exactly one active van, assign it so capacity etc. can resolve.
       // Multi-van trucks leave van selection to the operator (van_id stays null).
       const resolvedVanId = van_id ?? await getSoleActiveVanId(supabase, targetTruckId)
-      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true }).select().single()
+      // Seed order_ready_override from the van's current default so the new event starts matching the
+      // Settings master switch (master-switch model).
+      const seededOrderReady = await getVanOrderReadyDefault(supabase, targetTruckId, resolvedVanId)
+      const { data, error } = await supabase.from('truck_events').insert({ truck_id: targetTruckId, venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: resolvedVanId ?? null, order_ready_override: seededOrderReady, source: 'manual', status: eventStatus, confirmed_at: eventStatus === 'confirmed' ? now : null, auto_open: truck.default_auto_open ?? true, auto_close: truck.default_auto_close ?? true }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
 
@@ -722,7 +748,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'truck_order_email_enabled']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -828,7 +854,7 @@ export async function POST(req: NextRequest) {
   if (action === 'get_vans') {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, display_layout, split_screen, kitchen_capacity, capacity_window_mins')
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, order_ready_enabled, display_layout, split_screen, kitchen_capacity, capacity_window_mins')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
@@ -837,10 +863,11 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, show_cooking_step, kitchen_capacity, capacity_window_mins } = body
+    const { vanId, autoPauseOnOffline, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins } = body
     const updates: Record<string, unknown> = {}
     if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
     if (show_cooking_step !== undefined)  updates.show_cooking_step = show_cooking_step
+    if (order_ready_enabled !== undefined) updates.order_ready_enabled = order_ready_enabled
     if (kitchen_capacity !== undefined)   updates.kitchen_capacity = kitchen_capacity
     if (capacity_window_mins !== undefined) updates.capacity_window_mins = capacity_window_mins
     await supabase
@@ -848,6 +875,16 @@ export async function POST(req: NextRequest) {
       .update(updates)
       .eq('id', vanId)
       .eq('truck_id', truck.id)
+    // MASTER SWITCH (order-ready): flipping the Settings default bulk-writes order_ready_override onto
+    // EVERY event for this truck — including events previously toggled on the dashboard (they reset to the
+    // new value, by design). Scope = all of the truck's events (simplest; single-van trucks are the norm).
+    // van.order_ready_enabled above stays the seed for NEW events.
+    if (order_ready_enabled !== undefined) {
+      await supabase
+        .from('truck_events')
+        .update({ order_ready_override: order_ready_enabled })
+        .eq('truck_id', truck.id)
+    }
     return NextResponse.json({ ok: true })
   }
 
@@ -1106,11 +1143,14 @@ export async function POST(req: NextRequest) {
     let query = supabase
       .from('orders')
       // customer_email used client-side to infer order type: null = operator-placed, set = customer online
-      // No source/is_manual column exists yet — customer_email IS NULL is the best available signal
-      .select('id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date')
+      // No source/is_manual column exists yet — customer_email IS NULL is the best available signal.
+      // order_key (uuid) is the STABLE React key for the report list — `id` is the per-event DISPLAY
+      // number and is NOT unique across events (a multi-event date would collide keys).
+      .select('order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date')
       .eq('truck_id', truck.id)
-      // No status filter — reports include all orders (confirmed, collected, cancelled, rejected)
-      // Revenue totals exclude cancelled/rejected client-side
+      // Reports exclude cancelled/rejected orders (confirmed/collected/etc. only). Revenue already excludes
+      // them client-side (:7008) — this server filter keeps the list + the revenue calc consistent.
+      .not('status', 'in', '(cancelled,rejected)')
 
     // Resolve event date filter and build eventsMap for venue name lookup
     let eventsQuery = supabase
@@ -1126,7 +1166,11 @@ export async function POST(req: NextRequest) {
         .eq('truck_id', truck.id)
         .single()
       if (ev?.event_date) {
-        query = query.eq('event_date', ev.event_date)
+        // Scope ORDERS by event_id (set by place_order_atomic), NOT event_date — so a single-event report
+        // shows ONLY that event's orders. event_date would pull every same-date event's orders → duplicate
+        // display numbers (the key=1-7 crash) + wrong report totals on multi-event dates. The eventsQuery
+        // (venue lookup) stays by date — it's only used to label rows by event_date.
+        query = query.eq('event_id', eventId)
         eventsQuery = eventsQuery.eq('event_date', ev.event_date)
       }
     } else if (dateFrom && dateTo) {
@@ -1166,6 +1210,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, report: whatsappStats ? { whatsappStats } : null })
     }
 
+    // Revenue-by-category: order items jsonb carries NO category, so join the truck's menu here by item
+    // NAME → category NAME (itemCategories), plus the menu's category order (categoryOrder) for display.
+    const [{ data: catRows }, { data: menuRows }] = await Promise.all([
+      supabase.from('menu_categories').select('id, name, sort_order').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
+      supabase.from('menu_items_db').select('name, category_id').eq('truck_id', truck.id),
+    ])
+    const catById: Record<string, string> = {}
+    for (const c of (catRows || [])) catById[c.id] = c.name
+    const itemCategories: Record<string, string> = {}
+    for (const mi of (menuRows || [])) {
+      if (mi.name && mi.category_id && catById[mi.category_id]) itemCategories[mi.name] = catById[mi.category_id]
+    }
+    const categoryOrder = (catRows || []).map((c: any) => c.name)
+
     const totalRevenue = orders.reduce((s: number, o: any) => s + (o.total || 0), 0)
     const dealsRedeemed = orders.filter((o: any) => (o.discount_amt || 0) > 0).length
     const dealSavings = orders.reduce((s: number, o: any) => s + (o.discount_amt || 0), 0)
@@ -1199,6 +1257,8 @@ export async function POST(req: NextRequest) {
         whatsappStats,
         orders,
         eventsMap,
+        itemCategories,
+        categoryOrder,
       },
     })
   }
@@ -1236,6 +1296,9 @@ export async function POST(req: NextRequest) {
       .select('id, venue_name, event_date, status')
       .eq('truck_id', truck.id)
       .gte('event_date', thirtyDaysAgo)
+      // Report on events that actually happened — confirmed/open/closed only. Excludes 'cancelled'
+      // (rejected events, per the reject flow) and 'unconfirmed' (scraped-but-unapproved) from the picker.
+      .in('status', ['confirmed', 'open', 'closed'])
       .order('event_date', { ascending: false })
       .limit(20)
     return NextResponse.json({ ok: true, events: events || [] })

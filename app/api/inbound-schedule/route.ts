@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { sendConfirmationEmail } from '@/lib/email'
 import { normalizeVenue, venuesFuzzyMatch } from '@/lib/venue-signature'
 import { findVenue, normName, type VenueRow } from '@/lib/venue-matcher'
+import { getVanOrderReadyDefault } from '@/lib/van-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -109,6 +110,9 @@ export async function POST(req: NextRequest) {
 
   let bridgedCount = 0
   const notifiedTruckIds = new Set<string>()
+  // Per-truck cache of the order-ready default to seed onto each new scraped event (master-switch model —
+  // new events start matching the Settings default). One van lookup per truck, not per row.
+  const orderReadyDefaultCache = new Map<string, boolean | null>()
 
   for (const row of rows) {
     if (!row.truck_name) continue
@@ -171,8 +175,15 @@ export async function POST(req: NextRequest) {
     const longitude: number | null = matchedVenue?.longitude ?? null
     const venuePostcode: string | null = matchedVenue?.postcode ?? null
 
+    // Seed order_ready_override from the truck's order-ready default (cached per truck).
+    if (!orderReadyDefaultCache.has(truckId)) {
+      orderReadyDefaultCache.set(truckId, await getVanOrderReadyDefault(supabase, truckId))
+    }
+    const seededOrderReady = orderReadyDefaultCache.get(truckId)!
+
     const { data: insertedEvent, error: insertErr } = await supabase.from('truck_events').insert({
       truck_id:   truckId,
+      order_ready_override: seededOrderReady,
       venue_name: row.venue_name || null,
       town:       row.village || null,
       // Scraped postcode first; fall back to the matched venue's postcode; null if neither.

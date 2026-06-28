@@ -100,15 +100,28 @@ Rules:
 MODIFIER GROUPS (options/variants) — each item MAY carry an optional "modifierGroups" array:
 - VARIANT COLLAPSING (be EAGER): when the SAME base dish is listed multiple times differing ONLY by
   one varying axis (protein/size/etc.), COLLAPSE them into ONE item using the base name, plus a
-  modifierGroup of the varying options. Example: "Pad Thai Chicken £9 / Pad Thai Beef £9 / Pad Thai
-  Prawn £10.50" → ONE item "Pad Thai" (price 9, the CHEAPEST variant) + a group with options
-  Chicken £0, Beef £0, Prawn £1.50 (each option price is the DELTA above the base price). Mark these
-  groups "_inferredFromVariants": true.
-  - Group whenever the base dish matches and only a variant differs. Over-grouping is cheap (the
-    operator can split it later); under-grouping (missing a real variant set) is worse — so lean in.
-  - Do NOT merge genuinely DIFFERENT dishes that merely share a word: "Margherita Pizza" vs
-    "Pepperoni Pizza" are different dishes (different toppings = different dish), NOT a variant axis.
-    The signal for collapsing is: same base dish, ONE axis varying, similar price.
+  modifierGroup of the varying options. Each option price is the DELTA above the base (cheapest)
+  price. Mark these groups "_inferredFromVariants": true.
+  - DETERMINISTIC RULE (always apply): if two or more items share an IDENTICAL base-name prefix and
+    the ONLY difference is a single trailing/embedded PROTEIN or SIZE token, ALWAYS collapse them into
+    ONE item with a choice group — REGARDLESS of whether the prices are equal or differ.
+    • Protein tokens: Beef, Chicken, Prawn, Prawns, Duck, Veg, Vegetable, Vegetarian, Tofu, Lamb,
+      Pork, Fish, Salmon, Paneer, Halloumi, Mushroom, King Prawn.
+    • Size tokens: Small, Regular, Medium, Large, Sm, Reg, Lg.
+  - ANTI-OVER-MERGE GUARD (sharpened): do NOT collapse items whose differing token is NOT a protein
+    or size. If the difference is a dish-TYPE word — sauce/curry/flavour/topping — they are DIFFERENT
+    dishes, keep them SEPARATE. E.g. "Green Curry" vs "Red Curry" differ by curry-TYPE (not protein)
+    → TWO dishes. "Margherita Pizza" vs "Pepperoni Pizza" differ by topping → TWO dishes.
+  - WORKED EXAMPLES:
+    • "Tom Yum Prawn £9.50 / Tom Yum Chicken £9.50" → ONE item "Tom Yum" + protein group
+      [Prawn £0, Chicken £0]. (Equal price still collapses — protein token differs.)
+    • "Pad Thai Beef £9 / Pad Thai Prawn £10.50 / Pad Thai Chicken £9" → ONE item "Pad Thai" + protein
+      group [Beef £0, Chicken £0, Prawn £1.50].
+    • "Green Curry Chicken / Red Curry Chicken" → TWO dishes (the differing token Green/Red is a
+      curry-TYPE, not a protein — keep separate).
+  - "similar price" (when used as a soft signal elsewhere) means within £1; but per the deterministic
+    rule above, price equality is NOT required to collapse a protein/size variant. Over-grouping a
+    protein/size axis is cheap (the operator can split later); under-grouping is worse — so lean in.
 - EXPLICIT GROUPS: when the menu STATES a choice ("choice of protein: chicken/beef/prawn",
   "add extras (£1.50): cheese, bacon"), extract it as a modifierGroup directly. These are NOT
   inferred — set "_inferredFromVariants": false.

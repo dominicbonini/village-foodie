@@ -19,6 +19,25 @@ export const KITCHEN_CAPACITY_WARNING =
   "your menu categories (Menu & Stock). Without them, capacity can't tell how long " +
   "items take to cook."
 
+/**
+ * Canonical "How kitchen setup works" explainer — the per-category prep/batch walkthrough shown on the
+ * import wizard's Kitchen-setup step (and reusable by the Phase-2 shared <KitchenCapacityEdit>). ONE
+ * source so the wording never drifts. (Distinct from KITCHEN_CAPACITY_* above, which describe the
+ * event-level capacity CEILING — this describes setting up a single category's prep time + batch.)
+ */
+export const KITCHEN_SETUP_EXPLAINER = {
+  title: 'How kitchen setup works',
+  example:
+    'If your kitchen can cook 10 pizzas every 10 minutes, set Pizza to 10 min prep and 10 items at a ' +
+    'time. Once 10 pizza items are in progress, the next customer is automatically told their order ' +
+    'takes 20 minutes.',
+  instant:
+    'Items like drinks or dips that are ready instantly can be left as "No wait time" and "No limit".',
+  window:
+    'You can also set a maximum orders-per-window limit when creating an event — this acts as a safety ' +
+    'cap across all categories combined.',
+} as const
+
 type CatPrep = { prep_secs?: number | null; batch_size?: number | null }
 
 /**

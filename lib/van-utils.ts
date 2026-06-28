@@ -20,3 +20,25 @@ export async function getSoleActiveVanId(
   if (!data || data.length !== 1) return null
   return data[0].id as string
 }
+
+/**
+ * The van's current order-ready default (truck_vans.order_ready_enabled), used to SEED a new event's
+ * order_ready_override at creation (master-switch model — new events start matching the Settings
+ * default). Resolves the given van, else the truck's sole active van. Returns null if no van resolves
+ * (multi-van, none given) → the event keeps order_ready_override = null and effectiveOrderReady's ??
+ * fallback covers it.
+ */
+export async function getVanOrderReadyDefault(
+  supabase: SupabaseClient,
+  truckId: string,
+  vanId?: string | null
+): Promise<boolean | null> {
+  const id = vanId ?? await getSoleActiveVanId(supabase, truckId)
+  if (!id) return null
+  const { data } = await supabase
+    .from('truck_vans')
+    .select('order_ready_enabled')
+    .eq('id', id)
+    .single()
+  return data?.order_ready_enabled ?? null
+}

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendCancellationEmail } from '@/lib/email'
-import { releaseOptionStock } from '@/lib/option-stock'
 import {
   removeOrderFromProductionSlot,
   buildItemCatMap,
@@ -103,9 +102,8 @@ export async function POST(req: NextRequest) {
       } catch (err) {
         console.error('[customer-cancel] slot removal failed (non-blocking):', err)
       }
-      // D2: re-credit the option shared pool. The status guard above (only pending/confirmed can
-      // cancel) prevents double-reversal — a cancelled order can't reach here again.
-      await releaseOptionStock(supabase, order.truck_id, order.items || [], order.deals || [])
+      // Ceiling model (step 3): no option-stock reversal — cancelling removes this order from the live
+      // ceiling tally automatically (was: releaseOptionStock, the removed decrement pool).
     }
 
     // Send cancellation email to customer
