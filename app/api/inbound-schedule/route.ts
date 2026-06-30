@@ -10,6 +10,19 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+// CALL-SITE venue-name dedup: the byte-mirrored primitive `venuesFuzzyMatch` (lib/venue-signature.ts, kept
+// IDENTICAL to run-scraper.js's isFuzzyMatch — anti-drift invariant) PLUS containment, composed HERE not in
+// the primitive. Mirrors the existing run-scraper.js pattern (:771/827) `isFuzzyMatch(a,b) || a.includes(b)
+// || b.includes(a)`, but ADDS a MIN length-gate the scraper's bare .includes lacks — so a short generic
+// token ("bell") can't be a substring of an unrelated venue (§25 substring caution). Used ONLY by the dedup
+// FALLBACK (when venue_id can't be the key); NOT by reject-memory (that stays strict Lev-1 — a suppression
+// false-positive silently loses a real event, so it must not loosen).
+const DEDUP_CONTAINMENT_MIN = 5
+function venueNameDedupMatch(a: string, b: string): boolean {
+  if (venuesFuzzyMatch(a, b)) return true
+  return a.length >= DEDUP_CONTAINMENT_MIN && b.length >= DEDUP_CONTAINMENT_MIN && (a.includes(b) || b.includes(a))
+}
+
 const INBOUND_SECRET = process.env.INBOUND_SCHEDULE_SECRET
 
 function toISODate(ddmmyyyy: string): string | null {
@@ -137,6 +150,10 @@ export async function POST(req: NextRequest) {
     if (truckPref?.scraper_preference === 'manual') continue
 
     const incomingVenue = normalizeVenue(row.venue_name || '')
+    // Resolve the incoming venue ONCE per row (precompute map) — reused by the dedup PRIMARY key below AND
+    // the insert stamps further down (never resolved twice; Section 25 single-resolution rule).
+    const venueMatch = venueMatchByRow.get(row) ?? { venue: null, confidence: 'none' as const }
+    const incomingVenueId = venueMatch.venue?.id ?? null
 
     // Reject-memory (Stage 3): skip events the operator previously rejected. Checked FIRST and
     // independent of any truck_events row, so a rejected-then-deleted event stays gone. Same
@@ -151,25 +168,33 @@ export async function POST(req: NextRequest) {
     )
     if (isSuppressed) continue
 
-    // Dedup against the IMMUTABLE scraped_signature (Stage 2): fetch this truck's events on this
-    // date (date is exact + not editable, so it stays the scraped original), then fuzzy-match the
-    // incoming venue against each row's scraped_signature. This survives edits — an operator
-    // renaming the venue ("Fardons"→"Farndons") doesn't change scraped_signature, so a re-scrape of
-    // the original still matches and isn't re-surfaced. Falls back to venue_name for legacy rows
-    // with no signature yet (backward-compatible — same as the old venue_name dedup).
+    // Dedup (Stage 2): fetch this truck's events on this date (date is exact-equality — so the same venue
+    // on a DIFFERENT date is never a dupe; recurring events stay distinct by construction), then decide
+    // "already exists" by TWO complementary rules:
+    //   PRIMARY  — (truck_id, event_date, venue_id) when BOTH resolve a venue_id. This survives the
+    //              operator editing venue_name post-approval (the name changes, the venue_id doesn't), so a
+    //              re-scrape of an approved-then-renamed event is still caught (Section 27 backlog :2675).
+    //   FALLBACK — name match when either venue_id is null (e.g. venue not in the directory, like "Belchamp
+    //              Community House"): venuesFuzzyMatch OR MIN-gated containment (venueNameDedupMatch), which
+    //              recognises Gemini rephrasing the same venue ("Community House" vs "Belchamp Community
+    //              House") while keeping different-prefix venues distinct (stambournevillagehall vs
+    //              toppesfieldvillagehall — neither contains the other).
+    // Name fallback compares against the IMMUTABLE scraped_signature (survives operator renames; falls back
+    // to venue_name for legacy rows with no signature).
     const { data: sameDay } = await supabase
       .from('truck_events')
-      .select('id, venue_name, scraped_signature')
+      .select('id, venue_name, scraped_signature, venue_id')
       .eq('truck_id', truckId)
       .eq('event_date', row.event_date!)
-    const isDup = (sameDay || []).some(r =>
-      venuesFuzzyMatch(normalizeVenue(r.scraped_signature || r.venue_name || ''), incomingVenue)
-    )
+    const isDup = (sameDay || []).some(r => {
+      if (incomingVenueId && r.venue_id && r.venue_id === incomingVenueId) return true   // PRIMARY: venue_id
+      return venueNameDedupMatch(normalizeVenue(r.scraped_signature || r.venue_name || ''), incomingVenue)
+    })
     if (isDup) continue
 
     // Reuse the single venue match resolved once per row above (coords + postcode + the anchor/
     // confidence stamps all come from the same VenueMatch — never resolved twice).
-    const match = venueMatchByRow.get(row) ?? { venue: null, confidence: 'none' as const }
+    const match = venueMatch
     const matchedVenue = match.venue
     const latitude: number | null = matchedVenue?.latitude ?? null
     const longitude: number | null = matchedVenue?.longitude ?? null

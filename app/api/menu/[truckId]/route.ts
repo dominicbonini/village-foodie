@@ -8,7 +8,7 @@ import { getLiveItemCounts } from '@/lib/stock-availability'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
-import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel } from '@/lib/preorder'
+import { isPreorderDeadlinePassed, preorderDeadlineClock, formatPreorderLabel, isPreorderOpenYet, formatPreorderOpenLabel } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -102,7 +102,7 @@ export async function GET(
 
     supabase
       .from('modifier_groups')
-      .select('id, name, is_required, min_choices, max_choices')
+      .select('id, name, is_required, min_choices, max_choices, hide_name')
       .eq('truck_id', truck.id),
 
     supabase
@@ -227,11 +227,15 @@ export async function GET(
   if (effectiveEventId) {
     const { data: ev } = await supabase
       .from('truck_events')
-      .select('van_id, paused_until, online_paused_until, offline_protection_override, extra_wait_mins, extra_wait_started_at, start_time, event_date')
+      .select('van_id, paused_until, online_paused_until, offline_protection_override, extra_wait_mins, extra_wait_started_at, start_time, end_time, event_date')
       .eq('id', effectiveEventId)
       .single()
 
     if (ev) {
+      // ORDERING GATE (durable, catches ANY null-time event regardless of how it went live): the slot
+      // engine needs both times — a null-time event is NOT orderable. Block ordering gracefully (the order
+      // page renders an intentional "not available yet" state, never the ordering UI / never a crash).
+      if (!ev.start_time || !ev.end_time) orderingAvailable = false
       eventExtraWaitMins = ev.extra_wait_mins ?? 0
       eventExtraWaitStartedAt = ev.extra_wait_started_at ?? null
       if (ev.start_time) {
@@ -302,7 +306,7 @@ export async function GET(
 
   // Build a resolved group object (with its options) for a given group id. Shared by the per-item
   // map below. Returns null if the group isn't found.
-  type ResolvedGroup = { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number; options: { id: string; name: string; price_adjustment: number; allergens: string[]; dietary: string[]; available: boolean; stock_count: number | null }[] }
+  type ResolvedGroup = { id: string; name: string; hide_name: boolean; is_required: boolean; min_choices: number; max_choices: number; options: { id: string; name: string; price_adjustment: number; allergens: string[]; dietary: string[]; available: boolean; stock_count: number | null }[] }
   const resolveGroup = (groupId: string, excludedOptionIds?: string[] | null): ResolvedGroup | null => {
     const group = (modifierGroups || []).find(g => g.id === groupId)
     if (!group) return null
@@ -340,6 +344,10 @@ export async function GET(
     return {
       id: group.id,
       name: group.name,
+      // hide_name: AI-import-inferred custom-extra groups carry an internal "Category - Name N" name the
+      // customer must NOT see — the order page shows "Choose an option" instead. Operator screens still
+      // read `name`. Defaults false so manual / AI-extras groups keep showing their meaningful name.
+      hide_name: (group as any).hide_name === true,
       // Selection rules — consumed by the customer modal (A1) + operator modal (A2). Defaults
       // mirror the column defaults (not required, multi-select) so an un-set group behaves as today.
       is_required: (group as any).is_required ?? false,
@@ -396,6 +404,11 @@ export async function GET(
   }
   // The post-cutoff force-pending string is config-independent (the helper ignores mins/date for it).
   const preorderClosedLabel = formatPreorderLabel('closed_pending', 0, '', '')
+  // OPEN-WINDOW (V8.3): "Pre-orders open Ddd D Mon" — the truck-level open rule, shared like the deadline.
+  // null for 'on_confirm'/unset (open as soon as confirmed → no future-open label).
+  const preorderOpenLabel = preorderActive
+    ? formatPreorderOpenLabel((truck as any).preorder_open_rule, preorderEventDate as string)
+    : null
 
   // Build menu response
   const menu = {
@@ -413,7 +426,18 @@ export async function GET(
       subcategories: subcatMap[c.id] || [],
     })),
     
-    items: (items || []).map(i => {
+    // SAFETY (per-dish visibility gate): in PER-DISH display mode, the CUSTOMER menu HIDES any item whose
+    // allergens aren't confirmed (allergens_verified === false) — a dish shown without confirmed allergens
+    // reads as "allergen-free" (under-warn trap). Only explicit false hides; null/legacy + true stay visible.
+    // Scoped to the CUSTOMER context (!isDashboard) — the OPERATOR (dashboard=1) still sees + can order
+    // against unconfirmed items. CARD mode is unaffected (the card is the display; per-item data isn't shown).
+    items: (items || [])
+      .filter(i => {
+        const perDish = ((truck.allergen_display_mode ?? null) as string) !== 'card'
+        if (isDashboard || !perDish) return true                 // operator OR card mode → show everything
+        return (i as any).allergens_verified !== false           // customer + per-dish → hide explicit-unconfirmed
+      })
+      .map(i => {
       const override = eventItemOverride[i.name]
       const liveOrdered = liveItemCounts[i.name] || 0
       // Per-event override stock_count takes precedence; fall back to live menu_items_db.default_stock.
@@ -441,9 +465,18 @@ export async function GET(
       // 'before' = deadline not passed; 'closed_pending' = passed & force_pending (still orderable,
       // kitchen approves). passed & sold_out ⇒ null (the item is available:false/hidden, no label).
       // Non-enabled item ⇒ pre.isPreorder false ⇒ both null. The strings come from the global compute.
-      let preorderState: 'before' | 'closed_pending' | null = null
+      // OPEN-WINDOW gate (V8.3): a pre-order-tagged item on an active event is NOT orderable before its open
+      // moment. Gated like the deadline (master toggle + resolved event = preorderActive; per-item tag).
+      // Independent of the deadline config (an item can have an open rule without a deadline set).
+      const itemIsPreorder = preorderActive && (i as any).preorder_enabled === true
+      const preorderNotOpenYet = itemIsPreorder
+        && !isPreorderOpenYet((truck as any).preorder_open_rule, preorderEventDate as string, preorderNowDate)
+      let preorderState: 'before' | 'closed_pending' | 'not_open_yet' | null = null
       let preorderLabel: string | null = null
-      if (pre.isPreorder) {
+      if (preorderNotOpenYet) {
+        // Before open takes precedence over the deadline (the window hasn't started yet).
+        preorderState = 'not_open_yet'; preorderLabel = preorderOpenLabel
+      } else if (pre.isPreorder) {
         if (!pre.passed) { preorderState = 'before'; preorderLabel = preorderBeforeLabel }
         else if (pre.pastAction === 'force_pending') { preorderState = 'closed_pending'; preorderLabel = preorderClosedLabel }
       }
@@ -456,6 +489,7 @@ export async function GET(
         // opens orderable). Keys only on required groups (validateModifierSelection skips the group).
         && !hasUnsatisfiableRequiredGroup(itemGroupMap[i.id] || [])
         && !preorderSoldOut          // ← pre-order past 'sold_out' deadline (read-time, plan-gated)
+        && !preorderNotOpenYet       // ← pre-order before its OPEN moment (V8.3) — not orderable yet
       return {
         name: i.name,
         description: i.description || '',
@@ -545,6 +579,10 @@ export async function GET(
       plan: (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max',
       allergen_info_url: truck.allergen_info_url ?? null,
       allergen_info_text: truck.allergen_info_text ?? null,
+      // Allergen display mode (Slice 4): 'per_dish' | 'card' | 'both' | null. null = unset/legacy →
+      // the customer page treats it as 'both' (show whatever exists) for backward compatibility.
+      allergen_display_mode: (truck.allergen_display_mode ?? null) as 'per_dish' | 'card' | 'both' | null,
+      preorder_open_rule: ((truck as any).preorder_open_rule ?? null) as string | null,   // V8.3 calendar "opens [date]"
       ordering_available: orderingAvailable,
       // Truck-level allergen-verification flag: false when ANY live menu item is unverified
       // (allergens_verified === false). Drives the customer "allergen info not verified — ask staff"

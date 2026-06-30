@@ -1,0 +1,15 @@
+-- Undo "Mark paid & done" must revert ONE stage, to the order's ACTUAL previous status.
+--
+-- BUG: undo_collected hardcoded status -> 'confirmed', so confirmed -> ready -> collected -> Undo
+-- skipped 'ready' and jumped two stages back to the Ready button. The collect path can start from
+-- either 'ready' (normal: confirmed -> Ready -> Mark paid & done) OR directly from confirmed/modified
+-- (when the Ready button is suppressed). The server already READS the prior status at collect time but
+-- discarded it — so we persist it and let undo revert to exactly that.
+--
+-- status_before_collected: the status the order held immediately before it was collected. Written by
+-- the 'collected' action; read by 'undo_collected' to revert. NULL on legacy rows (collected before
+-- this column) and on never-collected orders → undo falls back to 'confirmed' (the old behaviour).
+--
+-- ADDITIVE / safe-early: nullable, no default change; deployed code that doesn't read/write it is
+-- unaffected. Apply by hand anytime before/with deploy.
+ALTER TABLE orders ADD COLUMN status_before_collected text;

@@ -4,7 +4,8 @@
 import { useState, useEffect } from 'react'
 import type { Order, TruckData, Slot, TruckEvent } from './types'
 import { STATUS } from './types'
-import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle, resolveCollectionTime } from './helpers'
+import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle, resolveCollectionTime, getOrderCookSecs, cookAmberLeadMins } from './helpers'
+import type { CatConfig } from '@/lib/prep-utils'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -92,6 +93,7 @@ export function OrderCard({
   onEdit,
   categoryOrder,
   itemCategoryMap,
+  catConfigs,
   viewMode = 'solo',
   kdsMode = false,
   showCookingStep = false,
@@ -107,6 +109,10 @@ export function OrderCard({
   onEdit: (order: Order) => void
   categoryOrder?: string[]
   itemCategoryMap?: Record<string, string>
+  /** Per-category cook config (prep_secs/batch_size, keyed by lowercased category name)
+   *  — drives the PREP-AWARE green→amber threshold. Absent ⇒ the card falls back to the
+   *  old fixed 5-min amber lead (getCombinedUrgency's default). */
+  catConfigs?: Record<string, CatConfig>
   viewMode?: ViewMode
   kdsMode?: boolean
   /** Van "show cooking step" preference — when false the cook view skips the intermediate
@@ -141,19 +147,32 @@ export function OrderCard({
 
   const [slotOffset, setSlotOffset] = useState(computeOffset)
 
-  // KDS: tick every 30s so the countdown stays live; mobile solo doesn't need it
+  // Client-side clock tick (ALL view modes incl. the orders-screen 'solo'): bump the
+  // resolved "now" every 15s so the relative countdown ("in Xm") AND the prep-aware
+  // green→amber→red colour advance in real time as the wall clock passes — no interaction,
+  // no data refetch, no network. This lives INSIDE the card on purpose: it re-renders ONLY
+  // this card, so the parent list / sort (sortByTimeThenId) / keys never recompute on a
+  // tick → cards never reorder, flicker, or reload; only the time text + colour class
+  // change. The 60s data poll (fetchAll) is separate and untouched — poll = data freshness,
+  // tick = clock advance. 15s is ample for minute-granular display (≤15s threshold lag)
+  // without re-rendering wastefully. Cleared on unmount (no leak).
   useEffect(() => {
-    if (viewMode === 'solo') return
-    const id = setInterval(() => setSlotOffset(computeOffset()), 30000)
+    const id = setInterval(() => setSlotOffset(computeOffset()), 15000)
     return () => clearInterval(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [order.slot, order.event_date, event?.event_date, event?.start_time, viewMode])
+  }, [order.slot, order.event_date, event?.event_date, event?.start_time])
 
+  // Prep-aware amber lead: amber fires when the slot is within (this order's cook time +
+  // buffer) — so a long-cook order goes amber early enough to start it, and a no-cook one
+  // only ~2 min out. Falls back to the helper's fixed 5-min default when configs aren't
+  // supplied (cookSecs null) so colour never regresses if catConfigs is missing.
+  const cookSecs = catConfigs ? getOrderCookSecs(order.items, itemCategoryMap ?? {}, catConfigs) : null
+  const amberLeadMins = cookSecs == null ? undefined : cookAmberLeadMins(cookSecs)
   const urgencyState = order.status === 'ready'
     ? 'ready'   as const
     : order.status === 'cooking'
     ? 'cooking' as const
-    : getCombinedUrgency(slotDt, order.created_at)
+    : getCombinedUrgency(slotDt, order.created_at, amberLeadMins)
   const headerCls = getHeaderStyle(urgencyState)
   const s         = STATUS[order.status] || STATUS.pending
   const isPub     = truck?.mode === 'pub'
@@ -231,6 +250,9 @@ export function OrderCard({
     if (slotOffset === 0) return 'now'
     return `${slotOffset}m late`
   })()
+  // Overdue (slot passed by ≥1 min) → the offset label renders as a RED PILL. Purely the lateness
+  // indicator; the CARD background colour logic (§72) is unchanged (a ready card stays green).
+  const isLate = !!slotDt && slotOffset >= 1
 
   // ── Button sets per viewMode ────────────────────────────────────────────────
 
@@ -341,9 +363,11 @@ export function OrderCard({
         <div className={`w-full px-3 py-2 ${headerCls}`}>
           <div className="flex items-baseline justify-between gap-1">
             <span className="text-lg font-bold text-slate-900 truncate">#{order.id}</span>
-            <span className="text-xs text-slate-600 flex-shrink-0">
+            <span className="text-xs text-slate-600 flex-shrink-0 inline-flex items-center gap-1">
               {timeLabel}
-              {offsetLabel ? ` · ${offsetLabel}` : ''}
+              {offsetLabel && (isLate
+                ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white">{offsetLabel}</span>
+                : <>{` · ${offsetLabel}`}</>)}
             </span>
           </div>
           <div className="flex items-center gap-1 mt-0.5">
@@ -374,20 +398,14 @@ export function OrderCard({
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold flex-shrink-0">#{order.id}</span>
                 {timeLabel && <span className="text-lg font-bold flex-shrink-0">· {timeLabel}</span>}
-                {/* Solo (dashboard) sits under a status SECTION HEADING ("New — action needed" /
-                    "Confirmed"), so the badge is redundant for those baseline statuses AND it pushes
-                    the useful "in Xm" readout off the right edge. Suppress it for 'confirmed' (the
-                    "Confirmed" heading says it; header colour is age-based, not status) and 'pending'
-                    (the "New" heading says it). KEEP it for 'modified' — its ONLY signal (heading
-                    says "Confirmed", header colour is age-based) — and for 'cooking'/'ready' (the
-                    explicit word helps; header top-border colour also signals them). KDS (window/cook)
-                    never render this badge. */}
-                {!['confirmed', 'pending'].includes(order.status) && (
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
-                )}
+                {/* The status badge moved DOWN to row 2 (between channel/name and price) so this top
+                    row has room for the lateness readout without clipping. Late = a RED PILL; otherwise
+                    the plain "in Xm"/age readout. */}
                 {(offsetLabel !== null || allStruck) && (
                   <div className="flex items-center gap-1.5 font-medium text-sm ml-auto flex-shrink-0">
-                    {offsetLabel !== null && <span className="opacity-70">{offsetLabel}</span>}
+                    {offsetLabel !== null && (isLate
+                      ? <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-red-600 text-white">{offsetLabel}</span>
+                      : <span className="opacity-70">{offsetLabel}</span>)}
                     {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                   </div>
                 )}
@@ -403,6 +421,13 @@ export function OrderCard({
                     className="text-[11px] text-slate-400 hover:text-orange-500 border border-slate-200 rounded px-1.5 py-0.5 transition-colors cursor-pointer flex-shrink-0">
                     Contact
                   </span>
+                )}
+                {/* Status BADGE (moved here from row 1) — sits between channel/name and price. Same
+                    condition as before: shown for modified/cooking/ready (incl. the blue "Ready"),
+                    suppressed for the baseline confirmed/pending the section heading already says. This
+                    is the status BADGE, NOT the Ready ACTION button (that stays in the bottom row). */}
+                {!['confirmed', 'pending'].includes(order.status) && (
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
                 )}
                 <span className="font-bold text-sm flex-shrink-0">£{Number(order.total).toFixed(2)}</span>
               </div>
@@ -434,7 +459,9 @@ export function OrderCard({
                   </span>
                 )}
                 {timeLabel && <span className="opacity-70 flex-shrink-0 ml-auto">{timeLabel}</span>}
-                {offsetLabel !== null && <span className="opacity-50 flex-shrink-0">· {offsetLabel}</span>}
+                {offsetLabel !== null && (isLate
+                  ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white flex-shrink-0">{offsetLabel}</span>
+                  : <span className="opacity-50 flex-shrink-0">· {offsetLabel}</span>)}
               </div>
             </>
           )}

@@ -9,6 +9,7 @@ import { ToastStack } from '@/components/ToastStack'
 import { getAllDayCounts } from '@/components/dashboard/helpers'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
+import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime, formatTimeRange } from '@/lib/time-utils'
@@ -42,6 +43,7 @@ export default function KdsPage() {
   const [error, setError] = useState<string | null>(null)
   const [categoryOrder, setCategoryOrder] = useState<string[]>([])
   const [itemCategoryMap, setItemCategoryMap] = useState<Record<string, string>>({})
+  const [catConfigs, setCatConfigs] = useState<Record<string, CatConfig>>({})
 
   // PIN auth — same pattern as main dashboard
   // Operators can bake the PIN into the bookmark URL: /kds?pin=1234
@@ -106,6 +108,7 @@ export default function KdsPage() {
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
       setCategoryOrder(data.categoryOrder ?? [])
       setItemCategoryMap(data.itemCategoryMap ?? {})
+      setCatConfigs(data.catConfigs ?? {})
       setRequiresPin(false)
 
       try {
@@ -884,6 +887,7 @@ export default function KdsPage() {
                 showCookingStep={showCookingStep}
                 categoryOrder={categoryOrder}
                 itemCategoryMap={itemCategoryMap}
+                catConfigs={catConfigs}
                 pendingSync={pendingSync.has(order.order_key)}
               />
             ))

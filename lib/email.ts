@@ -28,7 +28,7 @@ export interface EmailDeal {
 export function renderOrderLinesHtml(items: EmailOrderItem[], deals: EmailDeal[]): string {
   const itemRows = (items || []).map(item => {
     const modRows = (item.modifiers || []).map(m =>
-      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+£${Number(m.price).toFixed(2)}</span>` : ''}${(m.allergens && m.allergens.length) ? ` <span style="color:#b45309">— contains: ${m.allergens.join(', ')}</span>` : ''}</td></tr>`
+      `<tr><td colspan="2" style="padding:1px 0 1px 16px;font-size:12px;color:#64748b">+ ${m.name}${Number(m.price) > 0 ? ` <span style="color:#ea580c">+£${Number(m.price).toFixed(2)}</span>` : ''}</td></tr>`
     ).join('')
     const noteRow = item.specialInstructions
       ? `<tr><td colspan="2" style="padding:1px 0 4px 16px;font-size:12px;color:#64748b;font-style:italic">📝 ${item.specialInstructions}</td></tr>`
@@ -251,7 +251,7 @@ export function formatConfirmationEmail(params: {
     '',
     params.items.map(i => {
       const lines = [`${i.quantity}x ${i.name} — £${(i.unit_price * i.quantity).toFixed(2)}`]
-      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '') + (m.allergens && m.allergens.length ? ` (contains: ${m.allergens.join(', ')})` : '')).join(', ')}`)
+      if (i.modifiers?.length) lines.push(`  + ${i.modifiers.map(m => m.name + (m.price > 0 ? ` +£${m.price.toFixed(2)}` : '')).join(', ')}`)
       if (i.specialInstructions) lines.push(`  📝 ${i.specialInstructions}`)
       return lines.join('\n')
     }).join('\n'),

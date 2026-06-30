@@ -28,6 +28,7 @@ export function getBundleSlotCats(b: any): string[] {
 // ── KDS helpers ───────────────────────────────────────────────────────────────
 
 import type { Order } from './types'
+import type { CatConfig } from '@/lib/prep-utils'
 
 export type AgeState = 'new' | 'ok' | 'warn' | 'late'
 export type HeaderState = AgeState | 'ready' | 'cooking'
@@ -48,47 +49,100 @@ export function getSlotOffset(slotTime: Date): number {
 }
 
 /**
- * KDS urgency state based on slot offset (minutes until/past due).
- *   new   = slot is more than 15 min away   → grey
- *   ok    = slot is 5–15 min away           → green, start thinking
- *   warn  = slot is 0–5 min away or just due → amber, should be cooking
- *   late  = slot has passed by 1+ min        → red, overdue
- *
- * For slotless (walk-up) orders, pass -999 to always get 'new'.
+ * Raw cook seconds for an order = the worst (longest) category's batch math,
+ * max over categories of ceil(qty / batch) * prep_secs. NO 30s floor and NO buffer
+ * — instant/no-cook categories (prep_secs 0) contribute 0, so a basket of only
+ * no-cook items returns 0. This is the order's actual oven time; the prep-aware
+ * amber lead is derived from it. Mirrors the calcReadySecs per-category math (single
+ * source) but without the ready-time floor, which would mask no-cook orders.
  */
-export function getAgeState(slotOffset: number): AgeState {
-  if (slotOffset < -15) return 'new'
-  if (slotOffset < -5)  return 'ok'
-  if (slotOffset < 1)   return 'warn'
-  return 'late'
+export function getOrderCookSecs(
+  items: { name: string; quantity: number }[],
+  itemCategoryMap: Record<string, string>,
+  catConfigs: Record<string, CatConfig>,
+): number {
+  const byCat: Record<string, number> = {}
+  items.forEach(it => {
+    const cat = (itemCategoryMap[it.name] || 'mains').toLowerCase()
+    byCat[cat] = (byCat[cat] || 0) + it.quantity
+  })
+  let maxSecs = 0
+  Object.entries(byCat).forEach(([cat, qty]) => {
+    const cfg = catConfigs[cat]
+    if (!cfg || !cfg.secs) return
+    const secs = Math.ceil(qty / (cfg.batch || 1)) * cfg.secs
+    if (secs > maxSecs) maxSecs = secs
+  })
+  return maxSecs
+}
+
+/** Small handling/plating margin added on top of pure cook time when deciding the
+ *  amber ("start cooking now") moment — so the operator has a beat to plate and hand
+ *  over, and an instant/no-cook order still ambers ~2 min out rather than only at due. */
+const AMBER_BUFFER_SECS = 120
+
+/** Minutes before the collection target at which the card flips to amber = cook time +
+ *  handling buffer, floored at 2 min. A 12-min pizza ambers ~14 min out; a no-cook side
+ *  ambers ~2 min out — instead of a flat 5-min (too late for cooked food) or a 15-min
+ *  ticket-age offset (too early). */
+export function cookAmberLeadMins(cookSecs: number): number {
+  return Math.max(2, Math.ceil((cookSecs + AMBER_BUFFER_SECS) / 60))
 }
 
 /**
- * Combined urgency: the worse of slot-relative timing and time-since-creation.
+ * KDS urgency state based on slot offset (minutes until/past due) and the order's
+ * prep-aware amber lead (cook time + buffer; see cookAmberLeadMins).
+ *   new   = slot is more than (lead+10) min away → grey
+ *   ok    = slot is (lead..lead+10) min away      → white, start thinking
+ *   warn  = slot is within the lead, or just due  → amber, start cooking NOW
+ *   late  = slot has passed by 1+ min             → red, overdue
+ *
+ * amberLeadMins defaults to 5, which exactly reproduces the previous fixed thresholds
+ * (warn 0–5, ok 5–15, new >15) for any caller that doesn't supply a prep-aware lead.
+ * For slotless (walk-up) orders, pass -999 to always get 'new'.
+ */
+export function getAgeState(slotOffset: number, amberLeadMins: number = 5): AgeState {
+  if (slotOffset >= 1)                       return 'late'  // overdue slot → red
+  if (slotOffset >= -amberLeadMins)          return 'warn'  // within must-start window → amber (prep-aware)
+  if (slotOffset >= -(amberLeadMins + 10))   return 'ok'    // approaching → white
+  return 'new'                                              // far out → grey
+}
+
+/**
+ * Combined urgency, driven by PREP-AWARE slot timing.
  * ready/cooking overrides are handled in the caller — this only covers time urgency.
  *
- * RED ('late') fires ONLY when the SLOT is overdue (slotState === 'late', i.e.
- * slotOffset >= 1) — that is the SOLE source of red. The creation-age signal is a gentle
- * live-service nudge that CAPS at amber ('warn') from 15 min and never climbs: a not-yet-
- * overdue order is never reddened for being a stale ticket (operator ruling). A 20-min and
- * a 60-min not-due ticket both yield age='warn' — never 'late'.
+ * The card flips to AMBER ('warn') at the latest moment the operator can still start
+ * and finish on time = when the slot is within (cook time + buffer) of now — see
+ * cookAmberLeadMins. A 12-min pizza ambers ~14 min before its slot; a no-cook side
+ * ambers ~2 min before. RED ('late') fires ONLY when the SLOT is overdue (slotOffset
+ * >= 1) — the SOLE source of red.
+ *
+ * Ticket age is now a DEMOTED signal: it can only lift a far-out grey ticket to white
+ * once it's a few minutes old; it can NEVER manufacture amber. (Previously age hitting
+ * 15 min turned a card amber even when its slot was still 45 min out and the food only
+ * needed ~12 min to cook — the "amber ~30 min before cooking is needed" false alarm.)
+ *
+ * @param amberLeadMins minutes before the slot to flip amber (cook time + buffer);
+ *   defaults to 5, preserving the old fixed threshold for callers without prep data.
  */
-export function getCombinedUrgency(slotDt: Date | null, createdAt: string): AgeState {
-  const slotOffset = slotDt ? getSlotOffset(slotDt) : -999
-  const slotState  = getAgeState(slotOffset)
-  // Creation-age urgency is a LIVE-SERVICE signal (unactioned ticket going stale).
-  // It must never fire for pre-orders whose slot is still far away — otherwise an
-  // order for tomorrow turns red 30 min after being placed. When the slot is more
-  // than 60 min out, slot timing alone governs (calm/neutral).
-  if (slotDt && slotOffset < -60) return slotState
-  const ageMins    = getTicketAge(createdAt)
-  // Age caps at 'warn' from 15 min and never escalates to 'late' — only an overdue SLOT
-  // reds the card. Buckets: new (<5) / ok (<15) / warn (>=15).
-  const ageState: AgeState =
-    ageMins < 5  ? 'new' :
-    ageMins < 15 ? 'ok'  : 'warn'
-  const priority: Record<AgeState, number> = { new: 0, ok: 1, warn: 2, late: 3 }
-  return priority[slotState] >= priority[ageState] ? slotState : ageState
+export function getCombinedUrgency(
+  slotDt: Date | null,
+  createdAt: string,
+  amberLeadMins: number = 5,
+): AgeState {
+  // Slotless legacy walk-up (no due time to anchor cook urgency): fall back to the old
+  // ticket-age staleness buckets — new (<5) / ok (<15) / warn (>=15).
+  if (!slotDt) {
+    const ageMins = getTicketAge(createdAt)
+    return ageMins < 5 ? 'new' : ageMins < 15 ? 'ok' : 'warn'
+  }
+  const slotOffset = getSlotOffset(slotDt)
+  const slotState  = getAgeState(slotOffset, amberLeadMins)
+  // Prep-aware SLOT timing is the SOLE source of amber/red. Age only lifts a far-out
+  // grey ticket to white once it's a few minutes old — it can no longer escalate colour.
+  if (slotState !== 'new') return slotState
+  return getTicketAge(createdAt) >= 5 ? 'ok' : 'new'
 }
 
 /** Tailwind classes for the full-width ticket header bar, covering bg, text, and border. */

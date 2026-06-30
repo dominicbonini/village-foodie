@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { sendEventCancellationEmail } from '@/lib/email'
 import { getSoleActiveVanId } from '@/lib/van-utils'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
+import { hasValidEventTimes } from '@/lib/time-utils'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -46,10 +47,15 @@ export async function POST(req: NextRequest) {
     // truck has exactly one active van, assign it. Don't override an existing choice.
     const { data: ev } = await supabase
       .from('truck_events')
-      .select('van_id')
+      .select('van_id, start_time, end_time')
       .eq('id', eventId)
       .eq('truck_id', truck.id)
       .single()
+    // LIVE-TIME GATE: an event can't go live without both times (the engine needs them). Drafts stay null-OK
+    // — this fires only on the confirm transition.
+    if (!hasValidEventTimes(ev?.start_time, ev?.end_time)) {
+      return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
+    }
     const vanPatch = (!ev?.van_id)
       ? { van_id: await getSoleActiveVanId(supabase, truck.id) }
       : {}
@@ -74,6 +80,16 @@ export async function POST(req: NextRequest) {
 
   // ── OPEN ─────────────────────────────────────────────────
   if (action === 'open') {
+    // LIVE-TIME GATE: opening/reopening makes the event live → both times required (same rule as confirm).
+    const { data: openEv } = await supabase
+      .from('truck_events')
+      .select('start_time, end_time')
+      .eq('id', eventId)
+      .eq('truck_id', truck.id)
+      .single()
+    if (!hasValidEventTimes(openEv?.start_time, openEv?.end_time)) {
+      return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
+    }
     const { error } = await supabase
       .from('truck_events')
       .update({ status: 'open', opened_at: now })

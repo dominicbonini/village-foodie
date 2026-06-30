@@ -62,8 +62,43 @@ export function EmptyState({ icon, title, body }: { icon: string; title: string;
 // ── Allergen / dietary vocabulary + toggle chips ──────────────────────────────
 // ONE source for the vocabulary + styling so the manage editor, the option editor, and the
 // import wizard can't drift.
-export const ALLERGEN_VOCAB = ['Dairy', 'Lactose', 'Gluten', 'Eggs', 'Nuts', 'Soy', 'Fish', 'Shellfish', 'Celery', 'Mustard'] as const
-export const DIETARY_VOCAB = ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten Free', 'Dairy Free'] as const
+// The 14 UK statutory allergens, each named distinctly (FSA list): Nuts is split into
+// 'Peanuts' + 'Tree nuts'; Shellfish is split into 'Crustaceans' + 'Molluscs'. 'Dairy' is the
+// UK "Milk" allergen. 'Lactose' is NOT one of the 14 (non-regulated) but is kept as an extra
+// per product decision. Order follows the FSA 14 + Lactose appended.
+// EXACTLY the 14 UK regulated allergens — nothing more. (Milk = our "Dairy".) Lactose is NOT one of the
+// 14, so it lives in DIETARY_VOCAB, not here.
+export const ALLERGEN_VOCAB = ['Gluten', 'Crustaceans', 'Eggs', 'Fish', 'Peanuts', 'Soy', 'Dairy', 'Tree nuts', 'Celery', 'Mustard', 'Sesame', 'Sulphites', 'Lupin', 'Molluscs'] as const
+export const DIETARY_VOCAB = ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten Free', 'Dairy Free', 'Lactose'] as const
+
+// ── Allergen DISPLAY-MODE chooser (per-dish vs card) ──────────────────────────
+// ONE source for the "how do you want to show allergens?" option cards — consumed by BOTH the standalone
+// AllergenWizardModal (mode 0) AND the import wizard's Allergens step, so the icons/copy/layout can't drift.
+// CONTROLLED: the operator SELECTS a mode (highlighted), then a separate "Next" advances — no auto-advance
+// on click (so they can change their mind before proceeding). Both wizards render their own Next/Skip below.
+export function AllergenModeChooser({ value, onChange }: { value: 'per_dish' | 'card' | null; onChange: (mode: 'per_dish' | 'card') => void }) {
+  const card = (mode: 'per_dish' | 'card', selectedBorder: string) =>
+    `text-left border-2 rounded-xl p-4 transition-colors ${value === mode ? `${selectedBorder} bg-orange-50/40 ring-2 ring-orange-300` : 'border-slate-200 hover:border-orange-300'}`
+  return (
+    <div className="grid gap-3">
+      <button type="button" aria-pressed={value === 'per_dish'} onClick={() => onChange('per_dish')} className={card('per_dish', 'border-orange-400')}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-lg">🍽️</span>
+          <span className="font-bold text-slate-900 text-sm">Show allergens against each dish</span>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">Recommended</span>
+        </div>
+        <p className="text-xs text-slate-500">Review every dish and confirm its allergens. Customers see per-dish tags plus an allergen summary card derived from them.</p>
+      </button>
+      <button type="button" aria-pressed={value === 'card'} onClick={() => onChange('card')} className={card('card', 'border-orange-400')}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-lg">🛡️</span>
+          <span className="font-bold text-slate-900 text-sm">Show an allergen card</span>
+        </div>
+        <p className="text-xs text-slate-500">Upload or paste a single allergen card (PDF, image, or text), shown as-is. Per-dish tags stay hidden.</p>
+      </button>
+    </div>
+  )
+}
 
 export function AllergenToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
   return (

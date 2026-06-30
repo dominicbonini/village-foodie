@@ -778,7 +778,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
       const num=done?.id??''
-      // "Mark paid & done" → a 7s Undo toast (undo_collected reverts collected→confirmed AND re-books).
+      // "Mark paid & done" → a 7s Undo toast (undo_collected reverts ONE stage to the order's actual
+      // previous status — ready if it was ready, else confirmed — AND rebuilds capacity to match).
       // "Ready" → status commits now but the customer email is DEFERRED 4s (defer_email above): an Undo
       // within 4s cancels the email (clears the per-order timer) AND reverts the status. The toast's tap
       // auto-dismisses it (handled in the render), so the run handlers only do the action.
@@ -1031,6 +1032,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const map: Record<string, string> = {}
     truckMenu?.items?.forEach(item => { if (item.category) map[item.name] = item.category })
     return map
+  }, [truckMenu])
+  // Per-category cook config (keyed by lowercased name) → drives the order card's
+  // prep-aware green→amber threshold. Same shape the slot engine uses.
+  const catConfigs = useMemo<Record<string, CatConfig>>(() => {
+    const m: Record<string, CatConfig> = {}
+    truckMenu?.categories?.forEach(c => {
+      m[c.name.toLowerCase()] = { secs: c.prep_secs ?? 0, batch: c.batch_size && c.batch_size > 0 ? c.batch_size : 1 }
+    })
+    return m
   }, [truckMenu])
 
   // Edit picker traffic-light: SAME shared oven-occupancy helper as Add Order, so the
@@ -1631,13 +1641,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -1666,7 +1676,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       </div>
                       <div className="shrink-0 ml-3 flex items-center gap-2">
                         {/* Later-recovery Undo — collected orders only (not cancelled/rejected). Reuses
-                            the same undo_collected action as the toast: reverts to confirmed + re-books. */}
+                            the same undo_collected action as the toast: reverts ONE stage to the actual
+                            previous status (ready/confirmed) + rebuilds capacity. */}
                         {o.status==='collected'&&(
                           <button onClick={()=>doAction('undo_collected',o.order_key)} disabled={actionLoading===`undo_collected-${o.order_key}`}
                             className="text-xs font-bold text-slate-500 hover:text-orange-600 border border-slate-200 hover:border-orange-300 rounded-lg px-3 py-2 transition-colors active:scale-95 disabled:opacity-50">

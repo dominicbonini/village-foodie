@@ -84,10 +84,18 @@ Rules:
 - Use existing category names when they match
 - Each item needs: name, price (number, no currency symbol), category
 - description: the dish description ONLY — do NOT include allergen labels, dietary info, or "Contains/May contain" text in the description
-- allergens: extract any allergen or dietary labels as a separate array (e.g. ["Dairy", "Gluten", "Nuts", "Vegetarian", "Vegan"])
-  Common labels to look for: Dairy, Lactose, Gluten, Nuts, Eggs, Soy, Fish, Shellfish, Celery, Mustard, Vegetarian, Vegan, Halal, Kosher
-  Normalise them — "Includes Dairy" and "Contains Dairy" both become "Dairy"
-  "May Contains Nuts" becomes "Nuts" with a note it may contain
+- allergens: extract any STATED allergen labels as a separate array (e.g. ["Dairy", "Gluten", "Peanuts"])
+  The 14 UK statutory allergens (use these EXACT names): Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Dairy, Tree nuts, Celery, Mustard, Sesame, Sulphites, Lupin, Molluscs
+  (Also accept "Lactose" when the menu states it specifically.) Map common menu wording to these names:
+  "milk" → Dairy; "nuts"/"almonds"/"cashews"/"walnuts"/"hazelnuts" → Tree nuts; "peanuts"/"groundnuts" → Peanuts;
+  "prawn"/"shrimp"/"crab"/"lobster"/"crayfish" → Crustaceans; "mussels"/"clams"/"oysters"/"squid"/"octopus" → Molluscs;
+  "soya"/"soybeans" → Soy; "sulphur dioxide"/"sulfites" → Sulphites.
+  Normalise prefixes — "Includes Dairy" / "Contains Dairy" both become "Dairy"; "May Contain Peanuts" becomes "Peanuts".
+- ALLERGENS ARE STATED-DATA ONLY (same discipline as spiciness below — do NOT guess): extract an allergen
+  ONLY when the source menu STATES it — an explicit label ('GF', 'VG', 'contains nuts', 'N'), a listed
+  ingredient that is itself an allergen, or an allergen / "contains" / "may contain" note. NEVER infer an
+  allergen from the dish NAME alone or from what a dish "probably" contains. If there is NO stated allergen
+  data for an item, leave its allergens array EMPTY — do not guess.
 - dietary: extract dietary preference labels as a separate array (e.g. ["Vegetarian", "Vegan", "Halal", "Kosher"])
 - spiciness: a BEST-EFFORT integer heat rating from 1 to 3, ONLY when there's a clear signal.
   Chili emoji: one chili (e.g. 🌶) = 1, two = 2, three = 3.
@@ -134,7 +142,7 @@ MODIFIER GROUPS (options/variants) — each item MAY carry an optional "modifier
   protein) MAY be true. An "add extras" list is false (multi). DEFAULT false when unclear.
 - OPTION allergens/dietary: extract these for each option the SAME way you do for dishes — populate
   "allergens"/"dietary" when the option's name or the menu text indicates one (e.g. Prawn →
-  ["Shellfish"], Cheese → ["Dairy"], Halloumi → ["Dairy"]), using the SAME normalised allergen/
+  ["Crustaceans"], Cheese → ["Dairy"], Halloumi → ["Dairy"]), using the SAME normalised allergen/
   dietary vocabulary as the dish rules above. Omit (or empty) when there is no signal. The operator
   reviews and is responsible for the final allergen info — your job is to surface what you detect.
 ${existingItemsSummary ? `\nTHIS OPERATOR'S EXISTING MENU (use to match their structure):\n- Existing dishes: ${existingItemsSummary}\n- Existing modifier groups: ${existingGroupsSummary || '(none)'}\n- If an existing group matches a pattern you detect, REUSE its exact name. If two dishes already exist as SEPARATE items (e.g. "Green Curry" and "Red Curry"), do NOT merge them on this import — respect the established structure.` : ''}
@@ -148,7 +156,7 @@ Response format:
       "description": "Layers of delicate ladyfingers soaked in espresso and marsala wine, mascarpone, cream and a dusting of cocoa.",
       "price": 6.50,
       "category": "Desserts",
-      "allergens": ["Dairy", "Lactose", "Gluten", "Nuts"],
+      "allergens": ["Dairy", "Lactose", "Gluten", "Eggs"],
       "dietary": ["Vegetarian"],
       "spiciness": null
     },
@@ -157,13 +165,13 @@ Response format:
       "description": "Stir-fried rice noodles with egg, beansprouts, peanuts and tamarind.",
       "price": 9.00,
       "category": "Mains",
-      "allergens": ["Peanuts", "Egg"],
+      "allergens": ["Peanuts", "Eggs"],
       "dietary": [],
       "spiciness": 1,
       "modifierGroups": [
         {
           "name": "Protein",
-          "options": [ { "name": "Chicken", "price": 0 }, { "name": "Beef", "price": 0 }, { "name": "Prawn", "price": 1.50, "allergens": ["Shellfish"] } ],
+          "options": [ { "name": "Chicken", "price": 0 }, { "name": "Beef", "price": 0 }, { "name": "Prawn", "price": 1.50, "allergens": ["Crustaceans"] } ],
           "isRequired": false,
           "singleSelect": true,
           "_inferredFromVariants": true

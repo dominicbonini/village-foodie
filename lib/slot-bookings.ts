@@ -218,7 +218,12 @@ async function buildUnitsFromOrders(
     .select('slot, items, deals')
     .eq('truck_id', truckId)
     .eq('event_id', eventId)
-    .in('status', ['pending', 'confirmed', 'modified'])
+    // Occupies the oven from placement THROUGH cooking; RELEASES at 'ready' (done cooking — sitting on
+    // the counter) and at collected/cancelled/rejected. 'cooking' must be here or a rebuild fired while
+    // another order is mid-cook would free it prematurely (oversell). ONE source — both the live fit-read
+    // and rebuildProductionSlotUsage use this, so every reader (orders-screen day load, the seating
+    // projection) inherits the release-at-ready behaviour.
+    .in('status', ['pending', 'confirmed', 'modified', 'cooking'])
   if (excludeOrderKey) ordersQuery = ordersQuery.neq('order_key', excludeOrderKey)
 
   const [timeMap, meta, { data: orders }, { data: menuItems }, { data: categories }] = await Promise.all([
@@ -455,7 +460,12 @@ export async function getSlotBookingCounts(
     .select('slot')
     .eq('truck_id', truckId)
     .eq('event_id', eventId)
-    .in('status', ['pending', 'confirmed', 'modified'])
+    // Occupies the oven from placement THROUGH cooking; RELEASES at 'ready' (done cooking — sitting on
+    // the counter) and at collected/cancelled/rejected. 'cooking' must be here or a rebuild fired while
+    // another order is mid-cook would free it prematurely (oversell). ONE source — both the live fit-read
+    // and rebuildProductionSlotUsage use this, so every reader (orders-screen day load, the seating
+    // projection) inherits the release-at-ready behaviour.
+    .in('status', ['pending', 'confirmed', 'modified', 'cooking'])
     .not('slot', 'is', null)
   const counts: Record<string, number> = {}
   ;(data || []).forEach(o => {

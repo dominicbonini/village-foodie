@@ -400,6 +400,14 @@ const RUN_DISCOVERY = MODE !== 'hatchgrab';
 const RUN_HATCHGRAB = MODE !== 'discovery';
 if (MODE) console.log(`   🔀 SCRAPE_MODE=${MODE} → discovery:${RUN_DISCOVERY} hatchgrab:${RUN_HATCHGRAB}`);
 
+// SCRAPE_TRUCK_ID — a deliberate, SCOPED manual run (workflow_dispatch input → env, or a local invocation).
+// When SET, Pass B scrapes ONLY that one truck (by trucks.id) AND bypasses the three pacing gates
+// (shouldRunToday / isScrapeSlotNow / dueByFrequency) — if a human explicitly asked to scrape THIS truck
+// now, run it regardless of the hour/frequency window. When UNSET (cron), Pass B is unchanged: all eligible
+// auto/both trucks, fully gated.
+const SCRAPE_TRUCK_ID = (process.env.SCRAPE_TRUCK_ID || '').trim();
+if (SCRAPE_TRUCK_ID) console.log(`   🎯 SCRAPE_TRUCK_ID=${SCRAPE_TRUCK_ID} → scoped manual run (single truck, pacing gates bypassed)`);
+
 if (!process.env.GOOGLE_SHEETS_CREDENTIALS || !process.env.GEMINI_API_KEY) {
   throw new Error("Missing Credentials in .env.local");
 }
@@ -1107,11 +1115,16 @@ async function pruneScraperRunLog(supabase) {
 if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
   console.log('\n🏪 Starting HatchGrab-linked truck schedule scraping...');
 
-  const { data: hgTrucks } = await supabase
+  // Scoped manual run (SCRAPE_TRUCK_ID set) → that ONE truck by id, regardless of scraper_preference
+  // (an explicit request overrides the auto/both filter). Unset → all eligible auto/both trucks (cron).
+  let hgQuery = supabase
     .from('trucks')
     .select('id, name, schedule_url, scraper_preference, scraper_rule, scraper_last_hash, scraper_last_text_hash, scraper_learning_complete, scraper_update_day, scraper_first_run_at, scraper_last_empty_notify_at, scrape_times_per_day, scraper_last_run_at, timezone, dashboard_token, operator_id')
-    .in('scraper_preference', ['auto', 'both'])
     .not('schedule_url', 'is', null);
+  hgQuery = SCRAPE_TRUCK_ID
+    ? hgQuery.eq('id', SCRAPE_TRUCK_ID)
+    : hgQuery.in('scraper_preference', ['auto', 'both']);
+  const { data: hgTrucks } = await hgQuery;
 
   if (hgTrucks && hgTrucks.length > 0) {
     const hgBrowser = await puppeteer.launch({
@@ -1141,21 +1154,27 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
     for (const hgTruck of hgTrucks) {
       if (!hgTruck.schedule_url) continue;
 
-      // Three AND-composed gates — a truck scrapes this run only if ALL pass:
+      // Three AND-composed gates pace the SCHEDULED (cron) runs. A scoped manual run (SCRAPE_TRUCK_ID set)
+      // BYPASSES all three — the human explicitly asked to scrape this truck now, so hour/frequency/day
+      // windows don't apply. Cron path (unset) → gated exactly as before.
       //  (1) shouldRunToday  — learned-DAY window (new trucks pass every day);
       //  (2) isScrapeSlotNow — the truck's LOCAL hour is one of the fixed slots (08/14/20 local);
       //  (3) dueByFrequency  — enough time elapsed for its rate (caps how many of the 3 slots it takes).
-      if (!shouldRunToday(hgTruck)) {
-        console.log(`\n⏭️  Skipping ${hgTruck.name} — not scheduled for today (learned day: ${hgTruck.scraper_update_day})`);
-        continue;
-      }
-      if (!isScrapeSlotNow(hgTruck)) {
-        console.log(`\n⏭️  Skipping ${hgTruck.name} — not a scrape slot in its timezone (${hgTruck.timezone || 'Europe/London'}: local hour ${localHourNow(hgTruck.timezone)}, slots ${SCRAPE_SLOT_HOURS.join('/')})`);
-        continue;
-      }
-      if (!dueByFrequency(hgTruck)) {
-        console.log(`\n⏭️  Skipping ${hgTruck.name} — not due yet (frequency: ${hgTruck.scrape_times_per_day || 1}×/day, last run ${hgTruck.scraper_last_run_at})`);
-        continue;
+      if (SCRAPE_TRUCK_ID) {
+        console.log(`\n⏩ Scoped manual run — bypassing pacing gates for ${hgTruck.name}.`);
+      } else {
+        if (!shouldRunToday(hgTruck)) {
+          console.log(`\n⏭️  Skipping ${hgTruck.name} — not scheduled for today (learned day: ${hgTruck.scraper_update_day})`);
+          continue;
+        }
+        if (!isScrapeSlotNow(hgTruck)) {
+          console.log(`\n⏭️  Skipping ${hgTruck.name} — not a scrape slot in its timezone (${hgTruck.timezone || 'Europe/London'}: local hour ${localHourNow(hgTruck.timezone)}, slots ${SCRAPE_SLOT_HOURS.join('/')})`);
+          continue;
+        }
+        if (!dueByFrequency(hgTruck)) {
+          console.log(`\n⏭️  Skipping ${hgTruck.name} — not due yet (frequency: ${hgTruck.scrape_times_per_day || 1}×/day, last run ${hgTruck.scraper_last_run_at})`);
+          continue;
+        }
       }
 
       console.log(`\n🔍 HatchGrab truck: ${hgTruck.name} (${hgTruck.schedule_url})`);
@@ -1196,8 +1215,11 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
         // successful extract, the schedule is unchanged — skip Gemini + the inbound POST. Still stamps
         // last-run (recordRunAndLearn) so the frequency gate stays accurate. The stored hash is only
         // written AFTER a successful extract (below), so a page that fails Gemini is retried, not cached.
+        // A scoped manual run (SCRAPE_TRUCK_ID set) FORCES a fresh extract — the human asked to scrape this
+        // truck NOW, so don't short-circuit on the unchanged-text cache (e.g. re-running after a prompt fix
+        // where the page text is identical but we want a re-parse). Cron path → cache as before.
         const currentTextHash = hashText(winningText);
-        if (currentTextHash === hgTruck.scraper_last_text_hash) {
+        if (!SCRAPE_TRUCK_ID && currentTextHash === hgTruck.scraper_last_text_hash) {
           console.log(`   ⏩ Page text unchanged — skipping Gemini for ${hgTruck.name}`);
           await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
           continue;
@@ -1205,7 +1227,9 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
 
         // Parse events with Gemini
         const hgPrompt = `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
-You are extracting a food truck's schedule from website text. Extract ONLY future events.
+You are extracting a food truck's schedule from website text. Extract events from TODAY ONWARDS — you MUST
+INCLUDE today's event (a truck trading today is the most important to capture). Exclude ONLY events dated
+BEFORE today.
 DATE RULES: Format "DD/MM/YYYY". Always append /${currentYear}. Map day names to exact dates based on today.
 TIME RULES: "HH:MM" 24-hour. "5pm" → "17:00". If unknown, use "".
 VENUE RULES: "venue_name" = ONLY the pub/venue name. "town" = the village/town/city it is in.

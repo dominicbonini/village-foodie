@@ -151,6 +151,51 @@ export function formatPreorderLabel(
   return label
 }
 
+// ── PRE-ORDER OPEN-WINDOW (V8.3) — the twin of the deadline above. WHEN pre-ordering OPENS. ───────────
+// A fixed 9-option enum (NOT a free-form lead): 'on_confirm' (open as soon as the event is confirmed —
+// EARLIEST), 'day_of' (open from 00:00 event-tz on the event date — LATEST), '1d'..'7d' (open from 00:00
+// event-tz on the date N days before). Everything opens at start-of-day except 'on_confirm'. The orderable
+// window becomes [open, deadline]. Same event-tz discipline as the deadline — NEVER device-local (BST lesson).
+export type PreorderOpenRule = 'on_confirm' | 'day_of' | '1d' | '2d' | '3d' | '4d' | '5d' | '6d' | '7d'
+
+/** The local date (event-tz, 'YYYY-MM-DD') from which pre-ordering is OPEN. null = 'on_confirm'/unset →
+ *  open as soon as the event is confirmed (no date gate). Pure; event-tz calendar arithmetic only. */
+export function preorderOpenDate(rule: string | null | undefined, eventDate: string): string | null {
+  if (!rule || rule === 'on_confirm') return null
+  if (rule === 'day_of') return eventDate
+  const m = /^([1-7])d$/.exec(rule)
+  if (m) return addDaysToDateStr(eventDate, -Number(m[1]))
+  return null   // unknown value → treat as no gate (fail-open is fine; the deadline still bounds the close)
+}
+
+/** Has pre-ordering OPENED yet? Opens at MIDNIGHT (00:00) event-tz on preorderOpenDate, so it's a pure
+ *  date-boundary compare (nowMins not needed). 'on_confirm'/unset → true (the gate only ever evaluates a
+ *  CONFIRMED event, so "as soon as confirmed" is already open). Pure; caller supplies event-tz nowDate. */
+export function isPreorderOpenYet(rule: string | null | undefined, eventDate: string, nowDate: string): boolean {
+  const openDate = preorderOpenDate(rule, eventDate)
+  if (openDate == null) return true                 // on_confirm / no rule → open
+  return nowDate >= openDate                          // lexical 'YYYY-MM-DD' compare = chronological
+}
+
+/** Customer/operator label "Pre-orders open Ddd D Mon" — null for 'on_confirm'/unset (no future open).
+ *  Pure formatting, NO device-local (UTC-noon anchor → tz/DST-independent weekday, same basis as the deadline). */
+export function formatPreorderOpenLabel(rule: string | null | undefined, eventDate: string): string | null {
+  const openDate = preorderOpenDate(rule, eventDate)
+  if (openDate == null) return null
+  const [y, m, d] = openDate.split('-').map(Number)
+  const wd = new Date(Date.UTC(y, (m || 1) - 1, d || 1, 12)).getUTCDay()
+  return `Pre-orders open ${PREORDER_WEEKDAYS[wd]} ${d} ${PREORDER_MONTHS[(m || 1) - 1]}`
+}
+
+/** Operator-facing description of the open rule (for the Settings card). */
+export function describePreorderOpenRule(rule: string | null | undefined): string {
+  if (!rule || rule === 'on_confirm') return 'As soon as the event is confirmed'
+  if (rule === 'day_of') return 'On the day of the event'
+  const m = /^([1-7])d$/.exec(rule)
+  if (m) return `${m[1]} day${m[1] === '1' ? '' : 's'} before the event`
+  return 'As soon as the event is confirmed'
+}
+
 /** OPTIONAL — a short human description of the deadline, for the operator modal (Stage 5). */
 export function describePreorderDeadline(cfg: PreorderConfig): string {
   if (!cfg.enabled || cfg.deadlineType == null || cfg.deadlineValue == null) return 'No pre-order deadline'

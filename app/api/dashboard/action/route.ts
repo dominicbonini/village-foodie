@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml } from '@/lib/email'
 import { getVanOrderReadyDefault } from '@/lib/van-utils'
+import { hasValidEventTimes } from '@/lib/time-utils'
 import {
   addOrderToProductionSlot,
   removeOrderFromProductionSlot,
@@ -227,6 +228,11 @@ export async function POST(req: NextRequest) {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
       await supabase.from('orders').update({ status: 'ready' }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // RELEASE kitchen-capacity occupancy at ready (done cooking). buildUnitsFromOrders no longer counts a
+      // 'ready' order, so the rebuild frees its production slot — shared with every capacity reader (the
+      // orders-screen day load + the seating projection; queued/new orders can then seat into the freed
+      // window). The order itself stays in the list/counts — only its capacity occupancy clears.
+      if (order.event_date) await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       if (!body.defer_email) {
         await deliverReadyEmail(order, truck)
       }
@@ -249,7 +255,11 @@ export async function POST(req: NextRequest) {
     // Reverts status ready→confirmed (the dashboard undo). Status-only: unlike undo_collected, marking
     // ready never freed a production slot, so there is NO production_slot_usage rebuild here.
     if (action === 'undo_ready') {
+      const { data: order } = await supabase.from('orders').select('event_date').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // RE-BOOK: 'confirmed' occupies capacity again, so rebuild to reclaim the slot ready had freed —
+      // else the undo leaves an undercount (oversell). Mirrors the §-engine release-at-ready symmetry.
+      if (order?.event_date) await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       return NextResponse.json({ success: true, status: 'confirmed' })
     }
 
@@ -262,7 +272,11 @@ export async function POST(req: NextRequest) {
     if (action === 'collected') {
       const now = new Date().toISOString()
       const { data: order } = await supabase.from('orders').select('slot, event_date, event_id, status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // Record the from-status so Undo reverts ONE stage to the ACTUAL previous status (ready if it was
+      // ready, confirmed/modified if collected directly) — never a hardcoded 'confirmed'. Guard against
+      // re-firing on an already-collected order: don't overwrite a real prior status with 'collected'.
+      const fromStatus = order?.status && order.status !== 'collected' ? order.status : null
+      await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now, ...(fromStatus ? { status_before_collected: fromStatus } : {}) }).eq('order_key', orderKey).eq('truck_id', truck.id)
       // Free kitchen usage on collect by REBUILDING the date's production_slot_usage from the live
       // orders (deterministic), not an incremental subtract. The order is now 'collected' so the
       // rebuild (buildUnitsFromOrders filters pending/confirmed/modified) excludes it → its capacity
@@ -277,17 +291,20 @@ export async function POST(req: NextRequest) {
 
     // ── UNDO COLLECTED ────────────────────────────────────────────────────────
     if (action === 'undo_collected') {
-      const { data: order } = await supabase.from('orders').select('slot, event_date, event_id').eq('order_key', orderKey).eq('truck_id', truck.id).single()
-      await supabase.from('orders').update({ status: 'confirmed' }).eq('order_key', orderKey).eq('truck_id', truck.id)
-      // Re-book on undo by REBUILDING the date's production_slot_usage from the live orders, not an
-      // incremental add. The order is now 'confirmed' so the rebuild includes it → re-booked exactly.
-      // This replaces the old unguarded addOrderToProductionSlot, which re-booked unconditionally and
-      // double-counted on a re-fire (we surface two undo entry points — toast + completed list). A
-      // rebuild from live orders is naturally idempotent: firing it twice gives the identical slot state.
+      const { data: order } = await supabase.from('orders').select('slot, event_date, event_id, status_before_collected').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      // Revert ONE stage, to the order's ACTUAL previous status (recorded by 'collected'): 'ready' if it
+      // was ready, 'confirmed'/'modified' if collected directly. Fallback 'confirmed' for legacy rows with
+      // no recorded from-status (pre-migration) — the old behaviour, but only as a fallback now.
+      const revertTo = order?.status_before_collected || 'confirmed'
+      await supabase.from('orders').update({ status: revertTo, status_before_collected: null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // Rebuild the date's production_slot_usage from the live orders (deterministic, idempotent — two undo
+      // entry points: toast + completed list). Capacity follows the reverted status automatically because
+      // the rebuild reads it AFTER this update: revert→'ready' stays FREED (buildUnitsFromOrders excludes
+      // ready); revert→'confirmed'/'modified' RE-OCCUPIES the cook slot. No special-casing needed.
       if (order?.event_date) {
         await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       }
-      return NextResponse.json({ success: true, status: 'confirmed' })
+      return NextResponse.json({ success: true, status: revertTo })
     }
 
     // ── EDIT ORDER ────────────────────────────────────────────────────────────
@@ -435,11 +452,20 @@ export async function POST(req: NextRequest) {
       const { event_id, start_time, end_time, event_date } = body
       const date = event_date || new Date().toISOString().split('T')[0]
       if (event_id) {
+        // LIVE-TIME GATE: never leave a LIVE event (confirmed/open) timeless. A draft may still be cleared.
+        const { data: cur } = await supabase.from('truck_events').select('status').eq('id', event_id).eq('truck_id', truck.id).single()
+        const isLive = cur?.status === 'confirmed' || cur?.status === 'open'
+        if (isLive && !hasValidEventTimes(start_time, end_time)) {
+          return NextResponse.json({ error: 'A live event needs a start and end time — add them before saving.' }, { status: 400 })
+        }
         await supabase.from('truck_events')
           .update({ start_time, end_time, updated_at: new Date().toISOString() })
           .eq('id', event_id)
           .eq('truck_id', truck.id)
       } else {
+        // INSERT creates an UNCONFIRMED draft (truck_events.status defaults to 'unconfirmed') → null times
+        // allowed here; it can't go LIVE without passing the confirm/open time gate (events/action). So no
+        // block on draft creation (drafts stay null-OK by design).
         // Seed order_ready_override from the van's current default (master-switch model — new events
         // start matching the Settings default).
         const seededOrderReady = await getVanOrderReadyDefault(supabase, truck.id)

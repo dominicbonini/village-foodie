@@ -50,7 +50,7 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }
     // cells are tightened now that the count line is gone, so it never crushes the order cards.
     return (
       <div className="mb-3">
-        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Day load</p>
+        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Kitchen capacity</p>
         <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1">
           {upcoming.map(s => {
             const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'
@@ -71,7 +71,7 @@ export function DayLoadStrip({ slots, eventDate, variant, tz = 'Europe/London' }
   // windows show just the dot (quiet).
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-      <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Day load</p>
+      <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">Kitchen capacity</p>
       <div className="flex flex-col gap-0.5 max-h-[60vh] overflow-y-auto">
         {upcoming.map(s => {
           const tone = (s.tone ?? 'green') as 'green' | 'amber' | 'red'

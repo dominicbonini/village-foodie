@@ -20,7 +20,7 @@ import { validateModifierSelection, hasUnsatisfiableRequiredGroup, selectedCount
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 import type { CatConfig } from '@/lib/prep-utils'
 import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
-import { isPreorderDeadlinePassed, type PreorderConfig } from '@/lib/preorder'
+import { isPreorderDeadlinePassed, isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { enforceStockLimits } from '@/lib/stock-availability'
@@ -501,6 +501,22 @@ export async function POST(req: NextRequest) {
     // start_time via limit(1) so 2+ same-date events no longer collapse to null
     // (Section 5). van_id is selected so the order can be associated with the van.
     const orderEventDate = eventDate ?? new Date().toISOString().split('T')[0]
+
+    // PRE-ORDER OPEN-WINDOW HARD GATE (V8.3): reject BEFORE booking if any line's pre-order-tagged item
+    // hasn't OPENED yet (now < open). Server-enforced (not just menu-hidden) — the SAME isPreorderOpenYet
+    // the menu API display uses, so display == enforcement (DRY linchpin). Date-based, event-tz (NEVER
+    // device-local — BST lesson). Gated by plan + master toggle, like the deadline.
+    {
+      const poFeatureOn = canAccess(truck.plan, 'advance_preordering', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+      const poActive = poFeatureOn && (truck as any).preorders_enabled !== false
+      if (poActive) {
+        const poNowDate = getLocalDateInTz((truck as any).timezone || 'Europe/London')
+        const openYet = isPreorderOpenYet((truck as any).preorder_open_rule, orderEventDate, poNowDate)
+        if (!openYet && orderLines.some(l => (menuItems || []).find((m: any) => m.name === l.name)?.preorder_enabled === true)) {
+          return NextResponse.json({ error: 'Pre-orders for this event aren’t open yet — please check back when they open.', preorder_not_open: true }, { status: 403 })
+        }
+      }
+    }
     const eventCols = 'id, start_time, end_time, venue_name, town, postcode, van_id'
     let eventRow: {
       id: string; start_time: string | null; end_time: string | null

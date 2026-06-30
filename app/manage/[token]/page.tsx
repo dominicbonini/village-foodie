@@ -3,6 +3,7 @@
 // Truck management page — menu, modifiers, deals, schedule, settings
 
 import { useState, useEffect, useCallback, useMemo, use, useRef, Fragment } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { PLAN_META, canAccess, maxVans } from '@/lib/features'
 import { OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY, OFFLINE_PROTECTION_REMINDER } from '@/lib/copy/offlineProtection'
@@ -23,19 +24,21 @@ import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { useDragDrop } from '@/lib/useDragDrop'
-import { formatTime } from '@/lib/time-utils'
+import { formatTime, getLocalDateInTz } from '@/lib/time-utils'
+import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
 import { detectEventConflicts } from '@/lib/event-conflicts'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { SpiceLevel } from '@/components/SpiceLevel'
 import AppHeader from '@/components/shared/AppHeader'
-import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles } from '@/components/manage/primitives'
+import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles, AllergenModeChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
+import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -121,6 +124,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const { token } = use(params)
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('menu')
+  const [allergenWizardOpen, setAllergenWizardOpen] = useState(false)   // Slice-3 allergen wizard overlay (lives in MenuTab)
   const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
   const [showTrialReminder, setShowTrialReminder] = useState(false)
   const [userRole, setUserRole] = useState<UserRole>('owner')
@@ -384,8 +388,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
                 // Pending: show the count inline in the same font, reading "Schedule (8)" in orange.
                 <span className="text-orange-400">{t.label} ({pendingApprovalCount})</span>
               ) : t.id === 'menu' && allergensUnverified ? (
-                // Allergens unverified: a (!) on the Menu tab, mirroring the schedule count cue.
-                <span className="text-amber-400">{t.label} <span aria-label="allergens not set">(!)</span></span>
+                // Allergens unverified: a (!) on the Menu tab. Uses the SAME orange-400 treatment as the
+                // Schedule needs-approval cue (consistency) — not amber.
+                <span className="text-orange-400">{t.label} <span aria-label="allergens not set">(!)</span></span>
               ) : (
                 t.label
               )}
@@ -395,8 +400,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-6">
-        {/* Events-to-approve banner — helpful framing, dismissible, reappears when more arrive */}
-        {showApprovalBanner && (
+        {/* Events-to-approve banner — cross-tab signal. NOT shown on the Schedule tab itself: there the
+            "Needs your approval" section (ScheduleTab) is the surface, so a banner there would double it. */}
+        {showApprovalBanner && activeTab !== 'schedule' && (
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
             <span className="text-amber-500 text-lg shrink-0">📅</span>
             <p className="text-sm text-amber-800 flex-1">
@@ -406,20 +412,18 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             <button onClick={() => setBannerDismissedAtCount(pendingApprovalCount)} className="text-amber-400 hover:text-amber-600 text-sm font-bold leading-none shrink-0">✕</button>
           </div>
         )}
-        {/* Allergens-not-verified banner (mirrors the schedule banner). NOT dismissible — it's a safety
-            gate on customer-visible allergen info, so it stays until the truck verifies. */}
-        {allergensUnverified && (
+        {/* Allergens-not-verified banner — cross-tab signal on NON-Menu tabs only. On the Menu tab the
+            highlighted allergen BOX (below) is the surface, so the banner is suppressed there (no double).
+            "Review →" NAVIGATES to the Menu tab and does NOT auto-open the wizard — the operator opens it
+            deliberately from the box's "Set up / review allergens" button. */}
+        {allergensUnverified && activeTab !== 'menu' && (
           <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3">
             <span className="text-amber-500 text-lg shrink-0">⚠️</span>
             <p className="text-sm text-amber-800 flex-1">
-              <strong>Allergens not set</strong> — customers can&apos;t see allergen info until you verify it. Check each dish&apos;s allergens on the Menu tab.
+              <strong>Allergens not set</strong> — customers can&apos;t see allergen info until you verify it. Review each dish&apos;s allergens on the Menu tab.
             </p>
             <button onClick={() => setActiveTab('menu')} className="text-xs font-bold text-amber-800 underline whitespace-nowrap">Review →</button>
           </div>
-        )}
-        {/* (3) Menu-tab header wording — shown atop the Menu tab content while unverified. */}
-        {activeTab === 'menu' && allergensUnverified && (
-          <p className="mb-4 text-sm font-bold text-amber-700">⚠ Allergens not set — customers can&apos;t see allergen info until you verify it.</p>
         )}
         {/* Mandatory fields banner */}
         {(() => {
@@ -443,7 +447,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
@@ -570,7 +574,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // ══════════════════════════════════════════════════════════════
 // MENU TAB
 // ══════════════════════════════════════════════════════════════
-type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'prep' | 'saving' | 'done'
+type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'allergens' | 'prep' | 'saving' | 'done'
 
 // ── Variant-axis vocabulary for the deterministic regroup pass ───────────────────────────────
 // The single varying token that makes two same-base dishes a VARIANT of one item (vs two different
@@ -585,11 +589,922 @@ const VARIANT_AXIS_TOKENS: Record<string, 'protein' | 'size'> = {
   small: 'size', regular: 'size', medium: 'size', large: 'size', sm: 'size', reg: 'size', lg: 'size',
 }
 
-function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast }: {
+// ══════════════════════════════════════════════════════════════════════════════════════
+// ALLERGEN WIZARD (Slice 3 shell + Mode-1; Slice 4 adds Mode-2 card + Mode-3 both).
+// SAFETY: the system must NEVER under-warn. Unconfirmed per-item allergens stay HIDDEN from
+// customers (the deployed verified-gate in app/api/menu/[truckId]/route.ts does this). The
+// wizard only FLIPS allergens_verified=true when the operator explicitly confirms a row — no
+// auto-write, no bulk "confirm all". Confirm goes through the SHARED upsert_item path.
+//
+// MODE-2 (card) FOLDS IN the existing standalone card flow — the upload/text modal +
+// process-allergens extractor + the trucks.allergen_info_text/url storage all live in MenuTab
+// and are REUSED here (onAddCard opens the existing modal); this wizard does NOT duplicate them.
+// In card mode per-item AI allergens are RETAINED but stay verified=false (hidden) — enabling
+// per-dish later requires going through the review table + confirming each. The wizard never
+// deletes per-item data and never reveals it without a row confirm.
+//
+// MODE-3 (both) runs Mode-1's review table then Mode-2's card, sequentially (reused, not rebuilt).
+//
+// Legacy generics: slice-1 removed 'Nuts'/'Shellfish' from the vocab. A row may still carry one
+// (e.g. Gusto). We SHOW it and BLOCK confirm until the operator picks the precise allergen of
+// that family — dropping a generic without a precise replacement would under-warn (fatal).
+const GENERIC_REPLACEMENTS: Record<string, string[]> = {
+  Nuts: ['Tree nuts', 'Peanuts'],
+  Shellfish: ['Crustaceans', 'Molluscs'],
+}
+const isVocab = (a: string) => (ALLERGEN_VOCAB as readonly string[]).includes(a)
+// EXACT, order-independent set-equality (safety-critical — drives allergen auto-re-verify). True ONLY when
+// both arrays hold the same members, no more, no fewer. Length guard + every-member-present catches both
+// "extra in a" and "extra in b" (toggle-built arrays have no dups, so length+membership is exact).
+const setEqual = (a: string[], b: string[]) => {
+  if (a.length !== b.length) return false
+  const sb = new Set(b)
+  return a.every(x => sb.has(x))
+}
+
+// Stable per-item id for STAGED import items (used as the allergen review's draft/snapshot/React key — NOT
+// the array index, which is unsafe). Assigned once at parse + on manual add; survives importResult patches
+// (spreads preserve it). Session-scoped counter (client-only).
+let __impUidSeq = 0
+const newImpUid = () => `imp-${++__impUidSeq}`
+const withImpUids = (data: any) => (!data || !Array.isArray(data.items)) ? data
+  : { ...data, items: data.items.map((it: any) => ({ ...it, _uid: it._uid ?? newImpUid() })) }
+
+// #3: the legacy-generic "!" tooltip. Rendered via a PORTAL to document.body with position:fixed so it
+// CANNOT be clipped by the matrix's overflow scroll container or occluded by neighbouring/frozen cells
+// (z-[100], above everything). Positioned at the marker's on-screen rect on hover.
+function WarnMarker({ text }: { text: string }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
+  return (
+    <span
+      className="inline-flex shrink-0"
+      onMouseEnter={e => { const r = e.currentTarget.getBoundingClientRect(); setPos({ x: r.left, y: r.bottom }) }}
+      onMouseLeave={() => setPos(null)}
+      aria-label={text}
+    >
+      <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-red-600 text-white text-[11px] font-black leading-none cursor-help">!</span>
+      {pos && createPortal(
+        <span className="fixed z-[100] max-w-[16rem] rounded-md bg-slate-900 text-white text-[11px] leading-snug px-2 py-1.5 shadow-lg whitespace-normal" style={{ left: pos.x, top: pos.y + 6 }}>{text}</span>,
+        document.body,
+      )}
+    </span>
+  )
+}
+
+// CARD-ONLY editor — the "show allergen card" display mode. SEPARATE from CardUploadPage (the per-dish
+// extractor) so card-mode changes can NEVER leak into the per-dish path. NO process-allergens vocab parsing,
+// NO chips. The textarea is the source of truth and is stored VERBATIM. An image upload calls the parent's
+// onTranscribe (process-allergens?mode=transcribe → PROSE) which PRE-FILLS the textarea for the operator to
+// review/edit — never auto-saved, never stored as an image. Used by BOTH the standalone wizard (mode 2) and
+// the import wizard (card display mode).
+function CardOnlyEditor({ value, onChange, onTranscribe, transcribing, canEdit = true }: {
+  value: string; onChange: (t: string) => void
+  onTranscribe: (file: File) => void
+  transcribing: boolean
+  canEdit?: boolean
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
+        <p className="text-sm font-bold text-amber-800">Your allergen card</p>
+        <p className="text-xs text-amber-700 mt-0.5">Customers see this <span className="font-semibold">exactly as you write it</span> — nothing is rewritten. Type or paste below, or upload a photo/PDF and we’ll read the text in for you to check.</p>
+      </div>
+      {!canEdit ? (
+        value
+          ? <p className="text-sm text-slate-600 whitespace-pre-wrap border border-slate-200 rounded-xl p-3">{value}</p>
+          : <p className="text-sm text-slate-400 italic">No allergen card yet.</p>
+      ) : (
+        <>
+          <textarea
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            placeholder="e.g. All our fish & chips contain wheat and milk. Fryer is shared with items containing gluten and nuts. Vegan options available — ask staff."
+            className="w-full h-44 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <div className="flex items-center gap-3">
+            <label className={`inline-flex items-center gap-2 text-sm font-semibold rounded-lg border border-slate-300 px-3 py-1.5 cursor-pointer hover:bg-slate-50 ${transcribing ? 'opacity-60 pointer-events-none' : ''}`}>
+              {transcribing ? <><Spinner /> Reading image…</> : <>📷 Upload image / PDF</>}
+              <input type="file" accept="image/*,application/pdf" className="sr-only"
+                onChange={e => { const f = e.target.files?.[0]; if (f) onTranscribe(f); e.target.value = '' }} />
+            </label>
+            <p className="text-xs text-slate-400">We read the text off your image so you can review it — the image isn’t stored.</p>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// SHARED card-upload page — consumed by BOTH the import wizard AND the standalone wizard (DRY). Generic over
+// an opaque dishId: import passes index-as-string, standalone passes the committed uuid; the parent resolves
+// it. The matcher/merge/safety differences live in the parent's onProcess/onAssign — this is pure UI.
+type CardParse = { entries?: CardEntry[]; blanket?: string[]; cross_contamination?: string[]; formatted_text?: string; summary?: string; contains?: string[]; may_contain?: string[]; dietary_options?: string[]; additional_notes?: string }
+function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, onShowUpload, file, onFile, text, onText, onProcess, onCancelUpload, matchResult, resolvedKeys, dishes, onAssign, onDismiss, blanketOptIn, onBlanketToggle }: {
+  perDish: boolean; anyDetected: boolean
+  parsed: CardParse | null; processing: boolean
+  showUpload: boolean; onShowUpload: () => void
+  file: File | null; onFile: (f: File | null) => void
+  text: string; onText: (t: string) => void
+  onProcess: () => void; onCancelUpload: () => void
+  matchResult: CardMatchResult | null; resolvedKeys: Set<string>
+  dishes: { id: string; name: string }[]
+  onAssign: (entry: CardEntry, dishId: string) => void; onDismiss: (entry: CardEntry) => void
+  blanketOptIn: boolean; onBlanketToggle: (b: boolean) => void
+}) {
+  // Yes/No: uploading a card is OPTIONAL. Tri-state, defaults to NEITHER selected (null). The buttons stay
+  // ALWAYS visible so the operator can switch between Yes/No; "Yes" reveals the upload UI inline BELOW the
+  // (still-visible) buttons, "No" makes it clear they can just proceed via the footer. Reveal is driven by
+  // this LOCAL state (not the showUpload prop) so the first Yes click reliably shows the box. DRY: both
+  // wizards inherit this. UI-only — no change to matcher/merge/verified logic.
+  const [cardChoice, setCardChoice] = useState<'yes' | 'no' | null>(null)
+  const dishName = (id: string) => dishes.find(d => d.id === id)?.name || 'Dish'
+  const pending = matchResult
+    ? [...matchResult.unmatched.map(e => ({ entry: e, candidates: null as string[] | null })),
+       ...matchResult.ambiguous.map(a => ({ entry: a.entry, candidates: a.candidateDishIds }))]
+       .filter(x => !resolvedKeys.has(cardEntryKey(x.entry)))
+    : []
+  return (
+    <>
+      <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
+        <p className="text-sm font-bold text-amber-800">Do you have an allergen card to upload?</p>
+        <p className="text-xs text-amber-700 mt-0.5">
+          {perDish
+            ? <>Upload one and we’ll use it to build your dish allergens.{anyDetected ? ' Detected allergens will be visible on the next page where you confirm each dish.' : ''}</>
+            : <>Upload the allergen card customers will see.</>}
+        </p>
+        {/* Yes/No — ALWAYS visible (until a card is parsed/processing) so the operator can switch choice.
+            Default = neither selected. Yes reveals the upload UI below; No shows the proceed hint. */}
+        {!parsed && !processing && (
+          <div className="mt-3">
+            <div className="flex gap-2">
+              <button type="button" onClick={() => { setCardChoice('yes'); onShowUpload() }}
+                className={`px-5 py-1.5 rounded-lg text-sm font-bold border transition-colors ${cardChoice === 'yes' ? 'bg-orange-600 text-white border-orange-600' : 'bg-white border-amber-300 text-amber-800 hover:bg-amber-100'}`}>Yes</button>
+              <button type="button" onClick={() => setCardChoice('no')}
+                className={`px-5 py-1.5 rounded-lg text-sm font-bold border transition-colors ${cardChoice === 'no' ? 'bg-slate-700 text-white border-slate-700' : 'bg-white border-amber-300 text-amber-800 hover:bg-amber-100'}`}>No</button>
+            </div>
+            {cardChoice === 'no' && <p className="text-xs text-amber-700 font-semibold mt-2">No problem — you don’t need one. Continue with the button below.</p>}
+          </div>
+        )}
+      </div>
+      {!parsed ? (
+        <div className="flex flex-col gap-3">
+          {processing ? (
+            <div className="flex items-center gap-2 text-sm text-slate-500"><Spinner /> Analysing card…</div>
+          ) : cardChoice === 'yes' ? (
+            /* YES expanded — the drag-drop + paste UI inline, BELOW the still-visible Yes/No. Dropzone and
+               textarea share the SAME height (h-28) so they sit neatly and fit the fixed-height body. */
+            <>
+              <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-orange-300 hover:bg-orange-50/30 rounded-xl h-28 px-4 cursor-pointer transition-colors">
+                <span className="text-2xl">{file ? '✅' : '📷'}</span>
+                <span className="text-sm text-slate-500 text-center">{file ? file.name : 'Drag and drop or tap to choose'}</span>
+                <span className="text-xs text-slate-400">Image or PDF</span>
+                <input type="file" accept="image/*,application/pdf" className="sr-only" onChange={e => onFile(e.target.files?.[0] || null)} />
+              </label>
+              <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200" /><span className="text-xs text-slate-400 font-medium">or</span><div className="flex-1 h-px bg-slate-200" /></div>
+              <textarea value={text} onChange={e => onText(e.target.value)} placeholder="Paste your allergen card text here…" className="w-full h-28 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
+              <div><Btn label="Process card" disabled={!file && !text.trim()} onClick={onProcess} /></div>
+            </>
+          ) : null}
+        </div>
+      ) : (
+        <>
+          <div className="rounded-xl border border-slate-200 p-3">
+            <p className="text-sm font-bold text-slate-800">Card read ✓</p>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {(matchResult?.matched.length ?? 0)} matched to a dish.{pending.length > 0 && <> {pending.length} need your assignment.</>}
+            </p>
+          </div>
+          {pending.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide">Couldn’t auto-match these — assign or dismiss</p>
+              {pending.map((p, pi) => {
+                const opts = p.candidates ?? dishes.map(d => d.id)
+                return (
+                  <div key={`${cardEntryKey(p.entry)}-${pi}`} className="border border-slate-200 rounded-xl p-3 flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-slate-900">“{p.entry.name}”</span>
+                      <span className="inline-flex flex-wrap gap-1">{p.entry.allergens.map(a => <AllergenChip key={a} label={a} />)}</span>
+                    </div>
+                    {p.candidates && <p className="text-[11px] text-amber-700 font-semibold">Ambiguous — matches several dishes; pick the right one.</p>}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <select defaultValue="" onChange={e => { const v = e.target.value; if (v !== '') onAssign(p.entry, v) }}
+                        className="border border-slate-200 rounded-lg px-2 py-1.5 text-sm bg-white">
+                        <option value="">Assign to dish…</option>
+                        {opts.map(id => <option key={id} value={id}>{dishName(id)}</option>)}
+                      </select>
+                      <Btn label="Dismiss" colour="slate" size="sm" onClick={() => onDismiss(p.entry)} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+          {!!parsed.blanket?.length && (
+            <label className="flex items-start gap-2 rounded-xl border border-slate-200 p-3 cursor-pointer">
+              <input type="checkbox" checked={blanketOptIn} onChange={e => onBlanketToggle(e.target.checked)} className="mt-0.5" />
+              <span className="text-xs text-slate-600">
+                The card says <strong>{parsed.blanket.join(', ')}</strong> may be present across <strong>all</strong> dishes.
+                Add to every dish? (you’ll still confirm each) <span className="text-slate-400">— off by default</span>
+              </span>
+            </label>
+          )}
+          {!!parsed.cross_contamination?.length && (
+            <div className="rounded-xl border border-slate-200 p-3">
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Kitchen notes (saved to your allergen info)</p>
+              <ul className="list-disc pl-5 text-xs text-slate-600">{parsed.cross_contamination.map((n, i) => <li key={i}>{n}</li>)}</ul>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  )
+}
+
+function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard }: {
+  items: Item[]; categories: Category[]
+  canEdit: boolean                                                       // owner/admin — VIEW for all, EDIT/confirm only here (server also enforces)
+  onClose: () => void
+  onConfirmRow: (item: Item, allergens: string[], dietary: string[]) => Promise<void>
+  onUndoRow: (item: Item, allergens: string[], dietary: string[], verified: boolean) => Promise<void>  // reverses a confirm (data + verified)
+  onEditUnverify: (item: Item) => Promise<void>                          // flip verified=false on edit (data unchanged) until re-confirm
+  showToast: ShowToast
+  cardText: string; cardUrl: string; cardProcessing: boolean
+  onAddCard: () => void                                                  // opens the existing (folded-in) card upload/text modal
+  onSetDisplayMode: (mode: 'per_dish' | 'card' | 'both') => Promise<void>
+  initialMode?: 0 | 1 | 2                                                // 0 chooser (default); 1 review directly (import per-item → skips re-choosing); 2 card
+  // STANDALONE card→dish enrichment (#6). When provided, the per-dish branch shows a card-upload page that
+  // matches the card against THESE (committed) items + merges via onCardMerge. Absent (import) → no card page.
+  onProcessCard?: (file: File | null, text: string) => Promise<CardParse | null>   // → process-allergens (parent has token/api)
+  onCardMerge?: (item: Item, union: string[]) => Promise<void>                       // → writeItemAllergens(item, union, …, verified=false, 'card')
+  onBack?: () => void                                                                // IMPORT-only: review "← Back" returns to the import sub-step, NOT the wizard's own mode-0/mode-3
+  importStepper?: React.ReactNode                                                     // IMPORT-only: the wizard's step-progress header (Menu·Extras·Allergens·Kitchen). Presence ⇒ import context (Next-rename + Next-disabled-until-all-confirmed). Standalone omits it.
+  onSaveCard?: (text: string) => Promise<void>                                        // CARD-ONLY mode: persist the operator's VERBATIM card text to trucks.allergen_info_text (no extraction)
+  onTranscribeCard?: (file: File) => Promise<string | null>                          // CARD-ONLY mode: image → faithful PROSE transcription (process-allergens?mode=transcribe); fills the editor
+}) {
+  // mode 0 = chooser; 1 = per-dish review; 2 = card; 3 = per-dish CARD-UPLOAD page (#6, standalone only)
+  const [mode, setMode] = useState<0 | 1 | 2 | 3>(initialMode)
+  // #4: the chooser is SELECT-then-Next (no auto-advance). Holds the operator's pick until they press Next.
+  const [chooserMode, setChooserMode] = useState<'per_dish' | 'card' | null>(null)
+  // #6 STANDALONE card→dish state (only used when onProcessCard/onCardMerge are provided). Matches the
+  // parsed card against the COMMITTED `items` (exact-only) and merges via onCardMerge with a setEqual guard.
+  const [stdCardParsed, setStdCardParsed] = useState<CardParse | null>(null)
+  const [stdCardMatch, setStdCardMatch] = useState<CardMatchResult | null>(null)
+  const [stdCardProcessing, setStdCardProcessing] = useState(false)
+  const [stdShowUpload, setStdShowUpload] = useState(false)
+  const [stdCardFile, setStdCardFile] = useState<File | null>(null)
+  const [stdCardText, setStdCardText] = useState('')
+  const [stdResolved, setStdResolved] = useState<Set<string>>(new Set())
+  const [stdBlanket, setStdBlanket] = useState(false)
+  // Apply ONE matched entry to a committed item: union, then write ONLY if it CHANGED (Correction 1 —
+  // never needlessly flip an unchanged confirmed dish). Flips verified=false on a real change (re-confirm).
+  const applyCardToCommitted = async (itemId: string, allergens: string[]) => {
+    const item = items.find(i => i.id === itemId)
+    if (!item || !onCardMerge) return
+    const union = mergeAllergensUnion(item.allergens || [], allergens)
+    if (!setEqual(union, item.allergens || [])) await onCardMerge(item, union)   // setEqual guard (Correction 1)
+  }
+  const handleStandaloneCardProcess = async () => {
+    if (!onProcessCard) return
+    setStdCardProcessing(true)
+    try {
+      const parsed = await onProcessCard(stdCardFile, stdCardText)
+      if (!parsed) { showToast('Couldn’t read the allergen card — try again', 'error'); return }
+      setStdCardParsed(parsed)
+      const entries: CardEntry[] = Array.isArray(parsed.entries) ? parsed.entries.filter((e: any) => e && e.name && Array.isArray(e.allergens)) : []
+      const m = matchCardEntries(entries, items.map(i => ({ id: i.id, name: i.name })))
+      setStdCardMatch(m)
+      for (const { entry, dishId } of m.matched) await applyCardToCommitted(dishId, entry.allergens)   // exact auto-apply (guarded)
+      setStdResolved(new Set(m.matched.map(x => cardEntryKey(x.entry))))
+      showToast(`Card read — ${m.matched.length} matched, ${m.unmatched.length + m.ambiguous.length} need assignment`, 'success')
+    } catch { showToast('Couldn’t read the allergen card — try again', 'error') }
+    finally { setStdCardProcessing(false) }
+  }
+  const assignStandaloneEntry = async (entry: CardEntry, dishId: string) => {
+    await applyCardToCommitted(dishId, entry.allergens)
+    setStdResolved(prev => new Set(prev).add(cardEntryKey(entry)))
+  }
+  const dismissStandaloneEntry = (entry: CardEntry) => setStdResolved(prev => new Set(prev).add(cardEntryKey(entry)))
+  const [reviewView, setReviewView] = useState<'list' | 'table'>('list') // mode-1 review layout (same data/logic)
+  const [finishing, setFinishing] = useState(false)
+  // Per-row editable draft (vocab-only allergens + dietary). Lazily seeded from the item.
+  const [drafts, setDrafts] = useState<Record<string, { allergens: string[]; dietary: string[] }>>({})
+  const [confirming, setConfirming] = useState<string | null>(null)
+  const [sessionConfirmed, setSessionConfirmed] = useState<Set<string>>(new Set())
+  // Per-row snapshot of the LAST-CONFIRMED selection (the exact vocab allergens[] + dietary[] that were
+  // confirmed). The single source of truth for "differs from confirmed": we COMPARE the live draft to this
+  // (setEqual) rather than tracking a one-way "an edit happened" flag — so toggling back to the exact
+  // confirmed set auto-clears the "changed" state AND auto-restores verified=true. Replaces the old
+  // one-way `editedSinceConfirm` Set entirely.
+  const [confirmedSnapshot, setConfirmedSnapshot] = useState<Record<string, { allergens: string[]; dietary: string[] }>>({})
+  // Option A: the WHOLE <thead> is ONE sticky unit (top:0), so the group row + label row have NO inter-layer
+  // offset (gap eliminated structurally). The ONLY remaining offset is the category rows, which stick at the
+  // measured thead height — one ResizeObserver, one number.
+  const theadRef = useRef<HTMLTableSectionElement>(null)
+  const [headerH, setHeaderH] = useState(72)
+  useEffect(() => {
+    const el = theadRef.current
+    if (!el) return
+    const measure = () => setHeaderH(el.offsetHeight)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [reviewView, mode, items.length])
+
+  const seed = (item: Item) => ({
+    allergens: (item.allergens || []).filter(isVocab),
+    dietary: item.dietary_info || [],
+  })
+  const draftFor = (item: Item) => drafts[item.id] ?? seed(item)
+  const patchDraft = (item: Item, patch: Partial<{ allergens: string[]; dietary: string[] }>) =>
+    setDrafts(d => ({ ...d, [item.id]: { ...draftFor(item), ...patch } }))
+
+  const confirmedCount = items.filter(i => i.allergens_verified !== false).length
+  const allDone = items.length > 0 && confirmedCount === items.length
+
+  // The allergens[] actually WRITTEN on confirm = the operator's vocab picks + any unknown non-vocab string
+  // preserved (defensive over-warn); known generics are dropped, replaced by the precise picks. Shared by
+  // handleConfirm AND the auto-restore path so both write byte-identical data.
+  const writtenAllergens = (item: Item, draft: { allergens: string[]; dietary: string[] }) => {
+    const unknownStale = (item.allergens || []).filter(a => !isVocab(a) && !GENERIC_REPLACEMENTS[a])
+    return [...new Set([...draft.allergens, ...unknownStale])]
+  }
+
+  const handleConfirm = async (item: Item) => {
+    const draft = draftFor(item)
+    const written = writtenAllergens(item, draft)
+    // Snapshot the PRIOR state (before the write) so Undo can fully reverse the upsert_item.
+    const prev = { allergens: item.allergens || [], dietary: item.dietary_info || [], verified: item.allergens_verified !== false }
+    setConfirming(item.id)
+    try {
+      await onConfirmRow(item, written, draft.dietary)
+      setSessionConfirmed(s => new Set(s).add(item.id))
+      // Snapshot the CONFIRMED draft selection — the baseline the live draft is compared against for
+      // "changed"/auto-restore. (Vocab allergens + dietary, matching what draftFor returns.)
+      setConfirmedSnapshot(s => ({ ...s, [item.id]: { allergens: draft.allergens, dietary: draft.dietary } }))
+      // Named toast + Undo via the SHARED toast-undo system (lib/useToasts + ToastStack).
+      showToast(`${item.name} confirmed`, 'success', {
+        duration: 6000,
+        action: { label: 'Undo', run: () => undoConfirm(item, prev) },
+      })
+    } finally {
+      setConfirming(null)
+    }
+  }
+
+  // Undo a confirm — reverse the write (restore prior allergens/dietary + prior verified) and return
+  // the row to its unconfirmed UI (drop from sessionConfirmed; reset the draft to the prior selection).
+  const undoConfirm = async (item: Item, prev: { allergens: string[]; dietary: string[]; verified: boolean }) => {
+    try {
+      await onUndoRow(item, prev.allergens, prev.dietary, prev.verified)
+      setSessionConfirmed(s => { const n = new Set(s); n.delete(item.id); return n })
+      // Drop the confirmed snapshot — the confirm is reversed, so there's no confirmed baseline to compare
+      // to (the row returns to its prior, unconfirmed state; prev.verified is always false at confirm time).
+      setConfirmedSnapshot(s => { const n = { ...s }; delete n[item.id]; return n })
+      setDrafts(d => ({ ...d, [item.id]: { allergens: prev.allergens.filter(isVocab), dietary: prev.dietary } }))
+    } catch { /* writeItemAllergens already reverted + toasted */ }
+  }
+
+  // The confirmed snapshot to COMPARE the live draft against: the explicit one stored at confirm time, or
+  // — for a row that's verified with no explicit snapshot yet (confirmed in a PRIOR session) — its stored
+  // verified data (vocab allergens + dietary, matching draftFor's representation). A never-confirmed,
+  // unverified row has none → undefined (no baseline; auto-restore can't apply to it).
+  const snapshotFor = (item: Item): { allergens: string[]; dietary: string[] } | undefined =>
+    confirmedSnapshot[item.id]
+    ?? (item.allergens_verified !== false
+        ? { allergens: (item.allergens || []).filter(isVocab), dietary: item.dietary_info || [] }
+        : undefined)
+  // TRUE iff the row HAS a confirmed snapshot AND the live draft currently DIFFERS from it (exact,
+  // order-independent set-equality on BOTH allergens and dietary). The single derived source for the
+  // "changed"/amber/reverted UI — no one-way flag.
+  const differsFromConfirmed = (item: Item) => {
+    const snap = snapshotFor(item)
+    if (!snap) return false
+    const d = draftFor(item)
+    return !(setEqual(d.allergens, snap.allergens) && setEqual(d.dietary, snap.dietary))
+  }
+
+  // A toggle on a row = an edit. We compare the resulting draft to the confirmed snapshot:
+  //  • currently VERIFIED + now DIFFERS → flip to unconfirmed (verified=false in the DB, data unchanged)
+  //    so the customer never sees an edited-but-unconfirmed selection; the operator must Confirm again.
+  //    We also CAPTURE the snapshot we're leaving (for prior-session rows) so toggling back can restore it.
+  //  • currently UNVERIFIED + now EXACTLY MATCHES the snapshot → AUTO-RESTORE verified=true (re-writes the
+  //    confirmed data) — no explicit Confirm click needed; the customer sees the confirmed allergens again.
+  const handleToggle = (item: Item, patch: Partial<{ allergens: string[]; dietary: string[] }>) => {
+    if (!canEdit) return   // VIEW-only for non-owner/admin (server also rejects the write)
+    const nextDraft = { ...draftFor(item), ...patch }   // the draft AFTER this toggle (setState is async)
+    patchDraft(item, patch)   // #5: optimistic local draft → the tick + name pill update INSTANTLY
+    const snap = snapshotFor(item)
+    const matches = !!snap && setEqual(nextDraft.allergens, snap.allergens) && setEqual(nextDraft.dietary, snap.dietary)
+    if (item.allergens_verified !== false) {
+      // Verified → unverify ONLY if it now differs (a no-op toggle that lands back on the confirmed set
+      // leaves it verified). Capture the leaving snapshot first so the round-trip back can auto-restore.
+      if (!matches) {
+        if (snap && !confirmedSnapshot[item.id]) setConfirmedSnapshot(s => (s[item.id] ? s : { ...s, [item.id]: snap }))
+        setSessionConfirmed(s => { const n = new Set(s); n.delete(item.id); return n })
+        // #5: DEFER the verified=false write (heavier parent re-render) one tick so the optimistic tick
+        // paints first — same payload, just not blocking the click's paint. Data path unchanged.
+        setTimeout(() => onEditUnverify(item), 0)
+      }
+    } else if (matches) {
+      // Unverified, toggled back to the EXACT confirmed set → auto-re-verify (same write path as Confirm).
+      const written = writtenAllergens(item, nextDraft)
+      setSessionConfirmed(s => new Set(s).add(item.id))
+      setTimeout(() => onConfirmRow(item, written, nextDraft.dietary), 0)
+    }
+    // else: unverified + still differs (or never-confirmed) → just the draft update; nothing to write.
+  }
+
+  // ── Per-row derived state + small shared render pieces (used by BOTH list and table views) ──
+  const rowMeta = (item: Item) => {
+    const draft = draftFor(item)
+    const knownStale = (item.allergens || []).filter(a => !isVocab(a) && GENERIC_REPLACEMENTS[a])
+    // `unresolved` = a detected generic with NO precise replacement picked yet. It now drives the WARNING
+    // only — NOT a confirm block. WARN-but-allow: the operator can confirm with precise picks, or with
+    // NONE (informed "no nuts" decision if the AI was wrong). The generic is dropped on confirm regardless.
+    const unresolved = knownStale.filter(s => !GENERIC_REPLACEMENTS[s].some(p => draft.allergens.includes(p)))
+    return {
+      draft,
+      knownStale,
+      unresolved,
+      canConfirm: true,                                     // confirm is NEVER blocked by a generic now
+      verified: item.allergens_verified !== false,
+      justConfirmed: sessionConfirmed.has(item.id),
+    }
+  }
+  // Consequence-bearing warning text for an unresolved generic — the safety now lives in THIS text (the
+  // operator is told that confirming with no precise pick = the dish shows as containing none of that family).
+  const genericWarnText = (generics: string[]) => generics.map(s => {
+    const fam = s.toLowerCase()
+    return `“${s}” was detected but isn’t specific. Pick ${GENERIC_REPLACEMENTS[s].join(' and/or ')} if this dish contains ${fam} — or leave them unselected if it doesn’t.`
+  }).join(' ')
+  // Selected allergens/dietary as PILLS — REUSES the customer-page chip components (DRY: AllergenChip /
+  // DietaryChip from @/components/MenuAllergenChips) so the operator previews exactly the customer view.
+  // #9: rendered INLINE beside the dish name (not below) in the list view.
+  const selectedPills = (draft: { allergens: string[]; dietary: string[] }) =>
+    (draft.dietary.length > 0 || draft.allergens.length > 0) ? (
+      <span className="inline-flex flex-wrap gap-1 align-middle">
+        {draft.allergens.map(a => <AllergenChip key={a} label={a} />)}
+        {draft.dietary.map(d => <DietaryChip key={d} label={d} />)}
+      </span>
+    ) : null
+  // WARN (not block): shown while a detected generic is unresolved. The consequence text makes confirming
+  // nut-free a deliberate, INFORMED choice — that's what keeps dropping the generic from under-warning.
+  const staleWarn = (m: ReturnType<typeof rowMeta>) => m.unresolved.length === 0 ? null : (
+    <p className="text-[11px] text-amber-700 font-semibold">⚠ {genericWarnText(m.unresolved)}</p>
+  )
+  const stateBadge = (m: ReturnType<typeof rowMeta>) =>
+    m.justConfirmed && m.verified
+      ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 shrink-0">✓ Confirmed</span>
+      : m.verified
+        ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 shrink-0">Confirmed</span>
+        : <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 shrink-0">Needs review</span>
+  const confirmBtn = (item: Item, m: ReturnType<typeof rowMeta>) => {
+    // #3: an edited-since-confirmed row reads "Confirm" (NOT "re-confirm") + a subtle "· changed" hint so
+    // the operator sees why it needs confirming again. A verified row reads "Confirmed ✓" (disabled —
+    // nothing to do; editing a toggle re-enables it). No "re-confirm" wording anywhere.
+    const changed = differsFromConfirmed(item) && !m.verified
+    return (
+      // "· changed" hint STACKS below the Confirm button (keeps the Status column narrow; the row grows
+      // only when the hint shows). items-center → button + hint CENTRED in the Status column (#1).
+      <div className="flex flex-col items-center gap-0.5">
+        <Btn
+          label={confirming === item.id ? 'Confirming…' : m.verified ? 'Confirmed ✓' : 'Confirm'}
+          colour={m.verified ? 'slate' : (m.canConfirm ? 'green' : 'slate')} size="sm" loading={confirming === item.id}
+          disabled={!canEdit || m.verified || !m.canConfirm || confirming === item.id} onClick={() => handleConfirm(item)}
+        />
+        {changed && <span className="text-[10px] font-bold text-amber-600 leading-tight" title="Edited since you last confirmed — confirm again">· changed</span>}
+      </div>
+    )
+  }
+  const togglesBlock = (item: Item, draft: { allergens: string[]; dietary: string[] }) => (
+    <>
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Allergens</p>
+      <AllergenToggles value={draft.allergens} onChange={next => handleToggle(item, { allergens: next })} />
+      <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mt-2 mb-1">Dietary</p>
+      <DietaryToggles value={draft.dietary} onChange={next => handleToggle(item, { dietary: next })} />
+    </>
+  )
+  // #5: legacy-generic warning as a PROMINENT red "!" badge + a real (group-hover) tooltip with the full
+  // text. Shows ONLY while unresolved (!m.canConfirm) — so it IS the block-until-precise signal; the
+  // Confirm button stays disabled via m.canConfirm regardless. (Bug fixed: see report.)
+  const warnMarker = (m: ReturnType<typeof rowMeta>) => {
+    // WARN (not block): shown while a detected generic is unresolved; confirm is NOT gated. The tooltip
+    // carries the consequence text. Renders via the portal WarnMarker (fixed tooltip, never clipped).
+    if (m.unresolved.length === 0) return null
+    return <WarnMarker text={genericWarnText(m.unresolved)} />
+  }
+  // Dishes in MENU ORDER, grouped by category (category order; uncategorised last). Shared by both views.
+  const groupedItems = (() => {
+    const byCat = new Map<string, Item[]>()
+    items.forEach(i => { const k = i.category_id ?? '__none'; (byCat.get(k) ?? byCat.set(k, []).get(k)!).push(i) })
+    return [
+      ...categories.filter(c => byCat.has(c.id)).map(c => ({ name: c.name, rows: byCat.get(c.id)! })),
+      ...(byCat.has('__none') ? [{ name: 'Uncategorised', rows: byCat.get('__none')! }] : []),
+    ]
+  })()
+
+  // #5: SAVE & FINISH LATER — persists the chosen display mode, then closes. Per-row confirms were already
+  // saved at confirm time (verified=true), and unconfirmed rows stay verified=false (hidden) — so partial
+  // progress is fully persisted with NO requirement that every row be confirmed. On a save error we toast
+  // and STAY OPEN (recoverable) rather than throwing/closing silently (#4: incomplete save must not throw).
+  const finishWith = async (m: 'per_dish' | 'card' | 'both') => {
+    setFinishing(true)
+    try {
+      await onSetDisplayMode(m)
+      onClose()
+    } catch (e: any) {
+      showToast(e?.message || 'Couldn’t save — please try again', 'error')
+    } finally {
+      setFinishing(false)
+    }
+  }
+
+  // CARD-ONLY finish: store the operator's VERBATIM text (no extraction), set display mode 'card', close.
+  const [cardEditText, setCardEditText] = useState(cardText || '')
+  const [cardTranscribing, setCardTranscribing] = useState(false)
+  const transcribeCard = async (file: File) => {
+    if (!onTranscribeCard) return
+    setCardTranscribing(true)
+    try { const t = await onTranscribeCard(file); if (t != null) setCardEditText(t) }
+    catch { showToast('Couldn’t read that image — type or paste your card instead', 'error') }
+    finally { setCardTranscribing(false) }
+  }
+  const finishCard = async () => {
+    setFinishing(true)
+    try {
+      if (onSaveCard) await onSaveCard(cardEditText.trim())
+      await onSetDisplayMode('card')
+      onClose()
+    } catch (e: any) {
+      showToast(e?.message || 'Couldn’t save — please try again', 'error')
+    } finally {
+      setFinishing(false)
+    }
+  }
+
+  const goBack = () => { setMode(0) }
+
+  // ── Reusable Mode-1 review (shared by mode 1 and mode 3's review step) ────────────────────
+  // Same data + per-row logic in BOTH layouts (re-confirm-on-edit, block-until-precise, toast/undo);
+  // only the wrapper differs. The List ⇄ Table toggle picks the wrapper.
+  const reviewHeader = (
+    <div className="px-5 pt-4">
+      <div className="flex items-center justify-between mb-1 gap-2">
+        <p className="text-xs font-bold text-slate-600">{confirmedCount} of {items.length} confirmed</p>
+        <div className="flex items-center gap-2">
+          {allDone && <span className="text-xs font-bold text-green-600">✓ All confirmed</span>}
+          {/* List ⇄ Table view toggle — layout only, same review data/logic. Slightly larger for clarity. */}
+          <div className="flex rounded-lg border border-slate-200 overflow-hidden text-sm font-bold">
+            <button onClick={() => setReviewView('list')} className={`px-4 py-1.5 ${reviewView === 'list' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>List</button>
+            <button onClick={() => setReviewView('table')} className={`px-4 py-1.5 ${reviewView === 'table' ? 'bg-orange-500 text-white' : 'text-slate-500 hover:bg-slate-50'}`}>Table</button>
+          </div>
+        </div>
+      </div>
+      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+        <div className="h-full bg-green-500 transition-all" style={{ width: items.length ? `${(confirmedCount / items.length) * 100}%` : '0%' }} />
+      </div>
+      <p className="text-[11px] text-amber-700 mt-2">
+        Detected from your menu — <strong>check these</strong>. Allergens stay hidden from customers until you confirm each dish.
+      </p>
+      {!canEdit && (
+        <p className="text-[11px] text-slate-500 mt-1 font-semibold">👁 View only — only the owner can confirm or change allergens.</p>
+      )}
+    </div>
+  )
+
+  const reviewTable = (
+    <>
+      {reviewHeader}
+      <div className="p-5 pt-3 overflow-y-auto flex-1 min-h-0">
+        {items.length === 0 && <EmptyState icon="🍽️" title="No menu items" body="Add menu items first, then set their allergens here." />}
+
+        {/* LIST view — one roomy card per dish, GROUPED BY CATEGORY in menu order (#7), no per-item
+            category line (#8), selected pills INLINE beside the name (#9). */}
+        {reviewView === 'list' && (
+          <div className="flex flex-col gap-4">
+            {groupedItems.map(g => (
+              <div key={g.name} className="flex flex-col gap-3">
+                <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{g.name}</h4>
+                {g.rows.map(item => {
+                  const m = rowMeta(item)
+                  return (
+                    <div key={item.id} className="border border-slate-200 rounded-xl p-3">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="min-w-0 flex flex-wrap items-center gap-1.5">
+                          <span className="text-sm font-bold text-slate-900">{item.name}</span>
+                          {selectedPills(m.draft)}
+                        </div>
+                        {stateBadge(m)}
+                      </div>
+                      {/* LIST: the explicit staleWarn paragraph is the single legacy-generic warning here
+                          (room for the full text); the compact ! marker is TABLE-only to avoid doubling. */}
+                      <div className="mb-2">{staleWarn(m)}</div>
+                      {togglesBlock(item, m.draft)}
+                      <div className="flex justify-end mt-3">{confirmBtn(item, m)}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* TABLE view — a category-grouped MATRIX: allergens (amber) + dietary (green) as COLUMN
+            headers, dishes as rows, a tick per cell. Same per-row data/logic as the list (handleToggle,
+            rowMeta, block-until-precise via confirmBtn's m.canConfirm) — only the layout differs.
+            Horizontally scrollable (15 allergen + 6 dietary columns); the dish/confirm column is frozen
+            left so the row label + Confirm stay visible while scrolling the wide matrix. */}
+        {reviewView === 'table' && items.length > 0 && (() => {
+          const A = ALLERGEN_VOCAB.length, D = DIETARY_VOCAB.length
+          // Combined column list (allergens then dietary) — gives each column a stable index for the
+          // alternating shading (#4) and one shared tick renderer.
+          const COLUMNS = [
+            ...ALLERGEN_VOCAB.map(label => ({ label, tone: 'allergen' as const })),
+            ...DIETARY_VOCAB.map(label => ({ label, tone: 'diet' as const })),
+          ]
+          const stripe = (i: number) => (i % 2 ? 'bg-slate-50/70' : '')   // allergen column shading (tracking)
+          const COL_W = 56                                                 // ONE uniform width for EVERY tag column (table-fixed enforces it → equal grid + consistent 2-line wrap)
+          // #2: SINGLE SOURCE for the frozen Dish width — used by the colgroup, the Status sticky-left
+          // offset, and TABLE_W, so they can't drift apart. Widened from 200 so long names fit.
+          const DISH_COL_W = 252
+          const STATUS_COL_W = 118                                         // #1: tight — fits "Confirmed ✓"; "· changed" stacks BELOW the button (doesn't widen the column)
+          const STATUS_W = 'whitespace-nowrap'                            // keep the Confirm button on one line within its column
+          // ONLY the LEFT border (not all four sides) — `border-l-slate-400`, NOT `border-slate-400` — so
+          // the first dietary column gets a single boundary line and otherwise matches the other cells.
+          const DIVIDER = 'border-l-2 border-l-slate-400'
+          const TABLE_W = DISH_COL_W + STATUS_COL_W + COLUMNS.length * COL_W   // explicit width so table-layout:fixed ENGAGES (enforces the colgroup widths)
+          // SIMPLE binary tick: ON = solid ✓, OFF = empty (no greyed/hover intermediate on the glyph).
+          // #5(prev): the toggled cell on an edited-after-confirm row is highlighted amber. Dietary block
+          // tinted green; cells bordered so allergen + dietary are uniformly BOXED (#7).
+          const cell = (item: Item, m: ReturnType<typeof rowMeta>, c: { label: string; tone: 'allergen' | 'diet' }, i: number) => {
+            const draftArr = c.tone === 'allergen' ? m.draft.allergens : m.draft.dietary
+            const active = draftArr.includes(c.label)
+            const next = active ? draftArr.filter(x => x !== c.label) : [...draftArr, c.label]
+            const toggle = () => handleToggle(item, c.tone === 'allergen' ? { allergens: next } : { dietary: next })
+            // Highlight the cell only if it differs from the CONFIRMED snapshot (the baseline), and only
+            // while the row is in the "changed" (differs + unverified) state.
+            const snap = snapshotFor(item)
+            const snapHas = snap ? (c.tone === 'allergen' ? snap.allergens : snap.dietary).includes(c.label) : false
+            const changedCell = differsFromConfirmed(item) && !m.verified && active !== snapHas
+            const bg = changedCell ? 'bg-amber-200' : c.tone === 'diet' ? 'bg-green-50/40' : stripe(i)
+            return (
+              <td key={c.label} className={`p-0 text-center border-b border-r border-slate-100 ${bg} ${i === A ? DIVIDER : ''}`}>
+                <button type="button" disabled={!canEdit} onClick={toggle} aria-pressed={active} aria-label={c.label}
+                  className={`w-full h-11 flex items-center justify-center text-base font-bold ${active ? 'text-slate-800' : 'text-transparent'} ${canEdit && !active ? 'hover:bg-slate-100/70' : ''} ${canEdit ? '' : 'cursor-default'}`}>
+                  ✓
+                </button>
+              </td>
+            )
+          }
+          // (c) ONE measured offset: category rows stick at the thead height, with a 1px overlap so any
+          // sub-pixel rounding tucks UNDER the sticky thead instead of showing a gap.
+          const catTop = Math.ceil(headerH) - 1
+          return (
+            // The wrapper is the scroll container (both axes): the sticky <thead> holds the header on
+            // vertical scroll AND the frozen columns hold on horizontal scroll.
+            <div className="overflow-auto -mx-1 max-h-[60vh]">
+              {/* table-fixed + explicit TABLE_W → uniform enforced columns. (b) border-separate +
+                  border-spacing:0 → each cell paints its OWN borders (single-side: border-r + border-b),
+                  which TRAVEL with sticky cells — no detached-border seams (no inset-shadow hack needed). */}
+              <table className="table-fixed border-separate border-spacing-0 text-sm" style={{ width: TABLE_W }}>
+                <colgroup>
+                  <col style={{ width: DISH_COL_W }} />
+                  <col style={{ width: STATUS_COL_W }} />
+                  {COLUMNS.map(c => <col key={c.label} style={{ width: COL_W }} />)}
+                </colgroup>
+                {/* (a) the WHOLE thead is ONE sticky unit (top:0) → the group row + label row have NO
+                    inter-layer offset, so the gap between them is gone by construction. */}
+                <thead ref={theadRef} className="sticky top-0 z-30">
+                  {/* group headers spanning the allergen + dietary blocks */}
+                  <tr>
+                    <th colSpan={2} className="sticky left-0 z-40 bg-white h-6 border-b border-r border-slate-200" />
+                    <th colSpan={A} className="bg-amber-100 border-b border-r border-slate-200 text-center text-[11px] font-bold text-amber-700 uppercase tracking-wide py-1">Allergens</th>
+                    <th colSpan={D} className={`bg-green-100 border-b border-r border-slate-200 ${DIVIDER} text-center text-[11px] font-bold text-green-700 uppercase tracking-wide py-1`}>Dietary</th>
+                  </tr>
+                  {/* per-column labels (horizontal, centred, hyphenated 2-line wrap). Dish frozen always;
+                      Status frozen on sm+ only (req 2). */}
+                  <tr>
+                    <th style={{ width: DISH_COL_W }} className="sticky left-0 z-40 bg-white h-12 border-b border-r border-slate-200 text-left text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2">Dish</th>
+                    <th style={{ left: DISH_COL_W }} className={`static sm:sticky z-40 bg-white ${STATUS_W} h-12 border-b border-r border-slate-200 text-center text-[11px] font-bold text-slate-900 uppercase tracking-wide px-2 align-bottom pb-2`}>Status</th>
+                    {COLUMNS.map((c, i) => (
+                      <th key={c.label} className={`bg-white h-12 px-0.5 py-1 align-middle text-center text-[11px] font-bold text-slate-900 leading-tight hyphens-auto break-words border-b border-r border-slate-100 ${i === A ? DIVIDER : ''}`}>{c.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedItems.map(g => (
+                    <Fragment key={g.name}>
+                      {/* category row — SPLIT into 3 cells so (a) the allergen|dietary DIVIDER continues
+                          through it (a real border-l on the dietary segment, aligned with the dish-row
+                          dividers) and (b) the LABEL pins to the frozen Dish+Status zone on horizontal
+                          scroll. All sticky-TOP at catTop (1px overlap tucks under the thead); the label
+                          cell is also sticky-LEFT so "MAINS" stays visible when scrolling right. */}
+                      <tr>
+                        {/* label cell z-[25] > the scrolling segments (z-20) so the pinned label is NEVER
+                            covered by the grey allergen segment scrolling under it (the "MA…/DE…" clip). */}
+                        <td colSpan={2} className="sticky left-0 z-[25] bg-slate-100 text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 py-1 border-t border-b border-r border-slate-200" style={{ top: catTop }}>{g.name}</td>
+                        <td colSpan={A} className="sticky z-20 bg-slate-100 border-t border-b border-slate-200" style={{ top: catTop }} />
+                        <td colSpan={D} className={`sticky z-20 bg-slate-100 border-t border-b border-slate-200 ${DIVIDER}`} style={{ top: catTop }} />
+                      </tr>
+                      {g.rows.map(item => {
+                        const m = rowMeta(item)
+                        const reverted = differsFromConfirmed(item) && !m.verified
+                        return (
+                          // ONE row per dish — name (+ red !) | Status/Confirm | tick cells.
+                          <tr key={item.id}>
+                            {/* frozen Dish (always). Real border-r travels under border-separate. z-10. */}
+                            <td style={{ width: DISH_COL_W }} className="sticky left-0 z-10 bg-white border-b border-r border-slate-200 px-2 py-2.5 align-top">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-slate-900 truncate">{item.name}</span>
+                                {warnMarker(m)}
+                              </div>
+                              <div className="mt-1">{selectedPills(m.draft)}</div>
+                            </td>
+                            {/* Status frozen on sm+ ONLY (req 2): on a narrow phone it scrolls so the
+                                frozen pair (Dish+Status) doesn't fill the viewport. */}
+                            <td style={{ left: DISH_COL_W }} className={`static sm:sticky z-10 ${STATUS_W} border-b border-r border-slate-200 px-2 py-2.5 align-middle text-center ${reverted ? 'bg-amber-50' : 'bg-white'}`}>
+                              {confirmBtn(item, m)}
+                            </td>
+                            {COLUMNS.map((c, i) => cell(item, m, c, i))}
+                          </tr>
+                        )
+                      })}
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        })()}
+      </div>
+    </>
+  )
+
+  // ── Reusable Mode-2 card panel (shared by mode 2 and mode 3's card step) ──────────────────
+  // Drives the EXISTING (folded-in) card upload/text modal + process-allergens extractor via
+  // onAddCard; reads the saved card from the truck-level props (cardText / cardUrl).
+  const cardPanel = (
+    <div className="p-5 overflow-y-auto flex flex-col gap-4">
+      <p className="text-[11px] text-amber-700">
+        Customers will see this card as the menu&apos;s allergen reference. Per-dish allergens stay hidden in card-only mode (your dish data is kept for if you switch to per-dish later).
+      </p>
+      {cardProcessing ? (
+        <div className="border border-slate-200 rounded-xl p-6 flex items-center gap-3">
+          <Spinner /><p className="text-sm text-slate-500">Reading allergen information…</p>
+        </div>
+      ) : cardText ? (
+        <div className="border border-green-100 bg-green-50 rounded-xl p-4 flex flex-col gap-2">
+          <p className="text-sm font-semibold text-slate-900">🛡️ Allergen card saved</p>
+          <p className="text-xs text-slate-600 whitespace-pre-wrap line-clamp-6">{cardText}</p>
+          {cardUrl && <a href={cardUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 underline">View original card</a>}
+          {canEdit && <div><Btn label="Replace card" colour="slate" size="sm" onClick={onAddCard} /></div>}
+        </div>
+      ) : (
+        <div className="border border-slate-200 rounded-xl p-6 flex flex-col items-center text-center gap-3">
+          <div className="text-3xl">🛡️</div>
+          <p className="text-xs text-slate-500 max-w-xs">Upload your allergen card (photo/PDF) or paste your allergen info — our AI structures it for customers.</p>
+          {canEdit
+            ? <Btn label="Add allergen card" onClick={onAddCard} />
+            : <p className="text-[11px] text-slate-500 font-semibold">👁 View only — only the owner can add the allergen card.</p>}
+        </div>
+      )}
+    </div>
+  )
+
+  const subtitle =
+    mode === 0 ? 'Choose how customers see allergen info'
+      : mode === 2 ? 'Add your allergen card'
+        : mode === 3 ? 'Add an allergen card (optional)'
+          : 'Check & confirm each dish'
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+      {/* Unified shell — matches the import wizard shell (bg-black/60, items-center, shadow-2xl) so the
+          Allergens review/chooser is visually identical to Menu/Extras/Kitchen. The matrix (Table) review
+          uses a wider modal so the columns aren't cramped; everything else stays the compact 2xl. */}
+      <div className={`bg-white rounded-2xl w-full shadow-2xl flex flex-col ${(mode === 1 && reviewView === 'table') ? 'max-w-6xl max-h-[90vh]' : 'max-w-2xl h-[70vh] max-h-[90vh]'}`}>
+        {/* Header — #5: no top-left back arrow; navigation lives in the bottom button row. In the IMPORT
+            context the import step-progress stepper replaces the standalone subtitle so the review reads as
+            part of the wizard flow (Menu · Extras · Allergens · Kitchen setup). */}
+        <div className="p-5 border-b border-slate-200 shrink-0">
+          <div className="flex items-start justify-between gap-3">
+            <h2 className="text-base font-bold text-slate-900">{importStepper ? 'Allergens' : 'Allergen setup'}</h2>
+            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-lg leading-none flex-shrink-0">✕</button>
+          </div>
+          {importStepper ? importStepper : <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+        </div>
+
+        {/* STEP 1 — mode chooser (2 MUTUALLY-EXCLUSIVE modes; "both" removed — one source of truth.
+            Per-dish already yields a derivable card, so a separate maintained card+per-dish mode is gone). */}
+        {mode === 0 && (
+          <>
+            <div className="p-5 overflow-y-auto flex-1 min-h-0">
+              {/* DRY: the SHARED chooser (also used by the import Allergens step) — can't drift. #4: select then Next. */}
+              <AllergenModeChooser value={chooserMode} onChange={setChooserMode} />
+            </div>
+            <div className="p-4 border-t border-slate-200 flex justify-end shrink-0">
+              {/* per-dish → card-upload page (3) when card matching is wired (#6); else straight to review (1). card → 2. */}
+              <Btn label="Next →" disabled={!chooserMode} onClick={() => setMode(chooserMode === 'card' ? 2 : (onProcessCard ? 3 : 1))} />
+            </div>
+          </>
+        )}
+
+        {/* MODE 3 — per-dish CARD-UPLOAD page (#6, standalone). Shared <CardUploadPage>; matches the card
+            against COMMITTED items (exact-only) + merges (setEqual-guarded). Then → review (1). */}
+        {mode === 3 && (
+          <>
+            <div className="p-5 overflow-y-auto flex-1 min-h-0 flex flex-col gap-4">
+              <CardUploadPage
+                perDish
+                anyDetected={items.some(i => (i.allergens || []).length > 0)}
+                parsed={stdCardParsed}
+                processing={stdCardProcessing}
+                showUpload={stdShowUpload}
+                onShowUpload={() => setStdShowUpload(true)}
+                file={stdCardFile}
+                onFile={setStdCardFile}
+                text={stdCardText}
+                onText={setStdCardText}
+                onProcess={handleStandaloneCardProcess}
+                onCancelUpload={() => { setStdShowUpload(false); setStdCardFile(null); setStdCardText('') }}
+                matchResult={stdCardMatch}
+                resolvedKeys={stdResolved}
+                dishes={items.map(i => ({ id: i.id, name: i.name }))}
+                onAssign={(entry, dishId) => { void assignStandaloneEntry(entry, dishId) }}
+                onDismiss={dismissStandaloneEntry}
+                blanketOptIn={stdBlanket}
+                onBlanketToggle={setStdBlanket}
+              />
+            </div>
+            <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
+              <Btn label="← Back" colour="slate" onClick={() => setMode(0)} />
+              <div className="flex-1" />
+              <Btn label="Next →" onClick={() => setMode(1)} />
+            </div>
+          </>
+        )}
+
+        {/* MODE 1 — per-dish review. #5: no top-left arrow; Back + Skip + Done at the BOTTOM. */}
+        {mode === 1 && (
+          <>
+            {reviewTable}
+            {canEdit ? (
+              <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
+                <Btn label="← Back" colour="slate" onClick={() => onBack ? onBack() : setMode(onProcessCard ? 3 : 0)} />
+                <div className="flex-1" />
+                {/* Skip = defer, save AS-IS (per-row confirms already persisted; this doesn't confirm anything).
+                    ALWAYS available (the escape hatch) — never disabled, so the operator is never trapped when
+                    "Next" is greyed pending all-confirmed. Wording ties to the active-gated visibility rule. */}
+                <Btn label={importStepper ? 'Skip Allergen setup for now' : 'Skip for now'} colour="ghost" onClick={onClose} />
+                {importStepper
+                  ? /* IMPORT: "Next" — a wizard step; greyed until EVERY dish is confirmed (allDone). */
+                    <Btn label={finishing ? 'Saving…' : 'Next →'} colour="green" loading={finishing} disabled={finishing || !allDone} onClick={() => finishWith('per_dish')} />
+                  : <Btn label={finishing ? 'Saving…' : allDone ? 'Done' : 'Save & finish later'} colour={allDone ? 'green' : 'slate'} loading={finishing} disabled={finishing} onClick={() => finishWith('per_dish')} />}
+              </div>
+            ) : (
+              <div className="p-4 border-t border-slate-200 flex justify-end shrink-0"><Btn label="Close" colour="slate" onClick={onClose} /></div>
+            )}
+            {canEdit && <p className="px-4 pb-3 -mt-1 text-[11px] text-slate-400">{importStepper && !allDone
+              ? 'Confirm every dish to continue — or “Skip Allergen setup for now”.'
+              : 'Skip defers — dishes you haven’t confirmed stay hidden from customers until their allergens are confirmed.'}</p>}
+          </>
+        )}
+
+        {/* MODE 2 — CARD-ONLY editor (verbatim; NO extraction, NO chips). Stores the operator's text as-is. */}
+        {mode === 2 && (
+          <>
+            <div className="p-5 overflow-y-auto flex-1 min-h-0">
+              <CardOnlyEditor
+                value={cardEditText}
+                onChange={setCardEditText}
+                onTranscribe={transcribeCard}
+                transcribing={cardTranscribing}
+                canEdit={canEdit}
+              />
+            </div>
+            <div className="p-4 border-t border-slate-200 flex items-center gap-2 shrink-0">
+              <Btn label="← Back" colour="slate" onClick={() => setMode(0)} />
+              <div className="flex-1" />
+              {canEdit
+                ? <Btn label={finishing ? 'Saving…' : 'Finish'} colour="green" loading={finishing} disabled={!cardEditText.trim() || finishing} onClick={finishCard} />
+                : <Btn label="Close" colour="slate" onClick={onClose} />}
+            </div>
+          </>
+        )}
+
+      </div>
+    </div>
+  )
+}
+
+function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens }: {
   truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
   modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]; itemModGroups: {menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]
   setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>>
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
+  allergenWizardOpen: boolean; onCloseAllergenWizard: () => void; onOpenAllergenWizard: () => void
+  canEditAllergens: boolean   // owner/admin — gates the allergen edit affordances (server also enforces)
 }) {
   // §54: an item's attached option groups, split required vs optional via the source-of-truth
   // minRequiredForGroup (is_required OR min_choices>=1). The manage-local ModifierGroup has no
@@ -684,6 +1599,33 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // §65: the review is a 3-step wizard (1 Menu · 2 Extras · 3 Allergens). All edits live in
   // importResult, so stepping back/forward never loses progress — each step is just a different view.
   const [reviewStep, setReviewStep] = useState(1)
+  // ── Import ALLERGENS step (card→dish matching). The card-matched allergens are STAGED into importResult
+  // items (menu-detected ∪ card, _allergensChecked stays false) → commit writes verified=false → the
+  // existing allergen wizard opens POST-commit for row-by-row confirm (no forked review surface, no new
+  // write path). NOTHING here makes anything customer-visible — that's the post-commit confirm's job.
+  const [cardImportParsed, setCardImportParsed] = useState<{ entries?: CardEntry[]; blanket?: string[]; cross_contamination?: string[]; formatted_text?: string; summary?: string; contains?: string[]; may_contain?: string[]; dietary_options?: string[]; additional_notes?: string } | null>(null)
+  const [cardImportMatch, setCardImportMatch] = useState<CardMatchResult | null>(null)
+  const [cardImportProcessing, setCardImportProcessing] = useState(false)
+  const [cardImportDone, setCardImportDone] = useState(false)                 // a card was parsed this import → open wizard post-commit + save the artifact
+  const [cardBlanketOptIn, setCardBlanketOptIn] = useState(false)             // DEFAULT OFF — operator opts in to apply blanket may-contain to all dishes
+  const [cardEntriesResolved, setCardEntriesResolved] = useState<Set<string>>(new Set())  // unmatched/ambiguous entry keys the operator has assigned or dismissed
+  // Allergens step sub-screens: 'prompt' (detected + optional card upload) → 'chooser' (per-item vs card
+  // DISPLAY mode — detection ≠ display; the detected data is retained-but-hidden regardless of choice).
+  // Allergens step sub-screens: 'chooser' (structure: per-dish vs card) → 'card' (shared card-upload page,
+  // both branches) → 'review' (per-dish staged review). Card branch skips 'review' (goes to Kitchen).
+  const [allergenSubStep, setAllergenSubStep] = useState<'chooser' | 'card' | 'review'>('chooser')
+  // The chosen DISPLAY mode, applied at commit (update_settings). null = operator skipped (no mode change;
+  // detected data stays verified=false / retained-but-hidden, reviewable later from the Menu allergen card).
+  const [pendingDisplayMode, setPendingDisplayMode] = useState<'per_dish' | 'card' | null>(null)
+  // Shared card upload inputs (file OR pasted text) — same affordances as the menu-import upload (DRY).
+  const [cardImportFile, setCardImportFile] = useState<File | null>(null)
+  const [cardImportText, setCardImportText] = useState('')
+  const [showCardUpload, setShowCardUpload] = useState(false)   // the file/text inputs are revealed only after clicking "Upload allergen card"
+  // CARD-ONLY display mode (import): the operator's VERBATIM card text + image-transcribe state. Separate
+  // from the per-dish CardUploadPage state above so the card path never runs extraction. Saved verbatim at commit.
+  const [importCardOnlyText, setImportCardOnlyText] = useState('')
+  const [importCardOnlyTranscribing, setImportCardOnlyTranscribing] = useState(false)
+  const [wizardInitialMode, setWizardInitialMode] = useState<0 | 1 | 2>(0)   // 1 → open the post-commit wizard straight at the per-dish review (import per-item), skipping its chooser
   // §68 (Stage B): per-(virtual-group, category) expand state for the step-2 matrix (mirrors manage's catOpen).
   const [importCatOpen, setImportCatOpen] = useState<Record<string, boolean>>({})
   // Grouping chooser (step 2): per-row grouped|separate selection. Absent key = 'grouped' (default).
@@ -750,7 +1692,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       // §66: auto-split price-conflicting groups into separate items, THEN un-group the remaining
       // AI variant groups → importResult holds EVERY dish as a flat separate item for review. Page 1
       // shows the flat list; page 2 re-derives the grouping suggestions on top.
-      setImportResult(ungroupAiVariantsForReview(autoSplitConflicts(data)))
+      setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(data))))
       setReviewStep(1)
       setGroupingChoice({}) // fresh import → all grouping rows default to grouped
       // Seed Total capacity from the van(s) — held in state, written to the van ONLY at commit.
@@ -783,6 +1725,19 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setImportKitchenCapacity({ kitchen_capacity: null, capacity_window_mins: 5 })
     setImportVans([])
     setImportKitchenDirty(false)
+    setCardImportParsed(null)
+    setCardImportMatch(null)
+    setCardImportProcessing(false)
+    setCardImportDone(false)
+    setCardBlanketOptIn(false)
+    setCardEntriesResolved(new Set())
+    setAllergenSubStep('chooser')
+    setPendingDisplayMode(null)
+    setCardImportFile(null)
+    setCardImportText('')
+    setImportCardOnlyText('')
+    setImportCardOnlyTranscribing(false)
+    setShowCardUpload(false)
     setShowDiscardConfirm(false)
   }
 
@@ -1044,16 +1999,29 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     const options: GroupingOpt[] = sorted.map(m => ({
       name: m.optionName,
       surcharge: Number(((Number(items[m.idx].price) || 0) - basePrice).toFixed(2)),
-      allergens: items[m.idx].allergens || [], dietary: items[m.idx].dietary || [],
+      // Options carry NO allergen/dietary data on import: per-option allergens are a FUTURE feature
+      // (modifier_options has no verified flag), and copying the member item's allergens here BLED the
+      // parent dish's tags onto every protein option (Chicken→Gluten/Molluscs/Vegetarian). Leave BLANK —
+      // the dish-level union below (over-warn-safe) still warns for everything the dish can contain.
+      allergens: [], dietary: [],
     }))
     const groupedItem = {
       name: baseName, description: base.description || undefined, price: basePrice,
-      category, allergens: base.allergens || [], dietary: base.dietary || [],
+      // ALLERGENS/DIETARY = UNION of ALL members (not base-only) — §74 over-warn-safe: a statutory allergen
+      // on a non-cheapest member must NOT be dropped from the dish (base-only WAS an under-warn bug). Mirrors
+      // the option→item union elsewhere (:1442/:1473/:1524/:1635). Base still drives PRICE only.
+      category,
+      allergens: [...new Set(memberItems.flatMap((it: any) => it.allergens || []))],
+      dietary:   [...new Set(memberItems.flatMap((it: any) => it.dietary || []))],
       spiciness: base.spiciness ?? null, _allergensChecked: false,
       modifierGroups: [{
         name: groupName,
         options: options.map(o => ({ name: o.name, price: o.surcharge, allergens: o.allergens, dietary: o.dietary })),
-        isRequired: false, singleSelect: true, _inferredFromVariants: true,
+        // Inferred variant groups (protein/size) are structurally a MUST-CHOOSE-ONE → default required +
+        // single-select (→ is_required / min_choices=1 / max_choices=1 at commit). A default, not a lock —
+        // the operator can amend in the editor. Also makes the consolidation key uniform so groups that
+        // differ only by (now-removed) bled option tags merge.
+        isRequired: true, singleSelect: true, _inferredFromVariants: true,
       }],
     }
     return {
@@ -1083,6 +2051,55 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const members = cand.members.map(m => ({ idx: m.idx, optionName: m.token }))
       rows.push(makeGroupingRow(items, `cand|${cand.key}`, 'candidate', cand.category, cand.baseName, cand.axis, cand.axis === 'protein' ? 'Protein' : 'Size', members))
     }
+    // ── CONTENT-CONSOLIDATION + STRUCTURED NAMING (import-grouping only) ───────────────────────────
+    // The import models ONE inferred modifier group PER base dish, so N dishes offering the SAME options
+    // at the SAME prices yield N near-duplicate groups. Consolidate by EXACT CONTENT: rows whose group is
+    // identical on (category, option SET + per-option price, rules, per-option allergens/dietary) are ONE
+    // logical group and get the SAME final name → commit-menu's name-dedup then collapses them into a
+    // SINGLE modifier_groups row that every matching dish links to. Groups that differ on ANY of those
+    // (e.g. Beef free vs Beef +£0.50) keep DISTINCT signatures and are numbered apart so they stay
+    // separate — never the old name-collision over-merge across different prices.
+    //
+    // Allergens/dietary are PART of the key (stricter than options+price alone): a merge can therefore
+    // NEVER drop an option's allergen onto another dish (over-warn-safe — worst case leaves a near-dup
+    // unmerged, which is cosmetic). NAME is NOT part of the key — consolidation is by content, not by the
+    // AI's group name. Each dish keeps its own option set intact (no superset / no cross-dish option
+    // mixing). The operator sees none of this (machinery beneath the grouped/separate choice).
+    const sortJoin = (xs: any) => (Array.isArray(xs) ? xs : []).map((s: any) => normName(String(s))).sort().join(',')
+    const contentSig = (row: GroupingRow): string => {
+      const g = row.groupedItem.modifierGroups[0]
+      const opts = (g.options || []).map((o: any) => `${normName(o.name)}#${Number(o.price) || 0}#${sortJoin(o.allergens)}#${sortJoin(o.dietary)}`).sort()
+      return JSON.stringify({ cat: normName(row.category || ''), opts, req: g.isRequired === true, single: g.singleSelect === true })
+    }
+    // (1) CONSOLIDATE — bucket rows by content signature; each DISTINCT signature = one logical shared group.
+    const bySig = new Map<string, GroupingRow[]>()
+    const sigOrder: string[] = []
+    for (const row of rows) {
+      const sig = contentSig(row)
+      const arr = bySig.get(sig)
+      if (arr) arr.push(row); else { bySig.set(sig, [row]); sigOrder.push(sig) }
+    }
+    // (2) NAME the distinct signatures: bucket by (category, base axis name). A lone signature → "Category -
+    // Name"; 2+ DISTINCT signatures sharing a base name → "Category - Name 1/2/…" (first-seen order). All
+    // rows of a signature get the SAME name → one shared group at commit.
+    const sigBuckets = new Map<string, string[]>()   // (cat|baseName) → signatures, first-seen order
+    for (const sig of sigOrder) {
+      const r0 = bySig.get(sig)![0]
+      const bkey = `${normName(r0.category || '')}|${normName(r0.groupedItem.modifierGroups[0].name)}`
+      const arr = sigBuckets.get(bkey)
+      if (arr) arr.push(sig); else sigBuckets.set(bkey, [sig])
+    }
+    for (const sigs of sigBuckets.values()) {
+      const numbered = sigs.length > 1
+      sigs.forEach((sig, i) => {
+        const bucketRows = bySig.get(sig)!
+        const cat = String(bucketRows[0].category || '').trim()
+        const base = bucketRows[0].groupedItem.modifierGroups[0].name
+        const prefix = cat ? `${cat} - ` : ''
+        const finalName = `${prefix}${base}${numbered ? ` ${i + 1}` : ''}`
+        bucketRows.forEach(r => { r.groupedItem.modifierGroups[0].name = finalName })
+      })
+    }
     return rows
   }
   const groupingRows = computeGroupingRows(importResult?.items || [])
@@ -1092,9 +2109,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // now a visible step too. So: extras → "1 Menu · 2 Extras · 3 Kitchen setup"; none → "1 Menu · 2
   // Kitchen setup", and Menu's Next skips straight to Kitchen setup.
   const hasExtras = groupingRows.length > 0
-  const wizardSteps: { key: 'menu' | 'extras' | 'kitchen'; label: string }[] = hasExtras
-    ? [{ key: 'menu', label: 'Menu' }, { key: 'extras', label: 'Extras' }, { key: 'kitchen', label: 'Kitchen setup' }]
-    : [{ key: 'menu', label: 'Menu' }, { key: 'kitchen', label: 'Kitchen setup' }]
+  // Allergens step is ALWAYS present (allergens are detected from the menu; the step also offers card upload
+  // + "skip"). Order: Menu → Extras[if any] → Allergens → Kitchen setup.
+  // Order: Menu → Extras → Allergens → Kitchen setup. The allergen review runs on STAGED data (importResult),
+  // so it no longer needs committed items — Allergens sits before Kitchen, and the ONE atomic commit is at
+  // Kitchen "Save". Nothing persists until then (abandon = nothing written).
+  type WizKey = 'menu' | 'extras' | 'allergens' | 'kitchen'
+  const wizardSteps: { key: WizKey; label: string }[] = hasExtras
+    ? [{ key: 'menu', label: 'Menu' }, { key: 'extras', label: 'Extras' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
+    : [{ key: 'menu', label: 'Menu' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
   // Advance to the Kitchen-setup ('prep') step. Seeds prep state for new categories WITHOUT clobbering
   // values already entered (so stepping back/forward is non-destructive).
   const goToKitchen = () => {
@@ -1107,12 +2130,37 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     })
     setImportStep('prep')
   }
-  const goToStep = (key: 'menu' | 'extras' | 'kitchen') => {
+  const goToAllergens = () => { if (importResult) { setAllergenSubStep('chooser'); setImportStep('allergens') } }
+  // STRUCTURE choice → the shared card-upload page (both branches). Nothing commits — the menu commits ONCE
+  // at Kitchen "Save". per-dish → the staged review (on importResult); card → straight to Kitchen.
+  const chooseDisplayMode = (mode: 'per_dish' | 'card') => { setPendingDisplayMode(mode); setAllergenSubStep('card') }
+
+  // ── STAGED allergen review (atomic): the EXISTING AllergenWizardModal review runs on importResult, NOT
+  // committed rows. id = stable _uid; verified mirrors _allergensChecked; callbacks mutate importResult only
+  // (no DB write). The single commit-menu at Kitchen maps _allergensChecked → allergens_verified atomically.
+  const stagedCategories: Category[] = (importResult?.categories || []).map((name: string) => ({
+    id: name, name, slug: name, prep_secs: 0, batch_size: 0, allow_notes: false, default_stock: null, sort_order: 0, is_active: true,
+  }))
+  const stagedItems: Item[] = (importResult?.items || []).map((it: any) => ({
+    id: it._uid, name: it.name || '', description: it.description ?? null, price: Number(it.price) || 0,
+    category_id: it.category ?? null, is_available: true, stock_count: null, default_stock: null, sort_order: 0,
+    image_path: null, allergens: it.allergens || [], allergens_verified: it._allergensChecked === true,
+    dietary_info: it.dietary || [], spiciness: it.spiciness ?? null, auto_accept: false,
+  }))
+  const patchStagedItem = (uid: string, patch: any) =>
+    setImportResult(prev => prev ? { ...prev, items: prev.items.map((it: any) => it._uid === uid ? { ...it, ...patch } : it) } : prev)
+  const stagedConfirm  = async (item: Item, allergens: string[], dietary: string[]) => patchStagedItem(item.id, { allergens, dietary, _allergensChecked: true })
+  const stagedUndo     = async (item: Item, allergens: string[], dietary: string[], verified: boolean) => patchStagedItem(item.id, { allergens, dietary, _allergensChecked: verified })
+  const stagedUnverify = async (item: Item) => patchStagedItem(item.id, { _allergensChecked: false })
+  // After the card-upload page: per-dish → staged review; card → Kitchen (card display set at commit).
+  const advanceFromCardPage = () => { if (pendingDisplayMode === 'per_dish') setAllergenSubStep('review'); else goToKitchen() }
+  const goToStep = (key: WizKey) => {
     if (key === 'kitchen') { goToKitchen(); return }
+    if (key === 'allergens') { goToAllergens(); return }
     setImportStep('review')
     setReviewStep(key === 'extras' ? 2 : 1)
   }
-  const renderWizardStepper = (currentKey: 'menu' | 'extras' | 'kitchen') => (
+  const renderWizardStepper = (currentKey: WizKey) => (
     <div className="flex items-center gap-1.5 mt-2">
       {wizardSteps.map((s, i) => (
         <Fragment key={s.key}>
@@ -1126,6 +2174,61 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       ))}
     </div>
   )
+
+  // ── Import ALLERGENS step handlers ────────────────────────────────────────────────────────────────
+  // (cardEntryKey now lives in lib/allergen-card-match — shared by both wizards + CardUploadPage.)
+  // Additive UNION merge into a STAGED import item (by index). Never subtractive; _allergensChecked stays
+  // false so the dish commits verified=false and is reviewed. Uses the shared mergeAllergensUnion (lib).
+  const mergeCardAllergensIntoItem = (idx: number, allergens: string[]) =>
+    setImportResult(prev => prev ? { ...prev, items: prev.items.map((it: any, i: number) =>
+      i === idx ? { ...it, allergens: mergeAllergensUnion(it.allergens || [], allergens), _allergensChecked: false } : it) } : prev)
+  // Upload/paste a card → process-allergens → deterministic EXACT match against the staged dishes (keyed by
+  // index) → AUTO-APPLY only the exact matches (union). No-match → unmatched list; multi → ambiguous list;
+  // both surfaced for the operator to assign/dismiss. NOTHING non-exact is auto-applied.
+  const handleImportCardProcess = async (file: File | null, text: string) => {
+    if (!importResult) return
+    setCardImportProcessing(true)
+    try {
+      const fd = new FormData()
+      fd.append('token', token)
+      if (file) fd.append('file', file)
+      else fd.append('text', text)
+      const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!data.ok) { showToast('Couldn’t read the allergen card — try again', 'error'); return }
+      const parsed = data.allergens || {}
+      setCardImportParsed(parsed)
+      const entries: CardEntry[] = Array.isArray(parsed.entries) ? parsed.entries.filter((e: any) => e && e.name && Array.isArray(e.allergens)) : []
+      const dishes: DishRef[] = importResult.items.map((it: any, i: number) => ({ id: String(i), name: String(it.name || '') }))
+      const m = matchCardEntries(entries, dishes)
+      setCardImportMatch(m)
+      m.matched.forEach(({ entry, dishId }) => mergeCardAllergensIntoItem(Number(dishId), entry.allergens))   // exact only
+      setCardEntriesResolved(new Set(m.matched.map(x => cardEntryKey(x.entry))))   // exact matches count as resolved
+      setCardImportDone(true)
+      showToast(`Card read — ${m.matched.length} matched, ${m.unmatched.length + m.ambiguous.length} need your assignment`, 'success')
+    } catch { showToast('Couldn’t read the allergen card — try again', 'error') }
+    finally { setCardImportProcessing(false) }
+  }
+  // CARD-ONLY (import): image → faithful PROSE transcription (no extraction/vocab) → pre-fills the editor.
+  const transcribeImportCard = async (file: File) => {
+    setImportCardOnlyTranscribing(true)
+    try {
+      const fd = new FormData(); fd.append('token', token); fd.append('mode', 'transcribe'); fd.append('file', file)
+      const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (data.ok && typeof data.text === 'string') setImportCardOnlyText(data.text)
+      else showToast('Couldn’t read that image — type or paste your card instead', 'error')
+    } catch { showToast('Couldn’t read that image — type or paste your card instead', 'error') }
+    finally { setImportCardOnlyTranscribing(false) }
+  }
+  // Operator assigns an unmatched/ambiguous card entry to a specific dish → union into that dish, mark resolved.
+  const assignCardEntry = (entry: CardEntry, dishIdx: number) => {
+    mergeCardAllergensIntoItem(dishIdx, entry.allergens)
+    setCardEntriesResolved(prev => new Set(prev).add(cardEntryKey(entry)))
+  }
+  // Operator dismisses a card entry (no dish) → mark resolved, attach nowhere (safe — never force a match).
+  const dismissCardEntry = (entry: CardEntry) =>
+    setCardEntriesResolved(prev => new Set(prev).add(cardEntryKey(entry)))
 
   // Build the COMMIT payload's items by applying every chooser selection — PURELY (returns a new array,
   // never mutates importResult). importResult always holds SEPARATE items during review (Back-stable),
@@ -1181,13 +2284,21 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
   const handleCommitMenu = async () => {
     if (!importResult) return
+    // The display mode chosen on the Allergens step (before Kitchen) — stable in state by commit time.
+    const chosenDisplayMode = pendingDisplayMode
     // §69: allergens are NO LONGER a hard gate (price conflicts auto-split at §66). Unreviewed items
     // commit with allergens_verified=false → flagged "allergens not set" in manage for later. No block.
     setImportStep('saving')
     // Apply the grouping chooser's selections to the committed items (grouped → variant group, separate
     // → individual items). Pure transform — importResult itself is untouched. Empty-name rows (blank
     // "+ Add item" rows the operator never filled in) are EXCLUDED so they can't import as £0 nameless items.
-    const itemsToCommit = buildGroupedItems(importResult.items).filter(it => String(it.name || '').trim())
+    let itemsToCommit = buildGroupedItems(importResult.items).filter(it => String(it.name || '').trim())
+    // Blanket "may contain X" — applied to EVERY dish ONLY if the operator opted in on the Allergens step
+    // (default off). Additive union, verified=false (reviewed next). Never subtractive.
+    const blanket = cardImportParsed?.blanket
+    if (cardBlanketOptIn && blanket?.length) {
+      itemsToCommit = itemsToCommit.map((it: any) => ({ ...it, allergens: mergeAllergensUnion(it.allergens || [], blanket), _allergensChecked: false }))
+    }
     try {
       const res = await fetch('/api/manage/commit-menu', {
         method: 'POST',
@@ -1204,6 +2315,28 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           }
         }
         setImportDoneSkipped(data.skipped ?? 0)
+        // Card artifact: persist the formatted card text (truck-level) so it's available as the card view —
+        // best-effort, never blocks the import. Reuses the existing update_settings card path (no new path).
+        if (cardImportDone && cardImportParsed) {
+          const cardText = cardImportParsed.formatted_text || [
+            cardImportParsed.summary,
+            cardImportParsed.contains?.length ? `Contains: ${cardImportParsed.contains.join(', ')}` : null,
+            cardImportParsed.may_contain?.length ? `May contain: ${cardImportParsed.may_contain.join(', ')}` : null,
+            cardImportParsed.cross_contamination?.length ? cardImportParsed.cross_contamination.join('. ') : null,
+            cardImportParsed.additional_notes,
+          ].filter(Boolean).join('\n')
+          if (cardText) { try { await api('update_settings', { allergen_info_text: cardText }) } catch { /* non-fatal */ } }
+        }
+        // CARD-ONLY display mode: store the operator's VERBATIM edited card text (NO extraction/vocab).
+        // Mutually exclusive with the per-dish formatted_text path above (cardImportDone is per-dish-only).
+        if (chosenDisplayMode === 'card' && importCardOnlyText.trim()) {
+          try { await api('update_settings', { allergen_info_text: importCardOnlyText.trim() }) } catch { /* non-fatal */ }
+        }
+        // Apply the operator's chosen DISPLAY mode (decoupled from detection). null = skipped → leave the
+        // existing mode. Detected data is committed verified=false regardless (retain-but-hide).
+        if (chosenDisplayMode) { try { await api('update_settings', { allergen_display_mode: chosenDisplayMode }) } catch { /* non-fatal */ } }
+        // The per-dish review already happened IN-FLOW on staged data → confirmed dishes commit verified=true
+        // via _allergensChecked (atomic, here). No post-commit wizard auto-open.
         setImportStep('done')
         setTimeout(() => {
           resetImportState()
@@ -1328,6 +2461,24 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setLocalItems(list => list.map(i => i.id === next.id ? next : i))
     try { await api('upsert_item', next); flashSaved() }
     catch (e: any) { setLocalItems(prevLocal); showToast(e.message, 'error') }
+  }
+
+  // Allergen-wizard per-row confirm — writes an ARBITRARY item (not the open editingItem) via the
+  // SAME shared upsert_item path as saveItemPatch / the edit-modal AllergenToggles. Sends the FULL
+  // merged item (upsert_item coerces absent fields → null/default) with allergens + dietary_info +
+  // allergens_verified=true. Flipping verified=true is the ONLY thing that reveals the item's
+  // allergens to customers (deployed verified-gate in app/api/menu/[truckId]/route.ts). Optimistic
+  // local update + revert; only fires on explicit operator confirm — never auto/batch.
+  // Shared allergen writer for the wizard — sets allergens + dietary + verified via the SAME upsert_item
+  // path as the edit modal. Optimistic + revert. No toast here (the wizard owns the named confirm toast
+  // / undo); failures still surface an error toast + rethrow so the caller can react.
+  const writeItemAllergens = async (item: Item, allergens: string[], dietary: string[], verified: boolean, source?: 'card') => {
+    const next = { ...item, allergens, dietary_info: dietary, allergens_verified: verified } as Item
+    const prevLocal = localItems
+    setLocalItems(list => list.map(i => i.id === item.id ? next : i))
+    // _allergenSource='card' → the audit logs 'card_match' (vs a manual 'edit'). Not a column — read + dropped server-side.
+    try { await api('upsert_item', { ...next, ...(source ? { _allergenSource: source } : {}) }) }
+    catch (e: any) { setLocalItems(prevLocal); showToast(e.message, 'error'); throw e }
   }
 
   // CREATE handler — validates the 3 required fields, inserts the row, then switches the modal to EDIT
@@ -1726,7 +2877,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         return parts.length ? <p className="text-[11px] text-teal-700 mt-0.5">{parts.join(' · ')}</p> : null
                       })()}
                       {item.description && <p className="text-slate-400 text-xs truncate">{item.description}</p>}
-                      {(item.dietary_info?.length > 0 || item.allergens?.length > 0 || item.default_stock != null || item.stock_count != null || item.spiciness != null || item.auto_accept === false || item.preorder_enabled === true || optionalGroupsFor(item.id).length > 0 || item.allergens_verified === false) && (
+                      {/* Allergen + dietary chips ONLY show on VERIFIED items — an unverified item shows
+                          NO allergen/dietary chips (showing detected-but-unconfirmed chips would imply
+                          they're set when they're not). The "N dishes need review" count lives once, in
+                          the highlighted allergen box — NOT repeated per item. */}
+                      {((item.allergens_verified !== false && ((item.dietary_info?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0)) || item.default_stock != null || item.stock_count != null || item.spiciness != null || item.auto_accept === false || item.preorder_enabled === true || optionalGroupsFor(item.id).length > 0) && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           <SpiceLevel value={item.spiciness} />
                           {/* Operator-only routing flag. Shown ALWAYS when set (so the operator sees it
@@ -1735,17 +2890,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           {item.auto_accept === false && (
                             <span className={`text-[10px] px-1.5 py-0.5 bg-rose-50 text-rose-700 rounded-md border border-rose-100 ${truck.auto_accept ? '' : 'opacity-50'}`}>Manual review</span>
                           )}
-                          {item.dietary_info?.map(d => (
+                          {item.allergens_verified !== false && item.dietary_info?.map(d => (
                             <span key={d} className="text-[10px] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md border border-green-100">{d}</span>
                           ))}
-                          {item.allergens?.map(a => (
+                          {item.allergens_verified !== false && item.allergens?.map(a => (
                             <span key={a} className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md border border-amber-100">{a}</span>
                           ))}
-                          {/* §69: import skip-flag — allergens weren't reviewed during import. Clears when the
-                              operator sets/confirms allergens in the edit-item modal (saves verified=true). */}
-                          {item.allergens_verified === false && (
-                            <span className="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded-md border border-amber-300 font-bold" title="Allergens weren't set during import — open this item to set them.">⚠ allergens not set</span>
-                          )}
                           {item.default_stock != null && <Badge label={`${item.default_stock} per event`} colour="slate" />}
                           {item.stock_count != null && <Badge label={`Stock: ${item.stock_count}`} colour="orange" />}
                           {/* Pre-order inclusion flag (operator-only). Mirrors the "Manual review" dim
@@ -1884,47 +3034,96 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         </div>
       )}
 
-      {/* Allergen information — card */}
-      {!allergenInfoText && allergenStep === 'idle' && (
-        <div className="border border-slate-200 rounded-2xl p-6 flex flex-col items-center text-center gap-3 mt-8">
-          <div className="text-3xl">🛡️</div>
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Allergen information</h3>
-            <p className="text-xs text-slate-500 mt-1 max-w-xs">
-              Help customers with allergies order safely. Upload your allergen card and our AI will structure it automatically.
-            </p>
-          </div>
-          <button onClick={() => setShowAllergenModal(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-xl hover:bg-slate-50 transition-colors">
-            Add allergen info
-          </button>
-          <p className="text-xs text-slate-400">photo, PDF or text</p>
-        </div>
+      {/* Allergen wizard — opened from the "allergens not set" banners. Mode-1 per-row confirm goes
+          through the shared upsert_item path (never auto/batch); Mode-2/3 FOLD IN the card flow below
+          (the upload/review/processing modals are shared — the wizard's mode-2 opens them via
+          setShowAllergenModal). The chosen display mode is persisted to trucks.allergen_display_mode. */}
+      {allergenWizardOpen && (
+        <AllergenWizardModal
+          items={localItems}
+          categories={categories}
+          initialMode={wizardInitialMode}
+          onClose={() => { setWizardInitialMode(0); onCloseAllergenWizard() }}
+          canEdit={canEditAllergens}
+          onConfirmRow={(item, allergens, dietary) => writeItemAllergens(item, allergens, dietary, true)}
+          onUndoRow={(item, allergens, dietary, verified) => writeItemAllergens(item, allergens, dietary, verified)}
+          onEditUnverify={(item) => writeItemAllergens(item, item.allergens || [], item.dietary_info || [], false)}
+          showToast={showToast}
+          cardText={allergenInfoText}
+          cardUrl={allergenUrl}
+          cardProcessing={allergenStep === 'processing'}
+          onAddCard={() => setShowAllergenModal(true)}
+          onSetDisplayMode={async (m) => { await api('update_settings', { allergen_display_mode: m }) }}
+          onProcessCard={async (file, text) => {
+            const fd = new FormData(); fd.append('token', token); if (file) fd.append('file', file); else fd.append('text', text)
+            const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
+            const data = await res.json()
+            return data.ok ? (data.allergens as CardParse) : null
+          }}
+          onCardMerge={(item, union) => writeItemAllergens(item, union, item.dietary_info || [], false, 'card')}
+          onSaveCard={async (t) => { await api('update_settings', { allergen_info_text: t }); setAllergenInfoText(t) }}
+          onTranscribeCard={async (file) => {
+            const fd = new FormData(); fd.append('token', token); fd.append('mode', 'transcribe'); fd.append('file', file)
+            const res = await fetch('/api/manage/process-allergens', { method: 'POST', body: fd })
+            const data = await res.json()
+            return data.ok ? (data.text as string) : null
+          }}
+        />
       )}
 
-      {allergenInfoText && allergenStep === 'idle' && (
-        <div className="border border-green-100 bg-green-50 rounded-2xl p-4 mt-8">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <span className="text-lg flex-shrink-0">🛡️</span>
-              <div>
-                <p className="text-sm font-semibold text-slate-900">Allergen information</p>
-                <p className="text-xs text-slate-500 mt-0.5 line-clamp-2">{allergenInfoText}</p>
-                {allergenUrl && (
-                  <a href={allergenUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-green-600 underline mt-1 inline-block">
-                    View original card
-                  </a>
-                )}
+      {/* ── ALLERGEN SECTION (Slice C) — a permanent settings home on the Menu tab, reachable any time
+             (not just via the "allergens not set" warning). Shows status + display mode, opens the wizard,
+             and surfaces the saved card. EDIT affordances are owner/admin-only (canEditAllergens); all
+             roles can VIEW. The card flow itself is folded into the wizard (one card UI); the shared
+             upload/processing/review modals below are still rendered here because the wizard drives them. */}
+      {/* "Allergens" SECTION heading — its own section on the Menu tab, mirroring the Menu's heading. */}
+      <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mt-10 mb-2">Allergens</h2>
+      {(() => {
+        const unverifiedCount = localItems.filter(i => (i as any).allergens_verified === false).length
+        const needsReview = unverifiedCount > 0
+        // Empty menu: "0 unconfirmed" is vacuously true but "all dishes confirmed" reads as a false "done".
+        // Show neutral build-menu copy instead — and don't nag (needsReview stays false until a dish exists).
+        const noMenu = localItems.length === 0
+        // Display mode collapsed to 2 (per-dish / card): 'both' + NULL legacy read as per-dish.
+        const mode = (truck as any).allergen_display_mode as 'per_dish' | 'card' | 'both' | null
+        const modeLabel = mode === 'card' ? 'Allergen card' : mode === 'per_dish' || mode === 'both' ? 'Per dish' : 'Not set'
+        return (
+          // (#5) The BOX itself is the Menu-tab warning surface — amber warning treatment while any dish
+          // needs review (replaces the removed top banner); calm slate once all confirmed.
+          <div className={`rounded-2xl p-5 border-2 ${needsReview ? 'border-amber-300 bg-amber-50' : 'border-slate-200'}`}>
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">{needsReview ? '⚠️' : '🛡️'}</span>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">{needsReview ? 'Allergens not set' : 'Allergens'}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {noMenu
+                      ? <span className="text-slate-500 font-semibold">Build your menu first — add dishes, then set up their allergens</span>
+                      : <>
+                          Display mode: <strong>{modeLabel}</strong>
+                          {' · '}
+                          {needsReview
+                            ? <span className="text-amber-700 font-semibold">{unverifiedCount} dish{unverifiedCount !== 1 ? 'es' : ''} need review — customers can&apos;t see allergen info until confirmed</span>
+                            : <span className="text-green-600 font-semibold">all dishes confirmed</span>}
+                          {allergenInfoText ? ' · allergen card saved' : ''}
+                        </>}
+                  </p>
+                </div>
               </div>
+              {canEditAllergens
+                ? <Btn label="Set up / review allergens" colour="orange" size="sm" icon="🛡️" disabled={noMenu} onClick={() => { setWizardInitialMode(0); onOpenAllergenWizard() }} />
+                : <span className="text-[11px] text-slate-400 self-center">View only — only the owner can edit allergens</span>}
             </div>
-            <button onClick={() => setShowAllergenModal(true)}
-              className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-white flex-shrink-0">
-              Edit
-            </button>
+            {/* Saved card preview (view always; replace is owner/admin via the wizard). */}
+            {allergenInfoText && (
+              <div className="mt-3 border border-green-100 bg-green-50 rounded-xl p-3">
+                <p className="text-xs text-slate-600 whitespace-pre-wrap line-clamp-3">{allergenInfoText}</p>
+                {allergenUrl && <a href={allergenUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 underline mt-1 inline-block">View original card</a>}
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {allergenStep === 'processing' && (
         <div className="border border-slate-200 rounded-2xl p-6 flex items-center gap-3 mt-8">
@@ -2309,26 +3508,41 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 </div>
               </div>
 
-              {/* Allergens */}
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
-                <p className="text-xs text-slate-400 mt-0.5 mb-2">Select all that apply</p>
-                <AllergenToggles
-                  value={(editingItem as any).allergens || []}
-                  onChange={next => saveItemPatch({ allergens: next, allergens_verified: true })}
-                />
-              </div>
-
-              {/* Dietary */}
-              <div>
-                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
-                <div className="mt-2">
-                  <DietaryToggles
-                    value={(editingItem as any).dietary_info || []}
-                    onChange={next => saveItemPatch({ dietary_info: next })}
-                  />
+              {/* Allergens + Dietary — gated behind the wizard until the dish is SET UP. An UNSET item
+                  (allergens_verified === false, e.g. imported + not yet reviewed) hides the pickers and
+                  funnels to the allergen review (the wizard is the SETUP path — block-until-precise +
+                  row-by-row confirm). A SET item (verified !== false) shows the editable toggles; editing
+                  them flips the item back to needs-review (verified=false) until re-confirmed. Spiciness
+                  and every other field stay editable regardless. */}
+              {(editingItem as any).allergens_verified === false ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                  <p className="text-sm font-semibold text-amber-800">Set up allergens for this dish in the allergen review.</p>
+                  <p className="text-xs text-amber-700 mt-0.5">Open the “Set up / review allergens” box on the Menu tab — the wizard walks each dish through confirmation.</p>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Allergens */}
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Allergens</label>
+                    <p className="text-xs text-slate-400 mt-0.5 mb-2">Select all that apply</p>
+                    <AllergenToggles
+                      value={(editingItem as any).allergens || []}
+                      onChange={next => saveItemPatch({ allergens: next, allergens_verified: true })}
+                    />
+                  </div>
+
+                  {/* Dietary */}
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Dietary</label>
+                    <div className="mt-2">
+                      <DietaryToggles
+                        value={(editingItem as any).dietary_info || []}
+                        onChange={next => saveItemPatch({ dietary_info: next })}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Photo */}
               <div>
@@ -2470,8 +3684,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {/* AI Import — Review screen */}
       {importStep === 'review' && importResult && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="p-5 border-b border-slate-100">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
+            <div className="p-5 border-b border-slate-100 shrink-0">
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-black text-slate-900">Review imported menu</h3>
                 <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
@@ -2486,7 +3700,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 inner wrapper (py-6) so it SCROLLS AWAY instead of forming a fixed strip above the scrollport
                 — a sticky `top-0` header then pins FLUSH to the scroll area's visual top (no 24px gap, no
                 item bleeding above the header). Mirrors the step-2 matrix scroller (zero top padding). */}
-            <div className="overflow-y-auto flex-1 px-6">
+            <div className="overflow-y-auto flex-1 px-6 min-h-0">
 
               {/* ─ STEP 1 — MENU ITEMS (clean): name + price inline-editable, category headers,
                    DETECTED allergens as read-only tags only (no grids, no "NOT CHECKED"). ─ */}
@@ -2553,7 +3767,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                           return (
                             <button type="button" disabled={hasBlankManual}
                               title={hasBlankManual ? 'Name the new item before adding another' : undefined}
-                              onClick={() => { if (hasBlankManual) return; setImportResult(prev => prev ? { ...prev, items: [...prev.items, { name: '', price: 0, price_missing: true, category: cat, allergens: [], dietary: [], _allergensChecked: false, _manual: true }] } : prev) }}
+                              onClick={() => { if (hasBlankManual) return; setImportResult(prev => prev ? { ...prev, items: [...prev.items, { name: '', price: 0, price_missing: true, category: cat, allergens: [], dietary: [], _allergensChecked: false, _manual: true, _uid: newImpUid() }] } : prev) }}
                               className={`mt-2 text-xs font-bold ${hasBlankManual ? 'text-slate-300 cursor-not-allowed' : 'text-orange-600 hover:text-orange-700'}`}>+ Add item</button>
                           )
                         })()}
@@ -2615,21 +3829,136 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   and commit flagged (allergens_verified=false) for later review in Settings — no UI here. */}
 
             </div>
-            <div className="p-5 border-t border-slate-100 flex items-center gap-2">
+            <div className="p-5 border-t border-slate-100 flex items-center gap-2 shrink-0">
               <Btn label={reviewStep > 1 ? '← Back' : 'Back'} colour="slate" onClick={() => reviewStep > 1 ? setReviewStep(reviewStep - 1) : setImportStep('upload')} />
               <div className="flex-1" />
               {/* "Next →" everywhere — Kitchen setup (prep) follows, so neither review step is the final
                  action. Menu → Extras (if any) else straight to Kitchen setup; Extras → Kitchen setup.
                  The final commit lives on the Kitchen-setup step. */}
               {reviewStep === 1 ? (
-                <Btn label="Next →" onClick={() => hasExtras ? setReviewStep(2) : goToKitchen()} />
+                <Btn label="Next →" onClick={() => hasExtras ? setReviewStep(2) : goToAllergens()} />
               ) : (
-                <Btn label="Next →" onClick={goToKitchen} />
+                <Btn label="Next →" onClick={goToAllergens} />
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* AI Import — ALLERGENS step (STAGED + atomic). chooser → shared card-upload page → per-dish staged
+          review (the EXISTING wizard on importResult). NOTHING commits here — the one atomic commit is at
+          Kitchen "Save". Abandon = nothing persists. */}
+      {importStep === 'allergens' && importResult && (() => {
+        const namedDishes = importResult.items
+          .map((it: any, i: number) => ({ i, name: String(it.name || '').trim() }))
+          .filter(d => d.name)
+        const m = cardImportMatch
+        const pending = m ? [...m.unmatched.map(e => ({ entry: e, candidates: null as number[] | null })),
+                             ...m.ambiguous.map(a => ({ entry: a.entry, candidates: a.candidateDishIds.map(Number) }))]
+                             .filter(x => !cardEntriesResolved.has(cardEntryKey(x.entry))) : []
+        const dishName = (idx: number) => String(importResult.items[idx]?.name || `Dish ${idx + 1}`)
+        const anyDetected = importResult.items.some((it: any) => (it.allergens || []).length > 0)
+        // REVIEW sub-state → reuse the standalone AllergenWizardModal on STAGED data (in-flow, pre-commit).
+        // Confirms mutate importResult only; the atomic commit at Kitchen maps _allergensChecked → verified.
+        if (allergenSubStep === 'review') {
+          return (
+            <AllergenWizardModal
+              items={stagedItems}
+              categories={stagedCategories}
+              initialMode={1}
+              canEdit={canEditAllergens}
+              onConfirmRow={stagedConfirm}
+              onUndoRow={stagedUndo}
+              onEditUnverify={stagedUnverify}
+              showToast={showToast}
+              cardText={cardImportParsed?.formatted_text || ''}
+              cardUrl=""
+              cardProcessing={cardImportProcessing}
+              onAddCard={() => setAllergenSubStep('card')}
+              onSetDisplayMode={async () => { /* mode already chosen on the chooser; staged */ }}
+              onClose={goToKitchen}
+              onBack={() => setAllergenSubStep('card')}
+              importStepper={renderWizardStepper('allergens')}
+            />
+          )
+        }
+        return (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
+              <div className="p-5 border-b border-slate-100 shrink-0">
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-black text-slate-900">Allergens</h3>
+                  <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
+                    className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
+                </div>
+                {renderWizardStepper('allergens')}
+              </div>
+              {/* #1: min-height so the allergens page matches the other wizard pages (not noticeably smaller). */}
+              <div className="p-5 overflow-y-auto flex-1 flex flex-col gap-4 min-h-0">
+              {allergenSubStep === 'chooser' ? (
+              /* STRUCTURE choice FIRST — the shared chooser (identical to the standalone wizard's mode 0). */
+              <div className="flex flex-col gap-3">
+                {/* #3 PROMINENT detection notice — reuses the app's AMBER notice pattern (bg-amber-50
+                    border-amber-200 rounded-xl), same as the CardUploadPage notice + the cross-tab banners. */}
+                {anyDetected && (
+                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-3">
+                    <p className="text-xs text-amber-800 font-semibold">We detected allergens from your menu. Choose how to show them below.</p>
+                  </div>
+                )}
+                <p className="text-sm font-bold text-slate-900">How do you want to show allergens to customers?</p>
+                {/* #4 controlled — select a mode, then "Next" (footer) advances. No auto-advance. */}
+                <AllergenModeChooser value={pendingDisplayMode} onChange={setPendingDisplayMode} />
+              </div>
+              ) : pendingDisplayMode === 'card' ? (
+              /* CARD-ONLY editor — verbatim, NO extraction/vocab. SEPARATE from CardUploadPage so the card
+                 path can't leak into per-dish. Saved verbatim at commit (handleCommitMenu). */
+              <CardOnlyEditor
+                value={importCardOnlyText}
+                onChange={setImportCardOnlyText}
+                onTranscribe={transcribeImportCard}
+                transcribing={importCardOnlyTranscribing}
+                canEdit={canEditAllergens}
+              />
+              ) : (
+              /* SHARED <CardUploadPage> — DRY: the SAME component the standalone wizard uses. Import passes
+                 staged-index dishIds + the staged match/merge handlers. */
+              <CardUploadPage
+                perDish={pendingDisplayMode === 'per_dish'}
+                anyDetected={anyDetected}
+                parsed={cardImportParsed}
+                processing={cardImportProcessing}
+                showUpload={showCardUpload}
+                onShowUpload={() => setShowCardUpload(true)}
+                file={cardImportFile}
+                onFile={setCardImportFile}
+                text={cardImportText}
+                onText={setCardImportText}
+                onProcess={() => handleImportCardProcess(cardImportFile, cardImportText)}
+                onCancelUpload={() => { setShowCardUpload(false); setCardImportFile(null); setCardImportText('') }}
+                matchResult={cardImportMatch}
+                resolvedKeys={cardEntriesResolved}
+                dishes={importResult.items.map((it: any, i: number) => ({ id: String(i), name: String(it.name || '').trim() })).filter(d => d.name)}
+                onAssign={(entry, dishId) => assignCardEntry(entry, Number(dishId))}
+                onDismiss={dismissCardEntry}
+                blanketOptIn={cardBlanketOptIn}
+                onBlanketToggle={setCardBlanketOptIn}
+              />
+              )}
+            </div>
+            <div className="p-5 border-t border-slate-100 flex items-center gap-2 shrink-0">
+              <Btn label="← Back" colour="slate" onClick={() => allergenSubStep === 'card' ? setAllergenSubStep('chooser') : (hasExtras ? (setImportStep('review'), setReviewStep(2)) : (setImportStep('review'), setReviewStep(1)))} />
+              <div className="flex-1" />
+              {/* Skip the WHOLE allergen setup → Kitchen. NOTHING commits here (Kitchen "Save" is the commit). */}
+              <Btn label="Skip Allergen setup for now" colour="ghost" onClick={goToKitchen} />
+              {/* #4: chooser needs an explicit Next (select a mode first); card page advances to review/Kitchen. */}
+              {allergenSubStep === 'chooser'
+                ? <Btn label="Next →" disabled={!pendingDisplayMode} onClick={() => setAllergenSubStep('card')} />
+                : <Btn label="Next →" onClick={advanceFromCardPage} />}
+            </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* AI Import — Prep time */}
       {(importStep === 'prep' || importStep === 'saving') && importResult && (() => {
@@ -2638,8 +3967,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             {/* Same shell as the review modal (max-w-2xl shadow-2xl flex flex-col max-h-[90vh]) so the
                 Extras → Kitchen-setup transition keeps the SAME width — no shrink, feels connected. */}
-            <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
-              <div className="p-5 border-b border-slate-100">
+            <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
+              <div className="p-5 border-b border-slate-100 shrink-0">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="font-black text-slate-900">Kitchen setup</h3>
                   <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
@@ -2659,7 +3988,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <p className="text-xs text-blue-500">{KITCHEN_CAPACITY_EXAMPLE}</p>
               </div>
 
-              <div className="overflow-y-auto flex-1 p-5">
+              <div className="overflow-y-auto flex-1 p-5 min-h-0">
                 {newCats.length === 0 ? (
                   <p className="text-sm text-slate-500 text-center py-4">All categories already exist — no times to set.</p>
                 ) : (
@@ -2728,10 +4057,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 )}
               </div>
 
-              <div className="p-5 border-t border-slate-100 flex gap-2">
-                <Btn label="← Back" colour="slate" onClick={() => setImportStep('review')} disabled={importStep === 'saving'} />
+              <div className="p-5 border-t border-slate-100 flex gap-2 shrink-0">
+                <Btn label="← Back" colour="slate" onClick={() => setImportStep('allergens')} disabled={importStep === 'saving'} />
                 <div className="flex-1" />
-                <Btn label="Save & add to menu" onClick={handleCommitMenu} loading={importStep === 'saving'} />
+                {/* Kitchen is the FINAL step → the ONE atomic commit (items + categories + prep + reviewed
+                    allergens). Nothing was written before this. */}
+                <Btn label="Save & add to menu" onClick={() => handleCommitMenu()} loading={importStep === 'saving'} />
               </div>
             </div>
           </div>
@@ -3616,6 +4947,16 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
   }
 
   const handleConfirmEvent = async (eventId: string) => {
+    // LIVE-TIME GATE (UX): a null-time event can't go live (server enforces too). Instead of a blocked
+    // error, route the operator to Edit & Approve with the time field flagged — graceful, never broken.
+    const evForTime = events.find(e => e.id === eventId)
+    if (evForTime && (!evForTime.start_time || !evForTime.end_time)) {
+      showToast('Add a start and end time before approving — this event needs a time to go live.', 'error')
+      setEditingEventConfirmOnSave(true)
+      setFormErrors({ start_time: !evForTime.start_time ? 'Add a start time' : '', end_time: !evForTime.end_time ? 'Add an end time' : '' })
+      setEditingEvent({ id: evForTime.id, venue_name: evForTime.venue_name, town: evForTime.town || '', postcode: evForTime.postcode || '', address: evForTime.address || '', event_date: evForTime.event_date, start_time: evForTime.start_time ? evForTime.start_time.substring(0, 5) : '', end_time: evForTime.end_time ? evForTime.end_time.substring(0, 5) : '', notes: evForTime.notes || '', truck_id: evForTime.truck_id || truck.id, van_id: evForTime.van_id || null })
+      return
+    }
     setSaving(true)
     try {
       const res = await fetch('/api/events/action', {
@@ -3772,6 +5113,10 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
               {/* Line 3: time (+ van / truck) */}
               <p className="text-sm font-semibold text-slate-700 mt-0.5">
                 {event.start_time && event.end_time && `${formatTime(event.start_time)}–${formatTime(event.end_time)}`}
+                {/* ⚠ Time needed — a pending event with no time can't go live; flag it so the operator fixes it. */}
+                {(!event.start_time || !event.end_time) && event.status === 'unconfirmed' && (
+                  <span className="text-amber-700 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 text-[11px] font-bold">⚠ Time needed</span>
+                )}
                 {vans.length > 1 && event.van_id && ` · ${vans.find(v => v.id === event.van_id)?.name || ''}`}
               </p>
               {event.notes && <p className="text-xs text-slate-400 mt-0.5 truncate">📝 {event.notes}</p>}
@@ -3787,7 +5132,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                     // SAME acknowledge gate as the scraper Approve button: with a conflict the first
                     // click reveals "confirm anyway" in the banner below (warn-with-friction); no
                     // conflict → confirms immediately. Keyed on event.id so cards don't collide.
-                    <button onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">
+                    <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">
                       <span className="sm:hidden">✓</span>
                       <span className="hidden sm:inline">Confirm</span>
                     </button>
@@ -3817,7 +5162,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                 as that row, including the conflict-acknowledge gate on Approve. */}
             {pending && (
               <div className="hidden sm:flex items-center gap-1.5 flex-shrink-0 self-start">
-                <button onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50">Approve</button>
+                <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-2 py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">Approve</button>
                 {!isPast && (
                   <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-2 py-1.5 hover:bg-slate-50">Edit</button>
                 )}
@@ -3866,7 +5211,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
               {/* Approve: with a conflict, the FIRST click reveals the acknowledge in the banner
                   above (warn-with-friction); the explicit "approve anyway" there confirms. No conflict
                   → confirms immediately. */}
-              <button onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50">Approve</button>
+              <button disabled={!event.start_time || !event.end_time} title={(!event.start_time || !event.end_time) ? 'Set a time first' : undefined} onClick={() => { if (conflicts.length > 0 && conflictAckId !== event.id) { setConflictAckId(event.id) } else { handleConfirmEvent(event.id) } }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-green-700 border border-green-300 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed">Approve</button>
               {!isPast && (
                 <button onClick={() => { setEditingEventConfirmOnSave(true); setFormErrors({}); setEditingEvent({ id: event.id, venue_name: event.venue_name, town: event.town || '', postcode: event.postcode || '', address: event.address || '', event_date: event.event_date, start_time: event.start_time ? event.start_time.substring(0, 5) : '', end_time: event.end_time ? event.end_time.substring(0, 5) : '', notes: event.notes || '', truck_id: event.truck_id || truck.id, van_id: event.van_id || null }) }} className="flex-1 sm:flex-none text-center text-base sm:text-xs font-semibold text-slate-600 border border-slate-200 bg-white rounded-lg px-3 py-2 sm:py-1.5 hover:bg-slate-50">Edit</button>
               )}
@@ -4984,6 +6329,13 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   const [gType, setGType] = useState<'hours_before' | 'daily_cutoff'>(((truck as any).preorder_deadline_type as any) || 'hours_before')
   const [gVal, setGVal] = useState<number>((truck as any).preorder_deadline_value ?? 2)
   const [gAction, setGAction] = useState<'sold_out' | 'force_pending'>(((truck as any).preorder_past_action as any) || 'sold_out')
+  // OPEN-WINDOW rule (V8.3): WHEN pre-ordering opens (9 fixed options). Default 'on_confirm' (from approval).
+  const [gOpen, setGOpen] = useState<string>(((truck as any).preorder_open_rule as string) || 'on_confirm')
+  const saveOpenRule = async (v: string) => {
+    setGOpen(v) // optimistic
+    try { await api('update_truck', { data: { preorder_open_rule: v } }); onTruckUpdate({ preorder_open_rule: v } as any) }
+    catch (e: any) { showToast(e.message, 'error') }
+  }
   const saveGlobalCfg = async (patch: Partial<{ type: 'hours_before' | 'daily_cutoff'; value: number; action: 'sold_out' | 'force_pending' }>) => {
     const type = patch.type ?? gType
     const value = patch.value ?? (patch.type ? (patch.type === 'daily_cutoff' ? 720 : 2) : gVal)
@@ -5903,21 +7255,40 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         const ruleSummary = `${describePreorderDeadline({ enabled: true, deadlineType: gType, deadlineValue: gVal, pastAction: gAction })} · ${gAction === 'force_pending' ? 'needs approval' : 'sold out'}`
         return (
           <Card className="p-4">
-            {/* Master toggle */}
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Pre-orders</p>
-                <p className="text-xs text-slate-400 mt-0.5">When off, all pre-order settings are paused but saved.</p>
-              </div>
-              <button type="button" aria-pressed={preordersOn} onClick={() => saveMaster(!preordersOn)}
-                className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${preordersOn ? 'bg-teal-500' : 'bg-slate-300'}`}>
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${preordersOn ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
+            {/* Card header (the master toggle moved down to the "Pre-order rule" line). */}
+            <div>
+              <p className="text-base font-bold text-slate-800">Pre-orders</p>
+              <p className="text-xs text-slate-400 mt-0.5">Let customers order ahead of an event. Set when pre-orders open and the deadline rules below — these apply only to the items you select.</p>
             </div>
 
             {/* GLOBAL CONFIG — the ONE rule (truck row via update_truck). Stable deadline control + radios. */}
-            <div className={`mt-4 ${preordersOn ? '' : 'opacity-50'}`}>
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-2">Pre-order rule (applies to all included items)</p>
+            <div className="mt-4">
+              {/* OPEN-WINDOW (V8.3): when customers can START pre-ordering — Opens FIRST, 9 fixed options. */}
+              <p className="text-sm font-semibold text-slate-800 mb-2">When pre-orders open</p>
+              <select value={gOpen} onChange={e => saveOpenRule(e.target.value)}
+                className="w-full border border-slate-200 rounded-xl px-2 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 mb-3">
+                <option value="on_confirm">As soon as event is confirmed</option>
+                <option value="7d">7 days before</option>
+                <option value="6d">6 days before</option>
+                <option value="5d">5 days before</option>
+                <option value="4d">4 days before</option>
+                <option value="3d">3 days before</option>
+                <option value="2d">2 days before</option>
+                <option value="1d">1 day before</option>
+                <option value="day_of">On day of event</option>
+              </select>
+              {/* "Pre-order deadline" heading (prominent — matches the other section headings) + the master
+                  toggle on the SAME line; explanatory + scope text below. */}
+              <div className="flex items-center justify-between gap-3 mt-1">
+                <p className="text-sm font-semibold text-slate-800">Pre-order deadline</p>
+                <button type="button" aria-pressed={preordersOn} onClick={() => saveMaster(!preordersOn)}
+                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${preordersOn ? 'bg-teal-500' : 'bg-slate-300'}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${preordersOn ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rules to prevent ordering of items after a specified time.</p>
+              {/* Deadline + past-action dim when off; Opens + the toggle stay crisp. */}
+              <div className={preordersOn ? '' : 'opacity-50'}>
               <label className="block text-xs font-bold text-slate-600 mb-1">Deadline</label>
               <div className="flex items-center gap-2 mb-3">
                 <select value={gType} onChange={e => saveGlobalCfg({ type: e.target.value as any })}
@@ -5945,20 +7316,21 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   </label>
                 ))}
               </div>
+              </div>
             </div>
 
             {/* INCLUDED ITEMS (read-only) + Configure button — the summary shows the GLOBAL rule. */}
             <div className={`mt-4 pt-3 border-t border-slate-100 ${preordersOn ? '' : 'opacity-50'}`}>
               <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-sm font-semibold text-slate-800">Included items <span className="font-normal text-slate-400">({includedCount})</span></p>
+                <p className="text-sm font-semibold text-slate-800">Pre-order items <span className="font-normal text-slate-400">({includedCount})</span></p>
                 <button type="button" onClick={() => setPoModalOpen(true)}
                   className="text-xs px-3 py-1.5 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">Configure items</button>
               </div>
               {includedCount === 0
-                ? <p className="text-xs text-slate-400">No items included yet — “Configure items” to add some. They’ll all use the rule above ({ruleSummary}).</p>
+                ? <p className={preordersOn ? 'text-sm font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2' : 'text-xs text-slate-400'}>No items selected yet — “Configure items” to add some.</p>
                 : (
                   <>
-                    <p className="text-xs text-slate-400 mb-2">All included items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
+                    <p className="text-xs text-slate-400 mb-2">All selected items use the rule above: <span className="text-slate-600">{ruleSummary}</span>.</p>
                     <div className="space-y-2">
                       {groups.map(g => {
                         const inc = g.items.filter(i => i.preorder_enabled === true)
@@ -6853,6 +8225,11 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const isoDate = (offset: number) => {
     const d = new Date(); d.setDate(d.getDate() + offset); return d.toISOString().split('T')[0]
   }
+  // Reports are past/present only — cap the date pickers at TRUCK-LOCAL today (not device-local, so a
+  // near-midnight viewer in another tz can't pick the truck's "tomorrow"). max= blocks the picker UI; the
+  // onChange clamp blocks keyboard-typed dates too.
+  const todayLocal = getLocalDateInTz((truck as any)?.timezone ?? 'Europe/London')
+  const clampPast = (v: string) => (v && v > todayLocal ? todayLocal : v)
   const [filterMode, setFilterMode] = useState<'date' | 'event'>(hasAdvanced ? 'date' : 'event')
   const [itemView, setItemView] = useState<'orders' | 'items'>('orders')
   // Mobile order-history: which order rows are tap-expanded (desktop shows the full table, no expand).
@@ -7068,10 +8445,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
         {/* Row 2: filter inputs */}
         {filterMode === 'date' ? (
           <div className="flex items-center gap-2">
-            <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+            <input type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
               className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
             <span className="text-sm text-slate-400 flex-shrink-0">to</span>
-            <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+            <input type="date" value={dateTo} max={todayLocal} onChange={e => setDateTo(clampPast(e.target.value))}
               className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white" />
           </div>
         ) : (
@@ -7132,10 +8509,10 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             <div className="flex items-center gap-2" style={{ minHeight: '44px' }}>
               {filterMode === 'date' ? (
                 <>
-                  <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+                  <input type="date" value={dateFrom} max={todayLocal} onChange={e => setDateFrom(clampPast(e.target.value))}
                     className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />
                   <span className="text-sm text-slate-400 flex-shrink-0">to</span>
-                  <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+                  <input type="date" value={dateTo} max={todayLocal} onChange={e => setDateTo(clampPast(e.target.value))}
                     className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white flex-shrink-0" />
                 </>
               ) : (

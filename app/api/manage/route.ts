@@ -10,7 +10,9 @@ import { resolveTruckLogo } from '@/lib/truck-logo'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
+import { hasValidEventTimes, getLocalDateInTz } from '@/lib/time-utils'
 import { canAccess } from '@/lib/features'
+import { logAllergenChanges, diffItemAllergens, tagJson, arrEq, type Actor } from '@/lib/allergen-audit'
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -215,6 +217,20 @@ export async function POST(req: NextRequest) {
     }
   } catch {}
 
+  // ── Allergen-write gate (B) + audit identity (A) ─────────────────────────────────────
+  // Allergen/dietary/card writes are owner/admin-only. Resolve operators.is_admin for the session user.
+  // KNOWN-WEAK: token-only access resolves to requestingUserRole='owner' (no session) → it passes this
+  // gate. That weakness is recorded HONESTLY via auth_method ('token' vs 'authenticated') on every log.
+  let requestingIsAdmin = false
+  if (requestingUserId) {
+    const { data: op } = await supabase.from('operators').select('is_admin').eq('auth_user_id', requestingUserId).maybeSingle()
+    requestingIsAdmin = op?.is_admin === true
+  }
+  const authMethod: 'token' | 'authenticated' = requestingUserId ? 'authenticated' : 'token'
+  const canEditAllergens = requestingUserRole === 'owner' || requestingIsAdmin
+  const actor: Actor = { actor_user_id: requestingUserId, actor_role: requestingUserRole, auth_method: authMethod }
+  const ALLERGEN_FORBIDDEN = NextResponse.json({ error: 'Only the owner can change allergen information' }, { status: 403 })
+
   // Staff gate for all write actions except update_member (staff can edit themselves)
   const staffBlockedActions = [
     'upsert_event', 'upsert_item', 'upsert_category', 'delete_item', 'delete_category', 'bulk_delete_items',
@@ -354,7 +370,9 @@ export async function POST(req: NextRequest) {
 
   // ── ITEM CRUD ─────────────────────────────────────────────
   if (action === 'upsert_item') {
-    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info, spiciness, auto_accept, preorder_enabled, allergens_verified } = body
+    const { id, name, description, price, category_id, subcategory_id, is_available, stock_count, default_stock, sort_order, image_path, allergens, dietary_info, spiciness, auto_accept, preorder_enabled, allergens_verified, _allergenSource } = body
+    // Card→dish matcher writes tag the audit as 'card_match' (vs a manual 'edit'). Optional; manual edits omit.
+    const allergenChangeType = _allergenSource === 'card' ? ('card_match' as const) : undefined
     // Managed sub-category reference (nullable; null = ungrouped). The legacy text `subcategory`
     // column is the rollback source — no longer WRITTEN here (we write only subcategory_id now).
     const subcatId = (typeof subcategory_id === 'string' && subcategory_id) ? subcategory_id : null
@@ -367,18 +385,28 @@ export async function POST(req: NextRequest) {
     // the modal passes true → clears the "allergens not set" flag.
     const verifiedCol = allergens_verified === undefined ? {} : { allergens_verified: allergens_verified === true }
     if (id) {
+      // (A)+(B): diff allergen fields against the stored row → gate non-owner/admin when they CHANGE
+      // (a manager editing only price/stock sends unchanged allergens → no diff → allowed), then log.
+      const { data: prevItem } = await supabase.from('menu_items_db').select('allergens, dietary_info, allergens_verified').eq('id', id).eq('truck_id', truck.id).single()
+      const auditRows = diffItemAllergens({ truckId: truck.id, itemId: id, actor, prev: prevItem, next: { allergens, dietary_info, allergens_verified }, changeTypeOverride: allergenChangeType })
+      if (auditRows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
       const { data, error } = await supabase.from('menu_items_db')
         .update({ name, description, price, category_id, subcategory_id: subcatId, is_available, stock_count, default_stock: default_stock ?? null, sort_order, image_path, allergens, dietary_info, spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols, ...verifiedCol, updated_at: new Date().toISOString() })
         .eq('id', id).eq('truck_id', truck.id).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      await logAllergenChanges(supabase, auditRows)
       return NextResponse.json({ item: data })
     } else {
+      // New item: gate only when it's created WITH allergen data (empty = a plain item managers can add).
+      const auditRows = diffItemAllergens({ truckId: truck.id, itemId: null, actor, prev: null, next: { allergens, dietary_info, allergens_verified } })
+      if (auditRows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
       const maxOrder = await supabase.from('menu_items_db').select('sort_order').eq('truck_id', truck.id).eq('category_id', category_id).order('sort_order', { ascending: false }).limit(1)
       const nextOrder = ((maxOrder.data?.[0]?.sort_order || 0) + 1)
       const { data, error } = await supabase.from('menu_items_db')
         .insert({ truck_id: truck.id, name, description, price, category_id, subcategory_id: subcatId, is_available: is_available ?? true, stock_count: stock_count ?? null, default_stock: default_stock ?? null, sort_order: sort_order ?? nextOrder, image_path, allergens: allergens ?? [], allergens_verified: allergens_verified ?? true, dietary_info: dietary_info ?? [], spiciness: spiciness ?? null, auto_accept: auto_accept ?? true, ...preorderCols })
         .select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      await logAllergenChanges(supabase, auditRows.map(r => ({ ...r, item_id: data.id })))
       return NextResponse.json({ item: data })
     }
   }
@@ -448,17 +476,51 @@ export async function POST(req: NextRequest) {
 
   if (action === 'upsert_modifier_option') {
     const { id, group_id, name, price_adjustment, type, sort_order, allergens, dietary_info, available, stock_count } = body
+    // (A)+(B): option allergens/dietary (modifier_options has NO allergens_verified column). Gate
+    // non-owner/admin on a CHANGE; log per changed field (item_id null — these aren't menu items).
+    const optAllergenRows = (prevA: string[], prevD: string[]): any[] => {
+      const rows: any[] = []
+      if (!arrEq(allergens ?? [], prevA)) rows.push({ ...actor, truck_id: truck.id, item_id: null, change_type: 'edit', field: 'allergens', old_value: tagJson(prevA), new_value: tagJson(allergens ?? []) })
+      if (!arrEq(dietary_info ?? [], prevD)) rows.push({ ...actor, truck_id: truck.id, item_id: null, change_type: 'edit', field: 'dietary', old_value: tagJson(prevD), new_value: tagJson(dietary_info ?? []) })
+      return rows
+    }
     if (id) {
+      // TRUCK-OWNERSHIP GATE (mirrors set_item_group_excluded_options :525): modifier_options has no
+      // truck_id — ownership is via group_id → modifier_groups.truck_id. Fetch the EXISTING option's
+      // group and verify it belongs to THIS truck before writing. A foreign option id → not found for
+      // this truck → 403, no write. (Closes the cross-truck allergen-write gap from the scoping audit.)
+      const { data: prevOpt } = await supabase.from('modifier_options').select('group_id, allergens, dietary_info').eq('id', id).single()
+      const { data: ownGrp } = prevOpt?.group_id
+        ? await supabase.from('modifier_groups').select('id').eq('id', prevOpt.group_id).eq('truck_id', truck.id).maybeSingle()
+        : { data: null }
+      if (!ownGrp) return NextResponse.json({ error: 'Option not found for this truck' }, { status: 403 })
+      const rows = optAllergenRows(prevOpt?.allergens ?? [], prevOpt?.dietary_info ?? [])
+      if (rows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
       const { data } = await supabase.from('modifier_options').update({ name, price_adjustment, type, sort_order, allergens: allergens ?? [], dietary_info: dietary_info ?? [], available: available ?? true, stock_count: stock_count ?? null }).eq('id', id).select().single()
+      await logAllergenChanges(supabase, rows)
       return NextResponse.json({ option: data })
     } else {
+      // Verify the SUPPLIED group_id belongs to this truck before inserting (same gate as above).
+      const { data: ownGrp } = await supabase.from('modifier_groups').select('id').eq('id', group_id).eq('truck_id', truck.id).maybeSingle()
+      if (!ownGrp) return NextResponse.json({ error: 'Group not found for this truck' }, { status: 403 })
+      const rows = optAllergenRows([], [])
+      if (rows.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
       const { data, error } = await supabase.from('modifier_options').insert({ group_id, name, price_adjustment: price_adjustment || 0, type: type || 'add', sort_order: sort_order || 0, allergens: allergens ?? [], dietary_info: dietary_info ?? [], available: available ?? true, stock_count: stock_count ?? null }).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      await logAllergenChanges(supabase, rows)
       return NextResponse.json({ option: data })
     }
   }
 
   if (action === 'delete_modifier_option') {
+    // TRUCK-OWNERSHIP GATE (mirrors upsert_modifier_option + set_item_group_excluded_options :537):
+    // modifier_options has no truck_id — resolve the option's group → verify it's THIS truck's before
+    // deleting. A foreign option id → not found for this truck → 403, no delete.
+    const { data: opt } = await supabase.from('modifier_options').select('group_id').eq('id', body.id).single()
+    const { data: ownGrp } = opt?.group_id
+      ? await supabase.from('modifier_groups').select('id').eq('id', opt.group_id).eq('truck_id', truck.id).maybeSingle()
+      : { data: null }
+    if (!ownGrp) return NextResponse.json({ error: 'Option not found for this truck' }, { status: 403 })
     await supabase.from('modifier_options').delete().eq('id', body.id)
     return NextResponse.json({ success: true })
   }
@@ -592,10 +654,21 @@ export async function POST(req: NextRequest) {
     const targetTruckId = truck.id
 
     if (id) {
+      // LIVE-TIME GATE (edit): a DRAFT (unconfirmed) may keep null times — the operator is editing to add
+      // them. But a LIVE event (confirmed/open) must never be left timeless, so block clearing times on one.
+      const { data: cur } = await supabase.from('truck_events').select('status').eq('id', id).eq('truck_id', targetTruckId).single()
+      const isLive = cur?.status === 'confirmed' || cur?.status === 'open'
+      if (isLive && !hasValidEventTimes(start_time, end_time)) {
+        return NextResponse.json({ error: 'A live event needs a start and end time — add them before saving.' }, { status: 400 })
+      }
       const { data, error } = await supabase.from('truck_events').update({ venue_name, town: town ?? null, postcode: postcode ?? null, address, event_date, start_time, end_time, notes, latitude: latitude ?? null, longitude: longitude ?? null, van_id: van_id ?? null, updated_at: new Date().toISOString() }).eq('id', id).eq('truck_id', targetTruckId).select().single()
       if (error) return NextResponse.json({ error: error.message }, { status: 400 })
       savedEvent = data
     } else {
+      // LIVE-TIME GATE (create): manual events auto-confirm (go live immediately) → both times required.
+      if (!hasValidEventTimes(start_time, end_time)) {
+        return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
+      }
       const now = new Date().toISOString()
       const eventStatus = 'confirmed'
       // FIX 3 (single-van auto-assign): if the operator didn't pick a van and the
@@ -716,7 +789,7 @@ export async function POST(req: NextRequest) {
     const ALLOWED = [
       'name', 'description', 'cuisine_type', 'contact_email', 'contact_phone',
       'social_instagram', 'social_facebook', 'auto_accept', 'logo_storage_path',
-      'website', 'allergen_info_url', 'allergen_info_text', 'truck_emoji',
+      'website', 'allergen_info_url', 'allergen_info_text', 'allergen_display_mode', 'truck_emoji',
       // Customer-facing WhatsApp (the phone number, when the operator ticks "this number is on
       // WhatsApp") + the tick flag. SEPARATE from whatsapp_sender (Auto-replies/Connect) — not written here.
       'whatsapp', 'phone_is_whatsapp',
@@ -727,6 +800,11 @@ export async function POST(req: NextRequest) {
     if (Object.keys(safeData).length === 0) {
       return NextResponse.json({ truck: null })
     }
+    // (A)+(B): the allergen card + display-mode are allergen writes. Gate non-owner/admin when one
+    // CHANGES (a manager saving contact/social via the same action is unaffected); log each as card_save.
+    const ALLERGEN_SETTING_KEYS = ['allergen_info_url', 'allergen_info_text', 'allergen_display_mode']
+    const touchedAllergenKeys = ALLERGEN_SETTING_KEYS.filter(k => k in safeData && (safeData as any)[k] !== (truck as any)[k])
+    if (touchedAllergenKeys.length && !canEditAllergens) return ALLERGEN_FORBIDDEN
     const { data, error } = await supabase.from('trucks').update(safeData).eq('id', truck.id).select().single()
     if (error) {
       // Log the real cause server-side (schema drift, constraint, etc.); show the operator a clear,
@@ -734,6 +812,10 @@ export async function POST(req: NextRequest) {
       console.error('[update_settings] write failed:', error.message, '| fields:', Object.keys(safeData).join(', '))
       return NextResponse.json({ error: "Couldn't save settings — please try again." }, { status: 400 })
     }
+    await logAllergenChanges(supabase, touchedAllergenKeys.map(k => ({
+      ...actor, truck_id: truck.id, item_id: null, change_type: 'card_save', field: 'card',
+      old_value: (truck as any)[k] ?? null, new_value: (safeData as any)[k] ?? null,
+    })))
     return NextResponse.json({ truck: data })
   }
 
@@ -748,7 +830,7 @@ export async function POST(req: NextRequest) {
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'truck_order_email_enabled']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -1291,11 +1373,15 @@ export async function POST(req: NextRequest) {
 
   if (action === 'get_recent_events') {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    // Reports are about past/present activity — NO future events. Upper-bound at truck-local today (server
+    // filter so the limit(20) budget is spent on real past events, not crowded out by future ones).
+    const todayLocal = getLocalDateInTz((truck as any).timezone ?? 'Europe/London')
     const { data: events } = await supabase
       .from('truck_events')
       .select('id, venue_name, event_date, status')
       .eq('truck_id', truck.id)
       .gte('event_date', thirtyDaysAgo)
+      .lte('event_date', todayLocal)   // ≤ today only — never a future event in the Reports picker
       // Report on events that actually happened — confirmed/open/closed only. Excludes 'cancelled'
       // (rejected events, per the reject flow) and 'unconfirmed' (scraped-but-unapproved) from the picker.
       .in('status', ['confirmed', 'open', 'closed'])

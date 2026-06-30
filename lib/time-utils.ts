@@ -33,6 +33,14 @@ export function getNowMinsInTz(tz: string = 'Europe/London'): number {
   return get('hour') * 60 + get('minute')
 }
 
+/** Both event times present + valid HH:MM — the precondition for an event going LIVE (confirmed/open). The
+ *  slot/collection/capacity engine needs BOTH (start = floor, end = the slot-range/"available until" bound);
+ *  a null time can't project slots. DRAFTS (unconfirmed) may omit them — this gates only the live transition. */
+export function hasValidEventTimes(start?: string | null, end?: string | null): boolean {
+  const ok = (t?: string | null) => typeof t === 'string' && /^([01]\d|2[0-3]):[0-5]\d/.test(t)
+  return ok(start) && ok(end)
+}
+
 /** Calendar date 'YYYY-MM-DD' in the given timezone (the tz-aware localToday). */
 export function getLocalDateInTz(tz: string = 'Europe/London'): string {
   const parts = new Intl.DateTimeFormat('en-GB', {

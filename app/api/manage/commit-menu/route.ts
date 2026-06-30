@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { logAllergenChanges, type Actor } from '@/lib/allergen-audit'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,6 +18,15 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
+  // (A) Audit identity for the import. Import is NOT owner/admin-gated (it only STAGES allergens as
+  // verified=false — hidden from customers; the visibility-creating CONFIRM is gated in the manage
+  // route), but it IS logged. Best-effort actor resolution mirrors the manage route.
+  let importActor: Actor = { actor_user_id: null, actor_role: null, auth_method: 'token' }
+  try {
+    const { data: { user } } = await (await createSupabaseServerClient()).auth.getUser()
+    if (user) importActor = { actor_user_id: user.id, actor_role: 'owner', auth_method: 'authenticated' }
+  } catch { /* token-only import */ }
 
   // Build category ID map from existing categories — INCLUDING soft-deleted rows (no is_active filter)
   // so a same-key dead category is detected. The UNIQUE constraint is `menu_categories_truck_id_slug_key`
@@ -218,7 +229,7 @@ export async function POST(req: NextRequest) {
   if (committedWithGroups.length > 0) {
     const norm = (s: string) => String(s).trim().toLowerCase()
     type OptAgg = { name: string; price: number; allergens: string[]; dietary: string[]; order: number }
-    type GroupAgg = { display: string; isRequired: boolean; singleSelect: boolean; options: Map<string, OptAgg> }
+    type GroupAgg = { display: string; isRequired: boolean; singleSelect: boolean; inferred: boolean; options: Map<string, OptAgg> }
     const registry = new Map<string, GroupAgg>()
 
     // Pass 1 — aggregate groups + superset of options across committed dishes.
@@ -227,9 +238,12 @@ export async function POST(req: NextRequest) {
         if (!g?.name || !Array.isArray(g.options)) continue
         const key = norm(g.name)
         let entry = registry.get(key)
-        if (!entry) { entry = { display: String(g.name).trim(), isRequired: false, singleSelect: false, options: new Map() }; registry.set(key, entry) }
+        if (!entry) { entry = { display: String(g.name).trim(), isRequired: false, singleSelect: false, inferred: false, options: new Map() }; registry.set(key, entry) }
         if (g.isRequired === true) entry.isRequired = true
         if (g.singleSelect === true) entry.singleSelect = true
+        // _inferredFromVariants → hide_name: customers see "Choose an option", not the internal
+        // "Category - Name N". Set by the import grouping pass (makeGroupingRow); never on manual groups.
+        if (g._inferredFromVariants === true) entry.inferred = true
         for (const o of g.options) {
           if (!o?.name) continue
           const ok = norm(o.name)
@@ -256,6 +270,7 @@ export async function POST(req: NextRequest) {
         is_required: entry.isRequired,
         min_choices: entry.isRequired ? 1 : 0,
         max_choices: entry.singleSelect ? 1 : 99,
+        hide_name: entry.inferred,
       }).select('id').single()
       if (gErr || !grp) { failed.push({ type: 'group', name: entry.display, error: gErr?.message || 'group insert failed' }); continue }
       groupsCreated++
@@ -293,6 +308,13 @@ export async function POST(req: NextRequest) {
       }
     }
   }
+
+  // (A) Append-only import-summary audit row — records that allergens were STAGED unverified on import
+  // (never customer-visible until a gated wizard confirm). One row per import keeps the log clean.
+  await logAllergenChanges(supabase, [{
+    ...importActor, truck_id: truck.id, item_id: null, change_type: 'import', field: 'allergens',
+    old_value: null, new_value: JSON.stringify({ items_imported: inserted, allergens_verified: false }),
+  }])
 
   return NextResponse.json({ ok: failed.length === 0, inserted, skipped, failed, groupsCreated, optionsCreated, linksCreated, priceConflicts })
 }

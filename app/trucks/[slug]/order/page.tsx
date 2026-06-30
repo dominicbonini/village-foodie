@@ -11,6 +11,7 @@ import { calculateOrderTotal, calculateDealOriginalPrice, formatModifiers } from
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem';
 import TruckListCard from '@/components/TruckListCard';
 import { SpiceLevel } from '@/components/SpiceLevel';
+import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips';
 import type { VillageEvent } from '@/types';
 import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils';
 import { OptionStockBadge } from '@/components/OptionStockBadge';
@@ -19,13 +20,14 @@ import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } f
 import { getCatConfig, catCookSecs, calcQueueAwareReadySecs } from '@/lib/prep-utils';
 import { hasFeature } from '@/lib/features';
 import { formatTime, localTodayIso, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils';
+import { preorderOpenDate, formatPreorderOpenLabel } from '@/lib/preorder';
 import { isModifierAvailable } from '@/lib/modifier-utils';
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]; spiciness?: number | null; modifierGroups?: ModifierGroup[]; preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | null
+  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]; spiciness?: number | null; modifierGroups?: ModifierGroup[]; preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | 'not_open_yet' | null
 }
 interface UpsellRule {
   id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean
@@ -42,9 +44,9 @@ interface Bundle {
 }
 interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; active: boolean }
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
-interface ModifierGroup { id: string; name: string; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
+interface ModifierGroup { id: string; name: string; hide_name?: boolean; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; ordering_available?: boolean; allergensVerified?: boolean }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null }
 interface EventData {
   id: string            // truck_events.id — the event the customer is ordering against
   date: string          // dd/mm/yyyy
@@ -106,10 +108,10 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
 // labels only. Sold-out (available:false) items are hidden, so they don't block the group label.
 function groupPreorderLabel(
   items: Array<{ available?: boolean }>,
-): { label: string; state: 'before' | 'closed_pending' } | null {
+): { label: string; state: 'before' | 'closed_pending' | 'not_open_yet' } | null {
   const avail = items.filter(it => (it.available ?? true))
   if (avail.length === 0) return null
-  const read = (it: unknown) => it as { preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | null }
+  const read = (it: unknown) => it as { preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | 'not_open_yet' | null }
   const label = read(avail[0]).preorderLabel ?? null
   const state = read(avail[0]).preorderState ?? null
   if (!label || !state) return null
@@ -1298,7 +1300,13 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // finished — possibly early). Either blocks ordering, matching the server's status guard + the
   // finished-early promise.
   const isClosed = isEventClosed || eventEnded
-  const isOrderingBlocked = isPaused || isClosed
+  // ORDERING GATE / CRASH GUARD: a null-time event is not orderable. The server already returns
+  // ordering_available:false for it, but we ALSO gate on the event's own times here so a null-time event
+  // can NEVER render the ordering flow regardless of how it loaded — a graceful "not available yet" state,
+  // never the (fake-windowed) ordering UI, never a crash. (All the start/end .split sites are already
+  // null-guarded; this stops the silent 10:00–23:00 fallback path from being orderable.)
+  const orderingTimeNotSet = !!event && (!event.start_time || !event.end_time)
+  const isOrderingBlocked = isPaused || isClosed || orderingTimeNotSet
 
   // Shown in place of the event card when the events fetch failed (after auto-retries) — friendly,
   // not alarming, with a Retry that re-runs the events effect (setReloadKey bump). Used by both the
@@ -1320,6 +1328,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   return (
     <Shell>
       <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
+
+      {/* Time-not-set banner — a null-time event can't be ordered against (engine needs the times). Shown
+          INSTEAD of treating it as orderable; intentional + reassuring, never a broken/crash screen. */}
+      {orderingTimeNotSet && !isClosed && (
+        <div className="sticky top-[60px] z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
+          <div className="max-w-lg mx-auto">
+            <p className="font-black text-sm">Ordering isn’t available for this event yet</p>
+            <p className="text-xs text-slate-300 mt-0.5">The truck hasn’t set the event time yet — please check with them directly. You’ll be able to order here once it’s set.</p>
+          </div>
+        </div>
+      )}
 
       {/* Event closed banner — clock end (isEventClosed) OR operator finished (eventEnded, incl. early) */}
       {isClosed && (
@@ -1439,9 +1458,19 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // ?event_id=<truck_events.id>. Only confirmed/open events are returned by /api/events.
                 <>
                   <p className="text-xs font-black text-orange-600 uppercase tracking-wider mb-2 text-center">Choose which event to order for</p>
-                  {events.map((e) => (
-                    <TruckListCard key={e.id} event={eventToVillage(e, truck?.name || '')} slug={slug} forceOrderButton />
-                  ))}
+                  {events.map((e) => {
+                    // V8.3 calendar: "Pre-orders open [date]" under the card when this event's open is still
+                    // in the FUTURE (rule + event date, derived — no new data). Don't fork TruckListCard.
+                    const poOpenDate = preorderOpenDate(truck?.preorder_open_rule, e.date_iso)
+                    const poNotOpenYet = poOpenDate != null && localTodayIso() < poOpenDate
+                    const poLabel = poNotOpenYet ? formatPreorderOpenLabel(truck?.preorder_open_rule, e.date_iso) : null
+                    return (
+                      <div key={e.id}>
+                        <TruckListCard event={eventToVillage(e, truck?.name || '')} slug={slug} forceOrderButton />
+                        {poLabel && <p className="text-[11px] text-amber-700 font-semibold text-center mt-1 mb-2">⏳ {poLabel}</p>}
+                      </div>
+                    )
+                  })}
                 </>
               )}
             </div>
@@ -1487,7 +1516,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       </div>
                       <button onClick={() => !isOrderingBlocked && addDeal(bundle)} disabled={isOrderingBlocked}
                         className={`w-full font-bold text-sm py-2 rounded-xl transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                        {isOrderingBlocked ? (isClosed ? 'Ordering closed' : 'Ordering paused') : applied === 0 ? 'Add deal' : '+ Add another deal'}
+                        {isOrderingBlocked ? (isClosed ? 'Ordering closed' : orderingTimeNotSet ? 'Set-up pending' : 'Ordering paused') : applied === 0 ? 'Add deal' : '+ Add another deal'}
                       </button>
                     </div>
                     {/* Applied deal instances - compact summary */}
@@ -1533,30 +1562,25 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           </div>
         )}
 
-        {/* SAFETY: allergen data not verified for this menu → a clear "ask staff" notice (not a block —
-            customers can still order, just informed). Unverified per-item allergen chips are already hidden
-            server-side (menu API), so nothing unreliable is shown alongside this. */}
-        {truck?.allergensVerified === false && (
-          <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl px-4 py-3 mb-4 flex items-start gap-3">
-            <span className="text-amber-500 text-lg shrink-0 leading-none mt-0.5">⚠️</span>
-            <p className="text-sm text-amber-900 font-medium">
-              Allergen information has not been verified for this menu. If you have a food allergy or intolerance, please speak to the staff before ordering.
-            </p>
-          </div>
-        )}
+        {/* (The old "allergens not verified — ask staff" banner was removed — replaced by the
+            always-present "Allergen Info" link in the Menu header below, which shows confirmed info
+            per display_mode or an honest "not provided — ask the truck" message. Unconfirmed per-item
+            allergen chips remain hidden server-side by the verified-gate.) */}
 
         {/* MENU — grouped by category */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 px-4 py-4 mb-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest">Menu</h2>
-            {(truck?.allergen_info_url || truck?.allergen_info_text) && (
-              <button
-                onClick={() => setShowAllergenModal(true)}
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 underline"
-              >
-                ⚠️ Allergen information
-              </button>
-            )}
+            {/* Allergen Info — ALWAYS present (consistent, predictable entry point in every mode/state).
+                The modal resolves what to show by display_mode: confirmed card and/or confirmed per-item
+                allergens, or an honest "not provided — ask the truck" message when nothing is confirmed.
+                Never shows unconfirmed data (per-item is verified-gated server-side). */}
+            <button
+              onClick={() => setShowAllergenModal(true)}
+              className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 underline"
+            >
+              ⓘ Allergen Info
+            </button>
           </div>
           {/* Anchor at the MENU region's natural top (just above the sticky tab bar). Non-sticky, so
               its document position is stable even when the tabs are pinned — used by the tab-change
@@ -1662,7 +1686,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   // cast (same as spiciness): the grouped item is basket-utils' MenuItem, the menu API
                   // attaches the field at runtime. NO client-side time — render the string as-is.
                   const itemPreorderLabel = (item as { preorderLabel?: string | null }).preorderLabel ?? null
-                  const itemPreorderState = (item as { preorderState?: 'before' | 'closed_pending' | null }).preorderState ?? null
+                  const itemPreorderState = (item as { preorderState?: 'before' | 'closed_pending' | 'not_open_yet' | null }).preorderState ?? null
                   return (
                     <div key={item.name} className={isSoldOut ? 'opacity-60' : ''}>
                     {/* py-3 item-content wrapper (Option B): a TOP LINE, then a FULL-WIDTH description
@@ -1708,14 +1732,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         wraps to fewer lines; chips stay directly under it, tied to this item. Chip font
                         is rem (text-[0.625rem]) so it scales with the OS "Larger Text" setting. */}
                     {item.description && <p className="text-slate-400 text-xs mt-1 leading-snug">{item.description}</p>}
-                    {((item.dietary?.length ?? 0) > 0 || (item.allergens?.length ?? 0) > 0 || (itemSpiciness ?? 0) > 0) && (
+                    {/* Per-item allergen chips hidden in 'card' mode (the card is the reference there);
+                        shown in 'per_dish'/'both'/legacy(null). Dietary + spice always show (not the
+                        card's domain). Allergens are still server-side verified-gated regardless. */}
+                    {((item.dietary?.length ?? 0) > 0 || (truck?.allergen_display_mode !== 'card' && (item.allergens?.length ?? 0) > 0) || (itemSpiciness ?? 0) > 0) && (
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         <SpiceLevel value={itemSpiciness} />
                         {item.dietary?.map((d: string) => (
-                          <span key={d} className="text-[0.625rem] px-1.5 py-0.5 bg-green-50 text-green-700 rounded-md font-medium">{d}</span>
+                          <DietaryChip key={d} label={d} />
                         ))}
-                        {item.allergens?.map((a: string) => (
-                          <span key={a} className="text-[0.625rem] px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded-md font-medium">{a}</span>
+                        {truck?.allergen_display_mode !== 'card' && item.allergens?.map((a: string) => (
+                          <AllergenChip key={a} label={a} />
                         ))}
                       </div>
                     )}
@@ -1737,7 +1764,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                         <div className="mt-1.5 space-y-0.5">
                           {previewGroups.map(g => (
                             <p key={g.id} className="text-[0.625rem] text-slate-400 leading-snug flex flex-wrap items-center gap-x-1 gap-y-0.5">
-                              <span className="font-semibold text-slate-500">{g.name}:</span>
+                              {/* hide_name (inferred custom-extra): omit the internal "Category - Name N"
+                                  label on the card preview — the options alone read clearly. */}
+                              {!g.hide_name && <span className="font-semibold text-slate-500">{g.name}:</span>}
                               {g.options.map((opt, i) => (
                                 <span key={opt.id} className="inline-flex items-center gap-1">
                                   {i > 0 && <span className="text-slate-300">·</span>}
@@ -1772,7 +1801,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                               : qty > 0 ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
                               : 'bg-orange-600 text-white hover:bg-orange-700'
                             }`}>
-                            {isOrderingBlocked ? (isClosed ? 'Closed' : 'Paused') : qty > 0 ? `${qty} · Add` : 'Add'}
+                            {isOrderingBlocked ? (isClosed ? 'Closed' : orderingTimeNotSet ? 'Set-up pending' : 'Paused') : qty > 0 ? `${qty} · Add` : 'Add'}
                           </button>
                         ) : qty > 0 ? (
                           <>
@@ -1796,7 +1825,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           // the base item quantity directly, never re-prompting the upsell per unit.
                           <button onClick={() => !isOrderingBlocked && (opensModal ? openItemModal(item, catModGroups, itemUpsells) : addItem(item))} disabled={isOrderingBlocked}
                             className={`font-bold text-xs px-3 py-1.5 rounded-lg transition-colors active:scale-95 ${isOrderingBlocked ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
-                            {isOrderingBlocked ? (isClosed ? 'Closed' : 'Paused') : 'Add'}
+                            {isOrderingBlocked ? (isClosed ? 'Closed' : orderingTimeNotSet ? 'Set-up pending' : 'Paused') : 'Add'}
                           </button>
                         )}
                       </div>
@@ -2114,7 +2143,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <button onClick={e => { e.preventDefault(); handleSubmitClick() }}
                 disabled={submitting || isOrderingBlocked || !hasItems || !name || !emailValid || !phoneValid || (truck?.mode === 'village' && !selectedSlot && !asapChosen) || (!eventLoading && !event)}
                 className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm mt-5">
-                {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : 'Place order'}
+                {submitting ? 'Placing order...' : isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Place order'}
               </button>
               <p className="text-center text-slate-400 text-xs mt-2">Pay at the truck on collection · No card details needed</p>
 
@@ -2167,7 +2196,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <button onClick={e => { e.preventDefault(); setFormSheetOpen(true) }}
             disabled={isOrderingBlocked || !hasItems || (!eventLoading && !event)}
             className="w-full bg-orange-600 text-white font-black py-3.5 px-6 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : !eventLoading && !event ? 'No event available' : 'Review & order →'}
+            {isClosed ? 'Ordering has closed' : isPaused ? 'Ordering paused' : orderingTimeNotSet ? 'Set-up pending' : !eventLoading && !event ? 'No event available' : 'Review & order →'}
           </button>
           <p className="text-center text-slate-400 text-xs mt-1">Pay at the truck on collection · No card details needed</p>
         </div>
@@ -2199,7 +2228,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   return (
                     <div key={group.id}>
                       <p className="text-xs font-black uppercase tracking-wider mb-2">
-                        <span className="text-slate-500">{group.name}</span>
+                        {/* hide_name: AI-import-inferred custom-extra groups carry an internal
+                            "Category - Name N" name — never shown to customers; a generic prompt
+                            stands in. Manual / AI-extras groups (hide_name false) show their real name. */}
+                        <span className="text-slate-500">{group.hide_name ? 'Choose an option' : group.name}</span>
                         {ruleHint && (
                           <span className={`ml-2 font-bold ${isUnmet ? 'text-amber-600' : 'text-slate-400'}`}>· {ruleHint}</span>
                         )}
@@ -2308,16 +2340,49 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               <button onClick={() => setShowAllergenModal(false)}
                 className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
             </div>
-            {truck?.allergen_info_url && (
-              <a href={truck.allergen_info_url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-4 py-3
-                           text-sm text-orange-700 font-medium hover:bg-orange-100">
-                📎 View allergen card (PDF/image)
-              </a>
-            )}
-            {truck?.allergen_info_text && (
-              <p className="text-sm text-slate-600 whitespace-pre-wrap">{truck.allergen_info_text}</p>
-            )}
+            {(() => {
+              // Resolve what to show by display_mode (2 modes now; 'both' + null legacy → per-dish — one
+              // source of truth). card → the opaque card only. per_dish/both/null → the per-item allergen
+              // union (the "derived card"), verified-gated server-side so ONLY confirmed ones appear.
+              const mode = truck?.allergen_display_mode
+              const showCard = mode === 'card' && !!(truck?.allergen_info_url || truck?.allergen_info_text)
+              const perItem = mode !== 'card'
+                ? [...new Set((menu?.items ?? []).flatMap(i => i.allergens ?? []))].sort()
+                : []
+              if (!showCard && perItem.length === 0) {
+                // Honest fallback — never invents data; directs to a human.
+                return (
+                  <p className="text-sm text-slate-600">
+                    Allergen info not provided — please confirm directly with the truck.
+                  </p>
+                )
+              }
+              return (
+                <>
+                  {showCard && truck?.allergen_info_url && (
+                    <a href={truck.allergen_info_url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2 bg-orange-50 border border-orange-100 rounded-xl px-4 py-3
+                                 text-sm text-orange-700 font-medium hover:bg-orange-100">
+                      📎 View allergen card (PDF/image)
+                    </a>
+                  )}
+                  {showCard && truck?.allergen_info_text && (
+                    <p className="text-sm text-slate-600 whitespace-pre-wrap">{truck.allergen_info_text}</p>
+                  )}
+                  {perItem.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 mb-1">Allergens used in this menu</p>
+                      <div className="flex flex-wrap gap-1">
+                        {perItem.map(a => (
+                          <span key={a} className="text-xs px-2 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg">{a}</span>
+                        ))}
+                      </div>
+                      <p className="text-xs text-slate-400 mt-1">See each dish for its specific allergens.</p>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
             <p className="text-xs text-slate-400">
               If you have a severe allergy, please contact the vendor directly before ordering.
             </p>

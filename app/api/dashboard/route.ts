@@ -400,5 +400,6 @@ export async function GET(req: NextRequest) {
     date,
     categoryOrder,
     itemCategoryMap,
+    catConfigs,   // per-category prep_secs/batch_size → drives the card's prep-aware amber threshold
   })
 }
