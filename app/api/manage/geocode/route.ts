@@ -21,6 +21,12 @@ Return ONLY valid JSON, no markdown, no explanation:
 If you cannot determine the location with reasonable confidence, return:
 { "lat": null, "lng": null, "confidence": "none" }`
 
+  // Geocoding is BEST-EFFORT (it only fills latitude/longitude). A slow/stalled Gemini call must never hang
+  // the event save (the "Import schedule" spinner). Hard-cap the call at 10s via AbortController: on
+  // timeout the fetch aborts → falls to the catch → returns no-coordinates, so the event saves WITHOUT
+  // lat/lng instead of the spinner waiting minutes for Gemini to settle.
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10_000)
   try {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
@@ -34,6 +40,7 @@ If you cannot determine the location with reasonable confidence, return:
             responseMimeType: 'application/json',
           },
         }),
+        signal: controller.signal,
       }
     )
 
@@ -48,6 +55,9 @@ If you cannot determine the location with reasonable confidence, return:
       confidence: parsed.confidence,
     })
   } catch {
+    // Timeout/abort, network, or parse error → best-effort: no coordinates, NEVER block the save.
     return NextResponse.json({ lat: null, lng: null })
+  } finally {
+    clearTimeout(timeout)
   }
 }

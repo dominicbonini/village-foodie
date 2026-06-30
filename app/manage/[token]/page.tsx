@@ -170,7 +170,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // e.g. AI-detected on import, not yet human-confirmed). While true, customers can't see that item's
   // allergen info (hidden server-side) + see an "ask staff" notice; this drives the 3-place operator nudge
   // (top banner, (!) on the Menu tab, Menu-tab header). Strict === false → legacy/null items don't trigger.
-  const allergensUnverified = items.some(i => (i as any).allergens_verified === false)
+  // CARD-mode suppression: in card mode the per-dish unverified count is irrelevant (the card supplies the
+  // allergen info), so these CROSS-TAB nudges (banner + Menu (!) badge) must stay quiet in card mode —
+  // REGARDLESS of whether a card is saved yet. The "Review each dish's allergens" CTA is wrong for card
+  // mode; the Menu-tab box owns the correct card-mode CTA ("add an allergen card" when none is saved).
+  // Mirrors the customer per-dish gate (menu route :438, plain `!== 'card'`). PER-DISH mode is unchanged.
+  const cardModeSetUp = (truck as any)?.allergen_display_mode === 'card'
+  const allergensUnverified = !cardModeSetUp && items.some(i => (i as any).allergens_verified === false)
 
 
   const load = useCallback(async () => {
@@ -3080,32 +3086,44 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest mt-10 mb-2">Allergens</h2>
       {(() => {
         const unverifiedCount = localItems.filter(i => (i as any).allergens_verified === false).length
-        const needsReview = unverifiedCount > 0
         // Empty menu: "0 unconfirmed" is vacuously true but "all dishes confirmed" reads as a false "done".
         // Show neutral build-menu copy instead — and don't nag (needsReview stays false until a dish exists).
         const noMenu = localItems.length === 0
         // Display mode collapsed to 2 (per-dish / card): 'both' + NULL legacy read as per-dish.
         const mode = (truck as any).allergen_display_mode as 'per_dish' | 'card' | 'both' | null
         const modeLabel = mode === 'card' ? 'Allergen card' : mode === 'per_dish' || mode === 'both' ? 'Per dish' : 'Not set'
+        // CARD mode: the card IS the allergen info → the per-dish unverified count is irrelevant and must
+        // NOT drive "N dishes need review" (mirrors the customer per-dish gate, menu route :438). Card mode
+        // is "set up" once a card is saved; card mode WITHOUT a card prompts to ADD one (not "review dishes").
+        const cardMode = mode === 'card'
+        const hasCard = !!(allergenInfoText || allergenUrl)
+        const cardNeedsCard = cardMode && !noMenu && !hasCard
+        // Per-dish "needs review" fires ONLY in per-dish mode. `warn` drives the amber warning treatment.
+        const needsReview = !cardMode && unverifiedCount > 0
+        const warn = needsReview || cardNeedsCard
         return (
           // (#5) The BOX itself is the Menu-tab warning surface — amber warning treatment while any dish
           // needs review (replaces the removed top banner); calm slate once all confirmed.
-          <div className={`rounded-2xl p-5 border-2 ${needsReview ? 'border-amber-300 bg-amber-50' : 'border-slate-200'}`}>
+          <div className={`rounded-2xl p-5 border-2 ${warn ? 'border-amber-300 bg-amber-50' : 'border-slate-200'}`}>
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div className="flex items-start gap-3">
-                <span className="text-2xl">{needsReview ? '⚠️' : '🛡️'}</span>
+                <span className="text-2xl">{warn ? '⚠️' : '🛡️'}</span>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">{needsReview ? 'Allergens not set' : 'Allergens'}</h3>
+                  <h3 className="text-sm font-bold text-slate-900">{warn ? 'Allergens not set' : 'Allergens'}</h3>
                   <p className="text-xs text-slate-500 mt-0.5">
                     {noMenu
                       ? <span className="text-slate-500 font-semibold">Build your menu first — add dishes, then set up their allergens</span>
                       : <>
                           Display mode: <strong>{modeLabel}</strong>
                           {' · '}
-                          {needsReview
-                            ? <span className="text-amber-700 font-semibold">{unverifiedCount} dish{unverifiedCount !== 1 ? 'es' : ''} need review — customers can&apos;t see allergen info until confirmed</span>
-                            : <span className="text-green-600 font-semibold">all dishes confirmed</span>}
-                          {allergenInfoText ? ' · allergen card saved' : ''}
+                          {cardMode
+                            ? (hasCard
+                                ? <span className="text-green-600 font-semibold">allergen card saved</span>
+                                : <span className="text-amber-700 font-semibold">add an allergen card so customers can see allergen info</span>)
+                            : (needsReview
+                                ? <span className="text-amber-700 font-semibold">{unverifiedCount} dish{unverifiedCount !== 1 ? 'es' : ''} need review — customers can&apos;t see allergen info until confirmed</span>
+                                : <span className="text-green-600 font-semibold">all dishes confirmed</span>)}
+                          {!cardMode && allergenInfoText ? ' · allergen card saved' : ''}
                         </>}
                   </p>
                 </div>

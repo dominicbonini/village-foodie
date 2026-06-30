@@ -587,7 +587,13 @@ export async function GET(
       // Truck-level allergen-verification flag: false when ANY live menu item is unverified
       // (allergens_verified === false). Drives the customer "allergen info not verified — ask staff"
       // safety notice. true when every item is verified/legacy (no false) → no notice (e.g. Gusto).
-      allergensVerified: !(items || []).some((i: any) => i.allergens_verified === false),
+      // CARD mode with a saved card → the card supplies the allergen info → treat as verified (display-
+      // mode-aware, mirrors the per-dish gate above :438). Else the per-dish computation. No live consumer
+      // today (the customer "ask staff" banner was removed); gated for consistency so a future re-consumer
+      // isn't misled in card mode.
+      allergensVerified: ((truck.allergen_display_mode ?? null) === 'card' && !!(truck.allergen_info_url || truck.allergen_info_text))
+        ? true
+        : !(items || []).some((i: any) => i.allergens_verified === false),
     },
     menu,
   })

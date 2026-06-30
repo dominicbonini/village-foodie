@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V8.4
+HatchGrab Engineering Reference Manual · V8.5
 
 **HatchGrab**
 
@@ -6,13 +6,84 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 8.4**
+**Version 8.5**
 
 June 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V8.5 — June 2026
+
+Delta over V8.4. A live-debugging + import-correctness session triggered by an infinite-spinner hang on the wizard's "Save & add to menu". Headline: ran the deploy-coupled `hide_name` migration (forced early by the hang); fixed five wizard/allergen defects (all BUILT + tsc-clean + LIVE-VALIDATED on test-truck via a clean re-import); cleaned test-truck to a known-good state. **Status: all five fixes validated on the WORKING build; deployed-build re-test still required (fix-in-repo ≠ deployed).**
+
+### The hang — root cause + the latent handler bug (DIAGNOSED; immediate cause fixed by migration)
+
+"Save & add to menu" spun forever. ROOT: commit-menu `INSERT`s `modifier_groups.hide_name`, the column did not exist yet (migration unrun), so EVERY custom-extra group insert failed, commit-menu returned `{ok:false}` at HTTP 200 (not a throw), and `handleCommitMenu` has NO `else` on `if(data.ok)` and NO `finally` — so `importStep` stays `'saving'` forever, silently (the swallowed-error lesson again — a non-throwing `{ok:false}` + no `finally` = invisible infinite spinner). Fixed by running the `hide_name` migration.
+
+**LATENT HANDLER BUG STILL OPEN (backlog):** the missing else/finally + swallowed `{ok:false}` turns ANY future commit failure into the same silent hang — needs a `finally` that clears the spinner + a toast on the non-ok path. Not yet fixed (un-blocked by the migration; the durable handler fix is queued).
+
+**NOTE — commit-menu is best-effort / non-transactional:** categories + `menu_items_db` insert BEFORE the group inserts fail, so a hung import leaves PARTIAL data; a naive retry double-inserts. Clear partial rows before retrying.
+
+### `hide_name` migration — RUN (deploy-coupled, done by hand)
+
+`20260630_modifier_group_hide_name.sql` (`modifier_groups.hide_name bool NOT NULL DEFAULT false`) is now APPLIED + VERIFIED (`information_schema`). This was forced early by the hang; it is the FIRST step of the strict deploy order and is now complete. Running it does NOT break deployed prod (the live code doesn't `SELECT hide_name`). The two ADDITIVE migrations (`allergen_audit_card_match`, `preorder_open_rule`) remain to be run before/with the code deploy.
+
+### Allergen CARD-ONLY mode — verbatim, no AI extraction (FIX, Option A)
+
+The card-only ("show allergen card") mode was wrongly running process-allergens extraction on free-form card text and persisting the AI's vocab-rewritten `formatted_text` (typed "lactose" → stored "Dairy") + showing a chip modal — despite the chooser label promising "shown as-is". DECISION: a free-form allergen card is the operator's VERBATIM text shown to the customer; NO allergen-vocab extraction, NO chips, NO rewrite. Built:
+
+- New **`CardOnlyEditor`** (separate from `CardUploadPage` so card-mode cannot leak into per-dish): a free-form textarea + an image upload. Paste/type → stored verbatim to `trucks.allergen_info_text`. Image → AI TRANSCRIBES the allergen/dietary text faithfully (Interpretation A — prose, preserving the operator's wording; NO vocab-mapping, NO lactose→Dairy, NO restructuring), fills the editable box, the operator reviews/edits, then saves verbatim. Image is consumed for transcription ONLY — never stored, never shown, `allergen_info_url` not written in card-only mode. Transcription output is NEVER auto-saved.
+- Mechanism: process-allergens gained an opt-in `mode=transcribe` (`responseMimeType` text/plain, returns `{ok,text}`, no JSON/vocab parse); the default JSON/vocab path is byte-for-byte UNCHANGED → the per-dish path is unaffected. (DRY: one route, two modes.)
+- Customer display already rendered `allergen_info_text` verbatim (`whitespace-pre-wrap`) — unchanged.
+- The old card-mode chip flow (`cardPanel`, `showAllergenModal` "Extracted allergen information / Try again / Save allergen info", `handleSaveAllergens` `formatted_text` persistence, `handleAllergenUploadAndProcess` / `handleAllergenTextProcess` / `allergenExtracted`) is now ORPHANED/dead — left in place (not deleted) to avoid risk; flagged for a later dead-code sweep.
+- PER-DISH path (card→dish matching: `matchCardEntries` / `mergeAllergensUnion`, verified=false row-by-row) is UNCHANGED — that path's extraction-and-match is correct and is where the AI tries to match against individual dishes.
+
+### AI custom-extra over-split — content-based consolidation (FIX)
+
+AI import produced 6 near-duplicate Mains protein groups ("Mains - Protein 1…5" + "Main Ingredient"). DIAGNOSED: the split is structural — process-menu emits one modifier group PER DISH (`_inferredFromVariants`), `computeGroupingRows` makes one row per base dish, and the V8.4 naming pass numbered identical groups apart, which DISABLED commit-menu's only consolidation (name-based dedup, key = `norm(name)`) — so identical-content groups persisted as separate rows. (The V8.4 naming work did NOT cause the split but its distinct numbering broke the merge.) There was NO content-based consolidation anywhere.
+
+FIX (client-side, in `computeGroupingRows`, BEFORE the naming pass — so the operator sees the real result; the operator never sees group names/structure, only the grouped/separate per-dish choice): consolidate by a content SIGNATURE = (normalized category, sorted order-independent option-set [`normName#price#allergens#dietary`], group rules `is_required`/`singleSelect`). EXACT MATCH ONLY (Option X) — NO superset, NO per-dish exclusions, NO cross-dish option mixing. Rationale: an option's price can differ per dish, and a shared group holds one price per option, so price-divergent groups MUST stay separate or a dish shows the wrong price. Identical signatures collapse to one shared group every matching dish links to; the naming pass then numbers only genuinely-distinct surviving groups. Allergens/dietary are IN the signature (stricter than options+price+rules) so a merge can never move an allergen onto another dish (over-warn-safe). commit-menu's name-dedup kept as a backstop (now fed intentional content-based names). `buildGroupedItems` re-runs the pure `computeGroupingRows` at commit → chooser-render and commit produce identical structure.
+
+### Variant option allergen BLEED killed + options left BLANK + inferred group REQUIRED (FIX)
+
+DIAGNOSED: during AI variant-dissolution, the parent DISH's allergens/dietary BLED onto every variant option — `ungroupAiVariantsForReview` unions dish∪option onto every reconstructed item (`:1959-1960`), then `makeGroupingRow` copies that onto each option (`:2002`) — so "Chicken" wrongly carried the dish's Molluscs/Vegetarian/Gluten. (Prawn→Crustaceans survived only because the AI tagged the OPTION itself.) Even a correctly-tagged dish would wrongly stamp its allergen onto a protein option.
+
+DECISION + FIX: importer-populated option allergens are a FUTURE feature (the per-option verified-review feature, backlog) and `modifier_options` has NO verified flag, so the importer must leave ALL variant options BLANK. Built in `makeGroupingRow`: options now commit `allergens:[]`/`dietary:[]` (the single source for both inferred paths). The `:1959-1960` union was deliberately NOT killed (it feeds the DISH-level allergen union + the separate-path real dishes — killing it would drop a gluten curry's Gluten from the dish = under-warn); blanking at the option-mapping source (`:2002`) achieves "options blank" while dish-level allergens stay fully intact. SIDE-EFFECT (intended): with options blank + `is_required` uniform, previously bled-apart identical groups now share a signature and consolidate.
+
+ALSO: inferred-from-variants groups now default `is_required=true` + single-select (min 1 / max 1) — a protein choice is structurally a must-choose; the operator can amend later (default, not a lock). Uniform `is_required` also tightens consolidation (it's in the signature).
+
+KEPT (per decision): the AI's EXPLICIT "add extras" (`_inferredFromVariants:false`) option allergens are RETAINED in the DB as head-start data for the future per-option review — they are now fully HIDDEN from the customer (see the email-strip below; no other customer surface renders option allergens — pill removed V7.8 §31, basket removed §25), so "retain-but-hide" is achieved WITHOUT building the verified gate yet.
+
+### Allergens REMOVED from all emails (FIX — live ungated leak)
+
+DIAGNOSED: option allergens (AI-generated, ungated — no verified flag on `modifier_options`) were the ONLY customer-facing surface still rendering option allergens, via the confirmation/ready EMAIL ("— contains: X" HTML `:31` / "(contains: X)" text `:254` in `renderOrderLinesHtml`, shared by `formatConfirmationEmail` + `formatNewOrderEmail`). DECISION: allergens belong where the customer DECIDES (menu / allergen card / per-dish review), NOT echoed in a transactional receipt — remove ALL allergen/dietary rendering from EVERY email. Built: stripped both render sites (HTML + plaintext); modifiers still render by name+price. Confirmed by grep that allergen rendering existed ONLY at the option/modifier level in emails — no dish-level allergen rendering anywhere, none in cancellation/reject/new-order/ready templates. RENDER-ONLY: the `EmailOrderItem` allergen/dietary fields are kept (data still travels on the order) — simply never rendered. No DB/migration/Gusto touch.
+
+### Per-option allergen verified gate — STILL the known §17 gap (NOT built)
+
+`modifier_options` has no `allergens_verified` column and no hide gate. The above changes mean nothing renders option allergens to the customer anymore (importer commits variant options blank; explicit-extra allergens retained-but-hidden; emails stripped), so the gap is no longer a LIVE leak — but the proper close (add `modifier_options.allergens_verified`, gate the menu-API emit like dishes, set Gusto's real option allergens verified=true at deploy) is deferred to when the per-option REVIEW feature is built. That migration will be deploy-coupled AND Gusto-touching — scope carefully then.
+
+### Kitchen-setup step shows only NEW categories (KNOWN DESIGN GAP — fix specced, NOT built)
+
+The import wizard's Kitchen-setup step renders rows only for `newCats = categories − existing_categories`, so importing entirely into PRE-EXISTING categories shows only the total-capacity row ("All categories already exist — no times to set"); commit-menu also skips prep for active existing categories (`:64` `if(categoryIdMap[catName]) continue`). DECISION (Dominic): the Kitchen step SHOULD show ALL categories the import touches (existing included), pre-filled with their CURRENT prep/batch/counts, edit-in-place; Save writes back what's shown (untouched = no-op round-trip of current values, only edited categories change — the safety-correct model that never silently clobbers tuned capacity). Two-part build (UI: include existing categories + seed `categoryPrep` from current DB values; commit-menu: UPDATE prep for active existing categories instead of `continue`). NOT YET BUILT — backlog.
+
+### test-truck cleaned + a SQL-discipline note
+
+test-truck was wiped to a known-good state (orders, `production_slot_usage`, per-event stock, modifier options/links/groups, items, categories — keeping `truck_events`, never touching `allergen_info_text` yet). NOTE: a multi-statement clear left 7 `modifier_groups` behind because the group-delete statement didn't run (a DELETE reporting "success" = the statement ran, not that rows changed — and here one box wasn't executed); the `count(*)` verify caught it. Going forward, multi-step clears are wrapped in a single BEGIN/COMMIT transaction (atomic, dependency-ordered) + a separate `count(*)` verify box.
+
+### Deploy state (updated)
+
+`hide_name` migration RUN (deploy-coupled, done). REMAINING strict deploy order: (1) run the two ADDITIVE migrations (`allergen_audit_card_match`, `preorder_open_rule`) + verify columns; (2) deploy code; (3) verify every allergen/status column via `count(*)` on ref `ffphgwonshgxamtvefcv`; (4) RE-RUN the V8.5 smoke-test ON THE DEPLOYED BUILD (all V8.5 validation was on the working build — fix-in-repo ≠ deployed); (5) card-only cleanup SQL (clear `allergen_info_text` on test-truck + RTF, NEVER Gusto); (6) THEN share to RTF. The V8.5 fixes (card-only verbatim, content-consolidation, option-blank + required, email allergen-strip) join the existing large undeployed batch.
+
+### OUTSTANDING backlog (V8.5 additions)
+
+- `handleCommitMenu` missing else/finally + swallowed `{ok:false}` → silent infinite spinner on ANY commit failure (durable handler fix: `finally` clears spinner + toast on non-ok). **HIGH** — turns any future commit failure invisible.
+- Kitchen-setup step: show + persist prep for PRE-EXISTING categories (specced above, not built).
+- Per-option allergen verified gate (close the §17 gap when the per-option review feature is built; deploy-coupled + Gusto-touching).
+- Dead-code sweep: the orphaned card-mode chip flow (`cardPanel` / `showAllergenModal` / `handleSaveAllergens` / `handleAllergenUploadAndProcess` / `handleAllergenTextProcess` / `allergenExtracted`).
+- Free-form allergen NOTE available in PER-DISH mode too (operator wants per-dish chips PLUS an optional free-form note; reuses `allergen_info_text` + the verbatim editor; design the customer presentation so the note reads as supplementary, not contradictory).
+- RTF share decision: onboarding vs preview — settled as "deploy comes first either way" (the `hide_name` coupling + the ordering gates mean any RTF exposure wants the gates deployed). RTF will check everything before placing customer orders.
 
 ## V8.4 — June 2026
 
