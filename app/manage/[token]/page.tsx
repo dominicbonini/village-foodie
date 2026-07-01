@@ -290,7 +290,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [userRole, token, router])
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(d => {
+    // Native app sends its Bearer so /api/auth/me resolves is_admin (+ identity) without a cookie → the
+    // Admin link appears in the manage UserMenu too. Web: nativeAuthHeader() returns {} → cookie path unchanged.
+    nativeAuthHeader().then(h => fetch('/api/auth/me', { headers: h })).then(r => r.json()).then(d => {
       setCurrentUserName(d.name ?? null)
       setCurrentUserEmail(d.email ?? null)
       setCurrentUserFirstName(d.first_name ?? null)

@@ -22,7 +22,11 @@ const config: CapacitorConfig = {
     cleartext: IS_LOCAL_HTTP,   // http (localhost) needs cleartext; https production stays false
   },
   ios: {
-    contentInset: 'always',
+    // 'never' = don't let the OS auto-inset the scroll view for safe areas; the WEB layer owns the inset
+    // instead (viewport-fit=cover + env(safe-area-inset-top) padding on AppHeader), so the dark header
+    // extends into the status-bar strip and no page content shows above it. ('always' double-insets against
+    // the CSS env padding and let content bleed into the top inset once scroll was enabled.)
+    contentInset: 'never',
     backgroundColor: '#1C1C1E',
     // MUST stay true. `false` (the original scaffold default) disables the WKWebView's scrollView, which
     // kills body/window scroll — so the natural-flow `min-h-screen` pages (Dashboard, Manage, Admin) can't

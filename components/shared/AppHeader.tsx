@@ -16,7 +16,13 @@ interface AppHeaderProps {
 
 export default function AppHeader({ truckName, truckLogoUrl, subtitle, children }: AppHeaderProps) {
   return (
-    <header className="bg-slate-900 sticky top-0 z-50 shadow-md">{/* HEADER_BG — change here changes all operator headers */}
+    <header
+      className="bg-slate-900 sticky top-0 z-50 shadow-md"
+      /* Native app: extend the dark header UP into the status-bar/safe-area inset so no page content shows
+         above it. env(safe-area-inset-top) is 0 in a normal browser → web is byte-for-byte unchanged. Pairs
+         with capacitor contentInset:'never' + viewport-fit=cover, which let CSS own the safe area. */
+      style={{ paddingTop: 'env(safe-area-inset-top)' }}
+    >{/* HEADER_BG — change here changes all operator headers */}
       <div className="px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between relative">
 

@@ -65,6 +65,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  // viewport-fit=cover lets the page extend under the device safe areas so env(safe-area-inset-*) is
+  // populated (used by the operator AppHeader to fill the status-bar strip in the native app). No-op in a
+  // normal browser (no safe area) → web unchanged.
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({
