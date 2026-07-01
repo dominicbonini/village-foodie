@@ -2,7 +2,7 @@
 // app/dashboard/[token]/page.tsx
 
 import { useState, useEffect, useCallback, useRef, useMemo, use, Fragment } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { hasFeature } from '@/lib/features'
 import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
@@ -36,10 +36,17 @@ import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
 import { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'
 import UserMenu from '@/components/dashboard/UserMenu'
+import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
+import { DeviceSetupGate } from '@/components/native/OperatorDeviceConfig'
+import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
+import { addNetworkListener } from '@/lib/native/network'
+import { onAppResume } from '@/lib/native/app'
+import { isNativeApp } from '@/lib/native/device'
+import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
@@ -58,6 +65,7 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
   const{token}=use(params)
   const searchParams=useSearchParams()
+  const router=useRouter()
   const vanName=searchParams.get('van_name')??''
   const vanId=searchParams.get('van_id')??''
   const[pin,setPin]=useState('')
@@ -271,8 +279,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[extraWaitMins,extraWaitStartedAt,waitTick])
 
 
-  const handleSignOut=async()=>{await supabaseBrowser.auth.signOut();window.location.href='/login'}
-
   const saveProfile=async()=>{
     if(!editProfileName.trim())return
     setSavingProfile(true)
@@ -333,12 +339,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // route resolves the right event even when it isn't today's first event.
       const sel=selectedEventRef.current
       if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
-      const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
+      const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
       // Transient failure after successful auth — keep existing state, never blank the dashboard
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
-      setKeepScreenOn(data.truck?.keep_screen_on ?? true)
+      // WEB: the "Screen on" control follows the truck keep_screen_on setting. APP: it follows the
+      // per-device pref (initialised on mount below), so don't let the truck setting override it here.
+      if(!isNativeApp()) setKeepScreenOn(data.truck?.keep_screen_on ?? true)
       setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(data.orders); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
@@ -447,7 +455,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(authenticatedRef.current) fetchAllRef.current()
   },[selectedEventId])
   useEffect(()=>{
-    fetch('/api/auth/me').then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name);if(d.is_admin)setIsAdmin(true)}).catch(()=>null)
+    // Native app sends its Bearer so /api/auth/me resolves is_admin (+ identity) without a cookie → the
+    // Admin link appears in-app. Web: nativeAuthHeader() returns {} → cookie path unchanged.
+    nativeAuthHeader().then(h=>fetch('/api/auth/me',{headers:h})).then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name);if(d.is_admin)setIsAdmin(true)}).catch(()=>null)
   },[])
   useEffect(()=>{
     if(!truck?.id)return
@@ -500,13 +510,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useEffect(()=>{
     // Track the device's connectivity reactively so the UI re-renders on reconnect (offline-pause
     // suppression) and the heartbeat effect re-fires immediately (its dep below).
+    // Package 6: addNetworkListener uses the native Capacitor Network plugin INSIDE the iOS shell (more
+    // reliable transitions than navigator.onLine) and falls back to the SAME window online/offline events
+    // on web — so this is a strict upgrade that is a no-op behaviour change for browser users. Mirrors the
+    // KDS wiring (kds/page.tsx:196-197).
     if(typeof window==='undefined')return
-    const on=()=>setDeviceOnline(true)
-    const off=()=>setDeviceOnline(false)
-    window.addEventListener('online',on)
-    window.addEventListener('offline',off)
-    return()=>{window.removeEventListener('online',on);window.removeEventListener('offline',off)}
+    return addNetworkListener(s=>setDeviceOnline(s==='online'))
   },[])
+  // APP keep-awake init (Package 4): the "Screen on" control follows the PER-DEVICE pref (default ON /
+  // manual off), not the truck setting. No-op on web (the truck setting drives it there, via fetchAll).
+  useEffect(()=>{ if(isNativeApp()){const p=localStorage.getItem('hg_keepawake');setKeepScreenOn(p!=='off')} },[])
+  // Package 6: on native app FOREGROUND, ping the heartbeat immediately (don't wait for the 15s tick) so a
+  // returning device clears any offline-pause fast. No-op on web. Only meaningful while a live event is
+  // heartbeating; the /api/heartbeat call is idempotent so an off-event ping is harmless.
+  useEffect(()=>{
+    return onAppResume(()=>{
+      if(typeof navigator!=='undefined'&&!navigator.onLine)return
+      fetch('/api/heartbeat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,vanId:vanId||undefined})}).catch(()=>{})
+    })
+  },[token,vanId])
   useEffect(()=>{
     // Heartbeat ONLY while the active event is LIVE (status==='open'). Offline protection only
     // matters for a live event — a confirmed/pre-order event is unaffected by the truck being
@@ -556,14 +578,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo,truck?.qr_code_style])
 
-  const handleOpenKDS=()=>{
-    if(vans.length===1){
-      const van=vans[0]
-      if(van?.kds_token){window.open(`/kds/${van.kds_token}`,'_blank')}
-      else{window.open(`/dashboard/${token}/kds`,'_blank')}
+  // Open the Kitchen Display. NATIVE: soft-route to the in-app KDS (/dashboard/[token]/kds — dashboard_token
+  // based, authenticates natively; van preserved via query) so it stays in the webview — window.open('_blank')
+  // escapes to Safari / no-ops in WKWebView. WEB: unchanged — new tab (van's standalone /kds/[kds_token], or
+  // the in-app KDS when the van has no kds_token).
+  const openKDS=(van?:{id?:string;name?:string;kds_token?:string|null})=>{
+    if(isNativeApp()){
+      const q=van?.id?`?van_id=${encodeURIComponent(van.id)}${van.name?`&van_name=${encodeURIComponent(van.name)}`:''}`:''
+      router.push(`/dashboard/${token}/kds${q}`)
       return
     }
-    if(vans.length===0){window.open(`/dashboard/${token}/kds`,'_blank');return}
+    window.open(van?.kds_token?`/kds/${van.kds_token}`:`/dashboard/${token}/kds`,'_blank')
+  }
+
+  const handleOpenKDS=()=>{
+    if(vans.length===1){openKDS(vans[0]);return}
+    if(vans.length===0){openKDS();return}
     setShowKDSPicker(true)
   }
 
@@ -596,7 +626,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const submitPin=async()=>{
     const p=new URLSearchParams({token,pin:pinInput})
     const sel=selectedEventRef.current; if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
-    const res=await fetch(`/api/dashboard?${p}`); const data=await res.json()
+    const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
     setPin(pinInput); setTruck(data.truck); setOrders(data.orders); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
@@ -678,6 +708,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const applyKeepScreenOn=async(value:boolean)=>{
     setKeepScreenOn(value)
     if(value){await keepAwake()}else{await allowSleep()}
+    // ONE visible "Screen on" control, DUAL persistence (user unaware): in the APP it drives the PER-DEVICE
+    // keep-awake pref (localStorage 'hg_keepawake', default on / manual off) and does NOT touch the truck
+    // setting — so the web setting-tied mechanism can't also fire/clobber it. On WEB it persists to the
+    // truck keep_screen_on setting exactly as before. keepAwake()/allowSleep() above is the single applier.
+    if(isNativeApp()){try{localStorage.setItem('hg_keepawake',value?'on':'off')}catch{}return}
     try{
       await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'update_keep_screen_on',keepScreenOn:value})})
@@ -1172,6 +1207,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   return(
     <div className="min-h-screen bg-slate-50">
+      {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
+          / when off. Rendered first so it's on top. */}
+      <AppLockGate />
+      {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
+          on web and once this device is configured. */}
+      <DeviceSetupGate token={token} />
       {/* Header */}
       <AppHeader
         truckName={truck?.name ? (vanName ? `${truck.name} — ${vanName}` : truck.name) : null}
@@ -1322,7 +1363,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <p className="text-xs text-orange-700 mt-0.5">Your menu is using default prep times. Update them in Manage so your kitchen doesn't get overwhelmed with orders.</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <a href={`/manage/${token}`} className="text-xs font-medium text-orange-700 underline">Edit categories</a>
+                  <AppLink href={`/manage/${token}`} className="text-xs font-medium text-orange-700 underline">Edit categories</AppLink>
                   <button onClick={()=>setShowPrepTimeBanner(false)} className="text-orange-400 hover:text-orange-600 text-lg leading-none">×</button>
                 </div>
               </div>
@@ -2171,7 +2212,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <h3 className="text-lg font-semibold text-slate-900">Open kitchen screen</h3>
             <p className="text-sm text-slate-500">Choose which van's kitchen screen to open:</p>
             {vans.map(van=>(
-              <button key={van.id} onClick={()=>{window.open(`/kds/${van.kds_token}`,'_blank');setShowKDSPicker(false)}} className="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 hover:border-orange-300 hover:bg-orange-50 text-left transition-colors flex items-center justify-between">
+              <button key={van.id} onClick={()=>{openKDS(van);setShowKDSPicker(false)}} className="w-full py-3 px-4 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 hover:border-orange-300 hover:bg-orange-50 text-left transition-colors flex items-center justify-between">
                 {van.name}
                 <span className="text-xs text-slate-600">Kitchen screen →</span>
               </button>

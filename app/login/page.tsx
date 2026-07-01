@@ -3,6 +3,8 @@
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { isNativeApp } from '@/lib/native/device'
+import { getNativeSupabase } from '@/lib/native/session'
 
 function LoginForm() {
   const router = useRouter()
@@ -23,7 +25,9 @@ function LoginForm() {
     setError(null)
     setShowResetSuccess(false)
 
-    const supabase = createSupabaseBrowserClient()
+    // NATIVE: use the persistent localStorage-backed client so the session survives cold-launch (plan a).
+    // WEB: unchanged cookie @supabase/ssr client.
+    const supabase = isNativeApp() ? getNativeSupabase() : createSupabaseBrowserClient()
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -39,6 +43,11 @@ function LoginForm() {
     if (data.user?.user_metadata?.must_change_password) {
       router.push('/reset-password?firstLogin=true')
       return
+    }
+
+    // NATIVE: go to the app landing, which routes to this device's remembered truck/van/screen.
+    if (isNativeApp()) {
+      router.push('/app'); return
     }
 
     router.push(next)

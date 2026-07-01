@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Toggle } from '@/components/dashboard/OrderCard'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { isNativeApp } from '@/lib/native/device'
+import { operatorSignOut } from '@/lib/native/signOut'
+import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 
 interface UserMenuProps {
   // Account/session control — the identity block shows the LOGGED-IN USER (name + email), NOT the
@@ -46,7 +49,9 @@ export default function UserMenu({
   onShowQR,
   onOpenKDS,
 }: UserMenuProps) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
   // Identity = the LOGGED-IN USER: prefer their name, fall back to their email. Avatar initial
   // follows whichever we show.
   const displayName = (operatorName && operatorName.trim()) || null
@@ -54,9 +59,10 @@ export default function UserMenu({
   const initial = (identityLabel || '?').charAt(0).toUpperCase()
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowserClient()
-    await supabase.auth.signOut()
-    window.location.href = '/login'
+    // Clears the SESSION only — never touches van_devices, so the device stays pinned to its truck/van/
+    // screen and the next person lands on the same device config (person-switch, not device reconfigure).
+    // Native-aware: app clears the native session + soft-routes in-app; web unchanged (cookie + hard nav).
+    await operatorSignOut(router)
   }
 
   const hasMiddleSection = showScreenToggle || showOrderUtilities
@@ -147,6 +153,17 @@ export default function UserMenu({
             {/* Divider after middle section — only if it rendered anything */}
             {hasMiddleSection && <div className="sm:hidden" />}
 
+            {/* This device (native app only) — per-device/user config, NOT role-gated and NOT sm:hidden so
+                a staff member who can't reach Manage can still configure their own device on the iPad. */}
+            {isNativeApp() && (
+              <button
+                onClick={() => { setDeviceOpen(true); setOpen(false) }}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 w-full text-left"
+              >
+                📱 This device
+              </button>
+            )}
+
             {/* Manage link */}
             {showManageLink && (
               <Link
@@ -189,6 +206,24 @@ export default function UserMenu({
             </button>
           </div>
         </>
+      )}
+
+      {/* "This device" sheet — ThisDeviceSettings (default screen · van · notifications). Native-only
+          (ThisDeviceSettings self-guards on isNativeApp and renders its own card + "this device only" note).
+          Rendered only on tap → no SSR/hydration concern. */}
+      {deviceOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-4"
+          onClick={() => setDeviceOpen(false)}>
+          <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-end mb-1">
+              <button onClick={() => setDeviceOpen(false)} aria-label="Close"
+                className="text-white/80 hover:text-white text-3xl leading-none">×</button>
+            </div>
+            <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+              <ThisDeviceSettings token={token} />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

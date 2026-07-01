@@ -5,10 +5,15 @@ let webLock: any = null
 let keepAwakeEnabled = false      // tracks intent, survives auto-releases
 let visibilityListenerAdded = false
 
+// NB: wrap the plugin in a plain object — do NOT resolve this promise to the bare KeepAwake proxy. A
+// Capacitor plugin proxy returns a function for ANY property access (including `.then`), so it looks like a
+// thenable; when an async function resolves to it, the Promise machinery calls `.then(resolve, reject)` to
+// assimilate it → native invoke of a non-existent `then` method → "KeepAwake.then() is not implemented on
+// ios". Returning `{ KeepAwake }` (a plain, non-thenable object) sidesteps the assimilation entirely.
 async function getPlugin() {
   if (!Capacitor.isNativePlatform()) return null
   const { KeepAwake } = await import('@capacitor-community/keep-awake')
-  return KeepAwake
+  return { KeepAwake }
 }
 
 async function requestWebLock(): Promise<void> {
@@ -41,7 +46,7 @@ function ensureVisibilityListener(): void {
 export async function keepAwake(): Promise<void> {
   const plugin = await getPlugin()
   if (plugin) {
-    await plugin.keepAwake()
+    await plugin.KeepAwake.keepAwake()
   } else {
     keepAwakeEnabled = true
     ensureVisibilityListener()
@@ -52,7 +57,7 @@ export async function keepAwake(): Promise<void> {
 export async function allowSleep(): Promise<void> {
   const plugin = await getPlugin()
   if (plugin) {
-    await plugin.allowSleep()
+    await plugin.KeepAwake.allowSleep()
   } else {
     keepAwakeEnabled = false
     if (webLock) {

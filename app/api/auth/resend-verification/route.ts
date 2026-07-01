@@ -9,7 +9,17 @@ const supabase = createClient(
 
 export async function POST(req: NextRequest) {
   const supabaseAuth = await createSupabaseServerClient()
-  const { data: { user } } = await supabaseAuth.auth.getUser()
+  let { data: { user } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged, resolves first
+  // ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer. Only reached when there's
+  // no cookie user AND an Authorization header is present; a browser never enters it → web path unchanged.
+  if (!user) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) user = bearerUser
+    }
+  }
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   const { changeId } = await req.json()

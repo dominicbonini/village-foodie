@@ -7,9 +7,20 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-export async function GET() {
+export async function GET(req: Request) {
   const supabaseAuth = await createSupabaseServerClient()
-  const { data: { user } } = await supabaseAuth.auth.getUser()
+  let { data: { user } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged, resolves first
+  // ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer so is_admin + identity flow
+  // to the app. Only reached when there's no cookie user AND an Authorization header is present; a browser
+  // never enters this branch → the web path (and its logged-out null response) is byte-for-byte unchanged.
+  if (!user) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) user = bearerUser
+    }
+  }
 
   if (!user) return NextResponse.json({ name: null, email: null, first_name: null, last_name: null, phone: null })
 

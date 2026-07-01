@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { createClient } from '@supabase/supabase-js'
+import { DashboardIndexNativeFallback } from '@/components/native/DashboardIndexNativeFallback'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -11,7 +12,10 @@ export default async function DashboardIndexPage() {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/login')
+  // No COOKIE session. WEB → /login (as before). NATIVE app (no cookie, but a native localStorage session)
+  // → the fallback routes to /app instead of /login, breaking the cookie-vs-native login loop. The fallback
+  // itself sends a logged-out web user to /login, so the web outcome is unchanged; only native diverges.
+  if (!user) return <DashboardIndexNativeFallback />
 
   // ── Admin: platform admins (operators.is_admin) go straight to the admin console, BYPASSING the
   //    operator owner-path below. MUST run first — an admin who owns 0 or 2+ active trucks would

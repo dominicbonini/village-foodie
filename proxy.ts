@@ -111,8 +111,17 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/venues') ||
     pathname.startsWith('/help')
 
-  if (isProtected && !user) {
-    // Not logged in — redirect to login with return URL
+  // NATIVE APP (Capacitor iPad shell): its session lives in Preferences and is sent as a Bearer only on
+  // explicit fetch()s — document/RSC NAVIGATION requests carry no cookie AND no Authorization header, so
+  // `user` is always null here and this guard would 307-loop the app to /login (it logs in, gets a native
+  // session, navigates, hits this cookie-blind guard again → loop). The webview stamps a UA marker
+  // (capacitor.config ios.appendUserAgent) that a normal browser never has; when we see it, DEFER auth to
+  // the page/client, which DOES check the native session (hasNativeSession) and sends the Bearer to
+  // /api/dashboard. Web has no marker → this branch is skipped → web behaviour is byte-identical to before.
+  const isNativeApp = (request.headers.get('user-agent') || '').includes('HatchGrabNativeApp')
+
+  if (isProtected && !user && !isNativeApp) {
+    // Not logged in (web) — redirect to login with return URL
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('next', pathname)
     return NextResponse.redirect(loginUrl)

@@ -24,6 +24,7 @@ import { isPreorderDeadlinePassed, isPreorderOpenYet, type PreorderConfig } from
 import { canAccess } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { enforceStockLimits } from '@/lib/stock-availability'
+import { sendOrderPendingPush } from '@/lib/apns'
 import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -971,6 +972,43 @@ export async function POST(req: NextRequest) {
     // The truck's only operator-bound email per self-order is the 🔔 New order
     // notification sent above (formatNewOrderEmail) — never a copy of the customer
     // confirmation.
+
+    // ── (Package 5) APNs "order needs confirming" push — SOLE order-notification source ─────────────
+    // POST-save, fire-and-forget (mirrors the email blocks: MUST NOT block/hang or fail the saved order).
+    // Fires ONLY when the order is pending (needs confirming) = !autoAccepted. Routes: order's event →
+    // truck_events.van_id → van (van-level master pref) → van_devices (device opt-out + push_token). The
+    // webview no longer fires a local notification (dupe removed at KDS), so this is the one alert per
+    // pending order regardless of app foreground/background/closed. Null van / no enabled device / no
+    // token / APNs-unconfigured → graceful no-op (order still saved + shown in-app). Invalid tokens
+    // (BadDeviceToken/Unregistered) are cleared so we don't keep routing to dead devices.
+    if (!autoAccepted) {
+      try {
+        const eid = eventRow?.id ?? null
+        let vanId: string | null = null
+        if (eid) {
+          const { data: evVan } = await supabase.from('truck_events').select('van_id').eq('id', eid).single()
+          vanId = (evVan?.van_id as string | null) ?? null
+        }
+        if (vanId) {
+          // Van-level master toggle (default ON when no row).
+          const { data: pref } = await supabase
+            .from('van_notification_prefs').select('enabled').eq('van_id', vanId).eq('type', 'order_pending').maybeSingle()
+          if (!pref || pref.enabled) {
+            const { data: devices } = await supabase
+              .from('van_devices').select('device_id, push_token').eq('van_id', vanId).eq('notify_enabled', true).not('push_token', 'is', null)
+            const tokens = (devices || []).map(d => d.push_token as string).filter(Boolean)
+            if (tokens.length) {
+              const res = await sendOrderPendingPush(tokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })
+              if (res.invalidTokens.length) {
+                await supabase.from('van_devices').update({ push_token: null }).in('push_token', res.invalidTokens)
+              }
+            }
+          }
+        }
+      } catch (pushErr) {
+        console.error('Order-pending push failed (non-fatal, order saved):', pushErr)
+      }
+    }
 
     // ── Done ──────────────────────────────────────────────────────────────────
     return NextResponse.json({

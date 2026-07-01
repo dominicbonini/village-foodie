@@ -17,7 +17,17 @@ function generateTempPassword(): string {
 
 export async function POST(req: NextRequest) {
   const supabaseAuth = await createSupabaseServerClient()
-  const { data: { user } } = await supabaseAuth.auth.getUser()
+  let { data: { user } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged, resolves first
+  // ADDITIVE (native app): no cookie → validate the Bearer session. Only reached when there's no cookie
+  // user AND an Authorization header is present; a browser never enters it → web path byte-for-byte unchanged.
+  if (!user) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) user = bearerUser
+    }
+  }
   if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   const { data: caller } = await supabase.from('operators').select('is_admin').eq('auth_user_id', user.id).single()
   if (!caller?.is_admin) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })

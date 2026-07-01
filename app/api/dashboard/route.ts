@@ -37,7 +37,21 @@ export async function GET(req: NextRequest) {
 
   // If there's a logged-in user, verify they own this truck
   const supabaseAuth = await createSupabaseServerClient()
-  const { data: { user } } = await supabaseAuth.auth.getUser()
+  const { data: { user: cookieUser } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged
+  let user = cookieUser
+
+  // ADDITIVE (native app): the app has NO cookie, but sends its Supabase session as a Bearer so the
+  // SAME operator/is_admin/role resolution below applies (app-admin → owner-equivalent, exactly like web).
+  // Only runs when there's no cookie user → the web cookie path above is untouched; no header → token-only
+  // fallback is untouched. Bearer is validated via the service client's getUser(jwt).
+  if (!user) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) user = bearerUser
+    }
+  }
 
   let currentUserName: string | null = null
   let userRole: 'owner' | 'manager' | 'staff' | null = null

@@ -4,10 +4,14 @@
 
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { PLAN_META, type Plan, type Feature } from '@/lib/features'
 import { PLAN_PRICES, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import AppHeader from '@/components/shared/AppHeader'
 import UserMenu from '@/components/dashboard/UserMenu'
+import { operatorSignOut } from '@/lib/native/signOut'
+import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
+import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 
 interface AdminTruck {
   id: string
@@ -62,6 +66,7 @@ const PLAN_BADGE: Record<Plan, string> = {
 }
 
 export default function AdminPage() {
+  const router = useRouter()
   const [checkingSession, setCheckingSession] = useState(true)
   const [denied, setDenied] = useState(false)
   const [operatorName, setOperatorName] = useState<string | null>(null)
@@ -93,9 +98,10 @@ export default function AdminPage() {
   const load = async () => {
     setLoading(true)
     try {
+      const h = await nativeAuthHeader()
       const [res, discRes] = await Promise.all([
-        fetch('/api/admin'),
-        fetch('/api/admin?section=discovery'),
+        fetch('/api/admin', { headers: h }),
+        fetch('/api/admin?section=discovery', { headers: h }),
       ])
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
@@ -110,17 +116,20 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    fetch('/api/admin?section=check_admin')
-      .then(r => r.json())
-      .then(d => {
-        if (d.isAdmin) {
-          load()
-          fetch('/api/auth/me').then(r => r.json()).then(me => {
-            setOperatorName(me.first_name || me.name || null)
-          }).catch(() => null)
-        } else { setCheckingSession(false); setDenied(true) }
-      })
-      .catch(() => { setCheckingSession(false); setDenied(true) })
+    // Thread the native Bearer (if any) through check_admin + auth/me so the app can reach the console; on
+    // web nativeAuthHeader() is {} → same requests as before.
+    nativeAuthHeader().then(h =>
+      fetch('/api/admin?section=check_admin', { headers: h })
+        .then(r => r.json())
+        .then(d => {
+          if (d.isAdmin) {
+            load()
+            fetch('/api/auth/me', { headers: h }).then(r => r.json()).then(me => {
+              setOperatorName(me.first_name || me.name || null)
+            }).catch(() => null)
+          } else { setCheckingSession(false); setDenied(true) }
+        })
+    ).catch(() => { setCheckingSession(false); setDenied(true) })
   }, [])
 
   const update = async (truckId: string, updates: Record<string, any>) => {
@@ -128,7 +137,7 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ truckId, ...updates }),
       })
       const data = await res.json()
@@ -144,7 +153,7 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ discoveryTruckId, visibility }),
       })
       const data = await res.json()
@@ -162,7 +171,7 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
       })
       const data = await res.json()
@@ -193,7 +202,7 @@ export default function AdminPage() {
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ truckId: editingTruck.id, ...modalEdits }),
       })
       const data = await res.json()
@@ -218,7 +227,7 @@ export default function AdminPage() {
     setCreateError(null)
     const res = await fetch('/api/admin/create-operator', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
       body: JSON.stringify({ truckId: createModalTruck.id, email: createEmail }),
     })
     const data = await res.json()
@@ -260,7 +269,7 @@ export default function AdminPage() {
         <h1 className="font-black text-slate-900 text-lg mb-2">Access denied</h1>
         <p className="text-sm text-slate-500 mb-6">Your account does not have admin access.</p>
         <button
-          onClick={async () => { const { createSupabaseBrowserClient } = await import('@/lib/supabase/client'); await createSupabaseBrowserClient().auth.signOut(); window.location.href = '/login' }}
+          onClick={() => operatorSignOut(router)}
           className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-slate-700"
         >
           Sign out
@@ -456,14 +465,14 @@ export default function AdminPage() {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {truck.operator_id && truck.dashboard_token && (
-                        <a
+                        <AppLink
                           href={`/dashboard/${truck.dashboard_token}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
                         >
                           🖥 Dashboard →
-                        </a>
+                        </AppLink>
                       )}
                       <button
                         onClick={() => openEditModal(truck)}

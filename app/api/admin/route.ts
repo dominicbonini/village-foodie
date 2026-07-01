@@ -6,9 +6,20 @@ import { PLAN_META, type Plan } from '@/lib/features'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
 
-async function verifyAdmin(): Promise<boolean> {
+async function verifyAdmin(req?: NextRequest): Promise<boolean> {
   const supabaseAuth = await createSupabaseServerClient()
-  const { data: { user } } = await supabaseAuth.auth.getUser()
+  let { data: { user } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged, resolves first
+  // ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer. Only reached when there's
+  // no cookie user AND an Authorization header is present → a browser (cookie auth) never enters this branch,
+  // so the web admin path is byte-for-byte unchanged. Bearer validated via the service client's getUser(jwt).
+  if (!user && req) {
+    const authz = req.headers.get('authorization')
+    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
+    if (jwt) {
+      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
+      if (bearerUser) user = bearerUser
+    }
+  }
   if (!user) return false
   const { data: operator } = await supabase
     .from('operators')
@@ -22,11 +33,11 @@ export async function GET(req: NextRequest) {
   const section = req.nextUrl.searchParams.get('section')
 
   if (section === 'check_admin') {
-    const isAdmin = await verifyAdmin()
+    const isAdmin = await verifyAdmin(req)
     return NextResponse.json({ isAdmin })
   }
 
-  if (!await verifyAdmin()) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!await verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   if (section === 'discovery') {
     const { data: discoveryTrucks } = await supabase
@@ -44,7 +55,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!await verifyAdmin()) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+  if (!await verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
   const body = await req.json()
   const { truckId, discoveryTruckId, ...updates } = body

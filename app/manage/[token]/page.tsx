@@ -22,7 +22,9 @@ import { describePreorderDeadline } from '@/lib/preorder'
 import { groupBySubcategory } from '@/lib/basket-utils'
 import type { TruckEvent } from '@/components/dashboard/types'
 import { Tooltip } from '@/components/ui/Tooltip'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
+import { operatorSignOut } from '@/lib/native/signOut'
+import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
+import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { useDragDrop } from '@/lib/useDragDrop'
 import { formatTime, getLocalDateInTz } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
@@ -299,9 +301,8 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [])
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseBrowserClient()
-    await supabase.auth.signOut()
-    window.location.href = '/login'
+    // Native-aware: app clears the native session + soft-routes in-app; web unchanged (cookie + hard nav).
+    await operatorSignOut(router)
   }
 
   const saveProfile = async () => {
@@ -310,7 +311,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     try {
       const res = await fetch('/api/auth/update-profile', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ name: editProfileName }),
       })
       const data = await res.json()
@@ -371,10 +372,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         truckLogoUrl={truck.logo ?? null}
         subtitle="Management console"
       >
-        <a href={`/dashboard/${token}`}
+        <AppLink href={`/dashboard/${token}`}
           className="text-xs text-slate-400 hover:text-orange-400 font-bold transition-colors hidden sm:block">
           ← Orders dashboard
-        </a>
+        </AppLink>
         <UserMenu
           operatorName={currentUserName || currentUserFirstName || ''}
           userEmail={currentUserEmail}
@@ -8924,7 +8925,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
       const fullName = `${ownProfileFirstName.trim()} ${ownProfileLastName.trim()}`
       const res = await fetch('/api/auth/update-profile', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({
           first_name: ownProfileFirstName.trim(),
           last_name: ownProfileLastName.trim(),
@@ -8937,7 +8938,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
       if (ownProfileEmail.trim() && ownProfileEmail.trim() !== currentUserEmail) {
         const emailRes = await fetch('/api/auth/change-email', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
           body: JSON.stringify({ newEmail: ownProfileEmail.trim() }),
         })
         const emailData = await emailRes.json()
@@ -8969,7 +8970,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
     try {
       const res = await fetch('/api/auth/resend-verification', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ changeId }),
       })
       const data = await res.json()
@@ -8989,7 +8990,7 @@ function TeamTab({ truck, token, api, reload, showToast, currentUserEmail, curre
     try {
       const res = await fetch('/api/auth/cancel-email-change', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
         body: JSON.stringify({ changeId: pendingEmailChange.id }),
       })
       const data = await res.json()

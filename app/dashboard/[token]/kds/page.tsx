@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
+import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { useToasts } from '@/lib/useToasts'
 import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
 import { ToastStack } from '@/components/ToastStack'
@@ -14,10 +15,14 @@ import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { formatTime, formatTimeRange } from '@/lib/time-utils'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
-import { requestNotificationPermission, playNewOrderAlert, notifyNewOrder } from '@/lib/native/notifications'
-import { installAudioUnlock, primeAudio } from '@/lib/audio'
+import { requestNotificationPermission } from '@/lib/native/notifications'
+import { installAudioUnlock, primeAudio, playDing } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener, getQueueCount } from '@/lib/native/serviceWorker'
+import { isNativeApp } from '@/lib/native/device'
+import { nativeAuthHeader } from '@/lib/native/session'
+import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
+import { AppLockGate } from '@/components/native/AppLockGate'
 
 // View mode driven by ?view= query param
 // /kds           → window view (default, for the main iPad at the hatch)
@@ -61,6 +66,7 @@ export default function KdsPage() {
   // realtime INSERT callback (set up once), which reads the CURRENT pref without re-subscribing.
   const [soundEnabled, setSoundEnabled] = useState(true)
   const soundEnabledRef = useRef(true)
+  const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
   const [isOffline, setIsOffline] = useState(false)
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
   const [pendingSync, setPendingSync] = useState<Set<string>>(new Set())
@@ -86,7 +92,7 @@ export default function KdsPage() {
       // first load → the server falls back to the sole event on the date; once an event is
       // selected, fetchAll's identity changes and the effect re-fetches event-scoped.
       if (selectedEventId) params.set('event_id', selectedEventId)
-      const res = await fetch(`/api/dashboard?${params}`)
+      const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
       const data = await res.json()
 
       if (res.status === 401) {
@@ -262,10 +268,10 @@ export default function KdsPage() {
       prevOrderCountRef.current = orders.length
       return
     }
-    if (orders.length > prevOrderCountRef.current) {
-      const newCount = orders.length - prevOrderCountRef.current
-      notifyNewOrder(newCount)
-    }
+    // (Package 5 dupe removal) Order NOTIFICATIONS are now sent SERVER-side via APNs — the SOLE source,
+    // firing whether the app is foreground/background/closed. The webview no longer schedules a local
+    // notification here. The realtime INSERT handler below still plays the in-app SOUND for a foregrounded
+    // operator (UI feedback, not a notification → no dupe). Count tracking retained (harmless).
     prevOrderCountRef.current = orders.length
   }, [orders])
 
@@ -291,7 +297,7 @@ export default function KdsPage() {
           payload.eventType === 'INSERT' &&
           ['confirmed', 'pending'].includes(payload.new?.status)
         ) {
-          playNewOrderAlert(`#${payload.new.id}`)   // web → shared primed AudioContext; native → local notif
+          playDing()   // in-app SOUND only (Web Audio, works in the webview foreground); notification is the server APNs push
         }
       })
       .subscribe()
@@ -418,7 +424,7 @@ export default function KdsPage() {
   const submitPin = async () => {
     setPinError('')
     const params = new URLSearchParams({ token, pin: pinInput })
-    const res = await fetch(`/api/dashboard?${params}`)
+    const res = await fetch(`/api/dashboard?${params}`, { headers: await nativeAuthHeader() })
     const data = await res.json()
     if (!res.ok) {
       setPinError('Incorrect PIN')
@@ -617,18 +623,21 @@ export default function KdsPage() {
   return (
     <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden">
 
+      {/* App-lock overlay (per-device biometric/passcode) — no-op on web / when off. */}
+      <AppLockGate />
+
       {/* ── Header ── */}
       <header className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0">
         {/* Back to the orders dashboard — staff are auto-routed to KDS on login and otherwise have no
             way back to place orders. Unconditional (all roles): /dashboard/[token] has no staff block,
             so this can't loop. Label collapses to just ← on narrow widths to avoid crowding. */}
-        <a
+        <AppLink
           href={`/dashboard/${token}`}
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors shrink-0"
         >
           <span aria-hidden>←</span>
           <span className="hidden sm:inline">Dashboard</span>
-        </a>
+        </AppLink>
         <div className="flex items-center gap-2 flex-shrink-0">
           <div className="w-2 h-2 rounded-full bg-green-500" />
           <span className="font-medium text-slate-900">
@@ -696,6 +705,19 @@ export default function KdsPage() {
           {soundEnabled ? '🔔' : '🔕'}
         </button>
 
+        {/* This device (native app only) — device/user config, reachable from KDS since it's a default-
+            screen surface. Not role-gated, not sm:hidden. Uses the dashboard token (this route runs on it),
+            so its bind-device reads/writes authenticate. */}
+        {isNativeApp() && (
+          <button
+            onClick={() => setDeviceOpen(true)}
+            title="This device"
+            className="text-sm px-3 py-1.5 rounded-lg font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors shrink-0"
+          >
+            📱
+          </button>
+        )}
+
         <div className="flex-1" />
 
         {/* Extra wait selector */}
@@ -728,14 +750,14 @@ export default function KdsPage() {
 
         {/* Link to cook screen — window view + full crew mode only */}
         {activeView === 'window' && truck.crew_mode === 'full' && (
-          <a
+          <AppLink
             href={`/dashboard/${token}/kds?view=cook${pin ? `&pin=${pin}` : ''}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-slate-400 hover:text-slate-600 underline"
           >
             Open cook screen
-          </a>
+          </AppLink>
         )}
 
         <button
@@ -990,6 +1012,24 @@ export default function KdsPage() {
       {/* Shared stacked toast system — the ready-undo toasts (the event-lifecycle kdsToast above stays
           as-is; they rarely coincide). */}
       <ToastStack toasts={toasts} dismissToast={dismissToast} />
+
+      {/* "This device" sheet — same pattern as the dashboard UserMenu. ThisDeviceSettings self-guards on
+          isNativeApp and renders its own card + "this device only" note. `token` here is the dashboard
+          token (this route runs on it), so its bind-device calls authenticate. */}
+      {deviceOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-4"
+          onClick={() => setDeviceOpen(false)}>
+          <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-end mb-1">
+              <button onClick={() => setDeviceOpen(false)} aria-label="Close"
+                className="text-white/80 hover:text-white text-3xl leading-none">×</button>
+            </div>
+            <div className="bg-white rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto">
+              <ThisDeviceSettings token={token} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
