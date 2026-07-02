@@ -45,7 +45,11 @@ import { supabaseBrowser } from '@/lib/supabase-browser'
 import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
-import { isNativeApp } from '@/lib/native/device'
+import { isNativeApp, setLastScreen } from '@/lib/native/device'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { isOnline } from '@/lib/native/reachability'
+import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
 import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
@@ -68,6 +72,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const router=useRouter()
   const vanName=searchParams.get('van_name')??''
   const vanId=searchParams.get('van_id')??''
+  // Native: remember this device is on the DASHBOARD so a cold-launch reopens here (restart-to-last-screen, §33).
+  useEffect(()=>{if(isNativeApp())setLastScreen('dashboard')},[])
+  // Register the read-cache service worker (offline snapshot of this event's orders + menu). Its mutation
+  // replay is neutered — the app-level outbox owns all writes (Phase-1 offline).
+  useEffect(()=>{registerServiceWorker()},[])
   const[pin,setPin]=useState('')
   const[pinInput,setPinInput]=useState('')
   const[pinError,setPinError]=useState('')
@@ -808,8 +817,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(action==='reject'){const ord=orders.find(o=>o.order_key===orderKey)??null;setRejectingOrder(ord);setShowRejectModal(true);return}
     setActionLoading(`${action}-${orderKey}`)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})})})
-      const data=await res.json(); if(!res.ok)throw new Error(data.error)
+      // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
+      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
+      if(result.queued){const q=orders.find(o=>o.order_key===orderKey);setActionLoading(null);showToast(`Order #${q?.id??''} saved on this device — will sync when back online`);return}
+      const data=result.data??{}; if(!result.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
       const num=done?.id??''
@@ -1212,6 +1223,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
+      <OfflineBanner />
       <DeviceSetupGate token={token} />
       {/* Header */}
       <AppHeader

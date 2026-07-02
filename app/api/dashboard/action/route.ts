@@ -102,6 +102,18 @@ export async function POST(req: NextRequest) {
     const truck = await verifyToken(token, pin)
     if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
+    // ── Offline-replay conflict guard (Phase 1) ───────────────────────────────
+    // A status op replayed from the offline outbox carries `expected_from` (the statuses it may apply FROM,
+    // incl. its target). If the order has since moved to a state NOT in that set — e.g. a customer
+    // cancelled/rejected it online while the operator advanced it offline — return 409 so the outbox FLAGS it
+    // for review instead of overwriting the cancel. Online requests omit expected_from → zero behaviour change.
+    if (Array.isArray(body.expected_from) && orderKey && action !== 'manual') {
+      const { data: cur } = await supabase.from('orders').select('status').eq('order_key', orderKey).eq('truck_id', truck.id).single()
+      if (cur && !body.expected_from.includes(cur.status)) {
+        return NextResponse.json({ error: 'conflict', current_status: cur.status }, { status: 409 })
+      }
+    }
+
     // ── CONFIRM ───────────────────────────────────────────────────────────────
     if (action === 'confirm') {
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
@@ -671,7 +683,11 @@ export async function POST(req: NextRequest) {
 
         // (c) INSERT — walk-up/manual orders ALWAYS confirm (operator present). .select() returns
         //     the default-generated order_key for the cancel link.
-        const { data: manualOrderRow, error: insertErr } = await supabase.from('orders').insert({
+        // Accept a CLIENT-minted order_key (offline outbox) → idempotent replay: a re-sent already-synced
+        // walk-up is a no-op (order_key PK conflict → ignored), never a duplicate. Online walk-ups (no client
+        // key) keep the server-default order_key + a plain insert, exactly as before.
+        const clientOrderKey: string | undefined = typeof manualOrder?.order_key === 'string' ? manualOrder.order_key : undefined
+        const insertPayload: Record<string, any> = {
           id: newOrderId, truck_id: truck.id,
           customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
           customer_email: customerEmail || null,
@@ -681,7 +697,22 @@ export async function POST(req: NextRequest) {
           subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
           notes: notes || null, status: 'confirmed',
           payment_status: 'unpaid',
-        }).select('order_key').single()
+        }
+        if (clientOrderKey) insertPayload.order_key = clientOrderKey
+        let manualOrderRow: { order_key: string } | null = null
+        let insertErr: { message?: string; details?: string; hint?: string } | null = null
+        if (clientOrderKey) {
+          const up = await supabase.from('orders').upsert(insertPayload, { onConflict: 'order_key', ignoreDuplicates: true }).select('order_key').maybeSingle()
+          insertErr = up.error; manualOrderRow = up.data
+          if (!manualOrderRow && !insertErr) {
+            // Already present (replay of an already-synced order) → return its identity so the ACK is stable.
+            const existing = await supabase.from('orders').select('order_key').eq('order_key', clientOrderKey).eq('truck_id', truck.id).maybeSingle()
+            manualOrderRow = existing.data
+          }
+        } else {
+          const ins = await supabase.from('orders').insert(insertPayload).select('order_key').single()
+          insertErr = ins.error; manualOrderRow = ins.data
+        }
         if (insertErr || !manualOrderRow) {
           console.error('[manual] order insert failed:', insertErr?.message, insertErr?.details, insertErr?.hint)
           return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })

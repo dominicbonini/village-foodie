@@ -102,33 +102,15 @@ async function syncMutations() {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url)
 
-  // Mutations: POST to /api/dashboard/action or /api/events/action — enqueue when offline
-  if (event.request.method === 'POST' && (url.pathname === '/api/dashboard/action' || url.pathname === '/api/events/action')) {
-    event.respondWith(
-      fetch(event.request.clone()).catch(async () => {
-        const body = await event.request.text()
-        await enqueue({
-          url: event.request.url,
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body,
-        })
-        // Notify clients about new queue count
-        const db = await openDB()
-        const count = await getQueueCount(db)
-        const clients = await self.clients.matchAll()
-        clients.forEach(client => client.postMessage({ type: 'QUEUE_COUNT', count }))
+  // MUTATION REPLAY REMOVED (Phase-1 offline). The SW no longer intercepts POSTs — it is READ-CACHE ONLY.
+  // The app-level durable outbox (lib/native/orderGate + lib/native/outbox) owns ALL writes: an offline POST
+  // now THROWS and is captured by the gate (conflict-aware + idempotent on order_key), replacing the SW's old
+  // conflict-blind, fake-success ({ok:true, queued:true}) queue. (The legacy enqueue/syncMutations helpers +
+  // the 'sync' listener below are now inert — nothing enqueues — and are left only to keep this diff minimal.)
 
-        return new Response(JSON.stringify({ ok: true, queued: true }), {
-          headers: { 'Content-Type': 'application/json' },
-        })
-      })
-    )
-    return
-  }
-
-  // Network-first: dashboard data and events
-  if (url.pathname.startsWith('/api/dashboard') || url.pathname.startsWith('/api/events/manage')) {
+  // Network-first READ-cache (GET only): dashboard data + events → the offline snapshot used to keep existing
+  // orders actionable. POSTs are intentionally NOT matched here so they hit the network and throw when offline.
+  if (event.request.method === 'GET' && (url.pathname.startsWith('/api/dashboard') || url.pathname.startsWith('/api/events/manage'))) {
     event.respondWith(
       fetch(event.request)
         .then(res => {

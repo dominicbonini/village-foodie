@@ -18,8 +18,12 @@ import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
 import { installAudioUnlock, primeAudio, playDing } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { registerServiceWorker, addSWMessageListener, getQueueCount } from '@/lib/native/serviceWorker'
-import { isNativeApp } from '@/lib/native/device'
+import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
+import { countOps } from '@/lib/native/outbox'
+import { isNativeApp, setLastScreen } from '@/lib/native/device'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { isOnline } from '@/lib/native/reachability'
+import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
@@ -35,6 +39,9 @@ export default function KdsPage() {
   const kdsView: KdsView = searchParams.get('view') === 'cook' ? 'cook' : 'window'
   const vanId = searchParams.get('van_id') ?? ''
   const vanName = searchParams.get('van_name') ?? ''
+
+  // Native: remember this device is on KDS so a cold-launch reopens here (restart-to-last-screen, §33).
+  useEffect(() => { if (isNativeApp()) setLastScreen('kds') }, [])
 
   const [truck, setTruck] = useState<TruckData | null>(null)
   // Van-level "show cooking step" preference (Settings). Gates the cook view's "Start
@@ -202,14 +209,14 @@ export default function KdsPage() {
     getNetworkStatus().then(s => setIsOffline(s === 'offline'))
     const remove = addNetworkListener(s => {
       setIsOffline(s === 'offline')
-      if (s === 'online') getQueueCount().then(setPendingSyncCount)
+      if (s === 'online') countOps().then(setPendingSyncCount)
     })
     return remove
   }, [])
 
   useEffect(() => {
     registerServiceWorker()
-    getQueueCount().then(setPendingSyncCount)
+    countOps().then(setPendingSyncCount)
     return addSWMessageListener(count => {
       setPendingSyncCount(count)
       if (count === 0) {
@@ -353,14 +360,16 @@ export default function KdsPage() {
   const handleAction = useCallback(async (action: string, orderKey: string) => {
     setActionLoading(`${action}-${orderKey}`)
     try {
-      const res = await fetch('/api/dashboard/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      // Through the offline GATE: online → normal write; offline (native, unreachable) → durable outbox +
+      // queued result. `expected_from` guards the eventual replay (customer-cancel-wins), riding only on the
+      // queued op so the online request is byte-identical.
+      const result = await gatedAction({
+        url: '/api/dashboard/action',
         // 'ready' defers the customer email so the undo toast can cancel it (mirrors the dashboard).
-        body: JSON.stringify({ token, pin, action, order_key: orderKey, ...(action === 'ready' ? { defer_email: true } : {}) }),
+        body: { token, pin, action, order_key: orderKey, ...(action === 'ready' ? { defer_email: true } : {}) },
+        kind: 'status', order_key: orderKey, online: isOnline(), expectedFrom: STATUS_REPLAY_EXPECTED_FROM,
       })
-      const data = await res.json()
-      if (data?.queued) {
+      if (result.queued) {
         // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the email or show the
         // undo toast (a phantom email must not fire 4s later for an uncommitted ready).
         setPendingSyncCount(c => c + 1)
@@ -370,7 +379,7 @@ export default function KdsPage() {
       }
       // Committed 'ready' → defer the email 4s + show a stacked undo toast (undo cancels the email +
       // reverts the status; the order then re-appears in the cook list on refetch).
-      if (action === 'ready') {
+      if (action === 'ready' && result.ok) {
         const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
         scheduleReadyEmail(orderKey)
         showToast(`Order #${num} ready`, 'success', { duration: 4000, action: { label: '↩ Undo', run: () => undoReady(orderKey, num) } })
@@ -622,6 +631,9 @@ export default function KdsPage() {
 
   return (
     <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden">
+
+      {/* Offline warning + sync state (native only); also drives reachability + the outbox drain on reconnect. */}
+      <OfflineBanner onSynced={() => fetchAllRef.current()} />
 
       {/* App-lock overlay (per-device biometric/passcode) — no-op on web / when off. */}
       <AppLockGate />
