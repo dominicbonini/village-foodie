@@ -114,9 +114,31 @@ export async function GET(req: NextRequest) {
   // Suppression is now AUTOMATIC via `excluded`: a graduated truck's scraped shadow is excluded=true, so the
   // ordinary truck-level gate below drops all its events (no is_customer join, no hatchgrab_truck_id link).
 
+  // ── Orphaned-event fallback: ~half of discovery_events have a NULL discovery_truck_id (imported without
+  //    FK resolution), so the join returns no truck → their static logo/photo/details AND their visibility
+  //    (excluded/show_on_*) are lost. Recover the STATIC truck by normalized name so those events get their
+  //    profile back AND are gated exactly like a linked event (an excluded / off-this-site truck's orphaned
+  //    events must NOT show). Prefer the row WITH a logo on a normalized-name collision (the typo dupes).
+  const discByName = new Map<string, any>()
+  try {
+    const { data: allDisc } = await supabase
+      .from('discovery_trucks')
+      .select('name, logo_url, photo_url, cuisine, phone, order_url, accepted_methods, website, menu_url, notes, show_on_vf, show_on_hg, excluded')
+    for (const t of allDisc || []) {
+      const k = normalize(t.name || '')
+      if (!k) continue
+      const cur = discByName.get(k)
+      if (!cur || (!cur.logo_url && t.logo_url)) discByName.set(k, t)   // prefer the row that has a logo
+    }
+  } catch (err) {
+    console.error('[Discovery] orphaned-event fallback map build failed:', err)
+  }
+
   // ── Map discovery events ───────────────────────────────────────
   const mappedDiscoveryEvents = evData.map((e: any, idx: number) => {
-    const truck = e.discovery_trucks || {}
+    // Join first; if the event has a null FK (orphaned), fall back to the name-matched static truck. `{}` if
+    // neither resolves → the show_on_* gate below drops it (fail-safe: an unknown truck never surfaces).
+    const truck = e.discovery_trucks || discByName.get(normalize(e.truck_name || '')) || {}
     const venue = e.venues || {}
 
     // Master hide (replaces the old exclude_reason ~ 'y' filter) — also how a graduated truck's scraped
