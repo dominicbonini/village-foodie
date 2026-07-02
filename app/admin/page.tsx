@@ -28,6 +28,12 @@ interface AdminTruck {
   operator_id: string | null
   lifetime_discount_pct: number | null
   lifetime_discount_note: string | null
+  show_on_vf: boolean
+  show_on_hg: boolean
+  order_link_vf: boolean
+  order_link_hg: boolean
+  is_customer: boolean
+  excluded: boolean
   scraper_preference?: 'auto' | 'manual' | 'both' | null
   schedule_url?: string | null
   scraper_rule?: 'scroll_lazy' | 'scroll_next' | null
@@ -45,9 +51,12 @@ interface DiscoveryTruck {
   visibility: 'public' | 'hg_only' | 'hidden'
   hatchgrab_truck_id: string | null
   exclude_reason: string | null
+  show_on_vf: boolean
+  show_on_hg: boolean
+  excluded: boolean
 }
 
-const PLAN_ORDER: Plan[] = ['starter', 'trial', 'tester', 'pro', 'max']
+const PLAN_ORDER: Plan[] = ['starter', 'trial', 'tester', 'demo', 'pro', 'max']
 
 const OVERRIDEABLE_FEATURES: Feature[] = [
   'cook_screen',
@@ -61,9 +70,12 @@ const PLAN_BADGE: Record<Plan, string> = {
   starter: 'bg-slate-100 text-slate-600',
   trial:   'bg-teal-100 text-teal-700',
   tester:  'bg-purple-100 text-purple-700',
+  demo:    'bg-pink-100 text-pink-700',
   pro:     'bg-blue-100 text-blue-700',
   max:     'bg-orange-100 text-orange-700',
 }
+// Presentation-only pseudo-plan for scraped discovery rows (NOT in the Plan enum; derived from row type).
+const DISCOVERY_BADGE = 'bg-slate-100 text-slate-500'
 
 export default function AdminPage() {
   const router = useRouter()
@@ -78,7 +90,8 @@ export default function AdminPage() {
 
   const [adminTab, setAdminTab] = useState<'trucks' | 'features'>('trucks')
   const [truckSearch, setTruckSearch] = useState('')
-  const [planFilter, setPlanFilter] = useState<Plan | ''>('')
+  const [planFilter, setPlanFilter] = useState<Plan | 'discovery' | ''>('')
+  const [customersOnly, setCustomersOnly] = useState(false)   // Customers = non-Discovery (operator trucks)
 
   const [editingTruck, setEditingTruck] = useState<AdminTruck | null>(null)
   const [modalEdits, setModalEdits] = useState<Partial<AdminTruck>>({})
@@ -90,8 +103,6 @@ export default function AdminPage() {
   const [createdPassword, setCreatedPassword] = useState<string | null>(null)
   const [createError, setCreateError] = useState<string | null>(null)
 
-  const [showDiscovery, setShowDiscovery] = useState(false)
-  const [discoveryFilter, setDiscoveryFilter] = useState('')
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
@@ -148,41 +159,42 @@ export default function AdminPage() {
     finally { setSaving(null) }
   }
 
-  const updateDiscovery = async (discoveryTruckId: string, visibility: string) => {
+  // Inline per-field update for an OPERATOR truck (writes trucks.*). Mirrors updateDiscovery so the unified
+  // table's tickboxes dispatch to the correct table by row type.
+  const updateTruck = async (truckId: string, patch: Partial<Pick<AdminTruck, 'show_on_vf' | 'show_on_hg' | 'order_link_vf' | 'order_link_hg' | 'excluded' | 'active'>>) => {
+    setSaving(truckId)
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
+        body: JSON.stringify({ truckId, ...patch }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setTrucks(prev => prev.map(t => (t.id === truckId ? { ...t, ...patch } : t)))
+      showToast('Saved')
+    } catch (e: any) { alert(e.message) }
+    finally { setSaving(null) }
+  }
+
+  const updateDiscovery = async (discoveryTruckId: string, patch: Partial<Pick<DiscoveryTruck, 'show_on_vf' | 'show_on_hg' | 'excluded'>>) => {
     setSaving(discoveryTruckId)
     try {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
-        body: JSON.stringify({ discoveryTruckId, visibility }),
+        body: JSON.stringify({ discoveryTruckId, ...patch }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setDiscoveryTrucks(prev => prev.map(t =>
-        t.id === discoveryTruckId ? { ...t, visibility: visibility as DiscoveryTruck['visibility'] } : t
+        t.id === discoveryTruckId ? { ...t, ...patch } : t
       ))
       showToast('Saved')
     } catch (e: any) { alert(e.message) }
     finally { setSaving(null) }
   }
 
-  const linkDiscoveryTruck = async (discoveryTruckId: string, hatchgrabTruckId: string | null) => {
-    setSaving(discoveryTruckId)
-    try {
-      const res = await fetch('/api/admin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
-        body: JSON.stringify({ discoveryTruckId, hatchgrab_truck_id: hatchgrabTruckId || null }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-      setDiscoveryTrucks(prev => prev.map(t =>
-        t.id === discoveryTruckId ? { ...t, hatchgrab_truck_id: hatchgrabTruckId } : t
-      ))
-      showToast(hatchgrabTruckId ? 'Linked' : 'Unlinked')
-    } catch (e: any) { alert(e.message) }
-    finally { setSaving(null) }
-  }
 
   const openEditModal = (truck: AdminTruck) => {
     setEditingTruck(truck)
@@ -278,9 +290,21 @@ export default function AdminPage() {
     </div>
   )
 
-  const filteredTrucks = trucks.filter(t => {
-    if (planFilter && t.plan !== planFilter) return false
-    if (truckSearch && !t.name.toLowerCase().includes(truckSearch.toLowerCase())) return false
+  // Unified rows over BOTH sources, normalized to a common shape with a `kind` discriminant. Discovery rows
+  // present plan="Discovery" (derived from kind — NOT stored). Each tickbox dispatches to updateTruck /
+  // updateDiscovery by kind.
+  type UnifiedRow =
+    | { kind: 'operator'; id: string; name: string; op: AdminTruck }
+    | { kind: 'discovery'; id: string; name: string; dt: DiscoveryTruck }
+  const unifiedRows: UnifiedRow[] = [
+    ...trucks.map((t): UnifiedRow => ({ kind: 'operator', id: t.id, name: t.name, op: t })),
+    ...discoveryTrucks.map((t): UnifiedRow => ({ kind: 'discovery', id: t.id, name: t.name, dt: t })),
+  ]
+  const filteredRows = unifiedRows.filter(r => {
+    if (truckSearch && !r.name.toLowerCase().includes(truckSearch.toLowerCase())) return false
+    if (customersOnly && r.kind !== 'operator') return false
+    if (planFilter === 'discovery' && r.kind !== 'discovery') return false
+    if (planFilter && planFilter !== 'discovery' && (r.kind !== 'operator' || r.op.plan !== planFilter)) return false
     return true
   })
 
@@ -409,149 +433,163 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Trucks tab */}
+        {/* Trucks tab — ONE unified table over operator (trucks) + discovery (discovery_trucks) sources. */}
         {adminTab === 'trucks' && (
           <div>
-            <div className="flex gap-3 mb-4">
+            <div className="flex gap-3 mb-4 flex-wrap items-center">
               <input
                 type="text"
                 placeholder="Search trucks…"
                 value={truckSearch}
                 onChange={e => setTruckSearch(e.target.value)}
-                className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="flex-1 min-w-[180px] border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
               />
               <select
                 value={planFilter}
-                onChange={e => setPlanFilter(e.target.value as Plan | '')}
+                onChange={e => setPlanFilter(e.target.value as Plan | 'discovery' | '')}
                 className="border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
               >
                 <option value="">All plans</option>
                 {PLAN_ORDER.map(p => (
                   <option key={p} value={p}>{PLAN_META[p].name}</option>
                 ))}
+                <option value="discovery">Discovery</option>
               </select>
+              <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer whitespace-nowrap">
+                <input type="checkbox" checked={customersOnly} onChange={e => setCustomersOnly(e.target.checked)} className="w-4 h-4 accent-orange-500" />
+                Customers only
+              </label>
+              <span className="text-xs text-slate-400">{filteredRows.length} trucks</span>
             </div>
 
-            <div className="space-y-2">
-              {filteredTrucks.map(truck => {
-                const trialExpiry = truck.trial_expires_at ? new Date(truck.trial_expires_at) : null
-                const trialExpired = trialExpiry ? trialExpiry < new Date() : false
-                const trialDays = trialExpiry
-                  ? Math.max(0, Math.ceil((trialExpiry.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-                  : 0
-                return (
-                  <div key={truck.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-bold text-slate-900 text-sm">{truck.name}</p>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${PLAN_BADGE[truck.plan]}`}>
-                          {PLAN_META[truck.plan].name}
-                        </span>
-                        {truck.plan === 'trial' && trialExpiry && (
-                          <span className={`text-[10px] font-bold ${trialExpired ? 'text-red-500' : trialDays <= 7 ? 'text-amber-500' : 'text-teal-600'}`}>
-                            {trialExpired ? 'Expired' : `${trialDays}d`}
-                          </span>
-                        )}
-                        {truck.lifetime_discount_pct != null && (
-                          <span className="text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded-full">
-                            💚 {truck.lifetime_discount_pct}% lifetime
-                          </span>
-                        )}
-                        {!truck.active && (
-                          <span className="text-[10px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">Inactive</span>
-                        )}
-                      </div>
-                      {truck.contact_email && <p className="text-slate-400 text-xs mt-0.5">{truck.contact_email}</p>}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {truck.operator_id && truck.dashboard_token && (
-                        <AppLink
-                          href={`/dashboard/${truck.dashboard_token}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
-                        >
-                          🖥 Dashboard →
-                        </AppLink>
-                      )}
-                      <button
-                        onClick={() => openEditModal(truck)}
-                        className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50"
-                      >
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Discovery trucks */}
-            <div className="mt-8">
-              <button
-                onClick={() => setShowDiscovery(v => !v)}
-                className="flex items-center gap-2 font-black text-slate-700 text-lg mb-4 hover:text-slate-900"
-              >
-                {showDiscovery ? '▼' : '▶'} Discovery trucks ({discoveryTrucks.length})
-              </button>
-              {showDiscovery && (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Filter by name…"
-                    value={discoveryFilter}
-                    onChange={e => setDiscoveryFilter(e.target.value)}
-                    className="mb-3 w-full max-w-sm border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-                  />
-                  <div className="space-y-2">
-                    {discoveryTrucks
-                      .filter(t => !discoveryFilter || t.name.toLowerCase().includes(discoveryFilter.toLowerCase()))
-                      .map(truck => (
-                        <div key={truck.id} className="bg-white rounded-xl border border-slate-200 px-4 py-3 flex items-center justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <p className="font-bold text-slate-900 text-sm truncate">{truck.name}</p>
-                            {truck.hatchgrab_truck_id ? (
-                              <p className="text-[10px] text-teal-600 font-bold mt-0.5">
-                                → {trucks.find(t => t.id === truck.hatchgrab_truck_id)?.name || truck.hatchgrab_truck_id}
-                              </p>
-                            ) : (
-                              <p className="text-[10px] text-slate-400 mt-0.5">Not linked</p>
-                            )}
-                            {(truck.exclude_reason || '').toLowerCase().includes('y') && (
-                              <p className="text-[10px] text-red-500 font-bold mt-0.5">Excluded</p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <select
-                              value={truck.hatchgrab_truck_id || ''}
-                              onChange={e => linkDiscoveryTruck(truck.id, e.target.value || null)}
-                              disabled={saving === truck.id}
-                              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400 max-w-[140px]"
-                            >
-                              <option value="">— Link HG truck —</option>
-                              {trucks.map(t => (
-                                <option key={t.id} value={t.id}>{t.name}</option>
-                              ))}
-                            </select>
-                            <select
-                              value={truck.visibility || 'public'}
-                              onChange={e => updateDiscovery(truck.id, e.target.value)}
-                              disabled={saving === truck.id}
-                              className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
-                            >
-                              <option value="public">Public (VF + HG)</option>
-                              <option value="hg_only">HG only</option>
-                              <option value="hidden">Hidden</option>
-                            </select>
-                            {saving === truck.id && (
-                              <span className="text-xs text-slate-400 animate-pulse">Saving…</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </>
-              )}
+            <div className="border border-slate-200 rounded-xl overflow-auto max-h-[70vh]">
+              <table className="w-full text-sm border-collapse table-fixed">
+                <colgroup>
+                  <col />{/* Name — flex */}
+                  <col style={{ width: '5rem' }} />{/* Active */}
+                  <col style={{ width: '6rem' }} />{/* Plan */}
+                  <col style={{ width: '5rem' }} />{/* VF · Map */}
+                  <col style={{ width: '5rem' }} />{/* VF · Ordering */}
+                  <col style={{ width: '5rem' }} />{/* HG · Map */}
+                  <col style={{ width: '5rem' }} />{/* HG · Ordering */}
+                  <col style={{ width: '5rem' }} />{/* Exclude? */}
+                  <col style={{ width: '6rem' }} />{/* Dashboard */}
+                  <col style={{ width: '6rem' }} />{/* Manage */}
+                  <col style={{ width: '5rem' }} />{/* Actions */}
+                </colgroup>
+                {/* z-20 + opaque bg on every sticky th → body tickboxes never bleed through the header. */}
+                <thead className="text-slate-500 text-xs uppercase tracking-wide">
+                  {/* Row 1 — groups (sticky top-0). Site names span the two Map|Ordering sub-columns. */}
+                  <tr>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-left font-bold px-3 align-middle">Name</th>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 align-middle border-l border-slate-200">Active</th>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-left font-bold px-3 align-middle border-l border-slate-200">Plan</th>
+                    <th colSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 border-l border-slate-200">Village Foodie</th>
+                    <th colSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 border-l border-slate-200">HatchGrab</th>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 align-middle border-l border-slate-200">Exclude?</th>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 align-middle border-l border-slate-200">Dashboard</th>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 align-middle border-l border-slate-200">Manage</th>
+                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 align-middle border-l border-slate-200">Actions</th>
+                  </tr>
+                  {/* Row 2 — sub-columns (sticky top-9 = below row 1). */}
+                  <tr>
+                    <th className="sticky top-9 z-20 h-8 bg-slate-100 text-center font-medium px-2 border-l border-slate-200">Map</th>
+                    <th className="sticky top-9 z-20 h-8 bg-slate-100 text-center font-medium px-2">Ordering</th>
+                    <th className="sticky top-9 z-20 h-8 bg-slate-100 text-center font-medium px-2 border-l border-slate-200">Map</th>
+                    <th className="sticky top-9 z-20 h-8 bg-slate-100 text-center font-medium px-2">Ordering</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRows.map(r => {
+                    const isOp = r.kind === 'operator'
+                    const excluded = isOp ? r.op.excluded : r.dt.excluded
+                    const showVf = isOp ? r.op.show_on_vf : r.dt.show_on_vf
+                    const showHg = isOp ? r.op.show_on_hg : r.dt.show_on_hg
+                    const busy = saving === r.id
+                    const na = <span className="text-slate-300">—</span>
+                    // All toggles share ONE style — orange accent; `dim` (excluded) greys + disables.
+                    const box = (checked: boolean, dim: boolean, onChange: (v: boolean) => void) => (
+                      <input type="checkbox" checked={checked} disabled={busy || dim}
+                        className={`w-4 h-4 accent-orange-500 ${dim ? 'opacity-40' : ''}`}
+                        onChange={e => onChange(e.target.checked)} />
+                    )
+                    const linkBtn = (href: string, label: string) => (
+                      <AppLink href={href} target="_blank" rel="noopener noreferrer"
+                        className="inline-block text-xs px-2.5 py-1 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">{label}</AppLink>
+                    )
+                    const opNav = isOp && r.op.operator_id && r.op.dashboard_token
+                    return (
+                      <tr key={`${r.kind}-${r.id}`} className="border-t border-slate-100 hover:bg-slate-50/60">
+                        {/* Name */}
+                        <td className="px-3 py-2 truncate">
+                          <span className="font-bold text-slate-900">{r.name}</span>
+                          {isOp && !r.op.active && (
+                            <span className="ml-2 text-[10px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">Inactive</span>
+                          )}
+                          {isOp && r.op.lifetime_discount_pct != null && (
+                            <span className="ml-2 text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded-full">💚 {r.op.lifetime_discount_pct}%</span>
+                          )}
+                        </td>
+                        {/* Active — ON-AIR kill-switch (operator only). Confirm before taking a truck OFFLINE
+                            (active=false blocks ordering + hides from the public map + removes from the app). */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {isOp
+                            ? <input type="checkbox" checked={r.op.active} disabled={busy}
+                                className="w-4 h-4 accent-green-600"
+                                onChange={e => {
+                                  const next = e.target.checked
+                                  if (!next && !window.confirm(`Take ${r.name} offline? This immediately stops customer ordering and hides it from the public map.`)) return
+                                  updateTruck(r.id, { active: next })
+                                }} />
+                            : na}
+                        </td>
+                        {/* Plan (Discovery derived for scraped rows) */}
+                        <td className="px-3 py-2">
+                          {isOp
+                            ? <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${PLAN_BADGE[r.op.plan]}`}>{PLAN_META[r.op.plan].name}</span>
+                            : <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${DISCOVERY_BADGE}`}>Discovery</span>}
+                        </td>
+                        {/* VF · Map */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {box(showVf, excluded, v => isOp ? updateTruck(r.id, { show_on_vf: v }) : updateDiscovery(r.id, { show_on_vf: v }))}
+                        </td>
+                        {/* VF · Ordering — operator only */}
+                        <td className="text-center px-2 py-2">
+                          {isOp ? box(r.op.order_link_vf, excluded, v => updateTruck(r.id, { order_link_vf: v })) : na}
+                        </td>
+                        {/* HG · Map */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {box(showHg, excluded, v => isOp ? updateTruck(r.id, { show_on_hg: v }) : updateDiscovery(r.id, { show_on_hg: v }))}
+                        </td>
+                        {/* HG · Ordering — operator only */}
+                        <td className="text-center px-2 py-2">
+                          {isOp ? box(r.op.order_link_hg, excluded, v => updateTruck(r.id, { order_link_hg: v })) : na}
+                        </td>
+                        {/* Exclude? — master hide (same orange toggle), moved before Dashboard */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {box(excluded, false, v => isOp ? updateTruck(r.id, { excluded: v }) : updateDiscovery(r.id, { excluded: v }))}
+                        </td>
+                        {/* Dashboard — operator only */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {opNav ? linkBtn(`/dashboard/${r.op.dashboard_token}`, '🖥') : na}
+                        </td>
+                        {/* Manage — operator only (/manage/[dashboard_token]) */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {opNav ? linkBtn(`/manage/${r.op.dashboard_token}`, '⚙️') : na}
+                        </td>
+                        {/* Actions — Edit (operator only) */}
+                        <td className="text-center px-2 py-2 border-l border-slate-100">
+                          {isOp
+                            ? <button onClick={() => openEditModal(r.op)}
+                                className="text-xs px-2.5 py-1 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Edit</button>
+                            : na}
+                          {busy && <span className="ml-1 text-xs text-slate-400 animate-pulse">…</span>}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
@@ -636,6 +674,8 @@ export default function AdminPage() {
                 <span className="text-sm font-medium text-slate-700">Active</span>
               </label>
             </div>
+
+            {/* NB: VF/HG · Orders VF/HG · Excluded are edited INLINE in the unified trucks table now, not here. */}
 
             {/* Lifetime discount */}
             <div className="border border-slate-200 rounded-xl p-3 space-y-2">

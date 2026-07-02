@@ -124,12 +124,12 @@ export default function TruckListCard({ event, slug, hideOrderButton, forceOrder
                 </div>
 
                 {/* ORDER BUTTON — compact, right-aligned, intrinsic width (does NOT stretch full-width).
-                    Gated to HatchGrab AND operator-sourced events: source==='operator' guarantees a
-                    real truck_events id (orderable) and an order-taking truck (discovery events are
-                    excluded). Deep-links the order FORM scoped to this exact event. Pending/unconfirmed
-                    events never reach here (the discovery feed only returns confirmed/open operator
-                    events). px-4 py-2 keeps a sensible tap target even when not full-width. */}
-                {!hideOrderButton && (forceOrderButton || isHatchGrab()) && event.source === 'operator' && (
+                    Gated to operator-sourced events (real truck_events id + order-taking truck) AND the
+                    per-site order-link flag: on HatchGrab → event.orderLinkHg (default true), on Village
+                    Foodie → event.orderLinkVf (default false, so no VF order link until a truck is graduated
+                    post-trial). forceOrderButton bypasses the host gate (order-page chooser). Deep-links the
+                    order FORM scoped to this exact event; unconfirmed events never reach here. */}
+                {!hideOrderButton && (forceOrderButton || (isHatchGrab() ? event.orderLinkHg : event.orderLinkVf)) && event.source === 'operator' && (
                     <a
                         href={`/trucks/${slug}/order?event_id=${event.id}`}
                         // Equal-width (min-w + justify-center) so the card layout doesn't shift between

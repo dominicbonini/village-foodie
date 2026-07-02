@@ -87,6 +87,19 @@ export async function POST(req: NextRequest) {
     })
   }
 
+  // GRADUATION HOOK: this truck now takes orders via HatchGrab, so its scraped SHADOW must never surface
+  // publicly — the truck's public schedule comes solely from its confirmation-gated truck_events. Exclude the
+  // shadow by (case-insensitive) name match. Best-effort; never blocks account creation. If the scraped name
+  // differs, an admin can tick "Excluded" on that discovery row manually.
+  try {
+    const shadowName = (truckData?.name || '').trim()
+    if (shadowName) {
+      await supabase.from('discovery_trucks').update({ excluded: true }).ilike('name', shadowName)
+    }
+  } catch (e) {
+    console.error('[create-operator] shadow-exclusion failed:', e)
+  }
+
   // Send welcome email via Brevo
   const hgUrl = process.env.NEXT_PUBLIC_HATCHGRAB_URL
   const loginUrl = `${hgUrl}/login`

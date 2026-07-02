@@ -97,6 +97,8 @@ export async function POST(req: NextRequest) {
     return {
       ...discoveryRow,
       visibility: 'public',
+      show_on_vf: true,   // new scraped events default to both sites (mirrors visibility:'public')
+      show_on_hg: true,
       discovery_truck_id: discoveryTruckId,
       venue_id: venueId,
     }

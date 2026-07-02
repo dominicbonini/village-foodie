@@ -23,6 +23,7 @@ export const PLAN_PRICES: Record<Plan, string> = {
   max: '£49/mo',
   trial: 'Free trial',
   tester: 'Lifetime',
+  demo: 'Demo',
 }
 
 export const PLAN_DESCRIPTIONS: Record<Plan, string> = {
@@ -31,6 +32,7 @@ export const PLAN_DESCRIPTIONS: Record<Plan, string> = {
   max: 'High-volume operations & festivals',
   trial: 'All features included — Max tier + Pay at Hatch ordering',
   tester: 'Pre-launch tester — full feature access, lifetime discount',
+  demo: 'Prospect sandbox — full trial before signup (never public)',
 }
 
 export const TRANSACTION_ROWS: {

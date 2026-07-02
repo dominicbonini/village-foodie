@@ -33,7 +33,9 @@ const EV_SELECT = `
   venue_name,
   village,
   event_notes,
-  visibility,
+  discovery_truck_id,
+  show_on_vf,
+  show_on_hg,
   discovery_trucks!discovery_truck_id (
     name,
     cuisine,
@@ -46,8 +48,9 @@ const EV_SELECT = `
     logo_url,
     photo_url,
     aliases,
-    exclude_reason,
-    visibility
+    excluded,
+    show_on_vf,
+    show_on_hg
   ),
   venues!venue_id (
     name,
@@ -61,7 +64,7 @@ const EV_SELECT = `
   )
 `
 
-const TR_SELECT = 'name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason, visibility'
+const TR_SELECT = 'name, cuisine, phone, order_url, accepted_methods, notes, website, menu_url, logo_url, photo_url, aliases, exclude_reason, excluded, show_on_vf, show_on_hg'
 
 export async function GET(req: NextRequest) {
   const today = new Date().toISOString().split('T')[0]
@@ -69,8 +72,8 @@ export async function GET(req: NextRequest) {
 
   const host = req.headers.get('host') || ''
   const isHG = isHatchGrabHost(host)
-  // public = both sites, hg_only = HatchGrab only, hidden = neither
-  const allowedVisibility = isHG ? ['public', 'hg_only'] : ['public']
+  // Per-site boolean: HatchGrab reads show_on_hg, Village Foodie reads show_on_vf.
+  const showCol = isHG ? 'show_on_hg' : 'show_on_vf'
 
   let evData: any[] = []
   let trData: any[] = []
@@ -80,7 +83,7 @@ export async function GET(req: NextRequest) {
       supabase
         .from('discovery_events')
         .select(EV_SELECT)
-        .in('visibility', allowedVisibility)
+        .eq(showCol, true)
         .gte('event_date', today)
         .order('event_date', { ascending: true })
         .order('start_time', { ascending: true, nullsFirst: false })
@@ -89,7 +92,7 @@ export async function GET(req: NextRequest) {
       supabase
         .from('discovery_trucks')
         .select(TR_SELECT)
-        .in('visibility', allowedVisibility)
+        .eq(showCol, true)
         .order('name'),
     ])
 
@@ -100,46 +103,28 @@ export async function GET(req: NextRequest) {
     evData = evResult.data || []
     trData = trResult.data || []
   } catch (err) {
-    console.error('[Discovery] Query failed, falling back to no visibility filter:', err)
-
-    const [evResult, trResult] = await Promise.all([
-      supabase
-        .from('discovery_events')
-        .select(EV_SELECT)
-        .gte('event_date', today)
-        .order('event_date', { ascending: true })
-        .order('start_time', { ascending: true, nullsFirst: false })
-        .limit(1000),
-
-      supabase
-        .from('discovery_trucks')
-        .select(TR_SELECT)
-        .order('name'),
-    ])
-
-    if (evResult.error) {
-      console.error('[Discovery] Fallback events query failed:', evResult.error.message)
-      return NextResponse.json({ error: evResult.error.message }, { status: 500 })
-    }
-    if (trResult.error) {
-      console.error('[Discovery] Fallback trucks query failed:', trResult.error.message)
-      return NextResponse.json({ error: trResult.error.message }, { status: 500 })
-    }
-
-    evData = evResult.data || []
-    trData = trResult.data || []
+    // FAIL CLOSED: on error we drop the scraped-discovery feed entirely rather than fall back to an
+    // UNFILTERED query — the old fallback could leak hg_only/hidden rows onto the public Village Foodie
+    // site. Operator events are computed separately below and are unaffected by this.
+    console.error('[Discovery] Scraped-discovery query failed — failing closed (empty):', err)
+    evData = []
+    trData = []
   }
+
+  // Suppression is now AUTOMATIC via `excluded`: a graduated truck's scraped shadow is excluded=true, so the
+  // ordinary truck-level gate below drops all its events (no is_customer join, no hatchgrab_truck_id link).
 
   // ── Map discovery events ───────────────────────────────────────
   const mappedDiscoveryEvents = evData.map((e: any, idx: number) => {
     const truck = e.discovery_trucks || {}
     const venue = e.venues || {}
 
-    if (truck.name && (truck.exclude_reason || '').toLowerCase().includes('y')) return null
+    // Master hide (replaces the old exclude_reason ~ 'y' filter) — also how a graduated truck's scraped
+    // shadow is suppressed.
+    if (truck.excluded) return null
 
-    // Filter by truck-level visibility (in case the event passed but its truck didn't)
-    const truckVis = truck.visibility || 'public'
-    if (!allowedVisibility.includes(truckVis)) return null
+    // Truck-level gate (in case the event row passed but its truck is not shown on this site).
+    if (!truck[showCol]) return null
 
     const truckSlug = createSlug(truck.name || e.truck_name || '')
     if (slug && truckSlug !== slug) return null
@@ -175,19 +160,9 @@ export async function GET(req: NextRequest) {
   // ── Operator events (additive — failure must never break discovery map) ──
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 
-  // Visibility map for gating operator events: operator truck (trucks.id) → its linked
-  // discovery_trucks.visibility (via hatchgrab_truck_id). Fetched UNFILTERED on purpose — we must see
-  // hg_only/hidden rows to EXCLUDE them on villagefoodie. (trData above is visibility-filtered, so an
-  // hg_only row would be missing there and wrongly default to 'public' → leak.) Operator trucks with
-  // no linked discovery row default to 'public' (shown on both sites — no regression for real trucks).
-  const { data: linkRows } = await supabase
-    .from('discovery_trucks')
-    .select('hatchgrab_truck_id, visibility')
-    .not('hatchgrab_truck_id', 'is', null)
-  const linkedVisibilityByTruckId = new Map<string, string>(
-    (linkRows || []).map((r: any) => [r.hatchgrab_truck_id, r.visibility || 'public'])
-  )
-
+  // Operator-event visibility is now read DIRECTLY off the truck's own NOT-NULL show_on_vf/show_on_hg —
+  // no more "linked discovery_trucks.visibility, default public if unlinked" (that missing-link default was
+  // the leak the audit flagged). order_link_vf/order_link_hg drive the per-site Order CTA in the listing.
   let mappedOperatorEvents: any[] = []
   try {
     const opResult = await supabase
@@ -210,7 +185,12 @@ export async function GET(req: NextRequest) {
           cuisine_type,
           logo_storage_path,
           slug,
-          active
+          active,
+          excluded,
+          show_on_vf,
+          show_on_hg,
+          order_link_vf,
+          order_link_hg
         )
       `)
       .in('status', ['confirmed', 'open'])
@@ -227,11 +207,9 @@ export async function GET(req: NextRequest) {
           const truck = e.trucks as any
           if (!truck) return false
           if (!truck.active) return false
-          // Gate operator events by the linked discovery truck's visibility — SAME rule as the
-          // discovery-events path. No link → 'public' (both sites); 'hg_only' → HatchGrab only;
-          // 'hidden' → neither. Replaces the old is_test drop (is_test column doesn't exist in prod).
-          const linkedVis = linkedVisibilityByTruckId.get(truck.id) ?? 'public'
-          if (!allowedVisibility.includes(linkedVis)) return false
+          if (truck.excluded) return false   // master hide
+          // Gate by the truck's OWN per-site boolean (NOT NULL, no missing-link default → no leak).
+          if (!truck[showCol]) return false
           if (slug && createSlug(truck.name || '') !== slug) return false
           return true
         })
@@ -255,6 +233,10 @@ export async function GET(req: NextRequest) {
             type: truck?.cuisine_type || '',
             phoneNumber: null,
             orderUrl: truck?.slug ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order` : null,
+            // Per-site order-link flags — the listing gates the Order CTA on these (HG=order_link_hg,
+            // VF=order_link_vf). Defaults preserve today: HG on, VF off.
+            orderLinkVf: truck?.order_link_vf ?? false,
+            orderLinkHg: truck?.order_link_hg ?? true,
             acceptedMethods: null,
             websiteUrl: null,
             menuUrl: null,
@@ -300,8 +282,8 @@ export async function GET(req: NextRequest) {
   // ── Trucks list (discovery only) ─────────────────────────────
   const trucks = trData
     .filter((t: any) =>
-      !(t.exclude_reason || '').toLowerCase().includes('y') &&
-      allowedVisibility.includes(t.visibility || 'public')
+      !t.excluded &&
+      t[showCol] === true
     )
     .map((t: any) => ({
       rawName: t.name,

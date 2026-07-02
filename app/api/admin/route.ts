@@ -42,14 +42,14 @@ export async function GET(req: NextRequest) {
   if (section === 'discovery') {
     const { data: discoveryTrucks } = await supabase
       .from('discovery_trucks')
-      .select('id, name, visibility, hatchgrab_truck_id, exclude_reason')
+      .select('id, name, visibility, hatchgrab_truck_id, exclude_reason, show_on_vf, show_on_hg, excluded')
       .order('name')
     return NextResponse.json({ discoveryTrucks: discoveryTrucks || [] })
   }
 
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note')
+    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded')
     .order('name')
   return NextResponse.json({ trucks: trucks || [] })
 }
@@ -61,12 +61,15 @@ export async function POST(req: NextRequest) {
   const { truckId, discoveryTruckId, ...updates } = body
 
   if (discoveryTruckId) {
-    const { visibility, hatchgrab_truck_id } = updates
-    if (hatchgrab_truck_id !== undefined) {
-      await supabase.from('discovery_trucks').update({ hatchgrab_truck_id }).eq('id', discoveryTruckId)
-      return NextResponse.json({ ok: true })
-    }
-    await supabase.from('discovery_trucks').update({ visibility }).eq('id', discoveryTruckId)
+    const { visibility, show_on_vf, show_on_hg, excluded } = updates
+    // Per-site booleans + `excluded` master-hide are the live controls; `visibility` still accepted for
+    // back-compat until it's dropped. (linkDiscoveryTruck / hatchgrab_truck_id is no longer set from the UI.)
+    const patch: Record<string, any> = {}
+    if (show_on_vf !== undefined) patch.show_on_vf = show_on_vf
+    if (show_on_hg !== undefined) patch.show_on_hg = show_on_hg
+    if (excluded !== undefined) patch.excluded = excluded
+    if (visibility !== undefined) patch.visibility = visibility
+    await supabase.from('discovery_trucks').update(patch).eq('id', discoveryTruckId)
     return NextResponse.json({ ok: true })
   }
 

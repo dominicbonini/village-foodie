@@ -34,4 +34,8 @@ export interface VillageEvent {
   acceptedMethods?: string;
   orderInfo?: string;   // Keeping this for backwards compatibility
   source?: 'operator' | 'discovery';
+  // Per-site order-link flags (operator events only). The listing gates the Order/Pre-order CTA by host:
+  // HG uses orderLinkHg (default true), VF uses orderLinkVf (default false). See TruckListCard.
+  orderLinkVf?: boolean;
+  orderLinkHg?: boolean;
 }

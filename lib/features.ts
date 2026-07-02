@@ -1,4 +1,4 @@
-export type Plan = 'starter' | 'pro' | 'max' | 'trial' | 'tester'
+export type Plan = 'starter' | 'pro' | 'max' | 'trial' | 'tester' | 'demo'
 
 export type Feature =
   // Core — all plans
@@ -77,6 +77,11 @@ export const PLAN_FEATURES: Record<Plan, Set<Feature>> = {
   max: new Set(MAX_FEATURES),
   trial: new Set(TRIAL_FEATURES),
   tester: new Set(MAX_FEATURES),
+  // Demo = prospect-facing SANDBOX. Mirrors TRIAL's feature profile (full product access — menu, schedule,
+  // ordering screens, KDS preview — so a prospect can try everything before signup). Distinct from Tester
+  // (internal). ⚠️ FUTURE (demo-feature build, NOT here): a Demo-plan truck must be fully walled off from
+  // the public VF/HG discovery queries — its activity must never surface publicly.
+  demo: new Set(TRIAL_FEATURES),
 }
 
 // Base check — plan tier only, no overrides
@@ -145,6 +150,11 @@ export const PLAN_META: Record<Plan, {
     name: 'Tester',
     price: '',
     description: 'Pre-launch tester — full feature access',
+  },
+  demo: {
+    name: 'Demo',
+    price: '',
+    description: 'Prospect-facing sandbox — full product trial before signup (never public)',
   },
 }
 
