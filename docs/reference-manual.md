@@ -2222,6 +2222,40 @@ The "Screen on" toggle in the avatar dropdown requests the Wake Lock API. lib/na
 navigator.wakeLock: Chrome since v84, Firefox Android since 72, Samsung Internet since 14, Safari (iOS/macOS) from 16.4. Firefox desktop does not support it. When 'wakeLock' in navigator is false, show an inline amber warning under the toggle.
 
 
+## Kitchen ticket printing (design + Phase A built)
+
+iPad-app-ONLY (native) print of a kitchen ticket when an order is DUE. **MAX-plan feature** — gated via the
+existing `ticket_printing` `Feature` + **`canAccess(plan, 'ticket_printing', feature_overrides, trial_expires_at)`** (`lib/features.ts`; respects per-truck overrides + trial expiry). Memory: `project_kitchen_printing_design`.
+
+### Scope / decisions
+- **ONE combined ticket** (order #, name, due time, items+mods+qty, total) — a food truck doesn't need separate kitchen/customer tickets. The renderer is **extensible to a 2nd ticket type later** (an additive `type` branch, NOT a re-architecture).
+- **Trigger = print when DUE:** N minutes before the order's `collection_time` (the §31 slot-engine ready time). Per-device `print_lead_mins`. **ASAP orders print ~immediately** (imminent `collection_time`); **scheduled pre-orders print N-before-due**. One rule, computed in the **event timezone** (§31).
+- **Supports BOTH printer classes, steer operators to MFi:**
+  - **MFi (Star TSP143 / Epson TM-m30) — RECOMMENDED:** reliable, iOS-certified (survives iOS updates), real status (paper-out, cover-open).
+  - **BLE (cheap generic ~£30–40):** works via `@capacitor-community/bluetooth-le` but limited/no status, fiddly.
+  - **⚠️ iOS CONSTRAINT:** cheap generic / Android BT printers OFTEN WON'T PAIR with an iPad (need MFi or BLE) — a "standard Bluetooth printer" is NOT a safe assumption on iOS. Operator guidance copy: use an iOS-compatible printer; cheap BLE "works but may miss status → watch for missed tickets, use Reprint".
+
+### Architecture
+- **The plugin is a DUMB, printer-class-agnostic TRANSPORT** — `sendBytes(base64) → ok/err` + `scan/connect/status`. **All ESC/POS is generated in JS**, so renderer / scheduling / dedup / config / reprint are class-agnostic; only the thin native transport differs by `printer_class` (**MFi** via vendor SDK / External Accessory; **BLE** via a `bluetooth-le` characteristic write, MTU-chunked). Seam = `lib/printing/transport.ts` (`PrinterTransport`, `PrinterClass 'mfi'|'ble'`, `createStubTransport`).
+- **`renderTicket(order, config, type='combined'): Uint8Array`** — PURE; emits ESC/POS (`ESC @`, `ESC a`, `GS !`, `ESC E`, `ESC d`, `GS V` cut). **58mm (32 char) / 80mm (48 char)** via `paper_width`, word-wrapped. `buildTicketLines()` is the shared layout model consumed by BOTH the encoder and the on-screen preview.
+- **Scheduling:** a device-local watcher (`setInterval` ~15–30s, piggybacks the heartbeat; **keep-awake** keeps it foregrounded) scans un-printed due orders (`now >= collection_time − lead && status ∈ {confirmed,cooking,ready} && !printed`).
+- **DEDUP (must not reprint every tick):** `printed_at` (server-authoritative → survives restart / cross-device) + a local printed-set (Preferences) for offline immediacy + a **queued "mark printed" op via the offline OUTBOX** to sync on reconnect.
+- **Reliability — printing NEVER blocks the order:** the order lifecycle (confirm/ready/collect) is fully independent of printing. On failure (printer off / out-of-paper / BT dropped): auto-retry, then a **KDS flag** ("⚠️ ticket didn't print — Reprint") + a **per-order Reprint** button. **`print_jobs`** table (`order_key, van_id, status, attempts, printed_at, error`). MFi reports paper-out; **BLE reports little → treat write-failed / disconnected as the failure signal.**
+
+### Per-device model
+Printer connection is **PER-DEVICE** (BT pairing is device-bound). State is keyed on THIS iPad; a 2nd device shows "Connect" (pair its own) and **NEVER** the first device's printer as connected — no cross-device confusion (trucks have one iPad anyway). Config UI = the **`PrintingSettings`** section in the dashboard **"Menu & Stock"** tab: **iPad-only** (`return null` unless `isNativeApp()`), **Max-gated** (`canAccess ticket_printing`). Two states: **NOT set up → "Connect" button**; **SET UP → printer name + Connected chip + ticket settings (lead-mins, paper 58/80) + Change/Disconnect**.
+
+### Phasing
+- **Phase A — BUILT + tsc-clean, software-testable NOW (no hardware), committed to `ipad-native-app`:** `renderTicket` + on-screen/dev PREVIEW (`app/dev/ticket-preview`) + a **virtual-printer test path** (FilipChalupa/virtual-thermal-printer — real ESC/POS over TCP/HTTP, £0) + the scheduling watcher (routes "would print" → preview/log) + dedup + `print_jobs` + the Menu & Stock config section + Connect/connected UI + reprint UX. **Transport STUBBED at the `sendBytes` seam.** Files: `lib/printing/{ticket,printWatcher,transport}.ts`, `components/printing/{TicketPreview,PrintingSettings}.tsx`, `app/dev/ticket-preview/`, mounted in Menu & Stock.
+- **Phase B — HARDWARE-GATED (needs iPad + a real BT printer):** the two native transport backends (MFi SDK + BLE), real pairing/scan, bytes→paper (cut/feed/status). Slots into the `transport.ts` seam — nothing above it changes.
+
+### STORE NOTE (Phase A deviation)
+Settings are currently in **Capacitor Preferences (device-local)**, NOT `van_devices` — because the `van_devices` printing-columns migration isn't run yet, and adding those columns to the `bind-device` SELECT pre-migration would **regress the existing device-config read**. Move to the device's `van_devices` row when that additive migration runs — a contained swap. **Spec'd `van_devices` columns:** `printer_id, printer_name, printer_class, paper_width, print_lead_mins, ticket_type`; plus the new **`print_jobs`** table. Both migrations are **spec'd, NOT run** (deploy-coupled; applied by hand).
+
+### Hardware-gated / needs-validation tracking
+Printing **Phase B** joins the **native app** + the **offline outbox** as requiring the **physical iPad** (+ Apple Developer account) to validate — and printing **additionally needs a real BT thermal printer** (MFi Star/Epson recommended). Phase A (renderer/preview/scheduler/config/reprint) is fully validatable now via the preview + the virtual thermal printer; only the byte→paper transport is gated.
+
+
 # 12. Authentication and access
 
 ## Operator and staff accounts
