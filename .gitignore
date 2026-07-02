@@ -46,3 +46,6 @@ next-env.d.ts
 # scratch / local dev artifacts
 _pretest.cjs
 devserver.log
+
+# Generated venue-backfill artifacts (SQL/CSV/JSON) — scripts are tracked, outputs are not
+scripts/backfill-output/
