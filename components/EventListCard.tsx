@@ -12,6 +12,7 @@ import {
     getDistanceKm
   } from '@/lib/utils';
 import { formatTime, formatTimeRange } from '@/lib/time-utils';
+import { isHatchGrab } from '@/lib/domain';
 
 interface EventListCardProps {
   events: VillageEvent[]; 
@@ -124,7 +125,14 @@ export default function EventListCard({ events, userLocation, isMapPopup = false
 
   const wantsWebsite = methodsStr.includes('website');
   const acceptsWhatsApp = methodsStr.includes('whatsapp');
-  const showWebsite = wantsWebsite || (!methodsStr && primaryEvent.orderUrl && primaryEvent.orderUrl.includes('http'));
+  // The "🌐 Order" CTA below links to primaryEvent.orderUrl. For an OPERATOR event that URL is OUR in-app
+  // HatchGrab order link, so it must respect the per-site order-link control (admin "Orders VF/HG"): show
+  // only if order_link_vf on Village Foodie / order_link_hg on HatchGrab (default VF=false, HG=true). For a
+  // DISCOVERY event, orderUrl is the truck's OWN channel (their website/hatchesup) — keep the existing rule.
+  const operatorOrderAllowed = isHatchGrab() ? (primaryEvent.orderLinkHg ?? false) : (primaryEvent.orderLinkVf ?? false);
+  const showWebsite = primaryEvent.source === 'operator'
+    ? operatorOrderAllowed
+    : (wantsWebsite || (!methodsStr && primaryEvent.orderUrl && primaryEvent.orderUrl.includes('http')));
 
   const PrimaryBtnClass = "flex-1 flex items-center justify-center text-center gap-1 !bg-orange-600 hover:!bg-orange-700 !text-white !no-underline text-[11px] font-bold py-2 px-1 rounded-md transition-colors shadow-sm whitespace-nowrap";
   const UtilityLinkClass = "flex items-center justify-center gap-1 text-slate-700 hover:text-orange-600 text-[10px] font-bold py-0.5 px-1.5 transition-colors whitespace-nowrap bg-transparent cursor-pointer";
