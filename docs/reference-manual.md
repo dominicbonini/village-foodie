@@ -3896,7 +3896,36 @@ Every break in this saga was the SAME mistake: a PARALLEL model maintained along
 <!-- END SLOT & CAPACITY ENGINE SPEC -->
 <!-- ============================================================ -->
 
-# 32. Closing note
+# 32. Discovery shadow ↔ operator linking architecture (VERIFIED, July 2026)
+
+How a customer/operator truck that originated from discovery stays connected to the scraper, and why its `discovery_trucks` "shadow" row is **structural, not redundant**. Written against verified live behaviour (Pizzeria Gusto) — where older §15/§25 notes disagree, this governs.
+
+## The dual-row state (one truck, two rows — by design)
+
+A truck that graduated discovery → customer keeps BOTH: its operator row in `trucks`, AND its original `discovery_trucks` row (the "shadow") with `hatchgrab_truck_id = <operator trucks.id>`. This is intentional, and the shadow is **load-bearing**. It must NOT be deleted casually (see the warning below). The only defect this dual state caused was cosmetic — the truck rendering twice in the admin table — now fixed at the DISPLAY layer only.
+
+## What the shadow actually does (two jobs — neither is "hold the confirmed events")
+
+Verified precisely, because it's easy to get inverted:
+
+1. **INPUT — the scrape→portal bridge.** `app/api/inbound-schedule/route.ts` reads `discovery_trucks WHERE hatchgrab_truck_id IS NOT NULL` and, on each scrape, promotes matched scraped events into that operator's `truck_events` (status `unconfirmed`, `source='scraper'`). This is how an auto-scraped customer's upcoming schedule *reaches the operator portal to be confirmed*. The shadow's `hatchgrab_truck_id` is the anchor. (Gusto: `scraper_preference='auto'`; 6 of its 11 `truck_events` arrived this way.)
+2. **SUPPRESSION.** The shadow's own scraped `discovery_events` are held out of the public feed by `excluded=true`, so the raw scraped copies don't double-show next to the confirmed operator events.
+
+## What the shadow does NOT do — the confirmed events are `truck_events`, read directly
+
+The public VF/HG feed shows the operator's **confirmed events by reading `truck_events` directly** — the operator branch of `/api/discovery/events` joins `trucks` and gates on `trucks.show_on_vf`/`show_on_hg`; **it does not join `discovery_trucks` at all**. The confirmed schedule does NOT "live as discovery_events on the shadow." (Proven for Gusto: the 3 VF events are `truck_events` rows `1eed0b23…` / `461cf4f8…` / `4608e8df…`; the shadow's 7 future `discovery_events` are all `excluded`-suppressed and reach the feed **zero** times.)
+
+Consequence — **deleting the shadow would NOT make the current schedule vanish from VF** (the `truck_events` still render). What it *would* break: (a) future scrape→`truck_events` ingestion for auto-scraped customers (the bridge loses its anchor), (b) suppression of the raw scraped copies (they'd need an operator-existence gate instead), and (c) the scraper would re-mint the shadow by name on its next Pass-A run (`run-scraper.js` is blind to the operator table). That is why it is structural.
+
+## ⚠️ "Remove the shadow" is a re-architecture, not a cleanup
+
+A genuine shadow-free / one-row-per-truck model is possible but requires, together: re-keying the **bridge** off the operator `trucks` row (name + a new `trucks.scraper_aliases`, gated by `scraper_preference <> 'manual'`), re-keying **suppression** off operator-existence, a **scraper Pass-A guard** (don't mint a `discovery_trucks` row for a name that matches an operator), and a **graduation-hook** change (delete/skip the shadow instead of setting `excluded`). Until all of that is built + deployed together, the shadow stays. Do not ship a bare delete migration — it self-aborts on the linked events, and even ordered correctly it breaks the bridge for `auto` customers.
+
+## Admin display fix (BUILT this session — display-only, no data touched)
+
+`app/admin/page.tsx` `unifiedRows`: `discovery_trucks` rows with `hatchgrab_truck_id` set are filtered OUT of the unified table (they're an operator truck's linking-shadow, already represented by the operator row). Each truck now shows **once**. The shadow row **stays in the DB** (it carries the bridge + suppression). Pure (unlinked) discovery rows render as normal. Verified: Gusto shows once in admin; its VF display (the 3 confirmed `truck_events`) is completely unaffected (that path never reads the shadow). tsc-clean.
+
+# 33. Closing note
 
 This manual is living documentation. Update it whenever a new rule is established, a feature behaviour is decided, a DRY violation is identified and fixed, a plan tier feature changes, or a coding convention shifts.
 
