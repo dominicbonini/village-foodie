@@ -298,7 +298,15 @@ export default function AdminPage() {
     | { kind: 'discovery'; id: string; name: string; dt: DiscoveryTruck }
   const unifiedRows: UnifiedRow[] = [
     ...trucks.map((t): UnifiedRow => ({ kind: 'operator', id: t.id, name: t.name, op: t })),
-    ...discoveryTrucks.map((t): UnifiedRow => ({ kind: 'discovery', id: t.id, name: t.name, dt: t })),
+    // A discovery_trucks row WITH hatchgrab_truck_id set is an operator truck's linking-shadow — the
+    // structural row that carries scraped events into that operator's truck_events + suppresses the raw
+    // scraped copies (see reference-manual §33). It is NOT a separate truck: it must NOT render as its own
+    // admin row, or the operator shows twice. Fold it behind the operator row (display-only; the shadow row
+    // STAYS in the DB — it is load-bearing, do not delete). Unlinked discovery rows (pure discovery) render
+    // as normal.
+    ...discoveryTrucks
+      .filter(t => !t.hatchgrab_truck_id)
+      .map((t): UnifiedRow => ({ kind: 'discovery', id: t.id, name: t.name, dt: t })),
   ]
   const filteredRows = unifiedRows.filter(r => {
     if (truckSearch && !r.name.toLowerCase().includes(truckSearch.toLowerCase())) return false
