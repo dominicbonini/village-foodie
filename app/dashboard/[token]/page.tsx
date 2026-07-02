@@ -1206,7 +1206,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   )
 
   return(
-    <div className="min-h-screen bg-slate-50">
+    <div className={`bg-slate-50 ${activeTab==='add'?'h-dvh flex flex-col overflow-hidden':'min-h-screen'}`}>{/* Add tab = fixed-viewport shell (KDS pattern) so walk-up order UI fits w/ no page scroll + confirm visible; other tabs keep natural-flow scroll (Orders untouched) */}
       {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
           / when off. Rendered first so it's on top. */}
       <AppLockGate />
@@ -1331,7 +1331,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-4 pb-20"}>
+      <main className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto ${activeTab==='add'?'flex-1 min-h-0 overflow-hidden px-4':'px-4 py-4 pb-20'}`}>
 
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
@@ -1753,7 +1753,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* ADD ORDER TAB — always mounted (manual s.22): basket state lives inside
             AddOrderPanel and must survive tab switches. Hidden via CSS, never unmounted. */}
         {truck&&(
-          <div className={activeTab==='add'?'':'hidden'}>
+          <div className={activeTab==='add'?'h-full min-h-0 flex flex-col':'hidden'}>
           <AddOrderPanel
             isActive={activeTab==='add'}
             truck={truck}
