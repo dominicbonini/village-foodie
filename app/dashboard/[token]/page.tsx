@@ -49,6 +49,7 @@ import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { PrintingSettings } from '@/components/printing/PrintingSettings'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
@@ -1802,6 +1803,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* MENU & STOCK TAB */}
         {activeTab==='stock'&&(
           <div className="space-y-4">
+            {/* Kitchen ticket printing (iPad-native-only + Max-gated inside the component). */}
+            {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-center justify-between">
                 <div>
