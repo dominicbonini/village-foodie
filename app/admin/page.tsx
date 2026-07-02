@@ -12,6 +12,7 @@ import UserMenu from '@/components/dashboard/UserMenu'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
+import { isNativeApp } from '@/lib/native/device'   // native app = full-bleed; web keeps centered max-w
 
 interface AdminTruck {
   id: string
@@ -310,7 +311,7 @@ export default function AdminPage() {
 
       {/* Tab bar */}
       <div className="sticky top-[51px] z-40 bg-slate-900 border-b border-slate-700 overflow-x-auto">
-        <div className="max-w-5xl mx-auto px-4 flex gap-1 overflow-x-auto">
+        <div className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} px-4 flex gap-1 overflow-x-auto`}>
           {(['trucks', 'features'] as const).map(tab => (
             <button
               key={tab}
@@ -327,7 +328,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className={`${isNativeApp()?'w-full':'max-w-6xl mx-auto'} px-4 py-6`}>
 
         {/* Features tab */}
         {adminTab === 'features' && (
