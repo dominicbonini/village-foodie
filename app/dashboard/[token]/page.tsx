@@ -1260,7 +1260,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <div className="bg-slate-900 border-b border-slate-700 sticky top-[51px] z-40 overflow-x-auto">
         {/* Nav tabs row */}
         <div className="px-4">
-          <div className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} flex items-center`}>
+          <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center"}>
             {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
@@ -1285,7 +1285,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Event bar — Orders, Add Order, and Menu & Stock tabs */}
       {(activeTab==='orders'||activeTab==='add'||activeTab==='stock')&&(
         <div id="dashboard-event-bar" className="bg-slate-800 border-b border-slate-700 sticky top-[95px] z-30 relative">
-          <div className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} px-4 py-2 flex items-center gap-2`}>
+          <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-2 flex items-center gap-2"}>
             {activeEvent?(
               <>
                 <div className="flex-1 min-w-0">
@@ -1331,7 +1331,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      <main className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} px-4 py-4 pb-20`}>
+      <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-4 pb-20"}>
 
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
@@ -1379,7 +1379,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {activeEvent?.status==='open'&&<button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>}
               {/* Extra-wait: mobile/tablet keeps it here in the controls row; on lg+ it moves up beside
                   the stat boxes (above Prep) — see the summary row — so the full-width row is reclaimed. */}
-              {renderExtraWait(`flex-1 ${isNativeApp()?'md:hidden':'lg:hidden'}`)}
+              {renderExtraWait('flex-1 md:hidden')}
               {/* Mobile-only: Prep shares the extra-wait controls row so it no longer takes a full
                   line below the summary. On sm+ the summary keeps its own Prep button (desktop intact). */}
               <button onClick={()=>setShowPrepList(p=>!p)} className={`sm:hidden shrink-0 font-bold text-xs px-3 py-2.5 rounded-xl border transition-colors ${showPrepList?'bg-amber-100 text-amber-700 border-amber-300':'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
@@ -1399,8 +1399,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
               {/* Right-hand controls: on lg+ this becomes a stack with Add extra wait ABOVE Prep, beside
                   the stat boxes (the boxes flex-shrink to make room). On sm–lg it's just Prep (unchanged). */}
-              <div className={`hidden sm:flex sm:flex-col gap-1.5 sm:ml-2 sm:shrink-0 ${isNativeApp()?'md:w-40':'lg:w-40'}`}>
-                <div className={`hidden ${isNativeApp()?'md:block':'lg:block'}`}>{renderExtraWait('w-full')}</div>
+              <div className={"hidden sm:flex sm:flex-col gap-1.5 sm:ml-2 sm:shrink-0 md:w-40"}>
+                <div className={'hidden md:block'}>{renderExtraWait('w-full')}</div>
                 <button onClick={()=>setShowPrepList(p=>!p)} className={`font-bold text-xs px-2.5 py-2 rounded-xl transition-colors ${showPrepList?'bg-amber-100 text-amber-700':'bg-slate-100 text-slate-600 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
               </div>
             </div>

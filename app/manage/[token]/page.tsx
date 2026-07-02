@@ -25,7 +25,6 @@ import { Tooltip } from '@/components/ui/Tooltip'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
-import { isNativeApp } from '@/lib/native/device'   // native app = full-bleed; web keeps centered max-w
 import { useDragDrop } from '@/lib/useDragDrop'
 import { formatTime, getLocalDateInTz } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
@@ -389,7 +388,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       </AppHeader>
       {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
       <div className="bg-slate-900 border-b border-slate-700 sticky top-[51px] z-40 overflow-x-auto">
-        <div className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} px-4 flex gap-1 overflow-x-auto`}>
+        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
@@ -409,7 +408,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         </div>
       </div>
 
-      <main className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} px-4 py-6`}>
+      <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-6"}>
         {/* Events-to-approve banner — cross-tab signal. NOT shown on the Schedule tab itself: there the
             "Needs your approval" section (ScheduleTab) is the surface, so a banner there would double it. */}
         {showApprovalBanner && activeTab !== 'schedule' && (

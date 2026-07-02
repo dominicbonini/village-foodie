@@ -6,7 +6,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { isNativeApp } from '@/lib/native/device'   // native app = full-bleed; web keeps centered max-w
 
 interface AppHeaderProps {
   truckName: string | null
@@ -25,7 +24,7 @@ export default function AppHeader({ truckName, truckLogoUrl, subtitle, children 
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >{/* HEADER_BG — change here changes all operator headers */}
       <div className="px-4 py-3">
-        <div className={`${isNativeApp()?'w-full':'max-w-5xl mx-auto'} flex items-center justify-between relative`}>
+        <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-between relative"}>
 
           {/* Left: Village Foodie logo */}
           <Link href="/" className="shrink-0 z-10">
