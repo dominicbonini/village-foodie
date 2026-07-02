@@ -74,7 +74,12 @@ function VillageFoodieContent() {
   }, [activeWashedTrucks]);
 
   const verifiedMapEvents = useMemo(() => {
-    return mapEvents.filter(event => isEventVerified(event.truckName));
+    // Operator events are inherently verified (real trucks row, server-gated on show_on_vf/active/excluded).
+    // They are NOT in the discovery `trucks` directory that isEventVerified matches names against, so exempt
+    // them here. The map still only PINS events that have coords (MapView guards on venueLat/venueLong), so a
+    // coordless operator event (e.g. an unresolved venue) lists but simply doesn't get a marker — never a
+    // wrong-location pin. Discovery events keep the name gate (junk-scrape guard).
+    return mapEvents.filter(event => event.source === 'operator' || isEventVerified(event.truckName));
   }, [mapEvents, isEventVerified]);
 
   useEffect(() => {
@@ -276,7 +281,9 @@ function VillageFoodieContent() {
                       };
 
                       const activeEvents = dateEvents.filter(event => {
-                        if (!isEventVerified(event.truckName)) return false;
+                        // Operator events always LIST regardless of coords (they bypass the discovery-directory
+                        // name gate — see verifiedMapEvents). The map component pins only coord-having events.
+                        if (event.source !== 'operator' && !isEventVerified(event.truckName)) return false;
                         
                         if (!isToday) return true; 
                         const endMins = getMinutes((event as any).endTime);
