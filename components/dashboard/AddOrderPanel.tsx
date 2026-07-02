@@ -1064,6 +1064,9 @@ setItemModal({ item, modGroups, editCartKey })
       {categoryTabs}
       {selectedMenuCat && (
         <div className="flex flex-wrap gap-2">
+          {/* Content-width boxes (compact, sized to each item — no wasted space). NO reflow on selection:
+              the quantity is an ABSOLUTE corner badge (adds no width) and selecting only changes the colour,
+              so a box's width never changes when selected → neighbours can't shift. */}
           {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
             const stock = itemStocks.find(s => s.name === item.name)
             // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
@@ -1090,16 +1093,21 @@ setItemModal({ item, modGroups, editCartKey })
                 key={item.name}
                 onClick={() => !atStockLimit && addOrCustomise(item)}
                 disabled={atStockLimit}
-                className={`flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
+                className={`relative flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
                   atStockLimit ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
                   : totalInBasket > 0 ? 'bg-orange-600 border-orange-600 text-white active:scale-95'
                   : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-white active:scale-95'
                 }`}
               >
-                <div className="flex items-center gap-1.5">
-                  {totalInBasket > 0 && <span className={atStockLimit ? 'text-slate-500' : 'text-orange-200'}>{totalInBasket}×</span>}
-                  <span>{item.name}</span>
-                </div>
+                {/* Quantity as an ABSOLUTE corner badge — out of the text flow, so it never shifts the name or
+                    changes the box width. With the fixed-column grid, selecting an item changes ONLY the
+                    colour + this badge: the grid can't reflow, and the resting name sits hard-LEFT with no
+                    reserved indent. `pr-6` reserves the corner (constant in both states → no shift) so a long,
+                    wrapping name can't run under the badge. */}
+                {totalInBasket > 0 && (
+                  <span className={`absolute top-1.5 right-2 text-[11px] font-black tabular-nums ${atStockLimit ? 'text-slate-500' : 'text-white/90'}`}>{totalInBasket}×</span>
+                )}
+                <span className="pr-6 text-left leading-tight">{item.name}</span>
                 <div className="flex items-center gap-1.5">
                   <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
                   {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
