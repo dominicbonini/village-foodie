@@ -1221,7 +1221,7 @@ setItemModal({ item, modGroups, editCartKey })
   return (
     <>
       {/* ── iPad / desktop: two-column split ── */}
-      <div className="hidden lg:flex flex-1 min-h-0 -mx-4">
+      <div className="hidden md:flex flex-1 min-h-0 -mx-4">
 
         {/* LEFT — scrollable menu */}
         <div className="w-[58%] min-h-0 overflow-y-auto border-r border-slate-200 p-4">
@@ -1245,14 +1245,14 @@ setItemModal({ item, modGroups, editCartKey })
       </div>
 
       {/* ── Phone: single column ── */}
-      <div className="lg:hidden flex-1 min-h-0 overflow-y-auto pb-24">
+      <div className="md:hidden flex-1 min-h-0 overflow-y-auto pb-24">
         {eventBanner}
         {dealsButton}
         {truckMenu ? menuList : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
       </div>
 
       {/* ── Phone: sticky bottom bar ── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 z-20">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-3 flex items-center justify-between gap-3 z-20">
         <div>
           <p className="text-sm font-bold text-slate-900">£{manualTotal.toFixed(2)}</p>
           <p className="text-xs text-slate-400">{totalItemCount} item{totalItemCount !== 1 ? 's' : ''}</p>
@@ -1268,7 +1268,7 @@ setItemModal({ item, modGroups, editCartKey })
 
       {/* ── Phone: bottom sheet ── */}
       {showOrderSheet && (
-        <div className="lg:hidden fixed inset-0 z-50 flex items-end" onClick={() => setShowOrderSheet(false)}>
+        <div className="md:hidden fixed inset-0 z-50 flex items-end" onClick={() => setShowOrderSheet(false)}>
           <div className="absolute inset-0 bg-black/40" />
           <div className="relative w-full bg-white rounded-t-2xl shadow-2xl max-h-[85vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}>
