@@ -84,6 +84,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[authenticated,setAuthenticated]=useState(false)
   const[truck,setTruck]=useState<TruckData|null>(null)
   const[orders,setOrders]=useState<Order[]>([])
+  // Offline walk-ups optimistically added here (isolated from `orders`/fetchAll). Merged into the display
+  // list below; cleared on the reconnect drain (OfflineBanner onSynced), when the real orders arrive.
+  const[deviceQueuedOrders,setDeviceQueuedOrders]=useState<Order[]>([])
   // The active event's van "Show cooking step" preference — REUSED (no new toggle) to also expose the
   // order-READY step on the operator orders (solo) screen, alongside pub mode. Defaults off.
   const[showCookingStep,setShowCookingStep]=useState(false)
@@ -1153,9 +1156,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // event_id match as a client-side safety net during the brief window between an
   // event switch and its refetch. NULL-event orders are intentionally excluded
   // (the date+van fallback is dropped — it was the same-date multi-event bleed path).
+  // Offline-queued walk-ups (deviceQueuedOrders) are prepended for DISPLAY only — the isolated merge never
+  // touches `orders`/fetchAll; they clear on the reconnect drain once the synced order arrives from server.
   const eventOrders=activeEvent
-    ?orders.filter(o=>o.event_id===activeEvent.id)
-    :orders
+    ?[...deviceQueuedOrders,...orders].filter(o=>o.event_id===activeEvent.id)
+    :[...deviceQueuedOrders,...orders]
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   // Active in-progress states render as live cards (cooking/ready included — food done/
   // being made, still awaiting collection). otherOrders is a POSITIVE terminal filter, NOT
@@ -1223,7 +1228,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      <OfflineBanner />
+      <OfflineBanner onSynced={()=>{setDeviceQueuedOrders([]);fetchAll()}} />
       <DeviceSetupGate token={token} />
       {/* Header */}
       <AppHeader
@@ -1783,7 +1788,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             categoryOrder={categoryOrder}
             itemCategoryMap={itemCategoryMap}
             showToast={showToast}
-            onOrderPlaced={()=>{fetchAll();setActiveTab('orders')}}
+            onOrderPlaced={(optimistic?:Order)=>{if(optimistic){setDeviceQueuedOrders(p=>[optimistic,...p])}else{fetchAll()}setActiveTab('orders')}}
             onOpenEvent={openEvent}
             requestEventPickerOpen={pendingOpenEventPicker}
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}

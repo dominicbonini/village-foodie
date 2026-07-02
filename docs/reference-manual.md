@@ -2162,6 +2162,22 @@ A Capacitor wrapper (com.hatchgrab.app) around the existing Next.js app, pointin
 ### Stage C — Full offline with reconciliation (future)
 - Device UUIDs throughout, display IDs at sync time; slot capacity reconciliation; multi-device conflict resolution.
 
+### Offline Phase 1 outbox (BUILT V8.7 on `ipad-native-app`) — the order-integrity outbox + STORAGE decision
+The Phase-1 order-integrity outbox is BUILT + tsc-clean (undeployed; hardware-gated) — see memory
+`project_offline_order_handling_design`. Every order mutation goes through a GATE (`lib/native/orderGate.ts`):
+online → normal write; native + unreachable → durable local OUTBOX (`lib/native/outbox.ts`) + queued/optimistic
+state; reconnect → idempotent FIFO replay (dedupe on client-minted `order_key`; a `409` from the server's
+`expected_from` guard = customer-cancel-wins, flagged). Reachability = a debounced `/api/ping` health-check,
+NOT `navigator.onLine`. The old conflict-blind, fake-success SW mutation replay was removed (SW is read-cache
+only). No change-log needed. Wired: KDS + dashboard status actions + the walk-up CREATE (`AddOrderPanel`,
+optimistic add via an isolated `deviceQueuedOrders` list). Stock stays online-authoritative (Phase 2).
+> **STORAGE DECISION (CONFIRMED):** **Capacitor Preferences is the INTERIM store** — ships the
+> simulator-testable slice; survives a hard app-kill via the NSUserDefaults plist (per-op keys = atomic
+> writes). **Swap to SQLite (`@capacitor-community/sqlite`) AT THE DEVICE-HARDENING pass** for the provable
+> "never lose an order" guarantee (per-commit fsync; no sub-second flush window on the newest order). The
+> `outbox.ts` interface is storage-agnostic → a contained one-file swap (gate/drain/wiring unchanged). Add +
+> validate the native plugin on the REAL iPad together (the native app is hardware-gated regardless).
+
 ## Trial scope (V6.6)
 
 The trial runs on the WEB (tablet-browser), in villages with reliable coverage. The server-side safety nets (auto-close, offline auto-pause) are the protection during trial; native Stage A offline lands post-trial.

@@ -20,6 +20,9 @@ import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
+import { gatedAction, nextProvisionalId } from '@/lib/native/orderGate'
+import { newUuid } from '@/lib/native/outbox'
+import { isOnline } from '@/lib/native/reachability'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -86,7 +89,7 @@ interface AddOrderPanelProps {
   categoryOrder: string[]
   itemCategoryMap: Record<string, string>
   showToast: (msg: string, type?: 'success' | 'error') => void
-  onOrderPlaced: () => void
+  onOrderPlaced: (optimistic?: Order) => void
   onOpenEvent?: (eventId: string) => void
   requestEventPickerOpen?: boolean
   onEventPickerOpened?: () => void
@@ -622,7 +625,7 @@ setItemModal({ item, modGroups, editCartKey })
     // refetch below still refreshes the dots). FAILS OPEN — a flaky/missing check never stops a
     // manual order. skipFitCheck re-entry (the "use anyway" path + the stock-override re-entry)
     // avoids re-looping the prompt. Null/ASAP-unresolved slot → nothing to check.
-    if (!skipFitCheck && effectiveSlot && manualEvent) {
+    if (!skipFitCheck && effectiveSlot && manualEvent && isOnline()) {
       try {
         const p = new URLSearchParams({ date: manualEvent.event_date })
         if (manualEvent.start_time) p.set('start', manualEvent.start_time)
@@ -669,43 +672,64 @@ setItemModal({ item, modGroups, editCartKey })
 
     setLoading(true)
     try {
-      const res = await fetch('/api/dashboard/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token, pin, action: 'manual',
-          manualOrder: {
-            customerName: manualName,
-            customerPhone: manualPhone || null,
-            customerEmail: manualEmail || null,
-            slot: effectiveSlot,
-            items: manualItems,
-            deals: appliedDeals.map(d => ({
-              name: d.bundle.name,
-              slots: d.slots,
-              slotModifiers: d.slotModifiers,
-              slotNotes: d.slotNotes,
-              price: d.bundle.bundle_price,
-            })),
-            discountAmt: dealSavings,
-            total: manualTotal,
-            subtotal: manualItemsSubtotal,
-            notes: manualNotes || null,
-            event_id: manualEvent?.id || null,
-            event_date: manualEvent?.event_date || null,
-            override,
-          },
-        }),
+      // Client-mint the identity so an OFFLINE create is idempotent on replay (order_key) and carries a
+      // stable device-prefixed provisional number until the server assigns the real one.
+      const orderKey = newUuid()
+      const provisional = isOnline() ? '' : await nextProvisionalId()
+      const manualOrder = {
+        order_key: orderKey,
+        customerName: manualName,
+        customerPhone: manualPhone || null,
+        customerEmail: manualEmail || null,
+        slot: effectiveSlot,
+        items: manualItems,
+        deals: appliedDeals.map(d => ({
+          name: d.bundle.name,
+          slots: d.slots,
+          slotModifiers: d.slotModifiers,
+          slotNotes: d.slotNotes,
+          price: d.bundle.bundle_price,
+        })),
+        discountAmt: dealSavings,
+        total: manualTotal,
+        subtotal: manualItemsSubtotal,
+        notes: manualNotes || null,
+        event_id: manualEvent?.id || null,
+        event_date: manualEvent?.event_date || null,
+        override,
+      }
+      // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
+      const result = await gatedAction({
+        url: '/api/dashboard/action',
+        kind: 'create', order_key: orderKey, provisional_id: provisional, online: isOnline(),
+        body: { token, pin, action: 'manual', manualOrder },
       })
-      const data = await res.json()
+      // OFFLINE → durably queued. Optimistically add to the isolated device-queued list so the walk-up shows
+      // now (cleared on the reconnect drain; the merge NEVER touches fetchAll). Skip the online-only 409
+      // override flow + stock decrement below.
+      if (result.queued) {
+        const optimistic = {
+          id: provisional, order_key: orderKey,
+          customer_name: manualName || 'Walk-up', customer_phone: manualPhone || null, customer_email: manualEmail || null,
+          slot: effectiveSlot, event_date: manualEvent?.event_date ?? null, event_id: manualEvent?.id ?? null,
+          van_id: null, status: 'confirmed', items: manualItems, deals: manualOrder.deals,
+          subtotal: manualItemsSubtotal, total: manualTotal, notes: manualNotes || null,
+          order_type: 'collection', payment_status: 'unpaid', created_at: new Date().toISOString(),
+        } as unknown as Order
+        onOrderPlaced(optimistic)
+        showToast(`Order ${provisional} saved on this device — will sync when back online`, 'success')
+        resetManual(); setShowOrderSheet(false); setLoading(false)
+        return
+      }
+      const data = result.data ?? {}
       // Lock contention past the budget (rare): server did NOT insert — keep the order, retry.
-      if (res.status === 409 && data?.retry) {
+      if (result.status === 409 && data?.retry) {
         showToast('Busy right now — tap Confirm again in a moment', 'error')
         return
       }
       // Stock shortfall: the atomic check RAN and reported the real remaining. INFORMED override
       // — operator proceeds anyway (deliberate oversell) or cancels to edit. Not inserted yet.
-      if (res.status === 409 && data?.stock) {
+      if (result.status === 409 && data?.stock) {
         const shortItems: { name: string; remaining: number }[] = Array.isArray(data.items) ? data.items : []
         const detail = shortItems.length
           ? shortItems.map(s => `${s.name}: only ${s.remaining} left`).join('\n')
@@ -718,13 +742,13 @@ setItemModal({ item, modGroups, editCartKey })
       }
       // Option shared-pool shortfall (D2): a tracked modifier option ran out. SHARED POOL — overriding
       // oversells it across ALL dishes that use it (not just this one). Same override→re-submit shape.
-      if (res.status === 409 && data?.optionStock) {
+      if (result.status === 409 && data?.optionStock) {
         const opt = data.optionName || 'an option'
         const proceed = window.confirm(`Only a limited amount of "${opt}" left — and it's shared across ALL dishes that use it.\n\nProceed anyway (oversell)?\n\nOK = proceed anyway   ·   Cancel = edit the order`)
         if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel
       }
-      if (!res.ok) throw new Error(data.error)
+      if (!result.ok) throw new Error(data.error)
       showToast(`Order #${data.orderId} confirmed`)
       if (manualItems.length) {
         const categoryMap: Record<string, string> = {}
