@@ -206,6 +206,10 @@ export async function GET(req: NextRequest) {
           name,
           cuisine_type,
           logo_storage_path,
+          cover_image_path,
+          contact_phone,
+          website,
+          phone_is_whatsapp,
           slug,
           active,
           excluded,
@@ -224,6 +228,24 @@ export async function GET(req: NextRequest) {
     if (opResult.error) {
       console.error('[Discovery] Operator events query failed:', opResult.error.message)
     } else {
+      // READ-THROUGH (Option D): fetch each operator truck's LINKED discovery_trucks row once (keyed by
+      // hatchgrab_truck_id) so the mapping below can fill profile gaps (photo/logo/cuisine/contact) from the
+      // truck's own discovery record. NOTHING is copied/moved — the discovery row stays source-of-truth, so a
+      // plan change never loses data. Best-effort: on failure the map is empty and we fall back to
+      // operator-only fields (previous behaviour), never throw.
+      const opTruckIds = Array.from(new Set((opResult.data || []).map((e: any) => e.trucks?.id).filter(Boolean)))
+      const linkedByTruckId = new Map<string, any>()
+      if (opTruckIds.length) {
+        try {
+          const { data: linkedRows } = await supabase
+            .from('discovery_trucks')
+            .select('hatchgrab_truck_id, logo_url, photo_url, cuisine, phone, mobile, accepted_methods, website, menu_url')
+            .in('hatchgrab_truck_id', opTruckIds)
+          for (const r of linkedRows || []) if (r.hatchgrab_truck_id) linkedByTruckId.set(r.hatchgrab_truck_id, r)
+        } catch (err) {
+          console.error('[Discovery] operator read-through (linked discovery) fetch failed:', err)
+        }
+      }
       mappedOperatorEvents = (opResult.data || [])
         .filter((e: any) => {
           const truck = e.trucks as any
@@ -237,6 +259,14 @@ export async function GET(req: NextRequest) {
         })
         .map((e: any) => {
           const truck = e.trucks as any
+          // Read-through profile: operator's OWN fields always win; the linked discovery row only fills gaps.
+          const linked = (truck?.id && linkedByTruckId.get(truck.id)) || {}
+          const opPhone = truck?.contact_phone || null
+          const phoneNumber = opPhone || linked.phone || linked.mobile || null
+          // Keep the contact method consistent with WHOSE phone we used (operator's flag vs scraped methods).
+          const acceptedMethods = opPhone
+            ? (truck?.phone_is_whatsapp ? 'Whatsapp' : null)
+            : (linked.accepted_methods || null)
           return {
             id: e.id,
             date: toddmmyyyy(e.event_date),
@@ -252,22 +282,24 @@ export async function GET(req: NextRequest) {
             venuePhone: null,
             venueWebsite: null,
             venuePhoto: null,
-            type: truck?.cuisine_type || '',
-            phoneNumber: null,
+            type: truck?.cuisine_type || linked.cuisine || '',
+            phoneNumber,
             orderUrl: truck?.slug ? `${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order` : null,
             // Per-site order-link flags — the listing gates the Order CTA on these (HG=order_link_hg,
             // VF=order_link_vf). Defaults preserve today: HG on, VF off.
             orderLinkVf: truck?.order_link_vf ?? false,
             orderLinkHg: truck?.order_link_hg ?? true,
-            acceptedMethods: null,
-            websiteUrl: null,
-            menuUrl: null,
+            acceptedMethods,
+            websiteUrl: truck?.website || linked.website || null,
+            menuUrl: linked.menu_url || null,
             notes: e.notes || '',
             eventNotes: '',
             logoUrl: truck?.logo_storage_path
               ? `${supabaseUrl}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
-              : '',
-            foodPhotoUrl: '',
+              : formatImageUrl(linked.logo_url || null, 'logos'),
+            foodPhotoUrl: truck?.cover_image_path
+              ? `${supabaseUrl}/storage/v1/object/public/truck-media/${truck.cover_image_path}`
+              : formatImageUrl(linked.photo_url || null, 'photos'),
             source: 'operator' as const,
           }
         })
