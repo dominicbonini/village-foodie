@@ -5,7 +5,7 @@
 // through to /dashboard.
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { isNativeApp, getDeviceId } from '@/lib/native/device'
+import { isNativeApp, getDeviceId, getLastScreen } from '@/lib/native/device'
 import { hasNativeSession, getNativeAccessToken } from '@/lib/native/session'
 
 export default function AppLanding() {
@@ -36,10 +36,15 @@ export default function AppLanding() {
         const trucks = data.trucks || []
         const device = data.device || null
 
-        // This device is pinned to a truck → open its remembered screen (dashboard or KDS).
+        // This device is pinned to a truck → reopen the screen it was LAST on (restart-to-last-screen).
+        // Falls back to the device's configured default_screen the first launch after setup (nothing
+        // recorded yet).
         if (device) {
           const t = trucks.find(x => x.truck_id === device.truck_id)
-          if (t) return go(device.default_screen === 'kds' ? `/dashboard/${t.dashboard_token}/kds` : `/dashboard/${t.dashboard_token}`)
+          if (t) {
+            const screen = getLastScreen() ?? device.default_screen
+            return go(screen === 'kds' ? `/dashboard/${t.dashboard_token}/kds` : `/dashboard/${t.dashboard_token}`)
+          }
         }
         // Otherwise open the first permitted truck's dashboard.
         if (trucks.length) return go(`/dashboard/${trucks[0].dashboard_token}`)

@@ -7,6 +7,7 @@ import { Toggle } from '@/components/dashboard/OrderCard'
 import { isNativeApp } from '@/lib/native/device'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
+import { VanMenuChooser } from '@/components/native/VanMenuChooser'
 
 interface UserMenuProps {
   // Account/session control — the identity block shows the LOGGED-IN USER (name + email), NOT the
@@ -152,6 +153,11 @@ export default function UserMenu({
 
             {/* Divider after middle section — only if it rendered anything */}
             {hasMiddleSection && <div className="sm:hidden" />}
+
+            {/* Van chooser (native only) — always shows the CURRENT van; switchable when the truck has >1
+                van (any truck member may switch — permission note lives in VanMenuChooser). Self-guards on
+                isNativeApp + renders null until the van state loads. */}
+            <VanMenuChooser token={token} />
 
             {/* This device (native app only) — per-device/user config, NOT role-gated and NOT sm:hidden so
                 a staff member who can't reach Manage can still configure their own device on the iPad. */}

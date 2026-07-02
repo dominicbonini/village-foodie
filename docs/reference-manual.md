@@ -3925,7 +3925,51 @@ A genuine shadow-free / one-row-per-truck model is possible but requires, togeth
 
 `app/admin/page.tsx` `unifiedRows`: `discovery_trucks` rows with `hatchgrab_truck_id` set are filtered OUT of the unified table (they're an operator truck's linking-shadow, already represented by the operator row). Each truck now shows **once**. The shadow row **stays in the DB** (it carries the bridge + suppression). Pure (unlinked) discovery rows render as normal. Verified: Gusto shows once in admin; its VF display (the 3 confirmed `truck_events`) is completely unaffected (that path never reads the shadow). tsc-clean.
 
-# 33. Closing note
+# 33. Discovery / Visibility / Customer-Trucks-on-VF model + July 2026 data-integrity + DEPLOY-COUPLING LANDMINES
+
+Builds on **§32** (the shadow ↔ operator linking architecture — read it first; not duplicated here). §32 is the *why the shadow exists*; this section is the *end-to-end model, the July 2026 data-integrity work, and the strict deploy coupling for `ipad-native-app`*.
+
+## THE MODEL (final, verified state)
+
+- **Per-site visibility.** Both `trucks` and `discovery_trucks` carry `show_on_vf` + `show_on_hg` (+ `order_link_vf`/`order_link_hg` on `trucks`). VF renders `show_on_vf` events; HG renders `show_on_hg`. **`excluded` = master-hide** (overrides the per-site booleans on every surface).
+- **One truck conceptually, split architecturally.** Operator trucks live in `trucks`; scraped trucks in `discovery_trucks`. A **customer truck has BOTH**: a `trucks` operator row AND a linked `discovery_trucks` shadow (`hatchgrab_truck_id`). The shadow is **LOAD-BEARING (see §32)** — it carries the truck's scraped `discovery_events` and drives suppression. **Not redundant; do NOT delete** (Gusto's shadow has 35 linked events; deleting breaks the scrape→`truck_events` bridge + suppression, and the scraper re-mints it by name).
+- **Suppression (customer trucks show only confirmed events).** A customer's raw scraped `discovery_events` are suppressed; the public schedule is the operator's **CONFIRMED events** — `truck_events` (+ any confirmed `discovery_events`) with `status IN ('confirmed','open')`, today-or-future. Keyed via the shadow's `excluded`/link (§32).
+- **Customer-truck-on-VF rendering — the working chain, all keyed on `source==='operator'` (GENERAL, not per-truck):**
+  - **List** (`app/page.tsx:286`): operator events **bypass the `isEventVerified` name-gate** → always LIST, even without coords. Discovery events stay name-gated (junk-scrape guard). *(Commit `ee09cf5`.)* Note the gate's directory is built from `discovery_trucks WHERE show_on_vf=true`, so a customer's shadow (`show_on_vf=false`) is absent from it — which is *why* operator events had to bypass it.
+  - **Map** (`app/page.tsx:82`): operator events bypass the gate for LISTING; `MapView` pins only events with coords → a coordless operator event lists **without a pin** (e.g. Relay for Life). *(Commit `ee09cf5`.)*
+  - **Order-link** (`components/EventListCard.tsx`): gated **host + flag aware** — VF shows the in-app order link only if `order_link_vf`, HG only if `order_link_hg`. Previously gated on `orderUrl`-presence, ignoring the flags (an operator's HG order URL leaked onto VF). *(Fixed commit `2fc054f`.)*
+  - **Profile read-through (Option D, commit `666d100`):** the operator projection reads `logo/photo/cuisine/phone/methods` **through to the truck's linked `discovery_trucks` row** instead of hardcoding null — operator's own field wins, the shadow fills gaps. Delivers "one truck's data" with **NO data movement**, so a plan change loses nothing. Full `trucks`/`discovery_trucks` **table unification is a possible FUTURE tidy-up, deliberately NOT done** — read-through satisfies the "one truck, no data loss" requirement at ~zero risk (scoped: large in code surface — scraper+feed+events-merge+id-scheme — but small in data; the operator surface is only 3 trucks).
+- **Verified:** Gusto **and** RTF both render correctly on VF (3 events each, logo+photo via read-through, order-link gated off VF / on HG, confirmed-only). The fixes are **GENERAL** — every future customer truck is covered automatically (RTF needed zero RTF-specific code; it fell under the `source==='operator'` fixes the moment they existed).
+- **Plans/admin.** `Demo` plan mirrors Trial (tenant isolation deferred). **"Discovery"** is a presentation-derived plan label (NOT in the enum). Admin is one unified table (Active-with-confirm · Plan · VF/HG × Map/Ordering · Exclude? · Dashboard · Manage · Edit); operator-linked shadow rows are hidden so each truck shows **once** (§32).
+
+## DATA-INTEGRITY FINDINGS (July 2026) — one root cause: multiple discovery WRITE PATHS with inconsistent FK resolution
+
+Ingestion has **≥3 write paths, and only `inbound-schedule`'s SCRAPED path resolves FKs.** The others skip resolution:
+- **`run-scraper.js` Pass-A DB-mirror upsert** → skips `venue_id` (`findVenue`) → 456/868 events had no map coords.
+- **`inbound-schedule` `source='manual-entry'` (operator-confirmed) path** → skips venue matching + geocoding → **every operator-confirmed event arrives venue-less** (so customer trucks' confirmed events have no coords → list-only, no pin). **[BACKLOG — systemic geocoding fix, NOT built.]**
+
+Findings + fixes applied:
+- **Truck-FK orphans → missing logos + a VISIBILITY-GATE LEAK** (orphaned events bypassed `excluded`/`show_on_*`). Fixed by the endpoint name-fallback, **commit `3da0855`**.
+- **Venue-FK orphans → backfilled 406** (316 high-confidence + 90 low-confidence-approved; **5 suspicious skipped = wrong-town matches**). Script `scripts/backfill-venue-id.ts`.
+- **Duplicate `discovery_trucks` rows** (Pimp My Fish, Grab a Burger) → **MERGED** (keep the logo+photo row, re-point events, delete the dupe) + **normalized-name UNIQUE INDEX** + scraper `onConflict` → normalized key (prevents recurrence).
+- **Operator shadow-elimination migration was WRITTEN but NEVER RUN** — and would self-abort (35 linked events). Shadows **KEPT** (load-bearing, §32); the admin de-dupes by **hiding** them instead.
+
+BACKLOG (not built): the systemic geocoding fix (route manual-entry **and** Pass A through `findVenue`+geocode — **"Option A′"**); create ~13 real venues (incl. Relay for Life, for its pin); the **scraper date bug** (June-scraped events mis-dated as July — systemic, needs wider review); the truck-FK substring-match wrong-link bug; the graduate-discovery-truck→customer flow.
+
+## *** DEPLOY-COUPLING LANDMINES — READ BEFORE DEPLOYING `ipad-native-app` ***
+
+This branch's discovery changes have STRICT coupling. **Wrong order = a broken or LEAKING live public feed.**
+
+1. **Migrations run by hand on `ffphgwonshgxamtvefcv`, IN ORDER, BEFORE deploying code** (code reads the new columns; deploying first fails closed / leaks): `20260702` (visibility booleans) → `20260703` (excluded). **[ALREADY RUN on the current DB.]** The **shadow-elimination migration is NOT run and must NOT be** (it self-aborts; shadows are load-bearing).
+2. **`ee31dbf` (visibility gate change) + `3da0855` (orphan name-fallback) MUST deploy TOGETHER** — the gate without the fallback drops **441 orphaned events** off the live site.
+3. **Already applied DIRECTLY to the DB** (branch code assumes this state): the venue backfill (406), the PMF/GAB dedupe + normalized-name unique index.
+4. **Gusto/RTF `show_on_vf=true` are DELIBERATE post-deploy toggles** — already set on the current DB; confirm on prod.
+5. **The customer-truck-on-VF commits (`ee09cf5` list/map bypass, `666d100` read-through, `2fc054f` order-link gate) surface Gusto + RTF.** Until deployed, **both are name-gated out** on live villagefoodie.co.uk.
+6. **ON-DEPLOY smoke-test:** (a) app routes both-paths (web cookie + native Bearer); (b) VF/HG feed — the 37 excluded stay hidden, orphan events render via the fallback, customer trucks show confirmed-only with correct order-link gating; (c) Gusto + RTF appear on VF with logo/photo, **no** VF order link, order link on HG.
+
+**LESSON — "reported done ≠ actually done" bit us repeatedly this session** (a shadow that "was deleted" but wasn't; a "bug" that was a stale bundle; events "not surfacing" that were byte-parallel in the feed). Before diagnosing "**X doesn't show**", FIRST confirm you're viewing the **deployed/current** code (hard-refresh; check the surface/URL); then confirm the DB state with a direct query; only then chase logic.
+
+# 34. Closing note
 
 This manual is living documentation. Update it whenever a new rule is established, a feature behaviour is decided, a DRY violation is identified and fixed, a plan tier feature changes, or a coding convention shifts.
 

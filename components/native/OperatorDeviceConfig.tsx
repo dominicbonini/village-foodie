@@ -71,7 +71,7 @@ export function DeviceSetupGate({ token }: { token: string }) {
       <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-5 flex flex-col gap-4">
         <div>
           <h2 className="text-base font-black text-slate-900">Set up this device</h2>
-          <p className="text-xs text-slate-500 mt-0.5">These apply to <strong>this device only</strong> — other devices are set separately.</p>
+          <p className="text-xs text-slate-500 mt-0.5">One-time setup for <strong>this iPad</strong>: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → &ldquo;This device&rdquo;.</p>
         </div>
         <div>
           <p className="text-sm font-bold text-slate-800 mb-1.5">Which screen should this device open to?</p>
@@ -94,7 +94,7 @@ export function DeviceSetupGate({ token }: { token: string }) {
             </select>
           </div>
         )}
-        {vans.length === 0 && <p className="text-xs text-amber-700 font-semibold">Assign a van to this truck first, then set up this device.</p>}
+        {vans.length === 0 && <p className="text-xs text-amber-700 font-semibold">This truck has no active van yet — create or activate one first (Settings → Vans), then set up this device.</p>}
         <button type="button" disabled={!canSave || saving} onClick={onSave}
           className="bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-40">
           {saving ? 'Saving…' : 'Continue'}

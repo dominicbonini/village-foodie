@@ -58,3 +58,25 @@ export async function saveDeviceConfig(
     return data.device ?? null
   } catch { return null }
 }
+
+// ── Last-viewed screen (restart-to-last-screen) ──────────────────────────────────────────────────────
+// Per-device memory of the screen the operator was last on (Dashboard vs KDS), so a cold-launch reopens
+// THERE rather than the configured default. Stored in the same localStorage the device_id uses (survives
+// cold-launch in the shell's WKWebView). The DB `van_devices.default_screen` remains the FALLBACK (used the
+// first launch after setup, before any screen has been recorded).
+const LAST_SCREEN_KEY = 'hg_last_screen'
+
+/** Record the screen this device is currently on. Called by the dashboard/KDS pages (native). */
+export function setLastScreen(screen: 'dashboard' | 'kds'): void {
+  if (typeof window === 'undefined') return
+  try { localStorage.setItem(LAST_SCREEN_KEY, screen) } catch { /* storage disabled — fall back to default */ }
+}
+
+/** The screen this device was last on, or null if none recorded yet (→ caller falls back to default_screen). */
+export function getLastScreen(): 'dashboard' | 'kds' | null {
+  if (typeof window === 'undefined') return null
+  try {
+    const v = localStorage.getItem(LAST_SCREEN_KEY)
+    return v === 'kds' || v === 'dashboard' ? v : null
+  } catch { return null }
+}
