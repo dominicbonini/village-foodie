@@ -47,12 +47,13 @@ import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, buildStatusOverlay } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
+import { usePendingStatusOps } from '@/lib/native/usePendingStatusOps'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
@@ -96,6 +97,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Offline walk-ups optimistically added here (isolated from `orders`/fetchAll). Merged into the display
   // list below; cleared on the reconnect drain (OfflineBanner onSynced), when the real orders arrive.
   const[deviceQueuedOrders,setDeviceQueuedOrders]=useState<Order[]>([])
+  // FIX 2 — durable offline pending-status overlay. Optimistic status advances live in the outbox (not a
+  // one-shot setOrders patch a stale poll would wipe); applied at render over the merged orders, cleared on
+  // drain. Web/non-native → empty → no-op (online FIX-1 path untouched). refreshPendingStatus() is called
+  // immediately after queueing an offline status op + on reconnect drain (onSynced) for instant/seamless UX.
+  const{ops:pendingStatusOps,refresh:refreshPendingStatus}=usePendingStatusOps()
   // The active event's van "Show cooking step" preference — REUSED (no new toggle) to also expose the
   // order-READY step on the operator orders (solo) screen, alongside pub mode. Defaults off.
   const[showCookingStep,setShowCookingStep]=useState(false)
@@ -861,20 +867,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
       if(result.queued){
-        // OFFLINE: advance the local order status optimistically so the UI steps forward EXACTLY like online
-        // (online advances via fetchAll's round-trip; offline there's none, so mirror the server's action→
-        // status map here). Sync is deferred to the outbox drain. Patch whichever list holds this order_key:
-        // fetched orders (setOrders) OR an offline-created order (setDeviceQueuedOrders). fetchAll on reconnect
-        // is authoritative — it overwrites this optimistic state, so no double-advance.
+        // OFFLINE: the optimistic advance is now a DURABLE render-time overlay derived from the outbox (FIX 2),
+        // NOT a one-shot setOrders patch (a stale poll / SW-cache read would wipe that — the revert bug). We
+        // just refresh the overlay so the card advances instantly; it outlives reads and auto-clears on drain.
         const q=orders.find(o=>o.order_key===orderKey)??deviceQueuedOrders.find(o=>o.order_key===orderKey)
-        const sp=offlineStatusPatch(action,q as any)  // SHARED with the KDS → identical offline behaviour
-        if(sp){
-          const patch=(list:Order[])=>list.map(o=>o.order_key===orderKey?({...o,...sp} as Order):o)
-          setOrders(patch); setDeviceQueuedOrders(patch)
-          // Mirror the online prep-board auto-clear on ready/collected.
-          if((action==='ready'||action==='collected')&&q){
-            setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
-          }
+        refreshPendingStatus()
+        // Mirror the online prep-board auto-clear on ready/collected.
+        if((action==='ready'||action==='collected')&&q){
+          setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
         }
         setActionLoading(null);showToast(`Order #${q?.id??''} saved on this device — will sync when back online`);return
       }
@@ -1069,20 +1069,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }catch(err:any){showToast(err.message||'Failed','error')}
   }
 
-  const confirmCancelOrder=()=>{
+  const confirmCancelOrder=async()=>{
     if(!cancellingOrder) return
     const orderKey=cancellingOrder.order_key
     const displayId=cancellingOrder.id
     const fullReason=[cancelReason,cancelNote].filter(Boolean).join(' — ')
     setShowCancelModal(false);setCancellingOrder(null);setCancelReason('');setCancelNote('')
     setActionLoading(`cancel-${orderKey}`)
-    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null})})
-      .then(r=>r.json()).then(()=>{showToast(`Order #${displayId} cancelled`);fetchAll()})
-      .catch(()=>showToast('Failed to cancel','error'))
-      .finally(()=>setActionLoading(null))
+    try{
+      // Through the offline GATE (FIX 2): online → normal write; offline → durable outbox + queued. The
+      // reason rides IN the body so the reconnect replay is faithful; expected_from → 409-to-conflict if it raced.
+      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'cancel',order_key:orderKey,cancellationReason:fullReason||null},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
+      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved on this device — will sync when back online`);return}
+      if(!result.ok)throw new Error((result.data as any)?.error)
+      showToast(`Order #${displayId} cancelled`);await fetchAll()
+    }catch{showToast('Failed to cancel','error')}finally{setActionLoading(null)}
   }
 
-  const confirmRejectOrder=()=>{
+  const confirmRejectOrder=async()=>{
     if(!rejectingOrder) return
     const note=rejectNote.trim()
     // REQUIRED reason: a concrete preset → preset (+ optional note); "Other" or no preset → the note
@@ -1093,10 +1097,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const displayId=rejectingOrder.id
     setShowRejectModal(false);setRejectingOrder(null);setRejectReason('');setRejectNote('')
     setActionLoading(`reject-${orderKey}`)
-    fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'reject',order_key:orderKey,rejectionReason:fullReason})})
-      .then(r=>r.json()).then(()=>{showToast(`Order #${displayId} rejected`);fetchAll()})
-      .catch(()=>showToast('Failed to reject','error'))
-      .finally(()=>setActionLoading(null))
+    try{
+      // Offline GATE (FIX 2) — reason in the body for faithful replay; expected_from → conflict if it raced.
+      const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'reject',order_key:orderKey,rejectionReason:fullReason},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
+      if(result.queued){refreshPendingStatus();showToast(`Order #${displayId} saved on this device — will sync when back online`);return}
+      if(!result.ok)throw new Error((result.data as any)?.error)
+      showToast(`Order #${displayId} rejected`);await fetchAll()
+    }catch{showToast('Failed to reject','error')}finally{setActionLoading(null)}
   }
 
   const cancelEventFromMenu=async(eventId:string)=>{
@@ -1267,9 +1274,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // clear (which also dropped un-synced optimistic orders).
   const syncedKeys=new Set(orders.map(o=>o.order_key))
   const pendingQueued=deviceQueuedOrders.filter(o=>!syncedKeys.has(o.order_key))
-  const eventOrders=activeEvent
-    ?[...pendingQueued,...orders].filter(o=>o.event_id===activeEvent.id)
+  // FIX 2 — apply the durable offline status overlay over the merged orders BEFORE the column split, so an
+  // offline-advanced (or offline-cancelled) card moves to the right section and a stale read can't wipe it.
+  // Empty overlay (online / no pending ops) → identity map, zero behaviour change.
+  const statusOverlay=buildStatusOverlay([...pendingQueued,...orders],pendingStatusOps)
+  const overlayed=statusOverlay.size
+    ?[...pendingQueued,...orders].map(o=>{const ov=statusOverlay.get(o.order_key);return ov?({...o,...ov} as Order):o})
     :[...pendingQueued,...orders]
+  const eventOrders=activeEvent
+    ?overlayed.filter(o=>o.event_id===activeEvent.id)
+    :overlayed
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   // Active in-progress states render as live cards (cooking/ready included — food done/
   // being made, still awaiting collection). otherOrders is a POSITIVE terminal filter, NOT
@@ -1337,7 +1351,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      <OfflineBanner onSynced={()=>{fetchAll()}} />
+      <OfflineBanner onSynced={()=>{fetchAll();refreshPendingStatus()}} />
       {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
           the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
       <CapacityBreachBanner breaches={capacityBreaches} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />

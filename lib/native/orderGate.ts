@@ -21,8 +21,10 @@ const MAX_ATTEMPTS = 5
 // the operator advanced it offline, the server returns 409 and the outbox flags it — never overwrites.
 export const STATUS_REPLAY_EXPECTED_FROM = ['pending', 'confirmed', 'modified', 'cooking', 'ready', 'collected']
 
-/** action→status map for an OFFLINE optimistic status advance — mirrors what the server status handler sets. */
-const OFFLINE_STATUS_MAP: Record<string, string> = { confirm: 'confirmed', cooking: 'cooking', ready: 'ready', collected: 'collected' }
+/** action→status map for an OFFLINE optimistic status advance — mirrors what the server status handler sets.
+ *  cancel/reject included so an offline cancel/reject shows its TERMINAL state immediately (they now route
+ *  through the gate too — FIX 2 / offline-cancel queueing). */
+const OFFLINE_STATUS_MAP: Record<string, string> = { confirm: 'confirmed', cooking: 'cooking', ready: 'ready', collected: 'collected', cancel: 'cancelled', reject: 'rejected' }
 
 /**
  * Compute the optimistic local order-status change for an offline-QUEUED status action, so the UI advances
@@ -40,6 +42,44 @@ export function offlineStatusPatch(
   if (!next) return null
   if (action === 'collected') return { status: next, status_before_collected: order?.status ?? null }
   return { status: next }
+}
+
+// ── FIX 2 — durable pending-status OVERLAY (offline) ────────────────────────────────────────────────
+// The optimistic advance for an offline status change must OUTLIVE stale reads (the 60s poll, the SW cache
+// re-serving a pre-change /api/dashboard snapshot) — a one-shot setOrders patch gets wiped. So instead of
+// patching order state, we derive the optimistic status at RENDER from the durable outbox: the pending
+// 'status' ops ARE the source of truth. It auto-clears when an op drains (reconnect), at which point the
+// merge (FIX 1) accepts the server's newer updated_at → seamless handoff.
+
+export interface PendingStatusOp { order_key: string; action: string; seq: number }
+
+/** The pending (non-conflict) 'status' ops, oldest-first — the input to buildStatusOverlay. Reads Preferences. */
+export async function listPendingStatusOps(): Promise<PendingStatusOp[]> {
+  const ops = await listOps()
+  return ops
+    .filter(o => o.kind === 'status' && o.state !== 'conflict')
+    .map(o => ({ order_key: o.order_key, action: String((o.body as { action?: unknown } | undefined)?.action ?? ''), seq: o.seq }))
+    .filter(o => o.action)
+    .sort((a, b) => a.seq - b.seq)
+}
+
+/** Fold the pending status ops (seq order) over the CURRENT orders to produce an optimistic status per
+ *  order_key. Applied at render OVER the merged orders (before the column split) on both surfaces, so an
+ *  offline-advanced card moves columns and no read can wipe it. Pure — orders provide the fold base
+ *  (offlineStatusPatch resolves 'collected' status_before_collected / 'undo_collected' target from it). */
+export function buildStatusOverlay(
+  orders: Array<{ order_key: string; status?: string; status_before_collected?: string | null }>,
+  ops: PendingStatusOp[],
+): Map<string, { status: string; status_before_collected?: string | null }> {
+  const overlay = new Map<string, { status: string; status_before_collected?: string | null }>()
+  if (!ops.length) return overlay
+  const baseByKey = new Map(orders.map(o => [o.order_key, { status: o.status, status_before_collected: o.status_before_collected }]))
+  for (const op of ops) {
+    const base = overlay.get(op.order_key) ?? baseByKey.get(op.order_key)   // fold sequential ops on the same order
+    const sp = offlineStatusPatch(op.action, base)
+    if (sp) overlay.set(op.order_key, sp)
+  }
+  return overlay
 }
 
 export interface GateResult {

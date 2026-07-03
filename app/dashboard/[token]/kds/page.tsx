@@ -21,9 +21,10 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
 import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, buildStatusOverlay } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
+import { usePendingStatusOps } from '@/lib/native/usePendingStatusOps'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
@@ -78,6 +79,9 @@ export default function KdsPage() {
   const [isOffline, setIsOffline] = useState(false)
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
   const [pendingSync, setPendingSync] = useState<Set<string>>(new Set())
+  // FIX 2 — durable offline pending-status overlay (shared with the dashboard). Optimistic advances live in
+  // the outbox, applied at render over the merged orders, cleared on drain. Web/non-native → empty → no-op.
+  const { ops: pendingStatusOps, refresh: refreshPendingStatus } = usePendingStatusOps()
   const [todayEvents, setTodayEvents] = useState<TruckEvent[]>([])
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
   const [showEventMenu, setShowEventMenu] = useState(false)
@@ -373,13 +377,11 @@ export default function KdsPage() {
       if (result.queued) {
         // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the email or show the
         // undo toast (a phantom email must not fire 4s later for an uncommitted ready).
-        // Advance the local order status OPTIMISTICALLY so the KDS board moves the card forward immediately,
-        // EXACTLY like online (online advances via fetchAll's round-trip; offline there's none). Uses the
-        // SAME shared map as the dashboard (offlineStatusPatch) so the two surfaces never diverge. fetchAll on
-        // reconnect is authoritative → no double-advance. (KDS has no prep-board struck state to clear.)
-        const q = orders.find(o => o.order_key === orderKey)
-        const sp = offlineStatusPatch(action, q as any)
-        if (sp) setOrders(prev => prev.map(o => o.order_key === orderKey ? ({ ...o, ...sp } as Order) : o))
+        // Advance the KDS board OPTIMISTICALLY via the DURABLE outbox overlay (FIX 2), NOT a one-shot
+        // setOrders patch (a stale poll / SW-cache read would wipe that — the revert bug). refreshPendingStatus
+        // reflects the just-queued op instantly; the overlay outlives reads and auto-clears on drain. Shared
+        // with the dashboard (buildStatusOverlay/offlineStatusPatch) so the two surfaces never diverge.
+        refreshPendingStatus()
         setPendingSyncCount(c => c + 1)
         setPendingSync(prev => new Set(prev).add(orderKey))
         setActionLoading(null)
@@ -560,8 +562,15 @@ export default function KdsPage() {
     : 'window'
   const activeLayout = layoutOverride ?? displayMode
 
+  // FIX 2 — apply the durable offline status overlay over the merged orders BEFORE the view split, so an
+  // offline-advanced card moves columns and a stale read can't wipe it. Empty overlay (online) → identity.
+  const kdsStatusOverlay = buildStatusOverlay(orders, pendingStatusOps)
+  const overlayedOrders = kdsStatusOverlay.size
+    ? orders.map(o => { const ov = kdsStatusOverlay.get(o.order_key); return ov ? ({ ...o, ...ov } as Order) : o })
+    : orders
+
   // Base: exclude terminal statuses for all views
-  const activeOrders = orders.filter(o =>
+  const activeOrders = overlayedOrders.filter(o =>
     !['collected', 'cancelled', 'rejected'].includes(o.status)
   )
 
@@ -588,7 +597,7 @@ export default function KdsPage() {
     : 0
 
   // Done orders: last 5 collected (window view only)
-  const doneOrders = orders
+  const doneOrders = overlayedOrders
     .filter(o => o.status === 'collected')
     .slice(0, 5)
 
@@ -641,7 +650,7 @@ export default function KdsPage() {
     <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden">
 
       {/* Offline warning + sync state (native only); also drives reachability + the outbox drain on reconnect. */}
-      <OfflineBanner onSynced={() => fetchAllRef.current()} />
+      <OfflineBanner onSynced={() => { fetchAllRef.current(); refreshPendingStatus() }} />
 
       {/* App-lock overlay (per-device biometric/passcode) — no-op on web / when off. */}
       <AppLockGate />
