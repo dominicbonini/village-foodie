@@ -110,24 +110,29 @@ export async function drainOutbox(): Promise<DrainResult> {
   const ops = (await listOps()).filter(o => o.state !== 'conflict')
   let synced = 0, conflicts = 0
   for (const op of ops) {
-    op.state = 'syncing'; op.attempts += 1; await saveOp(op)
+    // COPY-ON-WRITE: the op is deserialized from storage and can be FROZEN/readonly in the runtime (observed
+    // on-device: mutating it throws "Attempted to assign to readonly property", crashing the whole drain on
+    // the first op → nothing ever syncs/removes → the "Syncing" banner sticks). NEVER mutate op in place;
+    // write a NEW object each time and persist that. Also cleaner: no aliasing of the persisted snapshot.
+    const syncing = { ...op, state: 'syncing' as const, attempts: op.attempts + 1 }
+    await saveOp(syncing)
     let res: Response
     try {
-      res = await post(op.url, op.body)
+      res = await post(syncing.url, syncing.body)
     } catch {
-      // Lost connectivity mid-drain → stop; this + later ops stay 'pending' (we reset state) for next time.
-      op.state = 'pending'; await saveOp(op)
+      // Lost connectivity mid-drain → stop; this + later ops stay 'pending' for next time.
+      await saveOp({ ...syncing, state: 'pending' })
       break
     }
     if (res.ok) {
-      await removeOp(op.op_id); synced++
+      await removeOp(syncing.op_id); synced++
     } else if (res.status === 409) {
       // Genuine conflict (e.g. the order was cancelled online while advanced offline) → flag, don't overwrite.
-      op.state = 'conflict'; await saveOp(op); conflicts++
-    } else if (op.attempts >= MAX_ATTEMPTS) {
-      op.state = 'conflict'; await saveOp(op); conflicts++   // give up auto-retry → surface for review
+      await saveOp({ ...syncing, state: 'conflict' }); conflicts++
+    } else if (syncing.attempts >= MAX_ATTEMPTS) {
+      await saveOp({ ...syncing, state: 'conflict' }); conflicts++   // give up auto-retry → surface for review
     } else {
-      op.state = 'pending'; await saveOp(op)                 // transient server error → retry next drain
+      await saveOp({ ...syncing, state: 'pending' })                 // transient server error → retry next drain
     }
   }
   const remaining = (await listOps()).filter(o => o.state !== 'conflict').length
