@@ -8,7 +8,7 @@
 //   • Persists to disk and survives force-quit + device restart (it is NOT WebKit "website data", so — unlike
 //     WKWebView IndexedDB/localStorage — it is never evicted under WebKit storage pressure).
 //   • Already a project dependency (session/device/app-lock use it) → no new native plugin to add + cap-sync.
-//   • We write ONE Preferences key per op (`hg_outbox_<op_id>`) so every enqueue is a single atomic set — a
+//   • We write ONE Preferences key per op (`hg_outbox_op_<op_id>`) so every enqueue is a single atomic set — a
 //     hard-kill mid-write can't corrupt the whole queue (no read-modify-write of a shared blob).
 //   Caveat (documented): NSUserDefaults flushes writes to disk on the OS's schedule, so a force-quit in the
 //   sub-second window after the newest enqueue *could* drop only that last write. For Phase 1 this is the
@@ -17,9 +17,32 @@
 import { Preferences } from '@capacitor/preferences'
 import { getDeviceId } from '@/lib/native/device'
 
-const KEY_PREFIX = 'hg_outbox_'
+// OP-KEY PREFIX — MUST NOT be a prefix of any COUNTER key. The old prefix was 'hg_outbox_', which is
+// itself a prefix of the counter 'hg_outbox_seq' → startsWith('hg_outbox_') wrongly enumerated the
+// counter as an op (its value "1" JSON-parses to the number 1, a shapeless "op" with no order_key), so
+// countPendingOps returned a PHANTOM 1 and the inspector showed a "malformed — missing order_key" entry
+// even with ZERO real ops. The '_op_' segment fixes it structurally: 'hg_outbox_seq' does NOT start with
+// 'hg_outbox_op_'. (Bump left as-is on any old-prefix data — there were no real ops to migrate.)
+const KEY_PREFIX = 'hg_outbox_op_'
 const SEQ_KEY = 'hg_outbox_seq'          // monotonic per-device counter (ordering, clock-independent)
 const DEVICE_LETTER_KEY = 'hg_device_letter'
+
+// The Preferences keys this module owns that are NOT ops (counters / device state). Enumeration
+// explicitly excludes these as defense-in-depth, so even a future counter sharing the op prefix by
+// mistake can never be listed/counted as an op.
+const NON_OP_KEYS = new Set<string>([SEQ_KEY, DEVICE_LETTER_KEY])
+
+/** True only for an actual op key — the op prefix AND not a known counter/state key. */
+function isOpKey(k: string): boolean {
+  return k.startsWith(KEY_PREFIX) && !NON_OP_KEYS.has(k)
+}
+
+/** A parsed Preferences value is a real op only if it's an object carrying the op identity fields.
+ *  Guards against a stray primitive (e.g. the counter's "1") ever being treated as an op. */
+function isOpShape(v: unknown): v is OutboxOp {
+  return !!v && typeof v === 'object' && typeof (v as OutboxOp).op_id === 'string'
+    && typeof (v as OutboxOp).order_key === 'string'
+}
 
 export type OutboxKind = 'create' | 'status' | 'edit'
 
@@ -94,17 +117,20 @@ export async function listOps(): Promise<OutboxOp[]> {
   const { keys } = await Preferences.keys()
   const ops: OutboxOp[] = []
   for (const k of keys) {
-    if (!k.startsWith(KEY_PREFIX)) continue
+    if (!isOpKey(k)) continue
     const v = (await Preferences.get({ key: k })).value
     if (!v) continue
-    try { ops.push(JSON.parse(v) as OutboxOp) } catch { /* skip a corrupt entry, never throw */ }
+    try {
+      const parsed = JSON.parse(v)
+      if (isOpShape(parsed)) ops.push(parsed)   // shape guard: a non-op value (e.g. a counter) is never an op
+    } catch { /* skip a corrupt entry, never throw */ }
   }
   return ops.sort((a, b) => a.seq - b.seq)
 }
 
 export async function countOps(): Promise<number> {
   const { keys } = await Preferences.keys()
-  return keys.filter(k => k.startsWith(KEY_PREFIX)).length
+  return keys.filter(isOpKey).length
 }
 
 /** Count of ACTIONABLE ops (pending/syncing) — EXCLUDES 'conflict' ops. The banner uses THIS (not countOps)
@@ -133,7 +159,7 @@ export async function removeOp(op_id: string): Promise<void> {
  *  so clearing only drops the local bookkeeping; used to clear poison ops from prior buggy-code testing. */
 export async function clearAllOps(): Promise<void> {
   const { keys } = await Preferences.keys()
-  for (const k of keys) if (k.startsWith(KEY_PREFIX)) await Preferences.remove({ key: k })
+  for (const k of keys) if (isOpKey(k)) await Preferences.remove({ key: k })   // ops only — never the counters
 }
 
 /** Persist a mutated op (e.g. attempts++, state → 'syncing' | 'conflict'). */
