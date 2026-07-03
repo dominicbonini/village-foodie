@@ -2153,6 +2153,25 @@ Food trucks operate in villages with patchy 4G. A web-only KDS that loses connec
 
 A Capacitor wrapper (com.hatchgrab.app) around the existing Next.js app, pointing at https://www.hatchgrab.com. Native code only for: offline detection, local order storage, background sound, screen wake, and Bluetooth printer (Max, post-trial). The Next.js UI is reused unchanged.
 
+## ⚠️ CRITICAL — loading fresh JS on the native app (the "device is running cached code" trap)
+
+The Capacitor app loads its web bundle **REMOTELY** from the dev server (`capacitor.config` `server.url` = `http://localhost:3000/app` in dev, `https://www.hatchgrab.com` in prod). A native rebuild / `cap sync` / Xcode Run does **NOT** refetch the JS — the **WKWebView serves a CACHED bundle**. So committing a JS fix and native-rebuilding leaves the **OLD code running**, and the fix appears not to take effect.
+
+- **To load fresh JS:** **DELETE the app from the simulator/device and reinstall** (wipes the WebView cache AND Capacitor Preferences), or hard-reload the WebView.
+- **`cap sync` is only for native plugin/config changes, not JS.** Don't rely on it (or an Xcode rebuild) to pick up a code fix.
+- **Deleting the app also wipes Preferences = clears the outbox** — useful for a clean offline-test slate (and it's the guaranteed way to clear a stuck/poison outbox op).
+
+**This "the device is running cached code" issue was the root cause of repeated "my fix doesn't work" confusion.** ALWAYS verify the running bundle before re-diagnosing a "persisting" bug — e.g. a temp `console.log` in the changed path, checked via Safari Web Inspector on the simulator's WebView. If the log doesn't appear on cold launch, you're on stale code — stop diagnosing and reinstall. (Same family as the §-history lessons "fix in repo ≠ deployed" and "migration written ≠ run": the gap between repo state and what's actually running.)
+
+## ⚠️ TWO offline-queue layers — the service-worker IndexedDB relic (a "syncing" count that survives Clear + reinstall)
+
+There are **two separate offline persistence layers**, and a stuck "N order(s) syncing" can live in *either* — don't assume the one you're looking at:
+
+1. **Capacitor Preferences outbox** (`lib/native/outbox.ts`, keys `hg_outbox_*` in NSUserDefaults). This is what the dev inspector reads, what `clearAllOps` (the inspector's **Clear**) wipes, and what an **app delete/reinstall wipes**. It is NOT WebKit website data.
+2. **The service worker's IndexedDB queue** (`public/sw.js` → DB **`vf-offline`**, store **`vf-mutation-queue`**, surfaced via `GET_QUEUE_COUNT`). This is **WebKit website data** — a *different* store that `clearAllOps` never touches and that **an app delete does NOT reliably wipe** (unlike Preferences). The current `sw.js` is **read-cache ONLY** (the legacy `enqueue`/`syncMutations`/`'sync'` path is inert — nothing enqueues now), but entries written by the **buggy pre-fix SW** (which DID intercept POSTs and enqueue them) still sit in IndexedDB. They never drain — `syncMutations` runs only on a Background-Sync `'sync'` event, which **iOS/WKWebView does not support** — so the count stays > 0 forever = a phantom "N syncing".
+
+**Diagnostic rule:** if a "syncing" relic **survives both Clear AND reinstall**, it is NOT the Preferences outbox — check the **service-worker IndexedDB** layer (Web Inspector → Storage → IndexedDB → `vf-offline / vf-mutation-queue`) and the **registered SW** (service workers are sticky — an old registered `sw.js` keeps controlling until a byte-different one activates *after all clients close*, which a single-window Capacitor app rarely does → cached-code compounds this). **Purge = clear WebKit data**: unregister the SW + delete the `vf-offline` IndexedDB (Web Inspector), or **Simulator → Erase All Content and Settings**. A Preferences wipe / app delete alone will not clear it. (Real incident: the "1 order syncing" relic tied to an order readied offline with the buggy code — the order was later deleted server-side, yet the count persisted, because its `ready` POST was stuck in `vf-mutation-queue`, not the outbox.)
+
 ## Three-stage offline progression
 
 ### Stage A — Read-only offline cache (post-trial as of V6.6)
