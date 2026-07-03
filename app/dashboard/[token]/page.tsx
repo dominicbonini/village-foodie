@@ -50,6 +50,8 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
+import type { CapacityBreach } from '@/lib/capacity-breach'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
@@ -157,6 +159,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // last-synced state while offline. Unused online.
   const[productionSlotUnits,setProductionSlotUnits]=useState<Record<string,Record<string,number>>>({})
   const[serverCatConfigs,setServerCatConfigs]=useState<Record<string,CatConfig>>({})
+  // Piece 2 — server-detected over-capacity slots (reconnect flag). Dismiss keyed to the breach set
+  // signature so a NEW/worse breach re-shows but an already-reviewed one stays hidden.
+  const[capacityBreaches,setCapacityBreaches]=useState<CapacityBreach[]>([])
+  const[breachDismissedSig,setBreachDismissedSig]=useState<string|null>(null)
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
@@ -392,6 +398,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.capacityWindowMins !== undefined) setCapacityWindowMins(data.capacityWindowMins ?? 5)
       if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
       if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
+      if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
       // Real van offline-protection default (Settings value) — feeds the toggle/label when
       // there's no event override. Without this, vanAutoPause stayed hardcoded false.
@@ -1325,6 +1332,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
       <OfflineBanner onSynced={()=>{fetchAll()}} />
+      {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
+          the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
+      <CapacityBreachBanner breaches={capacityBreaches} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
       <DevOutboxInspector />

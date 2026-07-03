@@ -9,6 +9,7 @@ import { resolveTruckLogo } from '@/lib/truck-logo'
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
 import { buildSlotIndicators } from '@/lib/slot-display'
+import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
 
@@ -253,6 +254,10 @@ export async function GET(req: NextRequest) {
     label?: string
   }[] = []
 
+  // PIECE 2 — reconnect capacity-exceeded flag (detection only). Populated inside the slot try
+  // below by READING the same engine output (§31). Empty on error / no event.
+  let capacityBreaches: CapacityBreach[] = []
+
   // Hoisted so they can be returned for the dashboard's capacity card (single source —
   // the client used to read truck_vans directly with the anon key, which RLS blocked).
   let kitchenCapacity: number | null = null
@@ -354,6 +359,20 @@ export async function GET(req: NextRequest) {
       tone: dayIndicators.get(s.collection_time)?.tone ?? s.tone,
       label: dayIndicators.get(s.collection_time)?.label ?? '',
     }))
+
+    // PIECE 2 — after the (post-rebuild) authoritative production_slot_usage is read above, detect
+    // collection slots GENUINELY OVER a ceiling by re-reading the SAME engine output (no new math,
+    // no engine change). Strictly-over only (raw remainingTotal/remainingByCat < 0), so legitimately
+    // full slots don't cry wolf. The client surfaces a dismissible "N slot(s) over capacity" banner.
+    capacityBreaches = detectCapacityBreaches({
+      times: slots || [],
+      productionSlotUnits,
+      catConfigs,
+      kitchenCapacity,
+      eventStartMins: eventStartMins ?? 0,
+      capacityWindowMins,
+      orders: (orders || []) as any,
+    })
   } catch (slotErr) {
     console.error('[dashboard] slot capacity error:', slotErr)
     slotsWithCapacity = (slots || []).map(s => ({
@@ -417,6 +436,7 @@ export async function GET(req: NextRequest) {
     orders:  orders || [],
     slots:   slotsWithCapacity,
     productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)
+    capacityBreaches,                               // Piece 2 — slots genuinely over a ceiling (reconnect flag)
     date,
     categoryOrder,
     itemCategoryMap,
