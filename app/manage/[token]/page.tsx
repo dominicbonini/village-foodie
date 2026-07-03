@@ -367,7 +367,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   })
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
       {/* Header */}
       <AppHeader
         truckName={truck.name}
@@ -386,8 +386,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           isAdmin={isAdmin}
         />
       </AppHeader>
-      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
-      <div className="bg-slate-900 border-b border-slate-700 sticky top-[51px] z-40 overflow-x-auto">
+      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts.
+          Non-scrolling shrink-0 flex child (not sticky) → locked on every tab/browser incl. iPad WKWebView.
+          overflow-x-auto stays on the inner row for narrow-width horizontal tab scroll. */}
+      <div className="bg-slate-900 border-b border-slate-700 shrink-0 z-40">
         <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
           {tabs.map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id)}
@@ -408,7 +410,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         </div>
       </div>
 
-      <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-6"}>
+      {/* The ONLY scroll container — flex-1 min-h-0 fills the shell and scrolls internally while the bars
+          stay put. NO top padding on the scroller: a `position:sticky` child pins at the scroll container's
+          CONTENT box, so padding-top here would become a permanent gap above any sticky header (the Billing
+          plan/price row). The resting top gap lives on the inner `pt-6` wrapper as SCROLLABLE content
+          instead, so `sticky top-0` pins FLUSH under the tabs — no magic offset, desktop + iPad WKWebView. */}
+      <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
+        <div className="pt-6">
         {/* Events-to-approve banner — cross-tab signal. NOT shown on the Schedule tab itself: there the
             "Needs your approval" section (ScheduleTab) is the surface, so a banner there would double it. */}
         {showApprovalBanner && activeTab !== 'schedule' && (
@@ -481,6 +489,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
         />}
         {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
+        </div>
       </main>
 
       <ToastStack toasts={toasts} dismissToast={dismissToast} />
@@ -7875,11 +7884,12 @@ function BillingTab({ truck }: { truck: Truck | null }) {
 
   const matrixContent = (
     <>
-      {/* Plan columns header with prices — sticky below the nav (51px) + tabs bar (~44px) so the
-          plan/price columns stay visible while scrolling the feature rows. z-30 < tabs z-40 so it
-          tucks under the tabs. bg-white hides rows scrolling beneath. Works on mobile (the matrix
-          wrapper has no overflow ancestor — page scrolls on the window). */}
-      <div className="flex items-start justify-between mb-2 sticky top-[95px] z-30 bg-white pt-2">
+      {/* Plan columns header with prices — sticks to the TOP of the scrolling <main> (top-0) so the
+          plan/price columns stay visible while scrolling the feature rows. <main> is the app-shell's
+          scroll container and already sits directly under the fixed header+tabs, so the OLD top-[95px]
+          body-scroll offset is wrong here (it stuck the header mid-screen in the iPad WKWebView). z-30
+          keeps it above the rows; bg-white hides rows scrolling beneath. */}
+      <div className="flex items-start justify-between mb-2 sticky top-0 z-30 bg-white pt-2">
         <div className="flex-1" />
         {billingPlans.map(p => (
           <div key={p} className={`w-14 sm:w-28 text-center pb-3 border-b-2 ${

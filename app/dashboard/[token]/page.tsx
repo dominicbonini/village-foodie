@@ -1224,7 +1224,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   )
 
   return(
-    <div className={`bg-slate-50 ${activeTab==='add'?'h-dvh flex flex-col overflow-hidden':'min-h-screen'}`}>{/* Add tab = fixed-viewport shell (KDS pattern) so walk-up order UI fits w/ no page scroll + confirm visible; other tabs keep natural-flow scroll (Orders untouched) */}
+    <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern) for EVERY tab: fixed-viewport h-dvh column where the top bars are shrink-0 and only <main> scrolls. Bars stay locked on all tabs + all browsers — replaces the stacked position:sticky-against-body-scroll that was unreliable in the iPad WKWebView (tabs scrolled away). */}
       {/* App-lock overlay (per-device biometric/passcode) — covers the screen until unlocked. No-op on web
           / when off. Rendered first so it's on top. */}
       <AppLockGate />
@@ -1277,10 +1277,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         />
       </AppHeader>
 
-      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts */}
-      <div className="bg-slate-900 border-b border-slate-700 sticky top-[51px] z-40 overflow-x-auto">
+      {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts.
+          Non-scrolling `shrink-0` flex child of the h-dvh app-shell → stays locked on every tab/browser
+          (incl. the iPad WKWebView, where position:sticky-against-body-scroll was unreliable). overflow-x-auto
+          stays on the INNER row so the tab strip can still scroll horizontally on narrow widths. */}
+      <div className="bg-slate-900 border-b border-slate-700 shrink-0 z-40">
         {/* Nav tabs row */}
-        <div className="px-4">
+        <div className="px-4 overflow-x-auto">
           <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center"}>
             {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
@@ -1305,7 +1308,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
       {/* Event bar — Orders, Add Order, and Menu & Stock tabs */}
       {(activeTab==='orders'||activeTab==='add'||activeTab==='stock')&&(
-        <div id="dashboard-event-bar" className="bg-slate-800 border-b border-slate-700 sticky top-[95px] z-30 relative">
+        <div id="dashboard-event-bar" className="bg-slate-800 border-b border-slate-700 shrink-0 z-30 relative">
           <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-2 flex items-center gap-2"}>
             {activeEvent?(
               <>
@@ -1352,7 +1355,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      <main className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto ${activeTab==='add'?'flex-1 min-h-0 overflow-hidden px-4':'px-4 py-4 pb-20'}`}>
+      {/* The ONLY scroll container — flex-1 min-h-0 lets it fill the shell and scroll internally while the
+          top bars above stay put. Add tab manages its own inner scroll (overflow-hidden here). */}
+      <main className={`w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 ${activeTab==='add'?'overflow-hidden px-4':'overflow-y-auto px-4 py-4 pb-20'}`}>
 
         {/* ORDERS TAB */}
         {activeTab==='orders'&&(
@@ -1762,7 +1767,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
               </div>
-              <aside className="hidden lg:block lg:w-48 lg:flex-shrink-0 lg:sticky lg:top-[120px]">
+              {/* Sticks within <main>'s own scroll now (bars live outside main) → offset is 0, not the old
+                  120px body-scroll offset. */}
+              <aside className="hidden lg:block lg:w-48 lg:flex-shrink-0 lg:sticky lg:top-0">
                 <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
               </aside>
               </div>
