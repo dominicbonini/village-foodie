@@ -1063,10 +1063,17 @@ setItemModal({ item, modGroups, editCartKey })
     <div>
       {categoryTabs}
       {selectedMenuCat && (
-        <div className="flex flex-wrap gap-2">
-          {/* Content-width boxes (compact, sized to each item — no wasted space). NO reflow on selection:
-              the quantity is an ABSOLUTE corner badge (adds no width) and selecting only changes the colour,
-              so a box's width never changes when selected → neighbours can't shift. */}
+        <div className="grid gap-2 grid-cols-2 @sm:grid-cols-3">
+          {/* UNIFORM TILE GRID (Square/Toast/Clover POS pattern): equal-width tiles in clean columns, so
+              tap targets are consistent and the whitespace reads as an intentional grid. Column count is
+              DELIBERATE per orientation and driven by the PANEL width (this menu column is `@container`),
+              NOT the viewport — the panel is only 58% of the screen, so viewport `lg:` breakpoints would
+              misfire. `@sm` = 24rem/384px container width: iPad landscape panel (~684pt) and portrait
+              panel (~476pt) both clear it ⇒ 3 comfortable columns in BOTH orientations (~212pt / ~143pt
+              tiles). Below a 384px panel it drops to grid-cols-2 as a graceful floor (phone uses the
+              separate menuList, so it never forces oversized tiles). NO reflow on selection: the grid
+              track widths are fixed by the container, and the quantity is an ABSOLUTE corner badge (adds
+              no width), so selecting only recolours a tile — neighbours can't shift. */}
           {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
             const stock = itemStocks.find(s => s.name === item.name)
             // Sold-out mirrors the SERVER rule (menu route AND-composition): menu-level flag OFF
@@ -1083,8 +1090,8 @@ setItemModal({ item, modGroups, editCartKey })
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
             const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
             if (isSoldOut) return (
-              <div key={item.name} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
-                <span className="text-xs text-slate-500 line-through">{item.name}</span>
+              <div key={item.name} className="flex flex-col items-start justify-center gap-0.5 px-3 py-2.5 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
+                <span className="text-xs text-slate-500 line-through leading-tight">{item.name}</span>
                 <span className="text-[10px] text-red-400 font-bold">sold out</span>
               </div>
             )
@@ -1093,7 +1100,7 @@ setItemModal({ item, modGroups, editCartKey })
                 key={item.name}
                 onClick={() => !atStockLimit && addOrCustomise(item)}
                 disabled={atStockLimit}
-                className={`relative flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] min-w-[80px] ${
+                className={`relative flex flex-col items-start gap-0.5 px-3 py-2.5 rounded-xl border text-sm font-bold transition-all min-h-[56px] ${
                   atStockLimit ? 'opacity-50 cursor-not-allowed bg-slate-100 border-slate-200 text-slate-400'
                   : totalInBasket > 0 ? 'bg-orange-600 border-orange-600 text-white active:scale-95'
                   : 'bg-slate-50 border-slate-200 text-slate-700 hover:border-orange-300 hover:bg-white active:scale-95'
@@ -1256,7 +1263,7 @@ setItemModal({ item, modGroups, editCartKey })
       <div className="hidden md:flex flex-1 min-h-0 -mx-4">
 
         {/* LEFT — scrollable menu */}
-        <div className="w-[58%] min-h-0 overflow-y-auto border-r border-slate-200 p-4">
+        <div className="@container w-[58%] min-h-0 overflow-y-auto border-r border-slate-200 p-4">
           {eventBanner}
           {dealsButton}
           {truckMenu ? menuGrid : <p className="text-slate-400 text-sm animate-pulse">Loading menu…</p>}
