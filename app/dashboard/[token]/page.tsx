@@ -1196,27 +1196,39 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // orderItemsToQtyByCat + mergeQtyByCat; event-scoped. Auto-reverts to server truth once the orders sync +
   // prune. Advisory OFFLINE view — the server stays authoritative on reconnect; oversell detection is Piece 2.
   const displaySlots=useMemo(()=>{
-    if(deviceQueuedOrders.length===0||!activeEvent)return slots
-    const timeMap:Record<string,string>={}
-    slots.forEach(s=>{timeMap[s.collection_time]=s.production_window_key||s.collection_time})
-    const eventStart=activeEvent.start_time||''
-    const merged:Record<string,Record<string,number>>={}
-    for(const k in productionSlotUnits)merged[k]={...productionSlotUnits[k]}
-    // Fold ONLY optimistic orders NOT yet in the server `orders` — a synced order is already in
-    // productionSlotUnits (same fetchAll response), so this keeps the fold EXACTLY-ONCE across the sync
-    // boundary (no transient double-count while deviceQueuedOrders awaits its prune).
-    deviceQueuedOrders.filter(o=>o.event_id===activeEvent.id&&!orders.some(so=>so.order_key===o.order_key)).forEach(o=>{
-      const ct=(o as {slot?:string|null}).slot||eventStart
-      if(!ct)return
-      const ps=timeMap[ct]||ct
-      const lines=normaliseOrderLines((o.items as Array<{name:string;quantity:number|string}>)||[],(o as {deals?:Array<{slots?:Record<string,unknown>}>|null}).deals)
-      const delta=orderItemsToQtyByCat(lines,itemCategoryMap)
-      merged[ps]=mergeQtyByCat(merged[ps]||{},delta)
-    })
-    const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
-    const eventStartMins=(h||0)*60+(m||0)
-    const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder,capacityWindowMins)
-    return slots.map(s=>({...s,tone:ind.get(s.collection_time)?.tone??s.tone,label:ind.get(s.collection_time)?.label??s.label}))
+    // FAIL-SAFE: the capacity STRIP must NEVER crash the dashboard. Any not-yet-loaded input OR any thrown
+    // error → return the plain server `slots` (the online/normal path). Worst case the strip shows
+    // server-only state; it can never take the page down.
+    try{
+      if(!Array.isArray(slots)||slots.length===0)return slots
+      if(deviceQueuedOrders.length===0||!activeEvent)return slots            // online / no optimistic orders → server slots (unchanged)
+      if(!serverCatConfigs||Object.keys(serverCatConfigs).length===0)return slots  // engine inputs not loaded yet → server slots
+      const units=productionSlotUnits||{}
+      const timeMap:Record<string,string>={}
+      slots.forEach(s=>{if(s?.collection_time)timeMap[s.collection_time]=s.production_window_key||s.collection_time})
+      const eventStart=activeEvent.start_time||''
+      const merged:Record<string,Record<string,number>>={}
+      for(const k in units)merged[k]={...(units[k]||{})}
+      // Fold ONLY optimistic orders NOT yet in the server `orders` — a synced order is already in `units`
+      // (same fetchAll response), keeping the fold EXACTLY-ONCE across the sync boundary (no transient
+      // double-count while deviceQueuedOrders awaits its prune).
+      const serverOrders=Array.isArray(orders)?orders:[]
+      deviceQueuedOrders.filter(o=>o&&o.event_id===activeEvent.id&&!serverOrders.some(so=>so.order_key===o.order_key)).forEach(o=>{
+        const ct=(o as {slot?:string|null}).slot||eventStart
+        if(!ct)return
+        const ps=timeMap[ct]||ct
+        const lines=normaliseOrderLines((o.items as Array<{name:string;quantity:number|string}>)||[],(o as {deals?:Array<{slots?:Record<string,unknown>}>|null}).deals)
+        const delta=orderItemsToQtyByCat(lines,itemCategoryMap||{})
+        merged[ps]=mergeQtyByCat(merged[ps]||{},delta)
+      })
+      const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
+      const eventStartMins=(h||0)*60+(m||0)
+      const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins)
+      return slots.map(s=>({...s,tone:ind.get(s.collection_time)?.tone??s.tone,label:ind.get(s.collection_time)?.label??s.label}))
+    }catch(e){
+      console.warn('[displaySlots] offline capacity fold failed — using server slots',e)
+      return slots
+    }
   },[slots,orders,deviceQueuedOrders,activeEvent,productionSlotUnits,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
 
   // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
