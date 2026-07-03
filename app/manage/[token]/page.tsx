@@ -33,6 +33,7 @@ import { detectEventConflicts } from '@/lib/event-conflicts'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { SpiceLevel } from '@/components/SpiceLevel'
 import AppHeader from '@/components/shared/AppHeader'
+import { configureStatusBar } from '@/lib/native/statusBar'
 import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles, AllergenModeChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
@@ -206,6 +207,9 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [token])
 
   useEffect(() => { load() }, [load])
+  // Native: overlay the WebView under the status bar here too (not only the cold-launch /app call), so the
+  // AppHeader fills the status-bar strip with no empty band. Self-guards native → no-op on web.
+  useEffect(() => { void configureStatusBar() }, [])
 
   // Keep the truck's van(s) alive while the operator is on Manage — mirrors the dashboard/KDS
   // heartbeat (every 15s → /api/heartbeat) so a dashboard→Manage switch doesn't stop the only

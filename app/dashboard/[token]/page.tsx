@@ -46,6 +46,7 @@ import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
+import { configureStatusBar } from '@/lib/native/statusBar'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
@@ -76,7 +77,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const vanName=searchParams.get('van_name')??''
   const vanId=searchParams.get('van_id')??''
   // Native: remember this device is on the DASHBOARD so a cold-launch reopens here (restart-to-last-screen, §33).
-  useEffect(()=>{if(isNativeApp())setLastScreen('dashboard')},[])
+  useEffect(()=>{if(isNativeApp()){setLastScreen('dashboard');void configureStatusBar()}},[]) // configureStatusBar here too (not only cold-launch /app) so the WebView overlays the status bar wherever AppHeader renders
   // Register the read-cache service worker (offline snapshot of this event's orders + menu). Its mutation
   // replay is neutered — the app-level outbox owns all writes (Phase-1 offline).
   useEffect(()=>{registerServiceWorker()},[])
