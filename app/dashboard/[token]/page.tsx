@@ -60,6 +60,8 @@ import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNI
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
+import { normaliseOrderLines } from '@/lib/slot-bookings'
+import { orderItemsToQtyByCat, mergeQtyByCat } from '@/lib/slot-capacity'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -150,6 +152,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[eventOrderReadyOverride,setEventOrderReadyOverride]=useState<boolean|null>(null)
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
   const[capacityWindowMins,setCapacityWindowMins]=useState<number>(5)
+  // Frozen server occupancy + server catConfigs (with countsToCapacity) — inputs the OFFLINE capacity re-run
+  // folds deviceQueuedOrders into (Piece 1). Only refresh on a successful (online) fetch → they hold the
+  // last-synced state while offline. Unused online.
+  const[productionSlotUnits,setProductionSlotUnits]=useState<Record<string,Record<string,number>>>({})
+  const[serverCatConfigs,setServerCatConfigs]=useState<Record<string,CatConfig>>({})
   const[activeVanName,setActiveVanName]=useState<string|null>(null)
   const[showCompleted,setShowCompleted]=useState(false)
   const[struckPrep,setStruckPrep]=useState<Set<string>>(new Set())
@@ -383,6 +390,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // !== undefined so a failed/partial response never wipes a good value.
       if(data.kitchenCapacity !== undefined) setKitchenCapacity(data.kitchenCapacity)
       if(data.capacityWindowMins !== undefined) setCapacityWindowMins(data.capacityWindowMins ?? 5)
+      if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
+      if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
       // Real van offline-protection default (Settings value) — feeds the toggle/label when
       // there's no event override. Without this, vanAutoPause stayed hardcoded false.
@@ -1178,6 +1187,38 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
   const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
+  // OFFLINE-AWARE capacity for the day-load strip (Piece 1). ONLINE / no optimistic orders → returns the
+  // server `slots` UNCHANGED (deviceQueuedOrders is ONLY ever populated by an OFFLINE create, so online this
+  // is a no-op returning the same reference — the online path is byte-identical). OFFLINE with optimistic
+  // orders → fold THEIR oven occupancy into the frozen server occupancy and re-run the SAME buildSlotIndicators
+  // the strip's tone/label already come from, overlaying tone/label. Mirrors the server buildUnitsFromOrders
+  // EXACTLY: ct = order.slot || eventStart → window key (timeMap[ct]||ct); normaliseOrderLines +
+  // orderItemsToQtyByCat + mergeQtyByCat; event-scoped. Auto-reverts to server truth once the orders sync +
+  // prune. Advisory OFFLINE view — the server stays authoritative on reconnect; oversell detection is Piece 2.
+  const displaySlots=useMemo(()=>{
+    if(deviceQueuedOrders.length===0||!activeEvent)return slots
+    const timeMap:Record<string,string>={}
+    slots.forEach(s=>{timeMap[s.collection_time]=s.production_window_key||s.collection_time})
+    const eventStart=activeEvent.start_time||''
+    const merged:Record<string,Record<string,number>>={}
+    for(const k in productionSlotUnits)merged[k]={...productionSlotUnits[k]}
+    // Fold ONLY optimistic orders NOT yet in the server `orders` — a synced order is already in
+    // productionSlotUnits (same fetchAll response), so this keeps the fold EXACTLY-ONCE across the sync
+    // boundary (no transient double-count while deviceQueuedOrders awaits its prune).
+    deviceQueuedOrders.filter(o=>o.event_id===activeEvent.id&&!orders.some(so=>so.order_key===o.order_key)).forEach(o=>{
+      const ct=(o as {slot?:string|null}).slot||eventStart
+      if(!ct)return
+      const ps=timeMap[ct]||ct
+      const lines=normaliseOrderLines((o.items as Array<{name:string;quantity:number|string}>)||[],(o as {deals?:Array<{slots?:Record<string,unknown>}>|null}).deals)
+      const delta=orderItemsToQtyByCat(lines,itemCategoryMap)
+      merged[ps]=mergeQtyByCat(merged[ps]||{},delta)
+    })
+    const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
+    const eventStartMins=(h||0)*60+(m||0)
+    const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder,capacityWindowMins)
+    return slots.map(s=>({...s,tone:ind.get(s.collection_time)?.tone??s.tone,label:ind.get(s.collection_time)?.label??s.label}))
+  },[slots,orders,deviceQueuedOrders,activeEvent,productionSlotUnits,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
+
   // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
   // orders resolve to the event-date-aware ASAP base, so they interleave with
   // timed orders instead of always sorting last. order_key is the stable
@@ -1479,7 +1520,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             </div>
             <div className="lg:hidden">
-              <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="strip" />
+              <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="strip" />
             </div>
             {/* "To make" aggregate box removed (2026-06) — a cook-per-order truck doesn't work from a
                 day-wide item total. getAllDayCounts is retained (still used by the completed-order
@@ -1818,7 +1859,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {/* Sticks within <main>'s own scroll now (bars live outside main) → offset is 0, not the old
                   120px body-scroll offset. */}
               <aside className="hidden lg:block lg:w-48 lg:flex-shrink-0 lg:sticky lg:top-0">
-                <DayLoadStrip slots={slots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
+                <DayLoadStrip slots={displaySlots} eventDate={activeEvent?.event_date ?? null} variant="sidebar" />
               </aside>
               </div>
               </>

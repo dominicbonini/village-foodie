@@ -257,6 +257,10 @@ export async function GET(req: NextRequest) {
   // the client used to read truck_vans directly with the anon key, which RLS blocked).
   let kitchenCapacity: number | null = null
   let capacityWindowMins = 5
+  // Raw oven occupancy (production_slot → qty-by-cat) — the EXACT input buildSlotIndicators/buildSlotAvailability
+  // consume. Returned so the NATIVE client can re-run the SAME engine OFFLINE with its optimistic orders folded
+  // in (offline-aware capacity, Piece 1). Response-only addition — the online slots computation is unchanged.
+  let dashProductionSlotUnits: Record<string, Record<string, number>> = {}
   let activeVanName: string | null = null
   // The selected event's van offline-protection DEFAULT (Settings value). The dashboard
   // shows this when there's no per-event override — without it the client's vanAutoPause
@@ -305,6 +309,7 @@ export async function GET(req: NextRequest) {
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
       : {}
+    dashProductionSlotUnits = productionSlotUnits   // surface the raw occupancy for the offline client re-run
     const nowMins = new Date().getHours() * 60 + new Date().getMinutes()
     // For the truck: don't show slots before event start (use eventStartMins as minimum)
     const earliestMins = eventStartMins !== null ? eventStartMins : nowMins
@@ -411,9 +416,10 @@ export async function GET(req: NextRequest) {
     offlinePauseEventId: selectedEventId,         // the event the marker belongs to (ack key)
     orders:  orders || [],
     slots:   slotsWithCapacity,
+    productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)
     date,
     categoryOrder,
     itemCategoryMap,
-    catConfigs,   // per-category prep_secs/batch_size → drives the card's prep-aware amber threshold
+    catConfigs,   // per-category prep_secs/batch_size (+ countsToCapacity) → card amber + the offline capacity re-run
   })
 }
