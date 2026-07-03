@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { isNativeApp, getDeviceId, getLastScreen } from '@/lib/native/device'
 import { hasNativeSession, getNativeAccessToken } from '@/lib/native/session'
+import { configureStatusBar } from '@/lib/native/statusBar'
 
 export default function AppLanding() {
   const router = useRouter()
@@ -18,6 +19,11 @@ export default function AppLanding() {
     ;(async () => {
       // Not the native app → this is just a web hit on /app; send to the normal dashboard entry.
       if (!isNativeApp()) return go('/dashboard')
+
+      // Native launch → configure the status bar ONCE here (cold-launch entry), so the WebView overlays the
+      // status bar wherever the AppHeader renders (dashboard / manage / kds), not only after visiting KDS.
+      // Persists at the native layer across web navigation; no-op on web.
+      void configureStatusBar()
 
       // No persistent session (or no access token) → log in.
       if (!(await hasNativeSession())) return go('/login')
