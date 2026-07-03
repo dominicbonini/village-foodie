@@ -2,7 +2,7 @@
 // Per-device operator config UI (Packages 3, 4, 5-config). APP-ONLY: every export renders null on web
 // (isNativeApp() false) → zero behaviour change for browser users. Reads/writes the current device_id's
 // van_devices row via /api/native/bind-device (truck-scoped server-side).
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, type DeviceConfig, type VanRef } from '@/lib/native/device'
 import { registerForPush } from '@/lib/native/push'
 import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdentity } from '@/lib/native/appLock'
@@ -19,46 +19,49 @@ import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
 // the keep-awake default once bound.
 export function DeviceSetupGate({ token }: { token: string }) {
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)   // fetchDeviceConfig FAILED (network/429/500) — NOT "no van"
   const [needsSetup, setNeedsSetup] = useState(false)
+  const [dismissed, setDismissed] = useState(false)      // "Later" — never trap; card re-appears next launch until set up
   const [vans, setVans] = useState<VanRef[]>([])
   const [screen, setScreen] = useState<'dashboard' | 'kds'>('dashboard')
   const [vanId, setVanId] = useState<string>('')
   const [saving, setSaving] = useState(false)
+  const mounted = useRef(true)
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
 
-  useEffect(() => {
+  const runSetup = useCallback(async () => {
     if (!isNativeApp()) { setLoading(false); return }
-    let cancelled = false
-    ;(async () => {
-      const cfg = await fetchDeviceConfig(token)
-      if (cancelled) return
-      const device = cfg?.device ?? null
-      const vanList = cfg?.vans ?? []
-      // Already configured (row exists WITH a van) → apply side effects, no card.
-      if (device && device.van_id) {
-        void registerForPush(token)
-        setLoading(false); return
-      }
-      // Single-van truck → auto-bind silently (still ask the screen? No — bind van; screen defaults to
-      // 'dashboard' and is changeable in This-device settings). Per spec: single van = no van question.
-      if (vanList.length === 1) {
-        const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
-        if (saved) { void registerForPush(token) }
-        if (!cancelled) setLoading(false)
-        return
-      }
-      // Multi-van (or no van yet) → show the card. Pre-fill van from the single-van staff hint if present.
-      setVans(vanList)
-      setVanId(cfg?.vanHint ?? '')
-      setScreen(device?.default_screen ?? 'dashboard')
-      setNeedsSetup(true)
-      setLoading(false)
-    })()
-    return () => { cancelled = true }
+    setFetchError(false); setLoading(true)
+    const result = await fetchDeviceConfig(token)
+    if (!mounted.current) return
+    // FETCH FAILED (null/network/non-OK) — do NOT show "no active van"; offer Retry. This is where a transient
+    // 429/500 used to masquerade as "no van" and trap the operator.
+    if (!result.ok) { setFetchError(true); setLoading(false); return }
+    const device = result.device
+    const vanList = result.vans
+    // Already configured (row exists WITH a van) → apply side effects, no card.
+    if (device && device.van_id) { void registerForPush(token); setLoading(false); return }
+    // Single active van → auto-bind SILENTLY (no van question; screen defaults to 'dashboard', changeable in
+    // This-device settings). Per spec: single van = no modal.
+    if (vanList.length === 1) {
+      const saved = await saveDeviceConfig(token, { van_id: vanList[0].id, default_screen: device?.default_screen ?? 'dashboard' })
+      if (!mounted.current) return
+      if (saved) void registerForPush(token)
+      setLoading(false); return
+    }
+    // Genuinely 0 (fetch OK, no active vans) OR >1 → show the card. Pre-fill van from the single-van staff hint.
+    setVans(vanList)
+    setVanId(result.vanHint ?? '')
+    setScreen(device?.default_screen ?? 'dashboard')
+    setNeedsSetup(true)
+    setLoading(false)
   }, [token])
 
-  if (!isNativeApp() || loading || !needsSetup) return null
+  useEffect(() => { void runSetup() }, [runSetup])
 
-  const canSave = vans.length === 0 ? false : !!vanId
+  if (!isNativeApp() || loading || dismissed) return null
+  if (!fetchError && !needsSetup) return null
+
   const onSave = async () => {
     setSaving(true)
     const saved = await saveDeviceConfig(token, { van_id: vanId, default_screen: screen })
@@ -66,39 +69,70 @@ export function DeviceSetupGate({ token }: { token: string }) {
     if (saved) { void registerForPush(token); setNeedsSetup(false) }
   }
 
+  // NEVER TRAP: every state has an escape — Retry (error), "Go to Settings → Vans" (no van), Continue (picker),
+  // and a "Later" dismiss on all of them. No permanently-disabled Continue with no way out.
   return (
     <div className="fixed inset-0 bg-black/70 z-[60] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-5 flex flex-col gap-4">
-        <div>
-          <h2 className="text-base font-black text-slate-900">Set up this device</h2>
-          <p className="text-xs text-slate-500 mt-0.5">One-time setup for <strong>this iPad</strong>: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → &ldquo;This device&rdquo;.</p>
-        </div>
-        <div>
-          <p className="text-sm font-bold text-slate-800 mb-1.5">Which screen should this device open to?</p>
-          <div className="flex gap-2">
-            {(['dashboard', 'kds'] as const).map(s => (
-              <button key={s} type="button" onClick={() => setScreen(s)}
-                className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold border ${screen === s ? 'bg-orange-600 text-white border-orange-600' : 'bg-white border-slate-300 text-slate-600'}`}>
-                {s === 'dashboard' ? 'Dashboard' : 'KDS'}
+        {fetchError ? (
+          // ── FETCH FAILED ──────────────────────────────────────────────────────────────────────
+          <>
+            <div>
+              <h2 className="text-base font-black text-slate-900">Couldn&apos;t load device setup</h2>
+              <p className="text-xs text-slate-500 mt-0.5">We couldn&apos;t reach the server to set up <strong>this iPad</strong>. Check the connection and try again — your orders and settings are unaffected.</p>
+            </div>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => void runSetup()} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">Retry</button>
+              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
+            </div>
+          </>
+        ) : vans.length === 0 ? (
+          // ── GENUINELY NO ACTIVE VAN ───────────────────────────────────────────────────────────
+          <>
+            <div>
+              <h2 className="text-base font-black text-slate-900">No active van</h2>
+              <p className="text-xs text-slate-500 mt-0.5">This truck has no active van yet. Activate one in <strong>Settings → Vans</strong>, then this device sets up automatically — no further steps here.</p>
+            </div>
+            <div className="flex gap-2">
+              <a href={`/manage/${token}?tab=settings`} className="flex-1 text-center bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm">Go to Settings → Vans</a>
+              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
+            </div>
+          </>
+        ) : (
+          // ── MULTI-VAN PICKER (>1 active van) ──────────────────────────────────────────────────
+          <>
+            <div>
+              <h2 className="text-base font-black text-slate-900">Set up this device</h2>
+              <p className="text-xs text-slate-500 mt-0.5">One-time setup for <strong>this iPad</strong>: the screen it opens to and which van it runs. Applies to this device only — other devices are set separately, and you can change these later from the profile menu → &ldquo;This device&rdquo;.</p>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800 mb-1.5">Which screen should this device open to?</p>
+              <div className="flex gap-2">
+                {(['dashboard', 'kds'] as const).map(s => (
+                  <button key={s} type="button" onClick={() => setScreen(s)}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-bold border ${screen === s ? 'bg-orange-600 text-white border-orange-600' : 'bg-white border-slate-300 text-slate-600'}`}>
+                    {s === 'dashboard' ? 'Dashboard' : 'KDS'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-800 mb-1.5">Which van is this device?</p>
+              <select value={vanId} onChange={e => setVanId(e.target.value)}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+                <option value="">Select a van…</option>
+                {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+              </select>
+            </div>
+            <div className="flex gap-2">
+              <button type="button" disabled={!vanId || saving} onClick={onSave}
+                className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-40">
+                {saving ? 'Saving…' : 'Continue'}
               </button>
-            ))}
-          </div>
-        </div>
-        {vans.length > 1 && (
-          <div>
-            <p className="text-sm font-bold text-slate-800 mb-1.5">Which van is this device?</p>
-            <select value={vanId} onChange={e => setVanId(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
-              <option value="">Select a van…</option>
-              {vans.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-            </select>
-          </div>
+              <button type="button" onClick={() => setDismissed(true)} className="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-500 border border-slate-200">Later</button>
+            </div>
+          </>
         )}
-        {vans.length === 0 && <p className="text-xs text-amber-700 font-semibold">This truck has no active van yet — create or activate one first (Settings → Vans), then set up this device.</p>}
-        <button type="button" disabled={!canSave || saving} onClick={onSave}
-          className="bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-40">
-          {saving ? 'Saving…' : 'Continue'}
-        </button>
       </div>
     </div>
   )
@@ -123,7 +157,7 @@ export function ThisDeviceSettings({ token }: { token: string }) {
     void isBiometricAvailable().then(setBioAvailable)
     void (async () => {
       const c = await fetchDeviceConfig(token)
-      if (c) { setCfg(c.device); setVans(c.vans); setTruckName(c.truck?.name ?? null) }
+      if (c.ok) { setCfg(c.device); setVans(c.vans); setTruckName(c.truck?.name ?? null) }
       const mt = await fetchMyTrucks()
       setMyTrucks(mt.trucks)
     })()

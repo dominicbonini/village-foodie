@@ -9,30 +9,43 @@
 // is a soft, UNENFORCED hint. So there is no per-user "read-only" case today: the only read-only state is a
 // single-van truck (nothing to switch to). A staff-read-only restriction would need server-side enforcement
 // (a role / truck_user_vans check added to bind-device) and is intentionally NOT faked in the UI.
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { isNativeApp, fetchDeviceConfig, saveDeviceConfig, type VanRef } from '@/lib/native/device'
 
 export function VanMenuChooser({ token }: { token: string }) {
   const [vans, setVans] = useState<VanRef[]>([])
   const [vanId, setVanId] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
+  const [loadError, setLoadError] = useState(false)   // fetch failed — degrade to a Retry, don't vanish silently
   const [switching, setSwitching] = useState(false)
 
-  useEffect(() => {
+  const load = useCallback(async () => {
     if (!isNativeApp()) return
-    let cancelled = false
-    void (async () => {
-      const cfg = await fetchDeviceConfig(token)
-      if (cancelled || !cfg) return
-      setVans(cfg.vans)
-      setVanId(cfg.device?.van_id ?? null)
-      setReady(true)
-    })()
-    return () => { cancelled = true }
+    setLoadError(false)
+    const result = await fetchDeviceConfig(token)
+    // FETCH FAILED → surface a Retry instead of rendering null (which would make the van row silently
+    // disappear from the profile menu). Same failure/empty distinction as the setup gate.
+    if (!result.ok) { setLoadError(true); setReady(true); return }
+    setVans(result.vans)
+    setVanId(result.device?.van_id ?? null)
+    setReady(true)
   }, [token])
+
+  useEffect(() => { void load() }, [load])
 
   // Native-only, and only once we know the van state (avoids a flash of "—" before the fetch lands).
   if (!isNativeApp() || !ready) return null
+
+  if (loadError) {
+    return (
+      <div className="px-4 py-2 border-b border-slate-100">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm text-slate-700">Van</span>
+          <button type="button" onClick={() => void load()} className="text-sm font-semibold text-orange-600">Couldn&apos;t load · Retry</button>
+        </div>
+      </div>
+    )
+  }
 
   const currentName = vans.find(v => v.id === vanId)?.name ?? '—'
 

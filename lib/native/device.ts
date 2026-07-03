@@ -33,13 +33,28 @@ export function getDeviceId(): string {
   return id
 }
 
+export type DeviceConfigData = {
+  device: DeviceConfig | null
+  vans: VanRef[]
+  vanHint: string | null
+  truck: { id: string; name: string | null } | null
+}
+/**
+ * Result of reading this device's config. DISCRIMINATED so callers can tell a FETCH FAILURE
+ * (`{ ok: false }` → offer Retry) apart from a successful read that genuinely has no active vans
+ * (`{ ok: true, vans: [] }` → "no active van"). Previously BOTH collapsed to `null`, so a transient
+ * 429/500/network error masqueraded as "no active van" and trapped the operator behind a dead-end modal.
+ */
+export type DeviceConfigResult = ({ ok: true } & DeviceConfigData) | { ok: false }
+
 /** Read this device's config + the truck's vans + single-van staff hint + the current truck (name). */
-export async function fetchDeviceConfig(token: string): Promise<{ device: DeviceConfig | null; vans: VanRef[]; vanHint: string | null; truck: { id: string; name: string | null } | null } | null> {
+export async function fetchDeviceConfig(token: string): Promise<DeviceConfigResult> {
   try {
     const res = await fetch(`/api/native/bind-device?token=${encodeURIComponent(token)}&device_id=${encodeURIComponent(getDeviceId())}`)
-    if (!res.ok) return null
-    return await res.json()
-  } catch { return null }
+    if (!res.ok) return { ok: false }
+    const data = await res.json()
+    return { ok: true, device: data.device ?? null, vans: data.vans ?? [], vanHint: data.vanHint ?? null, truck: data.truck ?? null }
+  } catch { return { ok: false } }
 }
 
 /** Upsert this device's row (van / default screen / notify / push token). Truck-scoped server-side. */
