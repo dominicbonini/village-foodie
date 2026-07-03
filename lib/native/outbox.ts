@@ -106,6 +106,23 @@ export async function countOps(): Promise<number> {
   return keys.filter(k => k.startsWith(KEY_PREFIX)).length
 }
 
+/** Count of ACTIONABLE ops (pending/syncing) — EXCLUDES 'conflict' ops. The banner uses THIS (not countOps)
+ *  so a conflict awaiting review never keeps a perpetual "syncing" banner up. Reads op state (heavier than
+ *  countOps' key-only count). */
+export async function countPendingOps(): Promise<number> {
+  return (await listOps()).filter(o => o.state !== 'conflict').length
+}
+
+/** Ops flagged 'conflict' (409 / gave-up after MAX_ATTEMPTS) — surfaced SEPARATELY for operator review. */
+export async function listConflictOps(): Promise<OutboxOp[]> {
+  return (await listOps()).filter(o => o.state === 'conflict')
+}
+
+/** Dismiss/acknowledge every conflict op (operator has reviewed) — removes them from the outbox. */
+export async function clearConflicts(): Promise<void> {
+  for (const op of await listConflictOps()) await removeOp(op.op_id)
+}
+
 /** Remove an op — ONLY after a definitive server ACK (or a resolved conflict). */
 export async function removeOp(op_id: string): Promise<void> {
   await Preferences.remove({ key: KEY_PREFIX + op_id })

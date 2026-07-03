@@ -21,7 +21,7 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
 import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
@@ -372,6 +372,13 @@ export default function KdsPage() {
       if (result.queued) {
         // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the email or show the
         // undo toast (a phantom email must not fire 4s later for an uncommitted ready).
+        // Advance the local order status OPTIMISTICALLY so the KDS board moves the card forward immediately,
+        // EXACTLY like online (online advances via fetchAll's round-trip; offline there's none). Uses the
+        // SAME shared map as the dashboard (offlineStatusPatch) so the two surfaces never diverge. fetchAll on
+        // reconnect is authoritative → no double-advance. (KDS has no prep-board struck state to clear.)
+        const q = orders.find(o => o.order_key === orderKey)
+        const sp = offlineStatusPatch(action, q as any)
+        if (sp) setOrders(prev => prev.map(o => o.order_key === orderKey ? ({ ...o, ...sp } as Order) : o))
         setPendingSyncCount(c => c + 1)
         setPendingSync(prev => new Set(prev).add(orderKey))
         setActionLoading(null)

@@ -46,7 +46,7 @@ import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
 import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
@@ -511,6 +511,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       clearInterval(fallbackInterval)
     }
   },[truck?.id])
+  // Reconcile the optimistic device-queued list: once an offline-created order's synced twin lands in
+  // `orders` (matched on order_key), prune it from deviceQueuedOrders. Keeps state tidy (the render-time
+  // dedup handles the same-tick display). Returns the same ref when nothing changed → no re-render loop.
+  useEffect(()=>{
+    const keys=new Set(orders.map(o=>o.order_key))
+    setDeviceQueuedOrders(prev=>{const next=prev.filter(o=>!keys.has(o.order_key));return next.length===prev.length?prev:next})
+  },[orders])
   useEffect(()=>{
     const truckId=truck?.id
     if(!truckId)return
@@ -834,7 +841,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       // Offline GATE (mirrors KDS): online → normal write; offline (native) → durable outbox + queued.
       const result=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action,order_key:orderKey,...(action==='ready'?{defer_email:true}:{})},kind:'status',order_key:orderKey,online:isOnline(),expectedFrom:STATUS_REPLAY_EXPECTED_FROM})
-      if(result.queued){const q=orders.find(o=>o.order_key===orderKey);setActionLoading(null);showToast(`Order #${q?.id??''} saved on this device — will sync when back online`);return}
+      if(result.queued){
+        // OFFLINE: advance the local order status optimistically so the UI steps forward EXACTLY like online
+        // (online advances via fetchAll's round-trip; offline there's none, so mirror the server's action→
+        // status map here). Sync is deferred to the outbox drain. Patch whichever list holds this order_key:
+        // fetched orders (setOrders) OR an offline-created order (setDeviceQueuedOrders). fetchAll on reconnect
+        // is authoritative — it overwrites this optimistic state, so no double-advance.
+        const q=orders.find(o=>o.order_key===orderKey)??deviceQueuedOrders.find(o=>o.order_key===orderKey)
+        const sp=offlineStatusPatch(action,q as any)  // SHARED with the KDS → identical offline behaviour
+        if(sp){
+          const patch=(list:Order[])=>list.map(o=>o.order_key===orderKey?({...o,...sp} as Order):o)
+          setOrders(patch); setDeviceQueuedOrders(patch)
+          // Mirror the online prep-board auto-clear on ready/collected.
+          if((action==='ready'||action==='collected')&&q){
+            setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
+          }
+        }
+        setActionLoading(null);showToast(`Order #${q?.id??''} saved on this device — will sync when back online`);return
+      }
       const data=result.data??{}; if(!result.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
@@ -1170,9 +1194,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // (the date+van fallback is dropped — it was the same-date multi-event bleed path).
   // Offline-queued walk-ups (deviceQueuedOrders) are prepended for DISPLAY only — the isolated merge never
   // touches `orders`/fetchAll; they clear on the reconnect drain once the synced order arrives from server.
+  // Per-order reconciliation: drop any optimistic order whose synced twin has arrived in `orders` (matched on
+  // order_key) — kills the M3+3 duplicate AND the duplicate React key. Replaces the old wholesale onSynced
+  // clear (which also dropped un-synced optimistic orders).
+  const syncedKeys=new Set(orders.map(o=>o.order_key))
+  const pendingQueued=deviceQueuedOrders.filter(o=>!syncedKeys.has(o.order_key))
   const eventOrders=activeEvent
-    ?[...deviceQueuedOrders,...orders].filter(o=>o.event_id===activeEvent.id)
-    :[...deviceQueuedOrders,...orders]
+    ?[...pendingQueued,...orders].filter(o=>o.event_id===activeEvent.id)
+    :[...pendingQueued,...orders]
   const pendingOrders=eventOrders.filter(o=>o.status==='pending').sort(sortByTimeThenId)
   // Active in-progress states render as live cards (cooking/ready included — food done/
   // being made, still awaiting collection). otherOrders is a POSITIVE terminal filter, NOT
@@ -1240,7 +1269,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      <OfflineBanner onSynced={()=>{setDeviceQueuedOrders([]);fetchAll()}} />
+      <OfflineBanner onSynced={()=>{fetchAll()}} />
       {/* DEV-ONLY floating pill to force offline (renders null in production) — validates the offline outbox. */}
       <DevOfflineToggle />
       <DeviceSetupGate token={token} />

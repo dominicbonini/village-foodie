@@ -678,6 +678,9 @@ setItemModal({ item, modGroups, editCartKey })
       const provisional = isOnline() ? '' : await nextProvisionalId()
       const manualOrder = {
         order_key: orderKey,
+        // Offline → send the device-prefixed provisional (e.g. 'M3') so the server KEEPS it as the permanent
+        // display id (skips its counter) → no renumber on sync. Online → '' → null → server assigns normally.
+        provisional_id: provisional || null,
         customerName: manualName,
         customerPhone: manualPhone || null,
         customerEmail: manualEmail || null,

@@ -21,6 +21,27 @@ const MAX_ATTEMPTS = 5
 // the operator advanced it offline, the server returns 409 and the outbox flags it — never overwrites.
 export const STATUS_REPLAY_EXPECTED_FROM = ['pending', 'confirmed', 'modified', 'cooking', 'ready', 'collected']
 
+/** action→status map for an OFFLINE optimistic status advance — mirrors what the server status handler sets. */
+const OFFLINE_STATUS_MAP: Record<string, string> = { confirm: 'confirmed', cooking: 'cooking', ready: 'ready', collected: 'collected' }
+
+/**
+ * Compute the optimistic local order-status change for an offline-QUEUED status action, so the UI advances
+ * immediately (deferred sync). SHARED by the dashboard (doAction) and the KDS (handleAction) so both behave
+ * identically — one source of truth, never a divergent map. Returns the fields to merge into the order, or
+ * null if the action doesn't change status. `order` supplies the current status ('collected' →
+ * status_before_collected) and the prior status_before_collected ('undo_collected' revert target).
+ */
+export function offlineStatusPatch(
+  action: string,
+  order: { status?: string; status_before_collected?: string | null } | undefined,
+): { status: string; status_before_collected?: string | null } | null {
+  if (action === 'undo_collected') return { status: order?.status_before_collected ?? 'confirmed', status_before_collected: null }
+  const next = OFFLINE_STATUS_MAP[action]
+  if (!next) return null
+  if (action === 'collected') return { status: next, status_before_collected: order?.status ?? null }
+  return { status: next }
+}
+
 export interface GateResult {
   ok: boolean          // server accepted the write
   queued: boolean      // stored offline for later replay (optimistic local state should be applied)

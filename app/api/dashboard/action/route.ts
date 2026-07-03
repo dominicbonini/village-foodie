@@ -674,11 +674,21 @@ export async function POST(req: NextRequest) {
 
         // (b) Display number (per-event, restarts at 1) — under the lock. order_key UUID is set
         //     by the column default. orderEventId may be null (ambiguous/no event) → truck fallback.
-        try {
-          newOrderId = await nextOrderId(orderEventId, truck.id)
-        } catch (err: any) {
-          console.error('[manual] order counter failed:', err.message)
-          return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+        // Offline-origin orders KEEP their device-prefixed provisional number (e.g. 'M3') as the PERMANENT
+        // display id — skip the server counter so a synced order isn't renumbered (M3 → 3). order_key
+        // idempotency (the upsert below) still prevents a double-insert on replay. Online orders (no
+        // provisional) take the next server sequential exactly as before.
+        const provisionalId: string | null =
+          typeof manualOrder?.provisional_id === 'string' && manualOrder.provisional_id ? manualOrder.provisional_id : null
+        if (provisionalId) {
+          newOrderId = provisionalId
+        } else {
+          try {
+            newOrderId = await nextOrderId(orderEventId, truck.id)
+          } catch (err: any) {
+            console.error('[manual] order counter failed:', err.message)
+            return NextResponse.json({ error: 'Failed to generate order ID' }, { status: 500 })
+          }
         }
 
         // (c) INSERT — walk-up/manual orders ALWAYS confirm (operator present). .select() returns
