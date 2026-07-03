@@ -124,10 +124,21 @@ async function drainOnce(): Promise<DrainResult> {
   const ops = (await listOps()).filter(o => o.state !== 'conflict')
   let synced = 0, conflicts = 0
   for (const op of ops) {
+    // MALFORMED GUARD: a poison op from the buggy-code era can lack fields the whole pipeline relies on —
+    // order_key (server idempotency / dedup / removal all key on it), url (post target), op_id (storage
+    // key / removeOp). Such an op can NEVER sync idempotently or be cleanly removed → it would retry forever
+    // amber (and NaN attempts from a missing `attempts` never reaches MAX, so it never even escalates). Flag
+    // it 'conflict' (dismissible in the inspector) and SKIP — never post/retry it.
+    if (!op.order_key || !op.url || !op.op_id) {
+      if (op.op_id) await saveOp({ ...op, state: 'conflict', last_error: `malformed op — missing ${[!op.order_key && 'order_key', !op.url && 'url'].filter(Boolean).join('/') || 'required field'}` })
+      conflicts++
+      continue
+    }
     // COPY-ON-WRITE: the op is deserialized from storage and can be FROZEN/readonly in the runtime (observed
     // on-device: mutating it throws "Attempted to assign to readonly property", crashing the whole drain on
     // the first op). NEVER mutate op in place; write a NEW object each time and persist that.
-    const syncing = { ...op, state: 'syncing' as const, attempts: op.attempts + 1 }
+    // `attempts ?? 0` — a malformed op with a missing `attempts` would otherwise make NaN → never hits MAX.
+    const syncing = { ...op, state: 'syncing' as const, attempts: (op.attempts ?? 0) + 1 }
     await saveOp(syncing)
     let res: Response
     try {

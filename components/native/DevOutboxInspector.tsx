@@ -46,16 +46,22 @@ export function DevOutboxInspector() {
           </div>
           {ops.length === 0 ? (
             <p className="py-1 text-slate-500">empty ✓</p>
-          ) : ops.map(o => (
-            <div key={o.op_id} className="border-t border-slate-700 py-1">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-bold">{o.kind} · {actionOf(o)}</span>
-                <span className={`font-bold ${stateColor(o.state)}`}>{o.state} ×{o.attempts}</span>
+          ) : ops.map((o, i) => {
+            // MALFORMED ops (poison from the buggy-code era, e.g. order_key: undefined) must RENDER, not
+            // crash — every field is read defensively and the bad op is flagged so we can SEE it.
+            const missing = [!o.order_key && 'order_key', !o.op_id && 'op_id', !o.url && 'url'].filter(Boolean) as string[]
+            return (
+              <div key={o.op_id ?? `malformed-${i}`} className="border-t border-slate-700 py-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold">{o.kind ?? '?'} · {actionOf(o)}</span>
+                  <span className={`font-bold ${stateColor(o.state)}`}>{o.state ?? '?'} ×{o.attempts ?? '?'}</span>
+                </div>
+                <div className="truncate text-slate-400">key {o.order_key?.slice(0, 8) ?? '(none)'} · op {o.op_id?.slice(0, 6) ?? '?'} · seq {o.seq ?? '?'}{o.provisional_id ? ` · #${o.provisional_id}` : ''}</div>
+                {missing.length > 0 && <div className="truncate font-bold text-red-400">⚠ malformed — missing {missing.join(', ')}</div>}
+                {o.last_error && <div className="truncate text-red-300">⚠ {o.last_error}</div>}
               </div>
-              <div className="truncate text-slate-400">key {o.order_key.slice(0, 8)} · op {o.op_id.slice(0, 6)} · seq {o.seq}{o.provisional_id ? ` · #${o.provisional_id}` : ''}</div>
-              {o.last_error && <div className="truncate text-red-300">⚠ {o.last_error}</div>}
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : (
         <button type="button" onClick={() => setOpen(true)}
