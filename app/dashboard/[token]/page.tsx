@@ -1377,9 +1377,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   // 'confirmed' (or any not-yet-started status) — NOT finished; pairs with Start Event.
                   <span className="text-xs font-medium text-slate-400 flex-shrink-0">Not started</span>
                 )}
+                {/* Labeled, obviously-tappable trigger for the event-level actions (pause / +30 / finish /
+                    cancel / note) — names the menu so those actions are discoverable, not hidden behind ⋯. */}
                 <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
-                  className="text-slate-400 hover:text-white flex-shrink-0 text-base leading-none px-1">
-                  ···
+                  className="flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2.5 py-1 transition-colors">
+                  Event actions ▾
                 </button>
               </>
             ):(
@@ -1442,7 +1444,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               </div>
             )}
             <div className="flex gap-2 mb-3">
-              {activeEvent?.status==='open'&&<button onClick={()=>{if(paused){fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}else{setShowPauseModal(true)}}} className={`flex-1 py-2.5 rounded-xl text-sm font-black border transition-all ${paused?'bg-red-600 text-white border-red-600':'bg-white text-slate-700 border-slate-200 hover:border-red-300'}`}>{paused?'▶ Resume orders':'⏸ Pause orders'}</button>}
+              {/* Pause/Resume moved into the "Event actions ▾" menu (rarely used) — the full-width row is
+                  reclaimed for orders. An active pause still surfaces the prominent red Resume banner below. */}
               {/* Extra-wait: mobile/tablet keeps it here in the controls row; on lg+ it moves up beside
                   the stat boxes (above Prep) — see the summary row — so the full-width row is reclaimed. */}
               {renderExtraWait('flex-1 md:hidden')}
@@ -2641,6 +2644,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <button onClick={()=>saveEventNote(activeEvent.id)} className="mt-2 w-full bg-slate-100 text-slate-700 font-bold py-2 rounded-xl hover:bg-slate-200 text-sm">Save note</button>
             </div>
             <div className="space-y-2 border-t border-slate-100 pt-3">
+              {/* Pause / Resume orders (moved here from the full-width row). Only for a LIVE event. Same handler:
+                  paused → clear paused_until (resume); else → open the pause-duration modal. */}
+              {activeEvent.status==='open'&&(
+                paused?(
+                  <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
+                    className="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl hover:bg-red-700 text-sm">▶ Resume orders</button>
+                ):(
+                  <button onClick={()=>{setShowEventMenu(false);setShowPauseModal(true)}}
+                    className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">⏸ Pause orders</button>
+                )
+              )}
               <button onClick={()=>{extendEvent(activeEvent.id,30);setShowEventMenu(false)}}
                 className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">+30 min</button>
               <button onClick={()=>finishEvent(activeEvent.id)}
