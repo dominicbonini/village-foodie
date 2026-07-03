@@ -1170,29 +1170,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     fetchStock(pin,stockEventId)
   },[stockEventId,pin,fetchStock])
 
-  if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
-  if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
-  if(requiresPin&&!authenticated)return(
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
-      <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
-        <div className="text-4xl mb-4">🔒</div>
-        <h2 className="text-white font-black text-xl mb-2">Enter PIN</h2>
-        <p className="text-slate-500 text-sm mb-6">4-digit dashboard PIN</p>
-        <input type="number" maxLength={4} value={pinInput} onChange={e=>setPinInput(e.target.value.slice(0,4))} onKeyDown={e=>e.key==='Enter'&&submitPin()} placeholder="• • • •" className="w-full text-center text-2xl font-black tracking-widest bg-slate-700 text-white rounded-xl px-4 py-3 mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600"/>
-        {pinError&&<p className="text-red-400 text-sm mb-3">{pinError}</p>}
-        <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700">Unlock</button>
-      </div>
-    </div>
-  )
-
+  // ── Event resolution + displaySlots — MUST run UNCONDITIONALLY, ABOVE the early returns below ──────────
+  // resolvedEvent/activeEvent are consts (movable), but displaySlots is a HOOK (useMemo): if it sat after a
+  // conditional return (loading/error/pin) it would be skipped on those renders → "Rendered more hooks than
+  // during the previous render". Rules of Hooks: every hook runs on every render, in the same order.
   const resolvedEvent:TruckEvent|null=selectedOrDefaultEvent
   // Fall back to the last known event when upcomingEvents is transiently empty
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
-  const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
-  const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
   // OFFLINE-AWARE capacity for the day-load strip (Piece 1). ONLINE / no optimistic orders → returns the
   // server `slots` UNCHANGED (deviceQueuedOrders is ONLY ever populated by an OFFLINE create, so online this
@@ -1237,6 +1224,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       return slots
     }
   },[slots,orders,deviceQueuedOrders,activeEvent,productionSlotUnits,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
+
+  if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
+  if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
+  if(requiresPin&&!authenticated)return(
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+      <div className="bg-slate-800 rounded-2xl p-8 max-w-sm w-full text-center">
+        <div className="text-4xl mb-4">🔒</div>
+        <h2 className="text-white font-black text-xl mb-2">Enter PIN</h2>
+        <p className="text-slate-500 text-sm mb-6">4-digit dashboard PIN</p>
+        <input type="number" maxLength={4} value={pinInput} onChange={e=>setPinInput(e.target.value.slice(0,4))} onKeyDown={e=>e.key==='Enter'&&submitPin()} placeholder="• • • •" className="w-full text-center text-2xl font-black tracking-widest bg-slate-700 text-white rounded-xl px-4 py-3 mb-3 focus:outline-none focus:ring-2 focus:ring-orange-500 border border-slate-600"/>
+        {pinError&&<p className="text-red-400 text-sm mb-3">{pinError}</p>}
+        <button onClick={submitPin} className="w-full bg-orange-600 text-white font-black py-3 rounded-xl hover:bg-orange-700">Unlock</button>
+      </div>
+    </div>
+  )
+
+  const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
+  const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
   // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
   // orders resolve to the event-date-aware ASAP base, so they interleave with
