@@ -255,6 +255,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Tracks auth across fetchAll closures (authenticated state is stale inside the callback).
   // Once true, transient fetch failures keep existing state instead of showing the error screen.
   const authenticatedRef=useRef(false)
+  // Transient 429 on the very FIRST load (before auth): a momentary rate-limit burst must not render the
+  // hard "Access denied" lockout. Count retries so we back off + recover instead of erroring out.
+  const rl429RetriesRef=useRef(0)
   // Last successfully resolved event — survives transient empty upcomingEvents (e.g. failed refetch)
   const lastActiveEventRef=useRef<TruckEvent|null>(null)
   // SINGLE status-INDEPENDENT event resolution (cross-event fix): the explicitly-selected
@@ -355,6 +358,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
       const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
       if(res.status===401){if(data.requiresPin){setRequiresPin(true);setLoading(false);return};setError('Invalid access link');setLoading(false);return}
+      // Initial-load 429 = transient rate-limit burst → back off + retry, NEVER the hard "Access denied"
+      // lockout (operators are now exempt in proxy.ts; this is belt-and-braces for any first-paint edge on
+      // a shared IP). Up to 5 tries (1s,2s,4s,8s,8s). Keeps the loading spinner; self-heals on recovery.
+      if(res.status===429&&!authenticatedRef.current&&rl429RetriesRef.current<5){
+        const backoff=Math.min(1000*2**rl429RetriesRef.current,8000); rl429RetriesRef.current++
+        setLoading(true); setTimeout(()=>fetchAllRef.current(),backoff); return
+      }
       // Transient failure after successful auth — keep existing state, never blank the dashboard
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
@@ -376,7 +386,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // there's no event override. Without this, vanAutoPause stayed hardcoded false.
       if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
       if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
-      setAuthenticated(true); authenticatedRef.current=true; setLastRefresh(new Date())
+      setAuthenticated(true); authenticatedRef.current=true; rl429RetriesRef.current=0; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
         const eventsRes=await fetch(`/api/events/manage?token=${token}&upcoming=true`)

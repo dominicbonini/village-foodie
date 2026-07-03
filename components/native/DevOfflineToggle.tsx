@@ -7,6 +7,7 @@
 // NEVER shipped to operators: the whole render + the underlying setSimulatedOffline() are gated on
 // process.env.NODE_ENV. Mount alongside <OfflineBanner/> on the offline-capable screens.
 import { useEffect, useState } from 'react'
+import { isNativeApp } from '@/lib/native/device'
 import { setSimulatedOffline, isSimulatedOffline, startReachability } from '@/lib/native/reachability'
 
 const IS_PROD = process.env.NODE_ENV === 'production'
@@ -15,12 +16,15 @@ export function DevOfflineToggle() {
   const [sim, setSim] = useState(false)
 
   useEffect(() => {
-    if (IS_PROD) return
+    // Native + dev only. Gating on isNativeApp too (not just !IS_PROD) stops this from starting the /api/ping
+    // reachability loop on the WEB dashboard — where the offline outbox doesn't exist anyway — which was
+    // adding ~6 req/min to the shared-IP rate-limit bucket in local dev.
+    if (IS_PROD || !isNativeApp()) return
     startReachability()               // idempotent — ensure the checker is live even if the banner hasn't mounted yet
     setSim(isSimulatedOffline())      // reflect any state carried over from a previous screen
   }, [])
 
-  if (IS_PROD) return null
+  if (IS_PROD || !isNativeApp()) return null
 
   const toggle = () => {
     const next = !sim
