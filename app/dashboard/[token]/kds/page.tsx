@@ -23,6 +23,7 @@ import { countOps } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
+import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
@@ -116,7 +117,7 @@ export default function KdsPage() {
       setTruck(data.truck)
       setShowCookingStep(data.vanShowCookingStep ?? false)
       setKeepScreenOn(data.truck?.keep_screen_on ?? true)
-      setOrders(data.orders ?? [])
+      setOrders(prev => mergeOrders(prev, data.orders ?? []))
       setPausedUntil(data.truck?.paused_until ?? null)
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
       setCategoryOrder(data.categoryOrder ?? [])
@@ -449,7 +450,7 @@ export default function KdsPage() {
     setPin(pinInput)
     setTruck(data.truck)
     setShowCookingStep(data.vanShowCookingStep ?? false)
-    setOrders(data.orders ?? [])
+    setOrders(prev => mergeOrders(prev, data.orders ?? []))
     setPausedUntil(data.truck?.paused_until ?? null)
     setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
     setRequiresPin(false)

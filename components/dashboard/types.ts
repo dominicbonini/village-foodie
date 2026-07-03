@@ -44,6 +44,12 @@ export interface Order {
   paid_at: string | null
   collected_at: string | null
   created_at: string
+  /** Row version — bumped on every UPDATE by the orders_set_updated_at trigger. Drives the
+   *  version-guarded merge (lib/orders/mergeOrders.ts) so a stale read can't revert a newer status.
+   *  Optional: present at runtime (/api/dashboard select('*')); offline-created optimistic rows omit it. */
+  updated_at?: string
+  /** Set by 'collected' to the prior status; cleared by undo_collected. Surfaced for the merge/undo. */
+  status_before_collected?: string | null
 }
 
 export interface Slot {
