@@ -24,9 +24,11 @@ let consecutiveOks = 0
 let timer: ReturnType<typeof setInterval> | null = null
 let removeNet: (() => void) | null = null
 let started = false
+let simulatedOffline = false   // DEV-only override (see setSimulatedOffline); always false in production
 const listeners = new Set<Listener>()
 
 async function ping(): Promise<boolean> {
+  if (simulatedOffline) return false   // DEV-only: force the health-check OFFLINE without touching the network
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
   try {
@@ -66,6 +68,28 @@ export function stopReachability(): void {
 }
 
 export function isOnline(): boolean { return online }
+
+/**
+ * DEV-ONLY. Force the reachability health-check to report OFFLINE (`true`) or resume real checks (`false`),
+ * so the offline outbox / banner / order-queueing can be exercised in the simulator WITHOUT killing the
+ * Mac's network. Hard no-op in production (`NODE_ENV === 'production'`) so it can never affect operators.
+ * Toggling ON flips offline immediately (bypasses the fail-threshold debounce → banner + outbox engage on
+ * demand); toggling OFF re-checks NOW so a reachable server flips back online and drains the outbox promptly.
+ */
+export function setSimulatedOffline(v: boolean): void {
+  if (process.env.NODE_ENV === 'production') return
+  simulatedOffline = v
+  if (v) {
+    consecutiveFails = FAIL_THRESHOLD; consecutiveOks = 0
+    if (online) { online = false; emit() }
+  } else {
+    consecutiveFails = 0; consecutiveOks = 0
+    void check()
+  }
+}
+
+/** DEV-ONLY. Current simulate-offline override state (see setSimulatedOffline). */
+export function isSimulatedOffline(): boolean { return simulatedOffline }
 
 /** Subscribe to online↔offline transitions. Returns an unsubscribe fn. Fires immediately with current state. */
 export function onReachabilityChange(fn: Listener): () => void {

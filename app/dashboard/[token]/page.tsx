@@ -49,6 +49,7 @@ import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
@@ -1230,6 +1231,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
       <OfflineBanner onSynced={()=>{setDeviceQueuedOrders([]);fetchAll()}} />
+      {/* DEV-ONLY floating pill to force offline (renders null in production) — validates the offline outbox. */}
+      <DevOfflineToggle />
       <DeviceSetupGate token={token} />
       {/* Header */}
       <AppHeader
