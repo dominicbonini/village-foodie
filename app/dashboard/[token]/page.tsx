@@ -1203,22 +1203,36 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // server-only state; it can never take the page down.
     try{
       if(!Array.isArray(slots)||slots.length===0)return slots
-      if(deviceQueuedOrders.length===0||!activeEvent)return slots            // online / no optimistic orders → server slots (unchanged)
+      // ONLINE-SAFETY GATE (critical): recompute ONLY when the device holds offline changes — offline CREATES
+      // (deviceQueuedOrders) OR offline STATUS changes (pendingStatusOps). Both are populated ONLY offline, so
+      // online BOTH are empty → return server `slots` UNCHANGED (byte-identical live path; the client recompute
+      // can never affect the online strip, and any client/server divergence stays offline-only).
+      const hasOfflineChanges=deviceQueuedOrders.length>0||pendingStatusOps.length>0
+      if(!hasOfflineChanges||!activeEvent)return slots
       if(!serverCatConfigs||Object.keys(serverCatConfigs).length===0)return slots  // engine inputs not loaded yet → server slots
-      const units=productionSlotUnits||{}
+      // Stage 2b — FROM-ORDERS recompute (base = {}, NOT the frozen productionSlotUnits blob): mirror the
+      // server's buildUnitsFromOrders so offline STATUS changes are reflected, not just creates. Source = server
+      // orders + offline creates not yet synced (dedup by order_key), EVENT-SCOPED (null/other-event excluded,
+      // matching .eq('event_id', …)). Apply the Stage-2 OVERLAY status, then the ENGINE'S OWN occupied filter —
+      // so ready/collected/cancelled/rejected RELEASE and pending/confirmed/modified/cooking OCCUPY. On sync the
+      // server rebuild + overlay-clear reconcile to the same occupancy → seamless handoff. NO engine change.
+      const serverOrders=Array.isArray(orders)?orders:[]
+      const syncedKeys=new Set(serverOrders.map(o=>o.order_key))
+      const source=[...serverOrders,...deviceQueuedOrders.filter(o=>o&&!syncedKeys.has(o.order_key))]
+        .filter(o=>o&&(o as {event_id?:string|null}).event_id===activeEvent.id)
+      const overlay=buildStatusOverlay(source,pendingStatusOps)   // outbox-derived optimistic statuses (Stage 2)
       const timeMap:Record<string,string>={}
       slots.forEach(s=>{if(s?.collection_time)timeMap[s.collection_time]=s.production_window_key||s.collection_time})
       const eventStart=activeEvent.start_time||''
+      // buildUnitsFromOrders' .in(...) status filter (§71) reused as a constant — the whole release mechanism.
+      const OCCUPYING=['pending','confirmed','modified','cooking']
       const merged:Record<string,Record<string,number>>={}
-      for(const k in units)merged[k]={...(units[k]||{})}
-      // Fold ONLY optimistic orders NOT yet in the server `orders` — a synced order is already in `units`
-      // (same fetchAll response), keeping the fold EXACTLY-ONCE across the sync boundary (no transient
-      // double-count while deviceQueuedOrders awaits its prune).
-      const serverOrders=Array.isArray(orders)?orders:[]
-      deviceQueuedOrders.filter(o=>o&&o.event_id===activeEvent.id&&!serverOrders.some(so=>so.order_key===o.order_key)).forEach(o=>{
-        const ct=(o as {slot?:string|null}).slot||eventStart
+      source.forEach(o=>{
+        const status=overlay.get(o.order_key)?.status??(o as {status?:string}).status
+        if(!status||!OCCUPYING.includes(status))return          // released (ready/collected/cancelled/rejected) → excluded
+        const ct=(o as {slot?:string|null}).slot||eventStart     // slot||eventStart (mirrors buildUnitsFromOrders)
         if(!ct)return
-        const ps=timeMap[ct]||ct
+        const ps=timeMap[ct]||ct                                 // window key = timeMap[ct] || ct
         const lines=normaliseOrderLines((o.items as Array<{name:string;quantity:number|string}>)||[],(o as {deals?:Array<{slots?:Record<string,unknown>}>|null}).deals)
         const delta=orderItemsToQtyByCat(lines,itemCategoryMap||{})
         merged[ps]=mergeQtyByCat(merged[ps]||{},delta)
@@ -1228,10 +1242,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins)
       return slots.map(s=>({...s,tone:ind.get(s.collection_time)?.tone??s.tone,label:ind.get(s.collection_time)?.label??s.label}))
     }catch(e){
-      console.warn('[displaySlots] offline capacity fold failed — using server slots',e)
+      console.warn('[displaySlots] offline capacity recompute failed — using server slots',e)
       return slots
     }
-  },[slots,orders,deviceQueuedOrders,activeEvent,productionSlotUnits,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
+  },[slots,orders,deviceQueuedOrders,pendingStatusOps,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
 
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
   if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
