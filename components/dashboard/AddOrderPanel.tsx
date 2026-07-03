@@ -20,7 +20,8 @@ import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
-import { gatedAction, nextProvisionalId } from '@/lib/native/orderGate'
+import { gatedAction, nextProvisionalId, seedProvisionalSeq } from '@/lib/native/orderGate'
+import { isNativeApp } from '@/lib/native/device'
 import { newUuid } from '@/lib/native/outbox'
 import { isOnline } from '@/lib/native/reachability'
 
@@ -123,6 +124,15 @@ export function AddOrderPanel({
   const [activeMenuCat, setActiveMenuCat] = useState<string | null>(null)
   const [manualItems, setManualItems] = useState<BasketItem[]>([])
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
+  // Seed the offline provisional counter so offline order numbers CONTINUE from the highest known order
+  // (e.g. orders 1-4 → offline M5, M6) instead of restarting. Native only; monotonic (seedProvisionalSeq
+  // uses max). The running increment in nextProvisionalId handles multiple offline orders (the panel's
+  // `orders` doesn't refetch while offline). id letter prefix is stripped ("M5"→5, "4"→4).
+  useEffect(() => {
+    if (!isNativeApp()) return
+    const highest = orders.reduce((m, o) => Math.max(m, parseInt(String(o.id).replace(/^\D+/, ''), 10) || 0), 0)
+    void seedProvisionalSeq(highest)
+  }, [orders])
   const [loading, setLoading] = useState(false)
 
   // ── event / slot state ──────────────────────────────────────────────────────

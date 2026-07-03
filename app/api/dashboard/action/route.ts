@@ -729,6 +729,24 @@ export async function POST(req: NextRequest) {
         }
         manualOrderKey = manualOrderRow.order_key
 
+        // (c2) OFFLINE-ORIGIN order KEEPS its device number (e.g. M5) — so ADVANCE the event's order counter
+        //      to max(current, provisionalNumber). Otherwise the counter stays behind the offline numbers and
+        //      the next ONLINE order restarts at 5 and numerically overlaps M5. Under the SAME event lock as
+        //      the online increment_event_order_counter, so read-then-max is race-safe here. Idempotent on
+        //      replay (max never regresses). Null-event → the truck-level counter fallback.
+        if (provisionalId) {
+          const provNum = parseInt(provisionalId.replace(/^\D+/, ''), 10)
+          if (Number.isFinite(provNum) && provNum > 0) {
+            if (orderEventId) {
+              const { data: ev } = await supabase.from('truck_events').select('order_counter').eq('id', orderEventId).maybeSingle()
+              if (ev && provNum > (ev.order_counter ?? 0)) await supabase.from('truck_events').update({ order_counter: provNum }).eq('id', orderEventId)
+            } else {
+              const { data: tr } = await supabase.from('trucks').select('order_counter').eq('id', truck.id).maybeSingle()
+              if (tr && provNum > ((tr as { order_counter?: number }).order_counter ?? 0)) await supabase.from('trucks').update({ order_counter: provNum }).eq('id', truck.id)
+            }
+          }
+        }
+
         // (d) Occupy the oven window — REBUILD from orders (deterministic; the SAME path cancel/reject/
         //     collect use) instead of the old incremental read-merge-blind-SET (clobber/drift vector).
         //     Recomputes the slot total = the true sum of this event's orders (incl. the just-inserted

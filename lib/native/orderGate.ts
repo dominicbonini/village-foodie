@@ -51,14 +51,26 @@ export interface GateResult {
   order_key: string
 }
 
-/** Device-prefixed provisional display number for an offline-created order (e.g. 'A13'), stable + non-
- *  colliding across devices. Replaced by the server's real sequential id at sync. */
+/** Device-prefixed provisional display number for an offline-created order (e.g. 'A13'), CONTINUING the
+ *  sequence — seed the counter from the highest known order first (seedProvisionalSeq) so orders 1-4 mint
+ *  M5, M6 rather than restarting. The M-number is KEPT as the permanent id on sync (server uses provisional_id
+ *  as the order id). */
 export async function nextProvisionalId(): Promise<string> {
   const letter = await deviceLetter()
   const cur = parseInt((await Preferences.get({ key: PROV_SEQ_KEY })).value ?? '0', 10) || 0
   const next = cur + 1
   await Preferences.set({ key: PROV_SEQ_KEY, value: String(next) })
   return `${letter}${next}`
+}
+
+/** Seed the provisional counter so offline numbers CONTINUE from the highest known order (not restart at 1).
+ *  MONOTONIC — only ever raises hg_prov_seq (max), never rewinds; the running increment in nextProvisionalId
+ *  still prevents multi-offline-order collisions (the panel's `orders` doesn't refetch while offline). Call on
+ *  each sync/load with the highest known order number (letter prefix STRIPPED, e.g. "M5"→5, "4"→4). */
+export async function seedProvisionalSeq(highestKnown: number): Promise<void> {
+  if (!Number.isFinite(highestKnown) || highestKnown <= 0) return
+  const cur = parseInt((await Preferences.get({ key: PROV_SEQ_KEY })).value ?? '0', 10) || 0
+  if (highestKnown > cur) await Preferences.set({ key: PROV_SEQ_KEY, value: String(highestKnown) })
 }
 
 async function post(url: string, body: Record<string, unknown>): Promise<Response> {
