@@ -2172,6 +2172,16 @@ There are **two separate offline persistence layers**, and a stuck "N order(s) s
 
 **Diagnostic rule:** if a "syncing" relic **survives both Clear AND reinstall**, it is NOT the Preferences outbox — check the **service-worker IndexedDB** layer (Web Inspector → Storage → IndexedDB → `vf-offline / vf-mutation-queue`) and the **registered SW** (service workers are sticky — an old registered `sw.js` keeps controlling until a byte-different one activates *after all clients close*, which a single-window Capacitor app rarely does → cached-code compounds this). **Purge = clear WebKit data**: unregister the SW + delete the `vf-offline` IndexedDB (Web Inspector), or **Simulator → Erase All Content and Settings**. A Preferences wipe / app delete alone will not clear it. (Real incident: the "1 order syncing" relic tied to an order readied offline with the buggy code — the order was later deleted server-side, yet the count persisted, because its `ready` POST was stuck in `vf-mutation-queue`, not the outbox.)
 
+## ⚠️ Counter keys vs op keys — the phantom-op trap (the ACTUAL resolution of the "1 order syncing" relic)
+
+The SW-IndexedDB hypothesis above was **not** the final root cause of the persistent "1 order syncing". A console dump of Capacitor Preferences showed the outbox held **ZERO op keys** — only `hg_device_letter`, `hg-native-auth`, `hg_prov_seq`, and `hg_outbox_seq` (value `"1"`). The phantom was an **enumeration bug**, not stuck data:
+
+`hg_outbox_seq` (the per-device provisional/sequence counter) and `hg_prov_seq` are **COUNTERS, not ops** — but `hg_outbox_seq` shared the op-key prefix `'hg_outbox_'`, so the outbox enumerators (`listOps` / `countPendingOps` / `clearAllOps` / the dev inspector) swept it in as a malformed op: `JSON.parse('1') = 1` → a shapeless "op" with no `order_key` → **counted as "1 order syncing", rendered "malformed — missing order_key"**. It survived **every** storage purge (Clear / reinstall / Erase) because the counter *legitimately* persists and is *supposed* to — the defect was in reading it, not in the data.
+
+**FIX (`lib/native/outbox.ts`):** op keys use the distinct prefix **`'hg_outbox_op_'`** (which `hg_outbox_seq` does not start with); enumerators use **`isOpKey`** (has the op prefix AND is not in `NON_OP_KEYS`) + **`isOpShape`** (parsed value is an object with string `op_id` + `order_key`). A counter can no longer be enumerated or shape-parsed as an op.
+
+**LESSON:** when a "stuck" item **survives all storage clears**, suspect it is being **MIS-READ** — a non-op enumerated as an op — *before* assuming stuck data in a harder-to-clear layer. And **check key-prefix collisions between counter keys and record keys**: a counter/marker key that is a prefix-match of the record namespace (`startsWith`) will be silently enumerated as a (malformed) record. Namespaces for records and for counters must not overlap under `startsWith`.
+
 ## Three-stage offline progression
 
 ### Stage A — Read-only offline cache (post-trial as of V6.6)
