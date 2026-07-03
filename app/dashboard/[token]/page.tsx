@@ -121,7 +121,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
   const[lastRefresh,setLastRefresh]=useState(new Date())
-  const[activeTab,setActiveTab]=useState<'orders'|'add'|'stock'>('orders')
+  const[activeTab,setActiveTab]=useState<'orders'|'add'|'stock'|'settings'>('orders')
   const[actionLoading,setActionLoading]=useState<string|null>(null)
   // Shared stacked-toast system (lib/useToasts) + the ready-email-undo machinery (lib/useReadyEmailUndo,
   // wired below after fetchAll). Extracted so KDS + manage can reuse the SAME implementation.
@@ -1285,7 +1285,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* Nav tabs row */}
         <div className="px-4 overflow-x-auto">
           <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center"}>
-            {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock']] as [typeof activeTab,string][]).map(([tab,label])=>(
+            {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock'],['settings','Settings']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
             {/* Utility actions — desktop only */}
@@ -1306,8 +1306,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       </div>
 
-      {/* Event bar — Orders, Add Order, and Menu & Stock tabs */}
-      {(activeTab==='orders'||activeTab==='add'||activeTab==='stock')&&(
+      {/* Event bar — Orders, Add Order, Menu & Stock, and Settings tabs (Settings has per-event toggles
+          — offline protection, order-ready, kitchen capacity — that need the active-event context). */}
+      {(activeTab==='orders'||activeTab==='add'||activeTab==='stock'||activeTab==='settings')&&(
         <div id="dashboard-event-bar" className="bg-slate-800 border-b border-slate-700 shrink-0 z-30 relative">
           <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 py-2 flex items-center gap-2"}>
             {activeEvent?(
@@ -1810,8 +1811,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         )}
 
 
-        {/* MENU & STOCK TAB */}
-        {activeTab==='stock'&&(
+        {/* SETTINGS TAB (setup-time config: printing, auto-accept, offline protection, order-ready
+            notifications, kitchen capacity). The service-time Menu & Stock list renders in its own block
+            below. Sections relocated VERBATIM from the old Menu & Stock tab — no behaviour change. */}
+        {activeTab==='settings'&&(
           <div className="space-y-4">
             {/* Kitchen ticket printing (iPad-native-only + Max-gated inside the component). */}
             {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
@@ -1962,6 +1965,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* MENU & STOCK TAB (service-time: per-event stock + availability operators adjust mid-service) */}
+        {activeTab==='stock'&&(
+          <div className="space-y-4">
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Items — this event</p>
               <p className="text-slate-500 text-xs mb-4">Category totals, item limits and availability for the selected event — these reset each event. Changes take effect immediately.</p>
