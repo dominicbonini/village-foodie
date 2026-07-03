@@ -50,6 +50,7 @@ import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, offlineStatusPatch } from '@/
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
+import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
@@ -1270,8 +1271,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
       <OfflineBanner onSynced={()=>{fetchAll()}} />
-      {/* DEV-ONLY floating pill to force offline (renders null in production) — validates the offline outbox. */}
+      {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
+      <DevOutboxInspector />
       <DeviceSetupGate token={token} />
       {/* Header */}
       <AppHeader

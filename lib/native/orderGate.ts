@@ -132,24 +132,30 @@ async function drainOnce(): Promise<DrainResult> {
     let res: Response
     try {
       res = await post(syncing.url, syncing.body)
-    } catch {
+    } catch (e: unknown) {
       // Thrown fetch = NO server response (genuine offline OR a per-op failure). If this op has now failed
       // MAX_ATTEMPTS times, treat it as poison: flag 'conflict' and CONTINUE so it can't block the ops behind
       // it nor loop amber forever (the earlier hole — the catch used to only ever set 'pending' + break).
       // Below MAX it's likely a transient/offline blip → keep 'pending' and STOP; retry on the next drain.
-      if (syncing.attempts >= MAX_ATTEMPTS) { await saveOp({ ...syncing, state: 'conflict' }); conflicts++; continue }
-      await saveOp({ ...syncing, state: 'pending' })
+      const last_error = `network: ${e instanceof Error ? e.message : 'thrown fetch (no response)'}`
+      if (syncing.attempts >= MAX_ATTEMPTS) { await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++; continue }
+      await saveOp({ ...syncing, state: 'pending', last_error })
       break
     }
     if (res.ok) {
       await removeOp(syncing.op_id); synced++
-    } else if (res.status === 409) {
-      // Genuine conflict (e.g. the order was cancelled online while advanced offline) → flag, don't overwrite.
-      await saveOp({ ...syncing, state: 'conflict' }); conflicts++
-    } else if (syncing.attempts >= MAX_ATTEMPTS) {
-      await saveOp({ ...syncing, state: 'conflict' }); conflicts++   // give up auto-retry → surface for review
     } else {
-      await saveOp({ ...syncing, state: 'pending' })                 // transient server error → retry next drain
+      // Capture the server's rejection reason for the dev inspector (HTTP status + body error), THEN branch.
+      const data = await res.json().catch(() => ({} as Record<string, unknown>))
+      const last_error = `HTTP ${res.status}${(data as any)?.error ? ` — ${(data as any).error}` : ''}`
+      if (res.status === 409) {
+        // Genuine conflict (e.g. the order was cancelled online while advanced offline) → flag, don't overwrite.
+        await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++
+      } else if (syncing.attempts >= MAX_ATTEMPTS) {
+        await saveOp({ ...syncing, state: 'conflict', last_error }); conflicts++   // give up auto-retry → surface for review
+      } else {
+        await saveOp({ ...syncing, state: 'pending', last_error })                 // transient server error → retry next drain
+      }
     }
   }
   const remaining = (await listOps()).filter(o => o.state !== 'conflict').length

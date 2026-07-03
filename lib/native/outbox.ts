@@ -34,6 +34,7 @@ export interface OutboxOp {
   attempts: number
   provisional_id: string // device-prefixed display number for offline creates (e.g. 'A13'); '' for status ops
   state: 'pending' | 'syncing' | 'conflict'
+  last_error?: string    // last drain failure (HTTP status + server error, or thrown-fetch) — for the dev inspector
 }
 
 /** uuid v4 (crypto-backed; falls back to a random string on ancient runtimes). */
@@ -126,6 +127,13 @@ export async function clearConflicts(): Promise<void> {
 /** Remove an op — ONLY after a definitive server ACK (or a resolved conflict). */
 export async function removeOp(op_id: string): Promise<void> {
   await Preferences.remove({ key: KEY_PREFIX + op_id })
+}
+
+/** DEV/recovery: wipe EVERY outbox op. Safe — an op's server effect is already applied (idempotent replay),
+ *  so clearing only drops the local bookkeeping; used to clear poison ops from prior buggy-code testing. */
+export async function clearAllOps(): Promise<void> {
+  const { keys } = await Preferences.keys()
+  for (const k of keys) if (k.startsWith(KEY_PREFIX)) await Preferences.remove({ key: k })
 }
 
 /** Persist a mutated op (e.g. attempts++, state → 'syncing' | 'conflict'). */
