@@ -103,24 +103,41 @@ export async function gatedAction(opts: {
 
 export interface DrainResult { synced: number; conflicts: number; remaining: number }
 
-/** Replay the outbox FIFO on reconnect. Idempotent (server dedupes on order_key / status precondition):
- *  a 2xx ACK → remove; a 409 conflict → flag for review (kept, state='conflict'); a network error → stop
- *  (remaining ops stay pending for the next reconnect). Never creates duplicates. */
+// SERIALIZE: only ONE drain may run at a time. OfflineBanner fires drainOutbox() from BOTH
+// onReachabilityChange(online) AND the backoff scheduleRetry — with no lock they overlap, and Drain B can
+// saveOp() an op that Drain A already removeOp()'d (the just-removed key comes back → synced-but-not-removed,
+// stuck amber forever). A concurrent call coalesces onto the in-flight run instead of starting a second.
+let drainInFlight: Promise<DrainResult> | null = null
+
+/** Replay the outbox FIFO on reconnect. SERIALIZED (see drainInFlight). Idempotent replay (server dedupes on
+ *  order_key upsert / status precondition), so a re-post of an already-applied op is a safe no-op that returns
+ *  2xx → the op is finally removed. Outcomes: 2xx → remove; 409 → conflict (flag for review); thrown fetch →
+ *  stop if likely offline, but flag+skip once it has failed MAX_ATTEMPTS so one poison op can't block the
+ *  queue nor loop amber forever. Never creates duplicates. */
 export async function drainOutbox(): Promise<DrainResult> {
+  if (drainInFlight) return drainInFlight                        // already running → coalesce (race fix)
+  drainInFlight = drainOnce().finally(() => { drainInFlight = null })
+  return drainInFlight
+}
+
+async function drainOnce(): Promise<DrainResult> {
   const ops = (await listOps()).filter(o => o.state !== 'conflict')
   let synced = 0, conflicts = 0
   for (const op of ops) {
     // COPY-ON-WRITE: the op is deserialized from storage and can be FROZEN/readonly in the runtime (observed
     // on-device: mutating it throws "Attempted to assign to readonly property", crashing the whole drain on
-    // the first op → nothing ever syncs/removes → the "Syncing" banner sticks). NEVER mutate op in place;
-    // write a NEW object each time and persist that. Also cleaner: no aliasing of the persisted snapshot.
+    // the first op). NEVER mutate op in place; write a NEW object each time and persist that.
     const syncing = { ...op, state: 'syncing' as const, attempts: op.attempts + 1 }
     await saveOp(syncing)
     let res: Response
     try {
       res = await post(syncing.url, syncing.body)
     } catch {
-      // Lost connectivity mid-drain → stop; this + later ops stay 'pending' for next time.
+      // Thrown fetch = NO server response (genuine offline OR a per-op failure). If this op has now failed
+      // MAX_ATTEMPTS times, treat it as poison: flag 'conflict' and CONTINUE so it can't block the ops behind
+      // it nor loop amber forever (the earlier hole — the catch used to only ever set 'pending' + break).
+      // Below MAX it's likely a transient/offline blip → keep 'pending' and STOP; retry on the next drain.
+      if (syncing.attempts >= MAX_ATTEMPTS) { await saveOp({ ...syncing, state: 'conflict' }); conflicts++; continue }
       await saveOp({ ...syncing, state: 'pending' })
       break
     }
