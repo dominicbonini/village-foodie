@@ -49,7 +49,7 @@ import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { removePendingStatusOp } from '@/lib/native/outbox'
-import { isOnline } from '@/lib/native/reachability'
+import { isOnline, startReachability, onReachabilityChange } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
@@ -209,6 +209,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Reactive device-online flag (navigator.onLine + online/offline transition events). Drives BOTH the
   // immediate reconnect-heartbeat (heartbeat-effect dep) AND the operator-only offline-pause suppression.
   const[deviceOnline,setDeviceOnline]=useState(typeof navigator!=='undefined'?navigator.onLine:true)
+  // SINGLE offline source for all offline gating (settings-lock, the header chip, and — later — stock/event
+  // gating). Driven by the SAME reachability signal OfflineBanner/heartbeat use, so everything agrees. isOffline
+  // is false online → every gated control is enabled exactly as today (online path byte-identical).
+  const[isOffline,setIsOffline]=useState(false)
   const[showPauseModal,setShowPauseModal]=useState(false)
   // Offline-pause notification: durable marker from /api/dashboard (set only by heartbeat-monitor,
   // survives the reconnect clear). Fires a one-time popup when it's NEWER than this device's ack.
@@ -447,6 +451,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }})
 
   useEffect(()=>{fetchAll()},[fetchAll])
+
+  // SINGLE offline source: subscribe to the reachability module (same signal as OfflineBanner/heartbeat).
+  // Fires immediately with the current state; startReachability is idempotent (OfflineBanner may already
+  // have started it). Drives isOffline for the settings-lock + the header chip.
+  useEffect(()=>{startReachability();return onReachabilityChange(online=>setIsOffline(!online))},[])
 
   useEffect(()=>{
     if(selectedEventId||!upcomingEvents.length) return
@@ -1388,6 +1397,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
           the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
       <CapacityBreachBanner breaches={capacityBreaches} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
+      {/* Persistent OFFLINE chip — shown on EVERY tab whenever offline (single isOffline source), so the
+          operator always knows. Complements OfflineBanner (order-focused, native-only): this signals the
+          global offline state + what's locked, on Settings/Stock too. Slim shrink-0 bar in the app-shell. */}
+      {isOffline&&(
+        <div className="w-full bg-slate-800 text-white text-xs font-semibold px-4 py-1.5 flex items-center justify-center gap-2 shrink-0">
+          <span>📴 Offline — settings are locked until you reconnect</span>
+        </div>
+      )}
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
       <DevOutboxInspector />
@@ -1981,6 +1998,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className="space-y-4">
             {/* Kitchen ticket printing (iPad-native-only + Max-gated inside the component). */}
             {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
+            {/* SETTINGS-LOCK notice — the server-backed settings below are disabled offline (they'd fail
+                silently / desync the engine). Printer settings above stay editable (device-local). */}
+            {isOffline&&(
+              <div className="bg-slate-100 border border-slate-200 rounded-2xl p-3 text-sm text-slate-600 flex items-center gap-2">
+                <span aria-hidden>📴</span>
+                <span>You&apos;re offline — reconnect to change these settings. (Printer settings above still work offline.)</span>
+              </div>
+            )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-center justify-between">
                 <div>
@@ -1989,7 +2014,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
                   {savingAutoAccept&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)}/>
+                  <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)} disabled={isOffline}/>
                 </div>
               </div>
             </div>
@@ -2000,7 +2025,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
                   <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
                 </div>
-                <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)}/>
+                <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline}/>
               </div>
             )}
             {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
@@ -2014,7 +2039,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <p className="text-sm font-semibold text-slate-800">Order-ready notifications</p>
                   <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
                 </div>
-                <Toggle on={effectiveOrderReady} onToggle={()=>setOrderReadyOverride(!effectiveOrderReady)}/>
+                <Toggle on={effectiveOrderReady} onToggle={()=>setOrderReadyOverride(!effectiveOrderReady)} disabled={isOffline}/>
               </div>
             )}
             {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
@@ -2047,7 +2072,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       {truckMenu.categories.map(catObj=>{
                         const hasCap=kitchenCapacity!=null
                         const locked=(catObj.prep_secs??0)>0
-                        const capDisabled=locked||!hasCap||!activeEvent.van_id
+                        const capDisabled=locked||!hasCap||!activeEvent.van_id||isOffline
                         return(
                           <Fragment key={catObj.id??catObj.name}>
                             <span className="min-w-0 truncate text-slate-700 font-medium text-sm">{catObj.name}</span>
@@ -2055,11 +2080,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                 ∞ = no batch limit (null), unchanged write (updateCategoryField 'batch_size'). */}
                             <BatchSizeSelect
                               ariaLabel={`${catObj.name} items per batch`}
+                              disabled={isOffline}
                               valueSize={catObj.batch_size}
                               onChange={val=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,batch_size:val??undefined}:c)}:prev);updateCategoryField(catObj.id??'','batch_size',val)}}
                               className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400" />
                             <PrepTimeSelect
                               valueSecs={catObj.prep_secs}
+                              disabled={isOffline}
                               ariaLabel={`${catObj.name} prep time`}
                               onChange={secs=>{setTruckMenu(prev=>prev?{...prev,categories:prev.categories?.map(c=>c.id===catObj.id?{...c,prep_secs:secs}:c)}:prev);updateCategoryField(catObj.id??'','prep_secs',secs)}}
                               className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"/>
@@ -2093,7 +2120,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <select
                       value={kitchenCapacity??''}
                       aria-label="Total capacity (items)"
-                      disabled={!activeEvent.van_id}
+                      disabled={!activeEvent.van_id||isOffline}
                       onChange={e=>saveKitchenCapacity(e.target.value===''?null:parseInt(e.target.value))}
                       className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                       <option value="">∞</option>
@@ -2104,7 +2131,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     <select
                       value={capacityWindowMins}
                       aria-label="Capacity window (minutes)"
-                      disabled={!activeEvent.van_id||kitchenCapacity==null}
+                      disabled={!activeEvent.van_id||kitchenCapacity==null||isOffline}
                       onChange={e=>saveCapacityWindow(parseInt(e.target.value))}
                       className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
                       {Array.from({length:20},(_,i)=>i+1).concat((capacityWindowMins>20)?[capacityWindowMins]:[]).map(n=>(
