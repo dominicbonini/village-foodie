@@ -44,7 +44,13 @@ function isOpShape(v: unknown): v is OutboxOp {
     && typeof (v as OutboxOp).order_key === 'string'
 }
 
-export type OutboxKind = 'create' | 'status' | 'edit'
+// 'stock' — an offline stock write (set_stock / set_category_stock / set_modifier_option_*). It has no real
+// order_key; the `order_key` field instead holds a SYNTHETIC stable key `${event_id}:${action}:${target}` so
+// (a) it satisfies the drain's malformed-guard (which requires a truthy order_key), and (b) a re-queue for the
+// SAME target+action COALESCES (see enqueue) → absolute last-write-wins locally, fewer replays. Idempotent on
+// replay (set_stock is an absolute UPSERT). Excluded from the status-op paths (listPendingStatusOps filters
+// kind==='status'), so it never touches the order overlay.
+export type OutboxKind = 'create' | 'status' | 'edit' | 'stock'
 
 export interface OutboxOp {
   op_id: string          // uuid — dedupe / logging
@@ -96,6 +102,14 @@ export async function enqueue(input: {
   body: Record<string, unknown>
   provisional_id?: string
 }): Promise<OutboxOp> {
+  // COALESCE stock ops: a newer stock write for the SAME target (synthetic order_key) supersedes an older
+  // pending one — absolute last-write-wins, fewer replays. Only pending/syncing (not 'conflict', which needs
+  // review). Order/status/edit ops are never coalesced (each is a distinct mutation).
+  if (input.kind === 'stock' && input.order_key) {
+    for (const prev of await listOps()) {
+      if (prev.kind === 'stock' && prev.order_key === input.order_key && prev.state !== 'conflict') await removeOp(prev.op_id)
+    }
+  }
   const op: OutboxOp = {
     op_id: newUuid(),
     kind: input.kind,

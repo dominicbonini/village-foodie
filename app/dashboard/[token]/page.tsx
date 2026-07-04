@@ -1009,15 +1009,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // await before showing it. no_item_cap rides along so the follow-category state shows pre-POST.
     // No fetchMenu here: it re-pulled default_stock and was a clobber vector.
     setItemStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.name===itemName);const next=ex?cur.map(s=>s.name===itemName?{...s,available,stock_count:stockCount,no_item_cap:noItemCap}:s):[...cur,{name:itemName,available,stock_count:stockCount,no_item_cap:noItemCap,orders_count:0,category:category||null}];return{...prev,[key]:next}})
-    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_stock',itemName,available,stockCount,noItemCap,category,event_id})})}
-    catch(err){console.warn('[updateStock] write failed (will re-sync on next refresh):',err)}
+    // Through the offline GATE (kind:'stock'): online → posts directly (unchanged); offline → durable outbox +
+    // optimistic stays. Synthetic key `${event_id}:set_stock:${itemName}` coalesces re-queues (last-write-wins).
+    const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_stock',itemName,available,stockCount,noItemCap,category,event_id},kind:'stock',order_key:`${event_id??'none'}:set_stock:${itemName}`,online:isOnline()})
+    if(r.queued)showToast('Stock saved on this device — will sync when back online')
   }
   const updateCategoryStock=async(category:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     const key=event_id??'__none__'
     setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,stock_count:stockCount}:s):[...cur,{category,stock_count:stockCount,default_stock:null,orders_count:0}];return{...prev,[key]:next}})
-    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_category_stock',category,stockCount,event_id})})}
-    catch(err){console.warn('[updateCategoryStock] write failed (will re-sync on next refresh):',err)}
+    const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_category_stock',category,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_category_stock:${category}`,online:isOnline()})
+    if(r.queued)showToast('Stock saved on this device — will sync when back online')
   }
 
   // Stage B re-source: options now live on item.modifierGroups (category.modifierGroups was emptied),
@@ -1041,13 +1043,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const updateModifierOptionAvailable=async(optionId:string,available:boolean)=>{
     const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{available}) // optimistic
-    await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_available',optionId,available,event_id})})
+    // Offline gate (kind:'stock'). Key includes the ACTION so an option's availability + stock don't collide.
+    const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_available',optionId,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_available:${optionId}`,online:isOnline()})
+    if(r.queued)showToast('Stock saved on this device — will sync when back online')
   }
   const updateModifierOptionStock=async(optionId:string,stockCount:number|null)=>{
     const event_id=selectedEventRef.current?.id??null
     patchOption(optionId,{stock_count:stockCount}) // optimistic
-    try{await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_modifier_option_stock',optionId,stockCount,event_id})})}
-    catch(err){console.warn('[updateModifierOptionStock] write failed (will re-sync on next refresh):',err)}
+    const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_modifier_option_stock',optionId,stockCount,event_id},kind:'stock',order_key:`${event_id??'none'}:set_modifier_option_stock:${optionId}`,online:isOnline()})
+    if(r.queued)showToast('Stock saved on this device — will sync when back online')
   }
 
   const openEvent=async(eventId:string)=>{
@@ -1276,6 +1280,33 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     }
   },[slots,orders,deviceQueuedOrders,statusOverlay,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
 
+  // STOCK ↔ ORDERS (offline): fold offline-order consumption into the displayed orders_count so remaining
+  // ticks down as the operator takes orders offline. EXACTLY-ONCE: only offline orders NOT yet in server
+  // `orders` (dedup by order_key), event-scoped, and NOT cancelled/rejected (overlay status). On sync the
+  // server's own decrement covers the same orders and they prune from deviceQueuedOrders → the fold empties →
+  // no double-decrement. FAIL-SAFE: any error → empty maps (display falls back to server orders_count).
+  const{offlineConsumedByItem,offlineConsumedByCat}=useMemo(()=>{
+    const byItem=new Map<string,number>(); const byCat=new Map<string,number>()
+    try{
+      if(deviceQueuedOrders.length===0)return{offlineConsumedByItem:byItem,offlineConsumedByCat:byCat}
+      const syncedKeys=new Set((Array.isArray(orders)?orders:[]).map(o=>o.order_key))
+      for(const o of deviceQueuedOrders){
+        if(!o||syncedKeys.has(o.order_key))continue
+        if(stockEventId&&(o as {event_id?:string|null}).event_id!==stockEventId)continue
+        const status=statusOverlay.get(o.order_key)?.status??(o as {status?:string}).status
+        if(status==='cancelled'||status==='rejected')continue                       // not placed → doesn't consume
+        const lines=normaliseOrderLines((o.items as Array<{name:string;quantity:number|string}>)||[],(o as {deals?:Array<{slots?:Record<string,unknown>}>|null}).deals)
+        for(const l of lines){
+          const name=l.name; const qty=Number(l.quantity)||0
+          if(!name||qty<=0)continue
+          byItem.set(name,(byItem.get(name)||0)+qty)
+          const c=(itemCategoryMap||{})[name]; if(c)byCat.set(c,(byCat.get(c)||0)+qty)
+        }
+      }
+    }catch(e){console.warn('[stock] offline consumption fold failed — server counts only',e);return{offlineConsumedByItem:new Map<string,number>(),offlineConsumedByCat:new Map<string,number>()}}
+    return{offlineConsumedByItem:byItem,offlineConsumedByCat:byCat}
+  },[deviceQueuedOrders,orders,statusOverlay,stockEventId,itemCategoryMap])
+
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
   if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
   if(requiresPin&&!authenticated)return(
@@ -1402,7 +1433,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           global offline state + what's locked, on Settings/Stock too. Slim shrink-0 bar in the app-shell. */}
       {isOffline&&(
         <div className="w-full bg-slate-800 text-white text-xs font-semibold px-4 py-1.5 flex items-center justify-center gap-2 shrink-0">
-          <span>📴 Offline — settings are locked until you reconnect</span>
+          <span>📴 Offline — orders &amp; stock save on this device; settings are locked</span>
         </div>
       )}
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
@@ -2161,6 +2192,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* MENU & STOCK TAB (service-time: per-event stock + availability operators adjust mid-service) */}
         {activeTab==='stock'&&(
           <div className="space-y-4">
+            {/* Stock is EDITABLE offline (unlike Settings, which lock) — changes are optimistic + durably
+                queued and reconcile on reconnect. Distinct affordance so the operator knows it's safe to edit. */}
+            {isOffline&&(
+              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-sm text-amber-800 flex items-center gap-2">
+                <span aria-hidden>📴</span>
+                <span>You&apos;re offline — stock changes are saved on this device and will sync when you reconnect.</span>
+              </div>
+            )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
               <p className="text-sm font-semibold text-slate-800 tracking-wide mb-1">Items — this event</p>
               <p className="text-slate-500 text-xs mb-4">Category totals, item limits and availability for the selected event — these reset each event. Changes take effect immediately.</p>
@@ -2174,7 +2213,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {Object.entries(menuGroups).map(([cat,items])=>{
                     const catStock=categoryStocks.find(s=>s.category===cat)
                     const catDefStock=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())?.default_stock??null
-                    const catCount=catStock?.stock_count??catDefStock??null; const catOrdered=activeEvent?(catStock?.orders_count??0):0
+                    const catCount=catStock?.stock_count??catDefStock??null; const catOrdered=activeEvent?((catStock?.orders_count??0)+(offlineConsumedByCat.get(cat)??0)):0
                     const isCatDefault=catStock?.stock_count==null&&catDefStock!=null
                     const catRem=catCount!==null?catCount-catOrdered:null
                     const catObj=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())
@@ -2225,7 +2264,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             // inherits the category pool) REGARDLESS of any default_stock.
                             const followsCategory=!!stock?.no_item_cap
                             const itemCount=followsCategory?null:(stock?.stock_count ?? item.default_stock ?? null)
-                            const itemOrdered=activeEvent?(stock?.orders_count??0):0
+                            const itemOrdered=activeEvent?((stock?.orders_count??0)+(offlineConsumedByItem.get(item.name)??0)):0
                             const itemRem=itemCount!==null?itemCount-itemOrdered:null
                             const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
                             // Drives the input's default-state border/tooltip (the visible "default"

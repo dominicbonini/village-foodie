@@ -180,7 +180,8 @@ async function drainOnce(): Promise<DrainResult> {
     // order_key (server idempotency / dedup / removal all key on it), url (post target), op_id (storage
     // key / removeOp). Such an op can NEVER sync idempotently or be cleanly removed → it would retry forever
     // amber (and NaN attempts from a missing `attempts` never reaches MAX, so it never even escalates). Flag
-    // it 'conflict' (dismissible in the inspector) and SKIP — never post/retry it.
+    // it 'conflict' (dismissible in the inspector) and SKIP — never post/retry it. (A kind:'stock' op is
+    // VALID here: it carries a SYNTHETIC key `${event_id}:${action}:${target}` in order_key, so it passes.)
     if (!op.order_key || !op.url || !op.op_id) {
       if (op.op_id) await saveOp({ ...op, state: 'conflict', last_error: `malformed op — missing ${[!op.order_key && 'order_key', !op.url && 'url'].filter(Boolean).join('/') || 'required field'}` })
       conflicts++
