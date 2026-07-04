@@ -47,13 +47,14 @@ import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, buildStatusOverlay } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
+import { removePendingStatusOp } from '@/lib/native/outbox'
 import { isOnline } from '@/lib/native/reachability'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
-import { usePendingStatusOps } from '@/lib/native/usePendingStatusOps'
+import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
@@ -97,11 +98,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Offline walk-ups optimistically added here (isolated from `orders`/fetchAll). Merged into the display
   // list below; cleared on the reconnect drain (OfflineBanner onSynced), when the real orders arrive.
   const[deviceQueuedOrders,setDeviceQueuedOrders]=useState<Order[]>([])
-  // FIX 2 — durable offline pending-status overlay. Optimistic status advances live in the outbox (not a
-  // one-shot setOrders patch a stale poll would wipe); applied at render over the merged orders, cleared on
-  // drain. Web/non-native → empty → no-op (online FIX-1 path untouched). refreshPendingStatus() is called
-  // immediately after queueing an offline status op + on reconnect drain (onSynced) for instant/seamless UX.
-  const{ops:pendingStatusOps,refresh:refreshPendingStatus}=usePendingStatusOps()
+  // FIX 2 — durable offline pending-status overlay. Optimistic advances live in the outbox (not a one-shot
+  // setOrders patch a stale poll would wipe); applied at render over the merged orders. HOLDS each entry until
+  // the server reflects the status (no reconnect flash — ISSUE 2). Web/non-native → empty → no-op. dropEntry =
+  // the offline UNDO (drop the optimistic entry as-if-never-happened). refreshPendingStatus() re-reads the
+  // outbox immediately after queueing / on drain.
+  const{overlay:statusOverlay,refresh:refreshPendingStatus,dropEntry:dropOverlayEntry}=useOfflineStatusOverlay(orders)
   // The active event's van "Show cooking step" preference — REUSED (no new toggle) to also expose the
   // order-READY step on the operator orders (solo) screen, alongside pub mode. Defaults off.
   const[showCookingStep,setShowCookingStep]=useState(false)
@@ -876,7 +878,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         if((action==='ready'||action==='collected')&&q){
           setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
         }
-        setActionLoading(null);showToast(`Order #${q?.id??''} saved on this device — will sync when back online`);return
+        setActionLoading(null)
+        // OFFLINE UNDO (ISSUE 1): remove the still-pending op → the overlay reverts as-if-never-happened. If it
+        // already synced within the toast window (removePendingStatusOp → false), fall back to the ONLINE
+        // compensating undo. Offered for ready/collected (matching the online undo affordance).
+        const offlineUndo=async()=>{
+          const removed=await removePendingStatusOp(orderKey)
+          if(removed){
+            dropOverlayEntry(orderKey); refreshPendingStatus()
+            // Un-strike this order's prep pills (the onUndoRestore side-effect).
+            setStruckPrep(prev=>{const n=new Set(prev);prev.forEach(k=>{if(k.split(':')[0]===orderKey)n.delete(k)});return n})
+            showToast(`Order #${q?.id??''} reverted`)
+          }else if(action==='ready'){undoReady(orderKey,q?.id??'')}
+          else if(action==='collected'){doAction('undo_collected',orderKey)}
+          else{fetchAll()}
+        }
+        const savedMsg=`Order #${q?.id??''} saved on this device — will sync when back online`
+        if(action==='ready'||action==='collected'){
+          showToast(savedMsg,'success',{duration:7000,action:{label:'↩ Undo',run:offlineUndo}})
+        }else{showToast(savedMsg)}
+        return
       }
       const data=result.data??{}; if(!result.ok)throw new Error(data.error)
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
@@ -1204,10 +1225,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       if(!Array.isArray(slots)||slots.length===0)return slots
       // ONLINE-SAFETY GATE (critical): recompute ONLY when the device holds offline changes — offline CREATES
-      // (deviceQueuedOrders) OR offline STATUS changes (pendingStatusOps). Both are populated ONLY offline, so
-      // online BOTH are empty → return server `slots` UNCHANGED (byte-identical live path; the client recompute
-      // can never affect the online strip, and any client/server divergence stays offline-only).
-      const hasOfflineChanges=deviceQueuedOrders.length>0||pendingStatusOps.length>0
+      // (deviceQueuedOrders) OR offline STATUS changes (statusOverlay, the sticky offline overlay). Both are
+      // populated ONLY offline, so online BOTH are empty → return server `slots` UNCHANGED (byte-identical live
+      // path; the client recompute can never affect the online strip, and divergence stays offline-only).
+      const hasOfflineChanges=deviceQueuedOrders.length>0||statusOverlay.size>0
       if(!hasOfflineChanges||!activeEvent)return slots
       if(!serverCatConfigs||Object.keys(serverCatConfigs).length===0)return slots  // engine inputs not loaded yet → server slots
       // Stage 2b — FROM-ORDERS recompute (base = {}, NOT the frozen productionSlotUnits blob): mirror the
@@ -1220,7 +1241,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const syncedKeys=new Set(serverOrders.map(o=>o.order_key))
       const source=[...serverOrders,...deviceQueuedOrders.filter(o=>o&&!syncedKeys.has(o.order_key))]
         .filter(o=>o&&(o as {event_id?:string|null}).event_id===activeEvent.id)
-      const overlay=buildStatusOverlay(source,pendingStatusOps)   // outbox-derived optimistic statuses (Stage 2)
       const timeMap:Record<string,string>={}
       slots.forEach(s=>{if(s?.collection_time)timeMap[s.collection_time]=s.production_window_key||s.collection_time})
       const eventStart=activeEvent.start_time||''
@@ -1228,7 +1248,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const OCCUPYING=['pending','confirmed','modified','cooking']
       const merged:Record<string,Record<string,number>>={}
       source.forEach(o=>{
-        const status=overlay.get(o.order_key)?.status??(o as {status?:string}).status
+        const status=statusOverlay.get(o.order_key)?.status??(o as {status?:string}).status
         if(!status||!OCCUPYING.includes(status))return          // released (ready/collected/cancelled/rejected) → excluded
         const ct=(o as {slot?:string|null}).slot||eventStart     // slot||eventStart (mirrors buildUnitsFromOrders)
         if(!ct)return
@@ -1245,7 +1265,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       console.warn('[displaySlots] offline capacity recompute failed — using server slots',e)
       return slots
     }
-  },[slots,orders,deviceQueuedOrders,pendingStatusOps,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
+  },[slots,orders,deviceQueuedOrders,statusOverlay,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
 
   if(loading)return<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 animate-pulse font-medium">Loading dashboard...</p></div>
   if(error){const _brand=typeof window!=='undefined'&&window.location.hostname.includes('hatchgrab')?'HatchGrab':'Village Foodie';return<div className="min-h-screen bg-slate-50 flex items-center justify-center px-4"><div className="text-center"><p className="text-slate-900 font-bold text-lg mb-2">Access denied</p><p className="text-slate-500 text-sm">{error}</p><Link href="/" className="mt-4 inline-block text-orange-600 text-sm hover:underline">← {_brand}</Link></div></div>}
@@ -1288,10 +1308,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // clear (which also dropped un-synced optimistic orders).
   const syncedKeys=new Set(orders.map(o=>o.order_key))
   const pendingQueued=deviceQueuedOrders.filter(o=>!syncedKeys.has(o.order_key))
-  // FIX 2 — apply the durable offline status overlay over the merged orders BEFORE the column split, so an
-  // offline-advanced (or offline-cancelled) card moves to the right section and a stale read can't wipe it.
-  // Empty overlay (online / no pending ops) → identity map, zero behaviour change.
-  const statusOverlay=buildStatusOverlay([...pendingQueued,...orders],pendingStatusOps)
+  // FIX 2 — apply the durable offline status overlay (sticky; held until the server reflects it) over the
+  // merged orders BEFORE the column split, so an offline-advanced (or offline-cancelled) card moves to the
+  // right section and no stale/intermediate read can wipe it. Empty overlay (online) → identity, no change.
   const overlayed=statusOverlay.size
     ?[...pendingQueued,...orders].map(o=>{const ov=statusOverlay.get(o.order_key);return ov?({...o,...ov} as Order):o})
     :[...pendingQueued,...orders]

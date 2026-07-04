@@ -19,12 +19,12 @@ import { requestNotificationPermission } from '@/lib/native/notifications'
 import { installAudioUnlock, primeAudio, playDing } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
-import { countOps } from '@/lib/native/outbox'
+import { countOps, removePendingStatusOp } from '@/lib/native/outbox'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
-import { gatedAction, STATUS_REPLAY_EXPECTED_FROM, buildStatusOverlay } from '@/lib/native/orderGate'
+import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
-import { usePendingStatusOps } from '@/lib/native/usePendingStatusOps'
+import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
@@ -80,8 +80,9 @@ export default function KdsPage() {
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
   const [pendingSync, setPendingSync] = useState<Set<string>>(new Set())
   // FIX 2 — durable offline pending-status overlay (shared with the dashboard). Optimistic advances live in
-  // the outbox, applied at render over the merged orders, cleared on drain. Web/non-native → empty → no-op.
-  const { ops: pendingStatusOps, refresh: refreshPendingStatus } = usePendingStatusOps()
+  // the outbox, applied at render over the merged orders, HELD until the server reflects the status (no
+  // reconnect flash). Web/non-native → empty → no-op. dropEntry = the offline UNDO.
+  const { overlay: kdsOverlay, refresh: refreshPendingStatus, dropEntry: dropOverlayEntry } = useOfflineStatusOverlay(orders)
   const [todayEvents, setTodayEvents] = useState<TruckEvent[]>([])
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
   const [showEventMenu, setShowEventMenu] = useState(false)
@@ -375,16 +376,28 @@ export default function KdsPage() {
         kind: 'status', order_key: orderKey, online: isOnline(), expectedFrom: STATUS_REPLAY_EXPECTED_FROM,
       })
       if (result.queued) {
-        // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the email or show the
-        // undo toast (a phantom email must not fire 4s later for an uncommitted ready).
-        // Advance the KDS board OPTIMISTICALLY via the DURABLE outbox overlay (FIX 2), NOT a one-shot
-        // setOrders patch (a stale poll / SW-cache read would wipe that — the revert bug). refreshPendingStatus
-        // reflects the just-queued op instantly; the overlay outlives reads and auto-clears on drain. Shared
-        // with the dashboard (buildStatusOverlay/offlineStatusPatch) so the two surfaces never diverge.
+        // QUEUED OFFLINE → the ready did NOT commit server-side. Do NOT schedule the customer email (a phantom
+        // email must not fire for an uncommitted ready). Advance the KDS board via the DURABLE outbox overlay
+        // (FIX 2) — refreshPendingStatus reflects the just-queued op instantly; the overlay outlives reads and
+        // is held until the server reflects it. Shared with the dashboard so the two surfaces never diverge.
         refreshPendingStatus()
         setPendingSyncCount(c => c + 1)
         setPendingSync(prev => new Set(prev).add(orderKey))
         setActionLoading(null)
+        // OFFLINE UNDO (ISSUE 1) for 'ready' (matching KDS's online undo affordance): remove the still-pending
+        // op → the overlay reverts as-if-never-happened; if it already synced, fall back to the online undo.
+        if (action === 'ready') {
+          const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
+          const offlineUndo = async () => {
+            const removed = await removePendingStatusOp(orderKey)
+            if (removed) {
+              dropOverlayEntry(orderKey); refreshPendingStatus()
+              setPendingSync(prev => { const n = new Set(prev); n.delete(orderKey); return n }); setPendingSyncCount(c => Math.max(0, c - 1))
+              showToast(`Order #${num} reverted`)
+            } else { undoReady(orderKey, num) }
+          }
+          showToast(`Order #${num} saved on this device — will sync when back online`, 'success', { duration: 7000, action: { label: '↩ Undo', run: offlineUndo } })
+        }
         return
       }
       // Committed 'ready' → defer the email 4s + show a stacked undo toast (undo cancels the email +
@@ -562,11 +575,11 @@ export default function KdsPage() {
     : 'window'
   const activeLayout = layoutOverride ?? displayMode
 
-  // FIX 2 — apply the durable offline status overlay over the merged orders BEFORE the view split, so an
-  // offline-advanced card moves columns and a stale read can't wipe it. Empty overlay (online) → identity.
-  const kdsStatusOverlay = buildStatusOverlay(orders, pendingStatusOps)
-  const overlayedOrders = kdsStatusOverlay.size
-    ? orders.map(o => { const ov = kdsStatusOverlay.get(o.order_key); return ov ? ({ ...o, ...ov } as Order) : o })
+  // FIX 2 — apply the durable offline status overlay (sticky; held until the server reflects it) over the
+  // merged orders BEFORE the view split, so an offline-advanced card moves columns and no stale/intermediate
+  // read can wipe it. Empty overlay (online) → identity.
+  const overlayedOrders = kdsOverlay.size
+    ? orders.map(o => { const ov = kdsOverlay.get(o.order_key); return ov ? ({ ...o, ...ov } as Order) : o })
     : orders
 
   // Base: exclude terminal statuses for all views

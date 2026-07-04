@@ -155,6 +155,17 @@ export async function removeOp(op_id: string): Promise<void> {
   await Preferences.remove({ key: KEY_PREFIX + op_id })
 }
 
+/** Offline UNDO of a queued status change: remove the LATEST still-PENDING (non-conflict) status op for an
+ *  order — clean revert, as-if-never-happened, no compensating op. Returns true if one was removed (false ⇒
+ *  it already synced/drained → the caller falls back to the online compensating undo). */
+export async function removePendingStatusOp(order_key: string): Promise<boolean> {
+  const ops = (await listOps()).filter(o => o.kind === 'status' && o.state !== 'conflict' && o.order_key === order_key)
+  if (!ops.length) return false
+  const latest = ops.sort((a, b) => a.seq - b.seq)[ops.length - 1]
+  await removeOp(latest.op_id)
+  return true
+}
+
 /** DEV/recovery: wipe EVERY outbox op. Safe — an op's server effect is already applied (idempotent replay),
  *  so clearing only drops the local bookkeeping; used to clear poison ops from prior buggy-code testing. */
 export async function clearAllOps(): Promise<void> {
