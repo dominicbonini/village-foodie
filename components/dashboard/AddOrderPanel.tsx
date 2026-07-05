@@ -420,35 +420,12 @@ export function AddOrderPanel({
     return () => clearInterval(id)
   }, [])
 
-  // MEASURED sticky offset for the mobile category tabs. The tabs pin BELOW the dashboard's sticky
-  // chrome (AppHeader + nav tabs + event bar), whose total height VARIES (one- vs two-line event bar,
-  // font load, future banners) — so instead of a fixed top-[Npx] that drifts, we measure the live bottom
-  // of the event bar (the lowest chrome element, id="dashboard-event-bar") and publish it to a CSS var
-  // `--addorder-sticky-top` on :root. The tabs pin to `top:var(--addorder-sticky-top,145px)` on mobile;
-  // the 145px fallback covers first paint before the first measurement. ResizeObserver (event-bar height
-  // changes) + resize/orientation keep it correct. Desktop uses md:top-0 (menuGrid scrolls its OWN column,
-  // where 0 is correct), so the var only affects the mobile window-scroll path. Scoped to Add Order — the
-  // chrome's own offsets (top-0/51/95) stay hardcoded (a systemic measured-stack pass is a future task).
-  useEffect(() => {
-    const root = document.documentElement
-    const measure = () => {
-      const bar = document.getElementById('dashboard-event-bar')
-      if (!bar) return
-      const bottom = Math.round(bar.getBoundingClientRect().bottom)
-      if (bottom > 0) root.style.setProperty('--addorder-sticky-top', `${bottom}px`)
-    }
-    measure()
-    const bar = document.getElementById('dashboard-event-bar')
-    const ro = (bar && typeof ResizeObserver !== 'undefined') ? new ResizeObserver(measure) : null
-    if (ro && bar) ro.observe(bar)
-    window.addEventListener('resize', measure)
-    window.addEventListener('orientationchange', measure)
-    return () => {
-      ro?.disconnect()
-      window.removeEventListener('resize', measure)
-      window.removeEventListener('orientationchange', measure)
-    }
-  }, [])
+  // Category tabs sticky offset — now a plain `top-0`. The OLD measured `--addorder-sticky-top` (event-bar
+  // bottom) assumed MOBILE used WINDOW scroll, so the header had to offset below the sticky chrome. The KDS
+  // app-shell (h-dvh flex-col; the header/tabs/event-bar are shrink-0 OUTSIDE the single <main> scroller)
+  // eliminated that path: on EVERY width the category header lives inside <main>, so `top-0` pins it flush at
+  // the top of the scroller — i.e. right below the fixed chrome — exactly the pre-app-shell mobile look. The
+  // measured offset double-counted the chrome height (shifted the header down ~145px) → removed.
 
   useEffect(() => {
     if (!isActive) return
@@ -1060,7 +1037,7 @@ setItemModal({ item, modGroups, editCartKey })
   }
   // Sticky, finger-sized (≥44px) category tab bar. Horizontal-scrolls on a narrow width — never off-screen.
   const categoryTabs = menuCats.length > 1 ? (
-    <div className="sticky top-[var(--addorder-sticky-top,145px)] md:top-0 z-10 bg-white pb-2 mb-2 border-b border-slate-100">
+    <div className="sticky top-0 z-10 bg-white pb-2 mb-2 border-b border-slate-100">
       <div className="flex gap-1.5 overflow-x-auto">
         {menuCats.map(cat => (
           <button
