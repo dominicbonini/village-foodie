@@ -77,6 +77,26 @@ function makeCartKey(itemName: string, mods: { name: string }[], notes?: string)
   return parts.length > 0 ? `${itemName}::${parts.join('::')}` : itemName
 }
 
+// CLEANUP: on cold launch, purge the SW read-cache (DATA_CACHE = 'vf-data-v1', see public/sw.js) entries for
+// events that have ENDED (the request's `date` query param < today). These are re-fetchable read snapshots,
+// so removing a past event's snapshot is safe. GATED ON ONLINE — never touch the cache offline (it may be the
+// only copy of the CURRENT event's data). Touches the CACHE ONLY — NEVER Preferences / the outbox (un-synced
+// ops for a past event must still drain). Past-date only ⇒ today's/future events' cache is preserved.
+async function pruneStaleEventCache(): Promise<void> {
+  try {
+    if (typeof caches === 'undefined') return
+    if (typeof navigator !== 'undefined' && !navigator.onLine) return   // offline → don't evict the offline snapshot
+    const cache = await caches.open('vf-data-v1')
+    const todayIso = new Date().toISOString().split('T')[0]
+    for (const req of await cache.keys()) {
+      try {
+        const d = new URL(req.url).searchParams.get('date')   // /api/dashboard?…&date=YYYY-MM-DD (per-event)
+        if (d && d < todayIso) await cache.delete(req)
+      } catch { /* skip an unparseable key, never throw */ }
+    }
+  } catch { /* cache API unavailable / any error → no-op, never crash the dashboard */ }
+}
+
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
   const{token}=use(params)
   const searchParams=useSearchParams()
@@ -213,6 +233,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // gating). Driven by the SAME reachability signal OfflineBanner/heartbeat use, so everything agrees. isOffline
   // is false online → every gated control is enabled exactly as today (online path byte-identical).
   const[isOffline,setIsOffline]=useState(false)
+  // EVENT-SWITCH GATE (Option A): events whose data was successfully loaded THIS session (network OR the SW
+  // read-cache). Offline, the event picker allows switching ONLY to these — a never-loaded event has no
+  // cached orders/stock/capacity, so ordering against it would be unsafe. Online → not consulted (no gating).
+  const[loadedEventIds,setLoadedEventIds]=useState<Set<string>>(new Set())
   const[showPauseModal,setShowPauseModal]=useState(false)
   // Offline-pause notification: durable marker from /api/dashboard (set only by heartbeat-monitor,
   // survives the reconnect clear). Fires a one-time popup when it's NEWER than this device's ack.
@@ -396,6 +420,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // Transient failure after successful auth — keep existing state, never blank the dashboard
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
       setTruck(data.truck)
+      // EVENT-SWITCH GATE: this event's data just loaded (network or SW cache) → mark it switchable offline.
+      {const loadedId=selectedEventRef.current?.id; if(loadedId)setLoadedEventIds(p=>p.has(loadedId)?p:new Set(p).add(loadedId))}
       // WEB: the "Screen on" control follows the truck keep_screen_on setting. APP: it follows the
       // per-device pref (initialised on mount below), so don't let the truck setting override it here.
       if(!isNativeApp()) setKeepScreenOn(data.truck?.keep_screen_on ?? true)
@@ -456,6 +482,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Fires immediately with the current state; startReachability is idempotent (OfflineBanner may already
   // have started it). Drives isOffline for the settings-lock + the header chip.
   useEffect(()=>{startReachability();return onReachabilityChange(online=>setIsOffline(!online))},[])
+
+  // COLD-LAUNCH cleanup: purge the SW read-cache for ENDED events (past date). Cache-only, online-only,
+  // never the outbox. Runs once on mount; a failure is a silent no-op (helper is fully guarded).
+  useEffect(()=>{void pruneStaleEventCache()},[])
 
   useEffect(()=>{
     if(selectedEventId||!upcomingEvents.length) return
@@ -696,6 +726,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
     setPin(pinInput); setTruck(data.truck); setOrders(prev=>mergeOrders(prev,data.orders||[])); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
+    {const loadedId=selectedEventRef.current?.id; if(loadedId)setLoadedEventIds(p=>p.has(loadedId)?p:new Set(p).add(loadedId))} // EVENT-SWITCH GATE: mark loaded
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput,selectedEventRef.current?.id??null)}
   }
@@ -2016,7 +2047,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             requestEventPickerOpen={pendingOpenEventPicker}
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
             controlledEvent={activeEvent}
-            onEventChange={(id)=>setSelectedEventId(id)}
+            isOffline={isOffline}
+            isEventLoaded={(id)=>loadedEventIds.has(id)}
+            onEventChange={(id)=>{
+              // EVENT-SWITCH GATE backstop: never switch to a never-loaded event offline (the picker also
+              // greys/blocks these). Online → always allowed. Current event is always in loadedEventIds.
+              if(isOffline&&!loadedEventIds.has(id)){showToast('Reconnect to load this event','error');return}
+              setSelectedEventId(id)
+            }}
           />
           </div>
         )}

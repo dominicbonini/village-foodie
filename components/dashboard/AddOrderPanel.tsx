@@ -96,6 +96,10 @@ interface AddOrderPanelProps {
   onEventPickerOpened?: () => void
   onEventChange?: (eventId: string) => void
   controlledEvent?: EventRecord | null
+  /** EVENT-SWITCH GATE (Option A): offline, only events whose data was loaded this session are switchable.
+   *  isOffline false / isEventLoaded absent → no gating (online = every event switchable as today). */
+  isOffline?: boolean
+  isEventLoaded?: (eventId: string) => boolean
   /** Always-mounted tab pattern (manual s.22): panel stays mounted, data effects
    *  only run while the tab is visible. Basket state survives tab switches. */
   isActive?: boolean
@@ -111,6 +115,7 @@ export function AddOrderPanel({
   showToast, onOrderPlaced, onOpenEvent,
   requestEventPickerOpen, onEventPickerOpened,
   onEventChange, controlledEvent,
+  isOffline = false, isEventLoaded,
   isActive = true,
 }: AddOrderPanelProps) {
 
@@ -1457,11 +1462,16 @@ setItemModal({ item, modGroups, editCartKey })
                   ? upcomingEvents.map(ev => {
                     const isSelected = manualEvent?.id === ev.id
                     const isFuture = ev.event_date > todayIso
+                    // EVENT-SWITCH GATE: offline, an event not loaded this session has no cached data → block
+                    // switching to it (grey + disabled + "Reconnect to load"). Online / current event → allowed.
+                    const blocked = isOffline && !isSelected && !!isEventLoaded && !isEventLoaded(ev.id)
                     return (
-                      <button key={ev.id} onClick={() => { if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
-                        className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
+                      <button key={ev.id} disabled={blocked}
+                        onClick={() => { if (blocked) return; if (manualEvent && manualEvent.id !== ev.id) resetManual(); setManualEvent(ev); setShowEventPicker(false); fetchManualSlots(ev.event_date, ev.start_time, ev.end_time, ev.id); setManualSlot(''); onEventChange?.(ev.id) }}
+                        className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${blocked ? 'border-slate-200 bg-slate-50 opacity-60 cursor-not-allowed' : isSelected ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-200 hover:bg-orange-50/50'}`}>
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-bold text-slate-900 flex-1">{fmtEvDate(ev.event_date)} · {formatTime(ev.start_time)}–{formatTime(ev.end_time)}</p>
+                          {blocked && <span className="text-[10px] font-bold text-slate-500 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">📴 Reconnect to load</span>}
                           {ev.status === 'closed' && <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 rounded px-1.5 py-0.5 flex-shrink-0">● Finished</span>}
                           {ev.status === 'open' && <span className="text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 rounded px-1.5 py-0.5 flex-shrink-0">● Live</span>}
                           {isFuture && ev.status !== 'closed' && ev.status !== 'open' && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-1.5 py-0.5 flex-shrink-0">Future</span>}
