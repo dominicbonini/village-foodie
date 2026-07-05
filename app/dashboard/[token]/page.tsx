@@ -483,7 +483,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // SINGLE offline source: subscribe to the reachability module (same signal as OfflineBanner/heartbeat).
   // Fires immediately with the current state; startReachability is idempotent (OfflineBanner may already
   // have started it). Drives isOffline for the settings-lock + the header chip.
-  useEffect(()=>{startReachability();return onReachabilityChange(online=>setIsOffline(!online))},[])
+  // NATIVE-ONLY: the offline UX (chip, settings-lock, event-switch gate, stock "saved on this device — will
+  // sync" banner) is only TRUTHFUL on the native app, where the durable outbox exists. On web there's no
+  // queue → "will sync" would be a false promise (a web offline change is NOT queued → lost), so DON'T
+  // activate any of it. Native-gating the SOURCE keeps isOffline false on web (offline behaves as today);
+  // every isOffline consumer inherits the gate from this single point.
+  useEffect(()=>{if(!isNativeApp())return;startReachability();return onReachabilityChange(online=>setIsOffline(!online))},[])
 
   // COLD-LAUNCH cleanup: purge the SW read-cache for ENDED events (past date). Cache-only, online-only,
   // never the outbox. Runs once on mount; a failure is a silent no-op (helper is fully guarded).
