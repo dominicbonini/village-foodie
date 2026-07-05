@@ -50,6 +50,8 @@ import { configureStatusBar } from '@/lib/native/statusBar'
 import { gatedAction, STATUS_REPLAY_EXPECTED_FROM } from '@/lib/native/orderGate'
 import { removePendingStatusOp } from '@/lib/native/outbox'
 import { isOnline, startReachability, onReachabilityChange } from '@/lib/native/reachability'
+import { useOfflineAlert } from '@/lib/native/useOfflineAlert'
+import { NotificationSettings } from '@/components/native/NotificationSettings'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
@@ -486,6 +488,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // COLD-LAUNCH cleanup: purge the SW read-cache for ENDED events (past date). Cache-only, online-only,
   // never the outbox. Runs once on mount; a failure is a silent no-op (helper is fully guarded).
   useEffect(()=>{void pruneStaleEventCache()},[])
+
+  // LOCAL offline/paused notification (iPad-only, reachability-driven, debounced, Settings-gated). Message
+  // depends on whether auto-pause is on (effectiveOfflineProtection = event override ?? van default).
+  useOfflineAlert(eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause)
 
   useEffect(()=>{
     if(selectedEventId||!upcomingEvents.length) return
@@ -2067,6 +2073,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className="space-y-4">
             {/* Kitchen ticket printing (iPad-native-only + Max-gated inside the component). */}
             {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
+            {/* Notifications (iPad-native only) — device-local; renders null on web. Editable offline (it's a
+                device pref); the "New order alerts" push toggle writes van_devices.notify_enabled best-effort. */}
+            <NotificationSettings token={token}/>
             {/* SETTINGS-LOCK notice — the server-backed settings below are disabled offline (they'd fail
                 silently / desync the engine). Printer settings above stay editable (device-local). */}
             {isOffline&&(
