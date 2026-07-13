@@ -2067,17 +2067,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             below. Sections relocated VERBATIM from the old Menu & Stock tab — no behaviour change. */}
         {activeTab==='settings'&&(
           <div className="space-y-4">
-            {/* Kitchen ticket printing (iPad-native-only + Max-gated inside the component). */}
-            {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
-            {/* Notifications (iPad-native only) — device-local; renders null on web. Editable offline (it's a
-                device pref); the "New order alerts" push toggle writes van_devices.notify_enabled best-effort. */}
-            <NotificationSettings token={token}/>
             {/* SETTINGS-LOCK notice — the server-backed settings below are disabled offline (they'd fail
-                silently / desync the engine). Printer settings above stay editable (device-local). */}
+                silently / desync the engine). The device-local Printer + Notifications cards (moved to the
+                BOTTOM of this tab) stay editable offline. */}
             {isOffline&&(
               <div className="bg-slate-100 border border-slate-200 rounded-2xl p-3 text-sm text-slate-600 flex items-center gap-2">
                 <span aria-hidden>📴</span>
-                <span>You&apos;re offline — reconnect to change these settings. (Printer settings above still work offline.)</span>
+                <span>You&apos;re offline — reconnect to change these settings. (Printer &amp; notification settings still work offline.)</span>
               </div>
             )}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
@@ -2229,6 +2225,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             )}
+            {/* Device-specific iPad-only cards LAST — both render null on web / non-native, so mobile & desktop
+                show none of this block and the SHARED settings above (auto-accept → offline protection →
+                order-ready → kitchen capacity) sit in the same relative order on every surface. Kitchen ticket
+                printing: iPad-native + Max-gated inside the component. Notifications: iPad-native, device-local. */}
+            {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
+            <NotificationSettings token={token}/>
           </div>
         )}
 

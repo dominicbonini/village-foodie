@@ -30,6 +30,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt }: {
   const [printer, setPrinter] = useState<string | null>(null)   // THIS device's paired printer (name)
   const [lead, setLead] = useState(10)
   const [paper, setPaper] = useState<PaperWidth>(80)
+  const [expanded, setExpanded] = useState(false)               // when enabled+configured, config is COLLAPSED by default
 
   useEffect(() => {
     if (!isNativeApp()) return
@@ -52,7 +53,7 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt }: {
   const canPrint = canAccess(plan, 'ticket_printing', featureOverrides ?? {}, trialExpiresAt)
   if (!canPrint) return null
 
-  const setEnabledPref = async (v: boolean) => { setEnabled(v); await Preferences.set({ key: K.enabled, value: String(v) }) }
+  const setEnabledPref = async (v: boolean) => { setEnabled(v); if (!v) setExpanded(false); await Preferences.set({ key: K.enabled, value: String(v) }) }
   const setLeadMins = async (n: number) => { setLead(n); await Preferences.set({ key: K.lead, value: String(n) }) }
   const setPaperWidth = async (w: PaperWidth) => { setPaper(w); await Preferences.set({ key: K.paper, value: String(w) }) }
   // Phase A stub "pairing": sets a placeholder so the connected state is viewable. Phase B replaces this with
@@ -81,29 +82,51 @@ export function PrintingSettings({ plan, featureOverrides, trialExpiresAt }: {
           <p className="text-[11px] text-slate-400">Bluetooth pairing coming soon.</p>
         </div>
       ) : (
-        // Enabled + set up on THIS device → status + ticket settings + manage.
+        // Enabled + set up on THIS device → COMPACT summary by default (the key "minutes before due" value
+        // stays visible); the full config is one tap behind "Settings" so the card isn't always expanded.
         <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between text-sm gap-3">
-            <span className="text-slate-700 truncate">Printer: <strong>{printer}</strong></span>
-            <div className="flex gap-3 text-xs font-semibold shrink-0">
-              <button onClick={connect} className="text-slate-600 hover:text-orange-600">Change</button>
-              <button onClick={disconnect} className="text-red-600 hover:text-red-700">Disconnect</button>
+          {/* The WHOLE summary row is the disclosure control, with a chevron (▾ collapsed / ▲ expanded) —
+              an obvious, positionally-stable expand affordance in both states (replaces the mid-card button). */}
+          <button onClick={() => setExpanded(v => !v)} aria-expanded={expanded}
+            className="group flex items-center justify-between gap-3 w-full text-left">
+            <span className="text-xs text-slate-600 min-w-0 truncate">
+              Print <strong>{lead} min</strong> before due · {paper}mm paper
+            </span>
+            <span className="shrink-0 flex items-center gap-1 text-xs font-semibold text-slate-500 group-hover:text-orange-600 transition-colors">
+              Settings <span aria-hidden>{expanded ? '▲' : '▾'}</span>
+            </span>
+          </button>
+
+          {expanded && (
+            // Full config — SAME controls as before (printer name + Change/Disconnect, minutes-before-due,
+            // paper width), just gated behind the collapse. Nothing removed; presentation only.
+            <div className="flex flex-col gap-3 border-t border-slate-100 pt-3">
+              <div className="flex items-center justify-between text-sm gap-3">
+                <span className="text-slate-700 truncate">Printer: <strong>{printer}</strong></span>
+                {/* "Change" (pick a DIFFERENT printer) is Phase B — the real BT scan/picker doesn't exist yet,
+                    so there's nothing to change TO (connect() is a Phase-A stub that just re-adds the same demo
+                    printer, so the button looked dead). Hidden until Phase B. Disconnect still works — it clears
+                    the pairing and returns to the "Connect a printer" entry. */}
+                <div className="flex gap-3 text-xs font-semibold shrink-0">
+                  <button onClick={disconnect} className="text-red-600 hover:text-red-700">Disconnect</button>
+                </div>
+              </div>
+              <label className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-slate-700">Print tickets this many minutes before due</span>
+                <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
+                  className="w-20 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
+              </label>
+              <div className="flex items-center justify-between gap-3 text-sm">
+                <span className="text-slate-700">Paper width</span>
+                <div className="flex gap-1.5">
+                  {([58, 80] as PaperWidth[]).map(w => (
+                    <button key={w} onClick={() => setPaperWidth(w)}
+                      className={`px-3 py-1 rounded-lg text-sm font-bold border ${paper === w ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-300 text-slate-600'}`}>{w}mm</button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-          <label className="flex items-center justify-between gap-3 text-sm">
-            <span className="text-slate-700">Print tickets this many minutes before due</span>
-            <input type="number" min={0} max={60} value={lead} onChange={e => setLeadMins(Number(e.target.value) || 0)}
-              className="w-20 border border-slate-300 rounded-lg px-2 py-1 text-sm text-right" />
-          </label>
-          <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="text-slate-700">Paper width</span>
-            <div className="flex gap-1.5">
-              {([80, 58] as PaperWidth[]).map(w => (
-                <button key={w} onClick={() => setPaperWidth(w)}
-                  className={`px-3 py-1 rounded-lg text-sm font-bold border ${paper === w ? 'bg-orange-600 border-orange-600 text-white' : 'bg-white border-slate-300 text-slate-600'}`}>{w}mm</button>
-              ))}
-            </div>
-          </div>
+          )}
         </div>
       ))}
     </div>

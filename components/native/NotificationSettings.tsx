@@ -18,6 +18,7 @@ export function NotificationSettings({ token }: { token: string }) {
   const [master, setMaster] = useState(false)          // OS permission granted + master on (this device)
   const [offlineAlerts, setOfflineAlerts] = useState(true)  // LOCAL offline/paused alerts (default ON)
   const [newOrder, setNewOrder] = useState(false)      // mirrors van_devices.notify_enabled (server push)
+  const [notice, setNotice] = useState<string | null>(null) // user-facing message when permission is refused/unavailable
 
   useEffect(() => {
     if (!isNativeApp()) return
@@ -35,9 +36,18 @@ export function NotificationSettings({ token }: { token: string }) {
   if (!isNativeApp() || !ready) return null
 
   const toggleMaster = async (v: boolean) => {
+    setNotice(null)
     if (v) {
-      const granted = await requestNotificationPermission()   // OS prompt — must be granted to turn on
-      if (!granted) return
+      // OS prompt — must be granted to turn on. requestNotificationPermission never throws (it try/catches
+      // internally + returns false), but we guard here too so the toggle can NEVER surface a runtime error.
+      let granted = false
+      try { granted = await requestNotificationPermission() } catch { granted = false }
+      if (!granted) {
+        // Denied / unavailable → leave the toggle OFF and tell the operator how to fix it (iOS won't re-prompt
+        // once denied — they must enable it in device Settings).
+        setNotice('Notifications need to be enabled in your device Settings to turn this on.')
+        return
+      }
     }
     setMaster(v); await Preferences.set({ key: NOTIFY_KEYS.master, value: String(v) })
   }
@@ -59,12 +69,16 @@ export function NotificationSettings({ token }: { token: string }) {
         <Toggle on={master} onToggle={() => toggleMaster(!master)} />
       </div>
 
+      {notice && (
+        <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">{notice}</p>
+      )}
+
       {master && (
         <div className="flex flex-col gap-2 pt-1 border-t border-slate-100">
           <div className="flex items-start justify-between gap-3 pt-2">
             <div className="min-w-0">
               <p className="text-sm font-medium text-slate-800">New order alerts</p>
-              <p className="text-xs text-slate-500 mt-0.5">Get notified when a customer order needs confirming. <span className="text-slate-400">Needs a connection.</span></p>
+              <p className="text-xs text-slate-500 mt-0.5">Get notified when a customer order needs confirming.</p>
             </div>
             <Toggle on={newOrder} onToggle={() => toggleNewOrder(!newOrder)} />
           </div>

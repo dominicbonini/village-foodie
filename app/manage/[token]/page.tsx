@@ -6701,7 +6701,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="space-y-6">
       <h2 className="font-black text-slate-900 text-lg">Settings</h2>
 
       {/* Logo */}
@@ -8023,7 +8023,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   )
 
   return (
-    <div className="max-w-2xl mx-auto flex flex-col gap-6">
+    <div className="flex flex-col gap-6">
 
       {/* TRIAL: payment capture is urgent — show ABOVE the matrix */}
       {plan === 'trial' && (
