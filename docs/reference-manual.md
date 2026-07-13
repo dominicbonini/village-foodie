@@ -2435,7 +2435,7 @@ This replaces the V6 "operator events show on both maps unconditionally" rule an
 
 ## Scraper preference and self-service verify (V6.2)
 
-Three columns on trucks: **scraper_preference** ('manual'|'auto', default 'manual'; legacy 'both' = 'auto'), **schedule_url** (text), **scraper_rule** ('scroll_lazy'|'scroll_next').
+Three columns on trucks: **scraper_preference** ('manual'|'auto', default 'manual'; legacy 'both' = 'auto'), **schedule_url** (text), **scraper_rule** ('scroll_lazy'|'scroll_next' — for what each value STRUCTURALLY means and how the winner is chosen, see Section 24 "Scroll rules").
 
 ### Settings → "Your schedule"
 
@@ -2574,7 +2574,7 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 
 ### Scraper-preference and adaptive-scheduling columns on trucks (V6.2)
 
-- **scraper_preference** (text, 'manual'|'auto', default 'manual'), **schedule_url** (text), **scraper_rule** (text, 'scroll_lazy'|'scroll_next'), **scraper_last_changed_at** (timestamptz), **scraper_update_day** (smallint 0–6), **scraper_learning_complete** (boolean default false), **scraper_last_empty_notify_at** (timestamptz), **scraper_first_run_at** (timestamptz), **scraper_last_hash** (text). See Section 24.
+- **scraper_preference** (text, 'manual'|'auto', default 'manual'), **schedule_url** (text), **scraper_rule** (text, 'scroll_lazy'|'scroll_next' — semantics in Section 24 "Scroll rules"), **scraper_last_changed_at** (timestamptz), **scraper_update_day** (smallint 0–6), **scraper_learning_complete** (boolean default false), **scraper_last_empty_notify_at** (timestamptz), **scraper_first_run_at** (timestamptz), **scraper_last_hash** (text). See Section 24.
 
 - **operators** — first_name, last_name, phone, email, auth_user_id, is_admin (V6), billing.
 - **truck_vans** — auto_pause_on_offline (offline-protection creation default), show_cooking_step, kitchen_capacity, **capacity_window_mins** (V6.7, integer NOT NULL DEFAULT 5, CHECK 1–20 — the concurrency ceiling's own window cadence, independent of category prep; Section 6), display_layout, split_screen, kds_token, name, active, last_heartbeat_at (device-online property), online_paused_until (VESTIGIAL post-V6.6), paused_until (VESTIGIAL post-V6.6). (V6.6 — pause moved to truck_events; the van keeps only `auto_pause_on_offline` as the default and `last_heartbeat_at` as the live device property. Section 5 / Section 11.)
@@ -3069,6 +3069,20 @@ The web scraper runs as .github/workflows/daily_scrape.yml (separate from the Ap
 > **NOTE (V6.2)** — actions/checkout@v4 and actions/setup-node@v4 emit a Node 20 deprecation warning; from 16 June 2026 GitHub forces Node 24 for the action runtime. The workflow's own node-version is '24' to match.
 
 > **NOTE (V6.6)** — the daily scraper is also the natural home for the cron-health alert (Section 27): a check that `cron.job_run_details` shows a recent successful `heartbeat-monitor` / `auto-event-scheduler` run, emailing Dominic via Brevo if a scheduler has gone silent.
+
+## Scroll rules — how a page is fetched (`trucks.scraper_rule`) (documented V8.7)
+
+`scraper_rule` selects the Puppeteer fetch STRATEGY used to load a truck's `schedule_url` before Gemini extraction. It encodes the page's STRUCTURE, not a quality score. Two values are wired into the Pass-B loop (`scripts/run-scraper.js:1143-1144` — `scroll_next → performButtonHunt`, anything else → `performModernScroll`); `verify-schedule-url/route.ts` carries byte-mirrored copies for the self-service Verify flow.
+
+- **`scroll_lazy` → `performModernScroll` (`run-scraper.js:265`).** For a schedule held on ONE page that lazy-loads. Deep-scrolls the single page in 150px steps (up to 1.5× scrollHeight, 15s cap) to TRIGGER lazy-loaded content, then captures the full `document.body.innerText`. **Use when the whole schedule is on one page.**
+- **`scroll_next` → `performButtonHunt` (`run-scraper.js:329`).** For a schedule spread across MULTIPLE pages. Takes the initial `innerText`, then up to 4× finds and clicks a pagination control ("next" / "load more" / "older entries" / `›` / `»`, excluding prev/back) and appends each new page. **Use when the schedule paginates.** ⚠️ It does NOT deep-scroll, so it **UNDER-READS a single lazy-load page** — it captures only what rendered before lazy-load fired and misses below-the-fold events. **Do NOT use `scroll_next` for a lazy-load page.**
+- **Two more strategies exist in code but are NOT wired to `scraper_rule`:** `performExpandAndScrape` (`:284`, day-by-day accordion clicking) and `performFrameDump` (`:356`, iframe innerText dump). They are reachable only via the internal STRATEGIES map (`:34-42`), not selectable as a stored rule.
+
+**Winner selection — by date-pattern count, NOT by "reliability."** When `scraper_rule` is NULL the loop runs BOTH `scroll_lazy` and `scroll_next` (dual-detection, `:1188-1200`) and keeps the rule whose text yields MORE date patterns; `verify-schedule-url` does the same. Beware: a rule that CONSISTENTLY returns a stable, smaller count can LOOK "reliable" while actually being the WRONG structural fit — e.g. `scroll_next` on a lazy-load page returns a steady partial read (its initial-render events) that never varies, which is a consistent UNDER-read, not correctness. Judge by page structure + which rule surfaces MORE of the schedule, never by count stability.
+
+**Zero-result rule-reset caveat.** The zero-result recheck (`:1278-1287`) clears `scraper_rule` to NULL whenever a run finds 0 events AND the truck has recent event history — it cannot distinguish "wrong rule" from "the page genuinely has no future events today." So a legitimately empty (0-event) day wipes the rule exactly like a broken rule would. It self-re-detects (dual-detection) on the next run, re-picking the structurally-correct rule. **Therefore a NULL `scraper_rule` is usually just "had a 0-event day," not a fault** — don't treat NULL as broken, and don't manually pin a rule to "fix" it.
+
+> **EXAMPLE — Pizzeria Gusto.** Its schedule lives on ONE lazy-loading page (`https://www.pizzeriagusto.co.uk`), so **`scroll_lazy` is the correct rule**. `scroll_next` under-reads it (it returned a steady 2–3 initial-render events while `scroll_lazy` surfaced the fuller 4–5). Gusto's rule reads NULL after 0-event days and correctly re-detects `scroll_lazy` on the next real run — pinning `scroll_next` would be WRONG (it would force the partial read).
 
 ## Town extraction strengthened (V6.5)
 

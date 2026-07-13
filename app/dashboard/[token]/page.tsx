@@ -63,7 +63,7 @@ import { PrintingSettings } from '@/components/printing/PrintingSettings'
 import { registerServiceWorker } from '@/lib/native/serviceWorker'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getLocalDateInTz } from '@/lib/time-utils'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
@@ -1566,14 +1566,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
                   </span>
                   {activeEvent.event_date&&(
-                    <span className="block text-xs font-medium text-slate-400 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
+                    <span className="hidden sm:block text-xs font-medium text-slate-400 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
                   )}
                 </div>
-                <button
-                  onClick={()=>{setPendingOpenEventPicker(true);setActiveTab('add')}}
-                  className="text-xs text-slate-400 hover:text-white flex-shrink-0 px-2 py-1 rounded border border-slate-600 hover:border-slate-400 transition-colors">
-                  Change
-                </button>
+                {/* "Change" button removed — event-switching lives in Event actions ▾ → "📅 Change event"
+                    (redundant here on every viewport). The no-event "Select event" path below is unaffected. */}
                 {paused?(
                   <span className="text-xs font-medium text-amber-400 flex-shrink-0">⏸ Paused</span>
                 ):activeEvent.status==='open'?(
@@ -2147,8 +2144,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       cats toggle once a capacity is set. PrepTimeSelect + off-grid preservation unchanged.
                       The window select stays PLAIN MINUTES (capacity window ≠ a prep time). */}
                   {truckMenu?.categories&&truckMenu.categories.length>0&&(
-                    <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 gap-y-2 items-center">
-                      <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                    <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
+                      <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
                       <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
                       <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
                       <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
@@ -2193,7 +2190,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       ITEMS column holds the kitchen_capacity ceiling, PREP column holds the WINDOW
                       (plain whole minutes — NOT PrepTimeSelect; the engine reads capacity_window_mins
                       as minutes). Same saveKitchenCapacity / saveCapacityWindow writes. */}
-                  <div className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
+                  <div className={`${KITCHEN_CAPACITY_GRID} items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-semibold text-slate-800">Total capacity</span>
                       {activeEvent.van_id&&activeVanName&&(

@@ -19,6 +19,19 @@ export const KITCHEN_CAPACITY_WARNING =
   "your menu categories (Menu & Stock). Without them, capacity can't tell how long " +
   "items take to cook."
 
+// ── Shared kitchen-capacity GRID template (DRY §3) ─────────────────────────────
+// ONE 4-column template — Category · Items · Prep · Counts — shared by the SIX sibling grids across
+// three surfaces (dashboard capacity card, Manage Settings card, import-wizard kitchen-setup step); on
+// EACH surface the category grid AND the aligned Total-capacity row use it so their columns line up.
+// RESPONSIVE so it fits a phone: the old fixed columns (6.5+6.5+5.5rem ≈ 296px + gaps ≈ 332px) overflowed
+// a ~311px phone, collapsing the flexible name column to 0 — so the "Category" header and "Total capacity"
+// label overflowed their neighbours (the overlap) and the ceiling selects were pushed off-screen (the
+// hidden total). Compact fixed columns on mobile keep the name column real-width; roomier at sm+ (desktop
+// unchanged). Callers append their own gap-y / items / margin classes.
+export const KITCHEN_CAPACITY_GRID =
+  'grid grid-cols-[minmax(0,1fr)_5rem_5rem_2.5rem] gap-x-2 ' +
+  'sm:grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] sm:gap-x-3'
+
 /**
  * Canonical "How kitchen setup works" explainer — the per-category prep/batch walkthrough shown on the
  * import wizard's Kitchen-setup step (and reusable by the Phase-2 shared <KitchenCapacityEdit>). ONE

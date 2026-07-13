@@ -2,16 +2,15 @@ name: HatchGrab Truck Schedule Scrape
 
 on:
   schedule:
-    # FIXED daily slots PER TRUCK TIMEZONE: 08:00 / 14:00 / 20:00 in each truck's OWN local time.
-    # GitHub cron is UTC-only + DST-unaware, so we fire at every UTC hour that could be one of those local
-    # slots for the timezones in use, and run-scraper.js's isScrapeSlotNow() lets only the truck whose
-    # LOCAL hour is 08/14/20 actually scrape (DST handled via Intl, no UTC drift). The hours below cover
-    # the UK year-round: BST(UTC+1) → 07/13/19 UTC = 08/14/20 local; GMT(UTC+0) → 08/14/20 UTC = local.
-    # → adding a truck in a NEW timezone? Add that zone's local-08/14/20 UTC hours here; the per-truck gate
-    #   does the rest. (Or switch to '0 * * * *' hourly for zero cron maintenance, at higher CI cost.)
-    # The per-truck dueByFrequency gate (5h interval for 3×/day) then caps how many of the 3 slots each
-    # truck takes: 3×/day → all three, 2×/day → 08+20, 1×/day → one.
-    - cron: '0 7,8,13,14,19,20 * * *'
+    # HOURLY fire + a per-truck DUE-WINDOW gate (run-scraper.js isDueByLog). The old exact-hour design
+    # (fire at UTC hours mapping to local 08/14/20, and only scrape when the truck's LOCAL hour == a slot)
+    # broke against GitHub's cron jitter: scheduled runs land late (the discovery cron '0 6' arrives ~09:2x),
+    # so the exact-hour match almost never held and scheduled scraping silently stopped (06-28 regression).
+    # Now we fire every hour and let each truck scrape only when it's DUE (no run in scraper_run_log within
+    # ~24/scrape_times_per_day − 1h; 3×/day → 7h) → naturally ~3×/day, tolerant of any single fire being
+    # dropped/delayed. Most hourly fires find nothing due and exit before launching Chrome (cheap no-op).
+    # Timezone-agnostic (the window is duration-based, not clock-based); no per-zone cron maintenance.
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       scrape_truck_id:

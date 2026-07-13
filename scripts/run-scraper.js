@@ -401,10 +401,9 @@ const RUN_HATCHGRAB = MODE !== 'discovery';
 if (MODE) console.log(`   🔀 SCRAPE_MODE=${MODE} → discovery:${RUN_DISCOVERY} hatchgrab:${RUN_HATCHGRAB}`);
 
 // SCRAPE_TRUCK_ID — a deliberate, SCOPED manual run (workflow_dispatch input → env, or a local invocation).
-// When SET, Pass B scrapes ONLY that one truck (by trucks.id) AND bypasses the three pacing gates
-// (shouldRunToday / isScrapeSlotNow / dueByFrequency) — if a human explicitly asked to scrape THIS truck
-// now, run it regardless of the hour/frequency window. When UNSET (cron), Pass B is unchanged: all eligible
-// auto/both trucks, fully gated.
+// When SET, Pass B scrapes ONLY that one truck (by trucks.id) AND bypasses the pacing gates
+// (shouldRunToday / isDueByLog) — if a human explicitly asked to scrape THIS truck now, run it regardless
+// of the day/due window. When UNSET (cron), Pass B is unchanged: all eligible auto/both trucks, fully gated.
 const SCRAPE_TRUCK_ID = (process.env.SCRAPE_TRUCK_ID || '').trim();
 if (SCRAPE_TRUCK_ID) console.log(`   🎯 SCRAPE_TRUCK_ID=${SCRAPE_TRUCK_ID} → scoped manual run (single truck, pacing gates bypassed)`);
 
@@ -940,36 +939,25 @@ function shouldRunToday(truck) {
   return false;
 }
 
-// Frequency gate — has enough time elapsed since this truck's last scrape for its rate?
-// intervalHours = 24 / scrape_times_per_day minus a 3h SLACK → 1→21h, 2→9h, 3→5h. The 3h slack is tuned
-// to the FIXED daily slots (08/14/20 local, see isScrapeSlotNow): the two daytime slots are only 6h apart,
-// so a 3×/day truck scraped at 08:00 must clear the interval by 14:00 (6h elapsed). 24/3=8h would skip it
-// (8h>6h) → only 2×/day; subtracting 3h gives a 5h interval so the 6h gap passes and a 3×/day truck takes
-// ALL three slots. 2×/day (9h) takes 08+20 (skips the 6h-away 14:00); 1×/day (21h) takes one slot/day.
-// NULL last-run (never scraped) → due. Composed AND with shouldRunToday + isScrapeSlotNow at the loop gate.
-function dueByFrequency(truck) {
-  if (!truck.scraper_last_run_at) return true;
+// Forgiving due-based pacing gate (V8.8 — REPLACES the old exact-hour isScrapeSlotNow + dueByFrequency).
+// A truck is DUE if its most recent run in scraper_run_log is older than its window, where
+//   windowHours ≈ 24 / scrape_times_per_day − 1h slack  (3×/day → 7h, 2×/day → 11h, 1×/day → 23h).
+// WHY: the old gate required the truck's London LOCAL hour to be EXACTLY 08/14/20, but GitHub Actions
+// scheduled crons fire late/jittery — the discovery cron '0 6' has been landing ~09:2x UTC (a ~3h delay) —
+// so an exact-hour match almost never held and scheduled scraping silently stopped (the 06-28 regression).
+// A due-window is tolerant of that jitter: a delayed (or plain hourly) cron firing still scrapes, and a
+// truck won't double-run inside its window → naturally ~3×/day at scrape_times_per_day=3 without needing
+// precise timing. LAST-RUN SOURCE is scraper_run_log (the AUTHORITATIVE per-run history, one row per actual
+// scrape via recordRunAndLearn), NOT trucks.scraper_last_run_at — that column is reset to NULL by test-truck
+// cleanup, which would make this gate fire on every run.
+function dueWindowHours(truck) {
   const perDay = truck.scrape_times_per_day || 1;
-  const intervalMs = ((24 / perDay) - 3) * 60 * 60 * 1000;
-  const elapsed = Date.now() - new Date(truck.scraper_last_run_at).getTime();
-  return elapsed >= intervalMs;
+  return Math.max(1, (24 / perDay) - 1); // 3→7h, 2→11h, 1→23h
 }
-
-// The three FIXED daily scrape slots, expressed in each truck's OWN local timezone (so a UK truck scrapes
-// at 08/14/20 UK time; a truck in another country scrapes at 08/14/20 THEIR local time). Because the slots
-// are evaluated in local time via Intl, DST is handled automatically (no UTC drift). The workflow cron
-// fires at every UTC hour that could be one of these local slots for the timezones in use; this gate then
-// lets only the truck whose LOCAL hour is a slot actually scrape this run.
-const SCRAPE_SLOT_HOURS = [8, 14, 20];
-function localHourNow(tz) {
-  try {
-    return parseInt(new Intl.DateTimeFormat('en-GB', { timeZone: tz || 'Europe/London', hour: '2-digit', hourCycle: 'h23' }).format(new Date()), 10);
-  } catch {
-    return parseInt(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', hourCycle: 'h23' }).format(new Date()), 10);
-  }
-}
-function isScrapeSlotNow(truck) {
-  return SCRAPE_SLOT_HOURS.includes(localHourNow(truck.timezone));
+function isDueByLog(truck, lastRunAtIso) {
+  if (!lastRunAtIso) return true; // never logged (or log pruned) → due
+  const elapsedHours = (Date.now() - new Date(lastRunAtIso).getTime()) / (60 * 60 * 1000);
+  return elapsedHours >= dueWindowHours(truck);
 }
 
 // Pre-Gemini skip (slice iv): hash the RAW scraped page text. If it's identical to last time, the
@@ -991,7 +979,8 @@ async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ru
   const now = new Date();
   const dayOfWeek = now.getDay();
 
-  // Always stamp last-run (slice ii — feeds dueByFrequency); set first-run too if this is the first scrape.
+  // Always stamp last-run (legacy/telemetry; the due-window gate reads scraper_run_log, not this column, so
+  // it survives test-truck cleanup that resets scraper_last_run_at); set first-run on the first scrape.
   const truckUpdates = { scraper_last_run_at: now.toISOString() };
   if (!truck.scraper_first_run_at) truckUpdates.scraper_first_run_at = now.toISOString();
   await supabase.from('trucks')
@@ -1110,8 +1099,9 @@ async function pruneScraperRunLog(supabase) {
 
 // ── Per-truck scrape loop ──────────────────────────────────────────────────────
 
-// ── PASS B: HatchGrab-linked truck scraping. Runs unless SCRAPE_MODE=discovery, on its own every-4h
-//    cron (hatchgrab_scrape.yml); the slice-(ii) due-check gates which trucks scrape each run. (slice iii)
+// ── PASS B: HatchGrab-linked truck scraping. Runs unless SCRAPE_MODE=discovery, on its own hourly
+//    cron (hatchgrab_scrape.yml '0 * * * *'); the per-truck isDueByLog due-window gates which trucks
+//    actually scrape each fire (~3×/day at scrape_times_per_day=3), tolerant of GitHub cron jitter.
 if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
   console.log('\n🏪 Starting HatchGrab-linked truck schedule scraping...');
 
@@ -1126,7 +1116,27 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
     : hgQuery.in('scraper_preference', ['auto', 'both']);
   const { data: hgTrucks } = await hgQuery;
 
+  // Authoritative last-run per candidate truck from scraper_run_log (NOT trucks.scraper_last_run_at, which
+  // test-truck cleanup resets to NULL). Feeds the forgiving due-window gate (isDueByLog) below.
+  const lastRunByTruck = new Map();
   if (hgTrucks && hgTrucks.length > 0) {
+    const { data: logRows } = await supabase
+      .from('scraper_run_log')
+      .select('truck_id, run_at')
+      .in('truck_id', hgTrucks.map(t => t.id))
+      .order('run_at', { ascending: false });
+    for (const r of (logRows || [])) {
+      if (!lastRunByTruck.has(r.truck_id)) lastRunByTruck.set(r.truck_id, r.run_at); // first = most recent
+    }
+  }
+
+  // On an hourly cron most fires have nothing due — skip launching Chrome entirely then (cheap no-op run).
+  // A scoped manual run (SCRAPE_TRUCK_ID) always proceeds and bypasses the gates below.
+  const anyDue = SCRAPE_TRUCK_ID
+    ? true
+    : (hgTrucks || []).some(t => shouldRunToday(t) && isDueByLog(t, lastRunByTruck.get(t.id)));
+
+  if (hgTrucks && hgTrucks.length > 0 && anyDue) {
     const hgBrowser = await puppeteer.launch({
       executablePath: CHROME_PATH,
       headless: true,
@@ -1154,12 +1164,12 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
     for (const hgTruck of hgTrucks) {
       if (!hgTruck.schedule_url) continue;
 
-      // Three AND-composed gates pace the SCHEDULED (cron) runs. A scoped manual run (SCRAPE_TRUCK_ID set)
-      // BYPASSES all three — the human explicitly asked to scrape this truck now, so hour/frequency/day
-      // windows don't apply. Cron path (unset) → gated exactly as before.
-      //  (1) shouldRunToday  — learned-DAY window (new trucks pass every day);
-      //  (2) isScrapeSlotNow — the truck's LOCAL hour is one of the fixed slots (08/14/20 local);
-      //  (3) dueByFrequency  — enough time elapsed for its rate (caps how many of the 3 slots it takes).
+      // Two AND-composed gates pace the SCHEDULED (cron) runs. A scoped manual run (SCRAPE_TRUCK_ID set)
+      // BYPASSES both — the human explicitly asked to scrape this truck now, so the day/due windows don't
+      // apply. Cron path (unset) → gated below.
+      //  (1) shouldRunToday — learned-DAY window (new trucks pass every day);
+      //  (2) isDueByLog     — forgiving due-window vs scraper_run_log (~24/n−1h; 3×/day → 7h). Replaces the
+      //                       old exact-hour isScrapeSlotNow + dueByFrequency (see the helpers above).
       if (SCRAPE_TRUCK_ID) {
         console.log(`\n⏩ Scoped manual run — bypassing pacing gates for ${hgTruck.name}.`);
       } else {
@@ -1167,12 +1177,9 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
           console.log(`\n⏭️  Skipping ${hgTruck.name} — not scheduled for today (learned day: ${hgTruck.scraper_update_day})`);
           continue;
         }
-        if (!isScrapeSlotNow(hgTruck)) {
-          console.log(`\n⏭️  Skipping ${hgTruck.name} — not a scrape slot in its timezone (${hgTruck.timezone || 'Europe/London'}: local hour ${localHourNow(hgTruck.timezone)}, slots ${SCRAPE_SLOT_HOURS.join('/')})`);
-          continue;
-        }
-        if (!dueByFrequency(hgTruck)) {
-          console.log(`\n⏭️  Skipping ${hgTruck.name} — not due yet (frequency: ${hgTruck.scrape_times_per_day || 1}×/day, last run ${hgTruck.scraper_last_run_at})`);
+        const lastRun = lastRunByTruck.get(hgTruck.id);
+        if (!isDueByLog(hgTruck, lastRun)) {
+          console.log(`\n⏭️  Skipping ${hgTruck.name} — not due yet (window ${dueWindowHours(hgTruck)}h @ ${hgTruck.scrape_times_per_day || 1}×/day, last run ${lastRun || 'never'})`);
           continue;
         }
       }
@@ -1327,6 +1334,8 @@ ${winningText.slice(0, 100000)}`;
     }
 
     await hgBrowser.close();
+  } else if (hgTrucks && hgTrucks.length > 0) {
+    console.log('   ⏭️  No HatchGrab trucks due this run (due-window gate) — skipping browser launch.');
   } else {
     console.log('   ℹ️  No HatchGrab trucks with auto-scraping enabled.');
   }

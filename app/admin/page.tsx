@@ -473,7 +473,7 @@ export default function AdminPage() {
             <div className="border border-slate-200 rounded-xl overflow-auto max-h-[70vh]">
               <table className="w-full text-sm border-collapse table-fixed">
                 <colgroup>
-                  <col />{/* Name — flex */}
+                  <col style={{ width: '11rem' }} />{/* Name — fixed base so it never collapses to 0 on mobile (table-fixed); flexes wider on desktop */}
                   <col style={{ width: '5rem' }} />{/* Active */}
                   <col style={{ width: '6rem' }} />{/* Plan */}
                   <col style={{ width: '5rem' }} />{/* VF · Map */}
@@ -489,7 +489,7 @@ export default function AdminPage() {
                 <thead className="text-slate-500 text-xs uppercase tracking-wide">
                   {/* Row 1 — groups (sticky top-0). Site names span the two Map|Ordering sub-columns. */}
                   <tr>
-                    <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-left font-bold px-3 align-middle">Name</th>
+                    <th rowSpan={2} className="sticky top-0 left-0 z-30 h-9 bg-slate-100 text-left font-bold px-3 align-middle">Name</th>
                     <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 align-middle border-l border-slate-200">Active</th>
                     <th rowSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-left font-bold px-3 align-middle border-l border-slate-200">Plan</th>
                     <th colSpan={2} className="sticky top-0 z-20 h-9 bg-slate-100 text-center font-bold px-2 border-l border-slate-200">Village Foodie</th>
@@ -527,9 +527,9 @@ export default function AdminPage() {
                     )
                     const opNav = isOp && r.op.operator_id && r.op.dashboard_token
                     return (
-                      <tr key={`${r.kind}-${r.id}`} className="border-t border-slate-100 hover:bg-slate-50/60">
-                        {/* Name */}
-                        <td className="px-3 py-2 truncate">
+                      <tr key={`${r.kind}-${r.id}`} className="group border-t border-slate-100 hover:bg-slate-50/60">
+                        {/* Name — sticky-left so it stays visible while the wide table scrolls horizontally on mobile */}
+                        <td className="sticky left-0 z-10 bg-white group-hover:bg-slate-50 px-3 py-2 truncate">
                           <span className="font-bold text-slate-900">{r.name}</span>
                           {isOp && !r.op.active && (
                             <span className="ml-2 text-[10px] bg-red-100 text-red-600 font-bold px-1.5 py-0.5 rounded-full">Inactive</span>

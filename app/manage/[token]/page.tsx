@@ -16,7 +16,7 @@ import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { describePreorderDeadline } from '@/lib/preorder'
 import { groupBySubcategory } from '@/lib/basket-utils'
@@ -4031,8 +4031,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   // (Fragment-of-cells); all edits are in-memory (setCategoryPrep, NO RPC) — committed
                   // with the categories. The counts column mirrors Settings exactly (cooked → checked+
                   // disabled / auto-counts; instant → tickable only once a total capacity is set).
-                  <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 gap-y-2 items-center">
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                  <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
+                    <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
                     <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
                     <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
                     <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
@@ -4067,7 +4067,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 {/* Total capacity — mirrors Settings (ceiling + window), SAME 4-col template as the
                     category grid so it aligns (empty 4th cell under the Counts column, like Settings).
                     HELD IN STATE — written to the van(s) ONLY at commit (deferred; see importKitchenCapacity). */}
-                <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 items-center mt-4 pt-2.5 border-t border-slate-100">
+                <div className={`${KITCHEN_CAPACITY_GRID} items-center mt-4 pt-2.5 border-t border-slate-100`}>
                   <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
                   <BatchSizeSelect
                     ariaLabel="Total capacity (items)"
@@ -5321,7 +5321,15 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
     e.end_time ? now > new Date(`${e.event_date}T${e.end_time}`) : new Date(e.event_date) < today
   // Single-truck console: events are already token-scoped to this truck (events/manage). No truck filter.
   const upcoming = events.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
-  const past = events.filter(e => isPastEvent(e) || e.status === 'cancelled')
+  // Past events list most-recent FIRST (descending), working backwards. Upcoming/confirmed stay
+  // soonest-first (ascending, source order) — deliberately not re-sorted here.
+  const past = events
+    .filter(e => isPastEvent(e) || e.status === 'cancelled')
+    .sort((a, b) => {
+      const ka = `${a.event_date}T${a.end_time || a.start_time || '00:00'}`
+      const kb = `${b.event_date}T${b.end_time || b.start_time || '00:00'}`
+      return kb.localeCompare(ka)
+    })
   const unconfirmedEvents = upcoming.filter(e => e.status === 'unconfirmed')
   const scraperUnconfirmed = unconfirmedEvents.filter(e => e.source === 'scraper')
   const operatorUnconfirmed = unconfirmedEvents.filter(e => e.source !== 'scraper')
@@ -7577,8 +7585,8 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               <div className="mt-3">
                 <p className="text-sm font-semibold text-slate-800 mb-3">Kitchen capacity</p>
                 {categories.length > 0 && (
-                  <div className="grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 gap-y-2 items-center">
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                  <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
+                    <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
                     <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
                     <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
                     <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
@@ -7613,7 +7621,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 )}
                 {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
                     column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
-                <div className={`grid grid-cols-[minmax(0,1fr)_6.5rem_6.5rem_5.5rem] gap-x-3 items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
+                <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
                   <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
                   <select
                     value={van.kitchen_capacity ?? ''}

@@ -1037,8 +1037,8 @@ setItemModal({ item, modGroups, editCartKey })
   }
   // Sticky, finger-sized (≥44px) category tab bar. Horizontal-scrolls on a narrow width — never off-screen.
   const categoryTabs = menuCats.length > 1 ? (
-    <div className="sticky top-0 z-10 bg-white pb-2 mb-2 border-b border-slate-100">
-      <div className="flex gap-1.5 overflow-x-auto">
+    <div className="sticky top-0 z-10 bg-white pt-3 pb-2 mb-2 border-b border-slate-100">
+      <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
         {menuCats.map(cat => (
           <button
             key={cat}
