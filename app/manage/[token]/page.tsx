@@ -7901,7 +7901,11 @@ function BillingTab({ truck }: { truck: Truck | null }) {
           scroll container and already sits directly under the fixed header+tabs, so the OLD top-[95px]
           body-scroll offset is wrong here (it stuck the header mid-screen in the iPad WKWebView). z-30
           keeps it above the rows; bg-white hides rows scrolling beneath. */}
-      <div className="flex items-start justify-between mb-2 sticky top-0 z-30 bg-white pt-2">
+      {/* items-stretch → all plan columns share the tallest column's height so their bottom border-b-2
+          lines align. On mobile (w-14) the trial column's "Free trial" price wraps to 2 lines while
+          Free/TBC stay 1 line; items-start let each column keep its natural height, so the trial border
+          sat at a different y than the others (desktop w-28 fits "Free trial" on one line → already aligned). */}
+      <div className="flex items-stretch justify-between mb-2 sticky top-0 z-30 bg-white pt-2">
         <div className="flex-1" />
         {billingPlans.map(p => (
           <div key={p} className={`w-14 sm:w-28 text-center pb-3 border-b-2 ${
