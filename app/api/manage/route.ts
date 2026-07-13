@@ -80,6 +80,7 @@ export async function GET(req: NextRequest) {
     { data: bundles },
     { data: codes },
     { data: events },
+    { data: upsellRules },
   ] = await Promise.all([
     supabase.from('menu_categories').select('*').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
     supabase.from('menu_items_db').select('*').eq('truck_id', truck.id).eq('is_active', true).order('sort_order'),
@@ -99,6 +100,9 @@ export async function GET(req: NextRequest) {
     supabase.from('truck_events').select('*').eq('truck_id', truck.id)
       .gte('event_date', new Date().toISOString().split('T')[0])
       .order('event_date'),
+    // Upsell rules — folded into the initial parallel load (was a SEPARATE deferred get_upsell_rules POST
+    // that fired on tab-open, so the Upsells section lagged ~2s behind the instant Custom-Extras/Deals).
+    supabase.from('upsell_rules').select('*').eq('truck_id', truck.id).order('created_at', { ascending: true }),
   ])
 
   // Stock check: mark bundles where any slot category has no available items
@@ -170,6 +174,7 @@ export async function GET(req: NextRequest) {
     bundles: stockCheckedBundles,
     codes: codes || [],
     events: events || [],
+    upsellRules: upsellRules || [],
     userRole,
     currentUserId,
     ownerEmail: ownerOperator?.email ?? null,

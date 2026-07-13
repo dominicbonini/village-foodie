@@ -141,6 +141,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // Stage B: per-item modifier-group links (menu_item_id, group_id) — sole resolution source.
   const [itemModGroups, setItemModGroups] = useState<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>([])
   const [bundles, setBundles] = useState<Bundle[]>([])
+  const [upsellRules, setUpsellRules] = useState<UpsellRule[]>([])
   const [loading, setLoading] = useState(true)
   // Shared stacked, action-capable toast system (lib/useToasts) — replaces the old single Toast. The
   // showToast signature (msg,type,opts?) is back-compatible with every existing (msg)/(msg,type) caller
@@ -201,6 +202,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       setCategoryModGroups(data.categoryModGroups)
       setItemModGroups(data.itemModGroups || [])
       setBundles(data.bundles)
+      setUpsellRules(data.upsellRules || [])
       setPendingEmailChange(data.pendingEmailChange || null)
     } catch (e: any) { showToast(e.message || 'Failed to load', 'error') }
     finally { setLoading(false) }
@@ -469,7 +471,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           )
         })()}
         {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} />}
-        {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
+        {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
         <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} />
@@ -4146,29 +4148,22 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 // ══════════════════════════════════════════════════════════════
 // UPSELL RULES SECTION (used inside MenuTab)
 // ══════════════════════════════════════════════════════════════
-function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
+function UpsellRulesSection({ initialRules, categories, api, showToast, adding, setAdding }: {
+  initialRules: UpsellRule[]
   categories: Category[]
   api: (a: string, e?: any) => Promise<any>
   showToast: ShowToast
   adding: boolean
   setAdding: (v: boolean) => void
 }) {
-  const [rules, setRules] = useState<UpsellRule[]>([])
-  const [loading, setLoading] = useState(true)
+  // Seeded from the initial /api/manage load (no deferred fetch → renders instantly like the rest of the
+  // tab). Mutations below update this local state optimistically; re-sync if the parent reloads.
+  const [rules, setRules] = useState<UpsellRule[]>(initialRules)
+  useEffect(() => { setRules(initialRules) }, [initialRules])
   const [newTrigger, setNewTrigger] = useState('')
   const [newSuggest, setNewSuggest] = useState('')
   // When set, the inline form is editing this existing rule (vs. adding a new one).
   const [editingId, setEditingId] = useState<string | null>(null)
-
-  const load = useCallback(async () => {
-    try {
-      const data = await api('get_upsell_rules')
-      setRules(data.rules || [])
-    } catch { /* non-fatal */ }
-    finally { setLoading(false) }
-  }, [api])
-
-  useEffect(() => { load() }, [load])
 
   const saveRule = async () => {
     if (!newTrigger || !newSuggest || newTrigger === newSuggest) return
@@ -4237,9 +4232,7 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
         </div>
       )}
 
-      {loading ? (
-        <p className="text-slate-400 text-sm animate-pulse">Loading…</p>
-      ) : rules.length === 0 ? (
+      {rules.length === 0 ? (
         <p className="text-slate-400 text-sm">No upsell rules yet.</p>
       ) : (
         <div className="space-y-2">
@@ -4273,9 +4266,10 @@ function UpsellRulesSection({ categories, api, showToast, adding, setAdding }: {
 // ══════════════════════════════════════════════════════════════
 // MODIFIERS TAB
 // ══════════════════════════════════════════════════════════════
-function ModifiersTab({ categories, items, modifierGroups, modifierOptions, itemModGroups, setModifierGroups, setModifierOptions, setItemModGroups, api, reload, showToast }: {
+function ModifiersTab({ categories, items, modifierGroups, modifierOptions, itemModGroups, upsellRules, setModifierGroups, setModifierOptions, setItemModGroups, api, reload, showToast }: {
   categories: Category[]; items: Item[]; modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]
   itemModGroups: {menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]
+  upsellRules: UpsellRule[]
   setModifierGroups: React.Dispatch<React.SetStateAction<ModifierGroup[]>>
   setModifierOptions: React.Dispatch<React.SetStateAction<ModifierOption[]>>
   setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>>
@@ -4415,7 +4409,7 @@ function ModifiersTab({ categories, items, modifierGroups, modifierOptions, item
         {!upsellAdding && <Btn label="+ Add upsell" onClick={() => setUpsellAdding(true)} />}
       </div>
 
-      <UpsellRulesSection categories={categories} api={api} showToast={showToast} adding={upsellAdding} setAdding={setUpsellAdding} />
+      <UpsellRulesSection initialRules={upsellRules} categories={categories} api={api} showToast={showToast} adding={upsellAdding} setAdding={setUpsellAdding} />
 
       {/* ── Section 2: Custom Extras ────────────────────────────────────────── */}
       {/* Stage D: the entire Custom Extras editor (heading, add-group, group cards, selection rules,
