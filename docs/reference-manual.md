@@ -2153,6 +2153,18 @@ Food trucks operate in villages with patchy 4G. A web-only KDS that loses connec
 
 A Capacitor wrapper (com.hatchgrab.app) around the existing Next.js app, pointing at https://www.hatchgrab.com. Native code only for: offline detection, local order storage, background sound, screen wake, and Bluetooth printer (Max, post-trial). The Next.js UI is reused unchanged.
 
+## Branch model — web ships to `main`, native-only stays thin (V8.8)
+
+Because the app loads its web bundle **remotely** from `https://www.hatchgrab.com` (above), **almost everything is a WEB change** that ships to production via `main` — even code that only *matters* on the iPad. The offline outbox, order-lifecycle merge (`lib/orders/*`), capacity engine, status overlay, **`lib/native/*`**, `components/native/*`, `proxy.ts`, `public/sw.js`, `supabase/migrations/*`, `scripts/*` all compile into the web bundle the browser (and the app's WKWebView) load, so they belong on `main`. Note `lib/native/*` is imported directly by `app/dashboard`, `app/manage`, `app/admin`, `app/api/*` → it **IS** the web bundle (gated to no-op on web, but built and shipped there) — the name is misleading.
+
+**GENUINELY native-only files — the ONLY things that don't affect the web build:** `capacitor.config.ts` and `ios/**` (the Xcode project). Next/Vercel ignore them, so they are inert even sitting on `main`.
+
+**THE RULE (so it doesn't drift again):**
+- **Web change → `main`.** Anything under `app/`, `components/`, `lib/` (incl. `lib/native/*`), `proxy.ts`, `public/`, `supabase/migrations/`, `scripts/`, `package.json`. This is ~everything. **`main` = production** (keep Vercel's Production branch = `main`).
+- **Native-only change → the thin native branch** (`capacitor.config.ts` + `ios/**` ONLY), kept merged FROM `main` regularly so the shell tracks production. Never let web work accumulate on it. (Since those two are inert on `main`, keeping them on `main` and skipping a native branch entirely is also valid — the standard Capacitor layout.)
+
+**Why this drifted (the `ipad-native-app` lesson, V8.7→8.8):** 58 commits of mostly-WEB work piled onto a "native" feature branch and never reached `main`, so `main` fell ~5,560 lines behind while production was served from the branch. A 29-commit shared hotspot (`app/dashboard/[token]/page.tsx`) made an after-the-fact split infeasible → the clean reset was to fast-forward `main` to the branch (all of it is web or inert-on-web) and repoint Vercel at `main`. **Do not create "native" feature branches for web work again — the native branch is ONLY the Capacitor shell.**
+
 ## ⚠️ CRITICAL — loading fresh JS on the native app (the "device is running cached code" trap)
 
 The Capacitor app loads its web bundle **REMOTELY** from the dev server (`capacitor.config` `server.url` = `http://localhost:3000/app` in dev, `https://www.hatchgrab.com` in prod). A native rebuild / `cap sync` / Xcode Run does **NOT** refetch the JS — the **WKWebView serves a CACHED bundle**. So committing a JS fix and native-rebuilding leaves the **OLD code running**, and the fix appears not to take effect.
