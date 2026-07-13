@@ -1651,16 +1651,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <button onClick={()=>extendEvent(activeEvent.id,30)} className="text-sm font-medium text-teal-600 hover:text-teal-700">Extend 30 min</button>
               </div>
             )}
-            <div className="flex gap-2 mb-3">
-              {/* Pause/Resume moved into the "Event actions ▾" menu (rarely used) — the full-width row is
-                  reclaimed for orders. An active pause still surfaces the prominent red Resume banner below. */}
-              {/* Extra-wait: mobile/tablet keeps it here in the controls row; on lg+ it moves up beside
-                  the stat boxes (above Prep) — see the summary row — so the full-width row is reclaimed. */}
-              {renderExtraWait('flex-1 md:hidden')}
-              {/* Mobile-only: Prep shares the extra-wait controls row so it no longer takes a full
-                  line below the summary. On sm+ the summary keeps its own Prep button (desktop intact). */}
-              <button onClick={()=>setShowPrepList(p=>!p)} className={`sm:hidden shrink-0 font-bold text-xs px-3 py-2.5 rounded-xl border transition-colors ${showPrepList?'bg-amber-100 text-amber-700 border-amber-300':'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'}`} title="Today's prep list">📋 Prep</button>
-            </div>
+            {/* Mobile controls row REMOVED to reclaim vertical space (was: inline Add-extra-wait + Prep).
+                "Add extra wait" now lives in the Event actions ▾ menu (below); Prep is mobile-dropped (the
+                KDS covers live prep). Desktop/iPad are unchanged — they keep both inline in the right-hand
+                stack beside the stat boxes (md:block extra-wait + Prep, below). Stat boxes stay on all sizes. */}
             {paused&&pauseUntilEffective&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{pauseReason==='offline'?' (device offline)':''}{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>
               {/* Prominent inline Resume — one tap, no hunting in the ··· menu. Clears BOTH paused_until
                   and online_paused_until on the active event (set_paused resume). */}
@@ -2861,10 +2855,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <h3 className="font-black text-slate-900">{activeEvent.venue_name}</h3>
               <button onClick={()=>setShowEventMenu(false)} className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center">×</button>
             </div>
-            {activeEvent.status==='confirmed'&&!activeEvent.auto_open&&(
+            {/* Start / Restart — visible whenever the event isn't live yet (confirmed) or has finished
+                (closed), on ALL viewports incl. mobile. Was gated `confirmed && !auto_open`, so a not-started
+                event was un-startable from the mobile menu — the only Start button was the Add-order banner,
+                which is hidden on mobile (hidden sm:block). Now mirrors that banner's condition. */}
+            {(activeEvent.status==='confirmed'||activeEvent.status==='closed')&&(
               <button onClick={()=>{openEvent(activeEvent.id);setShowEventMenu(false)}}
                 className="w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm mb-3">
-                Start Event
+                {activeEvent.status==='closed'?'Restart Event':'Start Event'}
               </button>
             )}
             <button onClick={()=>{setShowEventMenu(false);setActiveTab('add');setPendingOpenEventPicker(true)}}
@@ -2891,8 +2889,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">⏸ Pause orders</button>
                 )
               )}
+              {/* Add extra wait — event-level buffer added to NEW-order time quotes (set_extra_wait). Moved
+                  here from the removed mobile controls row; desktop/iPad keep their inline copy beside the
+                  stat boxes. Active state stays visible via the "⏱ +N min extra wait active" banner above. */}
+              {renderExtraWait('w-full')}
+              {/* Extends the event's END TIME by 30 min (extendEvent → end_time) — NOT an order-wait buffer.
+                  Labelled explicitly so it isn't confused with "Add extra wait" now sitting beside it. */}
               <button onClick={()=>{extendEvent(activeEvent.id,30);setShowEventMenu(false)}}
-                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">+30 min</button>
+                className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Extend event +30 min</button>
               <button onClick={()=>finishEvent(activeEvent.id)}
                 className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Finish event</button>
               <button onClick={()=>cancelEventFromMenu(activeEvent.id)}
