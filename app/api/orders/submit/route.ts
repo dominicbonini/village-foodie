@@ -801,9 +801,14 @@ export async function POST(req: NextRequest) {
           // for a human to read + accept instead of auto-confirming it unread. Same pending state an
           // auto_accept=false item already produces (NO new status; customer messaging unchanged). `!== false`
           // (not a bare truthy read) so a pre-migration/undefined column still REVIEWS — safe-by-default.
+          // Deal-slot free-text notes (deals[].slotNotes: Record<slot, note>) count too — a note on a deal
+          // item is still an allergy request. slotModifiers (a CHOICE, not free text) does NOT count.
+          // Defensive on any shape (null slotNotes / non-string values) — a throw here would fail the order.
           const orderHasNotes =
             !!(notes && notes.trim()) ||
-            (Array.isArray(items) && items.some((i: any) => i?.specialInstructions?.trim()))
+            (Array.isArray(items) && items.some((i: any) => i?.specialInstructions?.trim())) ||
+            (Array.isArray(deals) && deals.some((d: any) =>
+              Object.values(d?.slotNotes ?? {}).some((n: any) => typeof n === 'string' && n.trim())))
           if (
             truck.auto_accept && allItemsAutoAccept && !anyForcesPending
             && !((truck as any).notes_require_review !== false && orderHasNotes)

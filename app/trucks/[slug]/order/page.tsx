@@ -1788,10 +1788,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       <div className="flex items-center gap-2 shrink-0">
                         {isSoldOut ? (
                           <span className="text-xs text-slate-400 font-medium px-3 py-1.5">Sold out</span>
-                        ) : hasModifiers ? (
-                          // MODIFIER items → modal button (variant selection needs the modal); the
-                          // per-variant +/− rows below handle quantity. No-modifier items (even with
-                          // upsells/notes) fall through to the stepper so they get full +/− quantity.
+                        ) : (hasModifiers || catAllowNotes) ? (
+                          // MODIFIER items AND notes-enabled items → persistent modal button, so every add
+                          // reopens the modal and can carry a DIFFERENT variant/note → distinct cartKey → its
+                          // own per-variant +/− row below. No-modifier + notes-DISABLED items fall through to
+                          // the stepper (plain +/− quantity — nothing to customise, no pointless modal).
                           <button
                             onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups, itemUpsells)}
                             disabled={isOrderingBlocked || atStockLimit}
@@ -1832,8 +1833,8 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     </div>
                     </div>{/* end py-3 item-content wrapper */}
 
-                    {/* Per-variant basket rows (only for modifier items) */}
-                    {hasModifiers && itemVariants.length > 0 && (
+                    {/* Per-variant basket rows — modifier items AND notes-enabled items (each note = its own line). */}
+                    {(hasModifiers || catAllowNotes) && itemVariants.length > 0 && (
                       <div className="pl-2 pb-2 space-y-1.5">
                         {itemVariants.map(v => {
                           const modSum = v.modifiers.reduce((s, m) => s + m.price, 0)

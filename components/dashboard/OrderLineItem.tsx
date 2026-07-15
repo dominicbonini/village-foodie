@@ -22,6 +22,9 @@ interface Props {
   nameSuffix?: React.ReactNode
   /** Slot for the price display — defaults to a plain price span. Pass <InlinePriceEditor> for operator. */
   rightSlot?: React.ReactNode
+  /** Suppress the item-name span (keeps qty/modifiers/note/price + nameSuffix). Use when a header directly
+   *  above already names the item — e.g. the operator's mobile per-line menu rows. Default false. */
+  hideName?: boolean
 }
 
 export function OrderLineItem({
@@ -34,6 +37,7 @@ export function OrderLineItem({
   variant = 'operator',
   nameSuffix,
   rightSlot,
+  hideName = false,
 }: Props) {
   const hasMods = modifiers.length > 0
   const modSum = modifiers.reduce((s, m) => s + m.price, 0)
@@ -47,9 +51,11 @@ export function OrderLineItem({
       {/* Name row */}
       <div className="flex items-center justify-between gap-1.5">
         <div className="flex items-center gap-1.5 flex-wrap flex-1 min-w-0">
-          <span className={variant === 'operator' ? 'text-sm font-bold text-slate-900' : 'text-xs text-slate-600'}>
-            {variant === 'customer' && quantity > 1 ? `${quantity}× ` : ''}{name}
-          </span>
+          {!hideName && (
+            <span className={variant === 'operator' ? 'text-sm font-bold text-slate-900' : 'text-xs text-slate-600'}>
+              {variant === 'customer' && quantity > 1 ? `${quantity}× ` : ''}{name}
+            </span>
+          )}
           {nameSuffix}
         </div>
         {rightSlot ?? (

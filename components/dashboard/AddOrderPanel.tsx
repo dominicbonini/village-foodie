@@ -1182,36 +1182,36 @@ setItemModal({ item, modGroups, editCartKey })
                     >+</button>
                   )}
                 </div>
-                {/* PER-LINE rows — each cart line of this item, keyed by cartKey. Stepper bound to THAT line
-                    (adjustManualQty(rowKey,…) — displayed == controlled, so removing the last unit removes the
-                    line and nothing strands). Extras/notes via the shared OrderLineItem; Edit opens the modal in
-                    EDIT mode with this line's cartKey (extras AND/OR notes). Same primitives Review uses. */}
+                {/* PER-LINE rows (operator MOBILE only) — each cart line, keyed by cartKey. ONE compact,
+                    vertically-centred row: [stepper] | customisation + note (stacked) | Edit | price. Bespoke
+                    inline layout (NOT the shared OrderLineItem, which stacks each mod/note on its own row —
+                    too many rows on a phone); desktop cart + Review keep OrderLineItem. Stepper bound to THAT
+                    line (adjustManualQty); Edit opens the modal in EDIT mode with this line's cartKey. */}
                 {lines.map(line => {
                   const rowKey = line.cartKey || line.name
                   const optBlocked = optionAddBlocked((line.modifiers || []).map(m => m.name))
+                  const modLabel = (line.modifiers || []).map(m => `${m.name}${m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}`).join(', ')
+                  const note = line.specialInstructions
                   return (
-                    <div key={rowKey} className="flex items-start gap-2 py-1 pl-3 mt-1">
-                      <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                    <div key={rowKey} className="flex items-center gap-2 py-1.5 pl-3 mt-1">
+                      {/* Stepper (left) */}
+                      <div className="flex items-center gap-1 shrink-0">
                         <button onClick={() => adjustManualQty(rowKey, -1)} className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 text-sm leading-none active:scale-90">−</button>
                         <span className="w-5 text-center font-black text-sm text-slate-900">{line.quantity}</span>
                         <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? `Only ${buildOptionStockByName(truckMenu?.items || [])[optBlocked]} ${optBlocked} left (shared)` : undefined} className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm leading-none active:scale-90 ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
                       </div>
+                      {/* Detail block — customisation + note stacked, next to the stepper. flex-1 min-w-0 so
+                          long values truncate/wrap instead of breaking the row. Empty on a plain line. rem
+                          type sizes (text-sm) scale with the OS text setting. */}
                       <div className="flex-1 min-w-0">
-                        <OrderLineItem
-                          name={line.name}
-                          quantity={line.quantity}
-                          unitPrice={line.unit_price}
-                          modifiers={line.modifiers}
-                          specialInstructions={line.specialInstructions}
-                          variant="operator"
-                          nameSuffix={(
-                            <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)}
-                              className="text-[10px] font-bold text-orange-500 border border-orange-200 rounded-md px-1.5 py-0.5 hover:bg-orange-50 shrink-0">
-                              ✏ Edit
-                            </button>
-                          )}
-                        />
+                        {modLabel && <p className="text-sm font-medium text-orange-600 truncate">{modLabel}</p>}
+                        {note && <p className="text-sm italic text-slate-400 break-words">📝 {note}</p>}
                       </div>
+                      {/* Edit — right, beside the price, vertically centred against the detail block. */}
+                      <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)}
+                        className="shrink-0 text-xs font-bold text-orange-500 border border-orange-200 rounded-md px-2 py-1 hover:bg-orange-50 active:scale-95">✏ Edit</button>
+                      {/* Price (right) */}
+                      <span className="shrink-0 text-sm font-bold text-slate-900 tabular-nums">£{(line.unit_price * line.quantity).toFixed(2)}</span>
                     </div>
                   )
                 })}
