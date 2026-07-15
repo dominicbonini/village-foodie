@@ -796,7 +796,18 @@ export async function POST(req: NextRequest) {
             const pre = isPreorderDeadlinePassed(cfg, orderEventDate, eventStartMins as number, preNowDate, preNowMins)
             return pre.isPreorder && pre.passed && pre.pastAction === 'force_pending'
           })
-          if (truck.auto_accept && allItemsAutoAccept && !anyForcesPending) {
+          // SAFETY — notes need review: a customer note (order-level OR any line's specialInstructions) is
+          // where allergy requests land, so a truck with notes_require_review ON holds a NOTED order `pending`
+          // for a human to read + accept instead of auto-confirming it unread. Same pending state an
+          // auto_accept=false item already produces (NO new status; customer messaging unchanged). `!== false`
+          // (not a bare truthy read) so a pre-migration/undefined column still REVIEWS — safe-by-default.
+          const orderHasNotes =
+            !!(notes && notes.trim()) ||
+            (Array.isArray(items) && items.some((i: any) => i?.specialInstructions?.trim()))
+          if (
+            truck.auto_accept && allItemsAutoAccept && !anyForcesPending
+            && !((truck as any).notes_require_review !== false && orderHasNotes)
+          ) {
             autoAccepted = true
           }
         }

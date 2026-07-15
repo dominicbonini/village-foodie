@@ -1101,6 +1101,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // ── set_notes_require_review ── hold NOTED orders pending for manual review (allergy safety) ──
+    if (action === 'set_notes_require_review') {
+      const { value } = body
+      await supabase.from('trucks').update({ notes_require_review: !!value }).eq('id', truck.id)
+      return NextResponse.json({ success: true })
+    }
+
     // ── set_paused ── EVENT-scoped (truck_events), not truck/van ───────────────
     if (action === 'set_paused') {
       const { paused_until, eventId } = body

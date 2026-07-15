@@ -2793,7 +2793,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   />
                   <div className="shrink-0">
                     <label className="flex items-center gap-2 cursor-pointer select-none">
-                      <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Allow item notes</span>
+                      <span className="text-xs font-bold text-slate-600 whitespace-nowrap">Allow customer notes</span>
                       <Toggle
                         on={!!(editingCat as any).allow_notes}
                         onToggle={() => {
@@ -2803,7 +2803,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                         }}
                       />
                     </label>
-                    <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">e.g. "no onion"</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap">Truck can always note; this is for customers</p>
                   </div>
                 </div>
                 {/* Row 2: Prep time + Batch size + Default stock */}
@@ -3045,7 +3045,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                 <div>
                   <p className="text-sm font-bold text-slate-700">Allow customer notes per item</p>
-                  <p className="text-xs text-slate-400">Customers can add a note to each item (e.g. "no onion"). All orders also have an order-level notes field.</p>
+                  <p className="text-xs text-slate-400">Lets customers add a note to each item (e.g. "no onion"). The truck can always add item notes regardless. All orders also have an order-level notes field.</p>
                 </div>
                 <Toggle on={!!(editingCat as any).allow_notes} onToggle={() => setEditingCat(p => ({...p!, allow_notes: !(p as any).allow_notes} as any))} />
               </div>
@@ -7209,6 +7209,29 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         {form.auto_accept && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
             ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
+          </div>
+        )}
+        {/* Nested sub-option — only meaningful when auto-accept is ON (when OFF, every order is manual anyway,
+            so notes_require_review can't matter; the submit rollup requires truck.auto_accept first). Same
+            truck-level column the dashboard live-toggle writes → the two surfaces mirror on next load. DIRECT
+            polarity: teal/ON = notes_require_review = hold NOTED orders for review; default ON (?? true) so a
+            pre-migration/undefined read still reviews. No inversion → displayed state can't drift from stored. */}
+        {form.auto_accept && (
+          <div className="flex items-center justify-between py-3 border-t border-slate-100 pl-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
+              <p className="text-xs text-slate-500 mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
+            </div>
+            <button
+              onClick={() => {
+                const next = !((form as any).notes_require_review ?? true)
+                setForm(p => ({...p, notes_require_review: next} as any))
+                saveFormField({ notes_require_review: next })
+              }}
+              className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${((form as any).notes_require_review ?? true) ? 'bg-teal-500' : 'bg-slate-300'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${((form as any).notes_require_review ?? true) ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
           </div>
         )}
 

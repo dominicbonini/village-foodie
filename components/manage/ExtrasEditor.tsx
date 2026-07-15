@@ -293,6 +293,25 @@ export default function ExtrasEditor({
                       return opts.filter(o => exc.has(o.id)).map(o => o.name)
                     }
                     const withExc = offered.filter(i => excNames(i.id).length > 0)
+                    // Collapse the "Offered on" list by category so a whole-category extra reads "Pizza" rather
+                    // than 18 dish names. Same cats shape as the matrix. Per category with ≥1 offered dish:
+                    // fully-covered (n===m) → just the name; partial → "Category (n of m)" for big categories
+                    // (m>4) or the dish names for small ones. A "*" on a collapsed name flags that some dish in
+                    // it hides options (the per-dish detail is still printed by the withExc block below).
+                    const summaryCats = [
+                      ...categories.map(c => ({ id: c.id, name: c.name, items: items.filter(i => i.category_id === c.id) })),
+                      { id: '__uncat__', name: 'Uncategorized', items: items.filter(i => !i.category_id) },
+                    ]
+                    const chunks: string[] = []
+                    for (const cat of summaryCats) {
+                      const inCat = cat.items.filter(i => linkedIds.has(i.id))
+                      if (inCat.length === 0) continue
+                      const n = inCat.length, m = cat.items.length
+                      const catStar = inCat.some(i => excNames(i.id).length > 0) ? ' *' : ''
+                      if (n === m) chunks.push(`${cat.name}${catStar}`)
+                      else if (m > 4) chunks.push(`${cat.name} (${n} of ${m})${catStar}`)
+                      else chunks.push(inCat.map(i => `${i.name}${excNames(i.id).length ? ' *' : ''}`).join(', '))
+                    }
                     return (
                       <>
                         <div className="flex items-center justify-between mb-1.5">
@@ -303,7 +322,7 @@ export default function ExtrasEditor({
                           <p className="text-xs text-slate-400">Not offered on any dish yet.</p>
                         ) : (
                           <>
-                            <p className="text-xs text-slate-600">{offered.map(i => `${i.name}${excNames(i.id).length ? ' *' : ''}`).join(', ')}</p>
+                            <p className="text-xs text-slate-600">{chunks.join(' · ')}</p>
                             {withExc.map(i => (
                               <p key={i.id} className="text-[10px] text-orange-500 mt-0.5">* {i.name}: {excNames(i.id).join(', ')} hidden</p>
                             ))}
@@ -340,18 +359,22 @@ export default function ExtrasEditor({
                           <h3 className="font-black text-slate-900">{group.name} — per-dish options</h3>
                           <button onClick={() => setMatrixModalGroupId(null)} className="text-slate-400 hover:text-slate-600 text-2xl leading-none">×</button>
                         </div>
-                        <p className="text-xs text-slate-400 mb-3">Tick &quot;Offer&quot; to add the group to a dish, then tick which options it shows. Saves instantly.</p>
+                        <p className="text-xs text-slate-400 mb-3">Tick &quot;Include&quot; to add the group to a dish, then tick which options it shows. Saves instantly.</p>
                         <div className="overflow-x-auto">
-                          <table className="text-xs border-collapse w-full" style={{ tableLayout: 'fixed', minWidth: '100%' }}>
+                          {/* Fixed layout + a shared colgroup pin every category's columns to the same x. The
+                              Dish col gets an EXPLICIT width so it can't collapse (which overlapped the headers
+                              and clipped dish names); min-width = Dish + Include + options so many-option grids
+                              scroll horizontally (wrapper is overflow-x-auto) rather than crushing columns. */}
+                          <table className="text-xs border-collapse w-full" style={{ tableLayout: 'fixed', minWidth: 200 + 56 + opts.length * 76 }}>
                             <colgroup>
-                              <col />
+                              <col style={{ width: 200 }} />
                               <col style={{ width: 56 }} />
                               {opts.map(o => <col key={o.id} style={{ width: 76 }} />)}
                             </colgroup>
                             <thead>
                               <tr>
                                 <th className="text-left font-bold text-slate-400 uppercase tracking-wide pb-1.5 pr-3">Dish</th>
-                                <th className="text-center font-bold text-slate-400 uppercase tracking-wide pb-1.5 px-2">Offer</th>
+                                <th className="text-center font-bold text-slate-400 uppercase tracking-wide pb-1.5 px-2">Include</th>
                                 {opts.map(o => (
                                   <th key={o.id} className="text-center font-bold text-slate-600 pb-1.5 px-1 leading-tight">
                                     {o.name}{o.price_adjustment > 0 && <span className="text-orange-500"> +£{o.price_adjustment.toFixed(2)}</span>}
@@ -369,7 +392,28 @@ export default function ExtrasEditor({
                                     <tr className="cursor-pointer" onClick={() => setCatOpen(s => ({ ...s, [key]: !open }))}>
                                       <td colSpan={opts.length + 2} className="pt-3 pb-1">
                                         <span className="flex items-center justify-between">
-                                          <span className="text-[11px] font-black text-slate-500 uppercase tracking-wide">{cat.name}</span>
+                                          <span className="flex items-center gap-2">
+                                            {/* Select-all-in-category: tri-state (all ✓ / partial – / none). Offers the
+                                                group on every dish in the category in one tap (or clears all when full).
+                                                stopPropagation so it doesn't also collapse the category row. */}
+                                            {onToggleAssign && (() => {
+                                              const allOn = cat.items.length > 0 && offeringCount === cat.items.length
+                                              const partial = offeringCount > 0 && !allOn
+                                              return (
+                                                <button type="button"
+                                                  title={allOn ? `Remove ${group.name} from all ${cat.name}` : `Offer ${group.name} on all ${cat.name}`}
+                                                  onClick={e => {
+                                                    e.stopPropagation()
+                                                    if (allOn) cat.items.forEach(it => { if (linkedIds.has(it.id)) onToggleAssign?.(it.id, group.id, true) })
+                                                    else cat.items.forEach(it => { if (!linkedIds.has(it.id)) onToggleAssign?.(it.id, group.id, false) })
+                                                  }}
+                                                  className={`w-4 h-4 rounded border inline-flex items-center justify-center text-[10px] leading-none transition-colors ${allOn ? 'bg-green-600 border-green-600 text-white' : partial ? 'bg-green-100 border-green-400 text-green-700' : 'bg-white border-slate-300 text-transparent hover:border-green-400'}`}>
+                                                  {allOn ? '✓' : partial ? '–' : ''}
+                                                </button>
+                                              )
+                                            })()}
+                                            <span className="text-[11px] font-black text-slate-500 uppercase tracking-wide">{cat.name}</span>
+                                          </span>
                                           <span className="flex items-center gap-2"><span className="text-[10px] font-bold text-slate-400">{offeringCount} of {cat.items.length} offer this</span><span className="text-slate-400">{open ? '▾' : '▸'}</span></span>
                                         </span>
                                       </td>
@@ -380,7 +424,7 @@ export default function ExtrasEditor({
                                       const includedCount = opts.filter(o => !excluded.has(o.id)).length
                                       return (
                                         <tr key={it.id} className="border-t border-slate-50">
-                                          <td className="py-1.5 pr-3 text-slate-700 font-medium truncate">{it.name}</td>
+                                          <td className="py-1.5 pr-3 text-slate-700 font-medium truncate" title={it.name}>{it.name}</td>
                                           <td className="text-center py-1.5 px-2">
                                             {tickBtn(offered, false, false,
                                               offered ? 'Offered — click to remove the group from this dish' : 'Not offered — click to add',

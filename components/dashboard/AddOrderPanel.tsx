@@ -743,6 +743,15 @@ setItemModal({ item, modGroups, editCartKey })
         if (proceed) { await submitManual(true, true); return }
         return // Edit/Cancel — keep the order in the panel
       }
+      // WEB offline: the gate couldn't reach the server (fetch threw → no HTTP status, and nothing was
+      // queued). The web dashboard has NO durable outbox, so instead of the bare "Failed" toast, be explicit:
+      // the order was NOT sent and the basket stays in this panel (no resetManual on this path) so the operator
+      // can retry on reconnect WITHOUT re-entering it. Do NOT imply durability — a refresh/navigation loses it.
+      // (Native never reaches here: the gate queues to the outbox and returns result.queued, handled above.)
+      if (!isNativeApp() && !result.queued && result.status == null) {
+        showToast("Couldn't reach the server — you appear to be offline. The order was NOT sent. Keep this panel open and retry when you reconnect.", 'error')
+        return
+      }
       if (!result.ok) throw new Error(data.error)
       showToast(`Order #${data.orderId} confirmed`)
       if (manualItems.length) {
@@ -962,12 +971,13 @@ setItemModal({ item, modGroups, editCartKey })
             <p className="text-[10px] font-black text-orange-500 uppercase tracking-wide mb-1 mt-2 first:mt-0">{cat}</p>
             {grouped[cat].map(item => {
               const rowKey = item.cartKey || item.name
-              const hasMods = (item.modifiers || []).length > 0
-              const catAllowNotes = categoryAllowNotes[cat.toLowerCase()] ?? false
               const fullMenuItem = truckMenu?.items.find(m => m.name === item.name)
               // Stage B: per-item groups are the sole source (replaces category name-match).
               const itemCatModGroups = fullMenuItem?.modifierGroups || []
-              const showCustomise = itemCatModGroups.length > 0 && fullMenuItem
+              // Edit shows on EVERY line — the truck can ALWAYS add notes (asymmetric model, backlog #2), so
+              // this is no longer gated on the category allow_notes flag (now customer-only). Guard on
+              // fullMenuItem only because the modal needs the item to open. Items with extras also edit extras.
+              const showCustomise = !!fullMenuItem
               // Option shared-pool gate (D2): disable "+" if one more of this line's options would
               // exceed the basket-wide pool. Reuses the item "max" affordance.
               const optBlocked = optionAddBlocked((item.modifiers || []).map(m => m.name))
@@ -992,10 +1002,8 @@ setItemModal({ item, modGroups, editCartKey })
                       nameSuffix={showCustomise ? (
                         <button onClick={() => openManualItemModal(fullMenuItem!, itemCatModGroups, rowKey)}
                           className="text-[10px] font-bold text-orange-500 border border-orange-200 rounded-md px-1.5 py-0.5 hover:bg-orange-50 shrink-0">
-                          {hasMods ? '✏ Edit' : '+ Customise'}
+                          ✏ Edit
                         </button>
-                      ) : catAllowNotes && !hasMods ? (
-                        <span className="text-[10px] text-slate-400 italic">Standard</span>
                       ) : undefined}
                       rightSlot={
                         <InlinePriceEditor price={item.unit_price} quantity={item.quantity}
@@ -1143,39 +1151,70 @@ setItemModal({ item, modGroups, editCartKey })
             const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
             const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
+            // PER-LINE mobile menu (mirrors Review-order / cartLines): the ADD row's "+" quick-adds a base unit
+            // (or opens the modal for a required-group item — addOrCustomise, BYTE-IDENTICAL). Each existing
+            // cart LINE of this item then renders as its own row with a cartKey-bound stepper + its extras/notes
+            // shown + Edit. Displayed == controlled → nothing strands, and the tile never shows a lying sum.
+            const lines = manualItems.filter(i => i.name === item.name)
+            const itemModGroups = item.modifierGroups || []
+            // Edit shows on EVERY line — the truck can ALWAYS add notes (asymmetric model, backlog #2), and
+            // items with extras also get their extras in the modal. (allow_notes is now CUSTOMER-only.)
             return (
-              <div key={item.name} className={`flex items-center gap-3 py-3 border-b border-slate-50 ${isSoldOut ? 'opacity-50' : ''}`}>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
-                    {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
-                    {atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
-                    {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
-                  </div>
-                </div>
-                {!isSoldOut && (
-                  totalInBasket > 0 ? (
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => adjustManualQty(item.name, -1)}
-                        className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-lg leading-none active:scale-90"
-                      >−</button>
-                      <span className="text-sm font-bold text-slate-800 w-4 text-center">{totalInBasket}</span>
-                      <button
-                        onClick={() => !atStockLimit && addOrCustomise(item)}
-                        disabled={atStockLimit}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg leading-none ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-600 text-white active:scale-90'}`}
-                      >+</button>
+              <div key={item.name} className={`py-2 border-b border-slate-50 ${isSoldOut ? 'opacity-60' : ''}`}>
+                {/* ADD row — name/price/stock + base "+" quick-add (unchanged addOrCustomise: plain add, or the
+                    modal for a required-group item). Adds another BASE unit; per-line rows below own the rest. */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-semibold truncate ${isSoldOut ? 'line-through text-slate-400' : 'text-slate-800'}`}>{item.name}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
+                      {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
+                      {!isSoldOut && atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
+                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
                     </div>
-                  ) : (
+                  </div>
+                  {!isSoldOut && (
                     <button
                       onClick={() => !atStockLimit && addOrCustomise(item)}
                       disabled={atStockLimit}
+                      title="Add"
                       className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xl leading-none shrink-0 ${atStockLimit ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-orange-100 text-orange-600 active:scale-90'}`}
                     >+</button>
+                  )}
+                </div>
+                {/* PER-LINE rows — each cart line of this item, keyed by cartKey. Stepper bound to THAT line
+                    (adjustManualQty(rowKey,…) — displayed == controlled, so removing the last unit removes the
+                    line and nothing strands). Extras/notes via the shared OrderLineItem; Edit opens the modal in
+                    EDIT mode with this line's cartKey (extras AND/OR notes). Same primitives Review uses. */}
+                {lines.map(line => {
+                  const rowKey = line.cartKey || line.name
+                  const optBlocked = optionAddBlocked((line.modifiers || []).map(m => m.name))
+                  return (
+                    <div key={rowKey} className="flex items-start gap-2 py-1 pl-3 mt-1">
+                      <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                        <button onClick={() => adjustManualQty(rowKey, -1)} className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold hover:bg-red-100 hover:text-red-600 text-sm leading-none active:scale-90">−</button>
+                        <span className="w-5 text-center font-black text-sm text-slate-900">{line.quantity}</span>
+                        <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? `Only ${buildOptionStockByName(truckMenu?.items || [])[optBlocked]} ${optBlocked} left (shared)` : undefined} className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm leading-none active:scale-90 ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <OrderLineItem
+                          name={line.name}
+                          quantity={line.quantity}
+                          unitPrice={line.unit_price}
+                          modifiers={line.modifiers}
+                          specialInstructions={line.specialInstructions}
+                          variant="operator"
+                          nameSuffix={(
+                            <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)}
+                              className="text-[10px] font-bold text-orange-500 border border-orange-200 rounded-md px-1.5 py-0.5 hover:bg-orange-50 shrink-0">
+                              ✏ Edit
+                            </button>
+                          )}
+                        />
+                      </div>
+                    </div>
                   )
-                )}
+                })}
               </div>
             )
           })}
@@ -1371,15 +1410,17 @@ setItemModal({ item, modGroups, editCartKey })
                     </div>
                   )
                 })}
-                {(truckMenu?.categories?.find(c => c.name === itemModal.item.category)?.allowNotes ?? false) && (
-                  <div>
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Note <span className="font-normal normal-case text-slate-400">— optional</span></p>
-                    <textarea value={modalNotes} onChange={e => setModalNotes(e.target.value.slice(0, 60))}
-                      placeholder="e.g. No onions, well done…" rows={2}
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none" />
-                    <p className="text-right text-[10px] text-slate-400 mt-0.5">{modalNotes.length}/60</p>
-                  </div>
-                )}
+                {/* TRUCK notes are ALWAYS available (asymmetric model, backlog #2): un-gated from the category
+                    allow_notes flag, which now controls CUSTOMER notes only. The operator may need to note an
+                    allergy / "no onions" / "extra crispy" on ANY item regardless of config. For a no-extras item
+                    (e.g. a drink) this is the modal's only body row → it renders cleanly on its own. */}
+                <div>
+                  <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Note <span className="font-normal normal-case text-slate-400">— optional</span></p>
+                  <textarea value={modalNotes} onChange={e => setModalNotes(e.target.value.slice(0, 60))}
+                    placeholder="e.g. No onions, well done…" rows={2}
+                    className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white resize-none" />
+                  <p className="text-right text-[10px] text-slate-400 mt-0.5">{modalNotes.length}/60</p>
+                </div>
               </div>
             </div>
             <div className="px-5 pb-5 pt-2 border-t border-slate-100">

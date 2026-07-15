@@ -53,6 +53,7 @@ import { isOnline, startReachability, onReachabilityChange } from '@/lib/native/
 import { useOfflineAlert } from '@/lib/native/useOfflineAlert'
 import { NotificationSettings } from '@/components/native/NotificationSettings'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
@@ -176,6 +177,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
+  const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
+  const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
   const[eventOfflineOverride,setEventOfflineOverride]=useState<boolean|null>(null)
   // Order-ready (master-switch model): the van DEFAULT (order_ready_enabled — the Settings master switch +
@@ -427,7 +430,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // WEB: the "Screen on" control follows the truck keep_screen_on setting. APP: it follows the
       // per-device pref (initialised on mount below), so don't let the truck setting override it here.
       if(!isNativeApp()) setKeepScreenOn(data.truck?.keep_screen_on ?? true)
-      setAutoAccept(data.truck?.auto_accept || false); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(prev=>mergeOrders(prev,data.orders||[])); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
+      setAutoAccept(data.truck?.auto_accept || false); setNotesRequireReview(data.truck?.notes_require_review ?? true); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(prev=>mergeOrders(prev,data.orders||[])); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
@@ -753,6 +756,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       showToast(val?'Auto-accept enabled':'Auto-accept disabled')
     }catch{showToast('Failed to save','error')}
     finally{setSavingAutoAccept(false)}
+  }
+
+  const saveNotesRequireReview=async(val:boolean)=>{
+    setSavingNotesReview(true)
+    try{
+      await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_notes_require_review',value:val})
+      })
+      setNotesRequireReview(val)
+      showToast(val?'Noted orders will need review':'Noted orders auto-accept')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingNotesReview(false)}
   }
 
   const toggleOfflineProtection=async(value:boolean)=>{
@@ -1467,6 +1483,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
       <OfflineBanner onSynced={()=>{fetchAll();refreshPendingStatus()}} />
+      {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
+          (renders null on native, where OfflineBanner owns the offline state). */}
+      <WebOfflineBanner />
       {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
           the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
       <CapacityBreachBanner breaches={capacityBreaches} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
@@ -2087,6 +2106,24 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)} disabled={isOffline}/>
                 </div>
               </div>
+              {/* Nested sub-option — only meaningful when auto-accept is ON (when OFF, every order is manual
+                  anyway, so notes_require_review can't matter; the rollup requires truck.auto_accept first).
+                  DIRECT polarity: checked = notes_require_review = hold NOTED orders for review. Default ON.
+                  No inversion, so the displayed state can never drift from the stored safety hold. */}
+              {autoAccept&&(
+                <div className="mt-3 pt-3 border-t border-slate-100 pl-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
+                      <p className="text-slate-500 text-xs mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 ml-3">
+                      {savingNotesReview&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                      <Toggle on={notesRequireReview} onToggle={()=>saveNotesRequireReview(!notesRequireReview)} disabled={isOffline}/>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
@@ -2311,7 +2348,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             const itemCount=followsCategory?null:(stock?.stock_count ?? item.default_stock ?? null)
                             const itemOrdered=activeEvent?((stock?.orders_count??0)+(offlineConsumedByItem.get(item.name)??0)):0
                             const itemRem=itemCount!==null?itemCount-itemOrdered:null
-                            const effectiveRem=itemRem!==null?(catRem!==null?Math.min(itemRem,catRem):itemRem):catRem
                             // Drives the input's default-state border/tooltip (the visible "default"
                             // label + "reset to default" link were removed — reset is still reachable
                             // by typing the default number back in).
@@ -2322,7 +2358,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}<span className="text-slate-600 font-normal ml-1.5">£{item.price.toFixed(2)}</span></p>
                                     {!isAvailable&&<span className="text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full">SOLD OUT</span>}
-                                    {isAvailable&&effectiveRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${effectiveRem<=3?'text-red-600 bg-red-100':effectiveRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{effectiveRem} left</span>}
+                                    {/* Show "X left" ONLY for an item with its OWN cap (itemRem !== null) — never echo
+                                        the category number onto every item (the category header row shows {catRem} left).
+                                        No ≤N threshold on this stock-management surface: the operator set the cap and wants
+                                        to see it at any value. DISPLAY only — gating/enforcement is unchanged. */}
+                                    {isAvailable&&itemRem!==null&&<span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${itemRem<=3?'text-red-600 bg-red-100':itemRem<=10?'text-orange-600 bg-orange-100':'text-slate-500 bg-slate-100'}`}>{itemRem} left</span>}
                                   </div>
                                   {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} sold</p>}
                                 </div>

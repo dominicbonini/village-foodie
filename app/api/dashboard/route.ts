@@ -401,6 +401,7 @@ export async function GET(req: NextRequest) {
       mode:        truck.mode,
       venue_name:  truck.venue_name,
       auto_accept:         truck.auto_accept ?? false,
+      notes_require_review: truck.notes_require_review ?? true,   // safe-by-default (undefined ⇒ ON)
       // Pause + extra-wait are EVENT-scoped now — sourced from the selected event, not the truck.
       // (Legacy trucks.* columns left unread; the badge reads these via the response.)
       paused_until:        null,

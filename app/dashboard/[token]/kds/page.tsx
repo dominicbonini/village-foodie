@@ -26,6 +26,7 @@ import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
 import { AppLockGate } from '@/components/native/AppLockGate'
@@ -664,6 +665,8 @@ export default function KdsPage() {
 
       {/* Offline warning + sync state (native only); also drives reachability + the outbox drain on reconnect. */}
       <OfflineBanner onSynced={() => { fetchAllRef.current(); refreshPendingStatus() }} />
+      {/* WEB-only counterpart (renders null on native): a clear "you're offline, orders won't send" bar. */}
+      <WebOfflineBanner />
 
       {/* App-lock overlay (per-device biometric/passcode) — no-op on web / when off. */}
       <AppLockGate />
