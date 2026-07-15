@@ -1200,16 +1200,19 @@ setItemModal({ item, modGroups, editCartKey })
                         <span className="w-5 text-center font-black text-sm text-slate-900">{line.quantity}</span>
                         <button onClick={() => adjustManualQty(rowKey, 1)} disabled={!!optBlocked} title={optBlocked ? `Only ${buildOptionStockByName(truckMenu?.items || [])[optBlocked]} ${optBlocked} left (shared)` : undefined} className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm leading-none active:scale-90 ${optBlocked ? 'bg-slate-100 text-slate-300 cursor-not-allowed' : 'bg-slate-200 hover:bg-orange-100 hover:text-orange-600'}`}>+</button>
                       </div>
-                      {/* Detail block — customisation + note stacked, next to the stepper. flex-1 min-w-0 so
-                          long values truncate/wrap instead of breaking the row. Empty on a plain line. rem
-                          type sizes (text-sm) scale with the OS text setting. */}
+                      {/* Detail block — STACK each extra on its own line + note beneath (break-words, NEVER
+                          truncate: the operator must see exactly what was chosen). rem type sizes scale w/ OS. */}
                       <div className="flex-1 min-w-0">
-                        {modLabel && <p className="text-sm font-medium text-orange-600 truncate">{modLabel}</p>}
+                        {(line.modifiers || []).map(m => (
+                          <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>
+                        ))}
                         {note && <p className="text-sm italic text-slate-400 break-words">📝 {note}</p>}
                       </div>
-                      {/* Edit — right, beside the price, vertically centred against the detail block. */}
-                      <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)}
-                        className="shrink-0 text-xs font-bold text-orange-500 border border-orange-200 rounded-md px-2 py-1 hover:bg-orange-50 active:scale-95">✏ Edit</button>
+                      {/* Edit — PENCIL only (dropped the "Edit" text: horizontal space is scarce and was
+                          driving the truncation). Padded ~44px tap target so operator speed isn't hurt.
+                          Vertically centred against the detail block, beside the price. */}
+                      <button onClick={() => openManualItemModal(item, itemModGroups, rowKey)} aria-label="Edit"
+                        className="shrink-0 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center text-slate-400 active:scale-95">✏️</button>
                       {/* Price (right) */}
                       <span className="shrink-0 text-sm font-bold text-slate-900 tabular-nums">£{(line.unit_price * line.quantity).toFixed(2)}</span>
                     </div>

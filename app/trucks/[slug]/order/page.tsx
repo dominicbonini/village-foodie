@@ -266,13 +266,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const [appliedDeals, setAppliedDeals] = useState<AppliedDeal[]>([])
   const [dealModalOpen, setDealModalOpen] = useState(false)
   const [selectedBundleForModal, setSelectedBundleForModal] = useState<Bundle | null>(null)
-  const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[]; upsells: MenuItem[] } | null>(null)
+  const [itemModal, setItemModal] = useState<{ item: MenuItem; modGroups: ModifierGroup[]; upsells: MenuItem[]; editCartKey?: string } | null>(null)
   const [modalMods, setModalMods] = useState<{ name: string; price: number; allergens?: string[]; dietary?: string[] }[]>([])
   const [modalNotes, setModalNotes] = useState('')
   // Upsells STAGED in the modal (like modalMods) — selected names, committed on "Add to basket".
   const [modalUpsells, setModalUpsells] = useState<string[]>([])
-  const [openNoteKey, setOpenNoteKey] = useState<string | null>(null)
-  const [noteInputVal, setNoteInputVal] = useState('')
   const [discountInput, setDiscountInput] = useState('')
   const [appliedCode, setAppliedCode] = useState<DiscountCode | null>(null)
   const [discountError, setDiscountError] = useState('')
@@ -554,7 +552,6 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     if (!entry) return
     const isLastVariant = basket.filter(b => b.menuItem.name === entry.menuItem.name).length === 1 && entry.quantity === 1
     if (isLastVariant) setAppliedDeals(prev => cleanupDealsForItem(prev, entry.menuItem.name))
-    if (entry.quantity === 1) setOpenNoteKey(prev => prev === cartKey ? null : prev)
     setBasket(prev => {
       const ex = prev.find(b => b.cartKey === cartKey)
       if (!ex) return prev
@@ -586,24 +583,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
     })
   }
 
-  const commitNote = (itemName: string) => {
-    const note = noteInputVal.trim()
-    setBasket(prev => prev.map(b =>
-      b.menuItem.name === itemName && b.modifiers.length === 0
-        ? { ...b, specialInstructions: note, cartKey: makeCartKey(b.menuItem.name, [], note) }
-        : b
-    ))
-    setOpenNoteKey(null)
-  }
-
   // Total qty across all variants of an item (for UI badge and stock checks)
   const getQty = (itemName: string) => basket.filter(b => b.menuItem.name === itemName).reduce((s, b) => s + b.quantity, 0)
 
   // Item modal helpers
-  const openItemModal = (item: MenuItem, modGroups: ModifierGroup[], upsells: MenuItem[] = []) => {
-    setItemModal({ item, modGroups, upsells })
-    setModalMods([])
-    setModalNotes('')
+  const openItemModal = (item: MenuItem, modGroups: ModifierGroup[], upsells: MenuItem[] = [], editCartKey?: string) => {
+    // editCartKey set → EDIT mode (variant-row ✏️): prefill mods+notes from the existing line. ALWAYS written
+    // into itemModal (value or undefined) so an ADD-open can never inherit a stale edit key. Upsells: never
+    // staged in edit.
+    const editLine = editCartKey ? basket.find(b => b.cartKey === editCartKey) : undefined
+    setItemModal({ item, modGroups, upsells, editCartKey })
+    setModalMods(editLine?.modifiers ?? [])
+    setModalNotes(editLine?.specialInstructions ?? '')
     setModalUpsells([])
   }
 
@@ -620,9 +611,41 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   const confirmAddFromModal = () => {
     if (!itemModal) return
-    // Required-group gate (A1): block add until every required group has its min selections.
-    // Defense-in-depth — the Add button is also disabled while unmet (the render surfaces which).
+    // Required-group gate (A1) — applies to BOTH add and edit (an edit that unsets a required option blocks).
     if (validateModifierSelection(itemModal.modGroups, modalMods).unmetGroupIds.length > 0) return
+
+    // ── EDIT MODE (variant-row ✏️) — remove the old line + re-create the variant, carrying its quantity
+    //    INVISIBLY. ONE atomic basket update (operator remove-and-re-add shape): no-op / merge-on-collision /
+    //    replace-preserving-qty. Upsells are NEVER committed in edit. ──
+    if (itemModal.editCartKey) {
+      const editKey = itemModal.editCartKey
+      const target = basket.find(b => b.cartKey === editKey)
+      if (target) {
+        // Client option-pool guard for NET-NEW options only (the removed old line frees its own; unchanged
+        // options net to zero). Matches addItem's silent no-op on a blocked pool; the server submit-check
+        // remains the authoritative backstop.
+        const oldNames = new Set(target.modifiers.map(m => m.name))
+        const netNew = modalMods.filter(m => !oldNames.has(m.name)).map(m => m.name)
+        if (netNew.length && optionAddBlocked(netNew)) return   // blocked → keep the modal open, no change
+        const newKey = makeCartKey(itemModal.item.name, modalMods, modalNotes)
+        if (newKey !== editKey) {                                // newKey === editKey → NO-OP, basket untouched
+          setBasket(prev => {
+            const idx = prev.findIndex(b => b.cartKey === editKey)
+            if (idx < 0) return prev
+            const t = prev[idx]
+            const cIdx = prev.findIndex((b, i) => i !== idx && b.cartKey === newKey)
+            if (cIdx >= 0)   // COLLISION → fold qty into the existing line, drop the edited one
+              return prev.map((b, i) => (i === cIdx ? { ...b, quantity: b.quantity + t.quantity } : b)).filter((_, i) => i !== idx)
+            // NO COLLISION → replace the edited line, PRESERVING its quantity (block edit, no split)
+            return prev.map((b, i) => (i === idx ? { ...t, modifiers: modalMods, specialInstructions: modalNotes, cartKey: newKey } : b))
+          })
+        }
+      }
+      setItemModal(null); setModalMods([]); setModalNotes(''); setModalUpsells([])
+      return
+    }
+
+    // ── ADD MODE (BYTE-IDENTICAL to before) ──
     addItem(itemModal.item, modalMods, modalNotes)
     // Commit selected upsells ONCE here (not on tap) — each as its OWN-category basket line
     // (capacity-correct: drink ≠ pizza windows), tagged source:'upsell'.
@@ -1852,9 +1875,21 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                                 <button onClick={() => !plusBlocked && addItem(v.menuItem, v.modifiers, v.specialInstructions)} disabled={plusBlocked}
                                   className="w-6 h-6 rounded-full bg-orange-600 flex items-center justify-center font-bold text-white hover:bg-orange-700 text-sm leading-none disabled:opacity-40">+</button>
                               </div>
-                              <span className={`flex-1 text-xs truncate ${subLabel ? 'text-slate-600' : catAllowNotes ? 'text-slate-400 italic' : ''}`}>
-                                {subLabel || (catAllowNotes ? 'Standard' : '')}
-                              </span>
+                              {/* STACK extras + note (one per line, break-words — NEVER truncate a customer's
+                                  own choices). Note last (📝, muted italic). ✏️ opens the modal in EDIT mode for
+                                  THIS line so extras AND note are editable. Pencil on every variant row. */}
+                              <div className="flex-1 min-w-0">
+                                {v.modifiers.map(m => (
+                                  <p key={m.name} className="text-sm text-slate-700 break-words">{m.name}{m.price > 0 ? ` +£${m.price.toFixed(2)}` : ''}</p>
+                                ))}
+                                {v.specialInstructions && <p className="text-sm italic text-slate-400 break-words">📝 {v.specialInstructions}</p>}
+                                {!v.modifiers.length && !v.specialInstructions && (
+                                  <p className="text-sm italic text-slate-400">{catAllowNotes ? 'Add note' : 'Customise'}</p>
+                                )}
+                              </div>
+                              <button onClick={() => !isOrderingBlocked && openItemModal(item, catModGroups, itemUpsells, v.cartKey)}
+                                disabled={isOrderingBlocked} aria-label="Edit"
+                                className="shrink-0 min-w-[2.75rem] min-h-[2.75rem] flex items-center justify-center text-slate-400 active:scale-95 disabled:opacity-40">✏️</button>
                               {optBlockedName && <span className="text-[10px] font-bold text-orange-600 shrink-0">{buildOptionStockByName((menu?.items as any[]) || [])[optBlockedName]} {optBlockedName} left</span>}
                               <span className="text-xs font-bold text-slate-700 shrink-0">£{((item.price + modSum) * v.quantity).toFixed(2)}</span>
                             </div>
@@ -1863,40 +1898,9 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                       </div>
                     )}
 
-                    {/* Inline note affordance for direct-add (no-modifier) items */}
-                    {!hasModifiers && qty > 0 && catAllowNotes && (() => {
-                      const directEntry = basket.find(b => b.menuItem.name === item.name && b.modifiers.length === 0)
-                      const directCartKey = directEntry?.cartKey ?? makeCartKey(item.name, [])
-                      const directNote = directEntry?.specialInstructions || ''
-                      return (
-                        <div className="px-3 pb-2.5 -mt-1">
-                          {openNoteKey === directCartKey ? (
-                            <ItemNoteInput
-                              compact
-                              value={noteInputVal}
-                              onChange={setNoteInputVal}
-                              onBlur={() => commitNote(item.name)}
-                              onKeyDown={(e) => e.key === 'Enter' && commitNote(item.name)}
-                            />
-                          ) : directNote ? (
-                            <button
-                              onClick={() => { setNoteInputVal(directNote); setOpenNoteKey(directCartKey) }}
-                              className="flex items-center gap-1.5 text-xs text-slate-400 italic"
-                            >
-                              <span>📝 {directNote}</span>
-                              <span className="not-italic text-slate-300 ml-0.5">✏️</span>
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => { setNoteInputVal(''); setOpenNoteKey(directCartKey) }}
-                              className="text-xs text-orange-500 font-medium"
-                            >
-                              + Add note
-                            </button>
-                          )}
-                        </div>
-                      )
-                    })()}
+                    {/* (Removed) the old single-note affordance for plain notes items — the per-variant rows
+                        above now show each note editable in place (per-line pencil), so it no longer renders
+                        a duplicate note row below. */}
 
                     {/* Upsells now live in the item modal ("Goes well with") — not inline. */}
                     </div>
@@ -2269,7 +2273,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     section heading frames them as a cross-category nudge). Tap TOGGLES selection (like an
                     extra) — staged in modalUpsells and committed on "Add to basket"; the button total
                     below reflects the selection. */}
-                {itemModal.upsells.length > 0 && (
+                {!itemModal.editCartKey && itemModal.upsells.length > 0 && (
                   <div>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">Goes well with</p>
                     <div className="flex flex-wrap gap-2">
@@ -2301,10 +2305,10 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 className="w-full bg-orange-600 text-white font-black py-3.5 rounded-xl text-base hover:bg-orange-700 transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 {modalUnmetGroupIds.length > 0
                   ? 'Choose required options'
-                  : `Add to basket · £${(
+                  : `${itemModal.editCartKey ? 'Save' : 'Add to basket'} · £${(
                       itemModal.item.price
                       + modalMods.reduce((s, m) => s + m.price, 0)
-                      + itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0)
+                      + (itemModal.editCartKey ? 0 : itemModal.upsells.filter(u => modalUpsells.includes(u.name)).reduce((s, u) => s + u.price, 0))
                     ).toFixed(2)}`}
               </button>
             </div>
