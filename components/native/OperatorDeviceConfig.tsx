@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isNativeApp, getDeviceId, fetchDeviceConfig, saveDeviceConfig, type DeviceConfig, type VanRef } from '@/lib/native/device'
 import { registerForPush } from '@/lib/native/push'
-import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdentity } from '@/lib/native/appLock'
+import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdentity, setAppLockPin, clearAppLockPin } from '@/lib/native/appLock'
 import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
 
 // NOTE (Package 4): keep-awake is NOT owned here — it's the SINGLE "Screen on" control in the dashboard
@@ -148,6 +148,13 @@ export function ThisDeviceSettings({ token }: { token: string }) {
   const [truckName, setTruckName] = useState<string | null>(null)
   const [appLock, setAppLock] = useState(false)
   const [bioAvailable, setBioAvailable] = useState(false)
+  // Enabling app-lock REQUIRES setting a backup PIN (the offline escape hatch) — a biometric-only lock is how
+  // an operator gets permanently locked out. `pinSetup` shows the set-PIN form; enabling isn't committed until
+  // a valid matching 4–6 digit PIN is stored.
+  const [pinSetup, setPinSetup] = useState(false)
+  const [newPin, setNewPin] = useState('')
+  const [confirmPin, setConfirmPin] = useState('')
+  const [pinSetupErr, setPinSetupErr] = useState('')
   const [myTrucks, setMyTrucks] = useState<TruckRef[]>([])
   const [switching, setSwitching] = useState(false)
 
@@ -231,17 +238,49 @@ export function ThisDeviceSettings({ token }: { token: string }) {
         <input type="checkbox" checked={cfg?.notify_enabled ?? true} onChange={e => patch({ notify_enabled: e.target.checked })} />
       </label>
 
-      {/* APP-LOCK — device-level Face ID / passcode gate (per-device, default off). SEPARATE from login. */}
+      {/* APP-LOCK — device-level Face ID / Touch ID gate (per-device, default off). SEPARATE from login.
+          Enabling opens the backup-PIN setup (required) — it's committed only once a valid PIN is stored. */}
       <label className="flex items-center justify-between gap-3 text-sm">
-        <span className="font-semibold text-slate-700">Require Face&nbsp;ID / passcode to open</span>
+        <span className="font-semibold text-slate-700">Require Face&nbsp;ID / Touch&nbsp;ID to open</span>
         <input type="checkbox" checked={appLock}
           onChange={async e => {
             const on = e.target.checked
-            if (on) { const ok = await verifyIdentity('Confirm to enable app lock'); if (!ok) return }
-            setAppLock(on); setAppLockEnabled(on)
+            if (on) {
+              const ok = await verifyIdentity('Confirm to enable app lock')
+              if (!ok) return
+              setNewPin(''); setConfirmPin(''); setPinSetupErr(''); setPinSetup(true)   // require a backup PIN before committing
+            } else {
+              await clearAppLockPin(); setAppLockEnabled(false); setAppLock(false); setPinSetup(false)
+            }
           }} />
       </label>
-      {appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">No Face ID / passcode enrolled on this device — set one up in iOS Settings.</p>}
+      {pinSetup && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 flex flex-col gap-2 -mt-1">
+          <p className="text-xs font-semibold text-slate-700">Set a backup PIN (4–6 digits)</p>
+          <p className="text-[11px] text-slate-500 -mt-1">Your way in if Face / Touch ID won&apos;t work — it&apos;s the only fallback, so don&apos;t forget it (a forgotten PIN means reinstalling the app). Works offline.</p>
+          <input type="tel" inputMode="numeric" value={newPin} placeholder="PIN"
+            onChange={e => { setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinSetupErr('') }}
+            className="text-center tracking-[0.3em] font-bold border border-slate-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          <input type="tel" inputMode="numeric" value={confirmPin} placeholder="Confirm PIN"
+            onChange={e => { setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 6)); setPinSetupErr('') }}
+            className="text-center tracking-[0.3em] font-bold border border-slate-300 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          {pinSetupErr && <p className="text-[11px] text-red-500">{pinSetupErr}</p>}
+          <div className="flex gap-2">
+            <button type="button"
+              onClick={async () => {
+                if (newPin.length < 4) { setPinSetupErr('Use at least 4 digits.'); return }
+                if (newPin !== confirmPin) { setPinSetupErr('PINs don’t match.'); return }
+                await setAppLockPin(newPin)
+                setAppLockEnabled(true); setAppLock(true); setPinSetup(false); setNewPin(''); setConfirmPin('')
+              }}
+              className="flex-1 bg-orange-600 text-white font-bold py-2 rounded-lg text-sm">Set PIN &amp; enable</button>
+            <button type="button"
+              onClick={() => { setPinSetup(false); setNewPin(''); setConfirmPin(''); setPinSetupErr('') }}
+              className="px-3 bg-slate-200 text-slate-600 font-bold py-2 rounded-lg text-sm">Cancel</button>
+          </div>
+        </div>
+      )}
+      {appLock && !bioAvailable && <p className="text-[11px] text-amber-600 -mt-1">No Face ID / Touch ID enrolled on this device — set one up in iOS Settings. Your backup PIN still works.</p>}
 
       <p className="text-[11px] text-slate-400 mt-0.5">These settings apply to this device only — other devices are configured separately.</p>
     </div>
