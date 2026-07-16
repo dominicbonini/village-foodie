@@ -21,8 +21,8 @@ const ITEM_TICK_ENABLED = false
 export function Toggle({ on, onToggle, disabled }: { on: boolean; onToggle: () => void; disabled?: boolean }) {
   return (
     <button onClick={onToggle} disabled={disabled} className="relative shrink-0 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
-      <div className={`w-12 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
-        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-7' : 'translate-x-1'}`} />
+      <div className={`w-11 h-6 rounded-full transition-colors ${on ? 'bg-teal-500' : 'bg-slate-300'}`}>
+        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
       </div>
     </button>
   )

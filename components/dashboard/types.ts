@@ -82,6 +82,14 @@ export interface Slot {
 
 export type CrewMode = 'solo' | 'full'
 
+// Per-truck SOUND policy (WHICH sounds fire) — persisted as jsonb on trucks. The on/off MASTER is a
+// separate per-device localStorage pref on the dashboard/KDS header (physical mute), NOT this. A sound
+// plays iff (master ON for this device) && (this event enabled here). Null/absent → DEFAULT_SOUND_CONFIG
+// (= today's behaviour: ding only on orders needing confirming; no amber-due sound).
+export type NewOrdersSound = 'needs_confirming' | 'all' | 'off'
+export interface SoundConfig { new_orders: NewOrdersSound; order_due: boolean }
+export const DEFAULT_SOUND_CONFIG: SoundConfig = { new_orders: 'needs_confirming', order_due: false }
+
 export interface TruckData {
   id: string
   name: string
@@ -101,6 +109,7 @@ export interface TruckData {
   feature_overrides: Record<string, boolean> | null
   qr_code_style?: 'standard' | 'branded'
   truck_emoji?: string
+  sound_config?: SoundConfig | null
 }
 
 export interface MenuItem {
@@ -191,6 +200,8 @@ export interface CategoryStock {
   stock_count: number | null
   default_stock: number | null
   orders_count: number
+  // Per-event enable/disable (GATE). false ⇒ category closed for this event. Absent/true ⇒ open.
+  available?: boolean
 }
 
 export const STATUS: Record<OrderStatus, { label: string; bg: string; text: string }> = {

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V8.8
+HatchGrab Engineering Reference Manual · V8.9
 
 **HatchGrab**
 
@@ -6,13 +6,54 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 8.8**
+**Version 8.9**
 
 July 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 # Changelog
+
+## V8.9 — 16 July 2026
+
+Delta over V8.8. This session: a per-truck **Sounds config** (which alerts fire — `trucks.sound_config` jsonb, distinct synthesized tones for new-order vs order-due, mirrored in Dashboard→Settings + Manage→Settings) and a **toggle/radio consistency pass** (one canonical `<Toggle>` = `w-11 h-6` teal; radios = the `w-4 h-4` orange custom dot). The headline, recorded below as a do-not-relearn rule, is the **structural fix for a bug class that recurred THREE times** (V7.1 offline-protection toggle, V8.8 category-available, V8.9 sound_config "All new orders") with **~20 latent instances**: the dashboard's order poll was clobbering the operator's own config edits. **Status: BUILT, tsc-clean, UNDEPLOYED (Gusto is live — the config/live split is the dashboard's core data path; a live both-paths smoke is owed before push).**
+
+### ⚠️ DO-NOT-RELEARN cluster
+
+**1. THE ORDER POLL MUST NOT RE-SEED CONFIG — separate LIVE from CONFIG in `fetchAll` (three-time bug class, ~20 latent instances).**
+
+- **ROOT CAUSE.** `fetchAll` treated the whole `trucks` row as LIVE data and re-seeded it **WHOLESALE** — `setTruck(data.truck)` (the endpoint is `/api/dashboard` `select('*')`) plus a row of individual config setters — on **every 60s poll and every realtime `orders` event**. An operator's optimistic write (e.g. toggle sound_config) was clobbered by a poll that returned **pre-write** state during the write's round-trip. Config and live state were **never separated** — that's the whole bug, three times over.
+
+- **WHY ONLY SOME TOGGLES VISIBLY FLIPPED (the insight — a "working" toggle was never proof).** Non-optimistic saves (write-THEN-set: `await write; setState(val)`) **self-heal** once the write commits, so they HIDE the race. Optimistic saves (set-BEFORE-write — the §23 iPhone-responsiveness rule) SHOW it. **All were equally racy**; following the optimistic rule is simply what made the latent bug visible. So `auto_accept`/`notes_require_review` "worked" only because they masked the same race sound_config exposed. **Never treat a non-flipping toggle as evidence the poll is safe.**
+
+- **THE FIX (structural, not another guard).** `fetchAll(currentPin, forceSeed=false)` splits into a **CONFIG block** (runs only when `seedConfig = forceSeed || !configSeededRef.current`) and a **LIVE block** (runs every fetch). Config is seeded on **nav/auth/event-switch/trucks-realtime/reconnect ONLY**; the **60s poll and orders-realtime never enter the config block.** So **correctness is the DEFAULT**: a truck setting added tomorrow, placed in the config block, is immune to the clobber with **zero extra code** — no per-toggle guard to remember.
+
+- **⚠️ THE LIVE ALLOWLIST IS A CONTRACT (nothing fails loudly if it's wrong — that's why it's written down).** LIVE = `orders` (via `mergeOrders`), `slots`, `productionSlotUnits`, `capacityBreaches`, `currentUserName`/`userRole`/`activeVanName`, and pause state: `pausedUntil`, `vanPausedUntil`, `vanOnlinePausedUntil`, `lastOfflinePauseAt`, `offlinePauseEventId`, plus `extraWaitMins`/`extraWaitStartedAt`. **ADDING A FIELD TO THE LIVE BLOCK PUTS IT BACK IN THE CLOBBER PATH.** Default = config = **not polled**. The block carries this warning inline in the code too.
+
+- **CROSS-DEVICE STILL WORKS.** Config propagation isn't lost by dropping it from the poll: the **`trucks` realtime UPDATE channel reseeds config**, so another device's settings change still appears — and because that channel fires **after** the writer's DB commit, the reseed reads a **matching** value (an optimistic local edit is never clobbered by its own commit). Event-switch reseeds too (van-scoped config — kitchen capacity, catConfigs, order-ready — can differ per event's van). `vans` realtime stays LIVE (carries offline auto-pause).
+
+- **DUAL-SOURCE FIELDS route through ONE shared primitive — do NOT add a bespoke guard ref.** Fields that are BOTH server-updatable AND operator-optimistic can't simply leave the poll: **manual pause** + **extra-wait** (server auto-pause forces them to keep polling), plus the reseed-only-but-optimistic **order-ready override / kitchen capacity / capacity window**. They all use `pendingWritesRef` + `markPending(key,value)` (register before the optimistic setState) + `applyPending(key,serverVal)` (apply the desired value over server state, **release the key once the server echoes**). **`pendingCatAvailRef` is RETIRED** — category-available now uses the same ref (`catavail:${event}:${cat}` keys, `meta` = original-case name for the omitted-row re-add). One primitive, not N refs. The next dual-source field registers via `markPending` — it does not invent a new guard.
+
+- **THE RULE.** **Never `setTruck(data.truck)` wholesale on a refetch.** Config propagates from the operator's own write (§23 optimistic partial-merge — `setTruck(t => ({...t, field}))`) **or** the `trucks` realtime channel — **never from the order poll.**
+
+**2. `/api/dashboard`'s truck response is a HAND-PICKED SUBSET (`route.ts:398`), NOT `select('*')` — a `trucks.*` field the dashboard OR KDS reads must be added to that map, or it arrives `undefined` and silently falls back to its default. Nothing fails loudly.** (Contrast `/api/manage`, which returns the raw `select('*')` row — that's why the same setting behaves differently across the two surfaces.)
+
+- **THIS BIT `sound_config` (the "dashboard flips back, Manage sticks" bug).** The write **succeeded** (`set_sound_config` → 200) and the DB **persisted** — but `GET /api/dashboard` dropped the field, so the reseed's `setTruck(data.truck)` set `sound_config = undefined` → `?? DEFAULT_SOUND_CONFIG` → the toggle appeared to "flip back". It also meant the dashboard's Sounds panel **and its new-order / order-due triggers had NEVER used the real config** — always the default — because the *old* 60s poll did the same `setTruck(subset)`. Both dashboard AND KDS were affected (KDS reads its truck from the same `/api/dashboard`). Fixed by adding `sound_config: truck.sound_config ?? null` to the map — one field fixes all three (dashboard display, dashboard triggers, KDS gating).
+
+- **SAME DISEASE as the `update_settings` ALLOWLIST** (`/api/manage`, which silently drops keys not on its whitelist on WRITE). One drops on **write**, one drops on **read**; **both are hand-maintained field lists that fail silently.** A hand-picked list is a landmine wherever it sits.
+
+- **RULE — adding a per-truck setting means wiring THREE things or it HALF-WORKS:** (1) the **write path** — the `update_settings` allowlist and/or the dashboard/action handler; (2) the **`/api/dashboard` truck map** if the dashboard or KDS reads it; (3) the **UI**. Missing (2) looks **exactly** like a state/reseed bug and will send you diagnosing the wrong layer (it did — the config/live split was suspected first). Verify a new field with a real `GET /api/dashboard`, not just the DB.
+
+- **NOT the config/live split's fault.** The split (item 1) is correct; the reseed only made this pre-existing latent bug **visible** (the pre-split poll had the same blind spot, so the feature never worked on the dashboard from day one). Two separate diseases surfaced in one debug — keep them distinct.
+
+**3. KEEP-AWAKE (screen stays on): WEB `navigator.wakeLock` has two constraints that bite; NATIVE has neither.** The "Screen on" toggle showed **green over a sleeping screen** on production — a UI claiming a guarantee it wasn't delivering (same class as the web "will sync" false promise), and because offline protection depends on the screen staying on, it **auto-paused events while the operator believed they were protected.**
+
+- **WEB constraint 1 — SECURE CONTEXT.** `navigator.wakeLock` is absent over `http://<LAN-IP>:3000`, so it's **genuinely unavailable in LAN dev testing** (same family as the `crypto.randomUUID` secure-context trap, V8.8). ⚠️ **An iPad CANNOT reach the dev server via `localhost`** (localhost is the iPad itself) → an iPad on the dev URL is ALWAYS on the LAN IP → ALWAYS lacks wakeLock. **Test keep-awake on production (https), never on the LAN URL** — "it's broken on my iPad" over LAN is expected, not a bug.
+- **WEB constraint 2 — USER GESTURE.** Safari requires the document **visible AND FOCUSED** and **rejects a request not tied to a user activation**. Chrome only needs visible — which is why it "worked in Chrome, not Safari," and why an **iPadOS tightening made it "stop working" with no code change**. The old code auto-requested from a mount effect (`keepScreenOn` defaults ON) with no gesture → Safari denied → the rejection was **swallowed** → the lie.
+- **WHY COOK-MODE SITES WORK AND WE DIDN'T:** they acquire the lock on a **button tap** (inside a user gesture); we acquired on **page load**. That's the whole difference.
+- **THE FIX (`lib/native/keepAwake.ts` + dashboard/KDS):** acquire on gesture — **`keepAwakeOnGesture()`** arms on mount and takes the lock on the first `pointerdown`/`keydown`/`touchend` (same shape as `installAudioUnlock`); **focus-retry** (`visibilitychange` does NOT fire on focus/blur, so a denial stayed stuck until a full tab-away-and-back — a `window.focus` listener heals it); an honest **BINARY toggle** (green ONLY when the lock is actually held, via the live `WakeState` subscription); and **`KeepAwakePrompt`** ("Tap anywhere to keep the screen on") — a full-width bar for the operator who props the screen up and walks away without touching it (their first tap dismisses AND acquires — self-fulfilling).
+- **UI RULE (governs any true/false control): the toggle says WHAT'S TRUE (on/off, two labels, nothing else); a prompt/message says WHAT TO DO.** Internal states (`denied`/`insecure`/`unsupported`) drive the message copy, NEVER the label. **"Screen on — not held" was honest and useless** — an operator can't decode a status readout mid-service. Copy is plain operator English: no "wake lock", "https", "secure context", "not held".
+- **NATIVE (Capacitor KeepAwake plugin) has NEITHER constraint** — no gesture, no secure context; the app holds the screen from launch and the prompt never shows (`isNativePlatform()` → the plugin path). **Android inherits this identically.** ⚠️ **UNVERIFIED ON REAL HARDWARE** — iPad launch checklist: confirm the plugin holds the screen through a **full service on a physical device**.
 
 ## V8.8 — 14–15 July 2026
 

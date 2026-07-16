@@ -16,6 +16,13 @@ export interface MenuItem {
   description?: string
   available?: boolean
   stock_remaining?: number | null
+  // Which cap bounds stock_remaining: 'item' | 'category' | null (uncapped). Display-only — drives the
+  // countdown badge copy ("3 pizzas left" vs "3 left"). Attached by the menu API alongside stock_remaining.
+  stock_bound?: 'item' | 'category' | null
+  // Committed remaining per axis (ceiling − other live orders), emitted separately so the client can
+  // fold in its own basket per axis (calcAddableRemaining). null = no cap on that axis.
+  item_remaining?: number | null
+  category_remaining?: number | null
   default_stock?: number | null
   image?: string | null
   photo_url?: string | null

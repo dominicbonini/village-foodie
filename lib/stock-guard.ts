@@ -179,3 +179,37 @@ export async function checkStockShortfall(
     { keyOf: (name) => (itemCatMap[name] || '').toLowerCase(), ceiling: catCeiling },
   )
 }
+
+/**
+ * Category ENABLE/DISABLE gate (GATE model, per-event). Returns the DISTINCT display names of any
+ * categories that are turned OFF for this event (event_category_stock.available === false) AND present
+ * in the order — or null if none. Kept SEPARATE from checkStockShortfall (which is about remaining
+ * counts): a closed category is a hard stop, not a shortfall, so callers return an HONEST "category
+ * closed" rejection rather than faking remaining=0 into the shortfall shape. Menu-hide alone is a
+ * bypass (a stale client / crafted request), so this MUST run at submit on both the customer and the
+ * operator path (operator gated by !override — an informed override may still add for the hatch).
+ * orderLines are deal-inclusive (constituents already flattened); itemCatMap maps item → category.
+ */
+export async function checkClosedCategories(
+  truckId: string,
+  eventId: string,
+  orderLines: { name: string; quantity: number }[],
+  itemCatMap: Record<string, string>,
+): Promise<string[] | null> {
+  const { data: catStock } = await supabase
+    .from('event_category_stock')
+    .select('category, available')
+    .eq('truck_id', truckId)
+    .eq('event_id', eventId)
+  const closed: Record<string, string> = {} // lowercased key -> display name
+  ;(catStock || []).forEach((r: any) => {
+    if (r.available === false) closed[String(r.category).toLowerCase()] = r.category
+  })
+  if (!Object.keys(closed).length) return null
+  const hit = new Set<string>()
+  for (const l of orderLines) {
+    const k = (itemCatMap[l.name] || '').toLowerCase()
+    if (k && closed[k]) hit.add(closed[k])
+  }
+  return hit.size ? Array.from(hit) : null
+}

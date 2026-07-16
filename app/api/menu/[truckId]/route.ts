@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { calcStockRemaining } from '@/lib/stock-utils'
+import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
 import { getLiveItemCounts } from '@/lib/stock-availability'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
@@ -288,6 +288,30 @@ export async function GET(
     })
   }
 
+  // Per-event CATEGORY stock override (sparse) — mirrors eventItemOverride, keyed by category NAME
+  // (lowercased, as checkStockShortfall does). Same source the submit gate reads
+  // (event_category_stock.stock_count(eventId)); a null stock_count / missing row falls through to
+  // menu_categories.default_stock below. Feeds the CATEGORY leg of the customer stock countdown so
+  // "hidden on the menu" == "would be blocked at submit".
+  const eventCategoryOverride: Record<string, number> = {}
+  // Per-event category ENABLE/DISABLE (GATE, not bulk-write): available === false ⇒ the whole category
+  // is closed for THIS event. DISTINCT from exhaustion — a disabled category's items are OMITTED from
+  // the CUSTOMER response entirely (below), so its tab vanishes (groupByCategory emits only categories
+  // with ≥1 item); a naturally sold-out category keeps its tab with crossed-out items. Additive column,
+  // mirrors event_item_stock.available. Empty until a dashboard toggle.
+  const disabledCategories = new Set<string>()
+  if (effectiveEventId) {
+    const { data: ecs } = await supabase
+      .from('event_category_stock')
+      .select('category, stock_count, available')
+      .eq('truck_id', truck.id)
+      .eq('event_id', effectiveEventId)
+    ;(ecs || []).forEach((r: any) => {
+      if (r.stock_count != null) eventCategoryOverride[(r.category || '').toLowerCase()] = r.stock_count
+      if (r.available === false) disabledCategories.add((r.category || '').toLowerCase())
+    })
+  }
+
   // Per-event EXTRA (modifier-option) overrides — mirrors eventItemOverride. Keyed by option_id. Both
   // columns are NULLABLE (NULL = inherit the template) because the dashboard sets stock + available via
   // two independent toggles, so each must inherit independently. resolveGroup resolves
@@ -410,6 +434,30 @@ export async function GET(
     ? formatPreorderOpenLabel((truck as any).preorder_open_rule, preorderEventDate as string)
     : null
 
+  // ── Customer stock countdown: CATEGORY leg ──────────────────────────────────────────────────────
+  // The per-item stockRemaining already reflects the ITEM cap; fold in the CATEGORY cap so a
+  // category-capped menu (e.g. 72 pizzas, no per-item caps) counts down + sells out on the customer
+  // menu, not only at submit. Ceiling + sold come from the SAME sources as checkStockShortfall so the
+  // menu's sold-out point is identical to the submit gate's block point:
+  //   ceiling = event_category_stock.stock_count ?? menu_categories.default_stock (lowercased key)
+  //   sold    = the EXISTING deal-aware liveItemCounts, aggregated per category (NO new tally/query)
+  const catDefault: Record<string, number | null> = {}
+  ;(categories || []).forEach((c: any) => { catDefault[(c.name || '').toLowerCase()] = c.default_stock ?? null })
+  const catCeiling = (cat: string): number | null =>
+    cat in eventCategoryOverride ? eventCategoryOverride[cat] : (catDefault[cat] ?? null)
+  // Sold-per-category: map each already-counted item name to its category and sum. liveItemCounts is
+  // deal-inclusive AND excludes cancelled/rejected (tallyItemCounts), so no double-count divergence
+  // from the gate. An ordered name absent from the current menu (delisted mid-event) is skipped — that
+  // undercounts sold → catRem higher → the SAFE direction (never over-hides; submit still backstops).
+  const nameToCat: Record<string, string> = {}
+  ;(items || []).forEach((i: any) => { nameToCat[i.name] = ((i.menu_categories as any)?.name || '').toLowerCase() })
+  const catSold: Record<string, number> = {}
+  for (const [name, n] of Object.entries(liveItemCounts)) {
+    const cat = nameToCat[name]
+    if (cat === undefined) continue
+    catSold[cat] = (catSold[cat] || 0) + n
+  }
+
   // Build menu response
   const menu = {
     categories: (categories || []).map(c => ({
@@ -433,6 +481,10 @@ export async function GET(
     // against unconfirmed items. CARD mode is unaffected (the card is the display; per-item data isn't shown).
     items: (items || [])
       .filter(i => {
+        // Category ENABLE/DISABLE gate (CUSTOMER-only): a disabled category's items are omitted entirely
+        // so the customer's tab disappears. The OPERATOR (dashboard=1) keeps them — to re-enable and to
+        // override-add for the hatch (AddOrderPanel reads categoryStocks.available for the "closed" state).
+        if (!isDashboard && disabledCategories.has(((i.menu_categories as any)?.name || '').toLowerCase())) return false
         const perDish = ((truck.allergen_display_mode ?? null) as string) !== 'card'
         if (isDashboard || !perDish) return true                 // operator OR card mode → show everything
         return (i as any).allergens_verified !== false           // customer + per-dish → hide explicit-unconfirmed
@@ -442,7 +494,19 @@ export async function GET(
       const liveOrdered = liveItemCounts[i.name] || 0
       // Per-event override stock_count takes precedence; fall back to live menu_items_db.default_stock.
       const effectiveStockCount = override?.stock_count ?? i.default_stock ?? null
-      const stockRemaining = calcStockRemaining(effectiveStockCount, liveOrdered)
+      const itemRem = calcStockRemaining(effectiveStockCount, liveOrdered)
+      // CATEGORY leg — fold the category cap in via the SHARED calcEffectiveRemaining (min of the two),
+      // using catCeiling/catSold (built above from the same sources as checkStockShortfall). So a
+      // category-capped item counts down + sells out here exactly where the submit gate would block.
+      const itemCatKey = ((i.menu_categories as any)?.name || '').toLowerCase()
+      const catRem = calcStockRemaining(catCeiling(itemCatKey), catSold[itemCatKey] || 0)
+      const stockRemaining = calcEffectiveRemaining(itemRem, catRem)
+      // Which leg bounds the number (for copy: 'item' → "Only 3 left"; 'category' → "Only 3 pizzas
+      // left"). null = uncapped. Ties resolve to 'item' (mirrors calcEffectiveRemaining's min).
+      let stockBound: 'item' | 'category' | null = null
+      if (stockRemaining !== null) {
+        stockBound = itemRem === null ? 'category' : catRem === null ? 'item' : (catRem < itemRem ? 'category' : 'item')
+      }
       // Availability via AND-composition (event_item_stock.available is NOT NULL DEFAULT true, so it
       // can't represent "unset"): Settings is_available propagates (a Settings-disabled item stays
       // disabled everywhere), a per-event override can only RESTRICT (available=false = per-event
@@ -501,6 +565,14 @@ export async function GET(
         subcategory_id: (i as any).subcategory_id ?? null,
         available: isAvailable,
         stock_remaining: stockRemaining,
+        // Which cap bounds stock_remaining: 'item' | 'category' | null (uncapped) — drives the badge
+        // copy so a category countdown reads "3 pizzas left", not "3 left" against each of 18 pizzas.
+        stock_bound: stockBound,
+        // The two legs SEPARATELY (committed remaining = ceiling − other live orders). The client folds
+        // in its own in-progress basket per axis via calcAddableRemaining — the category leg can be
+        // consumed by OTHER items in the category, so the folded stock_remaining alone can't gate adds.
+        item_remaining: itemRem,
+        category_remaining: catRem,
         default_stock: i.default_stock ?? null,
         photo_url: i.image_path
           ? `${supabaseUrl}/storage/v1/object/public/truck-media/${i.image_path}`

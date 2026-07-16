@@ -798,6 +798,8 @@ export async function POST(req: NextRequest) {
       // Customer-facing WhatsApp (the phone number, when the operator ticks "this number is on
       // WhatsApp") + the tick flag. SEPARATE from whatsapp_sender (Auto-replies/Connect) — not written here.
       'whatsapp', 'phone_is_whatsapp',
+      // Per-truck sound policy (jsonb: which sounds fire). REQUIRED here or the write is silently dropped.
+      'sound_config',
     ]
     const safeData = Object.fromEntries(
       Object.entries(body).filter(([key, val]) => ALLOWED.includes(key) && val !== undefined)

@@ -72,8 +72,8 @@ function fmtDate(d: string) {
 function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label?: string }) {
   return (
     <button onClick={onToggle} className="flex items-center gap-2 group">
-      <div className={`relative w-10 h-5 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
-        <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-5' : 'translate-x-0.5'}`} />
+      <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-teal-500' : 'bg-slate-300'}`}>
+        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
       </div>
       {label && <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900">{label}</span>}
     </button>
@@ -6821,16 +6821,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               {' '}before their pickup time
             </p>
           </div>
-          <button
-            onClick={async () => {
-              const next = !allowCancellation
-              setAllowCancellation(next)
-              await saveSetting('allow_customer_cancellation', next)
-            }}
-            className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${allowCancellation ? 'bg-teal-500' : 'bg-slate-300'}`}
-          >
-            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${allowCancellation ? 'translate-x-6' : 'translate-x-1'}`} />
-          </button>
+          <Toggle
+            on={allowCancellation}
+            onToggle={async () => { const next = !allowCancellation; setAllowCancellation(next); await saveSetting('allow_customer_cancellation', next) }}
+          />
         </div>
       </Card>
 
@@ -7081,40 +7075,27 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         {/* QR code style selector */}
         <div className="mb-4 space-y-2">
           <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">QR code style</p>
-          {/* Standard — available to all tiers */}
-          <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-            <input
-              type="radio"
-              name="qr_style"
-              value="standard"
-              checked={qrCodeStyle === 'standard'}
-              onChange={() => {
-                setQrCodeStyle('standard')
-                setQrDataUrl(null)
-                saveSetting('qr_code_style', 'standard')
-              }}
-              className="accent-orange-600"
-            />
+          {/* Standard — available to all tiers. Custom radio dot (w-4/h-4 orange) — matches the schedule
+              selector + the rest of the page (was a native accent-orange radio, a different size). */}
+          <button
+            type="button"
+            onClick={() => { setQrCodeStyle('standard'); setQrDataUrl(null); saveSetting('qr_code_style', 'standard') }}
+            className={`w-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'standard' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+          >
+            <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'standard' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'standard' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
             <div>
               <p className="text-sm font-semibold text-slate-800">Standard QR code</p>
             </div>
-          </label>
+          </button>
 
           {/* Branded — Pro/Max only */}
           {can('branded_qr_code') ? (
-            <label className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-              <input
-                type="radio"
-                name="qr_style"
-                value="branded"
-                checked={qrCodeStyle === 'branded'}
-                onChange={() => {
-                  setQrCodeStyle('branded')
-                  setQrDataUrl(null)
-                  saveSetting('qr_code_style', 'branded')
-                }}
-                className="accent-orange-600"
-              />
+            <button
+              type="button"
+              onClick={() => { setQrCodeStyle('branded'); setQrDataUrl(null); saveSetting('qr_code_style', 'branded') }}
+              className={`w-full text-left flex items-center gap-3 p-3 rounded-xl border transition-colors ${qrCodeStyle === 'branded' ? 'border-orange-400 bg-orange-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}
+            >
+              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${qrCodeStyle === 'branded' ? 'border-orange-500' : 'border-slate-300'}`}>{qrCodeStyle === 'branded' && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
                 <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
@@ -7129,10 +7110,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               {!truck.logo_storage_path && (
                 <span className="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-medium shrink-0">No logo</span>
               )}
-            </label>
+            </button>
           ) : (
             <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 opacity-50 cursor-not-allowed">
-              <input type="radio" disabled className="accent-orange-600" />
+              <span className="w-4 h-4 rounded-full border-2 border-slate-300 shrink-0" />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-slate-800">Branded QR code</p>
                 <p className="text-xs text-slate-400">Your logo shown in the middle of the QR code</p>
@@ -7190,50 +7171,73 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
       {/* Orders */}
       <Card className="p-4 space-y-3">
         <p className="text-base font-bold text-slate-800">Order settings</p>
-        <div className="flex items-center justify-between py-1">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
-            <p className="text-xs text-slate-400">Incoming web orders are confirmed immediately</p>
-          </div>
-          <button
-            onClick={() => {
-              const next = !form.auto_accept
-              setForm(p => ({...p, auto_accept: next}))
-              saveFormField({ auto_accept: next })
-            }}
-            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${form.auto_accept ? 'bg-teal-500' : 'bg-slate-300'}`}
-          >
-            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${form.auto_accept ? 'translate-x-6' : 'translate-x-1'}`} />
-          </button>
-        </div>
-        {form.auto_accept && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
-            ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
-          </div>
-        )}
-        {/* Nested sub-option — only meaningful when auto-accept is ON (when OFF, every order is manual anyway,
-            so notes_require_review can't matter; the submit rollup requires truck.auto_accept first). Same
-            truck-level column the dashboard live-toggle writes → the two surfaces mirror on next load. DIRECT
-            polarity: teal/ON = notes_require_review = hold NOTED orders for review; default ON (?? true) so a
-            pre-migration/undefined read still reviews. No inversion → displayed state can't drift from stored. */}
-        {form.auto_accept && (
-          <div className="flex items-center justify-between py-3 border-t border-slate-100 pl-4">
+        {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (notes-review only applies
+            when auto-accept is on — the block below is already conditional on it). Neutral sub-panel, same
+            treatment as Sounds. Toggles use the shared <Toggle> (canonical w-11/h-6/teal) — no bespoke inline. */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+          <div className="flex items-center justify-between gap-3 pb-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
-              <p className="text-xs text-slate-500 mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
+              <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
+              <p className="text-xs text-slate-500 mt-0.5">Incoming web orders are confirmed immediately</p>
             </div>
-            <button
-              onClick={() => {
-                const next = !((form as any).notes_require_review ?? true)
-                setForm(p => ({...p, notes_require_review: next} as any))
-                saveFormField({ notes_require_review: next })
-              }}
-              className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${((form as any).notes_require_review ?? true) ? 'bg-teal-500' : 'bg-slate-300'}`}
-            >
-              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${((form as any).notes_require_review ?? true) ? 'translate-x-6' : 'translate-x-1'}`} />
-            </button>
+            <Toggle on={!!form.auto_accept} onToggle={() => { const next = !form.auto_accept; setForm(p => ({...p, auto_accept: next})); saveFormField({ auto_accept: next }) }} />
           </div>
-        )}
+          {/* Nested sub-option — meaningful only when auto-accept is ON. Same truck-level column the dashboard
+              live-toggle writes → the two surfaces mirror on next load. DIRECT polarity: ON = notes_require_review
+              = hold NOTED orders for review; default ON (?? true) so a pre-migration/undefined read still reviews. */}
+          {/* pl-4 indents the whole sub-block as a CHILD of auto-accept (only enabled when it's on). */}
+          {form.auto_accept && (
+            <div className="py-3 pl-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-xs text-amber-700">
+                ⚠ Slot capacity limits still apply — full slots are never auto-confirmed
+              </div>
+              <div className="flex items-center justify-between gap-3 mt-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
+                  <p className="text-xs text-slate-500 mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
+                </div>
+                <Toggle on={(form as any).notes_require_review ?? true} onToggle={() => { const next = !((form as any).notes_require_review ?? true); setForm(p => ({...p, notes_require_review: next} as any)); saveFormField({ notes_require_review: next }) }} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* SOUNDS — WHICH alerts fire (per-truck policy). The on/off MASTER is a per-device switch on the
+            dashboard/KDS header (physical mute) — this only chooses which events make sound. §23 optimistic:
+            setForm + saveFormField({sound_config}); no reload. */}
+        {(() => {
+          const sc = ((form as any).sound_config ?? { new_orders: 'needs_confirming', order_due: false }) as { new_orders: 'needs_confirming' | 'all' | 'off'; order_due: boolean }
+          const setSc = (patch: Partial<typeof sc>) => { const next = { ...sc, ...patch }; setForm(p => ({ ...p, sound_config: next } as any)); saveFormField({ sound_config: next }) }
+          return (
+            <div className="pt-3 border-t border-slate-100">
+              {/* One neutral sub-panel so Sounds reads as a single grouped section, not loose parts. */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+                <div className="pb-3">
+                  <p className="text-sm font-bold text-slate-800">Sounds</p>
+                  <p className="text-xs text-slate-500 mt-0.5">The on/off switch is on each screen; every device controls its own sound.</p>
+                </div>
+                <div className="py-3">
+                  <p className="text-sm font-semibold text-slate-800 mb-1.5">New order sound</p>
+                  <div className="space-y-1">
+                    {([['needs_confirming', 'Only orders needing confirming'], ['all', 'All new orders']] as const).map(([val, label]) => (
+                      <button key={val} onClick={() => setSc({ new_orders: val })} className="flex items-center gap-2.5 w-full text-left py-1">
+                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sc.new_orders === val ? 'border-orange-500' : 'border-slate-300'}`}>{sc.new_orders === val && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
+                        <span className="text-sm text-slate-700">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-3 py-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Sound when an order is due to be cooked</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Sounds when a ticket turns amber.</p>
+                  </div>
+                  <Toggle on={sc.order_due} onToggle={() => setSc({ order_due: !sc.order_due })} />
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Truck-facing order-notification email toggle. Gates ONLY the email the truck receives on a new
             order (formatNewOrderEmail → truck.contact_email) — NOT the customer's confirmation/ready emails. */}
@@ -7242,16 +7246,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             <p className="text-sm font-semibold text-slate-800">Email order notifications</p>
             <p className="text-xs text-slate-500 mt-0.5">When on, an email is sent to {truck.contact_email || "the truck's contact email"} for every new order. Customer order emails are sent either way.</p>
           </div>
-          <button
-            onClick={() => {
-              const next = (form as any).truck_order_email_enabled !== false ? false : true
-              setForm(p => ({...p, truck_order_email_enabled: next} as any))
-              saveSetting('truck_order_email_enabled', next)
-            }}
-            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${(form as any).truck_order_email_enabled !== false ? 'bg-teal-500' : 'bg-slate-300'}`}
-          >
-            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${(form as any).truck_order_email_enabled !== false ? 'translate-x-6' : 'translate-x-1'}`} />
-          </button>
+          <Toggle
+            on={(form as any).truck_order_email_enabled !== false}
+            onToggle={() => { const next = (form as any).truck_order_email_enabled !== false ? false : true; setForm(p => ({...p, truck_order_email_enabled: next} as any)); saveSetting('truck_order_email_enabled', next) }}
+          />
         </div>
 
         <div className="flex items-center justify-between py-3 border-t border-slate-100">
@@ -7259,20 +7257,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
             <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
           </div>
-          <button
-            onClick={() => {
-              const next = !form.default_auto_open
-              setForm(p => ({...p, default_auto_open: next}))
-              saveSetting('default_auto_open', next)
-            }}
-            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
-              form.default_auto_open ? 'bg-teal-500' : 'bg-slate-300'
-            }`}
-          >
-            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-              form.default_auto_open ? 'translate-x-6' : 'translate-x-1'
-            }`} />
-          </button>
+          <Toggle
+            on={form.default_auto_open}
+            onToggle={() => { const next = !form.default_auto_open; setForm(p => ({...p, default_auto_open: next})); saveSetting('default_auto_open', next) }}
+          />
         </div>
 
         <div className="flex items-center justify-between py-3 border-t border-slate-100">
@@ -7280,20 +7268,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
             <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
           </div>
-          <button
-            onClick={() => {
-              const next = !form.default_auto_close
-              setForm(p => ({...p, default_auto_close: next}))
-              saveSetting('default_auto_close', next)
-            }}
-            className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${
-              form.default_auto_close ? 'bg-teal-500' : 'bg-slate-300'
-            }`}
-          >
-            <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-              form.default_auto_close ? 'translate-x-6' : 'translate-x-1'
-            }`} />
-          </button>
+          <Toggle
+            on={form.default_auto_close}
+            onToggle={() => { const next = !form.default_auto_close; setForm(p => ({...p, default_auto_close: next})); saveSetting('default_auto_close', next) }}
+          />
         </div>
       </Card>
 
@@ -7340,10 +7318,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   toggle on the SAME line; explanatory + scope text below. */}
               <div className="flex items-center justify-between gap-3 mt-1">
                 <p className="text-sm font-semibold text-slate-800">Pre-order deadline</p>
-                <button type="button" aria-pressed={preordersOn} onClick={() => saveMaster(!preordersOn)}
-                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${preordersOn ? 'bg-teal-500' : 'bg-slate-300'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${preordersOn ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
+                <Toggle on={preordersOn} onToggle={() => saveMaster(!preordersOn)} />
               </div>
               <p className="text-xs text-slate-400 mt-0.5 mb-2">Set pre-order rules to prevent ordering of items after a specified time.</p>
               {/* Deadline + past-action dim when off; Opens + the toggle stay crisp. */}
@@ -7369,10 +7344,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               <div className="space-y-1.5">
                 {([['sold_out', 'Mark sold out', "Customers can't order it after the deadline."],
                    ['force_pending', 'Allow, require approval', "Customers can still order, but the order needs your approval (won't auto-accept)."]] as const).map(([v, lbl, help]) => (
-                  <label key={v} className="flex items-start gap-2 cursor-pointer">
-                    <input type="radio" name="po_global_action" checked={gAction === v} onChange={() => saveGlobalCfg({ action: v })} className="mt-0.5 w-4 h-4 accent-orange-600" />
+                  <button type="button" key={v} onClick={() => saveGlobalCfg({ action: v })} className="w-full text-left flex items-start gap-2 cursor-pointer">
+                    <span className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${gAction === v ? 'border-orange-500' : 'border-slate-300'}`}>{gAction === v && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
                     <span className="text-sm"><span className="font-medium text-slate-700">{lbl}</span><span className="block text-xs text-slate-400">{help}</span></span>
-                  </label>
+                  </button>
                 ))}
               </div>
               </div>

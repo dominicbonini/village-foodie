@@ -16,7 +16,7 @@ import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
 import { OrderLineItem } from '@/components/dashboard/OrderLineItem'
-import { calcStockRemaining, calcEffectiveRemaining } from '@/lib/stock-utils'
+import { calcStockRemaining, calcAddableRemaining } from '@/lib/stock-utils'
 import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils'
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
@@ -722,6 +722,16 @@ setItemModal({ item, modGroups, editCartKey })
         showToast('Busy right now — tap Confirm again in a moment', 'error')
         return
       }
+      // Category CLOSED: the operator turned this category off for the event (online orders closed). They
+      // can still add for the HATCH via the informed override (same shape as the stock override). Checked
+      // before the stock branch — it's a hard stop, not a shortfall.
+      if (result.status === 409 && data?.categoryClosed) {
+        const cats: string[] = Array.isArray(data.categories) ? data.categories : []
+        const detail = cats.length ? `${cats.join(', ')} ${cats.length > 1 ? 'are' : 'is'} closed for this event.` : 'A category is closed for this event.'
+        const proceed = window.confirm(`${detail}\n\nAdd anyway (for the hatch)?\n\nOK = add anyway   ·   Cancel = edit the order`)
+        if (proceed) { await submitManual(true, true); return }
+        return // Edit/Cancel — keep the order in the panel
+      }
       // Stock shortfall: the atomic check RAN and reported the real remaining. INFORMED override
       // — operator proceeds anyway (deliberate oversell) or cancels to edit. Not inserted yet.
       if (result.status === 409 && data?.stock) {
@@ -1055,16 +1065,27 @@ setItemModal({ item, modGroups, editCartKey })
               cat === selectedMenuCat ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            {cat.charAt(0).toUpperCase() + cat.slice(1)}{categoryStocks.find(s => s.category === cat)?.available === false && ' 🔒'}
           </button>
         ))}
       </div>
     </div>
   ) : null
 
+  // Per-event category closed (GATE): items stay tappable so staff can add for the hatch (the submit
+  // override prompts "add anyway?"); this banner + the tab 🔒 make the closed state unmistakable.
+  const selectedCatClosed = !!selectedMenuCat && categoryStocks.find(s => s.category === selectedMenuCat)?.available === false
+  const closedBanner = selectedCatClosed ? (
+    <div className="mb-2 flex items-center gap-2 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
+      <span aria-hidden>🔒</span>
+      <span>{(selectedMenuCat as string).charAt(0).toUpperCase() + (selectedMenuCat as string).slice(1)} is closed for online orders this event — hidden from customers. You can still add for the hatch; you&apos;ll be asked to confirm.</span>
+    </div>
+  ) : null
+
   const menuGrid = (
     <div>
       {categoryTabs}
+      {closedBanner}
       {selectedMenuCat && (
         <div className="grid gap-2 grid-cols-2 @sm:grid-cols-3">
           {/* UNIFORM TILE GRID (Square/Toast/Clover POS pattern): equal-width tiles in clean columns, so
@@ -1088,10 +1109,15 @@ setItemModal({ item, modGroups, editCartKey })
             const catSt = categoryStocks.find(s => s.category === selectedMenuCat)
             const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
             const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
-            const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
-            const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
-            const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
+            // ONE rule with the submit gate (calcAddableRemaining ⟷ checkCeilingShortfall): fold THIS order's
+            // basket per axis. catBasketQty = the whole category's in-progress qty (basketByCat, deal slots
+            // already folded), so a category cap can't be over-filled by adding 4 of each item. addable = what
+            // you can still add; addable<=0 disables the +. (totalInBasket kept for the count pill / lines.)
+            const catBasketQty = basketByCat[(selectedMenuCat || '').toLowerCase()] || 0
+            const { addable } = calcAddableRemaining({ itemRem, catRem, itemBasketQty: totalInBasket, catBasketQty })
+            const isLow = !isSoldOut && addable !== null && addable <= 10
+            const atStockLimit = addable !== null && addable <= 0
             if (isSoldOut) return (
               <div key={item.name} className="flex flex-col items-start justify-center gap-0.5 px-3 py-2.5 rounded-xl border border-slate-100 bg-slate-50 cursor-not-allowed opacity-60 min-h-[56px]">
                 <span className="text-xs text-slate-500 line-through leading-tight">{item.name}</span>
@@ -1121,7 +1147,7 @@ setItemModal({ item, modGroups, editCartKey })
                 <div className="flex items-center gap-1.5">
                   <span className={`text-xs font-normal ${atStockLimit ? 'text-slate-400' : totalInBasket > 0 ? 'text-orange-200' : 'text-slate-400'}`}>£{item.price.toFixed(2)}</span>
                   {atStockLimit && <span className="text-[10px] text-red-500 font-black">max</span>}
-                  {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">({effectiveRem} left)</span>}
+                  {!atStockLimit && isLow && <span className={`text-[10px] font-black ${totalInBasket > 0 ? 'text-white' : 'text-orange-500'}`}>({addable} left)</span>}
                 </div>
               </button>
             )
@@ -1134,6 +1160,7 @@ setItemModal({ item, modGroups, editCartKey })
   const menuList = (
     <div>
       {categoryTabs}
+      {closedBanner}
       {selectedMenuCat && (
         <div>
           {sortMenuItems(menuGroups[selectedMenuCat] || []).map(item => {
@@ -1147,10 +1174,15 @@ setItemModal({ item, modGroups, editCartKey })
             const catSt = categoryStocks.find(s => s.category === selectedMenuCat)
             const itemRem = calcStockRemaining(stock?.stock_count ?? null, stock?.orders_count ?? 0)
             const catRem = calcStockRemaining(catSt?.stock_count ?? null, catSt?.orders_count ?? 0)
-            const effectiveRem = calcEffectiveRemaining(itemRem, catRem)
-            const isLow = !isSoldOut && effectiveRem !== null && effectiveRem <= 10
             const totalInBasket = manualItems.filter(i => i.name === item.name).reduce((s, i) => s + i.quantity, 0)
-            const atStockLimit = effectiveRem !== null && totalInBasket >= effectiveRem
+            // ONE rule with the submit gate (calcAddableRemaining ⟷ checkCeilingShortfall): fold THIS order's
+            // basket per axis. catBasketQty = the whole category's in-progress qty (basketByCat, deal slots
+            // already folded), so a category cap can't be over-filled by adding 4 of each item. addable = what
+            // you can still add; addable<=0 disables the +. (totalInBasket kept for the count pill / lines.)
+            const catBasketQty = basketByCat[(selectedMenuCat || '').toLowerCase()] || 0
+            const { addable } = calcAddableRemaining({ itemRem, catRem, itemBasketQty: totalInBasket, catBasketQty })
+            const isLow = !isSoldOut && addable !== null && addable <= 10
+            const atStockLimit = addable !== null && addable <= 0
             // PER-LINE mobile menu (mirrors Review-order / cartLines): the ADD row's "+" quick-adds a base unit
             // (or opens the modal for a required-group item — addOrCustomise, BYTE-IDENTICAL). Each existing
             // cart LINE of this item then renders as its own row with a cartKey-bound stepper + its extras/notes
@@ -1170,7 +1202,7 @@ setItemModal({ item, modGroups, editCartKey })
                       <span className="text-xs text-slate-400">£{item.price.toFixed(2)}</span>
                       {isSoldOut && <span className="text-[10px] text-red-400 font-bold">sold out</span>}
                       {!isSoldOut && atStockLimit && <span className="text-[10px] text-red-500 font-black">max reached</span>}
-                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{effectiveRem} left</span>}
+                      {!atStockLimit && isLow && <span className="text-[10px] text-orange-500 font-black">{addable} left</span>}
                     </div>
                   </div>
                   {!isSoldOut && (

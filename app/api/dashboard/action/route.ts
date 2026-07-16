@@ -17,7 +17,7 @@ import {
 import { nextOrderId } from '@/lib/order-utils'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
-import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
+import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
 
 async function verifyToken(token: string, pin?: string) {
@@ -647,6 +647,13 @@ export async function POST(req: NextRequest) {
         //     NOT insert; return the real per-item remaining so the operator can decide. With
         //     override:true → the operator has SEEN the shortfall and proceeds (informed oversell).
         if (orderEventId && !override) {
+          // Category CLOSED gate — honest hard stop, checked before the count shortfall. Gated by
+          // !override so an INFORMED operator can still add for the hatch (they close ONLINE orders but
+          // keep serving the window); the AddOrderPanel prompts "add anyway?" → resubmits override:true.
+          const closed = await checkClosedCategories(truck.id, orderEventId, manualLines, itemCatMap)
+          if (closed) {
+            return NextResponse.json({ error: `${closed[0]} is closed for this event`, categoryClosed: true, categories: closed }, { status: 409 })
+          }
           const shortfall = await checkStockShortfall(truck.id, orderEventId, eventDate, manualLines, itemCatMap)
           if (shortfall) {
             return NextResponse.json({ error: 'Not enough stock', stock: true, items: shortfall }, { status: 409 })
@@ -856,7 +863,7 @@ export async function POST(req: NextRequest) {
           : Promise.resolve({ data: [] as any[] }),
         eventId
           ? supabase.from('event_category_stock')
-              .select('category, stock_count')
+              .select('category, stock_count, available')
               .eq('truck_id', truck.id).eq('event_id', eventId)
           : Promise.resolve({ data: [] as any[] }),
         eventId ? getLiveItemCounts(supabase, truck.id, eventId) : Promise.resolve({} as Record<string, number>),
@@ -913,7 +920,8 @@ export async function POST(req: NextRequest) {
       for (const mc of menuCats || []) catDefaultMap[mc.name] = mc.default_stock ?? null
 
       const catStockMap: Record<string, number | null> = {}
-      for (const r of cats || []) catStockMap[r.category] = r.stock_count
+      const catAvailableMap: Record<string, boolean> = {}
+      for (const r of cats || []) { catStockMap[r.category] = r.stock_count; if (r.available === false) catAvailableMap[r.category] = false }
 
       // Build merged list: all categories that have either explicit stock or a default
       const allCatNames = new Set([
@@ -927,6 +935,7 @@ export async function POST(req: NextRequest) {
         stock_count:   catStockMap[category] ?? null,
         default_stock: catDefaultMap[category] ?? null,
         orders_count:  liveCatCounts[category] || 0,
+        available:     catAvailableMap[category] ?? true,
       }))
 
       return NextResponse.json({ success: true, stocks, categoryStocks })
@@ -1007,6 +1016,29 @@ export async function POST(req: NextRequest) {
         stock_count: stockCount ?? null,
       }, { onConflict: 'event_id,category' })
       return NextResponse.json({ success: true })
+    }
+
+    // ── SET CATEGORY AVAILABLE (enable/disable) — PER-EVENT, GATE model ─────────
+    // Mirrors set_item_availability / set_modifier_option_available. Omit stock_count → preserved on an
+    // existing row (no-clobber), defaults null on a new row (disabling never invents a ceiling). available
+    // === false closes the whole category for THIS event (menu-hide + submit gate); auto-reverts next event.
+    if (action === 'set_category_available') {
+      const { category, available, event_id } = body
+      if (!category) return NextResponse.json({ error: 'category required' }, { status: 400 })
+      if (!event_id) return NextResponse.json({ error: 'event_id required' }, { status: 400 })
+      // Check .error — a swallowed write is the V7.1 trap: the client believes it succeeded, then a
+      // refetch returns pre-write state and the toggle "reverts" with no clue why. Surface it as 500.
+      const { error: catAvailErr } = await supabase.from('event_category_stock').upsert({
+        truck_id:    truck.id,
+        event_id,
+        category,
+        available:   available !== false,
+      }, { onConflict: 'event_id,category' })
+      if (catAvailErr) {
+        console.error('[set_category_available] upsert failed:', catAvailErr.message)
+        return NextResponse.json({ error: catAvailErr.message }, { status: 500 })
+      }
+      return NextResponse.json({ success: true, category, available: available !== false })
     }
 
     // ── DECREMENT STOCK ON ORDER ──────────────────────────────────────────────
@@ -1106,6 +1138,21 @@ export async function POST(req: NextRequest) {
       const { value } = body
       await supabase.from('trucks').update({ notes_require_review: !!value }).eq('id', truck.id)
       return NextResponse.json({ success: true })
+    }
+
+    // ── set_sound_config ── per-truck SOUND POLICY (which alerts fire). Same trucks.sound_config column
+    //    the Manage settings write → the two surfaces mirror automatically. Sanitised defensively: the
+    //    'off' new_orders value stays VALID (spec'd + may be API/DB-set) even though the UI no longer offers it.
+    if (action === 'set_sound_config') {
+      const v = body.value ?? {}
+      const no = ['needs_confirming', 'all', 'off'].includes(v.new_orders) ? v.new_orders : 'needs_confirming'
+      const sound_config = { new_orders: no, order_due: !!v.order_due }
+      const { error } = await supabase.from('trucks').update({ sound_config }).eq('id', truck.id)
+      if (error) {
+        console.error('[set_sound_config] write failed:', error.message)
+        return NextResponse.json({ error: error.message }, { status: 500 })
+      }
+      return NextResponse.json({ success: true, sound_config })
     }
 
     // ── set_paused ── EVENT-scoped (truck_events), not truck/van ───────────────

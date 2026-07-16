@@ -3,20 +3,22 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
+import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { useToasts } from '@/lib/useToasts'
 import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
 import { ToastStack } from '@/components/ToastStack'
 import { getAllDayCounts } from '@/components/dashboard/helpers'
 import { supabaseBrowser } from '@/lib/supabase-browser'
-import type { Order, TruckData, TruckEvent } from '@/components/dashboard/types'
+import type { Order, TruckData, TruckEvent, SoundConfig } from '@/components/dashboard/types'
+import { DEFAULT_SOUND_CONFIG } from '@/components/dashboard/types'
 import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
-import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
+import { keepAwake, keepAwakeOnGesture, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { formatTime, formatTimeRange } from '@/lib/time-utils'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
-import { installAudioUnlock, primeAudio, playDing } from '@/lib/audio'
+import { installAudioUnlock, primeAudio, playNewOrder } from '@/lib/audio'
 import { configureStatusBar } from '@/lib/native/statusBar'
 import { registerServiceWorker, addSWMessageListener } from '@/lib/native/serviceWorker'
 import { countOps, removePendingStatusOp } from '@/lib/native/outbox'
@@ -68,6 +70,10 @@ export default function KdsPage() {
   const [requiresPin, setRequiresPin] = useState(false)
 
   const [keepScreenOn, setKeepScreenOn] = useState(true)
+  // ACTUAL keep-awake state, not intent — so the KDS Screen chip can't lie. No grace needed: with
+  // gesture-based acquisition the lock stays 'off' (optimistic) until first tap, so there's no mount-denial.
+  const [wakeState, setWakeState] = useState<WakeState>('off')
+  useEffect(() => subscribeWakeState(setWakeState), [])
   const [showScreenOffWarning, setShowScreenOffWarning] = useState(false)
   const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
   const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(null)
@@ -76,6 +82,9 @@ export default function KdsPage() {
   // realtime INSERT callback (set up once), which reads the CURRENT pref without re-subscribing.
   const [soundEnabled, setSoundEnabled] = useState(true)
   const soundEnabledRef = useRef(true)
+  // Per-truck sound policy, mirrored to a ref so the realtime callback (a stale closure) reads the
+  // current value. The header toggle stays the per-device MASTER; this is WHICH new orders ding.
+  const soundConfigRef = useRef<SoundConfig>(DEFAULT_SOUND_CONFIG)
   const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
   const [isOffline, setIsOffline] = useState(false)
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
@@ -197,15 +206,16 @@ export default function KdsPage() {
     soundEnabledRef.current = soundEnabled
     if (typeof window !== 'undefined') localStorage.setItem(`hg_kds_sound_${token}`, soundEnabled ? 'on' : 'off')
   }, [soundEnabled, token])
+  useEffect(() => { soundConfigRef.current = truck?.sound_config ?? DEFAULT_SOUND_CONFIG }, [truck?.sound_config])
 
   useEffect(() => {
     configureStatusBar()
-    keepAwake() // on by default; updated when truck.keep_screen_on loads
+    keepAwakeOnGesture() // ROOT FIX: acquire on first gesture (Safari denies a mount auto-request)
     return () => { allowSleep() }
   }, [])
 
   useEffect(() => {
-    if (keepScreenOn) { keepAwake() } else { allowSleep() }
+    if (keepScreenOn) { keepAwakeOnGesture() } else { allowSleep() }
   }, [keepScreenOn])
 
   useEffect(() => {
@@ -306,12 +316,15 @@ export default function KdsPage() {
         filter: `truck_id=eq.${truck.id}`,
       }, (payload: any) => {
         fetchAllRef.current()
-        if (
-          soundEnabledRef.current &&
-          payload.eventType === 'INSERT' &&
-          ['confirmed', 'pending'].includes(payload.new?.status)
-        ) {
-          playDing()   // in-app SOUND only (Web Audio, works in the webview foreground); notification is the server APNs push
+        // NEW-ORDER sound, gated on master (per-device) && per-truck config.new_orders:
+        //   'all' → confirmed OR pending · 'needs_confirming' → pending only · 'off' → never.
+        const mode = soundConfigRef.current.new_orders
+        const st = payload.new?.status
+        const wanted = mode === 'all' ? (st === 'confirmed' || st === 'pending')
+          : mode === 'needs_confirming' ? st === 'pending'
+          : false
+        if (soundEnabledRef.current && payload.eventType === 'INSERT' && wanted) {
+          playNewOrder()   // in-app SOUND only (Web Audio, works in the webview foreground); notification is the server APNs push
         }
       })
       .subscribe()
@@ -335,9 +348,13 @@ export default function KdsPage() {
     }
   }, [truck?.id])
 
-  const applyKeepScreenOn = async (value: boolean) => {
+  // BINARY UI: green only when actually held; grey otherwise. The KeepAwakePrompt banner carries the
+  // plain-English prompt/failure copy; no toast needed here.
+  const screenHeld = wakeState === 'held' || wakeState === 'native'
+  const applyKeepScreenOn = async (value: boolean): Promise<WakeState> => {
     setKeepScreenOn(value)
-    if (value) { await keepAwake() } else { await allowSleep() }
+    let st: WakeState = 'off'
+    if (value) { st = await keepAwake() } else { await allowSleep() }
     try {
       await fetch('/api/dashboard/action', {
         method: 'POST',
@@ -345,16 +362,21 @@ export default function KdsPage() {
         body: JSON.stringify({ token, action: 'update_keep_screen_on', keepScreenOn: value }),
       })
     } catch {}
+    return st
   }
   const toggleKeepScreenOn = async () => {
-    if (keepScreenOn && truck?.id) {
-      try {
-        const { data: vans } = await supabaseBrowser.from('truck_vans').select('name,auto_pause_on_offline').eq('truck_id', truck.id).eq('active', true)
-        const autoPauseVans = (vans || []).filter((v: any) => v.auto_pause_on_offline).map((v: any) => v.name)
-        if (autoPauseVans.length > 0) { setVansWithAutoPause(autoPauseVans); setShowScreenOffWarning(true); return }
-      } catch {}
+    if (screenHeld) {   // held → turning OFF
+      if (truck?.id) {
+        try {
+          const { data: vans } = await supabaseBrowser.from('truck_vans').select('name,auto_pause_on_offline').eq('truck_id', truck.id).eq('active', true)
+          const autoPauseVans = (vans || []).filter((v: any) => v.auto_pause_on_offline).map((v: any) => v.name)
+          if (autoPauseVans.length > 0) { setVansWithAutoPause(autoPauseVans); setShowScreenOffWarning(true); return }
+        } catch {}
+      }
+      await applyKeepScreenOn(false)
+    } else {            // grey → turning ON / retry (this tap is the gesture; the banner reflects the outcome)
+      await applyKeepScreenOn(true)
     }
-    await applyKeepScreenOn(!keepScreenOn)
   }
   const confirmScreenOff = async () => { setShowScreenOffWarning(false); await applyKeepScreenOn(false) }
 
@@ -805,15 +827,20 @@ export default function KdsPage() {
           </AppLink>
         )}
 
+        {/* BINARY: teal "Screen on" ONLY when the lock is actually HELD; grey "Screen off" otherwise. Failure
+            is a plain-English toast on the tap (screenFailMsg), never a hedged label. */}
         <button
           onClick={toggleKeepScreenOn}
-          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${keepScreenOn ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
-          title={keepScreenOn ? 'Screen will stay on' : 'Screen may turn off'}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${screenHeld ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-600'}`}
+          title={screenHeld ? 'Screen will stay on' : 'Tap to keep the screen on'}
         >
-          <span>{keepScreenOn ? '☀️' : '🌙'}</span>
-          <span className="hidden sm:inline">{keepScreenOn ? 'Screen on' : 'Screen off'}</span>
+          <span>{screenHeld ? '☀️' : '🌙'}</span>
+          <span className="hidden sm:inline">{screenHeld ? 'Screen on' : 'Screen off'}</span>
         </button>
       </header>
+      {/* Keep-screen-on prompt — full-width bar right under the header, unmissable on the cook screen. Shows
+          only when the pref is on but the lock isn't held; the operator's first tap dismisses AND acquires it. */}
+      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} />
 
       {/* ── To Make bar ── */}
       {allDayPills.length > 0 && activeView === 'window' && (

@@ -7,17 +7,18 @@ import Link from 'next/link'
 import { hasFeature } from '@/lib/features'
 import { OFFLINE_PROTECTION_ENABLE_CONFIRM, OFFLINE_PROTECTION_DISABLE_CONFIRM, OFFLINE_PROTECTION_CARD_DESCRIPTION, OFFLINE_PROTECTION_EXPLAINER_LEAD, OFFLINE_PROTECTION_EXPLAINER_BODY } from '@/lib/copy/offlineProtection'
 import AppHeader from '@/components/shared/AppHeader'
-import { playDing, installAudioUnlock, primeAudio } from '@/lib/audio'
+import { playNewOrder, playOrderDue, installAudioUnlock, primeAudio } from '@/lib/audio'
 
 import type {
   Order, Slot, TruckData, TruckMenu, Bundle, MenuItem,
   BasketItem, AppliedDeal, ItemStock, CategoryStock, CatConfig,
-  ModifierOption, ModifierGroup, TruckEvent,
+  ModifierOption, ModifierGroup, TruckEvent, SoundConfig,
 } from '@/components/dashboard/types'
-import { STATUS, DEFAULT_CAT_CONFIG } from '@/components/dashboard/types'
+import { STATUS, DEFAULT_CAT_CONFIG, DEFAULT_SOUND_CONFIG } from '@/components/dashboard/types'
 import {
   getAsapSlot, getCatConfig, catCookSecs,
-  calcMinsFromNow, getAllDayCounts, resolveCollectionTime
+  calcMinsFromNow, getAllDayCounts, resolveCollectionTime,
+  getOrderCookSecs, getCombinedUrgency, cookAmberLeadMins
 } from '@/components/dashboard/helpers'
 import { OrderCard, Toggle, InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { useToasts } from '@/lib/useToasts'
@@ -42,7 +43,7 @@ import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
-import { keepAwake, allowSleep } from '@/lib/native/keepAwake'
+import { keepAwake, keepAwakeOnGesture, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
@@ -54,6 +55,7 @@ import { useOfflineAlert } from '@/lib/native/useOfflineAlert'
 import { NotificationSettings } from '@/components/native/NotificationSettings'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { WebOfflineBanner } from '@/components/WebOfflineBanner'
+import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
@@ -156,6 +158,22 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[optStockDrafts,setOptStockDrafts]=useState<Record<string,string>>({})
   // Set by Escape so the blur it triggers reverts the draft instead of committing it.
   const skipStockBlurRef=useRef(false)
+  // ── SHARED optimistic-write guard (ONE mechanism for every dual-source field) ─────────────────────────
+  // A field the operator edits optimistically registers its key here; any background refetch (poll /
+  // realtime / reseed) applies the DESIRED value over server state until the server ECHOES it (then the
+  // key is released). Stops the write-round-trip clobber (the flip-back bug) without a per-toggle ref that
+  // a future edit has to remember. Used by: pause + extra-wait (dual-source live), and category-available
+  // (keyed `catavail:${eventKey}:${cat}`, meta = original-case name so an omitting refetch can re-add it).
+  const pendingWritesRef=useRef<Record<string,{v:any;meta?:any}>>({})
+  // Guard a SCALAR field: return the value to use, releasing the key once the server value matches.
+  const applyPending=useCallback((key:string,serverVal:any)=>{
+    const p=pendingWritesRef.current, g=p[key]
+    if(!g) return serverVal
+    if(serverVal===g.v){ delete p[key]; return serverVal }
+    return g.v
+  },[])
+  // Register an optimistic write BEFORE its setState, so a background refetch mid-write can't clobber it.
+  const markPending=useCallback((key:string,value:any)=>{ pendingWritesRef.current[key]={v:value} },[])
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
   const[lastRefresh,setLastRefresh]=useState(new Date())
@@ -209,6 +227,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showPrepList,setShowPrepList]=useState(false)
   const[showPrepTimeBanner,setShowPrepTimeBanner]=useState(false)
   const[keepScreenOn,setKeepScreenOn]=useState(true)
+  // ACTUAL keep-awake state (held / denied / unsupported / native), NOT the intent. The toggle reads this so
+  // it can't claim "Screen on" while the lock was denied. Updates live (OS release, focus re-acquire).
+  const[wakeState,setWakeState]=useState<WakeState>('off')
+  useEffect(()=>subscribeWakeState(setWakeState),[])
+  // BINARY UI: the toggle shows "Screen on" (green) ONLY when the lock is actually HELD; otherwise "Screen off"
+  // (grey). No hedged labels — honesty is carried by position. The internal WakeState still drives a plain-
+  // English failure MESSAGE (toast) shown only when the operator TAPS to turn it on and it can't hold.
+  const screenHeld = wakeState==='held'||wakeState==='native'
   // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON (a truck wants to hear orders).
   const[soundEnabled,setSoundEnabled]=useState(true)
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
@@ -302,13 +328,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[showQRFullscreen,setShowQRFullscreen]=useState(false)
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
+  // 'all'-mode new-order detection: order_keys seen last tick (per event) → a key that appears anew is a
+  // new order (covers AUTO-ACCEPTED orders that land 'confirmed' and never raise the pending count).
+  const prevOrderKeysRef=useRef<Set<string>>(new Set())
+  // Amber-DUE de-dupe: last-seen urgency per order_key, so the due sound fires ONCE on ok→warn, not every
+  // 15s tick. Persisted in the page (survives card remounts), so a card unmount/remount can't re-ding.
+  const prevUrgencyRef=useRef<Map<string,string>>(new Map())
   // Event the ping baseline (prevPendingCount) belongs to — prevents an event
   // SWITCH from being mistaken for new orders and firing a spurious ping.
   const soundEventRef=useRef<string|null>(null)
   // Selected event {id,date} for scoping /api/dashboard. Held in a ref so the
   // realtime/interval refetches (which call fetchAllRef with no args) stay scoped.
   const selectedEventRef=useRef<{id:string,date:string}|null>(null)
-  const fetchAllRef=useRef<()=>void>(()=>{})
+  const fetchAllRef=useRef<()=>void>(()=>{})     // LIVE refetch (poll / orders-realtime / vans-realtime) — never re-seeds config
+  const reseedRef=useRef<()=>void>(()=>{})       // CONFIG reseed (event-switch / trucks-realtime / reconnect) — forceSeed
+  // CONFIG is seeded on nav/auth/trucks-change ONLY, never by the order poll. Flag flips true after the first
+  // successful seed so subsequent LIVE refetches leave operator-edited settings untouched (the flip-back class).
+  const configSeededRef=useRef(false)
   // Tracks auth across fetchAll closures (authenticated state is stale inside the callback).
   // Once true, transient fetch failures keep existing state instead of showing the error screen.
   const authenticatedRef=useRef(false)
@@ -401,12 +437,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       body:JSON.stringify({token,pin:currentPin,action:'get_stock',eventId:eventId??null})})
       .then(r=>r.json()).then(d=>{
         setItemStocksByEvent(prev=>({...prev,[key]:d.stocks??[]}))
-        setCategoryStocksByEvent(prev=>({...prev,[key]:d.categoryStocks??[]}))
+        // Apply any in-flight category-available override on top of server state (guard against the
+        // write-round-trip clobber); drop a guard once the server row has caught up to the desired value.
+        const incoming=(d.categoryStocks??[]) as CategoryStock[]
+        const pend=pendingWritesRef.current
+        const kf=(cat:string)=>`catavail:${key}:${cat.toLowerCase()}`
+        const seen=new Set<string>()
+        const merged=incoming.map(cs=>{
+          const pk=kf(cs.category); seen.add(pk); const g=pend[pk]
+          return (g && (cs.available??true)!==g.v) ? {...cs,available:g.v as boolean} : cs
+        })
+        // Drop a guard once the server row has caught up to the desired value.
+        for(const cs of incoming){const pk=kf(cs.category); const g=pend[pk]; if(g && (cs.available??true)===g.v) delete pend[pk]}
+        // Re-add any pending category the (pre-write) refetch OMITTED entirely (no total/default/orders yet),
+        // so a mid-write clobber can't drop the optimistic toggle. Reconciles once the row lands in `incoming`.
+        for(const pk of Object.keys(pend)){ if(pk.startsWith(`catavail:${key}:`)&&!seen.has(pk)){ const g=pend[pk]; merged.push({category:g.meta as string,stock_count:null,default_stock:null,orders_count:0,available:g.v as boolean}) } }
+        setCategoryStocksByEvent(prev=>({...prev,[key]:merged}))
         setFetchedStockKeys(prev=>prev.has(key)?prev:new Set(prev).add(key))
       }).catch(()=>null)
   },[token])
 
-  const fetchAll=useCallback(async(currentPin=pin)=>{
+  const fetchAll=useCallback(async(currentPin=pin,forceSeed=false)=>{
     try {
       const p=new URLSearchParams({token}); if(currentPin) p.set('pin',currentPin)
       // Scope the read to the selected event (V6.4). Pass its date too so the
@@ -424,30 +475,56 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }
       // Transient failure after successful auth — keep existing state, never blank the dashboard
       if(!res.ok){if(authenticatedRef.current){console.warn('[fetchAll] dashboard fetch failed:',res.status,'— keeping existing state')}else{setError(data.error||'Failed to load')};setLoading(false);return}
-      setTruck(data.truck)
+      // ── CONFIG vs LIVE SPLIT (the flip-back CLASS fix) ──────────────────────────────────────────────
+      // seedConfig runs on NAV/AUTH (first load, event-switch, trucks-change, reconnect) — NEVER on the 60s
+      // poll or a realtime ORDER event. Config = operator-edited settings; re-seeding them from the order
+      // poll clobbers an in-flight optimistic edit (3× bug: offline-protection, category-available,
+      // sound_config). Trucks-realtime (fires AFTER the operator's own commit) + event-switch cover genuine
+      // config changes. The LIVE block below runs on EVERY fetch.
+      const seedConfig = forceSeed || !configSeededRef.current
       // EVENT-SWITCH GATE: this event's data just loaded (network or SW cache) → mark it switchable offline.
       {const loadedId=selectedEventRef.current?.id; if(loadedId)setLoadedEventIds(p=>p.has(loadedId)?p:new Set(p).add(loadedId))}
-      // WEB: the "Screen on" control follows the truck keep_screen_on setting. APP: it follows the
-      // per-device pref (initialised on mount below), so don't let the truck setting override it here.
-      if(!isNativeApp()) setKeepScreenOn(data.truck?.keep_screen_on ?? true)
-      setAutoAccept(data.truck?.auto_accept || false); setNotesRequireReview(data.truck?.notes_require_review ?? true); setPausedUntil(data.truck?.paused_until||null); setVanPausedUntil(data.vanPausedUntil??null); setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null); setLastOfflinePauseAt(data.lastOfflinePauseAt??null); setOfflinePauseEventId(data.offlinePauseEventId??null); setExtraWaitMins(data.truck?.extra_wait_mins||0); setExtraWaitStartedAt(data.truck?.extra_wait_started_at||null); setOrders(prev=>mergeOrders(prev,data.orders||[])); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
+      if(seedConfig){
+        // ── CONFIG — operator-edited; seeded on nav only. ⚠️ Everything here is CONFIG by default; adding a
+        //    LIVE field to this block would STOP it polling. Live state goes in the block below. ──
+        setTruck(data.truck)
+        // WEB: "Screen on" follows the truck setting. APP: it follows the per-device pref (mount init) — so
+        // don't let the truck setting override it here.
+        if(!isNativeApp()) setKeepScreenOn(data.truck?.keep_screen_on ?? true)
+        setAutoAccept(data.truck?.auto_accept || false)
+        setNotesRequireReview(data.truck?.notes_require_review ?? true)
+        setShowCookingStep(data.vanShowCookingStep??false)
+        // Capacity card + order-ready: van/event-scoped config. applyPending guards them so a reseed that
+        // fires DURING the operator's own optimistic edit (before the write commits) can't clobber it.
+        if(data.kitchenCapacity !== undefined) setKitchenCapacity(applyPending('kitchenCapacity',data.kitchenCapacity))
+        if(data.capacityWindowMins !== undefined) setCapacityWindowMins(applyPending('capacityWindowMins',data.capacityWindowMins ?? 5))
+        if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
+        if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
+        if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
+        setEffectiveOrderReady(applyPending('effectiveOrderReady',data.effectiveOrderReady??false))
+        configSeededRef.current=true
+      }
+      // ── LIVE — merged on EVERY fetch (poll/realtime/nav). Changes WITHOUT the operator (new orders,
+      //    server offline-auto-pause, other devices) → must keep polling. ⚠️ THIS is the explicit LIVE
+      //    ALLOWLIST; adding a field puts it back in the clobber path. Dual-source live+optimistic fields
+      //    (manual pause, extra-wait) go through applyPending so a mid-write poll can't clobber them. ──
+      setOrders(prev=>mergeOrders(prev,data.orders||[]))
+      setSlots(data.slots)
+      setPausedUntil(applyPending('pausedUntil',data.truck?.paused_until||null))              // manual truck pause (dual-source)
+      setVanPausedUntil(applyPending('vanPausedUntil',data.vanPausedUntil??null))              // manual van pause (dual-source)
+      setVanOnlinePausedUntil(data.vanOnlinePausedUntil??null)                                 // SERVER offline auto-pause (server-only → no guard)
+      setLastOfflinePauseAt(data.lastOfflinePauseAt??null)
+      setOfflinePauseEventId(data.offlinePauseEventId??null)
+      setExtraWaitMins(applyPending('extraWaitMins',data.truck?.extra_wait_mins||0))           // operator extra-wait (dual-source)
+      setExtraWaitStartedAt(applyPending('extraWaitStartedAt',data.truck?.extra_wait_started_at||null))
+      if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
+      if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
+      if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
+      if(data.userRole !== undefined) setUserRole(data.userRole)
+      if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
       // Clear prep pills for orders no longer active (collected/cancelled)
       const activeOrderKeys=new Set((data.orders||[]).filter((o:Order)=>['pending','confirmed','modified'].includes(o.status)).map((o:Order)=>o.order_key))
       setStruckPrep(prev=>{const n=new Set<string>();prev.forEach(k=>{const orderKey=k.split(':')[0];if(activeOrderKeys.has(orderKey))n.add(k)});return n})
-      if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
-      if(data.userRole !== undefined) setUserRole(data.userRole)
-      // Capacity card: single-source from the server (service-role van read). Guard on
-      // !== undefined so a failed/partial response never wipes a good value.
-      if(data.kitchenCapacity !== undefined) setKitchenCapacity(data.kitchenCapacity)
-      if(data.capacityWindowMins !== undefined) setCapacityWindowMins(data.capacityWindowMins ?? 5)
-      if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
-      if(data.catConfigs !== undefined) setServerCatConfigs(data.catConfigs || {})                        // server catConfigs (has countsToCapacity)
-      if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
-      if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
-      // Real van offline-protection default (Settings value) — feeds the toggle/label when
-      // there's no event override. Without this, vanAutoPause stayed hardcoded false.
-      if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
-      if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
       setAuthenticated(true); authenticatedRef.current=true; rl429RetriesRef.current=0; setLastRefresh(new Date())
       if(data.truck?.id){fetchMenu(data.truck.id,currentPin);fetchStock(currentPin,selectedEventRef.current?.id??null)}
       try{
@@ -471,7 +548,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         }
       }catch{}
     } catch{if(!authenticatedRef.current)setError('Connection error')} finally{setLoading(false)}
-  },[token,pin,fetchMenu,fetchStock])
+  },[token,pin,fetchMenu,fetchStock,applyPending])
 
   // Ready-email-undo machinery (shared hook). onUndoRestore = the dashboard-specific revert: un-strike the
   // prep pills the Ready click struck (KDS, the later consumer, passes none). Placed after fetchAll so it
@@ -536,7 +613,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .then(({data})=>{if(!cancelled){setEventOfflineOverride(data?.offline_protection_override??null);setEventOrderReadyOverride((data as any)?.order_ready_override??null)}})
     return()=>{cancelled=true}
   },[selectedEventId])
-  useEffect(()=>{fetchAllRef.current=fetchAll},[fetchAll])
+  useEffect(()=>{fetchAllRef.current=()=>fetchAll();reseedRef.current=()=>fetchAll(pin,true)},[fetchAll,pin])
   // SINGLE source for the event the Menu & Stock counts AND the order-scoping ref
   // resolve to: the explicitly-selected event, else today's open/confirmed/first.
   // EVERY stock/order fetcher reads this one value — the ref for non-reactive callers
@@ -554,9 +631,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useEffect(()=>{
     selectedEventRef.current=stockEvent?{id:stockEvent.id,date:stockEvent.event_date}:null
   },[stockEvent])
-  // Refetch only when the SELECTED event changes, so orders/badges/sound re-scope.
+  // Refetch when the SELECTED event changes — RESEED (event-switch = navigation; van-scoped config like
+  // kitchen capacity / catConfigs / order-ready can differ per event's van, so config must re-resolve).
   useEffect(()=>{
-    if(authenticatedRef.current) fetchAllRef.current()
+    if(authenticatedRef.current) reseedRef.current()
   },[selectedEventId])
   useEffect(()=>{
     // Native app sends its Bearer so /api/auth/me resolves is_admin (+ identity) without a cookie → the
@@ -572,8 +650,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .subscribe()
     const truckChannel=supabaseBrowser
       .channel(`truck:${truck.id}`)
+      // trucks UPDATE = a CONFIG change (this operator's own committed write, or another device) → RESEED
+      // config. Fires AFTER the DB commit, so it reads the new value (matches an optimistic edit → no
+      // clobber) and is the channel by which cross-device settings changes propagate.
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'trucks',filter:`id=eq.${truck.id}`},
-        ()=>fetchAllRef.current())
+        ()=>reseedRef.current())
       .subscribe()
     // Van pause lives on truck_vans (paused_until / online_paused_until), set by this
     // dashboard, other screens, AND the heartbeat-monitor — subscribe so a pause/unpause
@@ -669,23 +750,33 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useEffect(()=>{if(typeof window!=='undefined')localStorage.setItem(`hg_sound_${token}`,soundEnabled?'on':'off')},[soundEnabled,token])
   useEffect(()=>{
     if(!authenticated)return
-    if(keepScreenOn){keepAwake()}else{allowSleep()}
+    // ROOT FIX: arm the lock to acquire on the operator's FIRST gesture (Safari denies a mount-effect
+    // auto-request — no user activation). The toggle tap acquires directly (also a gesture).
+    if(keepScreenOn){keepAwakeOnGesture()}else{allowSleep()}
     return()=>{allowSleep()}
   },[authenticated,keepScreenOn])
   useEffect(()=>{
-    // orders is now event-scoped server-side. The ping must only fire for NEW
-    // pending orders within the SAME event — never when switching events brings in
-    // a different event's set. Identify the event from the data (all rows share the
-    // selected event_id), falling back to selectedEventId for an empty list.
+    // NEW-ORDER sound. Fires iff master (soundEnabled, per-device) && per-truck config.new_orders:
+    //   'needs_confirming' → pending count rose (today's behaviour; misses auto-accepted orders)
+    //   'all'              → a NEW order_key appeared (any status) → also dings auto-accepted 'confirmed'
+    //                        orders — closes the gap where an auto-accept truck was silent on the dashboard
+    //   'off'              → never
+    // orders is event-scoped server-side. Fire only within the SAME event — an event SWITCH bringing in a
+    // different set must not ping (soundEventRef guards it; on switch we just reset the baselines).
+    const mode=(truck?.sound_config??DEFAULT_SOUND_CONFIG).new_orders
     const count=orders.filter(o=>o.status==='pending').length
     const ordersEventId=orders.find(o=>o.event_id)?.event_id??selectedEventId??null
     const sameEvent=ordersEventId===soundEventRef.current
-    if(soundEnabled&&sameEvent&&count>prevPendingCount.current&&authenticated){
-      playDing(880,0.6,0.3) // shared primed AudioContext (unlocked on first gesture) — gated on the Sound pref
+    if(soundEnabled&&authenticated&&sameEvent&&mode!=='off'){
+      const fire = mode==='all'
+        ? orders.some(o=>o.order_key&&!prevOrderKeysRef.current.has(o.order_key))
+        : count>prevPendingCount.current
+      if(fire) playNewOrder()   // shared primed AudioContext (unlocked on first gesture)
     }
     soundEventRef.current=ordersEventId
     prevPendingCount.current=count
-  },[orders,authenticated,selectedEventId,soundEnabled])
+    prevOrderKeysRef.current=new Set(orders.map(o=>o.order_key))
+  },[orders,authenticated,selectedEventId,soundEnabled,truck?.sound_config])
 
   useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo,truck?.qr_code_style])
 
@@ -771,6 +862,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingNotesReview(false)}
   }
 
+  // Per-truck SOUND POLICY. Writes the SAME trucks.sound_config as Manage → Settings (one column, one
+  // source of truth → the two surfaces mirror automatically). §23 optimistic: patch truck.sound_config
+  // (the trigger effects read it → react immediately), no reload; revert on failure.
+  const saveSoundConfig=async(next:SoundConfig)=>{
+    const prev=truck?.sound_config??DEFAULT_SOUND_CONFIG
+    setTruck(t=>t?{...t,sound_config:next}:t)
+    try{
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_sound_config',value:next})})
+      if(!res.ok)throw new Error()
+    }catch{setTruck(t=>t?{...t,sound_config:prev}:t);showToast('Failed to save','error')}
+  }
+
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
     if(value===true){
@@ -803,48 +907,54 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!activeEvent)return
     const prevOverride=eventOrderReadyOverride
     const prevEffective=effectiveOrderReady
+    markPending('effectiveOrderReady',value)   // guard: a reseed mid-write can't clobber the optimistic value
     setEventOrderReadyOverride(value)
     setEffectiveOrderReady(value)
     try{
       const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_order_ready_override',value,eventId:activeEvent.id})})
       if(!res.ok)throw new Error('write failed')
-      fetchAll() // re-resolve effectiveOrderReady (override ?? default) so the Ready button updates
+      reseedRef.current() // re-resolve effectiveOrderReady (override ?? default); reads committed → releases guard
     }catch{
+      delete pendingWritesRef.current['effectiveOrderReady']
       setEventOrderReadyOverride(prevOverride); setEffectiveOrderReady(prevEffective) // revert optimistic on failure
     }
   }
 
   const saveKitchenCapacity=async(value:number|null)=>{
     if(!activeEvent?.van_id)return
-    setKitchenCapacity(value) // optimistic
+    markPending('kitchenCapacity',value); setKitchenCapacity(value) // optimistic + guard
     // Service-role write via /api/manage (same action the Manage page uses). The previous
     // anon supabaseBrowser.update on truck_vans was RLS-blocked and failed silently.
     await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,kitchen_capacity:value})})
-    fetchAllRef.current() // re-sync from the authoritative server read
+    reseedRef.current() // re-sync from the authoritative server read (reads committed → releases guard)
   }
 
   const saveCapacityWindow=async(value:number)=>{
     if(!activeEvent?.van_id)return
-    setCapacityWindowMins(value) // optimistic
+    markPending('capacityWindowMins',value); setCapacityWindowMins(value) // optimistic + guard
     await fetch('/api/manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'update_van_settings',vanId:activeEvent.van_id,capacity_window_mins:value})})
-    fetchAllRef.current() // re-sync from the authoritative server read
+    reseedRef.current() // re-sync from the authoritative server read (reads committed → releases guard)
   }
 
-  const applyKeepScreenOn=async(value:boolean)=>{
+  const applyKeepScreenOn=async(value:boolean):Promise<WakeState>=>{
     setKeepScreenOn(value)
-    if(value){await keepAwake()}else{await allowSleep()}
+    let st:WakeState='off'
+    if(value){st=await keepAwake()}else{await allowSleep()}
     // ONE visible "Screen on" control, DUAL persistence (user unaware): in the APP it drives the PER-DEVICE
     // keep-awake pref (localStorage 'hg_keepawake', default on / manual off) and does NOT touch the truck
     // setting — so the web setting-tied mechanism can't also fire/clobber it. On WEB it persists to the
     // truck keep_screen_on setting exactly as before. keepAwake()/allowSleep() above is the single applier.
-    if(isNativeApp()){try{localStorage.setItem('hg_keepawake',value?'on':'off')}catch{}return}
+    if(isNativeApp()){try{localStorage.setItem('hg_keepawake',value?'on':'off')}catch{}return st}
     try{
       await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'update_keep_screen_on',keepScreenOn:value})})
     }catch{}
+    return st
   }
   const toggleKeepScreenOn=async()=>{
-    if(keepScreenOn){
+    // The toggle acts on REALITY: green (held) → turn off; grey (not held) → turn on / retry (this click IS
+    // the user gesture, so it acquires). On a failed turn-on, a plain-English toast says why + what to do.
+    if(screenHeld){
       // Ensure vans are loaded before evaluating auto-pause
       let currentVans=vans
       if(currentVans.length===0&&truck?.id){
@@ -864,8 +974,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         console.log('[screen-off] no vanId, affectedVans',affectedVans,'vans',currentVans)
       }
       if(affectedVans.length>0){setVansWithAutoPause(affectedVans);setShowScreenOffWarning(true);return}
+      await applyKeepScreenOn(false)   // turning OFF (it's held) — no auto-pause vans
+    } else {
+      // turning ON / retry — this click is the gesture that acquires. The KeepAwakePrompt banner reflects
+      // the outcome (held → gone; still not held → the plain-English reason), so no toast is needed.
+      await applyKeepScreenOn(true)
     }
-    await applyKeepScreenOn(!keepScreenOn)
   }
   const confirmScreenOff=async()=>{setShowScreenOffWarning(false);await applyKeepScreenOn(false)}
 
@@ -1080,6 +1194,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(r.queued)showToast('Stock saved on this device — will sync when back online')
   }
 
+  // Enable/disable a whole category for THIS event (GATE) — mirrors updateCategoryStock. Optimistic
+  // toggle of `available`; the server upsert preserves stock_count (no-clobber). Closing hides the
+  // customer tab + blocks at submit; auto-reverts next event.
+  const updateCategoryAvailable=async(category:string,available:boolean)=>{
+    const event_id=selectedEventRef.current?.id??null
+    const key=event_id??'__none__'
+    const pk=`catavail:${key}:${category.toLowerCase()}`
+    pendingWritesRef.current[pk]={v:available,meta:category}   // shared guard; meta=name so an omitting refetch can re-add the row
+    setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const ex=cur.find(s=>s.category===category);const next=ex?cur.map(s=>s.category===category?{...s,available}:s):[...cur,{category,stock_count:null,default_stock:null,orders_count:0,available}];return{...prev,[key]:next}})
+    const r=await gatedAction({url:'/api/dashboard/action',body:{token,pin,action:'set_category_available',category,available,event_id},kind:'stock',order_key:`${event_id??'none'}:set_category_available:${category}`,online:isOnline()})
+    if(r.queued){delete pendingWritesRef.current[pk];showToast('Saved on this device — will sync when back online');return}
+    if(!r.ok){
+      // Write FAILED (surfaced now that the action checks .error): drop the guard + revert so the UI
+      // shows the truth instead of a lie that a later refetch would silently undo.
+      delete pendingWritesRef.current[pk]
+      setCategoryStocksByEvent(prev=>{const cur=prev[key]??[];const next=cur.map(s=>s.category===category?{...s,available:!available}:s);return{...prev,[key]:next}})
+      showToast('Could not update the category — please try again','error')
+    }
+    // On success the guard stays until fetchStock sees the committed value catch up (then drops it).
+  }
+
   // Stage B re-source: options now live on item.modifierGroups (category.modifierGroups was emptied),
   // so the optimistic patch walks the ITEM groups. One shared option appears on multiple items — patch
   // every copy so the deduped Options list reflects the change immediately.
@@ -1281,6 +1416,37 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
+  // AMBER-DUE sound: ding ONCE when an active order first crosses ok→warn (getCombinedUrgency), iff master
+  // (soundEnabled, per-device) && per-truck config.order_due. Runs on a 15s tick (like the card's own colour
+  // tick), with a per-order_key previous-urgency map so it fires once per transition, not every tick, and
+  // only for pending/confirmed orders (cooking/ready are already being handled — no "start now" alert).
+  // Uses the SAME urgency inputs as OrderCard (resolveCollectionTime + prep-aware cookAmberLeadMins) so the
+  // sound matches the card colour exactly. Default OFF (can get chatty). NOTE: fires from a TIMER, not a
+  // click, so it's silently dropped until the audio context is gesture-unlocked (the Settings UI says so).
+  useEffect(()=>{
+    const cfg=truck?.sound_config??DEFAULT_SOUND_CONFIG
+    if(!soundEnabled||!authenticated||!cfg.order_due) return
+    const scan=()=>{
+      const seen=new Set<string>()
+      for(const o of orders){
+        if(o.status!=='pending'&&o.status!=='confirmed'){ prevUrgencyRef.current.delete(o.order_key); continue }
+        seen.add(o.order_key)
+        const slotDt=resolveCollectionTime(o,activeEvent)
+        const lead=cookAmberLeadMins(getOrderCookSecs(o.items,itemCategoryMap,catConfigs))
+        const u=getCombinedUrgency(slotDt,o.created_at,lead)
+        const prev=prevUrgencyRef.current.get(o.order_key)
+        // Only a REAL transition into warn from a known ok/new fires — never on first sight of an
+        // already-amber order (load / card remount), never on warn→late re-entries.
+        if((prev==='ok'||prev==='new')&&u==='warn') playOrderDue()
+        prevUrgencyRef.current.set(o.order_key,u)
+      }
+      for(const k of Array.from(prevUrgencyRef.current.keys())) if(!seen.has(k)) prevUrgencyRef.current.delete(k)
+    }
+    scan()
+    const id=setInterval(scan,15000)
+    return()=>clearInterval(id)
+  },[orders,authenticated,soundEnabled,truck?.sound_config,activeEvent,catConfigs,itemCategoryMap])
+
   // OFFLINE-AWARE capacity for the day-load strip (Piece 1). ONLINE / no optimistic orders → returns the
   // server `slots` UNCHANGED (deviceQueuedOrders is ONLY ever populated by an OFFLINE create, so online this
   // is a no-op returning the same reference — the online path is byte-identical). OFFLINE with optimistic
@@ -1463,11 +1629,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // row; desktop (lg:) shows it stacked above Prep beside the stat boxes. `cls` carries the per-slot
   // width/visibility classes.
   const renderExtraWait=(cls:string)=> waitMinutes>0?(
-    <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
+    <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});markPending('extraWaitMins',0);markPending('extraWaitStartedAt',null);setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
       ⏱ +{waitMinutes}m active · Tap to clear
     </button>
   ):(
-    <select defaultValue="" onChange={e=>{const m=parseInt(e.target.value);if(!m)return;const startedAt=new Date().toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:m,eventId:activeEvent?.id})});setExtraWaitMins(m);setExtraWaitStartedAt(startedAt);e.target.value=''}} className={`border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${cls}`}>
+    <select defaultValue="" onChange={e=>{const m=parseInt(e.target.value);if(!m)return;const startedAt=new Date().toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:m,eventId:activeEvent?.id})});markPending('extraWaitMins',m);markPending('extraWaitStartedAt',startedAt);setExtraWaitMins(m);setExtraWaitStartedAt(startedAt);e.target.value=''}} className={`border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 ${cls}`}>
       <option value="">⏱ Add extra wait</option>
       <option value={10}>+10 min</option>
       <option value={20}>+20 min</option>
@@ -1482,7 +1648,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      <OfflineBanner onSynced={()=>{fetchAll();refreshPendingStatus()}} />
+      <OfflineBanner onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
       {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
           (renders null on native, where OfflineBanner owns the offline state). */}
       <WebOfflineBanner />
@@ -1497,6 +1663,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <span>📴 Offline — orders &amp; stock save on this device; settings are locked</span>
         </div>
       )}
+      {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
+          buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
+          AND acquires it. */}
+      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} />
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
       <DevOutboxInspector />
@@ -1518,13 +1688,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${soundEnabled ? 'translate-x-5' : 'translate-x-1'}`} />
           </div>
         </button>
-        {/* Screen toggle — desktop only; mobile handled via UserMenu */}
-        <button onClick={toggleKeepScreenOn} className="hidden sm:flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-500 select-none">
-            {keepScreenOn ? 'Screen on' : 'Screen off'}
-          </span>
-          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${keepScreenOn ? 'bg-green-500' : 'bg-slate-300'}`}>
-            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${keepScreenOn ? 'translate-x-5' : 'translate-x-1'}`} />
+        {/* Screen toggle — desktop only (mobile → UserMenu). BINARY: green "Screen on" ONLY when the lock is
+            actually HELD; grey "Screen off" otherwise. Failure is a toast on the tap, never a hedged label. */}
+        <button onClick={toggleKeepScreenOn} title={screenHeld ? 'Screen will stay on' : 'Tap to keep the screen on'} className="hidden sm:flex items-center gap-2">
+          <span className="text-xs font-medium text-slate-500 select-none">{screenHeld ? 'Screen on' : 'Screen off'}</span>
+          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${screenHeld ? 'bg-green-500' : 'bg-slate-300'}`}>
+            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${screenHeld ? 'translate-x-5' : 'translate-x-1'}`} />
           </div>
         </button>
         <UserMenu
@@ -1535,8 +1704,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           showOrderUtilities
           showManageLink={userRole==='owner'||userRole==='manager'}
           isAdmin={isAdmin}
-          keepScreenOn={keepScreenOn}
+          keepScreenOn={screenHeld}
           onToggleScreenOn={toggleKeepScreenOn}
+          soundEnabled={soundEnabled}
+          onToggleSound={()=>setSoundEnabled(v=>{const next=!v;if(next)primeAudio();return next})}
           copiedOrderLink={copiedOrderLink}
           onCopyOrderLink={handleCopyOrderLink}
           onShowQR={handleShowQR}
@@ -1677,7 +1848,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {paused&&pauseUntilEffective&&(()=>{const minsLeft=Math.max(0,Math.round((new Date(pauseUntilEffective).getTime()-Date.now())/60000));const isIndefinite=new Date(pauseUntilEffective).getFullYear()>=2099;return<div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-red-700 font-black text-sm">⏸ Orders paused{pauseReason==='offline'?' (device offline)':''}{isIndefinite?'':(` — resuming in ~${minsLeft} min`)} · Customers can browse but not order</p>
               {/* Prominent inline Resume — one tap, no hunting in the ··· menu. Clears BOTH paused_until
                   and online_paused_until on the active event (set_paused resume). */}
-              <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ Resume orders</button>
+              <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null)}} className="mt-2 w-full sm:w-auto bg-red-600 text-white font-black text-sm px-6 py-2.5 rounded-xl hover:bg-red-700 transition-colors">▶ Resume orders</button>
               {pauseReason==='offline'&&<p className="text-red-500 text-xs mt-1.5">If your connection is unstable, orders may pause again.</p>}
             </div>})()}
             {waitMinutes>0&&!paused&&<div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-3 text-center"><p className="text-orange-700 font-black text-sm">⏱ +{waitMinutes} min extra wait active</p></div>}
@@ -2095,8 +2266,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <span>You&apos;re offline — reconnect to change these settings. (Printer &amp; notification settings still work offline.)</span>
               </div>
             )}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <div className="flex items-center justify-between">
+            {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same
+                treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional). */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
+              <div className={`flex items-center justify-between ${autoAccept?'pb-3':''}`}>
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
                   <p className="text-slate-500 text-xs mt-0.5">Orders confirm automatically. If the requested slot is full, the order bumps to the next available slot. Only confirms when there is capacity.</p>
@@ -2106,25 +2279,52 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <Toggle on={autoAccept} onToggle={()=>saveAutoAccept(!autoAccept)} disabled={isOffline}/>
                 </div>
               </div>
-              {/* Nested sub-option — only meaningful when auto-accept is ON (when OFF, every order is manual
-                  anyway, so notes_require_review can't matter; the rollup requires truck.auto_accept first).
-                  DIRECT polarity: checked = notes_require_review = hold NOTED orders for review. Default ON.
-                  No inversion, so the displayed state can never drift from the stored safety hold. */}
+              {/* DIRECT polarity: ON = notes_require_review = hold NOTED orders for review. Default ON.
+                  pl-4 indents it as a CHILD of auto-accept (only enabled when auto-accept is on). */}
               {autoAccept&&(
-                <div className="mt-3 pt-3 border-t border-slate-100 pl-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
-                      <p className="text-slate-500 text-xs mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0 ml-3">
-                      {savingNotesReview&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                      <Toggle on={notesRequireReview} onToggle={()=>saveNotesRequireReview(!notesRequireReview)} disabled={isOffline}/>
-                    </div>
+                <div className="pt-3 pl-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Review orders with notes before accepting</p>
+                    <p className="text-slate-500 text-xs mt-0.5">When on, an order with a customer note (e.g. an allergy) waits for you to read and accept instead of auto-confirming. Recommended on.</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 ml-3">
+                    {savingNotesReview&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                    <Toggle on={notesRequireReview} onToggle={()=>saveNotesRequireReview(!notesRequireReview)} disabled={isOffline}/>
                   </div>
                 </div>
               )}
             </div>
+            {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
+                fire; the on/off MASTER is the per-device header toggle. */}
+            {(()=>{
+              const sc=truck?.sound_config??DEFAULT_SOUND_CONFIG
+              return (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
+                  <div className="pb-3">
+                    <p className="text-sm font-semibold text-slate-800">Sounds</p>
+                    <p className="text-slate-500 text-xs mt-0.5">The on/off switch is on each screen; every device controls its own sound.</p>
+                  </div>
+                  <div className="py-3">
+                    <p className="text-sm font-semibold text-slate-800 mb-1.5">New order sound</p>
+                    <div className="space-y-1">
+                      {([['needs_confirming','Only orders needing confirming'],['all','All new orders']] as const).map(([val,label])=>(
+                        <button key={val} onClick={()=>!isOffline&&saveSoundConfig({...sc,new_orders:val})} disabled={isOffline} className="flex items-center gap-2.5 w-full text-left py-1 disabled:opacity-50">
+                          <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sc.new_orders===val?'border-orange-500':'border-slate-300'}`}>{sc.new_orders===val&&<span className="w-2 h-2 rounded-full bg-orange-500"/>}</span>
+                          <span className="text-sm text-slate-700">{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Sound when an order is due to be cooked</p>
+                      <p className="text-slate-500 text-xs mt-0.5">Sounds when a ticket turns amber.</p>
+                    </div>
+                    <Toggle on={sc.order_due} onToggle={()=>saveSoundConfig({...sc,order_due:!sc.order_due})} disabled={isOffline}/>
+                  </div>
+                </div>
+              )
+            })()}
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
@@ -2291,6 +2491,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {[0,1,2,3].map(i=><div key={i} className="h-10 bg-slate-100 rounded-xl" />)}
                 </div>
               ):truckMenu?(
+                <>
+                {/* Column headers — line up with the fixed LIMIT (w-16) + AVAILABLE (w-12) columns on every
+                    row below; pr-2 matches the item rows' p-2 right inset so each label sits over its column. */}
+                <div className="flex items-center gap-2 pr-2 mb-2">
+                  <span className="flex-1" />
+                  <span className="w-16 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Item limit</span>
+                  <span className="w-12 text-center text-[10px] font-black uppercase tracking-wide text-slate-400">Available</span>
+                </div>
                 <div className="space-y-5">
                   {Object.entries(menuGroups).map(([cat,items])=>{
                     const catStock=categoryStocks.find(s=>s.category===cat)
@@ -2299,17 +2507,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     const isCatDefault=catStock?.stock_count==null&&catDefStock!=null
                     const catRem=catCount!==null?catCount-catOrdered:null
                     const catObj=truckMenu?.categories?.find(c=>c.name.toLowerCase()===cat.toLowerCase())
+                    // Category OFF this event → its item rows follow visibly: dimmed + inputs/toggle disabled.
+                    // DISPLAY/input-disable ONLY — each item's stored state is untouched (GATE), so reopening
+                    // the category restores exactly what was there.
+                    const catClosed=catStock?.available===false
                     return(
                       <div key={cat}>
                         {/* Mobile: two lines. Desktop: one line via hidden sm:flex */}
                         <div className="mb-2 pb-2 border-b border-slate-100">
                           {/* Line 1 (mobile) / full row (desktop) */}
-                          <div className="flex items-center gap-2">
-                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">({catOrdered} sold)</span>}</p>
+                          <div className="flex items-center gap-2 pr-2">
+                            <p className="text-sm font-black text-orange-600 uppercase tracking-wide flex-1">{cat.charAt(0).toUpperCase()+cat.slice(1)}{catOrdered>0&&<span className="ml-1.5 text-sm font-medium normal-case tracking-normal text-slate-500">({catOrdered} sold)</span>}{catRem!==null&&<span className={`ml-1.5 text-xs font-bold normal-case tracking-normal ${catRem<=5?'text-orange-500':'text-slate-500'}`}>{catRem} left</span>}{catStock?.available===false&&<span className="ml-1.5 text-[10px] font-black text-red-500 bg-red-100 px-1.5 py-0.5 rounded-full normal-case tracking-normal">CLOSED</span>}</p>
                             {/* Prep & batch moved to the "Total capacity" section (V7.8 §42) — this card is per-event STOCK only. */}
                             <div className="flex items-center gap-2">
-                              {catRem!==null&&<span className={`text-xs font-bold ${catRem<=5?'text-orange-500':'text-slate-600'}`}>{catRem} left</span>}
-                              <div className="flex flex-col items-center gap-0.5">
+                              <div className="flex flex-col items-center gap-0.5 w-16 shrink-0">
                                 <input type="number" inputMode="numeric" min="0" placeholder="∞"
                                   value={catStockDrafts[cat] ?? (catCount??'').toString()}
                                   onFocus={()=>setCatStockDrafts(d=>({...d,[cat]:(catCount??'').toString()}))}
@@ -2327,7 +2538,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   title={isCatDefault?'Default stock — save to override':'Category stock'}/>
                                 {isCatDefault&&<span className="text-[9px] text-blue-400 font-medium">default</span>}
                               </div>
-                              <span className="text-slate-600 font-medium text-xs">total</span>
+                              {/* AVAILABLE column — per-event category enable/disable (GATE). Off = closed for this
+                                  event: hidden from customers (tab vanishes) + blocked at submit; auto-reverts next event. */}
+                              <span className="w-12 shrink-0 flex justify-center"><Toggle on={catStock?.available??true} onToggle={()=>updateCategoryAvailable(cat,!(catStock?.available??true))}/></span>
                             </div>
                           </div>
                         </div>
@@ -2353,7 +2566,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                             // by typing the default number back in).
                             const isDefault=!followsCategory&&stock?.stock_count==null&&item.default_stock!=null
                             return(
-                              <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
+                              <div key={item.name} className={`flex items-center gap-2 p-2 rounded-xl border ${catClosed?'bg-slate-50 border-slate-100 opacity-50':!isAvailable?'bg-red-50 border-red-200':'bg-slate-50 border-slate-100'}`}>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <p className={`font-bold text-sm ${!isAvailable?'text-red-500':'text-slate-800'}`}>{item.name}<span className="text-slate-600 font-normal ml-1.5">£{item.price.toFixed(2)}</span></p>
@@ -2366,8 +2579,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                   </div>
                                   {itemOrdered>0&&<p className="text-xs text-slate-600 mt-0.5">{itemOrdered} sold</p>}
                                 </div>
-                                <div className="flex flex-col items-center gap-0.5">
-                                  <input type="number" inputMode="numeric" min="0" placeholder="–"
+                                <div className="flex flex-col items-center gap-0.5 w-16 shrink-0">
+                                  <input type="number" inputMode="numeric" min="0" placeholder="–" disabled={catClosed}
                                     value={stockDrafts[item.name] ?? (itemCount??'').toString()}
                                     onFocus={()=>setStockDrafts(d=>({...d,[item.name]:(itemCount??'').toString()}))}
                                     onChange={e=>setStockDrafts(d=>({...d,[item.name]:e.target.value}))}
@@ -2387,9 +2600,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                                         updateStock(item.name,isAvailable,next,cat,false)
                                       }
                                     }}
-                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={isDefault?'Default stock — save to override':followsCategory?'Following category total — type a number to cap':'Item stock'}/>
+                                    className={`w-16 border rounded-lg px-2 py-1.5 text-base sm:text-xs text-center font-bold focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white disabled:cursor-not-allowed disabled:bg-slate-100 ${isDefault?'border-blue-200 text-blue-600':'border-slate-200'}`} title={catClosed?'Category closed for this event':isDefault?'Default stock — save to override':followsCategory?'Following category total — type a number to cap':'Item stock'}/>
                                 </div>
-                                <Toggle on={isAvailable} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/>
+                                <span className="w-12 shrink-0 flex justify-center"><Toggle on={isAvailable} disabled={catClosed} onToggle={()=>updateStock(item.name,!isAvailable,stock?.stock_count??null,cat,!!stock?.no_item_cap)}/></span>
                               </div>
                             )
                           })}
@@ -2400,6 +2613,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                     )
                   })}
                 </div>
+                </>
               ):<p className="text-slate-400 text-sm animate-pulse">Loading menu...</p>}
             </div>
 
@@ -2478,11 +2692,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <div className="space-y-4">
             <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 text-xs text-slate-500 space-y-1 mt-4">
               <p className="font-bold text-slate-700">How it works</p>
-              <p>• Orange input: total for this category (e.g. 100 pizzas tonight)</p>
-              <p>• Small input: item override (e.g. only 8 Pepperoni)</p>
-              <p>• Toggle: green = available, grey = sold out</p>
-              <p>• Sold out items show as unavailable to customers</p>
-              <p>• Edit: configure prep time, batch size, and notes per category</p>
+              <p>• <span className="font-semibold">Category total</span> is a shared pool across every item in that category (e.g. 30 starters tonight).</p>
+              <p>• <span className="font-semibold">Item limit</span> caps just that one item within the pool (e.g. only 8 Pepperoni) — leave it blank to draw from the pool with no cap of its own.</p>
+              <p>• Whichever runs out first applies — the category pool or the item&apos;s own limit.</p>
+              <p>• <span className="font-semibold">Available</span>: green = on sale, grey = sold out (hidden from customers).</p>
+              <p>• Edit: configure prep time, batch size, and notes per category.</p>
             </div>
             </div>
             )}
@@ -2530,9 +2744,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             <p className="text-slate-500 text-sm text-center mb-4">Customers can still browse the menu but won't be able to order.</p>
             <div className="space-y-2 mb-4">
               {[{label:'10 minutes',mins:10},{label:'20 minutes',mins:20},{label:'30 minutes',mins:30}].map(({label,mins})=>(
-                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
+                <button key={mins} onClick={()=>{const until=new Date(Date.now()+mins*60000).toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-orange-50 border border-orange-200 text-orange-700 font-bold py-3 rounded-xl hover:bg-orange-100 text-sm">{label}</button>
               ))}
-              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
+              <button onClick={()=>{const until=new Date('2099-01-01').toISOString();fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:until,eventId:activeEvent?.id})});markPending('vanPausedUntil',until);setVanPausedUntil(until);setShowPauseModal(false)}} className="w-full bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm">Until I turn it back on</button>
             </div>
             <button onClick={()=>setShowPauseModal(false)} className="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
           </div>
@@ -2924,7 +3138,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   paused → clear paused_until (resume); else → open the pause-duration modal. */}
               {activeEvent.status==='open'&&(
                 paused?(
-                  <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
+                  <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
                     className="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl hover:bg-red-700 text-sm">▶ Resume orders</button>
                 ):(
                   <button onClick={()=>{setShowEventMenu(false);setShowPauseModal(true)}}

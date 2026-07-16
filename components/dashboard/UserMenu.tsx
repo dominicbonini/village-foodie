@@ -23,9 +23,14 @@ interface UserMenuProps {
   showManageLink?: boolean      // dashboard only
   showDashboardLink?: boolean   // manage page only
   isAdmin?: boolean
-  // Screen toggle
+  // Screen toggle — BINARY: `keepScreenOn` carries the ACTUAL held-state (green on / grey off). Failure copy
+  // is a toast raised by the parent's onToggleScreenOn, not a label here.
   keepScreenOn?: boolean
   onToggleScreenOn?: () => void
+  // Sound toggle — SAME per-device pref/state as the header (hidden sm:flex there), so a phone operator
+  // can still turn sound on/off. Enabling primes the audio (the parent's handler does primeAudio()).
+  soundEnabled?: boolean
+  onToggleSound?: () => void
   // Order utilities
   copiedOrderLink?: boolean
   onCopyOrderLink?: () => void
@@ -45,6 +50,8 @@ export default function UserMenu({
   isAdmin,
   keepScreenOn = false,
   onToggleScreenOn,
+  soundEnabled = true,
+  onToggleSound,
   copiedOrderLink,
   onCopyOrderLink,
   onShowQR,
@@ -104,17 +111,26 @@ export default function UserMenu({
             </div>
 
             {/* Screen on — dashboard only, mobile only */}
+            {/* Screen on — dashboard only, mobile only. BINARY: green "Screen on" when held, grey "Screen off"
+                otherwise. `keepScreenOn` here IS the held-state (parent passes screenHeld). Failure → toast. */}
             {showScreenToggle && (
               <div className="sm:hidden px-4 py-2 border-b border-slate-100">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-700">Screen on</span>
+                  <span className="text-sm text-slate-700">{keepScreenOn ? 'Screen on' : 'Screen off'}</span>
                   <Toggle on={keepScreenOn} onToggle={() => onToggleScreenOn?.()} />
                 </div>
-                {typeof navigator !== 'undefined' && !('wakeLock' in navigator) && (
-                  <p className="text-xs text-amber-600 mt-1">
-                    Screen lock isn't supported on this browser. Keep the device plugged in and the app in the foreground to prevent the screen dimming.
-                  </p>
-                )}
+              </div>
+            )}
+
+            {/* Sound — dashboard only, mobile only (the header toggle is hidden sm:flex). SAME per-device
+                pref as the header; parent's onToggleSound primes audio on enable. Placed right after Screen,
+                per the canonical dropdown order (identity → Screen → Sound → utilities → …). */}
+            {showScreenToggle && onToggleSound && (
+              <div className="sm:hidden px-4 py-2 border-b border-slate-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-700">{soundEnabled ? '🔔 Sound on' : '🔕 Sound off'}</span>
+                  <Toggle on={soundEnabled} onToggle={() => onToggleSound()} />
+                </div>
               </div>
             )}
 

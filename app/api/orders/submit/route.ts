@@ -25,7 +25,7 @@ import { canAccess } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { sendOrderPendingPush } from '@/lib/apns'
-import { acquireEventLock, releaseEventLock, checkStockShortfall } from '@/lib/stock-guard'
+import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -710,6 +710,17 @@ export async function POST(req: NextRequest) {
       //     remaining → 409, NO row persisted (this is BEFORE the atomic RPC). Atomic: we hold the
       //     lock through [check → RPC], so a concurrent submit waits and then sees this order's insert.
       if (eventRow?.id) {
+        // Category CLOSED gate (GATE model) — hard stop, checked first (more fundamental than a count
+        // shortfall). Menu-hide alone is a bypass, so the closed category is enforced here at submit for
+        // a stale client / crafted request. Honest rejection (not a faked remaining=0). No override on
+        // the customer path — closed is closed.
+        const closed = await checkClosedCategories(resolvedTruckId, eventRow.id, orderLines, itemCatMap)
+        if (closed) {
+          return NextResponse.json(
+            { error: `${closed[0]} is closed for this event`, categoryClosed: true, categories: closed },
+            { status: 409 },
+          )
+        }
         const shortfall = await checkStockShortfall(resolvedTruckId, eventRow.id, orderEventDate, orderLines, itemCatMap)
         if (shortfall) {
           return NextResponse.json(

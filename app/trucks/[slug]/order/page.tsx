@@ -14,6 +14,7 @@ import { SpiceLevel } from '@/components/SpiceLevel';
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips';
 import type { VillageEvent } from '@/types';
 import { cleanupDealsForItem, groupByCategory, groupBySubcategory, consumeBasketItemsForDeal, dealConsumedCartKeys, tallyBasketOptionQtys, buildOptionStockByName, optionDrawBlocked, optionRemaining } from '@/lib/basket-utils';
+import { calcAddableRemaining } from '@/lib/stock-utils';
 import { OptionStockBadge } from '@/components/OptionStockBadge';
 import { getAsapSlot, isSlotPast } from '@/lib/slot-utils';
 import { projectBackwardOccupancy, fitOrderBackward, earliestBackwardFitSlot } from '@/lib/slot-availability';
@@ -27,7 +28,7 @@ import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, s
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface MenuItem {
-  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]; spiciness?: number | null; modifierGroups?: ModifierGroup[]; preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | 'not_open_yet' | null
+  name: string; description?: string; price: number; available?: boolean; category: string; subcategory_id?: string | null; stock_remaining?: number | null; stock_bound?: 'item' | 'category' | null; item_remaining?: number | null; category_remaining?: number | null; image?: string | null; photo_url?: string | null; allergens?: string[]; dietary?: string[]; spiciness?: number | null; modifierGroups?: ModifierGroup[]; preorderLabel?: string | null; preorderState?: 'before' | 'closed_pending' | 'not_open_yet' | null
 }
 interface UpsellRule {
   id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean
@@ -1700,7 +1701,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                   const opensModal = hasModifiers || itemUpsells.length > 0 || catAllowNotes
                   const itemVariants = basket.filter(b => b.menuItem.name === item.name)
                   const directEntry = !hasModifiers ? itemVariants.find(b => b.modifiers.length === 0) : undefined
-                  const atStockLimit = item.stock_remaining != null && qty >= item.stock_remaining
+                  // ONE rule with the submit gate (calcAddableRemaining ⟷ checkCeilingShortfall): how many
+                  // MORE fit, folding THIS order's basket per axis. itemBasketQty = this item's qty; catBasketQty
+                  // = the whole category's in-progress qty (basketByCat, deal-slots already folded) — so a
+                  // category cap can't be over-filled by adding 4 of each item. addable<=0 ⟺ the + disables.
+                  const catBasketQty = basketByCat[item.category?.toLowerCase() || 'mains'] || 0
+                  const { addable: stockAddable, bound: stockBoundEff } = calcAddableRemaining({
+                    itemRem: item.item_remaining ?? null,
+                    catRem: item.category_remaining ?? null,
+                    itemBasketQty: qty,
+                    catBasketQty,
+                  })
+                  const atStockLimit = stockAddable !== null && stockAddable <= 0
                   // Display-only heat rating. The grouped item is typed by basket-utils' MenuItem (no
                   // spiciness, deliberately — it must not enter basket/order shapes); read the runtime
                   // value the menu API carries via a localized cast.
@@ -1743,11 +1755,20 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                           {isSoldOut && (
                             <span className="text-[0.625rem] font-black text-red-500 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">Sold out</span>
                           )}
-                          {!isSoldOut && item.stock_remaining != null && item.stock_remaining <= 10 && (
-                            <span className={`text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border ${item.stock_remaining <= 3 ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
-                              {item.stock_remaining <= 3 ? `Only ${item.stock_remaining} left!` : `${item.stock_remaining} left`}
-                            </span>
-                          )}
+                          {!isSoldOut && stockAddable != null && stockAddable <= 10 && (() => {
+                            // Badge = what you can still ADD (remaining − your basket, per binding axis), so
+                            // badge/+-disable/submit-gate are one number: "0 left" ⟺ + disabled ⟺ the gate
+                            // would reject the next unit. Copy varies by the binding axis: 'category' phrases
+                            // against the category noun so it can't be misread as "3 of THIS item" when every
+                            // item in the category shares the same count (e.g. 18 pizzas all "3 left").
+                            const n = stockAddable
+                            const noun = stockBoundEff === 'category' && item.category ? ` ${item.category.toLowerCase()}` : ''
+                            return (
+                              <span className={`text-[0.625rem] font-bold px-1.5 py-0.5 rounded-full border ${n <= 3 ? 'text-red-600 bg-red-50 border-red-200' : 'text-orange-600 bg-orange-50 border-orange-200'}`}>
+                                {n <= 3 ? `Only ${n}${noun} left!` : `${n}${noun} left`}
+                              </span>
+                            )
+                          })()}
                         </div>
                       </div>
                     </div>

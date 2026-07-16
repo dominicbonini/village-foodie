@@ -55,3 +55,42 @@ export function playDing(freq = 880, durationSecs = 0.6, gain = 0.3): void {
     osc.start(c.currentTime); osc.stop(c.currentTime + durationSecs)
   } catch { /* context closed / blocked — silent */ }
 }
+
+/** One note of a multi-note cue, scheduled at an absolute context time. exponential ramps never touch
+ *  zero (illegal) — start/end at 0.0001. Internal helper for the named cues below. */
+function tone(c: AudioContext, freq: number, startAt: number, durationSecs: number, gain: number): void {
+  const osc = c.createOscillator()
+  const g = c.createGain()
+  osc.connect(g); g.connect(c.destination)
+  osc.frequency.value = freq
+  g.gain.setValueAtTime(0.0001, startAt)
+  g.gain.exponentialRampToValueAtTime(gain, startAt + 0.012)
+  g.gain.exponentialRampToValueAtTime(0.0001, startAt + durationSecs)
+  osc.start(startAt); osc.stop(startAt + durationSecs)
+}
+
+/** NEW ORDER — a bright, friendly two-note RISE (G5 → C6). Instantly distinct from the due pulse so an
+ *  operator at the grill can tell "an order came in" from "an order is due" without looking up. */
+export function playNewOrder(): void {
+  const c = getCtx()
+  if (!c) return
+  if (c.state === 'suspended') { c.resume().catch(() => {}) }
+  try {
+    const t = c.currentTime
+    tone(c, 784, t, 0.16, 0.3)          // G5
+    tone(c, 1047, t + 0.13, 0.30, 0.3)  // C6 — rising = "arrived"
+  } catch { /* blocked — silent */ }
+}
+
+/** ORDER DUE (amber) — a lower, urgent DOUBLE-PULSE (A4) that reads as "act now"; deliberately lower and
+ *  repeated (not a rise) so it can't be mistaken for a new order. */
+export function playOrderDue(): void {
+  const c = getCtx()
+  if (!c) return
+  if (c.state === 'suspended') { c.resume().catch(() => {}) }
+  try {
+    const t = c.currentTime
+    tone(c, 440, t, 0.17, 0.32)         // A4 pulse 1
+    tone(c, 440, t + 0.24, 0.22, 0.32)  // A4 pulse 2 — insistent
+  } catch { /* blocked — silent */ }
+}

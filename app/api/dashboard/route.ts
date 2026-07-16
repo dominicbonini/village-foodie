@@ -417,6 +417,11 @@ export async function GET(req: NextRequest) {
       qr_code_style: (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
       truck_emoji:   truck.truck_emoji ?? null,
       slug:          truck.slug ?? null,
+      // ⚠️ This truck object is a HAND-PICKED subset (not the raw select('*') row) — a field omitted here is
+      // undefined on the client. sound_config was missing → the dashboard Sounds panel + its sound triggers
+      // always read the DEFAULT, and the reseed after an optimistic edit wiped it → the flip-back. Any new
+      // trucks.* setting the dashboard reads MUST be added to this map.
+      sound_config:  truck.sound_config ?? null,
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

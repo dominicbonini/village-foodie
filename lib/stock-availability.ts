@@ -72,14 +72,22 @@ export async function enforceStockLimits(
       supabase.from('menu_items_db').select('name, default_stock').eq('truck_id', truckId).eq('is_active', true),
       supabase.from('menu_categories').select('name, default_stock').eq('truck_id', truckId),
       supabase.from('event_item_stock').select('item_name, stock_count, available, no_item_cap').eq('truck_id', truckId).eq('event_id', eventId),
-      supabase.from('event_category_stock').select('category, stock_count').eq('truck_id', truckId).eq('event_id', eventId),
+      supabase.from('event_category_stock').select('category, stock_count, available').eq('truck_id', truckId).eq('event_id', eventId),
     ])
 
   // Per-event override maps (keyed by name; also tells us which items already have a row → UPDATE vs INSERT).
   const itemOverride: Record<string, { stock_count: number | null; available: boolean; no_item_cap: boolean }> = {}
   ;(overrides || []).forEach((o: any) => { itemOverride[o.item_name] = { stock_count: o.stock_count ?? null, available: o.available, no_item_cap: !!o.no_item_cap } })
   const catOverride: Record<string, number | null> = {}
-  ;(catStock || []).forEach((r: any) => { catOverride[String(r.category).toLowerCase()] = r.stock_count ?? null })
+  // Per-event category OFF (GATE): the disabled state is handled by the menu-hide + submit gate; the
+  // sweep must NOT bulk-write item rows for an OFF category (that would strand items available=false on
+  // reopen — the lossy behaviour GATE exists to avoid). Collect them and skip the category pass below.
+  const catDisabled = new Set<string>()
+  ;(catStock || []).forEach((r: any) => {
+    const k = String(r.category).toLowerCase()
+    catOverride[k] = r.stock_count ?? null
+    if (r.available === false) catDisabled.add(k)
+  })
 
   // Effective ceilings — IDENTICAL to the guard/menu (override ?? default). null = unlimited.
   // no_item_cap = "follow category" → item ceiling null (no cap), overriding the default.
@@ -127,6 +135,7 @@ export async function enforceStockLimits(
   // Category-level: category exhausted → mark every item in that category unavailable for this event.
   for (const c of menuCats || []) {
     const cat = String(c.name).toLowerCase()
+    if (catDisabled.has(cat)) continue   // OFF category — GATE handles hiding; don't sweep-mark its items (lossy on reopen)
     const ceiling = catCeiling(cat)
     if (ceiling != null && (soldByCat[cat] || 0) >= ceiling) {
       for (const i of menuItems || []) {
