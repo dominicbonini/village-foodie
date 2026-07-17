@@ -85,50 +85,42 @@ function ensureListeners(): void {
   if (typeof window !== 'undefined') window.addEventListener('focus', retry)
 }
 
-/** Request keep-awake. Returns the resulting state so the caller can reflect held vs denied vs unsupported
- *  (the state also updates live via subscribeWakeState as the OS releases/re-acquires). */
+/** Request keep-awake. MUST be called from inside a live user activation on web (a real click handler) —
+ *  Safari denies `wakeLock.request` that isn't tied to one. The activation is spent by any `await` BEFORE the
+ *  request, so on web we reach `navigator.wakeLock.request` with NO preceding await: the platform check is
+ *  synchronous and the only `await import()` (the native plugin) happens on the native branch, where no
+ *  activation is needed at all. Returns the resulting state; it also updates live via subscribeWakeState. */
 export async function keepAwake(): Promise<WakeState> {
-  const plugin = await getPlugin()
-  if (plugin) {
-    await plugin.KeepAwake.keepAwake()
+  // NATIVE FIRST — `isNativePlatform()` is SYNCHRONOUS (no activation spent). The dynamic import lives on this
+  // branch only, so it never delays the web request. The plugin holds the lock with no gesture required.
+  if (Capacitor.isNativePlatform()) {
+    const { KeepAwake } = await import('@capacitor-community/keep-awake')
+    await KeepAwake.keepAwake()
     setWakeState('native')
     return 'native'
   }
+  // WEB — fire the request with NOTHING awaited before it. requestWebLock runs its sync guards then awaits the
+  // request() call itself, so request() is reached synchronously within the caller's click handler.
   keepAwakeEnabled = true
   ensureListeners()
   if (!webLock) await requestWebLock()
   return wakeState
 }
 
-let gestureListening = false
-/** Acquire on the FIRST user gesture — the ROOT FIX. Safari denies a wake-lock request that isn't tied to a
- *  user activation, so a mount-effect auto-request (`keepScreenOn` defaults ON) is guaranteed to fail; recipe
- *  "cook mode" works because it requests inside a tap. This sets the intent NOW and takes the lock on the next
- *  pointerdown/keydown/touchend. Held / unsupported / insecure are reflected immediately (no gesture changes
- *  them). Supported-but-not-yet-acquired stays 'off' — which the UI treats as optimistic, NOT a failure, so
- *  there's no amber flash on load and NO grace period is needed. Native → the plugin (no gesture required). */
-export function keepAwakeOnGesture(): void {
+/** Prepare keep-awake WITHOUT a user gesture (mount / pref-restore). Native acquires immediately (no
+ *  activation needed). Web CANNOT acquire here — Safari denies a request outside a live user activation — so
+ *  we only set the intent and reflect state: held (already locked), unsupported/insecure (no usable API), or
+ *  'off' = supported-but-awaiting-a-tap. In the awaiting case the KeepAwakePrompt renders a real BUTTON whose
+ *  own click (a `click` event, which WebKit honours as an activation — unlike a bare pointerdown) acquires the
+ *  lock via the same keepAwake() path as the header toggle. No global one-shot gesture listener: an unreliable
+ *  pointerdown-triggered request is exactly what failed on Safari. */
+export function prepareKeepAwake(): void {
   if (Capacitor.isNativePlatform()) { void keepAwake(); return }
   keepAwakeEnabled = true
   ensureListeners()
   if (webLock) { setWakeState('held'); return }
   if (typeof navigator === 'undefined' || !('wakeLock' in navigator)) { setWakeState(unsupportedOrInsecure()); return }
-  armGestureAcquire()
-}
-
-function armGestureAcquire(): void {
-  if (gestureListening || typeof window === 'undefined') return
-  gestureListening = true
-  const fire = () => {
-    gestureListening = false
-    window.removeEventListener('pointerdown', fire)
-    window.removeEventListener('keydown', fire)
-    window.removeEventListener('touchend', fire)
-    if (keepAwakeEnabled && !webLock) requestWebLock()
-  }
-  window.addEventListener('pointerdown', fire)
-  window.addEventListener('keydown', fire)
-  window.addEventListener('touchend', fire)
+  setWakeState('off')   // supported, not yet held → banner button prompts + acquires on its click
 }
 
 export async function allowSleep(): Promise<void> {

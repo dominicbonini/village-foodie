@@ -99,6 +99,19 @@ interface AddOrderPanelProps {
   /** EVENT-SWITCH GATE (Option A): offline, only events whose data was loaded this session are switchable.
    *  isOffline false / isEventLoaded absent → no gating (online = every event switchable as today). */
   isOffline?: boolean
+  /** OFFLINE advisory capacity for the active event, from the dashboard's SW-cached /api/dashboard inputs +
+   *  the shared offlineOccupancy fold. The panel derives its capacityInputs/slots from this when its own
+   *  /api/slots fetch is unavailable (offline) → advisory traffic lights instead of bare times, draining live
+   *  as offline orders queue. Scoped by eventId (only the active event is cached offline). */
+  offlineCapacity?: {
+    eventId: string
+    slots: Slot[]
+    productionSlotUnits: Record<string, Record<string, number>>
+    kitchenCapacity: number | null
+    capacityWindowMins: number
+    eventStartMins: number
+    catConfigs: Record<string, { secs: number; batch: number }>
+  } | null
   isEventLoaded?: (eventId: string) => boolean
   /** Always-mounted tab pattern (manual s.22): panel stays mounted, data effects
    *  only run while the tab is visible. Basket state survives tab switches. */
@@ -115,7 +128,7 @@ export function AddOrderPanel({
   showToast, onOrderPlaced, onOpenEvent,
   requestEventPickerOpen, onEventPickerOpened,
   onEventChange, controlledEvent,
-  isOffline = false, isEventLoaded,
+  isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
 }: AddOrderPanelProps) {
 
@@ -142,7 +155,7 @@ export function AddOrderPanel({
 
   // ── event / slot state ──────────────────────────────────────────────────────
   const [manualEvent, setManualEvent] = useState<EventRecord | null>(todayEvent)
-  const [manualSlots, setManualSlots] = useState<Slot[]>([])
+  const [apiSlots, setApiSlots] = useState<Slot[]>([])   // raw /api/slots; `manualSlots` below derives the offline fallback
   // Event timezone from /api/slots (default London); ASAP + isSlotPast derive in this tz.
   const [eventTz, setEventTz] = useState('Europe/London')
   // Live 30s tick → re-render so manualAsapSlot + the dropdown's isSlotPast re-evaluate as the clock
@@ -152,7 +165,7 @@ export function AddOrderPanel({
   const [apiQueueByCat, setApiQueueByCat] = useState<Record<string, number>>({})
   // Engine inputs from /api/slots so the dot/modal can recompute basket-inclusive
   // tones with the SAME buildSlotAvailability the server traffic-light uses.
-  const [capacityInputs, setCapacityInputs] = useState<{
+  const [apiCapacityInputs, setApiCapacityInputs] = useState<{
     productionSlotUnits: Record<string, Record<string, number>>
     kitchenCapacity: number | null
     capacityWindowMins?: number
@@ -168,7 +181,20 @@ export function AddOrderPanel({
   // the flag-less `categoryConfigs` prop does NOT, which is why instant items never counted on
   // the operator path. Typed {secs,batch} (countsToCapacity is optional on CatConfig and read at
   // runtime), identical to the customer page's serverCatConfigs.
-  const [serverCatConfigs, setServerCatConfigs] = useState<Record<string, { secs: number; batch: number }>>({})
+  const [apiCatConfigs, setApiCatConfigs] = useState<Record<string, { secs: number; batch: number }>>({})
+  // ── EFFECTIVE inputs: authoritative /api/slots when present, else the dashboard's cached ADVISORY
+  //    offlineCapacity for THIS event (offline / pre-first-fetch). All consumers below read these derived
+  //    consts unchanged, so the offline fallback flows everywhere AND drains live as offlineCapacity re-folds.
+  const offlineForThisEvent = offlineCapacity && (!manualEvent || offlineCapacity.eventId === manualEvent.id) ? offlineCapacity : null
+  const manualSlots: Slot[] = apiSlots.length ? apiSlots : (offlineForThisEvent?.slots ?? [])
+  const capacityInputs = apiCapacityInputs ?? (offlineForThisEvent ? {
+    productionSlotUnits: offlineForThisEvent.productionSlotUnits,
+    kitchenCapacity: offlineForThisEvent.kitchenCapacity,
+    capacityWindowMins: offlineForThisEvent.capacityWindowMins,
+    eventStartMins: offlineForThisEvent.eventStartMins,
+    eventEndMins: null, earliestCollectionMins: 0, date: '', nowMins: 0, windowSecs: 0,   // unused by the panel
+  } : null)
+  const serverCatConfigs = Object.keys(apiCatConfigs).length ? apiCatConfigs : (offlineForThisEvent?.catConfigs ?? {})
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
   const [eventsLoading, setEventsLoading] = useState(false)
@@ -406,12 +432,14 @@ export function AddOrderPanel({
       if (eventId) p.set('event_id', eventId)
       const res = await fetch(`/api/slots/${truck.id}?${p}`)
       const data = await res.json()
-      setManualSlots(data.slots || [])
+      setApiSlots(data.slots || [])
       setApiQueueByCat(data.queueByCat || {})
-      setCapacityInputs(data.capacityInputs ?? null)
-      setServerCatConfigs(data.catConfigs || {})
+      setApiCapacityInputs(data.capacityInputs ?? null)
+      setApiCatConfigs(data.catConfigs || {})
       if (data.tz) setEventTz(data.tz)
-    } catch { setManualSlots([]); setApiQueueByCat({}); setCapacityInputs(null); setServerCatConfigs({}) }
+      // Null the raw /api/slots state on failure (offline). NOT bare times — the derived `manualSlots`/
+      // `capacityInputs` fall back to the cached advisory `offlineCapacity`, so the picker keeps its lights.
+    } catch { setApiSlots([]); setApiQueueByCat({}); setApiCapacityInputs(null); setApiCatConfigs({}) }
   }, [truck?.id])
 
   // Live 30s tick so the ASAP label + the dropdown's isSlotPast re-evaluate as time passes.
@@ -463,6 +491,17 @@ export function AddOrderPanel({
     fetchManualSlots(controlledEvent.event_date, controlledEvent.start_time, controlledEvent.end_time, controlledEvent.id)
     setManualSlot('')
   }, [controlledEvent?.id, isActive]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // RECONNECT: fetchManualSlots is keyed on manualEvent id/date/times, so if the panel stays OPEN on the same
+  // event across a reconnect it won't refire on its own → refetch authoritative /api/slots when we come back
+  // online, replacing the advisory offlineCapacity view with server truth. (The strip corrects via reseedRef.)
+  const wasOfflineRef = useRef(isOffline)
+  useEffect(() => {
+    if (wasOfflineRef.current && !isOffline && isActive && manualEvent) {
+      fetchManualSlots(manualEvent.event_date, manualEvent.start_time, manualEvent.end_time, manualEvent.id)
+    }
+    wasOfflineRef.current = isOffline
+  }, [isOffline, isActive, manualEvent, fetchManualSlots])
 
   // Sync status-only changes on the same event (e.g. after open/close)
   useEffect(() => {

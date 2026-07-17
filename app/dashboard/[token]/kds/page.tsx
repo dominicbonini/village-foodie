@@ -14,7 +14,7 @@ import type { Order, TruckData, TruckEvent, SoundConfig } from '@/components/das
 import { DEFAULT_SOUND_CONFIG } from '@/components/dashboard/types'
 import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
-import { keepAwake, keepAwakeOnGesture, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
+import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { formatTime, formatTimeRange } from '@/lib/time-utils'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
@@ -210,12 +210,12 @@ export default function KdsPage() {
 
   useEffect(() => {
     configureStatusBar()
-    keepAwakeOnGesture() // ROOT FIX: acquire on first gesture (Safari denies a mount auto-request)
+    prepareKeepAwake() // native acquires now; web waits for the KeepAwakePrompt button's click (Safari needs a user activation)
     return () => { allowSleep() }
   }, [])
 
   useEffect(() => {
-    if (keepScreenOn) { keepAwakeOnGesture() } else { allowSleep() }
+    if (keepScreenOn) { prepareKeepAwake() } else { allowSleep() }
   }, [keepScreenOn])
 
   useEffect(() => {
@@ -840,7 +840,7 @@ export default function KdsPage() {
       </header>
       {/* Keep-screen-on prompt — full-width bar right under the header, unmissable on the cook screen. Shows
           only when the pref is on but the lock isn't held; the operator's first tap dismisses AND acquires it. */}
-      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} />
+      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={() => { void applyKeepScreenOn(true) }} />
 
       {/* ── To Make bar ── */}
       {allDayPills.length > 0 && activeView === 'window' && (

@@ -43,7 +43,7 @@ import { AppLockGate } from '@/components/native/AppLockGate'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { adjustQuantity, cleanupDealsForItem, groupByCategory, groupBySubcategory, isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys } from '@/lib/basket-utils'
 import { supabaseBrowser } from '@/lib/supabase-browser'
-import { keepAwake, keepAwakeOnGesture, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
+import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
 import { addNetworkListener } from '@/lib/native/network'
 import { onAppResume } from '@/lib/native/app'
 import { isNativeApp, setLastScreen } from '@/lib/native/device'
@@ -71,7 +71,7 @@ import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { normaliseOrderLines } from '@/lib/slot-bookings'
-import { orderItemsToQtyByCat, mergeQtyByCat } from '@/lib/slot-capacity'
+import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/lib/slot-capacity'
 
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
@@ -750,9 +750,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useEffect(()=>{if(typeof window!=='undefined')localStorage.setItem(`hg_sound_${token}`,soundEnabled?'on':'off')},[soundEnabled,token])
   useEffect(()=>{
     if(!authenticated)return
-    // ROOT FIX: arm the lock to acquire on the operator's FIRST gesture (Safari denies a mount-effect
-    // auto-request — no user activation). The toggle tap acquires directly (also a gesture).
-    if(keepScreenOn){keepAwakeOnGesture()}else{allowSleep()}
+    // Native acquires now; web can't (Safari denies a request outside a user activation) so this only sets
+    // intent + reflects state — the KeepAwakePrompt BUTTON (a real click) acquires the web lock.
+    if(keepScreenOn){prepareKeepAwake()}else{allowSleep()}
     return()=>{allowSleep()}
   },[authenticated,keepScreenOn])
   useEffect(()=>{
@@ -1455,6 +1455,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // EXACTLY: ct = order.slot || eventStart → window key (timeMap[ct]||ct); normaliseOrderLines +
   // orderItemsToQtyByCat + mergeQtyByCat; event-scoped. Auto-reverts to server truth once the orders sync +
   // prune. Advisory OFFLINE view — the server stays authoritative on reconnect; oversell detection is Piece 2.
+  // Advisory occupancy (window→qtyByCat), rebuilt FROM ORDERS via the SHARED buildOfflineOccupancy — used by
+  // BOTH the day strip (displaySlots) AND the Add-Order picker (offlineCapacity prop below), so the two can't
+  // diverge. Safe (try/catch → {}). Folds server orders + not-yet-synced offline creates, overlay-aware.
+  const offlineOccupancy=useMemo<Record<string,Record<string,number>>>(()=>{
+    try{
+      if(!activeEvent||!Array.isArray(slots)||slots.length===0)return {}
+      return buildOfflineOccupancy({
+        slots,
+        serverOrders:Array.isArray(orders)?orders:[],
+        queuedOrders:deviceQueuedOrders,
+        statusFor:(o)=>statusOverlay.get((o as {order_key:string}).order_key)?.status??(o as {status?:string}).status,
+        eventId:activeEvent.id,
+        eventStart:activeEvent.start_time||'',
+        itemCategoryMap:itemCategoryMap||{},
+      })
+    }catch{return {}}
+  },[slots,orders,deviceQueuedOrders,statusOverlay,activeEvent,itemCategoryMap])
   const displaySlots=useMemo(()=>{
     // FAIL-SAFE: the capacity STRIP must NEVER crash the dashboard. Any not-yet-loaded input OR any thrown
     // error → return the plain server `slots` (the online/normal path). Worst case the strip shows
@@ -1468,32 +1485,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const hasOfflineChanges=deviceQueuedOrders.length>0||statusOverlay.size>0
       if(!hasOfflineChanges||!activeEvent)return slots
       if(!serverCatConfigs||Object.keys(serverCatConfigs).length===0)return slots  // engine inputs not loaded yet → server slots
-      // Stage 2b — FROM-ORDERS recompute (base = {}, NOT the frozen productionSlotUnits blob): mirror the
-      // server's buildUnitsFromOrders so offline STATUS changes are reflected, not just creates. Source = server
-      // orders + offline creates not yet synced (dedup by order_key), EVENT-SCOPED (null/other-event excluded,
-      // matching .eq('event_id', …)). Apply the Stage-2 OVERLAY status, then the ENGINE'S OWN occupied filter —
-      // so ready/collected/cancelled/rejected RELEASE and pending/confirmed/modified/cooking OCCUPY. On sync the
-      // server rebuild + overlay-clear reconcile to the same occupancy → seamless handoff. NO engine change.
-      const serverOrders=Array.isArray(orders)?orders:[]
-      const syncedKeys=new Set(serverOrders.map(o=>o.order_key))
-      const source=[...serverOrders,...deviceQueuedOrders.filter(o=>o&&!syncedKeys.has(o.order_key))]
-        .filter(o=>o&&(o as {event_id?:string|null}).event_id===activeEvent.id)
-      const timeMap:Record<string,string>={}
-      slots.forEach(s=>{if(s?.collection_time)timeMap[s.collection_time]=s.production_window_key||s.collection_time})
-      const eventStart=activeEvent.start_time||''
-      // buildUnitsFromOrders' .in(...) status filter (§71) reused as a constant — the whole release mechanism.
-      const OCCUPYING=['pending','confirmed','modified','cooking']
-      const merged:Record<string,Record<string,number>>={}
-      source.forEach(o=>{
-        const status=statusOverlay.get(o.order_key)?.status??(o as {status?:string}).status
-        if(!status||!OCCUPYING.includes(status))return          // released (ready/collected/cancelled/rejected) → excluded
-        const ct=(o as {slot?:string|null}).slot||eventStart     // slot||eventStart (mirrors buildUnitsFromOrders)
-        if(!ct)return
-        const ps=timeMap[ct]||ct                                 // window key = timeMap[ct] || ct
-        const lines=normaliseOrderLines((o.items as Array<{name:string;quantity:number|string}>)||[],(o as {deals?:Array<{slots?:Record<string,unknown>}>|null}).deals)
-        const delta=orderItemsToQtyByCat(lines,itemCategoryMap||{})
-        merged[ps]=mergeQtyByCat(merged[ps]||{},delta)
-      })
+      // FROM-ORDERS occupancy comes from the shared offlineOccupancy memo (same fold the picker uses) — then
+      // re-run the SAME buildSlotIndicators, overlaying tone/label. Advisory; server-authoritative on reconnect.
+      const merged=offlineOccupancy
       const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
       const eventStartMins=(h||0)*60+(m||0)
       const ind=buildSlotIndicators(slots,merged,serverCatConfigs,kitchenCapacity,eventStartMins,categoryOrder||[],capacityWindowMins)
@@ -1502,7 +1496,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       console.warn('[displaySlots] offline capacity recompute failed — using server slots',e)
       return slots
     }
-  },[slots,orders,deviceQueuedOrders,statusOverlay,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins,itemCategoryMap])
+  },[slots,offlineOccupancy,deviceQueuedOrders,statusOverlay,activeEvent,serverCatConfigs,kitchenCapacity,categoryOrder,capacityWindowMins])
+
+  // Cached, ADVISORY capacity for the Add-Order picker when /api/slots is unavailable (offline). Same inputs
+  // the day strip uses (SW-cached /api/dashboard) + the SHARED offlineOccupancy fold, scoped to the active
+  // event. The panel derives its capacityInputs from this when its own fetch left them null → lights instead
+  // of bare times, and they DRAIN LIVE as offline orders queue (offlineOccupancy re-folds). null when unresolved.
+  const offlineCapacity=useMemo(()=>{
+    if(!activeEvent||!Array.isArray(slots)||slots.length===0)return null
+    const[h,m]=(activeEvent.start_time||'0:0').split(':').map(Number)
+    return {
+      eventId:activeEvent.id,
+      slots,
+      productionSlotUnits:offlineOccupancy,
+      kitchenCapacity,
+      capacityWindowMins,
+      eventStartMins:(h||0)*60+(m||0),
+      catConfigs:serverCatConfigs,
+    }
+  },[activeEvent,slots,offlineOccupancy,kitchenCapacity,capacityWindowMins,serverCatConfigs])
 
   // STOCK ↔ ORDERS (offline): fold offline-order consumption into the displayed orders_count so remaining
   // ticks down as the operator takes orders offline. EXACTLY-ONCE: only offline orders NOT yet in server
@@ -1666,7 +1678,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
-      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} />
+      <KeepAwakePrompt keepScreenOn={keepScreenOn} wakeState={wakeState} onAcquire={()=>{void applyKeepScreenOn(true)}} />
       {/* DEV-ONLY floating pills (render null in production) — force offline + inspect the live outbox. */}
       <DevOfflineToggle />
       <DevOutboxInspector />
@@ -2240,6 +2252,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
             controlledEvent={activeEvent}
             isOffline={isOffline}
+            offlineCapacity={offlineCapacity}
             isEventLoaded={(id)=>loadedEventIds.has(id)}
             onEventChange={(id)=>{
               // EVENT-SWITCH GATE backstop: never switch to a never-loaded event offline (the picker also
