@@ -1119,12 +1119,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, newSlot })
     }
 
-    // ── update_keep_screen_on ─────────────────────────────────────────────────
-    if (action === 'update_keep_screen_on') {
-      const { keepScreenOn } = body
-      await supabase.from('trucks').update({ keep_screen_on: !!keepScreenOn }).eq('id', truck.id)
-      return NextResponse.json({ ok: true })
-    }
+    // (update_keep_screen_on removed — keep-screen-on is a PER-DEVICE localStorage pref, no DB write.
+    //  trucks.keep_screen_on is dormant, to be dropped with the interface field in a cleanup pass.)
 
     // ── set_auto_accept ──────────────────────────────────────────────────────
     if (action === 'set_auto_accept') {

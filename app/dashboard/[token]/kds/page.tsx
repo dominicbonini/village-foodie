@@ -69,7 +69,10 @@ export default function KdsPage() {
   const [pinError, setPinError] = useState('')
   const [requiresPin, setRequiresPin] = useState(false)
 
-  const [keepScreenOn, setKeepScreenOn] = useState(true)
+  // PER-DEVICE keep-screen-on pref (mirrors sound + the dashboard). Lazy initializer reads localStorage
+  // SYNCHRONOUSLY at first paint (SSR-guarded) so the KeepAwakePrompt can't flash. KDS previously read the
+  // truck DB column even on native — this is its first per-device path. Default ON.
+  const [keepScreenOn, setKeepScreenOn] = useState(() => typeof window === 'undefined' ? true : localStorage.getItem(`hg_keepawake_${token}`) !== 'off')
   // ACTUAL keep-awake state, not intent — so the KDS Screen chip can't lie. No grace needed: with
   // gesture-based acquisition the lock stays 'off' (optimistic) until first tap, so there's no mount-denial.
   const [wakeState, setWakeState] = useState<WakeState>('off')
@@ -131,7 +134,8 @@ export default function KdsPage() {
 
       setTruck(data.truck)
       setShowCookingStep(data.vanShowCookingStep ?? false)
-      setKeepScreenOn(data.truck?.keep_screen_on ?? true)
+      // keep_screen_on is a PER-DEVICE localStorage pref now (see the keepScreenOn useState) — not read from
+      // the truck row (which never carried it in the /api/dashboard map anyway).
       setOrders(prev => mergeOrders(prev, data.orders ?? []))
       setPausedUntil(data.truck?.paused_until ?? null)
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
@@ -355,13 +359,9 @@ export default function KdsPage() {
     setKeepScreenOn(value)
     let st: WakeState = 'off'
     if (value) { st = await keepAwake() } else { await allowSleep() }
-    try {
-      await fetch('/api/dashboard/action', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, action: 'update_keep_screen_on', keepScreenOn: value }),
-      })
-    } catch {}
+    // PER-DEVICE pref (localStorage, per-token) — mirrors sound + the dashboard. No DB round-trip; read
+    // synchronously on mount so the KeepAwakePrompt can't flash for an operator who turned it off.
+    try { localStorage.setItem(`hg_keepawake_${token}`, value ? 'on' : 'off') } catch {}
     return st
   }
   const toggleKeepScreenOn = async () => {

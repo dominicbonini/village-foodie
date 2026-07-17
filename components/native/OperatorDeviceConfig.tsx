@@ -9,8 +9,8 @@ import { isAppLockEnabled, setAppLockEnabled, isBiometricAvailable, verifyIdenti
 import { fetchMyTrucks, switchTruck, type TruckRef } from '@/lib/native/trucks'
 
 // NOTE (Package 4): keep-awake is NOT owned here — it's the SINGLE "Screen on" control in the dashboard
-// header/UserMenu, which routes to the per-device mechanism in-app (localStorage 'hg_keepawake', default
-// on / manual off) and the truck setting on web. Duplicating it here would fire two mechanisms in the app.
+// header/UserMenu, which routes to the per-device pref (localStorage `hg_keepawake_${token}`, default on /
+// manual off) — the SAME per-device mechanism on web and in the app. Duplicating it here would fire two.
 
 // ── First-launch setup gate ─────────────────────────────────────────────────────────────────────────
 // Shows a one-time setup card (native + unconfigured) BEFORE the operator uses the console: default screen

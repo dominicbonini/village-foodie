@@ -226,7 +226,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[savingCat,setSavingCat]=useState(false)
   const[showPrepList,setShowPrepList]=useState(false)
   const[showPrepTimeBanner,setShowPrepTimeBanner]=useState(false)
-  const[keepScreenOn,setKeepScreenOn]=useState(true)
+  // PER-DEVICE keep-screen-on pref (mirrors sound's hg_sound_${token}). Read SYNCHRONOUSLY here via a lazy
+  // initializer — NOT a useEffect — so the value is known at first paint and the KeepAwakePrompt can't flash
+  // for an operator who turned it off. SSR-guarded (localStorage is client-only). Default ON.
+  const[keepScreenOn,setKeepScreenOn]=useState(()=>typeof window==='undefined'?true:localStorage.getItem(`hg_keepawake_${token}`)!=='off')
   // ACTUAL keep-awake state (held / denied / unsupported / native), NOT the intent. The toggle reads this so
   // it can't claim "Screen on" while the lock was denied. Updates live (OS release, focus re-acquire).
   const[wakeState,setWakeState]=useState<WakeState>('off')
@@ -488,9 +491,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // ── CONFIG — operator-edited; seeded on nav only. ⚠️ Everything here is CONFIG by default; adding a
         //    LIVE field to this block would STOP it polling. Live state goes in the block below. ──
         setTruck(data.truck)
-        // WEB: "Screen on" follows the truck setting. APP: it follows the per-device pref (mount init) — so
-        // don't let the truck setting override it here.
-        if(!isNativeApp()) setKeepScreenOn(data.truck?.keep_screen_on ?? true)
+        // keep_screen_on is now a PER-DEVICE localStorage pref (see the keepScreenOn useState) — NOT read
+        // from the truck row. (The trucks.keep_screen_on column is dormant; it was never in the /api/dashboard
+        // truck map anyway, so this read always resolved to the default — the bug this fix removes.)
         setAutoAccept(data.truck?.auto_accept || false)
         setNotesRequireReview(data.truck?.notes_require_review ?? true)
         setShowCookingStep(data.vanShowCookingStep??false)
@@ -709,9 +712,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(typeof window==='undefined')return
     return addNetworkListener(s=>setDeviceOnline(s==='online'))
   },[])
-  // APP keep-awake init (Package 4): the "Screen on" control follows the PER-DEVICE pref (default ON /
-  // manual off), not the truck setting. No-op on web (the truck setting drives it there, via fetchAll).
-  useEffect(()=>{ if(isNativeApp()){const p=localStorage.getItem('hg_keepawake');setKeepScreenOn(p!=='off')} },[])
   // Package 6: on native app FOREGROUND, ping the heartbeat immediately (don't wait for the 15s tick) so a
   // returning device clears any offline-pause fast. No-op on web. Only meaningful while a live event is
   // heartbeating; the /api/heartbeat call is idempotent so an off-event ping is harmless.
@@ -940,15 +940,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setKeepScreenOn(value)
     let st:WakeState='off'
     if(value){st=await keepAwake()}else{await allowSleep()}
-    // ONE visible "Screen on" control, DUAL persistence (user unaware): in the APP it drives the PER-DEVICE
-    // keep-awake pref (localStorage 'hg_keepawake', default on / manual off) and does NOT touch the truck
-    // setting — so the web setting-tied mechanism can't also fire/clobber it. On WEB it persists to the
-    // truck keep_screen_on setting exactly as before. keepAwake()/allowSleep() above is the single applier.
-    if(isNativeApp()){try{localStorage.setItem('hg_keepawake',value?'on':'off')}catch{}return st}
-    try{
-      await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'update_keep_screen_on',keepScreenOn:value})})
-    }catch{}
+    // PER-DEVICE pref (localStorage, per-token so two trucks on one iPad don't collide) — mirrors the sound
+    // pref. Web + app share one path; read synchronously on mount (the useState initializer) so no flash and
+    // no async DB round-trip. keepAwake()/allowSleep() above is the single applier.
+    try{localStorage.setItem(`hg_keepawake_${token}`,value?'on':'off')}catch{}
     return st
   }
   const toggleKeepScreenOn=async()=>{
