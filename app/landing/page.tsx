@@ -386,7 +386,7 @@ export default function LandingPage() {
             <path d="M10 114 H250" stroke="#DDE5EE" strokeWidth="3" strokeLinecap="round" />
           </svg>
           <h2>Want to see how easy setup is?</h2>
-          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page — your items, your prices — in about 30 seconds. No sign-up, no card, nothing to install. Have a look, then decide.</p>
+          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in about 30 seconds — your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
           <a href="#" className="btn btn-primary btn-lg">Upload my menu now →</a>
           <ul className="proof">
             <li><Check /> First month 100% free, everything unlocked</li>
