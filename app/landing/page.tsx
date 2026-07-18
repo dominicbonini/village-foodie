@@ -261,7 +261,7 @@ export default function LandingPage() {
                 <li>QR code &amp; discovery map listing</li>
                 <li>iPad kitchen app</li>
               </ul>
-              <a href="#try" className="btn btn-ghost">Start free</a>
+              <a href="#try" className="btn btn-ghost">Try Free</a>
             </div>
 
             {/* Pro */}
@@ -280,7 +280,7 @@ export default function LandingPage() {
                 <li>WhatsApp, Messenger &amp; Instagram auto-replies</li>
                 <li>Offline order protection</li>
               </ul>
-              <a href="#try" className="btn btn-primary">Try Pro free</a>
+              <a href="#try" className="btn btn-primary">Try Free</a>
             </div>
 
             {/* Max */}
@@ -296,7 +296,7 @@ export default function LandingPage() {
                 <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
               </ul>
-              <a href="#try" className="btn btn-ghost">Try Max free</a>
+              <a href="#try" className="btn btn-ghost">Try Free</a>
             </div>
           </div>
 
@@ -385,9 +385,9 @@ export default function LandingPage() {
             <circle cx="186" cy="100" r="13" fill="#16314F" /><circle cx="186" cy="100" r="4.5" fill="#F5F8FB" />
             <path d="M10 114 H250" stroke="#DDE5EE" strokeWidth="3" strokeLinecap="round" />
           </svg>
-          <h2>Put your menu in and have a play.</h2>
-          <p className="lede">Have a play in 30 seconds. Your truck, your items, your prices — nothing to sign up to.</p>
-          <a href="#" className="btn btn-primary btn-lg">Upload my menu →</a>
+          <h2>Want to see how easy setup is?</h2>
+          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page — your items, your prices — in about 30 seconds. No sign-up, no card, nothing to install. Have a look, then decide.</p>
+          <a href="#" className="btn btn-primary btn-lg">Upload my menu now →</a>
           <ul className="proof">
             <li><Check /> First month 100% free, everything unlocked</li>
             <li><Check /> No card needed</li>
