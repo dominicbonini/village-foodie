@@ -1,16 +1,24 @@
 /* ─────────────────────────────────────────────────────────────────────────
    HatchGrab landing page — SCOPED entirely under `.hg-landing` so nothing
    leaks into any other route (globals.css untouched). Ported from the
-   hatchgrab-landing artifact. Loaded only by /landing.
+   hatchgrab-landing-v32 artifact. Loaded only by /landing.
 
-   SLATE: the header/footer slate is NOT defined here — it's applied via the
-   shared `HEADER_BG` (= Tailwind `bg-slate-900`) className from lib/brand.ts
+   SLATE: the nav/footer slate is NOT defined here — it's applied via the shared
+   `HEADER_BG` (= Tailwind `bg-slate-900` = #0f172a) className from lib/brand.ts
    on the <nav> and <footer>, so there's a single source and no drift.
 
    --head (lifted navy) / --ink (body) are PROVISIONAL and landing-page-only —
    not a brand decision yet; kept local here on purpose.
 
    Fonts come from next/font (page.tsx) via --font-* → mapped to --display/-body/-ticket.
+
+   COMPARISON TABLE: rendered as a FLEX layout (.cmp2*), NOT a <table>. The v32
+   artifact used <table> inside `.cmp-wrap{overflow-x:auto}`, but overflow-x:auto
+   forces overflow-y:auto → `position:sticky` on the thead sticks inside that
+   content-height box and never pins on page scroll (the documented sticky trap).
+   This mirrors Manage → Billing's flex sticky header instead: fixed narrow plan
+   columns fit mobile with NO horizontal scroll, and the header pins to the page
+   (offset by --nav-h, below the sticky nav).
    ───────────────────────────────────────────────────────────────────────── */
 
 .hg-landing {
@@ -20,8 +28,11 @@
   --ink: #2C4766;       /* body copy — landing-local, provisional */
   --ink-soft: #5F7A99;
   --ink-faint: #9AAFC4;
-  --orange: #EF8B2C;
-  --orange-deep: #D9741A;
+  --orange: #EA580C;        /* THE one orange — orange-600, exactly Billing's "Upgrade to Max" button. Used for
+                               EVERY orange thing (button, checks, eyebrows, prices, group labels, wordmark). */
+  --orange-deep: #C2410C;   /* orange-700 — button HOVER only (matches Billing's hover:bg-orange-700). Not an accent. */
+  --orange-wash: #FEF1E7;
+  --orange-line: #F6D2B4;
   --line: #DDE5EE;
 
   --display: var(--font-archivo), system-ui, sans-serif;
@@ -30,6 +41,7 @@
 
   --gut: clamp(1.25rem, 4vw, 2.5rem);
   --max: 1140px;
+  --nav-h: 4.5rem;      /* fixed nav height — ALSO the sticky comparison-header offset (one var → they can't desync) */
 
   font-family: var(--body);
   color: var(--ink);
@@ -37,6 +49,9 @@
   -webkit-font-smoothing: antialiased;
   line-height: 1.55;
 }
+
+/* smooth in-page anchor scroll (scoped to when the landing is mounted) */
+html:has(.hg-landing) { scroll-behavior: smooth; }
 
 /* scoped reset — only affects landing content, never the rest of the app */
 .hg-landing * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,110 +61,200 @@
 
 /* ---------- logo (approximation; see HatchGrabWordmark.tsx) ---------- */
 .hg-landing .logo { display: inline-flex; align-items: center; font-family: var(--display); font-weight: 800; font-style: italic; font-size: 1.45rem; letter-spacing: -.02em; white-space: nowrap; text-decoration: none; line-height: 1; }
-.hg-landing .logo .a { color: var(--ink); }
+.hg-landing .logo .a { color: var(--head); }
 .hg-landing .logo .b { color: var(--orange); }
-.hg-landing .logo.logo-dark .a { color: #fff; }   /* dark-background variant */
+.hg-landing .logo.logo-dark .a { color: #fff; }   /* dark-background variant (nav + footer) */
 .hg-landing .logo .bolt { width: .42em; height: 1.05em; margin: 0 .02em 0 -.04em; flex: none; fill: var(--orange); }
 .hg-landing .logo .gwrap { position: relative; display: inline-block; }
 .hg-landing .logo .swoosh { position: absolute; left: -8%; top: -58%; width: 126%; height: auto; fill: var(--orange); pointer-events: none; }
 
-/* ---------- nav (background = HEADER_BG className) ---------- */
-.hg-landing nav { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(255,255,255,.1); }
-.hg-landing .nav-in { max-width: var(--max); margin: 0 auto; padding: .9rem var(--gut); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.hg-landing .nav-logo { display: inline-flex; text-decoration: none; }
-.hg-landing .nav-r { display: flex; align-items: center; gap: .4rem; }
-.hg-landing nav .btn-quiet { color: #C3CAD8; }
-.hg-landing nav .btn-quiet:hover { color: #fff; }
-.hg-landing nav .btn-ghost { color: #fff; border-color: rgba(255,255,255,.24); }
-.hg-landing nav .btn-ghost:hover { border-color: rgba(255,255,255,.55); }
-.hg-landing nav :focus-visible { outline-offset: 2px; }
-
 /* ---------- buttons ---------- */
 .hg-landing .btn { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--body); font-weight: 600; font-size: .95rem; padding: .7rem 1.15rem; border-radius: 7px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .12s ease, background .12s ease, border-color .12s ease; }
+/* Primary CTA: EXACTLY Billing's "Upgrade to Max" button — bg-orange-600 (var(--orange)) white text, hover
+   orange-700 (var(--orange-deep)). ⚠️ CONTRAST: white on orange-600 = 3.56:1 — meets WCAG AA only as LARGE
+   text (≥18.66px bold → 3:1), not normal text (4.5:1). Matches Billing's own buttons; see report. */
 .hg-landing .btn-primary { background: var(--orange); color: #fff; }
 .hg-landing .btn-primary:hover { background: var(--orange-deep); transform: translateY(-1px); }
 .hg-landing .btn-ghost { color: var(--ink); border-color: var(--line); }
 .hg-landing .btn-ghost:hover { border-color: var(--ink-faint); }
 .hg-landing .btn-quiet { color: var(--ink-soft); padding-inline: .6rem; }
 .hg-landing .btn-quiet:hover { color: var(--ink); }
-.hg-landing .btn-lg { font-size: 1.05rem; padding: .95rem 1.6rem; }
+/* Large + BOLD so WCAG "large text" applies (≥18.66px AND weight 700) → the 3:1 threshold, which white on
+   orange-600 (3.56:1) clears. Both the size AND the weight are required. Used by the hero + final CTAs. */
+.hg-landing .btn-lg { font-size: 1.2rem; font-weight: 700; padding: .95rem 1.7rem; }
+
+/* ---------- nav (background = HEADER_BG className). Fixed height = --nav-h. ---------- */
+.hg-landing nav { position: sticky; top: 0; z-index: 50; height: var(--nav-h); border-bottom: 1px solid rgba(255,255,255,.1); }
+.hg-landing .nav-in { max-width: var(--max); height: 100%; margin: 0 auto; padding: 0 var(--gut); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.hg-landing .nav-logo { display: inline-flex; text-decoration: none; }
+.hg-landing .nav-r { display: flex; align-items: center; gap: .4rem; }
+.hg-landing nav .btn-quiet { color: #C3CAD8; } .hg-landing nav .btn-quiet:hover { color: #fff; }
+.hg-landing nav .btn-ghost { color: #fff; border-color: rgba(255,255,255,.24); } .hg-landing nav .btn-ghost:hover { border-color: rgba(255,255,255,.55); }
+.hg-landing .nav-r .btn { white-space: nowrap; }   /* the CTA must never wrap the header */
+.hg-landing .cta-short { display: none; }
+@media(max-width:639px){
+  .hg-landing .nav-hide-sm { display: none; }   /* < 640px: drop Pricing + Log in, keep one compact CTA */
+  .hg-landing .cta-full { display: none; }
+  .hg-landing .cta-short { display: inline; }
+}
 
 /* ---------- hero ---------- */
-.hg-landing .hero { padding: clamp(3rem,7vw,5.5rem) 0 clamp(3rem,6vw,4.5rem); }
-.hg-landing .hero-grid { display: grid; gap: clamp(2.5rem,5vw,4rem); grid-template-columns: 1fr; align-items: center; }
-@media (min-width: 920px) { .hg-landing .hero-grid { grid-template-columns: 1.15fr .85fr; } }
-.hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1.1rem; }
+.hg-landing .hero { padding: clamp(2.5rem,5vw,4rem) 0 clamp(3rem,6vw,4.5rem); overflow: hidden; }
+.hg-landing .hero-grid { display: grid; gap: clamp(2.5rem,5vw,3.5rem); grid-template-columns: 1fr; align-items: center; }
+@media(min-width:940px){ .hg-landing .hero-grid { grid-template-columns: .9fr 1.1fr; } }
+.hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
 .hg-landing h1 .lean { font-style: italic; color: var(--orange); }
-.hg-landing .hero-sub { font-size: clamp(1.05rem,2vw,1.28rem); color: var(--ink-soft); max-width: 34ch; margin-bottom: 1.9rem; }
-.hg-landing .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem; }
-.hg-landing .no-card { font-size: .9rem; color: var(--ink-faint); }
-.hg-landing .no-card strong { color: var(--ink-soft); font-weight: 600; }
+.hg-landing .hero-sub { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--orange); letter-spacing: -.015em; max-width: 32ch; margin-bottom: 1.8rem; }
+.hg-landing .demo-line { font-size: .95rem; color: var(--ink-soft); max-width: 38ch; margin-bottom: 1rem; }
+.hg-landing .demo-line b { display: block; font-family: var(--display); font-weight: 800; font-size: 1.12rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .3rem; line-height: 1.25; }
+.hg-landing .hero-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 1.7rem; }
+.hg-landing .proof { list-style: none; display: grid; gap: .6rem; }
+.hg-landing .proof li { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: 1.02rem; color: var(--head); letter-spacing: -.01em; }
+.hg-landing .tick { width: 21px; height: 21px; border-radius: 50%; background: var(--orange); flex: none; display: flex; align-items: center; justify-content: center; }
+.hg-landing .tick svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+/* MOBILE hero: keep copy LEFT-aligned (better for multi-line reading); make the CTA full-width — bigger tap
+   target and it balances the left-heavy hero. */
+@media(max-width:620px){
+  .hg-landing .hero-cta { align-self: stretch; }
+  .hg-landing .hero-cta .btn-lg { width: 100%; justify-content: center; }
+  .hg-landing .hero-cta .proof { justify-items: center; }   /* centre the 3 proof bullets under the full-width CTA */
+}
 
-/* ---------- ticket (the signature) ---------- */
-.hg-landing .ticket-stage { display: flex; justify-content: center; }
-.hg-landing .ticket { font-family: var(--ticket); background: #fff; width: min(320px,100%); padding: 1.5rem 1.4rem 1.1rem; border: 1px solid var(--line); border-bottom: none; box-shadow: 0 18px 44px -18px rgba(35,35,38,.28), 0 2px 6px rgba(35,35,38,.05); position: relative; animation: hg-print .7s cubic-bezier(.2,.7,.3,1) both; }
-.hg-landing .ticket::after { content: ""; position: absolute; left: -1px; right: -1px; bottom: -11px; height: 12px; background: linear-gradient(-45deg, transparent 8px, #fff 0) left / 12px 12px repeat-x, linear-gradient(45deg, transparent 8px, #fff 0) left / 12px 12px repeat-x; filter: drop-shadow(0 1px 0 var(--line)); }
-@keyframes hg-print { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
-@media (prefers-reduced-motion: reduce) { .hg-landing .ticket { animation: none; } }
-.hg-landing .t-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed var(--line); padding-bottom: .7rem; margin-bottom: .85rem; }
-.hg-landing .t-no { font-weight: 700; font-size: 1.5rem; letter-spacing: -.02em; color: var(--head); }
-.hg-landing .t-time { font-size: .85rem; color: var(--ink-soft); }
-.hg-landing .t-time b { color: var(--head); font-weight: 700; }
-.hg-landing .t-line { display: flex; justify-content: space-between; gap: 1rem; font-size: .92rem; padding: .22rem 0; }
-.hg-landing .t-note { font-size: .82rem; color: var(--orange-deep); padding-left: 1.6rem; padding-bottom: .3rem; }
-.hg-landing .t-rule { border: 0; border-top: 1px dashed var(--line); margin: .85rem 0; }
-.hg-landing .t-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1rem; }
-.hg-landing .t-foot { margin-top: 1rem; text-align: center; font-size: .72rem; letter-spacing: .14em; color: var(--ink-faint); text-transform: uppercase; }
+/* ---------- screenshot fan (dashed placeholders — keep until real shots land) ---------- */
+.hg-landing .fan { position: relative; display: flex; align-items: center; justify-content: center; min-height: clamp(300px,42vw,430px); animation: hg-rise .7s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes hg-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@media(prefers-reduced-motion:reduce){ .hg-landing .fan { animation: none; } html:has(.hg-landing){ scroll-behavior: auto; } }
+.hg-landing .shot { background: var(--paper); border: 2px dashed var(--line); border-radius: 12px; box-shadow: 0 22px 50px -20px rgba(15,23,42,.32),0 2px 8px rgba(15,23,42,.06); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .35rem; text-align: center; padding: 1rem; position: absolute; }
+.hg-landing .shot .lbl { font-family: var(--display); font-weight: 700; font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+.hg-landing .shot .hint { font-size: .78rem; color: var(--ink-faint); max-width: 22ch; line-height: 1.35; }
+.hg-landing .shot-kds { width: min(58%,320px); aspect-ratio: 4/3; left: 0; top: 8%; transform: rotate(-6deg); z-index: 1; }
+.hg-landing .shot-dash { width: min(72%,400px); aspect-ratio: 16/11; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-1deg); z-index: 2; border-color: var(--ink-faint); }
+.hg-landing .shot-phone { width: min(26%,140px); aspect-ratio: 9/17; right: 2%; bottom: 0; transform: rotate(5deg); z-index: 3; border-radius: 18px; }
+.hg-landing .shot-phone .hint { font-size: .7rem; }
 
 /* ---------- sections ---------- */
 .hg-landing section { padding: clamp(3.5rem,7vw,5.5rem) 0; }
 .hg-landing .band { background: var(--wash); border-block: 1px solid var(--line); }
-.hg-landing .eyebrow { font-family: var(--display); font-weight: 700; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--orange-deep); margin-bottom: .85rem; }
+.hg-landing .eyebrow { font-family: var(--display); font-weight: 700; font-size: .75rem; letter-spacing: .16em; text-transform: uppercase; color: var(--orange); margin-bottom: .85rem; }
 .hg-landing h2 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(1.6rem,3.2vw,2.15rem); letter-spacing: -.03em; line-height: 1.12; margin-bottom: .7rem; }
-.hg-landing .lede { color: var(--ink-soft); max-width: 52ch; margin-bottom: 2.6rem; }
+.hg-landing .lede { color: var(--ink-soft); max-width: 50ch; margin-bottom: 2.6rem; }
 
 /* ---------- what it does ---------- */
-.hg-landing .does { display: grid; gap: 1.6rem 2.6rem; grid-template-columns: 1fr; }
-@media (min-width: 700px) { .hg-landing .does { grid-template-columns: 1fr 1fr; } }
-.hg-landing .does-item { padding-top: 1.15rem; border-top: 2px solid var(--head); }
-.hg-landing .does-item h3 { font-family: var(--display); font-weight: 700; font-size: 1.08rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .3rem; }
-.hg-landing .does-item p { color: var(--ink-soft); font-size: .95rem; }
+.hg-landing .does { display: grid; gap: 1.5rem 2.6rem; grid-template-columns: 1fr; }
+@media(min-width:760px){ .hg-landing .does { grid-template-columns: 1fr 1fr; } }
+.hg-landing .does-item { padding-top: 1.05rem; border-top: 2px solid var(--head); }
+.hg-landing .does-item h3 { font-family: var(--display); font-weight: 700; font-size: 1.05rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .25rem; }
+.hg-landing .does-item p { color: var(--ink-soft); font-size: .94rem; }
+
+/* ---------- testimonial ---------- */
+.hg-landing .quote-sec { padding: clamp(3rem,6vw,4.5rem) 0; }
+.hg-landing .quote-in { max-width: 44rem; margin: 0 auto; text-align: center; }
+.hg-landing .quote-mark { font-family: var(--display); font-weight: 800; font-style: italic; font-size: 3.4rem; color: var(--orange); line-height: .6; display: block; margin-bottom: .6rem; }
+.hg-landing blockquote { font-family: var(--display); font-weight: 700; font-size: clamp(1.25rem,2.6vw,1.7rem); line-height: 1.35; letter-spacing: -.02em; color: var(--head); margin-bottom: 1.5rem; }
+.hg-landing .quote-by { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
+.hg-landing .quote-logo { height: 56px; width: auto; flex: none; display: block; }
+.hg-landing .quote-who { text-align: center; }   /* centre name + credential under the centred logo */
+.hg-landing .quote-name { font-family: var(--display); font-weight: 800; color: var(--head); font-size: 1rem; letter-spacing: -.01em; }
+.hg-landing .quote-cred { display: inline-flex; align-items: center; gap: .35rem; margin-top: .15rem; font-size: .78rem; font-weight: 600; color: var(--orange); }
+.hg-landing .quote-cred svg { width: 12px; height: 12px; fill: var(--orange); }
 
 /* ---------- steps ---------- */
 .hg-landing .steps { display: grid; gap: 2rem; grid-template-columns: 1fr; counter-reset: s; }
-@media (min-width: 820px) { .hg-landing .steps { grid-template-columns: repeat(3,1fr); gap: 2.4rem; } }
+@media(min-width:820px){ .hg-landing .steps { grid-template-columns: repeat(3,1fr); gap: 2.4rem; } }
 .hg-landing .step { counter-increment: s; position: relative; padding-left: 3.1rem; }
 .hg-landing .step::before { content: counter(s); position: absolute; left: 0; top: -.35rem; font-family: var(--display); font-weight: 800; font-style: italic; font-size: 2.1rem; color: var(--orange); letter-spacing: -.04em; }
 .hg-landing .step h3 { font-family: var(--display); font-weight: 700; font-size: 1.12rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .35rem; }
 .hg-landing .step p { color: var(--ink-soft); font-size: .95rem; }
 
-/* ---------- screenshots (dashed placeholders — drop real images in) ---------- */
-.hg-landing .shots { display: grid; gap: 1.4rem; grid-template-columns: 1fr; }
-@media (min-width: 820px) { .hg-landing .shots { grid-template-columns: 1.6fr 1fr; } }
-.hg-landing .shot { border: 2px dashed var(--line); border-radius: 10px; background: var(--paper); min-height: 260px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; text-align: center; padding: 1.5rem; }
-.hg-landing .shot .lbl { font-family: var(--display); font-weight: 700; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
-.hg-landing .shot .hint { font-size: .85rem; color: var(--ink-faint); max-width: 30ch; }
+/* ---------- split / order ticket ---------- */
+.hg-landing .split { display: grid; gap: clamp(2rem,4vw,3.5rem); grid-template-columns: 1fr; align-items: center; }
+@media(min-width:860px){ .hg-landing .split { grid-template-columns: 1fr 1fr; } }
+.hg-landing .split .lede { margin-bottom: 0; }
+.hg-landing .ticket-stage { display: flex; justify-content: center; }
+.hg-landing .ticket { font-family: var(--ticket); background: #fff; width: min(300px,100%); padding: 1.4rem 1.3rem 1rem; border: 1px solid var(--line); border-bottom: none; box-shadow: 0 18px 44px -18px rgba(15,23,42,.28),0 2px 6px rgba(15,23,42,.05); position: relative; }
+.hg-landing .ticket::after { content: ""; position: absolute; left: -1px; right: -1px; bottom: -11px; height: 12px; background: linear-gradient(-45deg,transparent 8px,#fff 0) left/12px 12px repeat-x,linear-gradient(45deg,transparent 8px,#fff 0) left/12px 12px repeat-x; filter: drop-shadow(0 1px 0 var(--line)); }
+.hg-landing .t-head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dashed var(--line); padding-bottom: .7rem; margin-bottom: .85rem; }
+.hg-landing .t-no { font-weight: 700; font-size: 1.45rem; letter-spacing: -.02em; color: var(--head); }
+.hg-landing .t-name { font-size: .86rem; color: var(--ink-soft); margin-top: .1rem; }
+.hg-landing .t-time { font-size: .82rem; color: var(--ink-soft); } .hg-landing .t-time b { color: var(--head); font-weight: 700; }
+.hg-landing .t-line { display: flex; justify-content: space-between; gap: 1rem; font-size: .9rem; padding: .2rem 0; }
+.hg-landing .t-note { font-size: .8rem; color: var(--orange); padding-left: 1.5rem; padding-bottom: .3rem; }
+.hg-landing .t-rule { border: 0; border-top: 1px dashed var(--line); margin: .8rem 0; }
+.hg-landing .t-total { display: flex; justify-content: space-between; font-weight: 700; font-size: .98rem; }
+.hg-landing .t-foot { margin-top: .9rem; text-align: center; font-size: .68rem; letter-spacing: .14em; color: var(--ink-faint); text-transform: uppercase; }
 
 /* ---------- pricing ---------- */
-.hg-landing .plans { display: grid; gap: 1.15rem; grid-template-columns: 1fr; align-items: start; }
-@media (min-width: 860px) { .hg-landing .plans { grid-template-columns: repeat(3,1fr); } }
-.hg-landing .plan { border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 1.6rem 1.4rem; display: flex; flex-direction: column; height: 100%; }
+.hg-landing .price-head { text-align: center; margin-bottom: 2.2rem; }
+.hg-landing .price-head .lede { margin-inline: auto; margin-bottom: 0; }
+.hg-landing .trial-banner { background: var(--orange-wash); border: 1px solid var(--orange-line); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 2rem; text-align: center; }
+.hg-landing .trial-banner strong { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--head); letter-spacing: -.02em; display: block; margin-bottom: .15rem; }
+.hg-landing .trial-banner span { font-size: .92rem; color: var(--ink); }
+.hg-landing .plans { display: grid; gap: 1.15rem; grid-template-columns: 1fr; align-items: stretch; }
+@media(min-width:880px){ .hg-landing .plans { grid-template-columns: repeat(3,1fr); } }
+.hg-landing .plan { border: 1px solid var(--line); border-radius: 12px; background: var(--paper); padding: 1.6rem 1.4rem; display: flex; flex-direction: column; }
 .hg-landing .plan.hero-plan { border-color: var(--head); border-width: 2px; position: relative; }
 .hg-landing .plan-tag { position: absolute; top: -.72rem; left: 1.4rem; background: var(--head); color: #fff; font-family: var(--display); font-weight: 700; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; padding: .25rem .6rem; border-radius: 4px; }
-.hg-landing .plan-name { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--head); letter-spacing: -.02em; margin-bottom: .5rem; }
+.hg-landing .plan-name { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--head); letter-spacing: -.02em; margin-bottom: .2rem; }
+.hg-landing .plan-who { font-size: .85rem; color: var(--ink-soft); margin-bottom: .9rem; min-height: 2.4em; }
 .hg-landing .plan-price { font-family: var(--display); font-weight: 800; font-size: 2.3rem; color: var(--head); letter-spacing: -.04em; line-height: 1; margin-bottom: .15rem; }
 .hg-landing .plan-price span { font-size: .95rem; font-weight: 600; color: var(--ink-faint); letter-spacing: 0; }
-.hg-landing .plan-fee { font-size: .85rem; color: var(--ink-soft); margin-bottom: 1.2rem; }
+.hg-landing .plan-fee { font-size: .85rem; color: var(--ink-soft); margin-bottom: 1.2rem; min-height: 2.6em; }
+.hg-landing .plan-fee b { color: var(--head); font-weight: 600; }
 .hg-landing .plan ul { list-style: none; margin-bottom: 1.5rem; display: grid; gap: .5rem; }
 .hg-landing .plan li { font-size: .92rem; color: var(--ink-soft); padding-left: 1.3rem; position: relative; }
 .hg-landing .plan li::before { content: ""; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+.hg-landing .plan li.lead { color: var(--head); font-weight: 600; }
+.hg-landing .soon-inline { display: inline-block; font-size: .62rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); border: 1px solid var(--line); border-radius: 4px; padding: .05rem .3rem; margin-left: .2rem; white-space: nowrap; vertical-align: 1px; }
 .hg-landing .plan .btn { margin-top: auto; justify-content: center; }
-.hg-landing .plan-note { text-align: center; color: var(--ink-faint); font-size: .88rem; margin-top: 1.8rem; }
+.hg-landing .price-foot { margin-top: 1.8rem; display: grid; gap: .5rem; max-width: 46rem; margin-inline: auto; text-align: center; }
+.hg-landing .price-foot p { font-size: .88rem; color: var(--ink-soft); }
+.hg-landing .price-foot p b { color: var(--head); font-weight: 600; }
+
+/* ---------- comparison (FLEX, mirrors Manage → Billing; see file header note) ---------- */
+.hg-landing .cmp2 { margin-top: 1.4rem; font-size: .9rem; }
+.hg-landing .cmp2-head { position: sticky; top: var(--nav-h); z-index: 40; background: var(--wash); display: flex; align-items: flex-end; padding-top: .5rem; padding-bottom: .7rem; border-bottom: 2px solid var(--head); }
+.hg-landing .cmp2-feat { flex: 1; min-width: 0; padding-right: .6rem; }   /* header left spacer */
+/* Row left region — holds name (+ desc). MOBILE: desc STACKS under name (block flow). */
+.hg-landing .cmp2-label { flex: 1; min-width: 0; padding-right: .6rem; }
+/* 4 plan columns (Trial|Starter|Pro|Max) — narrow on phones so they fit with NO horizontal scroll (which
+   would re-introduce the overflow-x sticky trap); wider as room allows. col + cell share widths so they align. */
+.hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: 3rem; flex: none; text-align: center; padding-inline: .1rem; }
+@media(min-width:620px){ .hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: 6rem; } }
+@media(min-width:900px){ .hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: 7rem; } }
+.hg-landing .th-plan { font-family: var(--display); font-weight: 800; color: var(--head); font-size: .72rem; letter-spacing: -.02em; display: block; }
+@media(min-width:620px){ .hg-landing .th-plan { font-size: .95rem; } }
+.hg-landing .th-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .68rem; letter-spacing: -.02em; display: block; margin-top: .1rem; white-space: nowrap; }
+@media(min-width:620px){ .hg-landing .th-price { font-size: .9rem; } }
+.hg-landing .th-sub { display: block; font-size: .62rem; font-weight: 600; color: var(--ink-faint); line-height: 1.25; margin-top: .1rem; }
+@media(max-width:619px){ .hg-landing .th-sub { display: none; } }   /* keep the sticky header short on phones (2 lines: name + price) */
+.hg-landing .cmp2-grp { font-family: var(--display); font-weight: 700; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--orange); padding: 1.6rem 0 .5rem; }
+.hg-landing .cmp2-row { display: flex; align-items: flex-start; padding: .7rem 0; border-top: 1px solid var(--line); }
+.hg-landing .f-name { color: var(--head); font-weight: 600; display: block; }
+.hg-landing .f-desc { color: var(--ink-soft); font-size: .8rem; line-height: 1.4; display: block; margin-top: .15rem; max-width: 44ch; }
+/* DESKTOP (≥900px): give the description its OWN column so it fills the middle instead of leaving a dead gap
+   between the far-left name and the far-right plan columns. Below 900px it stays stacked under the name. */
+@media(min-width:900px){
+  .hg-landing .cmp2-label { display: flex; align-items: baseline; gap: 1.2rem; }
+  .hg-landing .cmp2-label .f-name { width: 12rem; flex: none; }
+  .hg-landing .cmp2-label .f-desc { flex: 1; margin-top: 0; max-width: none; }
+}
+.hg-landing .f-note { color: var(--ink-faint); font-size: .7rem; vertical-align: .3em; margin-left: .15rem; }
+.hg-landing .yes { color: var(--orange); font-weight: 700; font-size: 1.05rem; }
+.hg-landing .no { color: var(--ink-faint); }
+.hg-landing .val { font-size: .78rem; color: var(--ink); font-weight: 600; line-height: 1.3; display: inline-block; }
+/* Narrow plan columns (3.5rem mobile) — "Coming soon" must WRAP, not nowrap-overflow the cell (mirrors
+   Billing, which wraps a small italic label in its w-14 column). No pill/border at this width. */
+.hg-landing .soon { display: inline-block; font-size: .62rem; font-weight: 600; font-style: italic; line-height: 1.15; color: var(--ink-faint); }
+.hg-landing .fn { margin-top: 1.4rem; display: grid; gap: .3rem; }
+.hg-landing .fn p { font-size: .8rem; color: var(--ink-faint); }
+.hg-landing .fn sup { color: var(--ink-soft); }
 
 /* ---------- final cta ---------- */
 .hg-landing .final { text-align: center; }
+.hg-landing .truck { width: min(230px,60%); height: auto; display: block; margin: 0 auto 1.6rem; }
 .hg-landing .final h2 { max-width: 20ch; margin-inline: auto; }
-.hg-landing .final .lede { margin-inline: auto; margin-bottom: 2rem; }
+.hg-landing .final .lede { margin-inline: auto; margin-bottom: 1.6rem; }
+.hg-landing .final .proof { justify-items: center; margin-top: 1.2rem; }
 
 /* ---------- footer (background = HEADER_BG className) ---------- */
 .hg-landing footer { color: #fff; padding: 3rem 0 2.2rem; }
@@ -159,5 +264,4 @@
 .hg-landing .foot-links a { color: #C3CAD8; text-decoration: none; font-size: .9rem; }
 .hg-landing .foot-links a:hover { color: #fff; }
 .hg-landing .foot-base { margin-top: 2.4rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.12); display: flex; flex-wrap: wrap; gap: .6rem; justify-content: space-between; color: #7C8698; font-size: .82rem; }
-.hg-landing .vf { color: #C3CAD8; }
-.hg-landing .vf b { color: #fff; font-weight: 600; }
+.hg-landing .vf { color: #C3CAD8; } .hg-landing .vf b { color: #fff; font-weight: 600; }

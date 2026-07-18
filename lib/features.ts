@@ -47,14 +47,14 @@ const PRO_FEATURES: Feature[] = [
   'instagram_messenger_replies',
   'branded_qr_code',
   'advanced_reporting',
+  'whatsapp_replies',   // Pro+Max — moved from Max-only: a Pro truck was sold WhatsApp replies and the gate silently blocked it (canAccess('pro',…)===false)
 ]
 
 const MAX_FEATURES: Feature[] = [
-  ...PRO_FEATURES,
+  ...PRO_FEATURES,   // includes whatsapp_replies now
   'ticket_printing',
   'multi_device_kds',
   'cook_screen',
-  'whatsapp_replies',
 ]
 
 const TRIAL_FEATURES: Feature[] = [...MAX_FEATURES]
@@ -120,42 +120,21 @@ export function getPlanFeatures(plan: Plan): Set<Feature> {
   return PLAN_FEATURES[plan] ?? PLAN_FEATURES.starter
 }
 
-// Plan display metadata — for upgrade prompts
+// Plan display metadata — THE SINGLE SOURCE for plan name/price/description across the whole app: upgrade
+// prompts AND the pricing / billing / landing tables. lib/plan-features.ts DERIVES PLAN_PRICES +
+// PLAN_DESCRIPTIONS from this — do NOT re-hardcode those strings anywhere; that divergence was the drift
+// (three text mismatches had already crept in between the two copies).
 export const PLAN_META: Record<Plan, {
   name: string
   price: string
   description: string
 }> = {
-  starter: {
-    name: 'Starter',
-    price: 'Free',
-    description: 'Weekend traders & simple walk-up pitches',
-  },
-  pro: {
-    name: 'Pro',
-    price: '£29/mo',
-    description: 'Busy trucks scaling online pre-orders',
-  },
-  max: {
-    name: 'Max',
-    price: '£49/mo',
-    description: 'High-volume operations & festivals',
-  },
-  trial: {
-    name: 'Trial',
-    price: 'Free trial',
-    description: 'Pro features, time-limited',
-  },
-  tester: {
-    name: 'Tester',
-    price: '',
-    description: 'Pre-launch tester — full feature access',
-  },
-  demo: {
-    name: 'Demo',
-    price: '',
-    description: 'Prospect-facing sandbox — full product trial before signup (never public)',
-  },
+  starter: { name: 'Starter', price: 'Free',       description: 'Weekend traders & walk-up pitches' },
+  pro:     { name: 'Pro',     price: '£29/mo',     description: 'Busy trucks scaling pre-orders' },
+  max:     { name: 'Max',     price: '£49/mo',     description: 'High-volume operations & festivals' },
+  trial:   { name: 'Trial',   price: 'Free trial', description: 'All features included — Max tier + Pay at Hatch ordering' },
+  tester:  { name: 'Tester',  price: 'Lifetime',   description: 'Pre-launch tester — full feature access, lifetime discount' },
+  demo:    { name: 'Demo',    price: 'Demo',       description: 'Prospect sandbox — full trial before signup (never public)' },
 }
 
 // Maximum vans allowed per plan
