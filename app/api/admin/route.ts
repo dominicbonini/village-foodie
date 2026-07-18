@@ -1,33 +1,10 @@
 // app/api/admin/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { verifyAdmin } from '@/lib/auth/admin'   // canonical admin check (shared with the /landing gate)
 import { PLAN_META, type Plan } from '@/lib/features'
 
 const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)
-
-async function verifyAdmin(req?: NextRequest): Promise<boolean> {
-  const supabaseAuth = await createSupabaseServerClient()
-  let { data: { user } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged, resolves first
-  // ADDITIVE (native app): no cookie, but sends its Supabase session as a Bearer. Only reached when there's
-  // no cookie user AND an Authorization header is present → a browser (cookie auth) never enters this branch,
-  // so the web admin path is byte-for-byte unchanged. Bearer validated via the service client's getUser(jwt).
-  if (!user && req) {
-    const authz = req.headers.get('authorization')
-    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
-    if (jwt) {
-      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
-      if (bearerUser) user = bearerUser
-    }
-  }
-  if (!user) return false
-  const { data: operator } = await supabase
-    .from('operators')
-    .select('is_admin')
-    .eq('auth_user_id', user.id)
-    .single()
-  return !!operator?.is_admin
-}
 
 export async function GET(req: NextRequest) {
   const section = req.nextUrl.searchParams.get('section')

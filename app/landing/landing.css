@@ -28,9 +28,10 @@
   --ink: #2C4766;       /* body copy — landing-local, provisional */
   --ink-soft: #5F7A99;
   --ink-faint: #9AAFC4;
-  --orange: #EA580C;        /* THE one orange — orange-600, exactly Billing's "Upgrade to Max" button. Used for
-                               EVERY orange thing (button, checks, eyebrows, prices, group labels, wordmark). */
-  --orange-deep: #C2410C;   /* orange-700 — button HOVER only (matches Billing's hover:bg-orange-700). Not an accent. */
+  --orange: #EF8B2C;        /* THE one orange — warm amber-gold (landing-local; friendlier/appetite-forward than
+                               Billing's orange-600). Used for EVERY orange thing (button, checks, eyebrows,
+                               prices, group labels, wordmark). ⚠️ white-on-this = ~2.5:1 — see .btn-primary note. */
+  --orange-deep: #D9741A;   /* deeper amber — button HOVER only. Not an accent. */
   --orange-wash: #FEF1E7;
   --orange-line: #F6D2B4;
   --line: #DDE5EE;
@@ -92,10 +93,15 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing nav .btn-ghost { color: #fff; border-color: rgba(255,255,255,.24); } .hg-landing nav .btn-ghost:hover { border-color: rgba(255,255,255,.55); }
 .hg-landing .nav-r .btn { white-space: nowrap; }   /* the CTA must never wrap the header */
 .hg-landing .cta-short { display: none; }
+.hg-landing .nav-only-sm { display: none; }   /* mobile-only Log in — hidden on desktop (desktop uses .nav-hide-sm) */
 @media(max-width:639px){
-  .hg-landing .nav-hide-sm { display: none; }   /* < 640px: drop Pricing + Log in, keep one compact CTA */
+  .hg-landing .nav-hide-sm { display: none; }   /* < 640px: drop Pricing + full Log in */
   .hg-landing .cta-full { display: none; }
   .hg-landing .cta-short { display: inline; }
+  /* compact Log in to the LEFT of the CTA — small text + minimal padding so both fit ~360px with no wrap */
+  .hg-landing .nav-only-sm { display: inline-flex; font-size: .82rem; padding: .4rem .45rem; }
+  .hg-landing .nav-r { gap: .25rem; }
+  .hg-landing .nav-cta { padding-inline: .9rem; }
 }
 
 /* ---------- hero ---------- */
@@ -104,22 +110,31 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 @media(min-width:940px){ .hg-landing .hero-grid { grid-template-columns: .9fr 1.1fr; } }
 .hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
 .hg-landing h1 .lean { font-style: italic; color: var(--orange); }
-.hg-landing .hero-sub { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--orange); letter-spacing: -.015em; max-width: 32ch; margin-bottom: 1.8rem; }
-.hg-landing .demo-line { font-size: .95rem; color: var(--ink-soft); max-width: 38ch; margin-bottom: 1rem; }
-.hg-landing .demo-line b { display: block; font-family: var(--display); font-weight: 800; font-size: 1.12rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .3rem; line-height: 1.25; }
-.hg-landing .hero-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 1.7rem; }
+/* Tagline — muted soft-ink with ONLY the accent word (cooking!) in italic-orange (reuses .lean). */
+.hg-landing .hero-tag { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--ink-soft); letter-spacing: -.015em; max-width: 32ch; margin-bottom: 1.8rem; }
+.hg-landing .hero-tag .lean { font-style: italic; color: var(--orange); }
+/* CTA row. MOBILE-first (≤939px): stacked column — full-width button, then CENTRED demo text under it.
+   DESKTOP (≥940px, below): button LEFT + text RIGHT on one row, top-aligned. */
+.hg-landing .hero-cta-row { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.2rem; }
+.hg-landing .hero-cta-row .btn-lg { width: 100%; justify-content: center; white-space: nowrap; }
+.hg-landing .hero-cta-text { max-width: 34ch; margin-inline: auto; }
+.hg-landing .hero-cta-text b { display: block; font-family: var(--display); font-weight: 800; font-size: 1.12rem; color: var(--head); letter-spacing: -.015em; margin-bottom: .3rem; line-height: 1.25; }
+.hg-landing .hero-cta-text span { display: block; font-size: .95rem; color: var(--ink-soft); }
+/* MOBILE (≤939px): centre the whole left column — title, tagline, and CTA (CTA centring is in its base rule). */
+@media(max-width:939px){
+  .hg-landing .hero h1 { text-align: center; }
+  .hg-landing .hero-tag { text-align: center; margin-inline: auto; }
+}
+@media(min-width:940px){
+  /* button LEFT + text RIGHT, vertically centred against the text block, button on one slim line. */
+  .hg-landing .hero-cta-row { flex-direction: row; align-items: center; text-align: left; }
+  .hg-landing .hero-cta-row .btn-lg { width: auto; flex: none; }
+  .hg-landing .hero-cta-text { max-width: 30ch; margin-inline: 0; }
+}
 .hg-landing .proof { list-style: none; display: grid; gap: .6rem; }
 .hg-landing .proof li { display: flex; align-items: center; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: 1.02rem; color: var(--head); letter-spacing: -.01em; }
 .hg-landing .tick { width: 21px; height: 21px; border-radius: 50%; background: var(--orange); flex: none; display: flex; align-items: center; justify-content: center; }
 .hg-landing .tick svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
-/* MOBILE hero: keep copy LEFT-aligned (better for multi-line reading); make the CTA full-width — bigger tap
-   target and it balances the left-heavy hero. */
-@media(max-width:620px){
-  .hg-landing .hero-cta { align-self: stretch; }
-  .hg-landing .hero-cta .btn-lg { width: 100%; justify-content: center; }
-  .hg-landing .hero-cta .proof { justify-items: center; }   /* centre the 3 proof bullets under the full-width CTA */
-}
-
 /* ---------- screenshot fan (dashed placeholders — keep until real shots land) ---------- */
 .hg-landing .fan { position: relative; display: flex; align-items: center; justify-content: center; min-height: clamp(300px,42vw,430px); animation: hg-rise .7s cubic-bezier(.2,.7,.3,1) both; }
 @keyframes hg-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
@@ -131,6 +146,16 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .shot-dash { width: min(72%,400px); aspect-ratio: 16/11; left: 50%; top: 50%; transform: translate(-50%,-50%) rotate(-1deg); z-index: 2; border-color: var(--ink-faint); }
 .hg-landing .shot-phone { width: min(26%,140px); aspect-ratio: 9/17; right: 2%; bottom: 0; transform: rotate(5deg); z-index: 3; border-radius: 18px; }
 .hg-landing .shot-phone .hint { font-size: .7rem; }
+
+/* ---------- trust strip (full-width band under the hero) ---------- */
+.hg-landing .trust-strip { background: var(--wash); border-block: 1px solid var(--line); }
+/* Desktop: one centred horizontal row of three, evenly spaced. */
+.hg-landing .trust-in { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2.8rem; padding-block: 1.1rem; }
+.hg-landing .trust-in li { display: flex; align-items: flex-start; gap: .6rem; font-family: var(--display); font-weight: 700; font-size: .98rem; color: var(--head); letter-spacing: -.01em; }
+/* Mobile: stack, each bullet centred on its own line (tick + text as one centred unit). */
+@media(max-width:720px){
+  .hg-landing .trust-in { flex-direction: column; align-items: center; gap: .8rem; }
+}
 
 /* ---------- sections ---------- */
 .hg-landing section { padding: clamp(3.5rem,7vw,5.5rem) 0; }
@@ -147,16 +172,24 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .does-item p { color: var(--ink-soft); font-size: .94rem; }
 
 /* ---------- testimonial ---------- */
+/* Stays WHITE (the Gusto logo has a white background, so it must sit on white, not a tint). It reads as its
+   own band because both neighbours are tinted: "how it works" (band) above, "orders" (band) below. */
 .hg-landing .quote-sec { padding: clamp(3rem,6vw,4.5rem) 0; }
 .hg-landing .quote-in { max-width: 44rem; margin: 0 auto; text-align: center; }
 .hg-landing .quote-mark { font-family: var(--display); font-weight: 800; font-style: italic; font-size: 3.4rem; color: var(--orange); line-height: .6; display: block; margin-bottom: .6rem; }
 .hg-landing blockquote { font-family: var(--display); font-weight: 700; font-size: clamp(1.25rem,2.6vw,1.7rem); line-height: 1.35; letter-spacing: -.02em; color: var(--head); margin-bottom: 1.5rem; }
-.hg-landing .quote-by { display: flex; align-items: center; justify-content: center; gap: .8rem; flex-wrap: wrap; }
+/* Attribution STACKS vertically, centred (both desktop + mobile): logo → name → award credit. */
+.hg-landing .quote-by { display: flex; flex-direction: column; align-items: center; gap: .55rem; }
 .hg-landing .quote-logo { height: 56px; width: auto; flex: none; display: block; }
-.hg-landing .quote-who { text-align: center; }   /* centre name + credential under the centred logo */
+.hg-landing .quote-who { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .1rem; }
 .hg-landing .quote-name { font-family: var(--display); font-weight: 800; color: var(--head); font-size: 1rem; letter-spacing: -.01em; }
-.hg-landing .quote-cred { display: inline-flex; align-items: center; gap: .35rem; margin-top: .15rem; font-size: .78rem; font-weight: 600; color: var(--orange); }
-.hg-landing .quote-cred svg { width: 12px; height: 12px; fill: var(--orange); }
+/* Credential stacks: prominent TITLE line (stars flank it) with a smaller, muted SCOPE line beneath — both
+   centred and smaller/quieter than the name above. */
+/* Stacks IDENTICALLY at every width (no breakpoints): title row (★ — text — ★) on line 1, scope on line 2. */
+.hg-landing .quote-cred { display: flex; flex-direction: column; align-items: center; gap: .15rem; margin-top: .35rem; width: 100%; }
+.hg-landing .cred-title { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: .4rem; width: 100%; font-size: .78rem; font-weight: 700; line-height: 1.3; color: var(--orange); letter-spacing: .01em; white-space: nowrap; }
+.hg-landing .cred-scope { display: block; width: 100%; font-size: .68rem; font-weight: 600; line-height: 1.3; color: var(--ink-faint); text-align: center; }
+.hg-landing .quote-cred svg { width: 12px; height: 12px; fill: var(--orange); flex: none; }
 
 /* ---------- steps ---------- */
 .hg-landing .steps { display: grid; gap: 2rem; grid-template-columns: 1fr; counter-reset: s; }
@@ -197,33 +230,40 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .plan-name { font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--head); letter-spacing: -.02em; margin-bottom: .2rem; }
 .hg-landing .plan-who { font-size: .85rem; color: var(--ink-soft); margin-bottom: .9rem; min-height: 2.4em; }
 .hg-landing .plan-price { font-family: var(--display); font-weight: 800; font-size: 2.3rem; color: var(--head); letter-spacing: -.04em; line-height: 1; margin-bottom: .15rem; }
-.hg-landing .plan-price span { font-size: .95rem; font-weight: 600; color: var(--ink-faint); letter-spacing: 0; }
+.hg-landing .plan-price span { display: block; font-size: .9rem; font-weight: 600; color: var(--ink-soft); letter-spacing: 0; margin-top: .3rem; }
 .hg-landing .plan-fee { font-size: .85rem; color: var(--ink-soft); margin-bottom: 1.2rem; min-height: 2.6em; }
 .hg-landing .plan-fee b { color: var(--head); font-weight: 600; }
+.hg-landing .fee-star { color: var(--orange); font-weight: 700; }   /* the 0.99%* marker → card-fee note below */
 .hg-landing .plan ul { list-style: none; margin-bottom: 1.5rem; display: grid; gap: .5rem; }
 .hg-landing .plan li { font-size: .92rem; color: var(--ink-soft); padding-left: 1.3rem; position: relative; }
 .hg-landing .plan li::before { content: ""; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
 .hg-landing .plan li.lead { color: var(--head); font-weight: 600; }
-.hg-landing .soon-inline { display: inline-block; font-size: .62rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); border: 1px solid var(--line); border-radius: 4px; padding: .05rem .3rem; margin-left: .2rem; white-space: nowrap; vertical-align: 1px; }
+.hg-landing .soon-inline { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-faint); border: 1px solid var(--line); border-radius: 4px; padding: .05rem .3rem; margin-left: .2rem; white-space: nowrap; vertical-align: 1px; }
 .hg-landing .plan .btn { margin-top: auto; justify-content: center; }
 .hg-landing .price-foot { margin-top: 1.8rem; display: grid; gap: .5rem; max-width: 46rem; margin-inline: auto; text-align: center; }
 .hg-landing .price-foot p { font-size: .88rem; color: var(--ink-soft); }
 .hg-landing .price-foot p b { color: var(--head); font-weight: 600; }
 
 /* ---------- comparison (FLEX, mirrors Manage → Billing; see file header note) ---------- */
-.hg-landing .cmp2 { margin-top: 1.4rem; font-size: .9rem; }
-.hg-landing .cmp2-head { position: sticky; top: var(--nav-h); z-index: 40; background: var(--wash); display: flex; align-items: flex-end; padding-top: .5rem; padding-bottom: .7rem; border-bottom: 2px solid var(--head); }
+/* Column width defined ONCE (--cmp-col) and referenced by BOTH the header cols AND the body cells, so a plan
+   header can never drift off its tick column. The left region (feat/label) is flex:1 in both, identical. */
+.hg-landing .cmp2 { --cmp-col: 3.6rem; margin-top: 1.4rem; font-size: .9rem; }
+@media(min-width:620px){ .hg-landing .cmp2 { --cmp-col: 6rem; } }
+@media(min-width:900px){ .hg-landing .cmp2 { --cmp-col: 7rem; } }
+/* TOP-align columns: the Trial column has no sub-label, so flex-end dropped its name+price below the others.
+   flex-start lines the plan NAMES up on row 1 and the PRICES on row 2 across all columns; subs hang below. */
+.hg-landing .cmp2-head { position: sticky; top: var(--nav-h); z-index: 40; background: var(--wash); display: flex; align-items: flex-start; padding-top: .5rem; padding-bottom: .7rem; border-bottom: 2px solid var(--head); }
 .hg-landing .cmp2-feat { flex: 1; min-width: 0; padding-right: .6rem; }   /* header left spacer */
 /* Row left region — holds name (+ desc). MOBILE: desc STACKS under name (block flow). */
 .hg-landing .cmp2-label { flex: 1; min-width: 0; padding-right: .6rem; }
 /* 4 plan columns (Trial|Starter|Pro|Max) — narrow on phones so they fit with NO horizontal scroll (which
    would re-introduce the overflow-x sticky trap); wider as room allows. col + cell share widths so they align. */
-.hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: 3rem; flex: none; text-align: center; padding-inline: .1rem; }
-@media(min-width:620px){ .hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: 6rem; } }
-@media(min-width:900px){ .hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: 7rem; } }
-.hg-landing .th-plan { font-family: var(--display); font-weight: 800; color: var(--head); font-size: .72rem; letter-spacing: -.02em; display: block; }
+.hg-landing .cmp2-col, .hg-landing .cmp2-cell { width: var(--cmp-col); flex: none; text-align: center; padding-inline: .1rem; }
+/* Mobile plan name/price bumped up for readability on small phones (~360px); columns (--cmp-col 3.6rem) still
+   fit all four side by side with no horizontal scroll. Larger from 620px up. */
+.hg-landing .th-plan { font-family: var(--display); font-weight: 800; color: var(--head); font-size: .85rem; letter-spacing: -.02em; display: block; }
 @media(min-width:620px){ .hg-landing .th-plan { font-size: .95rem; } }
-.hg-landing .th-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .68rem; letter-spacing: -.02em; display: block; margin-top: .1rem; white-space: nowrap; }
+.hg-landing .th-price { font-family: var(--display); font-weight: 800; color: var(--orange); font-size: .78rem; letter-spacing: -.02em; display: block; margin-top: .1rem; white-space: nowrap; }
 @media(min-width:620px){ .hg-landing .th-price { font-size: .9rem; } }
 .hg-landing .th-sub { display: block; font-size: .62rem; font-weight: 600; color: var(--ink-faint); line-height: 1.25; margin-top: .1rem; }
 @media(max-width:619px){ .hg-landing .th-sub { display: none; } }   /* keep the sticky header short on phones (2 lines: name + price) */
@@ -242,9 +282,12 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .yes { color: var(--orange); font-weight: 700; font-size: 1.05rem; }
 .hg-landing .no { color: var(--ink-faint); }
 .hg-landing .val { font-size: .78rem; color: var(--ink); font-weight: 600; line-height: 1.3; display: inline-block; }
+/* Narrowest phones: shrink fee values a touch so single-word cells ("Unlimited", "£1,500") fit the 3.6rem
+   column on one line without overflowing into the next column. (Multi-word "Pay at Hatch" still wraps.) */
+@media(max-width:619px){ .hg-landing .val { font-size: .7rem; letter-spacing: -.01em; } }
 /* Narrow plan columns (3.5rem mobile) — "Coming soon" must WRAP, not nowrap-overflow the cell (mirrors
    Billing, which wraps a small italic label in its w-14 column). No pill/border at this width. */
-.hg-landing .soon { display: inline-block; font-size: .62rem; font-weight: 600; font-style: italic; line-height: 1.15; color: var(--ink-faint); }
+.hg-landing .soon { display: inline-block; font-size: .7rem; font-weight: 600; font-style: italic; line-height: 1.15; color: var(--ink-faint); }
 .hg-landing .fn { margin-top: 1.4rem; display: grid; gap: .3rem; }
 .hg-landing .fn p { font-size: .8rem; color: var(--ink-faint); }
 .hg-landing .fn sup { color: var(--ink-soft); }
@@ -265,3 +308,20 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .foot-links a:hover { color: #fff; }
 .hg-landing .foot-base { margin-top: 2.4rem; padding-top: 1.4rem; border-top: 1px solid rgba(255,255,255,.12); display: flex; flex-wrap: wrap; gap: .6rem; justify-content: space-between; color: #7C8698; font-size: .82rem; }
 .hg-landing .vf { color: #C3CAD8; } .hg-landing .vf b { color: #fff; font-weight: 600; }
+/* MOBILE: centre the whole footer — wordmark, tagline, links row and base row. Desktop stays as-is. */
+@media(max-width:720px){
+  .hg-landing .foot-grid { flex-direction: column; align-items: center; text-align: center; }
+  .hg-landing .foot-tag { margin-inline: auto; }
+  .hg-landing .foot-links { justify-content: center; }
+  .hg-landing .foot-base { flex-direction: column; align-items: center; text-align: center; }
+}
+
+/* ---------- MOBILE (≤720px) section-header alignment pass ---------- */
+/* DESKTOP is UNCHANGED. Per content section: centre the eyebrow, h2 AND the intro paragraph (including the
+   long What-it-does / Orders intros). Body content (feature grid, steps, cards, comparison rows) stays LEFT.
+   Pricing header is already centred on all sizes. */
+@media(max-width:720px){
+  .hg-landing .eyebrow { text-align: center; }
+  .hg-landing section h2 { text-align: center; }
+  .hg-landing section .lede { text-align: center; margin-inline: auto; }
+}

@@ -14,7 +14,7 @@ import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import {
-  FEATURE_SECTIONS, TRANSACTION_ROWS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
+  FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
   type FeatureValue,
 } from '@/lib/plan-features'
 import { PLAN_META } from '@/lib/features'
@@ -40,9 +40,28 @@ const PLAN_SUB: Record<TablePlan, string> = { trial: '', starter: 'free forever'
 // Trial column shows just "Free" (not "Free trial" + a sub) — keeps the sticky header compact.
 const PLAN_PRICE_LABEL: Record<TablePlan, string> = { trial: 'Free', starter: PLAN_PRICES.starter, pro: PLAN_PRICES.pro, max: PLAN_PRICES.max }
 
-// Trial mirrors Billing exactly: it includes everything Max has, and pay-at-hatch is always available.
+// Trial mirrors Billing exactly: it includes everything Max has, and pay-at-hatch is always available. EXCEPT
+// SMS confirmations — a paid add-on that isn't part of the free trial, so the Trial column shows "—" (not the
+// Coming-soon marker Max/Pro carry).
 function trialFeatureValue(row: { name: string; max: FeatureValue }): FeatureValue {
-  return row.name === 'Online ordering — Pay at Hatch' ? true : row.max
+  if (row.name === 'Online ordering — Pay at Hatch') return true
+  if (row.name === 'SMS order confirmations') return false
+  return row.max
+}
+
+// Landing-only Fees rows — RENDER-ONLY. The shared TRANSACTION_ROWS (lib/plan-features.ts) is NOT modified;
+// Manage → Billing / Admin keep their own version. One short fact per cell so each fits one line on mobile.
+// Footnotes reuse the shared FOOTNOTES: 1 = walk-up terminal fees, 2 = Stripe/online-payment fees (0.99%).
+const LANDING_FEE_ROWS: { name: string; footnote?: string; cells: Record<TablePlan, string> }[] = [
+  { name: 'Walk-up orders',        footnote: '1', cells: { trial: '0%',        starter: '0%',           pro: '0%',     max: '0%'     } },
+  { name: 'Online orders included', footnote: '2', cells: { trial: 'Unlimited', starter: '—',            pro: '£1,500', max: '£2,000' } },
+  { name: 'Fee after that',        footnote: '2', cells: { trial: 'Free',      starter: 'Pay at Hatch', pro: '0.99%',  max: '0.99%'  } },
+]
+
+// RENDER-ONLY footnote text overrides for the landing table. The shared FOOTNOTES (lib/plan-features.ts) are
+// NOT modified — Billing/Admin keep the original wording; only the landing table shows this text.
+const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
+  '2': 'Standard card processing fees (currently 1.5% + 20p) apply to all online orders, including those within your allowance.',
 }
 
 // One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
@@ -57,6 +76,15 @@ const Check = () => (
   <span className="tick"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.5 L4.6 9 L10 3" /></svg></span>
 )
 
+// Pricing-card price: split "£29/mo" into the big amount + a "per truck / month" sub-line (matches the compare
+// header wording). Free/other plans show no sub. Render-only — PLAN_PRICES/PLAN_META are untouched.
+function PlanPrice({ plan }: { plan: 'starter' | 'pro' | 'max' }) {
+  const raw = PLAN_PRICES[plan]
+  const perTruck = raw.endsWith('/mo')
+  const amount = perTruck ? raw.slice(0, -3) : raw
+  return <div className="plan-price">{amount}{perTruck && <span>per truck / month</span>}</div>
+}
+
 export default function LandingPage() {
   return (
     <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
@@ -68,12 +96,14 @@ export default function LandingPage() {
             <HatchGrabWordmark variant="dark" />
           </a>
           <div className="nav-r">
-            {/* Pricing + Log in are hidden < 640px (CSS) so the CTA never wraps/overflows the header. */}
+            {/* Pricing + full Log in are hidden < 640px (CSS). A compact mobile-only Log in (nav-only-sm) sits to
+                the LEFT of the CTA so small screens still get a login; the CTA drops its arrow on mobile to fit. */}
             <a href="#pricing" className="btn btn-quiet nav-hide-sm">Pricing</a>
             <a href="#" className="btn btn-ghost nav-hide-sm">Log in</a>
+            <a href="#" className="btn btn-quiet nav-only-sm">Log in</a>
             <a href="#try" className="btn btn-primary nav-cta">
               <span className="cta-full">Upload my menu →</span>
-              <span className="cta-short">Upload menu →</span>
+              <span className="cta-short">Upload menu</span>
             </a>
           </div>
         </div>
@@ -83,16 +113,15 @@ export default function LandingPage() {
       <header className="hero">
         <div className="wrap hero-grid">
           <div>
-            <h1>The ordering system built for food trucks.</h1>
-            <p className="hero-sub">Spend less time booking. More time cooking!</p>
-            <p className="demo-line"><b>Upload a photo of your menu. See it working in under 30 seconds.</b>No signup, no account — just a working demo with your truck’s food in it.</p>
-            <div className="hero-cta">
+            <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
+            <p className="hero-tag">Spend less time booking. More time <span className="lean">cooking!</span></p>
+            {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
+            <div className="hero-cta-row">
               <a href="#try" className="btn btn-primary btn-lg">Upload my menu →</a>
-              <ul className="proof">
-                <li><Check /> First month 100% free, everything unlocked</li>
-                <li><Check /> No card needed</li>
-                <li><Check /> Cancel anytime, no contract</li>
-              </ul>
+              <div className="hero-cta-text">
+                <b>Upload a photo of your menu. See it working in under 30 seconds.</b>
+                <span>No signup, no account — just a working demo with your truck’s food in it.</span>
+              </div>
             </div>
           </div>
 
@@ -106,8 +135,19 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ============ WHAT IT DOES ============ */}
-      <section className="band">
+      {/* ============ TRUST STRIP ============ Full-width band under the hero grid; hairline top/bottom on the
+          wash tint. Three bullets (orange ticks): row on desktop, left-aligned stack on mobile. */}
+      <div className="trust-strip">
+        <ul className="trust-in wrap">
+          <li><Check /> First month 100% free, everything unlocked</li>
+          <li><Check /> No card needed</li>
+          <li><Check /> Cancel anytime, no contract</li>
+        </ul>
+      </div>
+
+      {/* ============ WHAT IT DOES ============ (white — first content section, alternates against the wash
+          trust strip above and the wash "how it works" band below) */}
+      <section>
         <div className="wrap">
           <p className="eyebrow">What it does</p>
           <h2>Built for food trucks, not restaurants.</h2>
@@ -119,6 +159,22 @@ export default function LandingPage() {
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp, Messenger and Instagram get answered while you’re at the grill.</p></div>
             <div className="does-item"><h3>No signal? Keep serving.</h3><p>Some outdoor pitches are notorious for dead zones. If your connection drops, online ordering pauses automatically — so nobody pays for food you haven’t seen. The iPad app keeps taking orders regardless (Android coming soon).</p></div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============ HOW IT WORKS ============ (tinted band. Order is what-it-does(white) → this(wash) →
+          testimonial(white) → orders(wash) … so the page alternates white/wash cleanly and the white
+          testimonial sits between two wash bands without being tinted itself.) */}
+      <section className="band">
+        <div className="wrap">
+          <p className="eyebrow">Getting going</p>
+          <h2>Get set up and start taking orders in about 15 minutes.</h2>
+          <p className="lede">Three things to sort — and the two that would eat your evening come from a photo.</p>
+          <div className="steps">
+            <div className="step"><h3>Build your menu</h3><p>Photograph your board or paste it in. Items, prices and extras all come across on their own — you just check they’re right.</p></div>
+            <div className="step"><h3>Add your schedule</h3><p>Got it on your website? We’ll read it from there and keep it up to date. If not, photograph that too. You just approve what it finds.</p></div>
+            <div className="step"><h3>Share your link</h3><p>Post it on Facebook, stick the QR on the van. Orders land on your screen, in the order you need to cook them.</p></div>
           </div>
         </div>
       </section>
@@ -136,26 +192,18 @@ export default function LandingPage() {
             <Image className="quote-logo" src="/gusto-logo.png" alt="Pizzeria Gusto" width={320} height={233} />
             <span className="quote-who">
               <span className="quote-name">Pizzeria Gusto</span>
-              <span className="quote-cred">
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0l2.2 4.6 5 .7-3.6 3.5.9 5L8 11.4 3.5 13.8l.9-5L.8 5.3l5-.7z" /></svg>
-                Regional winner — Mobile Pizzeria of the Year
-                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0l2.2 4.6 5 .7-3.6 3.5.9 5L8 11.4 3.5 13.8l.9-5L.8 5.3l5-.7z" /></svg>
+              {/* ⚠️ Award wording UNVERIFIED (pending Gusto confirmation) — shown here only because /landing is
+                  admin-gated. Layout is set with INLINE styles (not just .cred-* classes) so it renders
+                  correctly even if a stale landing.css is cached: title row (★ — text — ★) then scope beneath. */}
+              <span className="quote-cred" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem', marginTop: '0.35rem', width: '100%' }}>
+                <span className="cred-title" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', whiteSpace: 'nowrap', color: 'var(--orange)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.01em' }}>
+                  <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" style={{ flex: 'none', fill: 'var(--orange)' }}><path d="M8 0l2.2 4.6 5 .7-3.6 3.5.9 5L8 11.4 3.5 13.8l.9-5L.8 5.3l5-.7z" /></svg>
+                  Mobile Pizzeria of the Year
+                  <svg width="12" height="12" viewBox="0 0 16 16" aria-hidden="true" style={{ flex: 'none', fill: 'var(--orange)' }}><path d="M8 0l2.2 4.6 5 .7-3.6 3.5.9 5L8 11.4 3.5 13.8l.9-5L.8 5.3l5-.7z" /></svg>
+                </span>
+                <span className="cred-scope" style={{ display: 'block', textAlign: 'center', color: 'var(--ink-faint)', fontWeight: 600, fontSize: '0.68rem' }}>Regional winner</span>
               </span>
             </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ============ HOW IT WORKS ============ */}
-      <section>
-        <div className="wrap">
-          <p className="eyebrow">Getting going</p>
-          <h2>Get set up and start taking orders in about fifteen minutes.</h2>
-          <p className="lede">Three things to sort — and the two that would eat your evening come from a photo.</p>
-          <div className="steps">
-            <div className="step"><h3>Build your menu</h3><p>Photograph your board or paste it in. Items, prices and extras all come across on their own — you just check they’re right.</p></div>
-            <div className="step"><h3>Add your schedule</h3><p>Got it on your website? We’ll read it from there and keep it up to date. If not, photograph that too. You just approve what it finds.</p></div>
-            <div className="step"><h3>Share your link</h3><p>Post it on Facebook, stick the QR on the van. Orders land on your screen, in the order you need to cook them.</p></div>
           </div>
         </div>
       </section>
@@ -189,12 +237,12 @@ export default function LandingPage() {
           <div className="price-head">
             <p className="eyebrow">Pricing</p>
             <h2>Start free. Stay free, if that’s all you need.</h2>
-            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Walk-ups are free on every plan, always.</p>
+            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees (currently 1.5% + 20p) apply to all online orders, including those within your allowance. Walk-ups are free on every plan, always.</p>
           </div>
 
           <div className="trial-banner">
             <strong>Your first month is completely free — every feature unlocked.</strong>
-            <span>See what you actually use, then pick the plan that fits. No card to start, cancel anytime.</span>
+            <span>With Pay at Hatch, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time — <b><u>adding online payments doesn’t start your subscription</u></b>; you’re only charged when you actively pick a paid plan after your free month. No card to start, cancel anytime.</span>
           </div>
 
           <div className="plans">
@@ -202,7 +250,7 @@ export default function LandingPage() {
             <div className="plan">
               <div className="plan-name">{PLAN_META.starter.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.starter}</div>
-              <div className="plan-price">{PLAN_PRICES.starter}</div>
+              <PlanPrice plan="starter" />
               <div className="plan-fee">{PLAN_ALLOWANCES.starter}</div>
               <ul>
                 <li className="lead">Everything to run a service</li>
@@ -221,8 +269,8 @@ export default function LandingPage() {
               <span className="plan-tag">Most trucks</span>
               <div className="plan-name">{PLAN_META.pro.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.pro}</div>
-              <div className="plan-price">{PLAN_PRICES.pro}</div>
-              <div className="plan-fee">{PLAN_ALLOWANCES.pro}</div>
+              <PlanPrice plan="pro" />
+              <div className="plan-fee">{PLAN_ALLOWANCES.pro}<sup className="fee-star">*</sup></div>
               <ul>
                 <li className="lead">Everything in Free, plus</li>
                 <li>Take payment online</li>
@@ -239,8 +287,8 @@ export default function LandingPage() {
             <div className="plan">
               <div className="plan-name">{PLAN_META.max.name}</div>
               <div className="plan-who">{PLAN_DESCRIPTIONS.max}</div>
-              <div className="plan-price">{PLAN_PRICES.max}</div>
-              <div className="plan-fee">{PLAN_ALLOWANCES.max}</div>
+              <PlanPrice plan="max" />
+              <div className="plan-fee">{PLAN_ALLOWANCES.max}<sup className="fee-star">*</sup></div>
               <ul>
                 <li className="lead">Everything in Pro, plus</li>
                 <li>Multi-device kitchen sync</li>
@@ -253,7 +301,7 @@ export default function LandingPage() {
           </div>
 
           <div className="price-foot">
-            <p><b>Taking card payments?</b> Your card processor charges their usual fee on top — that one goes to them, not us. Sell at the hatch and there’s nothing to pay at all.</p>
+            <p>*Standard card processing fees (currently 1.5% + 20p) apply to all online orders, including those within your allowance.</p>
             <p>Cancel by doing nothing. We’ll never charge a card you didn’t give us.</p>
           </div>
         </div>
@@ -264,7 +312,7 @@ export default function LandingPage() {
         <div className="wrap">
           <p className="eyebrow">Compare</p>
           <h2>Every feature, side by side.</h2>
-          <p className="lede">Your free month includes everything in the Max column — try the lot before you pick.</p>
+          <p className="lede">Your free month includes everything — try the lot before you pick.</p>
 
           <div className="cmp2">
             {/* Sticky priced header — pins below the nav (top: --nav-h), opaque bg hides rows scrolling under.
@@ -280,15 +328,16 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Fees group — from TRANSACTION_ROWS (Trial mirrors Starter, per Billing) */}
+            {/* Fees group — RENDER-ONLY landing rows (LANDING_FEE_ROWS), one fact per cell. Source
+                lib/plan-features.ts is not modified. */}
             <div className="cmp2-grp">Fees</div>
-            {TRANSACTION_ROWS.map(row => (
+            {LANDING_FEE_ROWS.map(row => (
               <div key={row.name} className="cmp2-row">
                 <div className="cmp2-label">
                   <span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
                 </div>
                 {TABLE_PLANS.map(p => (
-                  <div key={p} className="cmp2-cell"><span className="val">{p === 'trial' ? row.values.starter : row.values[p as 'starter' | 'pro' | 'max']}</span></div>
+                  <div key={p} className="cmp2-cell"><span className="val">{row.cells[p]}</span></div>
                 ))}
               </div>
             ))}
@@ -316,7 +365,7 @@ export default function LandingPage() {
 
           <div className="fn">
             {FOOTNOTES.map(f => (
-              <p key={f.number}><sup>{f.number}</sup> {f.text}</p>
+              <p key={f.number}><sup>{f.number}</sup> {FOOTNOTE_TEXT_OVERRIDES[f.number] ?? f.text}</p>
             ))}
           </div>
         </div>

@@ -45,12 +45,14 @@ export const TRANSACTION_ROWS: {
     values: { starter: '0%', pro: '0%', max: '0%' },
   },
   {
+    // One row: the included allowance (£1,500 / £2,000) shown BEFORE the 0.99% fee — "first £X of online orders
+    // free, then 0.99% + card fee". Starter = Pay at Hatch (no online card orders).
     name: 'Online orders',
     footnote: '2',
     values: {
       starter: 'Pay at Hatch',
-      pro: '0.99% + card fee',
-      max: '0.99% + card fee',
+      pro: '£1,500 free, then 0.99% + card fee',
+      max: '£2,000 free, then 0.99% + card fee',
     },
   },
 ]
@@ -86,6 +88,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Auto-reply to Messenger and Instagram enquiries with your schedule and order link.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { name: 'SMS order confirmations', footnote: '6', detail: "Text customers automatically when their order's confirmed. Coming soon — will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
@@ -130,6 +133,10 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   {
     number: '5',
     text: 'Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
+  },
+  {
+    number: '6',
+    text: 'SMS confirmations are not yet available and will incur an additional charge once launched; pricing to be confirmed.',
   },
 ]
 
