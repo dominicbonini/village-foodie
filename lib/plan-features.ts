@@ -64,6 +64,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Discovery map listing',           detail: 'Your truck appears on the public HatchGrab map so nearby customers can find you.', starter: true,  pro: true,  max: true  },
       { name: 'Universal web dashboard',         detail: 'Run the whole service from any phone, tablet or laptop browser — nothing to install.', starter: true,  pro: true,  max: true  },
       { name: 'QR code',                          detail: 'A printable QR code that opens your menu and ordering page.', starter: true,  pro: true,  max: true  },
+      { name: 'Automatic schedule import',        detail: 'We read your existing website and pull your upcoming locations and times into your schedule automatically — you just review and confirm.', starter: true,  pro: true,  max: true  },
       { name: 'Meal deals & upsells',            detail: 'Bundle items into deals and offer add-ons at checkout to lift the average order.', starter: true,  pro: true,  max: true  },
       { name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
