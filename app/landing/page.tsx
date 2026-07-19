@@ -61,7 +61,13 @@ const LANDING_FEE_ROWS: { name: string; footnote?: string; cells: Record<TablePl
 // RENDER-ONLY footnote text overrides for the landing table. The shared FOOTNOTES (lib/plan-features.ts) are
 // NOT modified — Billing/Admin keep the original wording; only the landing table shows this text.
 const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
-  '2': 'Standard card processing fees (currently 1.5% + 20p) apply to all online orders, including those within your allowance.',
+  '2': 'Standard card processing fees apply to all online orders (currently 1.5% + 20p), including those within your allowance.',
+}
+
+// RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
+// FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
+const DETAIL_OVERRIDES: Record<string, string> = {
+  'Offline Order Protection': "If you lose signal, online ordering pauses automatically so customers can't place orders you won't see. Walk-up service carries on as normal.",
 }
 
 // One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
@@ -114,7 +120,7 @@ export default function LandingPage() {
         <div className="wrap hero-grid">
           <div>
             <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
-            <p className="hero-tag">Spend less time booking. More time <span className="lean">cooking!</span></p>
+            <p className="hero-tag">Spend less time booking.<br />More time <span className="lean">cooking!</span></p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
               <a href="#try" className="btn btn-primary btn-lg">Upload my menu →</a>
@@ -158,7 +164,7 @@ export default function LandingPage() {
             <div className="does-item"><h3>Upsell without saying a word</h3><p>Drinks, sides, extra dips — the extras you forget to mention when you’re at the grill. Every online order offers them, to every customer, every single time.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp, Messenger and Instagram get answered while you’re at the grill.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>Some outdoor pitches are notorious for dead zones. If your connection drops, online ordering pauses automatically — so nobody pays for food you haven’t seen. The iPad app keeps taking orders regardless (Android coming soon).</p></div>
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If your connection drops, <em>Offline Order Protection</em> pauses online ordering automatically — so nobody pays for orders you can’t see.</p></div>
           </div>
         </div>
       </section>
@@ -237,7 +243,7 @@ export default function LandingPage() {
           <div className="price-head">
             <p className="eyebrow">Pricing</p>
             <h2>Start free. Stay free, if that’s all you need.</h2>
-            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees (currently 1.5% + 20p) apply to all online orders, including those within your allowance. Walk-ups are free on every plan, always.</p>
+            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently 1.5% + 20p), including those within your allowance. Walk-ups are free on every plan, always.</p>
           </div>
 
           <div className="trial-banner">
@@ -301,7 +307,7 @@ export default function LandingPage() {
           </div>
 
           <div className="price-foot">
-            <p>*Standard card processing fees (currently 1.5% + 20p) apply to all online orders, including those within your allowance.</p>
+            <p>*Standard card processing fees apply to all online orders (currently 1.5% + 20p), including those within your allowance.</p>
             <p>Cancel by doing nothing. We’ll never charge a card you didn’t give us.</p>
           </div>
         </div>
@@ -350,7 +356,7 @@ export default function LandingPage() {
                   <div key={row.name} className="cmp2-row">
                     <div className="cmp2-label">
                       <span className="f-name">{row.name}{row.footnote && <sup className="f-note">{row.footnote}</sup>}</span>
-                      {row.detail && <span className="f-desc">{row.detail}</span>}
+                      {(DETAIL_OVERRIDES[row.name] ?? row.detail) && <span className="f-desc">{DETAIL_OVERRIDES[row.name] ?? row.detail}</span>}
                     </div>
                     {TABLE_PLANS.map(p => (
                       <div key={p} className="cmp2-cell">

@@ -109,7 +109,7 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing .hero-grid { display: grid; gap: clamp(2.5rem,5vw,3.5rem); grid-template-columns: 1fr; align-items: center; }
 @media(min-width:940px){ .hg-landing .hero-grid { grid-template-columns: .9fr 1.1fr; } }
 .hg-landing h1 { font-family: var(--display); font-weight: 800; color: var(--head); font-size: clamp(2rem,4.3vw,3rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1rem; }
-.hg-landing h1 .lean { font-style: italic; color: var(--orange); }
+.hg-landing h1 .lean { color: var(--orange); }   /* orange accent, upright (not italic), inherits h1 weight */
 /* Tagline — muted soft-ink with ONLY the accent word (cooking!) in italic-orange (reuses .lean). */
 .hg-landing .hero-tag { font-family: var(--display); font-weight: 700; font-size: clamp(1.15rem,2.2vw,1.45rem); color: var(--ink-soft); letter-spacing: -.015em; max-width: 32ch; margin-bottom: 1.8rem; }
 .hg-landing .hero-tag .lean { font-style: italic; color: var(--orange); }
