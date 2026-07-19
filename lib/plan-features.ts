@@ -84,7 +84,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Customer time slot selection',                 detail: 'Customers pick a collection time slot, spreading demand across your service.', starter: false, pro: true,           max: true           },
       { name: 'Smart Slot Management',                        detail: "HatchGrab paces orders across time slots to match your kitchen's capacity.", starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
-      { name: 'Branded QR code',                              detail: 'Add your logo and colours to your QR code.', starter: false, pro: true,  max: true  },
+      { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
       { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries with your schedule and order link.', starter: false, pro: true,           max: true           },
       // Coming soon (kept at the bottom of the section)
       { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Auto-reply to Messenger and Instagram enquiries with your schedule and order link.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
