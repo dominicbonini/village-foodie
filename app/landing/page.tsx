@@ -41,11 +41,11 @@ const PLAN_SUB: Record<TablePlan, string> = { trial: '', starter: 'free forever'
 const PLAN_PRICE_LABEL: Record<TablePlan, string> = { trial: 'Free', starter: PLAN_PRICES.starter, pro: PLAN_PRICES.pro, max: PLAN_PRICES.max }
 
 // Trial mirrors Billing exactly: it includes everything Max has, and pay-at-hatch is always available. EXCEPT
-// SMS confirmations — a paid add-on that isn't part of the free trial, so the Trial column shows "—" (not the
+// SMS order alerts — a paid add-on that isn't part of the free trial, so the Trial column shows "—" (not the
 // Coming-soon marker Max/Pro carry).
 function trialFeatureValue(row: { name: string; max: FeatureValue }): FeatureValue {
   if (row.name === 'Online ordering — Pay at Hatch') return true
-  if (row.name === 'SMS order confirmations') return false
+  if (row.name === 'SMS order alerts') return false
   return row.max
 }
 
@@ -67,7 +67,7 @@ const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
 // RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
 // FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
 const DETAIL_OVERRIDES: Record<string, string> = {
-  'Offline Order Protection': "If you lose signal, online ordering pauses automatically so customers can't place orders you won't see. Walk-up service carries on as normal.",
+  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPad app keeps you taking orders offline; the web dashboard needs a connection.",
 }
 
 // One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
@@ -160,11 +160,11 @@ export default function LandingPage() {
           <p className="lede">Most ordering systems assume a fixed address, reliable wifi and the same hours every week. You’re somewhere new every week, at different times, on patchy or no mobile coverage. HatchGrab was built for that.</p>
           <div className="does">
             <div className="does-item"><h3>Kill the queue</h3><p>Customers order ahead and pick a collection time. No shouting over the fryer.</p></div>
-            <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity — how many fit in the oven, how long they take. Once a collection time is full, customers can’t pick it.</p></div>
-            <div className="does-item"><h3>Upsell without saying a word</h3><p>Drinks, sides, extra dips — the extras you forget to mention when you’re at the grill. Every online order offers them, to every customer, every single time.</p></div>
+            <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity — how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
+            <div className="does-item"><h3>Never type your schedule twice</h3><p>You already post your pitches to Facebook — send us that same photo, email it, or let us read it from your website. We fill your schedule in; you just review and confirm. No double-entry, no extra admin.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
-            <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp, Messenger and Instagram get answered while you’re at the grill.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If your connection drops, <em>Offline Order Protection</em> pauses online ordering automatically — so nobody pays for orders you can’t see.</p></div>
+            <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re at the grill. Messenger and Instagram coming soon.</p></div>
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. On the iPad app you carry on taking orders through the dead zone — the web dashboard needs a connection.</p></div>
           </div>
         </div>
       </section>
@@ -248,7 +248,7 @@ export default function LandingPage() {
 
           <div className="trial-banner">
             <strong>Your first month is completely free — every feature unlocked.</strong>
-            <span>With Pay at Hatch, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time — <b><u>adding online payments doesn’t start your subscription</u></b>; you’re only charged when you actively pick a paid plan after your free month. No card to start, cancel anytime.</span>
+            <span>With Pay at Hatch, customers order ahead and pay when they collect, so you can take online orders without connecting a card processor at all. Prefer to take payment up front? Add online card payments any time — <b><u>adding online payments doesn’t start your subscription</u></b>. You’re only charged when you actively select a paid plan. We’ll never charge you without your clear permission. No card to start, cancel anytime.</span>
           </div>
 
           <div className="plans">
@@ -283,7 +283,8 @@ export default function LandingPage() {
                 <li>Pre-orders &amp; collection times</li>
                 <li>Smart slot management</li>
                 <li>Auto-accept orders</li>
-                <li>WhatsApp, Messenger &amp; Instagram auto-replies</li>
+                <li>WhatsApp auto-replies</li>
+                <li>Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
                 <li>Offline order protection</li>
               </ul>
               <a href="#try" className="btn btn-primary">Try Free</a>
@@ -308,7 +309,7 @@ export default function LandingPage() {
 
           <div className="price-foot">
             <p>*Standard card processing fees apply to all online orders (currently 1.5% + 20p), including those within your allowance.</p>
-            <p>Cancel by doing nothing. We’ll never charge a card you didn’t give us.</p>
+            <p>Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.</p>
           </div>
         </div>
       </section>

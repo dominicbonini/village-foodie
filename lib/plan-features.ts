@@ -62,15 +62,15 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     title: 'Core operations',
     rows: [
       { name: 'Discovery map listing',           detail: 'Your truck appears on the public HatchGrab map so nearby customers can find you.', starter: true,  pro: true,  max: true  },
-      { name: 'Universal web dashboard',         detail: 'Run the whole service from any phone, tablet or laptop browser — nothing to install.', starter: true,  pro: true,  max: true  },
+      { name: 'Universal web dashboard',         detail: 'Run your service from any phone, tablet or laptop browser.', starter: true,  pro: true,  max: true  },
       { name: 'QR code',                          detail: 'A printable QR code that opens your menu and ordering page.', starter: true,  pro: true,  max: true  },
-      { name: 'Automatic schedule import',        detail: 'We read your existing website and pull your upcoming locations and times into your schedule automatically — you just review and confirm.', starter: true,  pro: true,  max: true  },
+      { name: 'Automatic schedule import',        detail: 'We fill your schedule automatically — from your website, or a photo you already post to Facebook. You just review and confirm.', starter: true,  pro: true,  max: true  },
       { name: 'Meal deals & upsells',            detail: 'Bundle items into deals and offer add-ons at checkout to lift the average order.', starter: true,  pro: true,  max: true  },
       { name: 'Walk-up order processing', footnote: '1', detail: 'Take and manage orders at the hatch, paid on your own card terminal.', starter: true, pro: true, max: true },
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
       { name: 'Automated stock countdown',       detail: 'Set a stock count and HatchGrab counts it down as orders come in, then sells out automatically.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
-      { name: 'iPad kitchen app', footnote: '3', detail: 'A dedicated kitchen screen for your iPad or tablet showing live orders to cook.', starter: true, pro: true, max: true },
+      { name: 'iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a dedicated kitchen screen showing live orders to cook, and the only way to keep taking orders when you lose signal. Kitchen ticket printing available on Max.', starter: true, pro: true, max: true },
       // Coming soon (kept at the bottom of the section)
       { name: 'Android kitchen app', footnote: '3', detail: 'The same kitchen screen on an Android tablet.', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
     ],
@@ -85,11 +85,14 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Smart Slot Management',                        detail: "HatchGrab paces orders across time slots to match your kitchen's capacity.", starter: false, pro: true,           max: true           },
       { name: 'Auto-accept online orders',                    detail: 'Online orders are accepted automatically — no need to confirm each one.', starter: false, pro: true,           max: true           },
       { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
-      { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries with your schedule and order link.', starter: false, pro: true,           max: true           },
+      // Auto-replies are SPLIT on purpose: WhatsApp is LIVE, Messenger/Instagram are coming soon. Do not
+      // re-merge them into one row — a combined row reads as "all three work today", which isn't true.
+      // Both carry footnotes 4 (business account required) + 6 (AI replies can be wrong).
+      { name: 'WhatsApp auto-replies',            footnote: '4,6', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true,           max: true           },
       // Coming soon (kept at the bottom of the section)
-      { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Auto-reply to Messenger and Instagram enquiries with your schedule and order link.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { name: 'Messenger & Instagram auto-replies', footnote: '4,6', detail: 'Auto-reply to Messenger and Instagram enquiries with your schedule and order link.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
-      { name: 'SMS order confirmations', footnote: '6', detail: "Text customers automatically when their order's confirmed. Coming soon — will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
   },
   {
@@ -137,7 +140,7 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   },
   {
     number: '6',
-    text: 'SMS confirmations are not yet available and will incur an additional charge once launched; pricing to be confirmed.',
+    text: 'Replies are AI-generated and can occasionally be wrong — you can view every message and reply yourself at any time.',
   },
 ]
 
