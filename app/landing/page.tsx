@@ -161,10 +161,10 @@ export default function LandingPage() {
           <div className="does">
             <div className="does-item"><h3>Kill the queue</h3><p>Customers order ahead and pick a collection time. No shouting over the fryer.</p></div>
             <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity — how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
-            <div className="does-item"><h3>Never type your schedule twice</h3><p>You already post your pitches to Facebook — send us that same photo, email it, or let us read it from your website. We fill your schedule in; you just review and confirm. No double-entry, no extra admin.</p></div>
+            <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website — or send the photo you already post to Facebook. You just review and confirm.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re at the grill. Messenger and Instagram coming soon.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. On the iPad app you carry on taking orders through the dead zone — the web dashboard needs a connection.</p></div>
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPad app (Android coming soon).</p></div>
           </div>
         </div>
       </section>
@@ -283,8 +283,7 @@ export default function LandingPage() {
                 <li>Pre-orders &amp; collection times</li>
                 <li>Smart slot management</li>
                 <li>Auto-accept orders</li>
-                <li>WhatsApp auto-replies</li>
-                <li>Messenger &amp; Instagram auto-replies <span className="soon-inline">Coming soon</span></li>
+                <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
                 <li>Offline order protection</li>
               </ul>
               <a href="#try" className="btn btn-primary">Try Free</a>

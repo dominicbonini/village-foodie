@@ -70,7 +70,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
       { name: 'Automated stock countdown',       detail: 'Set a stock count and HatchGrab counts it down as orders come in, then sells out automatically.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
-      { name: 'iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a dedicated kitchen screen showing live orders to cook, and the only way to keep taking orders when you lose signal. Kitchen ticket printing available on Max.', starter: true, pro: true, max: true },
+      { name: 'iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal. Ticket printing on Max.', starter: true, pro: true, max: true },
       // Coming soon (kept at the bottom of the section)
       { name: 'Android kitchen app', footnote: '3', detail: 'The same kitchen screen on an Android tablet.', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
     ],
@@ -87,10 +87,10 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Branded QR code',                              detail: 'Add your logo to your QR code.', starter: false, pro: true,  max: true  },
       // Auto-replies are SPLIT on purpose: WhatsApp is LIVE, Messenger/Instagram are coming soon. Do not
       // re-merge them into one row — a combined row reads as "all three work today", which isn't true.
-      // Both carry footnotes 4 (business account required) + 6 (AI replies can be wrong).
-      { name: 'WhatsApp auto-replies',            footnote: '4,6', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true,           max: true           },
+      // Both carry footnote 4 (business account required + AI replies can be wrong).
+      { name: 'WhatsApp auto-replies',            footnote: '4', detail: 'Auto-reply to WhatsApp enquiries about your menu and schedule.', starter: false, pro: true,           max: true           },
       // Coming soon (kept at the bottom of the section)
-      { name: 'Messenger & Instagram auto-replies', footnote: '4,6', detail: 'Auto-reply to Messenger and Instagram enquiries with your schedule and order link.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
+      { name: 'Messenger & Instagram auto-replies', footnote: '4', detail: 'Same as WhatsApp auto-replies, for Messenger and Instagram enquiries.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'Advanced reporting', detail: 'Break sales down by date range, item and event to see what’s really selling.', starter: false, pro: 'coming_soon', max: 'coming_soon' },
       { name: 'SMS order alerts', detail: "Text customers automatically when their order's ready. Will carry an additional charge (price to be confirmed).", starter: false, pro: 'coming_soon', max: 'coming_soon' },
     ],
@@ -132,15 +132,11 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   },
   {
     number: '4',
-    text: 'Auto-replies require a Business account on each platform. Automatically responds to customer enquiries with your schedule and order link only.',
+    text: 'Auto-replies require a Business account on each platform. Replies are AI-generated and can occasionally be wrong — you can view every message and reply yourself at any time.',
   },
   {
     number: '5',
     text: 'Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
-  },
-  {
-    number: '6',
-    text: 'Replies are AI-generated and can occasionally be wrong — you can view every message and reply yourself at any time.',
   },
 ]
 
