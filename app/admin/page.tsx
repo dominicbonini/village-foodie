@@ -11,6 +11,7 @@ import AppHeader from '@/components/shared/AppHeader'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
+import { createSlug } from '@/lib/utils'   // slug preview in the create-truck modal — SAME fn provision-truck derives with
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 
 interface AdminTruck {
@@ -54,6 +55,76 @@ interface DiscoveryTruck {
   show_on_vf: boolean
   show_on_hg: boolean
   excluded: boolean
+}
+
+// ── Create-truck form ────────────────────────────────────────────────────────────────────────────────
+// Mirrors ProvisionTruckOptions in lib/provision-truck.ts. Kept as plain strings so the inputs stay
+// controlled; coerced at submit (kitchen_capacity → number, blank optionals → omitted).
+interface NewTruckForm {
+  name: string
+  slug: string
+  kind: 'operator' | 'demo'
+  visibility: 'hidden' | 'public'
+  contactEmail: string
+  cuisineType: string
+  vanName: string
+  kitchenCapacity: string
+}
+
+const NEW_TRUCK_DEFAULTS: NewTruckForm = {
+  name: '',
+  slug: '',
+  kind: 'operator',
+  visibility: 'hidden',   // fail-safe — going public is an explicit act (see §4.3 of the onboarding spec)
+  contactEmail: '',
+  cuisineType: '',
+  vanName: 'Van 1',
+  kitchenCapacity: '5',
+}
+
+// The endpoint's error shape. `code` distinguishes 400 validation/reserved-prefix from 409
+// unique-exhausted; `orphanTruckId` appears ONLY when a truck row was created and the compensating
+// delete also failed — i.e. a real row is stranded and needs manual cleanup.
+interface NewTruckError {
+  message: string
+  code?: string
+  status: number
+  orphanTruckId?: string
+}
+
+// ── Delete truck ─────────────────────────────────────────────────────────────────────────────────────
+// The dry-run payload from GET /api/admin/delete-truck — real row counts, so the confirm screen shows what
+// is actually about to be destroyed rather than a bland "are you sure?".
+interface DeleteImpactRow { label: string; count: number | null }
+
+interface DeleteTarget {
+  truck: Pick<AdminTruck, 'id' | 'name' | 'slug' | 'operator_id' | 'plan' | 'active' | 'excluded'>
+  impact: DeleteImpactRow[]
+  requiresOperatorOverride: boolean
+}
+
+interface DeleteFailure {
+  message: string
+  code?: string
+  failedStep?: string
+  partial?: boolean
+}
+
+interface CreateTruckResponse {
+  truck: {
+    id: string
+    slug: string
+    name: string
+    plan: Plan
+    dashboard_token: string
+    active: boolean
+    excluded: boolean
+    show_on_vf: boolean
+    show_on_hg: boolean
+  }
+  van: { id: string; name: string; kds_token: string | null } | null
+  urls: { manage: string; dashboard: string; order: string }
+  warnings: string[]
 }
 
 const PLAN_ORDER: Plan[] = ['starter', 'trial', 'tester', 'demo', 'pro', 'max']
@@ -102,6 +173,29 @@ export default function AdminPage() {
   const [createLoading, setCreateLoading] = useState(false)
   const [createdPassword, setCreatedPassword] = useState<string | null>(null)
   const [createError, setCreateError] = useState<string | null>(null)
+
+  // ── CREATE TRUCK (POST /api/admin/create-truck → lib/provision-truck) ──────────────────────────────
+  // This replaces hand-written SQL as the way trucks get created. Trucks are created HIDDEN by default
+  // (excluded=true, show_on_hg=false) — a deliberate behaviour change from the SQL path, surfaced in the
+  // form so it can't surprise anyone. The result panel echoes the visibility flags back as proof.
+  const [showNewTruck, setShowNewTruck] = useState(false)
+  const [newTruck, setNewTruck] = useState<NewTruckForm>({ ...NEW_TRUCK_DEFAULTS })
+  const [newTruckLoading, setNewTruckLoading] = useState(false)
+  const [newTruckError, setNewTruckError] = useState<NewTruckError | null>(null)
+  const [newTruckResult, setNewTruckResult] = useState<CreateTruckResponse | null>(null)
+  const [tokenCopied, setTokenCopied] = useState(false)
+
+  // ── DELETE TRUCK (POST /api/admin/delete-truck → lib/delete-truck) ────────────────────────────────
+  // Deliberately NOT a per-row button: a one-click delete in a dense table that also lists a live trading
+  // operator is an accident waiting to happen. Reached from the edit modal's Danger zone instead, so you
+  // have already opened a specific truck, then gated behind a typed slug + (if an operator is attached) an
+  // explicit override. Every guard is re-checked server-side.
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)   // dry-run fetch
+  const [deleteTyped, setDeleteTyped] = useState('')
+  const [deleteOverride, setDeleteOverride] = useState(false)
+  const [deleteBusy, setDeleteBusy] = useState(false)         // the destructive call itself
+  const [deleteFailure, setDeleteFailure] = useState<DeleteFailure | null>(null)
 
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
@@ -232,6 +326,136 @@ export default function AdminPage() {
     setCreatedPassword(null)
     setCreateError(null)
   }
+
+  const openNewTruck = () => {
+    setNewTruck({ ...NEW_TRUCK_DEFAULTS })
+    setNewTruckError(null)
+    setNewTruckResult(null)
+    setTokenCopied(false)
+    setShowNewTruck(true)
+  }
+
+  // A demo truck's name is generated internally (and never shown to the visitor), so it's required only
+  // for an operator truck — mirroring profile.nameRequired in lib/provision-truck.ts.
+  const newTruckNameOk = newTruck.kind === 'demo' || !!newTruck.name.trim()
+
+  const submitNewTruck = async () => {
+    if (!newTruckNameOk) return
+    setNewTruckLoading(true)
+    setNewTruckError(null)
+    try {
+      const capacity = Number(newTruck.kitchenCapacity)
+      const res = await fetch('/api/admin/create-truck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
+        body: JSON.stringify({
+          kind: newTruck.kind,
+          ...(newTruck.name.trim() ? { name: newTruck.name.trim() } : {}),
+          // Blank optionals are OMITTED, not sent as '' — the module derives the slug from the name and
+          // treats absent contact/cuisine as null.
+          ...(newTruck.slug.trim() ? { slug: newTruck.slug.trim() } : {}),
+          ...(newTruck.contactEmail.trim() ? { contactEmail: newTruck.contactEmail.trim() } : {}),
+          ...(newTruck.cuisineType.trim() ? { cuisineType: newTruck.cuisineType.trim() } : {}),
+          visibility: newTruck.visibility,
+          van: {
+            name: newTruck.vanName.trim() || 'Van 1',
+            ...(Number.isFinite(capacity) && capacity > 0 ? { kitchen_capacity: capacity } : {}),
+          },
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.ok) {
+        setNewTruckError({
+          message: data.error || 'Truck creation failed',
+          code: data.code,
+          status: res.status,
+          orphanTruckId: data.orphanTruckId,
+        })
+        return
+      }
+      setNewTruckResult(data as CreateTruckResponse)
+      await load()   // refresh the list so the new truck appears in the table behind the modal
+    } catch (e) {
+      setNewTruckError({ message: e instanceof Error ? e.message : 'Network error', status: 0 })
+    } finally {
+      setNewTruckLoading(false)
+    }
+  }
+
+  const copyToken = (token: string) => {
+    navigator.clipboard.writeText(token)
+    setTokenCopied(true)
+    setTimeout(() => setTokenCopied(false), 2000)
+  }
+
+  // Opens the delete confirmation by first running the DRY RUN, so the confirm screen can state the real
+  // blast radius. Closes the edit modal (nested modals fight over z-index and read badly).
+  const openDeleteTruck = async (truck: AdminTruck) => {
+    setDeleteLoading(true)
+    setDeleteTyped('')
+    setDeleteOverride(false)
+    setDeleteFailure(null)
+    setEditingTruck(null)
+    try {
+      const res = await fetch(`/api/admin/delete-truck?truckId=${encodeURIComponent(truck.id)}`, {
+        headers: await nativeAuthHeader(),
+      })
+      const data = await res.json()
+      if (!res.ok) { showToast(data.error || 'Could not load delete details'); return }
+      setDeleteTarget(data as DeleteTarget)
+    } catch {
+      showToast('Could not load delete details')
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  const closeDeleteTruck = () => {
+    setDeleteTarget(null)
+    setDeleteTyped('')
+    setDeleteOverride(false)
+    setDeleteFailure(null)
+  }
+
+  const submitDeleteTruck = async () => {
+    if (!deleteTarget) return
+    setDeleteBusy(true)
+    setDeleteFailure(null)
+    try {
+      const res = await fetch('/api/admin/delete-truck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...await nativeAuthHeader() },
+        body: JSON.stringify({
+          truckId: deleteTarget.truck.id,
+          confirmSlug: deleteTyped.trim(),
+          allowOperatorDelete: deleteOverride,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.ok) {
+        setDeleteFailure({
+          message: data.error || 'Delete failed',
+          code: data.code,
+          failedStep: data.failedStep,
+          partial: data.partial === true,
+        })
+        return
+      }
+      showToast(`Deleted ${data.name || data.truckId}`)
+      closeDeleteTruck()
+      await load()
+    } catch (e) {
+      setDeleteFailure({ message: e instanceof Error ? e.message : 'Network error' })
+    } finally {
+      setDeleteBusy(false)
+    }
+  }
+
+  // The slug (or id, when slug is null) the admin must type — mirrors the server's own expectation.
+  const deleteExpected = deleteTarget ? (deleteTarget.truck.slug || deleteTarget.truck.id) : ''
+  const deleteConfirmOk = !!deleteTarget
+    && deleteTyped.trim().toLowerCase() === deleteExpected.toLowerCase()
+    && (!deleteTarget.requiresOperatorOverride || deleteOverride)
 
   const submitCreateOperator = async () => {
     if (!createModalTruck || !createEmail) return
@@ -468,6 +692,12 @@ export default function AdminPage() {
                 Customers only
               </label>
               <span className="text-xs text-slate-400">{filteredRows.length} trucks</span>
+              <button
+                onClick={openNewTruck}
+                className="ml-auto whitespace-nowrap text-sm px-3.5 py-2 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700"
+              >
+                ＋ Create truck
+              </button>
             </div>
 
             <div className="border border-slate-200 rounded-xl overflow-auto max-h-[70vh]">
@@ -848,6 +1078,28 @@ export default function AdminPage() {
               )}
             </div>
 
+            {/* Danger zone — delete lives HERE, not on the table row, so it can only be reached after
+                deliberately opening one specific truck. */}
+            <div className="border border-red-200 bg-red-50/50 rounded-xl px-3 py-3 mt-1">
+              <p className="text-xs font-bold text-red-700 uppercase tracking-wide">Danger zone</p>
+              <p className="text-[11px] text-red-600/90 mt-1 leading-relaxed">
+                Permanently deletes this truck and everything belonging to it. Irreversible, with no backup.
+              </p>
+              <button
+                onClick={() => openDeleteTruck(editingTruck)}
+                disabled={deleteLoading}
+                className="mt-2 text-xs px-3 py-1.5 border border-red-300 text-red-700 rounded-lg hover:bg-red-100 disabled:opacity-40"
+              >
+                {deleteLoading ? 'Loading…' : 'Delete truck…'}
+              </button>
+              {editingTruck.operator_id && (
+                <p className="text-[11px] text-red-700 mt-2">
+                  ⚠️ This truck has an <strong>operator account</strong> attached — it is somebody&apos;s live
+                  business. Deleting it requires an extra override.
+                </p>
+              )}
+            </div>
+
             {/* Actions */}
             <div className="flex gap-3 pt-2">
               <button
@@ -934,6 +1186,450 @@ export default function AdminPage() {
                 </p>
                 <button
                   onClick={() => { setCreateModalTruck(null); setCreatedPassword(null) }}
+                  className="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm"
+                >
+                  Done
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Delete truck confirmation ──────────────────────────────────────────────────────────────── */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/60 z-[70] flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 my-8 border-2 border-red-200">
+            <div>
+              <h3 className="text-lg font-semibold text-red-700">Delete {deleteTarget.truck.name}</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                <code className="bg-slate-100 px-1 rounded">{deleteTarget.truck.id}</code>
+                {deleteTarget.truck.slug && deleteTarget.truck.slug !== deleteTarget.truck.id && (
+                  <> · <code className="bg-slate-100 px-1 rounded">{deleteTarget.truck.slug}</code></>
+                )}
+              </p>
+            </div>
+
+            {/* What actually gets destroyed — real counts from the dry run */}
+            <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-3">
+              <p className="text-xs font-bold text-red-800">This permanently destroys:</p>
+              <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                {deleteTarget.impact.map(row => (
+                  <div key={row.label} className="flex justify-between gap-2 text-xs">
+                    <span className="text-red-700/80 truncate">{row.label}</span>
+                    <span className={`font-mono font-bold shrink-0 ${
+                      row.count === null ? 'text-amber-600' : row.count > 0 ? 'text-red-800' : 'text-red-300'
+                    }`}>
+                      {row.count === null ? '?' : row.count}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[11px] text-red-700/80 mt-2.5 leading-relaxed">
+                …plus everything else keyed to this truck: stock, slots, capacity usage, discount codes,
+                subcategories, upsell rules, KDS sessions, bound devices, WhatsApp logs and the allergen audit
+                trail. Roughly 25 tables in total. <strong>There is no backup and no undo.</strong>
+              </p>
+            </div>
+
+            {/* Operator override — the guard rail */}
+            {deleteTarget.requiresOperatorOverride && (
+              <label className="flex items-start gap-2.5 bg-amber-50 border border-amber-300 rounded-xl px-3 py-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={deleteOverride}
+                  onChange={e => setDeleteOverride(e.target.checked)}
+                  className="w-4 h-4 accent-red-600 mt-0.5 shrink-0"
+                />
+                <span className="text-xs text-amber-900 leading-relaxed">
+                  <strong>This truck has an operator account attached.</strong> That normally means a real,
+                  possibly trading, business — demo and throwaway trucks have no operator. I understand I am
+                  deleting a live account&apos;s truck and want to proceed.
+                </span>
+              </label>
+            )}
+
+            {/* Typed confirmation */}
+            <div>
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Type <code className="bg-slate-100 px-1 rounded normal-case font-mono text-slate-800">{deleteExpected}</code> to confirm
+              </label>
+              <input
+                type="text"
+                value={deleteTyped}
+                onChange={e => setDeleteTyped(e.target.value)}
+                autoComplete="off"
+                spellCheck={false}
+                placeholder={deleteExpected}
+                className="mt-1 w-full border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-400"
+              />
+            </div>
+
+            {deleteFailure && (
+              <div className="bg-red-100 border border-red-300 rounded-xl px-3 py-2.5">
+                <p className="text-sm text-red-800 font-semibold">
+                  {deleteFailure.partial ? 'Partially deleted' : 'Delete failed'}
+                </p>
+                <p className="text-xs text-red-700 mt-1">{deleteFailure.message}</p>
+                {deleteFailure.failedStep && (
+                  <p className="text-xs text-red-800 mt-2 font-mono bg-red-50 rounded-lg px-2 py-1.5">
+                    Failed at step: <strong>{deleteFailure.failedStep}</strong>
+                  </p>
+                )}
+                {deleteFailure.partial && (
+                  <p className="text-[11px] text-red-700 mt-2 leading-relaxed">
+                    The cascade is a sequence, not a transaction — everything before this step was already
+                    deleted, so <strong>this truck is now in a partial state</strong>. Re-running the delete is
+                    safe (every step is an idempotent delete-by-truck_id) and is the right next move.
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={closeDeleteTruck}
+                disabled={deleteBusy}
+                className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm disabled:opacity-40"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submitDeleteTruck}
+                disabled={deleteBusy || !deleteConfirmOk}
+                className="flex-1 bg-red-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-red-700"
+              >
+                {deleteBusy ? 'Deleting…' : 'Delete permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Create truck modal ─────────────────────────────────────────────────────────────────────── */}
+      {showNewTruck && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 my-8">
+            {!newTruckResult ? (
+              <>
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-900">Create truck</h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Creates the truck row + a van. Replaces the old hand-written SQL path.
+                  </p>
+                </div>
+
+                {/* Kind */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Kind</label>
+                  <div className="mt-1 flex gap-2">
+                    {(['operator', 'demo'] as const).map(k => (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() => setNewTruck(p => ({ ...p, kind: k }))}
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border ${
+                          newTruck.kind === k
+                            ? 'bg-slate-900 text-white border-slate-900'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {k === 'operator' ? 'Operator' : 'Demo'}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    {newTruck.kind === 'operator'
+                      ? 'Readable id/slug derived from the name. Plan starts as demo (pre-trial setup mode) — the clock starts at go-live.'
+                      : 'Random demo- prefixed id, slug and token (130-bit). Name is generated internally and never shown to the visitor.'}
+                  </p>
+                </div>
+
+                {/* Name */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Name {newTruck.kind === 'operator' ? '(required)' : '(optional)'}
+                  </label>
+                  <input
+                    type="text"
+                    value={newTruck.name}
+                    onChange={e => setNewTruck(p => ({ ...p, name: e.target.value }))}
+                    placeholder={newTruck.kind === 'demo' ? 'Auto-generated if blank' : 'Real Thai Food'}
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  />
+                </div>
+
+                {/* Slug — operator only; a demo's slug is always random */}
+                {newTruck.kind === 'operator' && (
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                      Slug (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={newTruck.slug}
+                      onChange={e => setNewTruck(p => ({ ...p, slug: e.target.value }))}
+                      placeholder={createSlug(newTruck.name) || 'derived-from-name'}
+                      className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-1.5">
+                      Leave blank to derive from the name
+                      {newTruck.name.trim() && (
+                        <> — will be <code className="bg-slate-100 px-1 rounded">{createSlug(newTruck.slug || newTruck.name)}</code></>
+                      )}
+                      . Used for both the truck id and the public order URL. Collisions get a numeric suffix.
+                    </p>
+                  </div>
+                )}
+
+                {/* Visibility — the behaviour change, made loud */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Visibility</label>
+                  <div className="mt-1 flex gap-2">
+                    {(['hidden', 'public'] as const).map(v => (
+                      <button
+                        key={v}
+                        type="button"
+                        onClick={() => setNewTruck(p => ({ ...p, visibility: v }))}
+                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border ${
+                          newTruck.visibility === v
+                            ? v === 'public'
+                              ? 'bg-amber-500 text-white border-amber-500'
+                              : 'bg-slate-900 text-white border-slate-900'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                        }`}
+                      >
+                        {v === 'hidden' ? '🔒 Hidden' : '🌍 Public'}
+                      </button>
+                    ))}
+                  </div>
+                  {newTruck.visibility === 'hidden' ? (
+                    <div className="mt-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                      <p className="text-[11px] text-slate-600 leading-relaxed">
+                        <strong className="text-slate-800">New trucks are created HIDDEN.</strong> This is a change
+                        from the old SQL path. Sets <code className="bg-white px-1 rounded">excluded=true</code>,{' '}
+                        <code className="bg-white px-1 rounded">show_on_hg=false</code>,{' '}
+                        <code className="bg-white px-1 rounded">order_link_hg=false</code> (both of which default to
+                        TRUE in the DB). The truck will <strong>not</strong> appear on the map and{' '}
+                        <strong>cannot take orders</strong> until you make it visible deliberately — flip the
+                        tickboxes in the table, or at go-live.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="mt-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5">
+                      <p className="text-[11px] text-amber-800 leading-relaxed">
+                        <strong>⚠️ Public immediately.</strong> The truck will be discoverable on HatchGrab and able
+                        to take real customer orders as soon as it has a confirmed event. Only choose this for a
+                        truck that is genuinely going live now.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Optional details */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Contact email</label>
+                    <input
+                      type="email"
+                      value={newTruck.contactEmail}
+                      onChange={e => setNewTruck(p => ({ ...p, contactEmail: e.target.value }))}
+                      placeholder="optional"
+                      className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Cuisine</label>
+                    <input
+                      type="text"
+                      value={newTruck.cuisineType}
+                      onChange={e => setNewTruck(p => ({ ...p, cuisineType: e.target.value }))}
+                      placeholder="optional"
+                      className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                  </div>
+                </div>
+
+                {/* Van */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Van</label>
+                  <div className="mt-1 grid grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={newTruck.vanName}
+                      onChange={e => setNewTruck(p => ({ ...p, vanName: e.target.value }))}
+                      placeholder="Van 1"
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min={1}
+                        value={newTruck.kitchenCapacity}
+                        onChange={e => setNewTruck(p => ({ ...p, kitchenCapacity: e.target.value }))}
+                        className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+                      />
+                      <span className="text-xs text-slate-400 whitespace-nowrap">capacity</span>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Kitchen capacity is a <strong>concurrency ceiling</strong> — how many counted items can be in
+                    production at once — not a rate. Without a van carrying one, no slot capacity is written and the
+                    capacity engine stays inert.
+                  </p>
+                </div>
+
+                {/* Errors */}
+                {newTruckError && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
+                    <p className="text-sm text-red-700 font-semibold">
+                      {newTruckError.status === 409 ? 'Name/slug already taken'
+                        : newTruckError.code === 'reserved_prefix' ? 'Reserved prefix'
+                        : newTruckError.status === 400 ? 'Invalid'
+                        : 'Creation failed'}
+                    </p>
+                    <p className="text-xs text-red-600 mt-1">{newTruckError.message}</p>
+                    {newTruckError.status === 409 && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Tried several numeric suffixes without finding a free slug — pick a different name.
+                      </p>
+                    )}
+                    {newTruckError.orphanTruckId && (
+                      <p className="text-xs text-red-800 mt-2 font-mono bg-red-100 rounded-lg px-2 py-1.5">
+                        ⚠️ ORPHAN — truck <strong>{newTruckError.orphanTruckId}</strong> was created but its van
+                        failed AND the rollback failed. It needs manual cleanup.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowNewTruck(false)}
+                    className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={submitNewTruck}
+                    disabled={newTruckLoading || !newTruckNameOk}
+                    className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40"
+                  >
+                    {newTruckLoading ? 'Creating…' : 'Create truck'}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="text-center">
+                  <div className="text-3xl mb-2">✅</div>
+                  <h3 className="text-lg font-semibold text-slate-900">Truck created</h3>
+                  <p className="text-sm text-slate-500 mt-1">{newTruckResult.truck.name}</p>
+                </div>
+
+                {/* Identity */}
+                <div className="bg-slate-50 rounded-xl px-3 py-2.5 text-xs space-y-1">
+                  <div className="flex justify-between gap-3">
+                    <span className="text-slate-500">id</span>
+                    <code className="font-mono text-slate-800 truncate">{newTruckResult.truck.id}</code>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <span className="text-slate-500">slug</span>
+                    <code className="font-mono text-slate-800 truncate">{newTruckResult.truck.slug}</code>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <span className="text-slate-500">plan</span>
+                    <span className={`px-1.5 rounded font-bold ${PLAN_BADGE[newTruckResult.truck.plan]}`}>
+                      {PLAN_META[newTruckResult.truck.plan].name}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Visibility proof — echoed back from the server, not assumed */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Visibility</label>
+                  <div className={`mt-1 rounded-xl px-3 py-2.5 border ${
+                    newTruckResult.truck.excluded ? 'bg-slate-50 border-slate-200' : 'bg-amber-50 border-amber-200'
+                  }`}>
+                    <p className="text-sm font-semibold text-slate-800">
+                      {newTruckResult.truck.excluded ? '🔒 Created hidden ✓' : '🌍 Created PUBLIC'}
+                    </p>
+                    <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-500 font-mono">
+                      <span>active={String(newTruckResult.truck.active)}</span>
+                      <span>excluded={String(newTruckResult.truck.excluded)}</span>
+                      <span>show_on_vf={String(newTruckResult.truck.show_on_vf)}</span>
+                      <span>show_on_hg={String(newTruckResult.truck.show_on_hg)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Van */}
+                {newTruckResult.van ? (
+                  <div className="text-xs text-slate-600">
+                    <span className="font-semibold">Van:</span> {newTruckResult.van.name}{' '}
+                    <span className="text-slate-400 font-mono">({newTruckResult.van.id.slice(0, 8)}…)</span>
+                  </div>
+                ) : (
+                  <div className="text-xs text-amber-700">No van created.</div>
+                )}
+
+                {/* Dashboard token — shown ONCE */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    Dashboard token — copy this now
+                  </label>
+                  <div className="mt-1 flex gap-2">
+                    <code className="flex-1 bg-slate-100 rounded-xl px-3 py-2.5 text-xs font-mono break-all">
+                      {newTruckResult.truck.dashboard_token}
+                    </code>
+                    <button
+                      onClick={() => copyToken(newTruckResult.truck.dashboard_token)}
+                      className="px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-600 hover:bg-slate-50 whitespace-nowrap"
+                    >
+                      {tokenCopied ? 'Copied' : 'Copy'}
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    This token is the truck&apos;s credential — anyone holding it can reach its dashboard. It is not
+                    logged anywhere; it is also in the Manage/Dashboard links below.
+                  </p>
+                </div>
+
+                {/* URLs */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Links</label>
+                  <div className="mt-1 flex flex-col gap-1.5">
+                    {([
+                      ['Manage', newTruckResult.urls.manage],
+                      ['Dashboard', newTruckResult.urls.dashboard],
+                      ['Order page', newTruckResult.urls.order],
+                    ] as const).map(([label, href]) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <span className="text-xs text-slate-500 w-20 shrink-0">{label}</span>
+                        <AppLink
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 text-xs font-mono text-teal-700 hover:underline truncate"
+                        >
+                          {href}
+                        </AppLink>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {newTruckResult.warnings.length > 0 && (
+                  <ul className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 text-[11px] text-amber-800 list-disc list-inside space-y-1">
+                    {newTruckResult.warnings.map(w => <li key={w}>{w}</li>)}
+                  </ul>
+                )}
+
+                <p className="text-[11px] text-slate-400 text-center">
+                  Next: create the operator account from this truck&apos;s row in the table.
+                </p>
+                <button
+                  onClick={() => { setShowNewTruck(false); setNewTruckResult(null) }}
                   className="w-full bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm"
                 >
                   Done

@@ -347,6 +347,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
     }
 
+    // HIDDEN-TRUCK GATE. Discovery gating (show_on_vf/show_on_hg/excluded) only governs the MAP — the
+    // customer menu and events APIs resolve any truck by slug/id with no visibility filter, and this route
+    // previously checked `active` alone. So anyone who knew or guessed the slug could place a REAL order on
+    // a truck that is hidden everywhere else: a demo truck, or an operator still in pre-trial setup mode.
+    // `excluded` is the master hide — if it's set, the truck is not open for business. Checked here rather
+    // than in the queries above so one condition covers both the slug and the id lookup. Deliberately the
+    // SAME 404 as an unknown truck: a hidden truck should not confirm its own existence.
+    if (truck.excluded === true) {
+      return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
+    }
+
     // Use the actual truck UUID for all subsequent queries
     const resolvedTruckId = truck.id
 

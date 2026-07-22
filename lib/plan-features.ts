@@ -70,7 +70,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
       { name: 'Automated stock countdown',       detail: 'Set a stock count and HatchGrab counts it down as orders come in, then sells out automatically.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
-      { name: 'iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal. Ticket printing on Max.', starter: true, pro: true, max: true },
+      { name: 'iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
       // Coming soon (kept at the bottom of the section)
       { name: 'Android kitchen app', footnote: '3', detail: 'The same kitchen screen on an Android tablet.', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
     ],

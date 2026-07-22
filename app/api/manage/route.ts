@@ -836,8 +836,21 @@ export async function POST(req: NextRequest) {
   }
 
   // ── UPDATE TRUCK (KDS / operational fields) ──────────────────
+  // ⚠️ GATING STATE IS DELIBERATELY ABSENT — DO NOT RE-ADD `plan`, `trial_expires_at` OR `feature_overrides`.
+  // This route authenticates on `dashboard_token` ALONE (no session required — see getTruck above), so
+  // EVERY key on this allowlist is writable by any holder of the token. Those three fields ARE the paid-
+  // feature gate — they are the exact inputs to canAccess(plan, feature, featureOverrides, trialExpiresAt)
+  // — so putting them here let a token holder grant themselves the product:
+  //   • `plan` / `trial_expires_at` — set your own tier and your own trial expiry.
+  //   • `feature_overrides` — worse, because canAccess checks it FIRST and it wins over BOTH the plan and
+  //     the expiry (lib/features.ts: `if (feature in featureOverrides) return featureOverrides[feature] === true`),
+  //     so an EXPIRED trial could re-grant itself every paid feature one key at a time.
+  // All three are admin-owned. Their home is `/api/admin` (POST, `verifyAdmin` = Supabase session →
+  // `operators.is_admin`), which is what the admin console already posts to — the console's plan/trial
+  // chips and per-feature override tickboxes all write there. Nothing ever wrote them through this path.
+  // The rule: gating state is never writable by a credential the gated party holds.
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'plan', 'trial_expires_at', 'feature_overrides', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
