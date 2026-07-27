@@ -14,17 +14,25 @@ import { saveDeviceConfig } from './device'
  */
 export async function registerForPush(token: string, onOpenOrder?: (orderKey: string) => void): Promise<void> {
   if (!Capacitor.isNativePlatform()) return
-  // ANDROID GUARD — must be PREVENTED here, not handled below. @capacitor/push-notifications is FCM-backed
-  // on Android: with no google-services.json, PushNotificationsPlugin.register() (line 103) calls
-  // FirebaseMessaging.getInstance() and throws IllegalStateException "Default FirebaseApp is not initialized"
-  // NATIVELY, inside the bridge, before control ever returns to JS — so the try/catch below CANNOT catch it
-  // and the app PROCESS DIES (confirmed in logcat, reproduced twice). THE PLATFORMS ARE NOT SYMMETRIC: iOS is
-  // safe only because an unconfigured APNs sender no-ops (registration just never yields a token), whereas FCM
-  // hard-fails. Remove this guard only once a Firebase project + google-services.json exist.
-  if ((Capacitor?.getPlatform?.() ?? 'web') === 'android') {
-    console.warn('[push] skipped: push notifications are not yet configured on Android (no Firebase project / google-services.json)')
-    return
-  }
+  // ⚠️ INVARIANT (still true, do not delete): A JS try/catch CANNOT protect against a NATIVE throw from a
+  // Capacitor plugin. On Android, @capacitor/push-notifications is FCM-backed: with no valid Firebase
+  // config, PushNotificationsPlugin.register() (PushNotificationsPlugin.java:103) calls
+  // FirebaseMessaging.getInstance(), which throws IllegalStateException "Default FirebaseApp is not
+  // initialized" INSIDE THE BRIDGE, before control returns to JS — so the catch below never runs and the app
+  // PROCESS DIES (confirmed in logcat 2026-07-27, reproduced twice, PIDs 8344/8584). THE PLATFORMS ARE NOT
+  // SYMMETRIC: iOS is safe because an unconfigured APNs sender merely no-ops (registration never yields a
+  // token); FCM hard-fails.
+  //
+  // The temporary Android early-return that stood here was REMOVED on 2026-07-27 once Firebase was
+  // configured: android/app/google-services.json exists with package_name "com.hatchgrab.app", matching
+  // capacitor.config.ts appId and android/app/build.gradle applicationId+namespace. That match is the actual
+  // precondition — the google-services Gradle plugin generates the google_app_id resource FirebaseApp
+  // auto-initialises from, and a package mismatch is the realistic way to get the crash back.
+  //
+  // ⚠️ THERE IS NO JS-SIDE PROTECTION FOR THIS. It is not defended; it is made not-arise. If
+  // google-services.json is deleted, replaced with another project's file, or the applicationId changes,
+  // the crash returns at first launch and NOTHING in this file can stop it. Guard it at BUILD time (keep
+  // the file committed; keep applicationId and package_name equal), never by adding a catch here.
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications')
 

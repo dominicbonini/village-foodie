@@ -723,3 +723,62 @@ answer must come from the installed plugin source, not the docs** — the docs d
 that exists; the source shows the API doing nothing.
 
 Both recorded, neither folded into the manual — Dominic folds by hand.
+
+---
+
+### 2026-07-27 — Android push guard REMOVED (Firebase now configured)
+
+**WHAT THE GUARD WAS.** `lib/native/push.ts` carried an early return for
+`getPlatform() === 'android'`, added earlier the same day after a confirmed native crash:
+`PushNotificationsPlugin.register()` (`PushNotificationsPlugin.java:103`) called
+`FirebaseMessaging.getInstance()` with no Firebase config and threw
+`IllegalStateException "Default FirebaseApp is not initialized"` **natively, inside the
+bridge** — killing the process (logcat, reproduced twice, PIDs 8344/8584).
+
+**WHY IT WAS CORRECT.** The throw happens before control returns to JS, so
+`registerForPush`'s try/catch could not catch it. The only remedy was to not make the call.
+That is still the invariant, and it is still recorded inline.
+
+**WHY IT IS NOW REMOVED.** `android/app/google-services.json` exists (2026-07-27) with
+`package_name: "com.hatchgrab.app"`, `project_id: "hatchgrab"`. That package name matches
+`capacitor.config.ts` `appId` and `android/app/build.gradle` `applicationId`/`namespace`,
+which is the actual precondition: `android/app/build.gradle:47-54` applies the
+google-services plugin only when the file is present, and the plugin generates the
+`google_app_id` resource that `FirebaseApp` auto-initialises from. With the config in place
+the crash condition no longer exists, and the guard was the only thing preventing
+registration.
+
+**HOW THE CRASH IS KEPT IMPOSSIBLE — honestly stated.** It is **not defended, it is made
+not-to-arise.** There is no JS-side protection and none was added; a catch cannot help. The
+protection is a build-time property: the config file present and committed, and
+`applicationId` equal to `package_name`. If the file is deleted, swapped for another
+project's, or the applicationId changes, the crash returns at first launch and nothing in
+`push.ts` can stop it. This is recorded in the file itself so a future reader does not
+mistake the try/catch for a safety net.
+
+`npx tsc --noEmit` → exit 0. iOS and web byte-identical: web still returns at
+`push.ts:16`, and the removed branch never applied to iOS.
+
+**TOKEN WRITE PATH (verified, unchanged by this edit):**
+`push.ts:43-45` `addListener('registration', t => saveDeviceConfig(token, { push_token: t.value }))`
+→ `lib/native/device.ts:66-71` POSTs `/api/native/bind-device` with `device_id` and
+`platform: Capacitor?.getPlatform?.() ?? 'web'` (→ **`'android'`**)
+→ `app/api/native/bind-device/route.ts:80-88` partial-patch upsert on `device_id`
+→ `van_devices.push_token` + `van_devices.platform`.
+
+**Nothing nulls a valid token except one place:** `app/api/orders/submit/route.ts:1082`, the
+`invalidTokens` cleanup after a provider `BadDeviceToken`/`Unregistered`. The bind-device
+upsert is a partial patch (`if (push_token !== undefined)`), so later saves that omit the
+key leave it intact, and `switch-truck` deliberately carries it over.
+
+**⚠️ TOKEN ARRIVING ≠ PUSH WORKING.** `app/api/orders/submit/route.ts:1077` still carries
+the temporary `.or('platform.eq.ios,platform.is.null')` predicate, so an Android row with a
+valid token is still excluded from the send — and there is no FCM transport yet. Registration
+and delivery are two separate milestones; do not read a populated `push_token` as "push
+works on Android".
+
+**VERIFICATION RESULT: PENDING.** The confirming SELECT is in the task report; it has not
+been run (Dominic runs SQL by hand) and no device launch has been observed. **This entry is
+to be completed with the actual result** — expected: a `van_devices` row with
+`platform = 'android'` and a non-null `push_token` after an Android launch. Until that is
+recorded here, Android registration is BUILT, UNVERIFIED.

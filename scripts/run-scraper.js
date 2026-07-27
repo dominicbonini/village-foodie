@@ -928,7 +928,16 @@ const BREVO_API_KEY = process.env.BREVO_API_KEY;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+// 🔴 DISABLED (behaviour switch, NOT a deletion — see the call site for the full reasoning).
+// Always true: the learned-day window is no longer a gate. The 23h due-window (isDueByLog) is now the
+// ONLY cadence control. The body below is intentionally preserved, unreachable, together with the
+// learner that writes scraper_update_day / scraper_learning_complete in recordRunAndLearn — the data
+// keeps accruing and this becomes a one-line re-enable (delete the `return true`) if truck volume ever
+// makes the saved page loads worth the missed-update risk.
 function shouldRunToday(truck) {
+  return true;
+
+  // eslint-disable-next-line no-unreachable
   const today = new Date().getDay();
   if (!truck.scraper_learning_complete) return true;
   if (truck.scraper_update_day === null || truck.scraper_update_day === undefined) return true;
@@ -975,7 +984,12 @@ function hashEvents(events) {
   return createHash('md5').update(sorted).digest('hex');
 }
 
-async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ruleUsed) {
+// `notes` (optional, default null) — a short machine-greppable reason string. Until now the column existed
+// in scraper_run_log but NOTHING ever wrote it, so `events_found = 0` conflated four very different
+// outcomes: an empty/blocked page, a healthy unchanged-page skip, an AI failure, and a genuine zero
+// extraction. Callers on the zero paths now pass a reason; SUCCESS paths still pass nothing (notes stays
+// NULL) unless a retry was involved, so rows for healthy trucks are byte-identical to before.
+async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ruleUsed, notes = null) {
   const now = new Date();
   const dayOfWeek = now.getDay();
 
@@ -994,6 +1008,7 @@ async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ru
     events_found: eventsFound,
     events_changed: eventsChanged,
     rule_used: ruleUsed,
+    notes,
   });
 
   const firstRun = truck.scraper_first_run_at ? new Date(truck.scraper_first_run_at) : now;
@@ -1021,6 +1036,38 @@ async function recordRunAndLearn(supabase, truck, eventsFound, eventsChanged, ru
 
   const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   console.log(`   🧠 Learned update day for ${truck.name}: ${dayNames[learnedDay]}`);
+}
+
+/**
+ * Record a per-truck CRASH in scraper_run_log so it is visible in SQL rather than only in the Actions
+ * console. Deliberately a direct insert, NOT recordRunAndLearn: a crash must not stamp
+ * trucks.scraper_last_run_at or feed the day-of-week learner with a junk observation.
+ *
+ * NEVER THROWS — logging is not allowed to kill the run. If the insert itself is what failed (the
+ * database being unreachable is a plausible cause of the crash we are recording), we fall back to stdout
+ * and carry on to the next truck.
+ *
+ * ⚠️ SIDE EFFECT, deliberate and documented: writing this row RESETS that truck's 23h due-window, because
+ * isDueByLog reads the most recent run_at regardless of outcome. Before this change a crashing truck wrote
+ * nothing and so stayed permanently due — retried every hour, silently, forever. It now backs off to one
+ * attempt per window. That is the intended trade (visibility + no hammering) but it IS a change: a truck
+ * failing transiently recovers on its next window rather than on the next hourly fire.
+ */
+async function recordRunFailure(supabase, truck, notes) {
+  try {
+    const { error } = await supabase.from('scraper_run_log').insert({
+      truck_id: truck.id,
+      run_at: new Date().toISOString(),
+      day_of_week: new Date().getDay(),
+      events_found: 0,
+      events_changed: false,
+      rule_used: truck.scraper_rule || null,
+      notes,
+    });
+    if (error) console.error(`   ⚠️  Could not log failure row for ${truck.name}: ${error.message}`);
+  } catch (logErr) {
+    console.error(`   ⚠️  Could not log failure row for ${truck.name}: ${logErr.message}`);
+  }
 }
 
 async function checkEmptySchedule(supabase, truck) {
@@ -1114,7 +1161,16 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
   hgQuery = SCRAPE_TRUCK_ID
     ? hgQuery.eq('id', SCRAPE_TRUCK_ID)
     : hgQuery.in('scraper_preference', ['auto', 'both']);
-  const { data: hgTrucks } = await hgQuery;
+  // 🔴 The query error is CHECKED. supabase-js returns { data: null, error } rather than throwing, so an
+  // unreachable database / expired service-role key used to yield hgTrucks = null, fall through the
+  // `hgTrucks && hgTrucks.length > 0` test below, and print "No HatchGrab trucks with auto-scraping
+  // enabled" — a DB OUTAGE reported as a clean no-op, exit 0, green tick. A failed read is a FAILURE.
+  // Note the distinction kept below: an ERROR throws; a successful query returning ZERO trucks is
+  // legitimate (nothing is enrolled) and still exits 0.
+  const { data: hgTrucks, error: hgTrucksError } = await hgQuery;
+  if (hgTrucksError) {
+    throw new Error(`Could not read trucks for scraping (database error, NOT "no trucks"): ${hgTrucksError.message}`);
+  }
 
   // Authoritative last-run per candidate truck from scraper_run_log (NOT trucks.scraper_last_run_at, which
   // test-truck cleanup resets to NULL). Feeds the forgiving due-window gate (isDueByLog) below.
@@ -1167,9 +1223,25 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
       // Two AND-composed gates pace the SCHEDULED (cron) runs. A scoped manual run (SCRAPE_TRUCK_ID set)
       // BYPASSES both — the human explicitly asked to scrape this truck now, so the day/due windows don't
       // apply. Cron path (unset) → gated below.
-      //  (1) shouldRunToday — learned-DAY window (new trucks pass every day);
+      //  (1) shouldRunToday — 🔴 NOW A NO-OP (hardcoded true). Kept in the chain so re-enabling is one line.
       //  (2) isDueByLog     — forgiving due-window vs scraper_run_log (~24/n−1h; 3×/day → 7h). Replaces the
       //                       old exact-hour isScrapeSlotNow + dueByFrequency (see the helpers above).
+      //
+      // 🔴 WHY THE LEARNED-DAY WINDOW WAS DISABLED. Once scraper_learning_complete flipped, a truck was
+      // eligible on only 3 days a week (learned day, +1, +2). Two trucks learned DISJOINT windows — gusto
+      // Mon/Tue/Wed, test-truck Thu/Fri/Sat — so no day ever ran both and SUNDAY ran neither. Gusto
+      // publishes on SUNDAY: the one day their learned window excluded. Their update sat unscraped until
+      // the window reopened the next day.
+      //
+      // The deeper defect is that the learner is SELF-REINFORCING and cannot correct itself. It learns
+      // from `events_changed` observed on days it actually ran, but it only runs on days it already
+      // believes in — so a truck can never be observed publishing outside its own window, and the evidence
+      // that would move the window can never be gathered. A single early coincidence becomes permanent.
+      // (`indexOf(maxChanges)` also breaks ties toward the lowest-numbered weekday, so sparse history
+      // decides the whole schedule.)
+      //
+      // Trade: we spend more page loads to stop missing updates. At 1×/day the 23h window still caps each
+      // truck at one scrape per day — the cost is bounded by scrape_times_per_day, not by this gate.
       if (SCRAPE_TRUCK_ID) {
         console.log(`\n⏩ Scoped manual run — bypassing pacing gates for ${hgTruck.name}.`);
       } else {
@@ -1189,6 +1261,11 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
       try {
         let winningText;
         let winningRule = hgTruck.scraper_rule;
+        let retryNote = null;   // set only when a retry below actually ran; null → notes stays NULL
+        // When dual detection runs it fetches BOTH texts, so the loser's text is already in hand — the
+        // retries below reuse it instead of re-fetching the page. Empty when a stored rule was used.
+        let loserText = '';
+        const otherRule = (r) => (r === 'scroll_next' ? 'scroll_lazy' : 'scroll_next');
 
         if (!winningRule) {
           console.log('   🔄 No stored rule — running dual detection...');
@@ -1196,14 +1273,20 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
             scrapeWithRule(hgTruck.schedule_url, 'scroll_lazy'),
             scrapeWithRule(hgTruck.schedule_url, 'scroll_next'),
           ]);
-          const countDates = (t) => (t.match(/\d{1,2}[\/\-]\d{1,2}/g) || []).length;
-          const lazyCount = countDates(lazyText);
-          const nextCount = countDates(nextText);
-          console.log(`   scroll_lazy: ~${lazyCount} date patterns, scroll_next: ~${nextCount}`);
+          // DISTINCT patterns, not occurrences. performButtonHunt appends a WHOLE fresh page of innerText
+          // per "next" click (up to 5 copies of the site's chrome), so counting OCCURRENCES let it win by
+          // repetition alone — the same dates counted 5× beat scroll_lazy's real, once-listed dates, and the
+          // winner then extracted nothing. A Set counts each distinct pattern once, so accumulation adds
+          // nothing unless it surfaces genuinely NEW dates, which is exactly what the metric is meant to ask.
+          // (Still a proxy — see the report for why extraction-scored detection was considered and rejected.)
+          const countDistinctDates = (t) => new Set(t.match(/\d{1,2}[\/\-]\d{1,2}/g) || []).size;
+          const lazyCount = countDistinctDates(lazyText);
+          const nextCount = countDistinctDates(nextText);
+          console.log(`   scroll_lazy: ~${lazyCount} distinct date patterns, scroll_next: ~${nextCount}`);
           if (nextCount > lazyCount) {
-            winningRule = 'scroll_next'; winningText = nextText;
+            winningRule = 'scroll_next'; winningText = nextText; loserText = lazyText;
           } else {
-            winningRule = 'scroll_lazy'; winningText = lazyText;
+            winningRule = 'scroll_lazy'; winningText = lazyText; loserText = nextText;
           }
           await supabase.from('trucks').update({ scraper_rule: winningRule }).eq('id', hgTruck.id);
           console.log(`   ✅ Stored winning rule: ${winningRule}`);
@@ -1212,10 +1295,28 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
           winningText = await scrapeWithRule(hgTruck.schedule_url, winningRule);
         }
 
+        // EMPTY PAGE — the pinned strategy returned nothing usable. Try the other one before giving up: a
+        // rule pinned to scroll_next returns the un-scrolled first view, which on a JS-rendered site can be
+        // near-empty while scroll_lazy (which waits and scrolls) reads fine. No Gemini call is spent here —
+        // this is a page-load only, and the normal extract below handles whichever text we end up with.
         if (!winningText || winningText.length < 50) {
-          console.log(`   ❌ Empty page for ${hgTruck.name}. Skipping.`);
-          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
-          continue;
+          const alt = otherRule(winningRule);
+          console.log(`   ❌ Empty page for ${hgTruck.name} with ${winningRule} — retrying with ${alt}...`);
+          // Reuse the detection loser's text when we have it (no second page load); otherwise fetch.
+          const altText = loserText || await scrapeWithRule(hgTruck.schedule_url, alt).catch(() => '');
+          if (altText && altText.length >= 50) {
+            console.log(`   ✅ ${alt} returned ${altText.length} chars — continuing with it`);
+            retryNote = `recovered_empty_page; rule=${alt}; was=${winningRule}`;
+            winningText = altText;
+            winningRule = alt;
+            // NOT re-pinned here: content alone isn't proof this rule extracts EVENTS. If it does, the run
+            // succeeds and the rule stays as-is; if it doesn't, the zero-retry below decides on evidence.
+          } else {
+            console.log(`   ❌ Both strategies empty for ${hgTruck.name}. Skipping.`);
+            await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule,
+              `empty_page; rule=${winningRule}; retry=${alt}:empty; rule_kept`);
+            continue;
+          }
         }
 
         // Pre-Gemini text-hash skip (slice iv): if the raw page text is byte-identical to the last
@@ -1225,15 +1326,21 @@ if (RUN_HATCHGRAB && HATCHGRAB_API_URL && INBOUND_SECRET) {
         // A scoped manual run (SCRAPE_TRUCK_ID set) FORCES a fresh extract — the human asked to scrape this
         // truck NOW, so don't short-circuit on the unchanged-text cache (e.g. re-running after a prompt fix
         // where the page text is identical but we want a re-parse). Cron path → cache as before.
-        const currentTextHash = hashText(winningText);
+        let currentTextHash = hashText(winningText);   // let: the zero-retry may replace winningText below
         if (!SCRAPE_TRUCK_ID && currentTextHash === hgTruck.scraper_last_text_hash) {
           console.log(`   ⏩ Page text unchanged — skipping Gemini for ${hgTruck.name}`);
-          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
+          // HEALTHY no-op, not a miss — deliberately NOT retried (the page is byte-identical to the last
+          // SUCCESSFUL extract, so there is nothing new to find and the other strategy would only burn a
+          // page load). The note is what lets SQL tell this apart from a real zero.
+          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule,
+            `unchanged_text; rule=${winningRule}; healthy_skip`);
           continue;
         }
 
-        // Parse events with Gemini
-        const hgPrompt = `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
+        // Parse events with Gemini.
+        // The template below is UNCHANGED — it is a function of the page text only so the zero-retry can run
+        // the IDENTICAL extraction on the other strategy's text without a second copy of the prompt drifting.
+        const buildHgPrompt = (pageText) => `CRITICAL CONTEXT: Today is ${todayStr}. Current year is ${currentYear}.
 You are extracting a food truck's schedule from website text. Extract events from TODAY ONWARDS — you MUST
 INCLUDE today's event (a truck trading today is the most important to capture). Exclude ONLY events dated
 BEFORE today.
@@ -1253,21 +1360,80 @@ Return ONLY valid JSON:
 {"events":[{"event_date":"DD/MM/YYYY","start_time":"HH:MM","end_time":"HH:MM","venue_name":"Name","town":"Town","postcode":"Postcode or empty"}]}
 
 WEBSITE TEXT:
-${winningText.slice(0, 100000)}`;
+${pageText.slice(0, 100000)}`;
+
+        // Uses gemini-2.5-flash (not lite) for schedule extraction per the manual spec.
+        // Apps Script paths also use gemini-2.5-flash — update there separately if rotated.
+        const extractEvents = async (pageText) => {
+          const r = await generateContentWithRetry(modelHeavy, buildHgPrompt(pageText));
+          return (r?.events || []).filter(isValidEvent);
+        };
 
         let hgEvents = [];
         try {
-          // Uses gemini-2.5-flash (not lite) for schedule extraction per the manual spec.
-          // Apps Script paths also use gemini-2.5-flash — update there separately if rotated.
-          const hgResult = await generateContentWithRetry(modelHeavy, hgPrompt);
-          hgEvents = (hgResult?.events || []).filter(isValidEvent);
+          hgEvents = await extractEvents(winningText);
         } catch (err) {
+          // AI/API failure, NOT a strategy failure — deliberately NOT retried with the other rule: the
+          // retry's own Gemini call would almost certainly hit the same outage, spending a page load and a
+          // second call to learn nothing. Recorded with a reason instead.
           console.error(`   ❌ AI parse failed for ${hgTruck.name}:`, err.message);
-          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
+          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule,
+            `ai_error; rule=${winningRule}; no_retry; msg=${(err.message || '').slice(0, 120)}`);
           continue;
         }
 
         console.log(`   📋 Extracted ${hgEvents.length} events`);
+
+        // ── ZERO-EVENT RETRY (replaces the old blind rule reset) ────────────────────────────────────────
+        // WAS: a zero-event run on a truck with events in the last 30 days set scraper_rule = null, on the
+        // theory that the rule had gone stale. That threw away the ONLY evidence of what works and forced a
+        // fresh dual-detection next run — which then re-rolled the (previously occurrence-counted) metric.
+        // A truck that returned zero ONCE could never converge again: zero → unpin → mis-detect → zero.
+        //
+        // The stale-rule case the reset was aimed at is REAL (an operator rebuilds their site and the pinned
+        // strategy stops matching). It is now served by EVIDENCE rather than by guessing: try the other
+        // strategy HERE, and re-pin only if it actually produces events. Same recovery, no destruction of a
+        // working rule on a transient zero — a page that was briefly down, slow, or genuinely empty for the
+        // week keeps its pinned rule.
+        //
+        // Ordering note: this now runs BEFORE change-detection so a successful retry's events flow through
+        // the normal hash/changed path exactly as a first-attempt success would.
+        if (hgEvents.length === 0) {
+          const alt = otherRule(winningRule);
+          console.log(`   ↻ Zero events with ${winningRule} — retrying with ${alt} before recording zero...`);
+          let altEvents = [];
+          let altText = '';
+          try {
+            // Reuse the detection loser's text when we have it — that turns this retry into a free
+            // extraction-scored second opinion (one Gemini call, NO extra page load).
+            altText = loserText || await scrapeWithRule(hgTruck.schedule_url, alt);
+            if (altText && altText.length >= 50) altEvents = await extractEvents(altText);
+            else console.log(`   ↻ ${alt} returned ${altText ? altText.length : 0} chars — nothing to extract`);
+          } catch (err) {
+            console.error(`   ❌ Retry (${alt}) failed for ${hgTruck.name}:`, err.message);
+          }
+
+          if (altEvents.length > 0) {
+            // The other strategy works on this site NOW → re-pin to it. This is the ONLY place the stored
+            // rule changes on a failure, and it changes only to a rule just proven to extract events.
+            await supabase.from('trucks').update({ scraper_rule: alt }).eq('id', hgTruck.id);
+            console.log(`   ✅ Retry with ${alt} found ${altEvents.length} events — rule re-pinned (was ${winningRule})`);
+            retryNote = `ok_after_retry; rule=${alt}; was=${winningRule}; events=${altEvents.length}`;
+            hgEvents = altEvents;
+            winningText = altText;
+            currentTextHash = hashText(altText);   // cache the text we actually extracted from
+            winningRule = alt;
+            // falls through to change-detection + POST with the retry's events
+          } else {
+            // BOTH strategies produced nothing. Keep the pinned rule — a zero is exactly when the
+            // previously-working rule is most valuable, and we have no evidence against it.
+            console.warn(`   ⚠️  Zero events from both ${winningRule} and ${alt} — rule KEPT (was: reset to null)`);
+            await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule,
+              `zero_events; rule=${winningRule}; retry=${alt}:0; rule_kept`);
+            await checkEmptySchedule(supabase, hgTruck);
+            continue;
+          }
+        }
 
         // Detect schedule change via hash
         const currentHash = hashEvents(hgEvents);
@@ -1279,22 +1445,6 @@ ${winningText.slice(0, 100000)}`;
           console.log(`   🔄 Schedule changed (hash: ${currentHash.slice(0, 8)})`);
         } else if (hgEvents.length > 0) {
           console.log(`   ✓ Schedule unchanged (hash: ${currentHash.slice(0, 8)})`);
-        }
-
-        // Zero-result recheck: reset rule if truck has had recent events
-        if (hgEvents.length === 0) {
-          const { count } = await supabase
-            .from('truck_events')
-            .select('id', { count: 'exact', head: true })
-            .eq('truck_id', hgTruck.id)
-            .gte('event_date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
-          if ((count || 0) > 0) {
-            await supabase.from('trucks').update({ scraper_rule: null }).eq('id', hgTruck.id);
-            console.warn(`   ⚠️  Zero events but has recent history — scraper_rule reset for recheck`);
-          }
-          await recordRunAndLearn(supabase, hgTruck, 0, false, winningRule);
-          await checkEmptySchedule(supabase, hgTruck);
-          continue;
         }
 
         // POST to inbound-schedule
@@ -1327,24 +1477,41 @@ ${winningText.slice(0, 100000)}`;
           .update({ scraper_last_text_hash: currentTextHash })
           .eq('id', hgTruck.id);
 
-        await recordRunAndLearn(supabase, hgTruck, hgEvents.length, eventsChanged, winningRule);
+        // retryNote is null on an ordinary first-attempt success → notes stays NULL, so healthy rows are
+        // byte-identical to every row written before this change.
+        await recordRunAndLearn(supabase, hgTruck, hgEvents.length, eventsChanged, winningRule, retryNote);
       } catch (err) {
+        // A per-truck crash used to be recorded NOWHERE — the truck simply vanished from scraper_run_log
+        // with no trace outside the Actions console. Now it leaves a row so it is findable in SQL.
         console.error(`   ❌ Error scraping ${hgTruck.name}:`, err.message);
+        await recordRunFailure(supabase, hgTruck,
+          `crash; rule=${hgTruck.scraper_rule || 'none'}; err=${(err.message || 'unknown').slice(0, 160)}`);
       }
     }
 
     await hgBrowser.close();
   } else if (hgTrucks && hgTrucks.length > 0) {
-    console.log('   ⏭️  No HatchGrab trucks due this run (due-window gate) — skipping browser launch.');
+    // LEGITIMATE no-op — the hourly cron firing with nothing inside its due window is the designed
+    // steady state (most fires). Exit 0 deliberately. Logged with counts so it is unmistakably a
+    // "nothing was due" run rather than a "something went wrong" run.
+    console.log(`   ⏭️  NO-OP: ${hgTrucks.length} truck(s) enrolled, 0 due this run (23h due-window) — no browser launched, nothing scraped, nothing failed.`);
   } else {
-    console.log('   ℹ️  No HatchGrab trucks with auto-scraping enabled.');
+    // Reachable ONLY on a successful query that returned zero rows (an error threw above), so this is a
+    // genuine "nothing is enrolled" — legitimate, exit 0.
+    console.log('   ℹ️  No HatchGrab trucks with auto-scraping enabled (query OK, zero rows).');
   }
 
   // Part 5 — prune run log once per daily run
   await pruneScraperRunLog(supabase);
 
 } else if (RUN_HATCHGRAB) {
-  console.log('\n⚠️  HATCHGRAB_API_URL or INBOUND_SCHEDULE_SECRET not set — skipping HatchGrab truck scraping.');
+  // 🔴 A MISSING SECRET IS A FAILURE, NOT A NO-OP. This used to console.log and exit 0 — the job went
+  // green while scraping nothing, so a cleared/rotated secret could silence every truck indefinitely with
+  // no red run anywhere. Throw → main()'s catch → exit 1 → red in Actions.
+  throw new Error(
+    `HatchGrab scraping requested (SCRAPE_MODE=${MODE || 'unset'}) but required secrets are missing: ` +
+    `${!HATCHGRAB_API_URL ? 'HATCHGRAB_API_URL ' : ''}${!INBOUND_SECRET ? 'INBOUND_SCHEDULE_SECRET' : ''}`.trim()
+  );
 } else {
   console.log('\n⏭️  SCRAPE_MODE=discovery — skipping HatchGrab truck scraping (Pass B).');
 }
@@ -1462,4 +1629,11 @@ if (newVenuesDetected.size > 0) {
 }
 } // end if (RUN_DISCOVERY) — Pass A discovery appends
 }
-main();
+// 🔴 A bare `main()` left every rejection unhandled: the run could die at any point — a missing credential
+// throw, a puppeteer.launch failure, a DB read error — and the only trace was stderr. Catch explicitly and
+// exit NON-ZERO so the GitHub Actions run goes RED instead of silently reporting success.
+main().catch(err => {
+  console.error('\n💥 SCRAPER RUN FAILED:', err?.message || err);
+  if (err?.stack) console.error(err.stack);
+  process.exit(1);
+});
