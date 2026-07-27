@@ -9,10 +9,32 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- THE RUNTIME THEME. Capacitor's BridgeActivity applies this itself on create
+         (BridgeActivity.java:25-26 — setTheme(R.style.AppTheme_NoActionBar) on both the Application and
+         the Activity), so this — NOT AppTheme and NOT AppTheme.NoActionBarLaunch — is the theme in force
+         for the whole time the app is on screen. That is why windowBackground is set HERE and nowhere
+         else: AppTheme is only the manifest-level default the Activity immediately overrides, and
+         NoActionBarLaunch is the splash window (its android:background is @drawable/splash — changing it
+         would alter the splash, not the running app).
+
+         WHY windowBackground MATTERS AT ALL: on Android 15+ Capacitor's core SystemBars plugin pads the
+         WebView's PARENT view down by the status-bar height and zeroes the insets handed to the WebView
+         (@capacitor/android .../plugin/SystemBars.java — the non-passthrough branch of
+         initWindowInsetsListener). The WebView therefore starts BELOW the status bar and cannot paint it,
+         so the exposed strip shows the window background — which for Theme.AppCompat.DayNight in light
+         mode is WHITE. Against white, the light status-bar icons set by StatusBar.setStyle(Style.Dark)
+         are near-invisible. Painting the window background with the header navy makes the strip
+         CONTINUOUS WITH THE APP HEADER (AppHeader = bg-slate-900 = #0F172A) instead of a white band
+         above it.
+
+         NOTE this is a COSMETIC continuity fix, not true immersion: the WebView still begins below the
+         strip. The strip simply stops reading as a defect. Do NOT pair this with CSS padding from
+         --safe-area-inset-top — see the comment in lib/native/statusBar.ts for why that double-pads. -->
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
+        <item name="android:windowBackground">@color/hgHeaderNavy</item>
     </style>
 
 

@@ -625,3 +625,101 @@ model, with neither the ordering nor the admin branch.
 
 The non-reproducibility is the real cost: an admin who happened to land on a real truck one
 launch and a demo the next reads as "flaky", which is how this stayed unexplained.
+
+---
+
+### 2026-07-27 — White status-bar strip on Android: window-background fix + statusBar.ts hygiene
+
+**SYMPTOM.** Pixel Tablet AVD (API 36): the status-bar strip renders WHITE with WHITE icons
+(clock/battery near-invisible) and the navy `AppHeader` starts BELOW it instead of filling
+behind it. Layout below the strip correct. iOS unaffected.
+
+**ROOT CAUSE (all verified from installed source, not docs).** On Android 15+ Capacitor's
+**core** `SystemBars` plugin (inside `@capacitor/android`, *not* a separate package —
+nothing to install) pads the WebView's PARENT view down by the status-bar height and zeroes
+the insets it hands the WebView, unless `WebView >= 140 && viewport-fit=cover` (the
+passthrough branch). So:
+
+- the WebView cannot paint the strip → the strip shows the theme's `windowBackground`, WHITE
+  under `Theme.AppCompat.DayNight` in light mode;
+- `env(safe-area-inset-top)` resolves to **0**, so `AppHeader`'s padding adds nothing;
+- `StatusBar.setBackgroundColor` is an **unconditional no-op for API ≥ 36**
+  (`StatusBar.java:66-68` guarded by `shouldSetStatusBarColor()`, `:121-133` returns false
+  for `deviceApi > VANILLA_ICE_CREAM` — branching on the **device** SDK_INT, so lowering
+  targetSdk would not help);
+- `setOverlaysWebView` still exists in 8.0.2 but is inert on Android 15+ (deprecated
+  systemUi flags only, `StatusBar.java:102-119`);
+- `setStyle(Style.Dark)` is the **only** one of the three that still works
+  (`StatusBar.java:42-52`) — and it sets LIGHT icons. White icons on a white strip.
+
+Nothing errors. The plugin resolves every promise and the platform ignores it — which is why
+there was no failure to find.
+
+**WHAT WAS BUILT.**
+
+1. **`android/app/src/main/res/values/colors.xml` (NEW)** — `hgHeaderNavy` = `#0F172A`,
+   documented as having to match `HEADER_BG` in `lib/brand.ts` (`bg-slate-900`).
+2. **`android/app/src/main/res/values/styles.xml`** — `android:windowBackground` →
+   `@color/hgHeaderNavy` on **`AppTheme.NoActionBar` ONLY**. That is the theme Capacitor's
+   `BridgeActivity` applies itself at create (`BridgeActivity.java:25-26`,
+   `setTheme(R.style.AppTheme_NoActionBar)` on both Application and Activity), so it is the
+   theme in force the whole time the app is on screen. `AppTheme` is only the manifest
+   default the Activity immediately overrides; `AppTheme.NoActionBarLaunch` is the splash
+   window (`Theme.SplashScreen`, `android:background` = `@drawable/splash`) and changing it
+   would alter the splash, not the running app. Both left alone deliberately.
+   Result: the strip becomes **continuous with the app header** rather than a white band
+   above it, and the light icons become legible. **Cosmetic continuity, not true
+   immersion** — the WebView still begins below the strip.
+3. **`lib/native/statusBar.ts`** — `setBackgroundColor({color:'#354F52'})` **REMOVED**. It
+   was a verified no-op on Android (above) and had no visible effect on iOS either:
+   `setOverlaysWebView(true)` removes the very background view it would have coloured
+   (`StatusBar.swift:114-121`) and we never set overlay false. The colour was also stale —
+   a slate-GREEN matching nothing in the brand (`HEADER_BG` is `#0F172A`). No hex was
+   introduced anywhere in TS; the Android strip is now a **theme resource**, which is the
+   right home for it. `setOverlaysWebView` and `setStyle` KEPT untouched —
+   `setOverlaysWebView` is load-bearing on iOS (the V8.7 double-band fix). The pre-existing
+   comment block was scoped "iOS ONLY" since it describes behaviour Android does not share.
+
+**iOS: byte-identical in behaviour.** The only removed call was unobservable under
+`overlay: true`. `ios.contentInset`, `viewportFit`, and `AppHeader`'s `paddingTop` were not
+touched. **Web: untouched** (`isNativePlatform()` early return unchanged).
+`npx tsc --noEmit` → exit 0.
+
+**HELD, deliberately: no `--safe-area-inset-top` / `env()` handling for Android**, with the
+reason recorded inline in `statusBar.ts` — see the invariant below.
+
+---
+
+## ⚠️ TWO MORE INVARIANT CANDIDATES for manual §35
+
+### 1. One mechanism per inset
+
+> **Only one mechanism may own a safe-area inset. If the platform has already padded the
+> view, additionally padding via CSS double-pads.**
+
+This is the **third** time this exact shape has bitten: (a) iOS `contentInset` +
+`scrollEnabled` vs the CSS `env()` padding — the V8.7 double band; (b) the same again when
+`setOverlaysWebView` was missing and the OS reserved the strip *and* the CSS padded; (c)
+Android now, where `SystemBars` pads the WebView's parent and any CSS padding we add would
+sit *below* a strip we still would not have filled. The fix each time was **not** to add
+compensation but to decide **who owns the inset** and make the other side contribute zero.
+`AppHeader`'s `paddingTop: env(safe-area-inset-top)` is safe on Android precisely *because*
+`env()` is 0 there — that is the mechanism yielding, and it must be left yielding.
+
+### 2. A native helper written for one platform must be re-verified against the other
+
+> **`lib/native/statusBar.ts` carried three calls that are no-ops on modern Android plus a
+> colour matching nothing in the brand. A native helper written for one platform must be
+> re-verified against the other, not assumed.**
+
+The file was written for WKWebView, gated only on `isNativePlatform()` (true on both), and
+shipped to Android untouched. Two of three calls were inert, the third did the opposite of
+what was wanted (white icons on a white strip), and the hardcoded `#354F52` had drifted from
+`HEADER_BG` without anything catching it — `brand.ts` even warns that the token is
+documentation-only and every literal must be updated by hand. Sibling helpers to re-audit on
+the same basis: `keepAwake.ts`, `printing`, and the notification helpers already flagged on
+26 July. **The audit question is "what does this call do on the OTHER platform?", and the
+answer must come from the installed plugin source, not the docs** — the docs describe an API
+that exists; the source shows the API doing nothing.
+
+Both recorded, neither folded into the manual — Dominic folds by hand.

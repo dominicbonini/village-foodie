@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Operator header navy. MUST match HEADER_BG in lib/brand.ts (Tailwind `bg-slate-900` = #0F172A),
+         which is the colour AppHeader paints (components/shared/AppHeader.tsx). Used as the window
+         background so the status-bar strip is continuous with the app header — see styles.xml.
+         If the operator header colour ever changes, change it in BOTH places (lib/brand.ts already
+         carries that warning for the web side). -->
+    <color name="hgHeaderNavy">#0F172A</color>
+
+</resources>

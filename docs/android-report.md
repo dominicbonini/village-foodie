@@ -1,4 +1,4 @@
-# Task report — Fixes 1–3 implemented (admin native landing) · 2026-07-27
+# Task report — Android status-bar strip fixed + statusBar.ts hygiene · 2026-07-27
 
 **TRANSIENT.** Overwritten every task. Durable log: `docs/android.md` (append-only).
 `docs/last-report.md` belongs to a separate workstream — not read, not written, not opened.
@@ -9,252 +9,261 @@
 
 | As received | Read as | Basis |
 | --- | --- | --- |
-| item 1: *"Add `.order('created_at')` to BOTH queries in **/-trucks**"* | **`/api/native/my-trucks`** | Characters dropped mid-path; the only `my-trucks` route in the repo, and the file the whole task is about. |
-| item 3: *"REQUIRED PRECEDENCE — in this **or a pinned van_devices config** for a permitted truck wins FIRST"* | *"in this **ORDER: (a)** a pinned `van_devices` config for a permitted truck wins FIRST"* | The `(a)` label and the word `ORDER:` were swallowed, leaving `or` as a fragment. The following clauses are explicitly labelled `(b)` and `(c)`, so the missing label is `(a)`, and the sentence is a precedence list. Implemented exactly as (a) → (b) → (c). |
-| item 5: *"the native landing inherited the web admin bypass **bthe** web admin redirect"* | *"…the web admin bypass **but not the** web admin redirect"* | Only reading that makes the invariant true and matches the rest of the sentence ("widens access silently"). Recorded in `docs/android.md` in the repaired form. |
+| CONTEXT: *"the literal\n **ars** nowhere else in the repo"* | *"**appears** nowhere else in the repo"* | Truncated word at a line break; it restates my own §1.1 finding from the previous report. |
+| item 3: *"Fix or remove the **#3literal**"* | *"the **`#354F52`** literal"* | Characters dropped mid-token; only one hex literal exists in the file. |
+| item 5: *"If the platform has **alr   padded** the view"* | *"has **already** padded the view"* | Truncated word plus collapsed spacing. Recorded in `docs/android.md` in the repaired form. |
 
-None of these changed the work; the precedence one is the only place a misreading would
-have mattered, and it is spelled out in §3 below so you can check it.
-
----
-
-## 1. Fix 1 — deterministic ordering · `app/api/native/my-trucks/route.ts`
-
-`.order('created_at', { ascending: true })` added to **both** truck queries — same column,
-same direction as the web router (`app/dashboard/page.tsx:41,63`). No new ordering invented.
-
-**:48** — the admin id-collection query inside `resolvePermittedTrucks`:
-
-```ts
-const { data: all } = await supabaseAdmin.from('trucks').select('id').eq('active', true).order('created_at', { ascending: true })
-```
-
-**:75** — the detail query in `GET`, with an inline note that this is the load-bearing one:
-
-```ts
-// ORDER BY created_at ASC — THIS is the load-bearing one: `trucksOut` is built from THIS result, so
-// its order is what the caller's trucks[0] resolves to. Matches the web router's ordering exactly.
-supabaseAdmin.from('trucks').select('id, name, dashboard_token').in('id', ids).eq('active', true).order('created_at', { ascending: true }),
-```
-
-**Why both, and why the second matters most:** `trucksOut` is mapped from the *detail*
-query's result, so ordering only the id query would have achieved nothing — the `Set`
-insertion order never reached the response. Ordering both means the id set and the emitted
-list agree, and `trucks[0]` is now a defined value.
-
-Left deliberately unordered: the `truck_vans` query (its rows are folded into a `Map`,
-order is irrelevant) and the non-admin `owned` / `memberships` queries (they only populate a
-`Set` that the ordered detail query re-reads). Say the word if you want those ordered too
-for uniformity — it would be harmless, just noise.
+None changed the work. Nothing else was garbled.
 
 ---
 
-## 2. Fix 2 — demo trucks excluded from the ADMIN bypass only
+## 1. Change 1 — the strip. Android theme only.
 
-**The helper exists**: `isDemoIdentifier` in `lib/demo.ts` — imported at **:3**. I did not
-need to hand-roll a prefix check.
+### 1.1 `android/app/src/main/res/values/colors.xml` — NEW file
 
-**:49** — the filter, inside the admin branch and nowhere else:
-
-```ts
-all?.forEach((t: { id: string }) => { if (!isDemoIdentifier(t.id)) ids.add(t.id) })
+```xml
+<color name="hgHeaderNavy">#0F172A</color>
 ```
 
-**Scope is exactly as instructed.** The non-admin path (`owned` at :53, `memberships` at
-:56) is untouched, so **an operator who genuinely owns a demo truck through the demo-signup
-claim still reaches it** — only the all-trucks admin bypass is narrowed. Recorded in the
-in-code comment so a future reader does not "tidy" the filter upward into the shared path.
+with a comment tying it to `HEADER_BG` in `lib/brand.ts` (`bg-slate-900`) and to
+`AppHeader`, and instructing that both move together.
 
-I also corrected the header comment at **:20** — it said *"ADMIN → all active trucks"*,
-which the change makes false. It now reads *"ADMIN → all active NON-DEMO trucks"*. A comment
-that contradicts its own code is the same drift class this workstream keeps finding.
+**Why a new file:** `android/app/src/main/res/values/colors.xml` did not exist — the only
+colour resource in the whole project was `ic_launcher_background.xml`. The name
+`hgHeaderNavy` is deliberately distinctive so it cannot collide with anything a future
+`cap` regeneration adds. See §5 for a genuine oddity I found while checking this.
 
-### The fragility record, inline at :28-40
+### 1.2 `android/app/src/main/res/values/styles.xml` — `AppTheme.NoActionBar` ONLY
 
-Written into the file, not just this report:
-
-> ⚠️ **DEMO EXCLUSION IS PREFIX-AS-MARKER, AND THAT IS FRAGILE.** There is NO demo flag on
-> `trucks` — the `demo-` prefix on id/slug/dashboard_token (`lib/demo.ts`) is the ONLY
-> signal that a truck is a demo, so this filter is a string convention standing in for a
-> schema fact. **PRECEDENT FOR WHY THAT ROTS:** the `hg_outbox_seq` incident
-> (reference-manual §11) — a per-device COUNTER shared the op-key prefix `'hg_outbox_'`, so
-> every outbox enumerator swept the counter in as a malformed op and reported "1 order
-> syncing" forever, surviving reinstall. A prefix convention held for a while, then a
-> neighbouring key grew into it. **THE DURABLE FIX IS A REAL COLUMN** — `trucks.is_demo
-> boolean not null default false`, backfilled from the prefix and written by
-> `lib/provision-truck.ts` — after which this filter becomes `.eq('is_demo', false)` and
-> stops depending on how ids are spelled. Until then, do not weaken
-> `assertReservedPrefix()` (provision-truck.ts), which is what keeps the prefix trustworthy
-> at all.
-
-The `hg_outbox_seq` citation is verified against the manual (lines 2392–2396, under §11 —
-the fix there was to move op keys to the distinct `'hg_outbox_op_'` prefix plus an `isOpKey`
-/ `isOpShape` guard, precisely because the bare prefix was not a reliable marker).
-
-### Proposed migration — NOT written, NOT run
-
-```sql
--- PROPOSAL ONLY. Not added to supabase/migrations/. Dominic runs SQL by hand.
-alter table trucks add column if not exists is_demo boolean not null default false;
-update trucks set is_demo = true where id like 'demo-%';
-```
-…then set `is_demo: true` in `lib/provision-truck.ts`'s demo insert, and swap the filter to
-`.eq('is_demo', false)`. **No DDL and no migration file was added by me**, per instruction.
-
----
-
-## 3. Fix 3 — admin branch on `/app`, with the required precedence
-
-### 3.1 Server: `is_admin` returned (additive)
-
-`permittedTruckIds` already had to know `is_admin` internally; it was computed and thrown
-away. Rather than issue a second `operators` lookup, I split the helper:
-
-- **:41** `resolvePermittedTrucks(userId): Promise<{ isAdmin: boolean; ids: Set<string> }>` —
-  the real implementation.
-- **:62** `permittedTruckIds(userId): Promise<Set<string>>` — **kept with its exact original
-  signature**, now delegating: `return (await resolvePermittedTrucks(userId)).ids`.
-
-**Why that matters:** `app/api/native/switch-truck/route.ts:8` imports `permittedTruckIds`
-and uses it as its security gate at `:29`. Its import, its call, and its behaviour are
-unchanged — no second query, no duplicated `is_admin` logic, one source of truth.
-(switch-truck does inherit the demo exclusion for admins, which is the intended symmetry:
-an admin can no longer *switch into* a demo truck either.)
-
-Response, **:96-100**:
-
-```ts
-return NextResponse.json({ trucks: trucksOut, device, is_admin: isAdmin })
+```xml
+<style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+    <item name="android:background">@null</item>
+    <item name="android:windowBackground">@color/hgHeaderNavy</item>   <!-- ← added -->
+</style>
 ```
 
-Additive — existing consumers read `trucks`/`device` and are unaffected. The empty-set early
-return at **:73** carries the flag too, so an admin with zero non-demo trucks still gets
-routed rather than falling through.
+**Which theme, and why that one specifically** (you asked me not to change all of them
+blindly — there are three, and only one is right):
 
-### 3.2 Client: the branch, in the required order
-
-`app/app/page.tsx`. Type widened at **:39** (`is_admin?: boolean`), branch inserted at
-**:56-65**, between the device-pin block and the truck fallback:
-
-| Precedence | Line | Behaviour |
+| Theme | Role | Changed? |
 | --- | --- | --- |
-| **(a) pinned `van_devices` config for a permitted truck** | :48-54 (**unchanged**) | Still wins first — a bound kitchen device boots to its configured screen, admin or not. |
-| **(b) `is_admin`** | **:65 — new** | `return go('/admin')` |
-| **(c) existing truck resolution** | :68 (unchanged) | `trucks[0]`, now deterministic |
+| **`AppTheme.NoActionBar`** | **THE RUNTIME THEME.** Capacitor's `BridgeActivity` applies it itself at create — `BridgeActivity.java:25-26`, `getApplication().setTheme(R.style.AppTheme_NoActionBar)` **and** `setTheme(R.style.AppTheme_NoActionBar)`. It is in force the entire time the app is on screen, so its `windowBackground` is what shows through the exposed strip. | ✅ **yes** |
+| `AppTheme` | Manifest `<application android:theme>` (`AndroidManifest.xml:10`) — the default the Activity immediately overrides. Note it is **not** a parent of the other two: both declare explicit parents, which cancels the dot-notation inheritance, so setting it here would not propagate anyway. | ❌ no |
+| `AppTheme.NoActionBarLaunch` | The **splash** window (`AndroidManifest.xml:16`, `parent="Theme.SplashScreen"`, `android:background` = `@drawable/splash`). Changing it would alter the splash screen, not the running app. | ❌ no |
 
-```tsx
-if (data.is_admin) return go('/admin')
-```
-
-The rationale is recorded in a comment above it, including *why* the branch is required
-rather than cosmetic (the bypass grants every active truck, so without it an unpinned admin
-falls through to an arbitrary truck's dashboard — in practice a demo, which has no
-sign-out).
-
----
-
-## 4. Constraints — each one checked
-
-| Constraint | Status |
-| --- | --- |
-| No change to the web `/dashboard` router or any web-visible behaviour | ✅ `app/dashboard/page.tsx` **not opened for edit**. Files changed: `app/api/native/my-trucks/route.ts`, `app/app/page.tsx` — that is all (`git status`). |
-| No change to `app/dashboard/[token]/page.tsx` (Fix 4 territory) | ✅ Untouched. Fix 4 **HELD** as instructed — the demo dashboard still has no escape at ≥640px. |
-| `my-trucks` is Bearer-only and native-only — still true after the edit? | ✅ **Confirmed, unchanged.** `GET` still starts `userIdFromBearer(req)` → `401` when there is no `Bearer` header (:67-68); there is no cookie path, and I added none. Client-side, both callers are native-gated: `app/app/page.tsx` is behind `isNativeApp()` (:21) and `lib/native/trucks.ts:9-10` returns early when `getNativeAccessToken()` is null, which it always is on web (`session.ts:37`). A browser cannot reach this endpoint usefully, so the changes are native-scoped by construction. |
-| No DDL / migration | ✅ None added. `trucks.is_demo` proposed only (§2). |
-| Fix 4 held | ✅ Not implemented. |
-
-**Gusto blast radius: nil.** Gusto trades on the web. Neither changed file is in a web
-request path — `/app` renders only inside the Capacitor shell (web hits fall through to
-`/dashboard` at :21), and `/api/native/my-trucks` is unreachable without a native Bearer.
+A comment above the style records the whole causal chain: that `SystemBars` pads the
+WebView's parent down on Android 15+ so the WebView cannot paint the strip; that the strip
+therefore shows `windowBackground` (white under `Theme.AppCompat.DayNight` light); that
+painting it navy makes the strip **continuous with the app header**; and — stated plainly —
+that this is **cosmetic continuity, not true immersion**, since the WebView still begins
+below the strip. It also cross-references the `statusBar.ts` note forbidding CSS padding on
+top.
 
 ---
 
-## 5. Verification
+## 2. Change 2 — the `--safe-area-inset-top` prohibition, recorded inline
+
+Held as instructed; **nothing consumes it, and nothing new reads `env()` on Android.** The
+reason is written into `lib/native/statusBar.ts:37-47` so the next person does not "fix" the
+remaining gap the obvious way:
+
+> 🚫 **DO NOT ADD `env(safe-area-inset-top)` OR `--safe-area-inset-top` HANDLING FOR
+> ANDROID. ONLY ONE MECHANISM MAY OWN THE INSET.** On Android 15+ Capacitor's core
+> `SystemBars` plugin has ALREADY padded the WebView's parent down by the status-bar height
+> and zeroed the insets it hands the WebView. Adding CSS padding on top of that pads TWICE:
+> a second navy band inside the WebView, BELOW a strip we still would not have filled —
+> exactly the two-band bug V8.7 removed on iOS (where `contentInset` and the CSS `env()`
+> padding were both claiming the same inset). `AppHeader`'s `paddingTop:
+> env(safe-area-inset-top)` is safe precisely BECAUSE `env()` resolves to 0 there. Note
+> Capacitor 8 injects a CSS CUSTOM PROPERTY (`--safe-area-inset-top`), NOT `env()`, so
+> nothing here reads it today. This only becomes relevant on the PASSTHROUGH branch
+> (`WebView >= 140` AND `viewport-fit=cover`), where `env()` is populated natively and
+> `AppHeader` already works unchanged — so even then the variable is not needed. Passthrough
+> is UNVERIFIED on our devices.
+
+---
+
+## 3. Change 3 — `lib/native/statusBar.ts` hygiene. iOS untouched.
+
+### 3.1 The `#354F52` literal — **removed with its call**, not recoloured
+
+You gave two options: pass the brand navy from `lib/brand.ts`, or remove the call if it is a
+no-op on the platforms we support and say so. **It is a no-op on both, so I removed it** —
+and that avoided adding a hex export to `brand.ts` (a web-shared file) for a call that
+cannot render anything.
+
+- **Android:** verified no-op for API ≥ 36. `StatusBar.java:66-68` wraps the entire method
+  body in `shouldSetStatusBarColor(...)`, and `:121-133` returns `false` unconditionally when
+  `deviceApi > VANILLA_ICE_CREAM`. That branches on the **device** `SDK_INT`, so lowering
+  `targetSdkVersion` would not bring it back.
+- **iOS:** no *visible* effect in our arrangement. `setOverlaysWebView(true)` — called on
+  the line above — removes the status-bar background view that `setBackgroundColor` colours
+  (`StatusBar.swift:114-121`), and we never call `setOverlaysWebView(false)`.
+- **The colour was wrong regardless:** `#354F52` is a slate-GREEN; the header is
+  `HEADER_BG` = `bg-slate-900` = `#0F172A`.
+
+**Precision on "iOS byte-identical":** the removed call did mutate one piece of iOS plugin
+state — `StatusBar.backgroundColor` — which is read only by
+`initializeBackgroundViewIfNeeded()`, reached only when overlay is set **false**. Nothing in
+this codebase ever does that. So iOS rendering is unchanged; the single hypothetical delta
+(if someone later disables overlay, the strip would use the plugin default `.black`
+(`StatusBarConfig.swift:5`) instead of the green) is recorded inline. I would rather state
+that than claim a literal byte-identity I cannot support.
+
+### 3.2 Which calls are verified no-ops — recorded inline with evidence
+
+`lib/native/statusBar.ts:14-35` now carries a per-call table with `file:line` citations into
+`node_modules`, so a future reader cannot assume these work:
+
+| Call | Status recorded | Evidence cited inline |
+| --- | --- | --- |
+| `setOverlaysWebView` | **INERT on Android 15+** — but **KEPT, load-bearing on iOS** (the V8.7 double-band fix) | `StatusBar.java:102-119` (deprecated systemUi flags only); `definitions.d.ts:197` "Not available on Android 15+"; `StatusBar.swift:114` (iOS removes the background view) |
+| `setStyle` | **The only one that still works on Android**; `Style.Dark` = "Light text for dark backgrounds" → LIGHT icons, correct against navy | `StatusBar.java:42-52` (ungated `setAppearanceLightStatusBars`); `definitions.d.ts:46-52` |
+| `setBackgroundColor` | **REMOVED** — no-op Android API ≥ 36, invisible on iOS under overlay, stale colour | `StatusBar.java:66-68`, `:121-133`; `StatusBar.swift:114-121`; `StatusBarConfig.swift:5` |
+
+### 3.3 One extra comment-accuracy fix
+
+The pre-existing paragraph at `:8-12` describes the OS *reserving* the strip and
+`overlay:true` *stopping* it — true on iOS, **false on Android 15+**. I scoped its opening
+line to **"THIS PARAGRAPH DESCRIBES iOS ONLY … see the Android note below"** rather than
+leaving a comment that contradicts the code beneath it. No behavioural change.
+
+### 3.4 What I deliberately did NOT do
+
+- **The `// TEMP` `console.log`s at `:7`, `:51`, `:53` are still there.** My previous report
+  proposed removing them, but this prompt specified *two* hygiene items — the literal and
+  the no-op comments — and log removal was not among them. Left in scope-discipline; they
+  are one line to delete if you want them gone (they currently fire on every mount across
+  four surfaces).
+- **`ios.contentInset`, `viewportFit`, `AppHeader`'s `paddingTop`** — untouched, as required.
+
+---
+
+## 4. What a WebView ≥ 140 device shows after this fix
+
+**On the passthrough branch** (`shouldPassthroughInsets = getWebViewMajorVersion() >= 140 &&
+hasViewportCover`, `SystemBars.java`), `SystemBars` does **not** pad the parent and passes
+the real system-bar insets through, so Chromium populates `env(safe-area-inset-top)`.
+
+**Predicted result:** `AppHeader`'s existing `paddingTop: env(safe-area-inset-top)` picks up
+a real value, the WebView extends under the strip, and the navy header paints it —
+i.e. **genuine immersion, identical to the working iOS arrangement, with no further code
+change.** `viewport-fit=cover` is already set (`app/layout.tsx:71`), so the second
+precondition is already met.
+
+**Is the `styles.xml` change still correct there?** **Yes — correct, and redundant, in that
+order.** It becomes invisible rather than wrong: if the WebView paints the whole strip, the
+window background behind it is never seen. It stays valuable as a **fallback**, because the
+branch is chosen per-device at runtime from the installed WebView version — the same APK can
+take the padded branch on an older-WebView device and the passthrough branch on a current
+one. Removing it would make the white strip reappear on exactly the devices that cannot
+manage without it. The colours also agree (`#0F172A` both), so there is no seam either way.
+
+**Verified vs inferred here:**
+
+- **Verified from source:** the `shouldPassthroughInsets` condition and both branches; that
+  the padded branch calls `v.setPadding(...)` and zeroes the insets; that
+  `viewport-fit=cover` is set; that `hasViewportCover` is fed by
+  `native-bridge.js:370-373` → `onDOMReady` → the meta-viewport check.
+- **Inference:** the *rendered outcome* on either branch. I cannot build or run, so
+  "predicted result" above is reasoning from the code, not an observation. The AVD's WebView
+  version is still unmeasured — `adb shell dumpsys package com.google.android.webview | grep
+  versionName` remains the one command that settles which branch you are on.
+
+---
+
+## 5. Flagged
+
+- ⚠️ **`AppTheme` references three colours that are defined nowhere.**
+  `styles.xml:7-9` uses `@color/colorPrimary`, `@color/colorPrimaryDark` and
+  `@color/colorAccent`, and I could find **no definition for any of them** anywhere under
+  `android/` — the only pre-existing colour resource was `ic_launcher_background`. An
+  unresolved `@color/` reference is normally a hard AAPT error, and `AppTheme` *is*
+  referenced (`AndroidManifest.xml:10`). Since your APK evidently builds, something must
+  resolve them that I cannot see without building. **I did not touch this** — my new
+  `colors.xml` deliberately defines only `hgHeaderNavy` and does not shadow those names.
+  Worth a look next time you build; if AAPT does complain, adding the three to `colors.xml`
+  is the fix.
+- **`android/` tracking has changed since my last report** — `styles.xml` now shows as
+  modified (`M`) rather than untracked, so the directory has been committed in between.
+  Good: my edit there is now revertible. `colors.xml` is new and shows as `??`, as expected.
+- **The fix is cosmetic, not immersive.** Worth being explicit: after this, the strip is
+  navy and the icons are legible, but the WebView still starts below it. If you want true
+  edge-to-edge on the padded branch, that is a different change (and per §2, *not* a CSS
+  one).
+- **Nothing here is device-verified** — no gradle, no build, no adb. Treat as **BUILT,
+  LIVE-TEST PENDING**.
+- **Still open from earlier in this workstream:** Fix 4 (the demo dashboard has no escape at
+  ≥640px), the notification lying-toggles, and the cook-screen session claim.
+
+---
+
+## 6. Verification
 
 `npx tsc --noEmit` → **exit 0, zero output.** Run twice (after the code edits, and again
-after the header-comment correction).
+after the comment-scoping edit).
 
-That is the only check available here — gradle, builds, `cap`, dev servers, `adb` and
-installs are all forbidden, so **none of this is device-verified**. Per the manual's own
-rule, treat as **BUILT, LIVE-TEST PENDING**.
+Note `tsc` covers only `lib/native/statusBar.ts` — **the two Android XML files are not
+type-checked or compiled by anything I am permitted to run**, so their correctness rests on
+review, not on a tool. They are small, and the resource reference (`@color/hgHeaderNavy` →
+`colors.xml`) is the only thing that could break; it matches.
 
-**Suggested live tests, in order:**
+**Files changed:**
 
-1. **Admin, fresh install, no pin** → should land on `/admin`. (The reported bug.)
-2. **RTF operator, fresh install** → should still land on RTF's dashboard. (Regression
-   check: the path that already worked.)
-3. **Admin on a device already pinned to a truck** → should still boot to that truck's
-   configured screen, *not* `/admin`. (Proves precedence (a) survived.)
-4. **Admin → 📱 This device → Truck** → the switcher list should no longer contain demo
-   trucks, and should be in `created_at` order.
-5. **Web**: sign in as Gusto on a browser → unchanged. (Should be, by construction.)
+| File | Change |
+| --- | --- |
+| `android/app/src/main/res/values/colors.xml` | **NEW** — `hgHeaderNavy` `#0F172A` |
+| `android/app/src/main/res/values/styles.xml` | `android:windowBackground` on `AppTheme.NoActionBar` + explanatory comment |
+| `lib/native/statusBar.ts` | `setBackgroundColor` removed; no-op/evidence comments; inset-ownership prohibition; iOS-scoping of the old paragraph |
+| `docs/android.md` | **Appended** 627 → 725 lines, nothing overwritten |
+| `docs/android-report.md` | This file, overwritten |
 
----
-
-## 6. `docs/android.md` — appended (541 → 627 lines, nothing overwritten)
-
-New entry `### 2026-07-27 — Admin native launch landed on a demo dashboard: Fixes 1–3
-BUILT`: symptom, the three compounding root causes, why RTF was unaffected, what was built,
-the `permittedTruckIds`-signature note, the tsc result, and the prefix-as-marker record with
-the proposed `trucks.is_demo` column.
-
-Then two flagged sections:
-
-**⚠️ NEW CROSS-CUTTING INVARIANT — candidate for manual §35** (`reference-manual.md:4327`):
-
-> Porting a permission bypass without porting the routing branch that constrains it widens
-> access silently: the native landing inherited the web admin bypass but not the web admin
-> redirect.
-
-Recorded with *why it generalises*: the V8.7 port copied the bypass into the data layer —
-its own comment claims it *"Mirrors the WEB admin model EXACTLY"* — but not
-`app/dashboard/page.tsx:30`, the redirect that stops an admin ever reaching truck resolution
-on web. On web "all trucks" is never a landing set; on native it was both. **The audit
-question is not "did we port the check?" but "did we port everything that made the check
-safe?"** Noted as the same shape as the existing §35 entry *"a flag named for a behaviour is
-not proof of that behaviour"* — a faithful-looking copy that omits its own precondition.
-
-**Also for §35 — the unordered-first-row class**, logged as an instance of what **V7.8 §3**
-already fixed on the web router (`.single()` → LIST + deterministic pick, "2+ → first by
-`created_at`"). That session hardened the web path and left the native one — written days
-earlier from the same model — with neither the ordering nor the admin branch. Stated as:
-
-> An unordered query whose FIRST ROW is used as an answer has no answer. If code takes `[0]`
-> from a query, that query needs an explicit `ORDER BY`.
-
-with the note that the non-reproducibility is the real cost — an admin landing on a real
-truck one launch and a demo the next reads as "flaky", which is how this stayed unexplained.
+**Not touched:** `app/layout.tsx`, `components/shared/AppHeader.tsx`, `capacitor.config.ts`,
+`AndroidManifest.xml`, `docs/reference-manual.md`.
 
 ---
 
-## 7. Flagged
+## 7. `docs/android.md` — appended
 
-- **Fix 4 is still open and still a trap.** With Fixes 1–3 an admin should no longer be
-  *sent* to a demo dashboard, but anyone who reaches one at ≥640px still has no sign-out, no
-  avatar menu and no switcher (`page.tsx:1813,1823`). Held per instruction; recommend it
-  next.
-- **`switch-truck` inherits the demo exclusion.** Intended (§3.1), but it is a behaviour
-  change beyond the strict letter of "the admin bypass in my-trucks": an admin can no longer
-  switch a device *into* a demo truck. Direct URL still works. Flagging so it is a known
-  consequence, not a surprise.
-- **The prefix filter is load-bearing on `assertReservedPrefix()`.** If that assertion is
-  ever weakened, a real operator truck could take a `demo-` id and silently vanish from the
-  admin's list — the same failure in the opposite direction. The `is_demo` column removes
-  the dependency entirely.
-- **`is_admin` now crosses the wire.** It is server-resolved from `operators.is_admin` and
-  only ever read for routing; the client never asserts it and no authorisation decision is
-  made from it. Worth knowing it exists in the payload.
+New entry `### 2026-07-27 — White status-bar strip on Android: window-background fix +
+statusBar.ts hygiene`: symptom, the verified root cause (SystemBars padding, the API-36
+guard, the one call that still works), what was built including which theme and why, the
+iOS-byte-identical statement, the tsc result, and the held `--safe-area-inset-top` decision.
+
+Then both invariant candidates for **manual §35** (`reference-manual.md:4327`), recorded
+verbatim as dictated:
+
+1. **"Only one mechanism may own a safe-area inset. If the platform has already padded the
+   view, additionally padding via CSS double-pads."** — logged with the note that this is
+   the **third** instance of the shape: iOS `contentInset` + `scrollEnabled` vs the CSS
+   `env()` padding (V8.7's double band), then the missing `setOverlaysWebView` with the OS
+   reserving *and* the CSS padding, and now Android. Each time the fix was to decide **who
+   owns the inset** and make the other side contribute zero — which is exactly why
+   `AppHeader`'s `env()` padding must be left resolving to 0 on Android.
+2. **"`lib/native/statusBar.ts` carried three calls that are no-ops on modern Android plus a
+   colour matching nothing in the brand. A native helper written for one platform must be
+   re-verified against the other, not assumed."** — logged with the sibling helpers worth
+   the same audit (`keepAwake.ts`, printing, the notification helpers already flagged on 26
+   July) and the sharpened audit question: *the answer must come from the installed plugin
+   source, not the docs — the docs describe an API that exists; the source shows the API
+   doing nothing.*
 
 ---
 
 ## 8. What I could not do / did not do
 
-- **Could not device-verify anything** — no gradle, builds, `cap`, dev servers, `adb`,
-  installs. `npx tsc --noEmit` (exit 0) is the only check run. §5 lists the live tests.
-- **Could not confirm which truck an admin previously landed on** — that needed the SQL from
-  the last report, which you run by hand. The mechanism is fixed either way.
-- **Did not implement Fix 4** — held, as instructed.
-- **Did not add DDL or a migration** — `trucks.is_demo` proposed in §2 only.
-- **Did not touch** `app/dashboard/page.tsx`, `app/dashboard/[token]/page.tsx`,
-  `app/api/native/switch-truck/route.ts`, or `docs/reference-manual.md`.
+- **Could not build, run, or measure** — no gradle, builds, `cap`, dev servers, `adb`,
+  installs. The XML is unvalidated by any tool; §4's rendering predictions are inference.
+- **Did not consume `--safe-area-inset-top` or add Android `env()` handling** — held, with
+  the reason recorded inline.
+- **Did not touch iOS** — `ios.contentInset`, `viewportFit`, `AppHeader.paddingTop`, and
+  `setOverlaysWebView` all unchanged.
+- **Did not remove the `// TEMP` console logs** — not among the two hygiene items specified
+  (§3.4).
+- **Did not resolve the missing `colorPrimary`/`colorPrimaryDark`/`colorAccent`
+  definitions** — flagged in §5, deliberately untouched.
+- **Did not edit `docs/reference-manual.md`** — the two §35 candidates sit in
+  `docs/android.md` for you to fold by hand.
 - **Did not touch `docs/last-report.md`** — not read, not written, not opened.
