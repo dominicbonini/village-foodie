@@ -369,6 +369,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editModalMods,setEditModalMods]=useState<{name:string;price:number}[]>([])
   const[editModalNotes,setEditModalNotes]=useState('')
   const[copiedOrderLink,setCopiedOrderLink]=useState(false)
+  // DEMO ONLY — the order key DemoLoopComplete's "Show me" has just scrolled to, so its card can carry
+  // the settled ring. Set only by that component (which only renders when isDemo), and read only in the
+  // `isDemo&&` ternaries on the two OrderCard grids, so on a live board it is null for the page's whole
+  // life and every card renders byte-for-byte what it did before.
+  const[highlightOrderKey,setHighlightOrderKey]=useState<string|null>(null)
   const[showQRFullscreen,setShowQRFullscreen]=useState(false)
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
@@ -1982,7 +1987,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <DemoLoopComplete
                   token={token}
                   orderKeys={orders.map(o=>o.order_key)}
+                  orders={orders}
                   loaded={!loading&&!!truck}
+                  onHighlight={setHighlightOrderKey}
                 />
               )}
               {/* Prep time banner — hidden in DEMO. Not just its "Edit categories" → /manage link: the whole
@@ -2311,13 +2318,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(

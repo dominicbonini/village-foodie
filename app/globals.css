@@ -62,3 +62,35 @@ details[open] > summary .details-arrow {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;                /* iOS Safari / Chrome */
 }
+
+/* ── DEMO ONLY — the loop-complete order highlight ───────────────────────────────────────────────
+   Applied by OrderCard's `highlight` prop, which only the demo dashboard ever sets (see
+   components/dashboard/DemoLoopComplete.tsx). Nothing renders this on a live operator's board.
+
+   THREE PULSES, THEN HOLD. The animation ends at the same ring the base rule declares, and there is
+   no fill-mode, so when it stops the element simply keeps that ring — a settled tint rather than an
+   indefinite flash. A permanently flashing card would compete with the board it exists to point at.
+
+   The base box-shadow also restates Tailwind's `shadow-sm` (the card root carries it) because a
+   single box-shadow declaration replaces rather than merges. This file is imported AFTER
+   "tailwindcss", so it wins on equal specificity without !important. */
+@keyframes demoOrderPulse {
+  0%   { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+  50%  { box-shadow: 0 0 0 10px rgb(249 115 22 / 0.15), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+  100% { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+}
+
+.demo-order-highlight {
+  /* The HELD state — what remains once the three pulses finish. */
+  box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  animation: demoOrderPulse 850ms ease-in-out 3;
+}
+
+/* A pulsing element is precisely what this setting exists for. Reduced motion keeps the ring — the
+   card must still be identifiable once you have been scrolled to it — and drops only the movement,
+   so the outcome is the same, arrived at without the animation. */
+@media (prefers-reduced-motion: reduce) {
+  .demo-order-highlight {
+    animation: none;
+  }
+}

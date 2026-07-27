@@ -99,6 +99,8 @@ export function OrderCard({
   showCookingStep = false,
   effectiveOrderReady = false,
   pendingSync = false,
+  anchorId,
+  highlight = false,
 }: {
   order: Order
   truck: TruckData | null
@@ -123,6 +125,14 @@ export function OrderCard({
    *  always fires on ready). Defaults off. */
   effectiveOrderReady?: boolean
   pendingSync?: boolean
+  /** DEMO ONLY — DOM id on the card root so the loop-complete card can scroll to this order.
+   *  Undefined everywhere else, and React omits the attribute entirely for undefined, so a live
+   *  operator's card renders exactly the markup it always did. */
+  anchorId?: string
+  /** DEMO ONLY — the settled "this is the one" ring (app/globals.css .demo-order-highlight). Set by
+   *  the demo dashboard once the scroll to this card has finished; false everywhere else, and false
+   *  appends nothing to the class string. */
+  highlight?: boolean
 }) {
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
   const expanded = true
@@ -355,7 +365,7 @@ export function OrderCard({
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${pendingSync ? 'border-amber-300' : 'border-slate-200'}`}>
+    <div id={anchorId} className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${pendingSync ? 'border-amber-300' : 'border-slate-200'}${highlight ? ' demo-order-highlight' : ''}`}>
 
       {/* Full-width coloured header — age-driven */}
       {viewMode === 'cook' ? (

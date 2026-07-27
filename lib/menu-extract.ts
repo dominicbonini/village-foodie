@@ -240,15 +240,24 @@ Response format:
   let lastError: Error | null = null
   let responseText: string | null = null
 
-  // ── Per-attempt timeout, DERIVED FROM the route ceiling (app/api/demo/route.ts maxDuration = 300s) ──────
-  // The timeout exists only to catch a GENUINE HANG — not to truncate a working-but-slow call. 25s did the
-  // latter (Gemini flash normally runs ~18-30s), so it aborted real extractions. Rule:
-  //     timeout = maxDuration − reserve(everything after extraction), capped at 120s.
-  //   reserve ≈ commitMenu (~85 round trips, a few s) + event + seeding + slot rebuild ≈ 15s (generous,
-  //   allows for production latency to Supabase). → 300 − 15 = 285s, capped → 120s.
-  // A working call finishes far inside 120s; only a true stall reaches it. Bounded well under the 300s
-  // route ceiling.
-  const EXTRACT_TIMEOUT_MS = 120_000
+  // ── Per-attempt timeout — SIZED TO THE CLIENT'S ESCAPE LADDER, not to the route ceiling ────────────────
+  // The timeout exists only to catch a GENUINE HANG — never to truncate a working-but-slow call. 25s did
+  // the latter (Gemini flash normally runs ~18-30s) and killed a real prospect's upload on 24 July:
+  // AbortError ×3, 80s burnt, demo dead. The route ceiling is 300s (app/api/demo/route.ts maxDuration), so
+  // the ceiling is NOT the binding constraint — the visitor's patience is.
+  //
+  // 90s is chosen to sit just AFTER the client's last escape hatch, so the ladder always completes:
+  //     60s  DemoUpload SLOW_PROMPT_AT   — "taking longer than usual" (reassurance)
+  //     75s  DemoUpload SAMPLE_OFFER_AT  — offer the authored sample menus (the escape)
+  //     90s  THIS abort                  — honest-failure path
+  // The visitor is given the choice at 75s; the server only decides once they've declined it. Any earlier
+  // and the abort would replace the sample offer with a failure screen a second after it appeared.
+  //
+  // HEADROOM against the 300s route ceiling (worst case, see the no-retry-on-abort note below):
+  //     provisionTruck ~5s + extraction ≤ ~100s (90s stall + 2s+4s backoff + three short 429/503 replies)
+  //     + reserve ~15s (commitMenu's ~85 round trips + event provisioner + seeding + slot rebuild)
+  //     ≈ 120s used, ≈ 180s spare.
+  const EXTRACT_TIMEOUT_MS = 90_000
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     const controller = new AbortController()
@@ -277,7 +286,8 @@ Response format:
       break
     } catch (err) {
       // Thrown = network failure or an ABORT (our timeout fired at EXTRACT_TIMEOUT_MS). An abort now means a
-      // GENUINE HANG, not a transient fault — DO NOT RETRY (retrying would multiply a 120s bound to 360s).
+      // GENUINE HANG, not a transient fault — DO NOT RETRY (retrying would multiply a 90s bound to 270s and
+      // buy the same outcome three times; the 24 July failure was exactly that shape at the old 25s).
       // Break straight out; after the loop the SAME MenuExtractionError throws → the honest-failure path.
       lastError = err as Error
       break

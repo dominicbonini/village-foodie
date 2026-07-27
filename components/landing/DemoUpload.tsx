@@ -74,10 +74,15 @@ const MAX_FLUSH_MS = 2_000
 // A non-blocking reassurance if the provision runs long. NOTE the client can't observe GEMINI specifically
 // (single blocking request, above) — this fires on elapsed wall-clock from submit, not on any AI signal.
 const SLOW_PROMPT_AT = 60_000
-// 30s AFTER the first prompt, offer the authored sample menus as an ESCAPE HATCH. Deliberately later than
+// 15s AFTER the first prompt, offer the authored sample menus as an ESCAPE HATCH. Deliberately later than
 // the reassurance: the first message is "hang on", not "give up". Taking a sample ABORTS the in-flight
 // fetch (the server-side provision finishes and orphans a demo truck — reclaimed by the cleanup sweep).
-const SAMPLE_OFFER_AT = 90_000
+//
+// ⚠️ MUST STAY BELOW the server's per-attempt Gemini abort (EXTRACT_TIMEOUT_MS = 90s, lib/menu-extract.ts).
+// It was 90s — level with the abort — so the offer and the failure screen raced: the visitor could watch
+// the escape hatch appear and be replaced a second later by "we couldn't read that menu", which reads as
+// the offer being snatched away. 75s gives a clear 15s window to take it before the server decides.
+const SAMPLE_OFFER_AT = 75_000
 
 // ── Context ─────────────────────────────────────────────────────────────────────────────────────────
 const DemoModalCtx = createContext<{ open: boolean; setOpen: (v: boolean) => void } | null>(null)
