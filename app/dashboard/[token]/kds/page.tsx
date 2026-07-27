@@ -5,6 +5,9 @@ import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
+import { isDemoIdentifier } from '@/lib/demo'
+import { DemoModeBanner } from '@/components/DemoModeBanner'
+import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { useToasts } from '@/lib/useToasts'
 import { useReadyEmailUndo } from '@/lib/useReadyEmailUndo'
 import { ToastStack } from '@/components/ToastStack'
@@ -40,6 +43,24 @@ type KdsView = 'window' | 'cook'
 
 export default function KdsPage() {
   const { token } = useParams<{ token: string }>()
+  // DEMO MODE — same signal, same source as the dashboard and proxy.ts: the `demo-` token prefix
+  // (lib/demo.ts). This route runs on the DASHBOARD token, so the check is identical here.
+  // The KDS is demo-ABLE rather than blocked: placing a customer order and watching the ticket land on the
+  // kitchen screen is part of the loop we want a prospect to see. Only configuration is hidden below.
+  const isDemo = isDemoIdentifier(token)
+  // FIX 2 — one-time explainer the FIRST time a demo visitor opens the kitchen screen. A prospect arriving
+  // here from the dashboard has no idea what a KDS is for; without a sentence of context it reads as "the
+  // same orders again, differently". Remembered per token so it never nags. Lazy initialiser (not an
+  // effect) so it's decided on first render — no flash of the popup for someone who already dismissed it.
+  const [showKdsIntro, setShowKdsIntro] = useState(() => {
+    if (typeof window === 'undefined') return false
+    if (!isDemoIdentifier(token)) return false
+    try { return localStorage.getItem(`hg_demo_kds_intro_${token}`) !== 'seen' } catch { return true }
+  })
+  const dismissKdsIntro = () => {
+    try { localStorage.setItem(`hg_demo_kds_intro_${token}`, 'seen') } catch { /* private mode — asks again */ }
+    setShowKdsIntro(false)
+  }
   const searchParams = useSearchParams()
   const kdsView: KdsView = searchParams.get('view') === 'cook' ? 'cook' : 'window'
   const vanId = searchParams.get('van_id') ?? ''
@@ -72,7 +93,14 @@ export default function KdsPage() {
   // PER-DEVICE keep-screen-on pref (mirrors sound + the dashboard). Lazy initializer reads localStorage
   // SYNCHRONOUSLY at first paint (SSR-guarded) so the KeepAwakePrompt can't flash. KDS previously read the
   // truck DB column even on native — this is its first per-device path. Default ON.
-  const [keepScreenOn, setKeepScreenOn] = useState(() => typeof window === 'undefined' ? true : localStorage.getItem(`hg_keepawake_${token}`) !== 'off')
+  // Per-device keep-screen-on pref — SAME rule as the dashboard (see its comment for the full reasoning):
+  // operators default ON (opt-out), demo defaults OFF (opt-in) so KeepAwakePrompt never renders unasked on
+  // a demo. The Screen on/off toggle stays fully functional either way.
+  const [keepScreenOn, setKeepScreenOn] = useState(() => {
+    if (typeof window === 'undefined') return !isDemo
+    const pref = localStorage.getItem(`hg_keepawake_${token}`)
+    return isDemo ? pref === 'on' : pref !== 'off'
+  })
   // ACTUAL keep-awake state, not intent — so the KDS Screen chip can't lie. No grace needed: with
   // gesture-based acquisition the lock stays 'off' (optimistic) until first tap, so there's no mount-denial.
   const [wakeState, setWakeState] = useState<WakeState>('off')
@@ -593,10 +621,14 @@ export default function KdsPage() {
   // Stage 1 (order-ready redesign): the cooking step is now ALWAYS on, so the cook view is gated on the
   // Max-plan feature ONLY — DE-COUPLED from show_cooking_step (was `can('cook_screen') && showCookingStep`).
   // To re-add the "Show cooking step" toggle later, restore `&& showCookingStep` here (and at :629).
+  // FIX 1 — DEMO defaults to Window + Grid. Window because it's the view that tells the story a prospect
+  // came for (orders to make, in the order to make them); Grid because a wall of cards reads as a working
+  // kitchen where a list reads as a spreadsheet. Still OVERRIDABLE — the switcher works, and once they
+  // pick something it persists per-token like any operator's preference.
   const activeView: KdsView = can('cook_screen')
-    ? (viewOverride ?? kdsView)
+    ? (viewOverride ?? (isDemo ? 'window' : kdsView))
     : 'window'
-  const activeLayout = layoutOverride ?? displayMode
+  const activeLayout = layoutOverride ?? (isDemo ? 'grid' : displayMode)
 
   // FIX 2 — apply the durable offline status overlay (sticky; held until the server reflects it) over the
   // merged orders BEFORE the view split, so an offline-advanced card moves columns and no stale/intermediate
@@ -693,6 +725,11 @@ export default function KdsPage() {
       {/* App-lock overlay (per-device biometric/passcode) — no-op on web / when off. */}
       <AppLockGate />
 
+      {/* Shared with the dashboard and the customer order page — components/DemoModeBanner.tsx. Sits ABOVE
+          the header so it can't be mistaken for a kitchen control. The "what is this screen" explanation
+          lives in the one-time intro popup below, not here. */}
+      {isDemo && <DemoModeBanner action={<DemoGetStarted token={token} />} />}
+
       {/* ── Header ── */}
       <header className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-slate-200 flex-shrink-0">
         {/* Back to the orders dashboard — staff are auto-routed to KDS on login and otherwise have no
@@ -775,7 +812,10 @@ export default function KdsPage() {
         {/* This device (native app only) — device/user config, reachable from KDS since it's a default-
             screen surface. Not role-gated, not sm:hidden. Uses the dashboard token (this route runs on it),
             so its bind-device reads/writes authenticate. */}
-        {isNativeApp() && (
+        {/* DEMO: hidden. ThisDeviceSettings is pure CONFIGURATION (default screen, van binding, notification
+            prefs) — the KDS counterpart of the NotificationSettings card hidden on the dashboard. Already
+            native-only, so a web demo never saw it; gated here so a native demo doesn't either. */}
+        {isNativeApp() && !isDemo && (
           <button
             onClick={() => setDeviceOpen(true)}
             title="This device"
@@ -787,7 +827,13 @@ export default function KdsPage() {
 
         <div className="flex-1" />
 
-        {/* Extra wait selector */}
+        {/* Extra wait selector.
+            DEMO: hidden. A visitor with no mental model of the system sets +30 min, forgets, then sees
+            quoted collection times they can't explain and concludes the product is broken. Neither this nor
+            Pause is part of what the demo is selling, and both can only make the demo look wrong. Safe to
+            hide OUTRIGHT (rather than keep a clear-path like Pause below): extra wait is only ever set from
+            here or the dashboard, and both are gated in demo — so it can never be non-zero to begin with. */}
+        {!isDemo && (
         <div className="flex items-center gap-1">
           <select
             value={extraWaitMins}
@@ -800,9 +846,14 @@ export default function KdsPage() {
             <option value="30">+30 min</option>
           </select>
         </div>
+        )}
 
-        {/* Pause — both views */}
-        {activeEvent?.status === 'open' && (
+        {/* Pause — both views.
+            DEMO: the PAUSE direction is hidden, the RESUME direction is NOT. This is one toggle button, so
+            `!isDemo || isPaused` keeps the recovery path open: offline auto-pause (heartbeat-monitor) can
+            still pause a demo event without anyone touching this, and hiding the button outright would
+            strand the demo paused with no way back — the exact failure we're avoiding, just caused by us. */}
+        {activeEvent?.status === 'open' && (!isDemo || isPaused) && (
           <button
             onClick={togglePause}
             className={`text-xs px-3 py-1.5 rounded-md border font-medium ${
@@ -920,6 +971,10 @@ export default function KdsPage() {
             <span className="text-sm font-medium text-slate-900 truncate">{activeEvent.venue_name}</span>
             <span className="text-xs text-slate-400 flex-shrink-0">{formatTimeRange(activeEvent.start_time, activeEvent.end_time)}</span>
           </div>
+          {/* FIX 3 — DEMO removes both. Same reasoning as the dashboard's Event actions: extend/finish/
+              cancel/note are operator event-lifecycle controls with nothing to offer a prospect, and
+              several of them can leave the demo looking broken. */}
+          {!isDemo && (
           <div className="flex items-center gap-2 flex-shrink-0">
             <button onClick={() => extendEvent(activeEvent.id, 30)}
               className="text-xs px-2.5 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:border-slate-400">
@@ -930,6 +985,7 @@ export default function KdsPage() {
               ⋯
             </button>
           </div>
+          )}
         </div>
       )}
 
@@ -1034,7 +1090,7 @@ export default function KdsPage() {
       )}
 
       {/* ── Event menu modal ── */}
-      {showEventMenu && activeEvent && (
+      {showEventMenu && activeEvent && !isDemo && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e => e.target === e.currentTarget && setShowEventMenu(false)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <div className="flex items-center justify-between mb-4">
@@ -1085,10 +1141,35 @@ export default function KdsPage() {
           as-is; they rarely coincide). */}
       <ToastStack toasts={toasts} dismissToast={dismissToast} />
 
+      {/* FIX 2 — DEMO kitchen-screen explainer. Fixed-height flex shell per the reference manual, though
+          it's short enough not to need the scroller; kept for consistency with the other demo modals. */}
+      {isDemo && showKdsIntro && (
+        <div className="fixed inset-0 z-[70] bg-black/60 flex items-center justify-center p-4"
+          onClick={dismissKdsIntro}>
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6 flex flex-col gap-3"
+            onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+            <div className="text-3xl text-center" aria-hidden>👨‍🍳</div>
+            <h3 className="font-black text-slate-900 text-center">This is the kitchen screen</h3>
+            <p className="text-sm text-slate-600">
+              It&apos;s the cook&apos;s view — the orders you need to make, in the order to make them. The
+              screen by the grill shows this while the counter uses the orders dashboard.
+            </p>
+            <p className="text-sm text-slate-600">
+              Cards move across as you tap them, so whoever&apos;s cooking always knows what&apos;s next and
+              nobody has to shout. Everything here is your demo data — have a play.
+            </p>
+            <button onClick={dismissKdsIntro}
+              className="mt-1 w-full bg-orange-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-orange-700">
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* "This device" sheet — same pattern as the dashboard UserMenu. ThisDeviceSettings self-guards on
           isNativeApp and renders its own card + "this device only" note. `token` here is the dashboard
           token (this route runs on it), so its bind-device calls authenticate. */}
-      {deviceOpen && (
+      {deviceOpen && !isDemo && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-4"
           onClick={() => setDeviceOpen(false)}>
           <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>

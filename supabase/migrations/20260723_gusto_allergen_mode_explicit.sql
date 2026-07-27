@@ -1,0 +1,58 @@
+-- 20260723_gusto_allergen_mode_explicit.sql
+-- M4: record Gusto's ALREADY-EFFECTIVE allergen choice explicitly, so null can mean "unanswered".
+--
+-- ── THE PROBLEM ─────────────────────────────────────────────────────────────────────────────────────
+-- `trucks.allergen_display_mode` is overloaded. api/menu/[truckId]/route.ts:488 reads:
+--     const perDish = ((truck.allergen_display_mode ?? null) as string) !== 'card'
+-- so NULL silently means PER-DISH, which hides every item with allergens_verified = false. That makes null
+-- mean two incompatible things: "I deliberately chose per-dish" (Gusto) and "I never answered the wizard's
+-- question" (anyone who used the Skip button). The renderer cannot tell them apart, and the go-live gate
+-- needs to.
+--
+-- ── WHY THE FIX IS HERE, NOT IN THE RENDERER ────────────────────────────────────────────────────────
+-- Making null mean "not configured → show everything" was considered and REJECTED. Two reasons:
+--   1. Hiding unverified dishes is the OVER-WARN direction, which is the safe one. Showing a dish with no
+--      allergen data reads to a customer as "contains no allergens" — the under-warn trap, which the
+--      allergen model treats as fatal.
+--   2. It would be a LATENT REGRESSION ON A LIVE TRUCK. Today Gusto renders identically under either
+--      semantic, because all 45 of its items are allergens_verified = true. But commitMenu writes
+--      `allergens_verified: (item._allergensChecked === true)` — i.e. FALSE — on every import. So the very
+--      next item Gusto imports would be hidden under today's rule (safe) and served with no allergen data
+--      under the proposed rule (unsafe). Invisible in testing; fires on the next import.
+--
+-- So the serving semantics stay EXACTLY as they are, and the ambiguity is resolved by recording the answer.
+--
+-- ── WHAT THIS CHANGES FOR CUSTOMERS: NOTHING ────────────────────────────────────────────────────────
+-- All 12 consumers of this column were audited (2026-07-23). Every customer-facing one tests `=== 'card'`
+-- or `!== 'card'` — menu/[truckId]:488 (item visibility), :666 (allergensVerified), order/page:1795, :1801
+-- (per-dish chips), :2396 (allergen modal) — so null and 'per_dish' take the same branch in all of them.
+-- Verifiable by diffing /api/menu/pizzeria-gusto before and after; expect an empty diff.
+--
+-- ── WHAT THIS CHANGES FOR THE OPERATOR: ONE LABEL ───────────────────────────────────────────────────
+-- manage/[token]/page.tsx:3109 is the ONLY non-equivalent consumer:
+--     mode === 'card' ? 'Allergen card' : mode === 'per_dish' || mode === 'both' ? 'Per dish' : 'Not set'
+-- So Manage → Menu → Allergens changes from "Display mode: Not set" to "Display mode: Per dish".
+--
+-- That is a CORRECTION, not a side effect: the box currently reports "Not set" while the customer menu is
+-- actively behaving as per-dish — the overloading bug leaking into the operator's console. Nothing else in
+-- that box moves; its warning state, icon and "all dishes confirmed" line key off cardMode/needsReview,
+-- neither of which this touches.
+--
+-- ── AUDIT TRAIL ─────────────────────────────────────────────────────────────────────────────────────
+-- Allergen-setting writes through /api/manage are owner-gated and logged via logAllergenChanges (route.ts
+-- :813). A direct UPDATE bypasses both. Accepted deliberately: this is a no-op relabel run by the owner,
+-- and THIS FILE is the record. If the audit trail ever needs to be complete for allergen fields, that is a
+-- reason to add a row here — not a reason to route the change through the API.
+--
+-- ── SCOPE ───────────────────────────────────────────────────────────────────────────────────────────
+-- Audited 2026-07-23: 8 trucks, distribution { card: 7, null: 1 }. Gusto is the only null, and it is a
+-- genuine per-dish truck (45/45 items verified, no allergen card set). The WHERE clause is defensive
+-- anyway — it touches only rows that are still null, so re-running is a no-op.
+--
+-- DATA MIGRATION. Run-anytime, no code coupling, no deploy ordering. Committed rather than hand-run: an
+-- uncommitted hand-run migration is how the §65 place_order_atomic incident happened.
+
+update trucks
+   set allergen_display_mode = 'per_dish'
+ where id = 'pizzeria-gusto'
+   and allergen_display_mode is null;

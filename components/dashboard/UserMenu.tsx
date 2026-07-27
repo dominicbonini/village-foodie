@@ -23,6 +23,12 @@ interface UserMenuProps {
   showManageLink?: boolean      // dashboard only
   showDashboardLink?: boolean   // manage page only
   isAdmin?: boolean
+  // Sign out — defaults TRUE (every existing caller keeps today's behaviour). Passed false by the DEMO
+  // dashboard: an anonymous demo visitor has no session to sign out of, so the item would be a dead end.
+  showSignOut?: boolean
+  /** Identity block (name + email). Passed false by the DEMO dashboard: an anonymous visitor has no
+   *  account, so it rendered a bare "—" placeholder — a profile row for a profile that doesn't exist. */
+  showIdentity?: boolean
   // Screen toggle — BINARY: `keepScreenOn` carries the ACTUAL held-state (green on / grey off). Failure copy
   // is a toast raised by the parent's onToggleScreenOn, not a label here.
   keepScreenOn?: boolean
@@ -48,6 +54,8 @@ export default function UserMenu({
   showManageLink,
   showDashboardLink,
   isAdmin,
+  showSignOut = true,
+  showIdentity = true,
   keepScreenOn = false,
   onToggleScreenOn,
   soundEnabled = true,
@@ -103,12 +111,14 @@ export default function UserMenu({
 
             {/* Identity block — the LOGGED-IN USER (not the viewed truck). Line 1 = their name
                 (or email if no name), line 2 = their email (omitted when it would duplicate line 1). */}
-            <div className="px-4 py-3 border-b border-slate-100">
-              <p className="text-sm font-semibold text-slate-800 truncate">{identityLabel || '—'}</p>
-              {displayName && userEmail && (
-                <p className="text-xs text-slate-400 truncate mt-0.5">{userEmail}</p>
-              )}
-            </div>
+            {showIdentity && (
+              <div className="px-4 py-3 border-b border-slate-100">
+                <p className="text-sm font-semibold text-slate-800 truncate">{identityLabel || '—'}</p>
+                {displayName && userEmail && (
+                  <p className="text-xs text-slate-400 truncate mt-0.5">{userEmail}</p>
+                )}
+              </div>
+            )}
 
             {/* Screen on — dashboard only, mobile only */}
             {/* Screen on — dashboard only, mobile only. BINARY: green "Screen on" when held, grey "Screen off"
@@ -217,15 +227,19 @@ export default function UserMenu({
               </Link>
             )}
 
-            <hr className="border-slate-100" />
-
-            {/* Sign out — always */}
-            <button
-              onClick={handleSignOut}
-              className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
-            >
-              Sign out
-            </button>
+            {/* Sign out — every caller EXCEPT the demo dashboard (no session exists to end). The <hr> is
+                tied to the button so a hidden sign-out doesn't leave a dangling divider. */}
+            {showSignOut && (
+              <>
+                <hr className="border-slate-100" />
+                <button
+                  onClick={handleSignOut}
+                  className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                >
+                  Sign out
+                </button>
+              </>
+            )}
           </div>
         </>
       )}

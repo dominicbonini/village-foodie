@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
 import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
+import { isDemoIdentifier } from '@/lib/demo'
+import { DemoModeBanner } from '@/components/DemoModeBanner'
+import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import Link from 'next/link';
@@ -151,6 +154,8 @@ function eventToVillage(e: EventData, truckName: string): VillageEvent {
 
 export default function OrderPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
+  // A demo truck's SLUG carries the `demo-` prefix (lib/demo.ts), so the page needs no extra data.
+  const isDemo = isDemoIdentifier(slug)
   // Per-event deep-link (hatchgrab "Order now" flow). ?event_id present → scope the page to that
   // one truck_events row (single-event card + "Change"). Absent → the order-entry schedule:
   // a single-event truck auto-selects; a multi-event truck shows the picker to choose from.
@@ -458,12 +463,17 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   // slot from a previously-viewed event lingers. Re-runs on Link navigation (param change).
   useEffect(() => {
     if (!events.length) { setEvent(null); return }
-    const next = eventIdParam
-      ? (events.find(e => e.id === eventIdParam) ?? null)
-      : (events.length === 1 ? events[0] : null)
+    // 2a — DEMO skips event selection entirely. A demo truck has exactly one event by construction, so
+    // the chooser would be a one-option question; forcing events[0] also means a transient multi-event
+    // state can never strand a visitor on a picker they have no way to reason about.
+    const next = isDemo
+      ? (events.find(e => e.id === eventIdParam) ?? events[0])
+      : eventIdParam
+        ? (events.find(e => e.id === eventIdParam) ?? null)
+        : (events.length === 1 ? events[0] : null)
     setEvent(next)
     setSlotHour(''); setSlotMinute('')
-  }, [eventIdParam, events])
+  }, [eventIdParam, events, isDemo])
 
 
   // Non-destructive menu re-fetch (truck.paused/pauseReason + menu) — reused by the initial load
@@ -1446,8 +1456,11 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <h1 className="text-2xl font-black text-slate-900">
             Order from {truck?.name}
           </h1>
-          {/* Event details card */}
-          {eventLoading ? (
+          {/* Event details card.
+              2b — HIDDEN IN DEMO. The whole block is the event card OR the chooser, and neither means
+              anything here: a demo event is a synthetic "Demo event · 11:30–14:00" window with no venue.
+              Selection still happens in the effect above, so ordering works — only the display is gone. */}
+          {isDemo ? null : eventLoading ? (
             <div className="mt-3 bg-slate-100 rounded-xl px-4 py-3 animate-pulse">
               <p className="text-slate-400 text-sm">Loading events...</p>
             </div>
@@ -2133,8 +2146,18 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         {/* YOUR DETAILS */}
         <Sec title="Your details">
           <div className="space-y-3">
+            {/* 2d — the fields stay EDITABLE and functional: /api/orders/submit requires customerEmail, so
+                the order genuinely can't be placed without one. But nothing is ever sent — the demo-truck
+                guard in submit + dashboard/action blocks every send site. Say so plainly rather than
+                letting someone hesitate over handing us their address. */}
+            {isDemo && (
+              <p className="text-xs font-semibold text-slate-700 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2">
+                This is a real form, so it needs an email to place the order — but nothing is sent. No
+                confirmation, no messages, nothing leaves the system.
+              </p>
+            )}
             <Fld label="Name" required><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Sarah" className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white" /></Fld>
-            <Fld label="Email" required note="confirmation sent here"><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">Please enter a valid email (e.g. sarah@email.com)</p>}</Fld>
+            <Fld label="Email" required note={isDemo ? 'not used in the demo' : 'confirmation sent here'}><input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="e.g. sarah@email.com" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${emailError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{emailError && <p className="text-red-500 text-xs mt-1">Please enter a valid email (e.g. sarah@email.com)</p>}</Fld>
             <Fld label="Phone number" note="optional"><input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07700 900123" className={`w-full border rounded-xl px-3 py-2.5 text-sm font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-white ${phoneError ? 'border-red-300 focus:ring-red-400' : 'border-slate-200 focus:ring-orange-400'}`} />{phoneError && <p className="text-red-500 text-xs mt-1">Please enter a valid UK mobile (e.g. 07700 900123)</p>}</Fld>
             <Fld label="Special instructions" note="optional"><textarea
                 value={notes}
@@ -2469,7 +2492,14 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: TruckData | null; scrolled: boolean; showBack?: boolean }) {
+  // DEMO banner lives HERE, not at each render path: <Hdr> is the one component every state of this page
+  // goes through (loading, error, no-event, ended, and the live menu), so one insertion covers all five and
+  // a future sixth can't miss it. A demo truck's SLUG carries the `demo-` prefix (lib/demo.ts), so the page
+  // needs no extra data to know. Sticky directly under the 60px header so it stays visible while scrolling
+  // a long menu — a demo indicator that scrolls away isn't doing its job. Calm, matching the dashboard.
+  const isDemo = isDemoIdentifier(slug)
   return (
+    <>
     <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
       <div className="max-w-6xl mx-auto flex justify-between items-center w-full relative">
 
@@ -2509,6 +2539,10 @@ function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: 
 
       </div>
     </header>
+    {/* Shared with the dashboard and the KDS — components/DemoModeBanner.tsx. Sticky under the 60px header
+        (this page isn't a flex shell), so it stays visible while scrolling a long menu. */}
+    {isDemo && <DemoModeBanner className="sticky top-[60px] z-40 shadow-sm" action={<DemoGetStarted slug={slug} />} />}
+    </>
   )
 }
 

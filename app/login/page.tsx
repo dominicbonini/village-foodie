@@ -50,6 +50,25 @@ function LoginForm() {
       router.push('/app'); return
     }
 
+    // ── ONBOARDING RESUME (additive; every failure falls through to the line below) ────────────────
+    // 🔴 SMALLEST POSSIBLE DIFF ON THE LOGIN PATH. A bug here locks an operator out on a trading day, so:
+    //   • it runs ONLY when `next` is the default — an explicit ?next= is honoured exactly as before;
+    //   • the endpoint answers `null` for anything it isn't certain about, and NULL means "carry on";
+    //   • a throw, a non-ok response or an unparseable body all fall through to router.push(next);
+    //   • the only destination it can ever return is /setup, built server-side from an id we looked up.
+    // Delete this block and login behaves precisely as it did before Phase 4.
+    if (next === '/dashboard') {
+      try {
+        const res = await fetch('/api/auth/post-login')
+        if (res.ok) {
+          const { redirect } = await res.json()
+          if (typeof redirect === 'string' && redirect.startsWith('/setup')) {
+            router.push(redirect); return
+          }
+        }
+      } catch { /* fall through — the default route below is always correct */ }
+    }
+
     router.push(next)
     router.refresh()
   }

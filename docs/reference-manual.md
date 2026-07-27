@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V9.0
+HatchGrab Engineering Reference Manual · V9.1
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 9.0**
+**Version 9.1**
 
 July 2026
 
@@ -15,6 +15,29 @@ July 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V9.1 — 24 July 2026
+
+Delta over V9.0 — the **23–24 July onboarding session**. One theme: closing the gap between "a stranger lands on `/landing`" and "a working truck with a menu and a schedule". **Signup moved INTO the demo modal** (a two-step wizard over endpoints that already existed), the **import wizard made setup-aware** via a single `inSetup` flag, a **schedule step** added after the menu commit, and a batch of **demo-reliability fixes** (fixed-length event window, now-aware seeded orders, a roll that re-derives from the same rule, commit-menu read batching, `maxDuration`). **§35 "Cross-cutting engineering invariants" created**; live-schema facts added to **§16**; the onboarding backlog added to **§27**. **Status: the SIGNUP CHAIN was verified end to end on 24 July. Everything else in this entry is BUILT but UNVERIFIED.**
+
+- **SIGNUP MOVED INTO THE DEMO MODAL — orchestration, not new contracts.** A **two-step wizard** inside the demo modal drives endpoints that already existed, in order: **`/api/signup` → `signInWithPassword` → `update-profile` → `create_truck` → `update_settings`**. **No endpoint contracts changed** — the wizard is a caller, not a new API surface, so the pre-existing signup path is untouched. **`/setup`'s identity step is BYPASSED on this path** — the wizard already collected that identity, and asking again is the same question twice. **VERIFIED END TO END on 24 July** — the only part of this session that has been.
+
+- **IMPORT WIZARD IS SETUP-AWARE — one flag, `inSetup` (`setup_step != null && setup_step !== 'done'`).** That single derived predicate unlocks four behaviours: **stepper continuity** (the import wizard renders as part of the setup progression, not as a standalone tool), a **finish-later exit**, **reworded Settings references** (a brand-new operator has no Settings page in their head yet), and a fix to the **unconditional "allergens aren't set" notice**, which fired regardless of state. **Every one of these is GATED on `inSetup`, so an existing operator's import is unaffected.** The gate is the point: this is a new *mode* of an existing wizard, not a rewrite of it.
+
+- **SCHEDULE STEP — after the menu commit, SETUP-MODE ONLY.** **Three routes:** a **verified URL**, a **photo import**, or a **manual date** — all three **reuse the existing ScheduleTab flows** rather than forking a second schedule implementation. **⚠️ Scraper enrolment (`schedule_url` + `scraper_preference: 'auto'`) is written ONLY on a SUCCESSFUL Verify**, never on a pasted-but-unverified URL. Enrolling an unverified URL hands the scraper a target it can't read and produces a truck that looks scheduled and never is — and a consistent under-read reads as "reliable" (see the scrape-frequency notes).
+
+- **DEMO RELIABILITY BATCH.**
+  - **FIXED-LENGTH EVENT WINDOW** — half-hour floor, **3h** long, **clamped at midnight**. One rule, one place.
+  - **NOW-AWARE SEEDED-ORDER FLOOR** — seeded demo orders can no longer land behind the current time.
+  - **THE ROLL RE-DERIVES FROM THE SAME RULE** — the roll doesn't reimplement the window, it recomputes it, and **recovers closed events** rather than leaving a demo stranded.
+  - **`commitMenu` READ BATCHING — 143 → 85 round trips.**
+  - **`maxDuration` SET ON `/api/demo`** — it inherited the ~10–15s platform default against a 40–45s workload, so it **had never worked deployed** (recorded as an invariant in §35).
+  - **HONEST-FAILURE + SLOW-WAIT UX** — a failing demo says so instead of hanging; a slow one says it's slow. Same principle as the wake-lock toggle: never show a state you aren't delivering.
+  - **TEMPLATE-CARRYOVER GUARD.**
+
+- **§35 "CROSS-CUTTING ENGINEERING INVARIANTS" CREATED.** Lessons that belong to no single subsystem and had nowhere to live: the **`position: fixed` inside a transformed ancestor** trap, **a route that blocks for tens of seconds must declare its own `maxDuration`**, **a timeout set inside a call's normal latency range is a truncation** (and never retry an abort), **wiring is not data flow** — verify the WRITE separately from the read (`demo_sessions.extraction` had a column, a read, a route and a UI, and no writer), **verify the cascade you actually depend on, not an adjacent one**, and **a flag named for a behaviour is not proof of that behaviour**.
+
+- **§16 + §27 UPDATED.** **Live-schema facts** added to §16 (verified against the live schema, not inferred). **Onboarding backlog** added to §27.
 
 ## V9.0 — 17 July 2026
 
@@ -113,7 +136,7 @@ Delta over V8.8. This session: a per-truck **Sounds config** (which alerts fire 
 
 - **SOUND CONFIG.** **[⚠️ MODEL REVERSED in V9.0 — going FULLY PER-DEVICE; `trucks.sound_config` + `set_sound_config` to be retired. The per-truck "which-sounds" split recorded here was wrong: the kitchen iPad and the owner's phone want different sounds. The triggers, distinct tones, and auto-accept INSERT trigger below stay correct regardless. See the V9.0 backlog.]** `trucks.sound_config` jsonb (migration `20260716`), `{ new_orders: 'needs_confirming'|'all'|'off', order_due: boolean }`, **NOT NULL + default = today's behaviour** so nothing changes until a truck opts in. **MODEL: per-device MASTER MUTE** (the header toggle, localStorage, dashboard and KDS *separate*) **× per-truck WHICH-SOUNDS** (`sound_config`). Mute is **physical** — the person at that screen must silence it without touching other devices; policy is the **business's**. Plays iff `master && config[type]`. ⚠️ **THE GAP IT CLOSED:** on an auto-accept truck the **DASHBOARD never dinged** for a new order — its trigger fires on a `pending` count RISE, but an auto-accepted order lands `confirmed` so the count never moves; only the KDS dinged (fires on any INSERT). `'all'` adds a **new-order INSERT trigger** to the dashboard. **Distinct tones** (`playNewOrder` = bright two-note rise; `playOrderDue` = lower urgent pulse) — everything was 880 Hz, so an operator at a grill couldn't tell "arrived" from "act now" without looking up; **that matters more than adding more triggers**. `'off'` stays valid in the type but isn't offered in the UI (the device master already silences everything). (See also the V8.9 do-not-relearn item 2 — `sound_config` was the field the `/api/dashboard` hand-picked-subset bug bit.)
 
-- **TOGGLE/RADIO CONSISTENCY.** The shared `<Toggle>` component itself had **DRIFTED to `w-12 h-6` green** — so *every* consumer was off-canonical. Fixed **at the component** (one edit, propagates), and Manage's bespoke inline toggles converted to the shared component (**hand-matched classes are how it drifts**). **CONVENTION: toggles = canonical `w-11 h-6` `teal-500` via the shared component; radio selectors = `w-4 h-4` orange dot.** Left unified-later: the Deals-editor "Apply to events" radios.
+- **TOGGLE/RADIO CONSISTENCY.** The shared `<Toggle>` component itself had **DRIFTED to `w-12 h-6` green** — so *every* consumer was off-canonical. Fixed **at the component** (one edit, propagates), and Manage's bespoke inline toggles converted to the shared component (**hand-matched classes are how it drifts**). **CONVENTION: toggles = canonical `w-11 h-6` `green-500` via the shared component; radio selectors = `w-4 h-4` orange dot.** ⚠️ **The colour was `teal-500` until V9.x — changed to `green-500` at the component (product decision, brighter). If you find a `teal-500` toggle, it is STALE, not canonical.** Left unified-later: the Deals-editor "Apply to events" radios.
 
 ## V8.8 — 14–15 July 2026
 
@@ -164,6 +187,16 @@ Per-dish grid FIXED (first colgroup `<col>` had no width under `table-layout:fix
 **Gusto is taking online orders → Brevo's 300/day SHARED cap is a real exposure NOW** (every order = a confirmation email, every "mark ready" = a notification; at the cap sends silently stop → a customer's "ready" email never arrives). Upgrade **Brevo → Starter (~$9)** and **Vercel Hobby → Pro (~$20)** — Hobby is non-commercial-ToS and **PAUSES the whole app on overage** (offline mid-service, no warning). Both trivial vs a live outage.
 
 ### Backlog
+
+- **🔴 STRUCTURAL — the DEMO bypasses the wizard's grouping pass; extract `computeGroupingRows`/`makeGroupingRow` to `lib/` so both paths share it.** ROOT CAUSE OF TWO KNOWN DIVERGENCES, and it will cause more: the operator import runs extraction → `computeGroupingRows` → `makeGroupingRow` → `buildGroupedItems` → `commitMenu`, while `lib/provision-demo.ts` calls `commitMenu` DIRECTLY with the AI payload. Everything `makeGroupingRow` decides is therefore missing from the demo. Known so far: (1) **inferred variant groups commit OPTIONAL** — `makeGroupingRow:2044` sets `isRequired:true, singleSelect:true` on `_inferredFromVariants` groups, and the extraction prompt deliberately defaults `isRequired:false`, so a demo's "Pad Thai [Chicken|Beef|Prawn]" was not must-choose (PATCHED demo-side in `commitExtraction`, V9.x — a plaster, not the fix); (2) **regroup candidates are never collapsed** — the AI's eager collapse runs, but `computeRegroupCandidates` (variants the AI left separate) never does, so the demo shows dishes the operator wizard would have grouped. NOTE `commitMenu` reads `_inferredFromVariants` ONLY for `hide_name` — it applies no required/single-select default of its own, by design. ⚠️ EXTRACTION TOUCHES THE LIVE OPERATOR IMPORT PATH (Gusto/RTF) and pulls four interdependent helpers out of an 8k-line component (`makeGroupingRow`, `computeRegroupCandidates`, the content-consolidation signature, the naming post-pass that feeds `hide_name`) — its own change, its own verification, ideally proven by re-importing a real menu and diffing the committed rows.
+
+- **TOGGLE — promote Manage's label-prop duplicate into the shared `<Toggle>`, then delete every bespoke copy (option b; DEFERRED, own change + own verification).** The shared component (`components/dashboard/OrderCard.tsx:21-29`) is canonical and correct, but **six** toggles bypass it and are hand-matched: the dashboard header Sound/Screen pair (`app/dashboard/[token]/page.tsx`), and four in Manage (`:76` a full local `Toggle` DUPLICATE that already has the missing `label` prop, plus inline copies at `:3625`, `:5254`, `:7478`, `:7531`). Hand-matched classes are exactly how this drifts — Sound/Screen had already gone to `w-10`/`green-500`, and `:5254` is still `w-10`/`translate-x-5` (off-spec SIZE, uncorrected). FIX: add an optional `label` to the shared component (copy Manage's `:76` signature), convert all bespoke sites, delete the duplicate. ⚠️ BLAST RADIUS: the header sites wrap label+track in ONE `<button>` and the shared `<Toggle>` is itself a `<button>` — nesting is invalid HTML, so this RESTRUCTURES click targets on two live operator surfaces (dashboard + Manage, i.e. Gusto/RTF). Not a colour change; needs a browser check on both consoles. Do it as a pure refactor with no visible diff.
+
+- **🔴 VENUE MATCHER — sole candidacy is treated as certainty (`lib/venue-matcher.ts:81`).** `if (cands.length === 1) return { venue: cands[0], confidence: 'high' }` returns HIGH with no corroboration whatsoever — the village-agreement check at `:83` only runs at `cands.length >= 2`, so it is unreachable for a single candidate. PROVEN LIVE (2026-07-23): `"West Suffolk Classic Show"` matched venue **"The Suffolk Show", Ipswich** at `high` — toks `['suffolk','show']` ⊆ `['west','suffolk','classic','show']`, 0.50 token coverage, ~30 miles wrong. Uniqueness among **574** venues is a statement about our coverage, not about the match. HARM CHANNEL (`inbound-schedule:200-203, 217`): `latitude`/`longitude` come from the matched venue **unconditionally with no scraped fallback** (wrong match ⇒ always a wrong map pin), and `postcode: row.postcode || venuePostcode` takes the venue's when the scrape has none — that is how IP3 8UH landed on a Bury St Edmunds event. ⚠️ **NOTHING READS `venue_match_confidence`** — the only reference in the codebase is the WRITE at `inbound-schedule:232` plus the migration; the "approval UI flags low-confidence guesses" described in §V7.0 was never built. So reclassification alone changes nothing for anyone. FIX = **A + C**: (A) sole candidate ⇒ `high` ONLY with corroboration (exact normalised name, village agreement, or a token-coverage threshold), else `low`; (C) **don't inherit coords/postcode from an uncorroborated venue** (keep `venue_id` for traceability — `low` and visible beats `null` and invisible), and build the approval-card flag so a human actually sees the guess. REJECTED: refusing to attach `venue_id` at all (throws away the map pin even when the guess was right). BLAST RADIUS MEASURED by replaying the real matcher over all 35 events holding a `venue_id`: 15 sole-candidate, 14 corroborated, **exactly 1 would be re-classified** — the Suffolk Show row, whose event Gusto has already cancelled.
+
+- **🔴 MANUAL EVENT ADDS ARE STRUCTURALLY EXEMPT FROM DEDUP, and V7.0 conflict detection cannot reach them.** Two defects with one fix. (1) `upsert_event`'s create branch (`app/api/manage/route.ts:687`) is a bare insert — no same-date check, and it never sets `venue_id`, so any dedup keyed on `(truck_id, event_date, venue_id)` is inert for manual rows (`NULL != NULL` — two identical manual adds both insert). (2) `detectEventConflicts` IS deployed and imported (`manage/[token]/page.tsx:33`) but the call site `:5078` gates on `event.status === 'unconfirmed'`, while `route.ts:673` hard-codes `const eventStatus = 'confirmed'` for manual creates — **a manually-added event is born confirmed and is therefore never checked, ever.** The comment above `:5078` claims it covers "the operator-added 'Needs confirmation' card"; that lifecycle does not exist. §3739 already lists "operator-added duplicate" as one of four V7.0 cases never live-verified. PROVEN LIVE: Gusto got duplicate confirmed events on 25 + 26 Jul 2026 (both `source='manual'`, created 5s apart, `venue_id` null) after the venue-matcher error above put wrong locations on the scraped originals and the operator "fixed" them by re-adding. Both would have hit Check A Tier 1 `duplicate`. FIX: the check must run at **CREATE time, server-side** — a render-time check cannot see a row that does not exist yet, so relaxing the `unconfirmed` gate would NOT have caught these. Server runs `detectEventConflicts` on create; conflicts + no explicit ack ⇒ **409 with the conflict payload**; client renders it and resubmits with the ack. ⚠️ **NOT a hard block** — lunch pitch + evening pitch on one date is an ordinary trading day. This is V7.0's own WARN-WITH-FRICTION moved to create-time and made server-authoritative. `lib/event-conflicts.ts` needs no refactor (already pure + source-agnostic). Leave the existing render-time unconfirmed check alone — it is correct for the scraper approval flow. OPEN QUESTION (separate decision): should CONFIRMED rows in the schedule list also carry a conflict badge, so an existing duplicate stays visible after the fact? It would have made Gusto's obvious, but may badge every historical same-day pair as noise.
+
+- **⚠️ HYPOTHESIS, NEEDS ITS OWN INVESTIGATION — editing an event through Manage may silently NULL its coordinates.** LIVE if true, and it affects **any operator who edits any event** — not scraper-specific, not onboarding-specific. MECHANISM: `upsert_event`'s edit branch (`app/api/manage/route.ts:670`) writes `latitude: latitude ?? null, longitude: longitude ?? null` — if the edit form does not round-trip the existing coordinates, saving ANY other field wipes the map pin. EVIDENCE (circumstantial, not confirmed): Gusto's 26 Jul scraper event had `town: ""` on first read and `town: "Kedington"` hours later (so it was edited), and holds `latitude: null, longitude: null` despite its matched venue having 52.0458 / 1.1809. That fits exactly, but **what the form actually sends was not checked** — this is a mechanism plus a coincidence, not a finding. TO VERIFY: edit one field on a test-truck event that has coordinates and re-read the row.
 
 **FILL DIRECTION option** (per-truck/van, decision deferred): the trap is **TWO mirrored fill loops** (`slot-availability.ts:679` existing load, `:930` the order being fit-checked) must flip in **LOCKSTEP** or the per-window fit combines them incoherently → silent oversell/false-block (a class the current single-direction engine cannot exhibit). Customer bookability SWAPS (earliest-first leaves the requested time bookable; nearest-first frees the earlier slot); kitchen ceiling + event-start fit gate provably INVARIANT; capacity config is per-VAN. Cost = re-certifying a safety-critical engine for a second regime ("prove it twice," a day-plus); build only if food actually goes cold in practice.
 **iPad BACKGROUND SYNC:** drain fires only on reachability→online while JS is running; **keep-awake keeps the SCREEN on, NOT the app foregrounded** — triage as (A) app active → detection bug (fixable) vs (B) backgrounded → iOS best-effort only. Scope: drain on `becomeActive`/resume + harden heartbeat (solid); silent-push `content-available` reusing the built APNs (best-effort). The durable outbox bounds worst case to next-foreground latency, not data loss.
@@ -1268,7 +1301,7 @@ Follow-on polish-and-hardening session after V6. Enables Row Level Security acro
 
 - **Dashboard prep list event scoping** — the "Prep needed now / Coming up" slotted-orders list read from the unfiltered orders array (line 890), so orders from other events bled in. Changed to eventOrders, matching the slotless section. See Section 10.
 
-- **Offline protection UX** — toggling offline protection now uses window.confirm dialogs (enable warns to keep the screen on and force-enables Screen On; disable warns of the impact) instead of a persistent on-screen warning or green toast. Toggle size and colour unified to w-11 h-6 / bg-teal-500 across all dashboard and settings toggles. See Section 11.
+- **Offline protection UX** — toggling offline protection now uses window.confirm dialogs (enable warns to keep the screen on and force-enables Screen On; disable warns of the impact) instead of a persistent on-screen warning or green toast. Toggle size and colour unified to w-11 h-6 / bg-teal-500 across all dashboard and settings toggles. *(V9.x: the colour is now `green-500` — see the TOGGLE/RADIO CONSISTENCY convention.)* See Section 11.
 
 - **Settings tab layout** — the Settings tab is a single centred column (max-w-2xl mx-auto) rather than full-bleed or two-column; a two-column experiment was reverted as poorer UX. Full heading hierarchy standardised: section labels text-base font-bold, feature/toggle labels text-sm font-semibold, descriptions text-xs text-slate-500. Auto-accept converted from the Toggle component to an inline button matching the others. See Section 23.
 
@@ -2405,7 +2438,7 @@ The dashboard Menu & Stock offline-protection toggle confirms both directions th
 - **Enabling** — warns the device must keep the screen on, and force-enables Screen On.
 - **Disabling** — warns online orders will no longer auto-pause for this event.
 
-The toggle uses the unified control styling: w-11 h-6 track, bg-teal-500 when on.
+The toggle uses the unified control styling: w-11 h-6 track, bg-green-500 when on *(was teal-500 until V9.x)*.
 
 ## Heartbeat + scheduler architecture (V6, rescoped V6.6)
 
@@ -2893,6 +2926,21 @@ RLS is enabled on every table in the public schema. All API routes use SUPABASE_
 > **NOTE (V6.4/V6.5)** — `truck_vans`, `event_item_stock`, and `event_category_stock` are service-role-only. The per-event stock reads/writes all go through service-role API routes (the menu API, the dashboard action) — a browser-side anon read would silently return nothing, which is exactly the class of bug that made the kitchen-capacity card show "No limit" (Section 10). Never add an anon policy to "fix" a read — route through the server.
 
 > **RULE (V6.1)** — New tables must have RLS enabled at creation. Decide deliberately between public-read and service-role-only. Both per-event stock tables are internal and service-role only.
+
+## Live-schema facts — signup + schedule (V9 / 24 July 2026)
+
+> The cross-cutting lessons these facts came from live in **§35 (Cross-cutting engineering invariants)** — "wiring is not data flow", "verify the cascade you actually depend on", "a flag named for a behaviour is not proof of that behaviour".
+
+- `demo_sessions.truck_id → trucks` is **ON DELETE CASCADE** — deleting a demo truck destroys the session row and the stored extraction with it. Demo-truck retirement must not fire until the operator's menu is committed.
+- `menu_items_db.price` is `numeric NOT NULL` with **no default**. `lib/menu-extract.ts` coerces any unreadable price to `0` before commit, so no null reaches the insert — but the demo therefore silently boards £0 items where the AI could not read a price. **Decided: show them.** An operator whose menu says "everything £5" still gets a working demo, and signup is where they correct it (those rows show amber and block Next until priced or marked free).
+- `menu_categories.slug` is `NOT NULL` with no default.
+- `trucks.whatsapp` **IS nullable** — the V7.5 `DROP NOT NULL` was applied. ⚠️ The code comment at `manage/page.tsx:6672-6674` still asserts it is NOT NULL. A stale belief-about-the-database in a comment; correct it when that file is next touched.
+- `trucks.website` and `trucks.schedule_url` are **distinct columns**. The Facebook/Instagram block is scoped to the schedule flow only — a truck whose only web presence is Facebook must still be able to give it as a general website.
+- Scraper enrolment is exactly `schedule_url IS NOT NULL AND scraper_preference IN ('auto','both')`. There is no enrolment table and no separate step. Cadence: hourly workflow with a per-truck due-window gate.
+- `/api/manage/verify-schedule-url` writes exactly one column (`trucks.scraper_rule`). It does not enrol, write events, or scrape.
+- `operators.terms_accepted_at` and `terms_version` exist and are stamped **unconditionally** at signup — they record that a signup happened, not that consent was given.
+- Cuisine vocabulary spans TWO columns on two tables: `trucks.cuisine_type` (8 operator trucks) and `discovery_trucks.cuisine` (~150 scraped rows, 56 of them null). The live Village Foodie filter reads `truck?.cuisine_type || linked.cuisine` and splits on commas — so "Pizza, Burgers" correctly appears under both, and multi-select is required to preserve that. **The signup wizard governs ~5% of the filter's vocabulary**; cleaning the discovery side (constraining the scraper's output plus a one-off normalisation) is separate work.
+- New shared module `lib/cuisines.ts` — the alphabetical cuisine list and the cuisine→emoji map, one source for the wizard and (not yet) Settings.
 
 # 17. Menu API behaviour
 
@@ -3852,9 +3900,13 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 
 - **Messenger + Instagram per-truck OAuth (parked, V6.3)** — page-id / account-id / encrypted-token columns, OAuth callback routes, ENCRYPTION_KEY (AES-256, lib/crypto.ts), send API, classifier wiring, then Meta app review (needs privacy policy + terms first).
 
-- Stripe Connect integration (upgrade buttons currently email support).
+- **STRIPE CONNECT + ONLINE PAYMENTS (V9.1) — ONE ITEM, BUILT TOGETHER.** *(Replaces the old one-line "Stripe Connect integration" stub.)* **Connect is NOT shippable alone, and online customer payments CANNOT exist without it** — split them and you get either an onboarding flow that leads nowhere or a pay button with nowhere to settle. **SCOPE (one pass):** (1) **Connect onboarding for operators** — ⚠️ funds settle to the **OPERATOR's** account, **not ours**; (2) **customer card payment on the order page**; (3) the **payout and refund paths** that follow from (1) and (2). ⚠️ **Card processing is PASSED THROUGH AT COST (1.49%) per the pricing model — the PLATFORM FEE (0.99%) is a SEPARATE number and must not be conflated with it in the implementation.** One is Stripe's, one is ours; merging them anywhere (a total, a receipt line, a payout calculation) misprices the product and misreports the operator's costs. The marketing side already exists in `lib/plan-features.ts` (plan matrix + footnote 2) — building this makes the advertised feature real (see the V9.0 rule: `canAccess` allowing a feature is not evidence it is BUILT).
+  - **DEPENDENT — NOT to be built in the same pass: STRIPE TERMINAL** (in-person card reader at the hatch). **Genuinely separable; follows Connect.**
+  - **DEPENDENT — NOT to be built in the same pass: SUBSCRIPTION BILLING (Pro £29 / Max £49).** A **different Stripe product**. Today the upgrade buttons **email hello@hatchgrab.com**. **Account setup overlaps with Connect; the code does not** — a shared Stripe account does not imply a shared implementation, and treating them as one job is how the payments pass grows until it never ships.
+  - **COUPLED TO THE REFUNDS ITEM BELOW** — refunds are only reachable once Connect exists, so the refund path is scoped INTO (3) above rather than left as an orphan.
+  - ⚠️ **A PROMISE ALREADY IN THE PRODUCT.** The customer cancel page tells a cancelling customer *"If you paid online, a refund will be processed within 5–10 business days"* (`app/order/[id]/manage/page.tsx:85`). It is **vacuous today** (nobody can pay online), but it becomes a **live commitment the moment card payment ships** — so **refunds must land WITH payments, not after.** Same class as the V9.0 COPY PRINCIPLE: a claim the product cannot keep is a defect, not a wording issue.
 
-- Refunds process — event cancellation cancels orders and emails customers but does not yet refund.
+- Refunds process — event cancellation cancels orders and emails customers but does not yet refund. *(Folded into the Stripe Connect + online payments item above — it cannot be built before Connect.)*
 
 - Multi-device session enforcement (kds_sessions exists, logic pending).
 
@@ -3941,6 +3993,24 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **Operator events dormant on both domains** — DONE V6.5: phantom `is_test` removed from the discovery/events branch, branch revived and visibility-gated (Section 15).
 
 - **Orphaned `event_id: NULL` order** — DONE V6.4: cancelled by `order_key`.
+
+## Onboarding / signup + demo (V9, 24 July 2026)
+
+> Several of these are instances of the invariants in **§35 (Cross-cutting engineering invariants)** — the `maxDuration` and timeout-vs-truncation lessons, and the portal-hardening rule.
+
+- 🔴 Gemini timeout → 60s per attempt, no retry on abort (confirmed cause of a real demo failure, 24 July).
+- 🔴 `warnings[]` logged on the `/api/demo` failure branch — without it, extraction-aborted / zero-items / commit-inserted-nothing are indistinguishable from the response.
+- 🔴 Zero-item event guard in `provisionDemo` — it builds an event and slot grid for a truck with no menu.
+- Expose `demo: { extraction_source, email, expires_at }` on `/api/dashboard` — closes three client-side-signal gaps at once: the banner CTA label (`?welcome=sample`, lost on reload), the saved-demo state (localStorage-keyed, lost on another device), and the email pre-fill (localStorage-held, so an operator returning on a different device retypes an address the server already holds in `demo_sessions.email`).
+- Scheduler prior-day sweep should honour `auto_close` or exclude `demo-` trucks — a global cron on a live operator path, own diff.
+- Customer order page never rolls an elapsed demo event — the demo's central surface goes dead until someone opens the dashboard.
+- Import wizard cannot rename or add categories.
+- Multi-van trucks may need **per-vehicle contact details** — `contact_phone`, `whatsapp` and `contact_email` live on `trucks`, not `truck_vans`. Sits alongside the existing van-scoping caveat.
+- Settings' cuisine input is still free text — should adopt `lib/cuisines.ts` or the vocabulary fragments from the other end.
+- Portal hardening: audit every `fixed inset-0` overlay for a transformed ancestor.
+- `/setup?truck=<id>` resume silently discards a re-typed truck name.
+- Admin view: operators with a confirmed event and no `trial_expires_at` (mitigation for O15).
+- Stale comment: `trucks.whatsapp` asserted NOT NULL at `manage/page.tsx:6672-6674`.
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -4254,4 +4324,20 @@ When in doubt about how something should work: check here first. If the answer i
 
 The cost of writing things down is a few minutes. The cost of not writing them down is rebuilding the same decision next week.
 
-HatchGrab Engineering Reference Manual · V7.8
+# 35. Cross-cutting engineering invariants
+
+> Lessons that belong to no single subsystem. §31's structural lesson is slot-engine-specific and §22 covers process; these are engineering invariants that cost real time in more than one place, and had nowhere to live until now.
+
+**A `position: fixed` overlay inside a transformed ancestor is silently mispositioned.** A CSS `transform` on ANY ancestor makes that element the containing block for `fixed` descendants, so `inset-0` resolves to the ancestor's box, not the viewport. No error, no console warning. Also caused by `filter`, `backdrop-filter`, `perspective`, `will-change` and `contain: paint`. **Portal every `fixed inset-0` overlay to `document.body` by default** — `DemoUpload` already did; `DemoGetStarted` did not, and lost its modal behind a `-translate-y-1/2` banner slot.
+
+**A route that blocks for tens of seconds must declare its own `maxDuration`.** `/api/demo` inherited the ~10–15s platform default against a 40–45s workload and had therefore never worked deployed. An inherited default is an unstated dependency. Vercel Pro's Node ceiling is 300s; Hobby's hard cap is 60s and silently ignores a higher value.
+
+**A timeout set inside a call's normal latency range is a truncation, not a timeout.** 25s on an 18–30s Gemini call aborted working requests. And **never retry an abort** — a slow call will be slow again; retrying multiplies the wait to reach the same failure. Retry on 429/503 only.
+
+**Wiring is not data flow.** A feature can be built at every layer except the one that populates it and still read as complete in a build report. `demo_sessions.extraction` had a column, a read, a route and a UI — and no writer. For anything that persists, **verify the WRITE separately from the read.** The diagnostic that caught it asked "show me the write site", not "is this built?".
+
+**Verify the cascade you actually depend on, not an adjacent one.** `clearMenu`'s header cited the truck-level cascade inventory as evidence for `modifier_groups → modifier_options`. That inventory establishes `trucks → modifier_groups` — a different relationship. The cascade was real, but the reasoning was not. (Verified against the live schema 23 July: `modifier_options.group_id → modifier_groups` CASCADE; `item_modifier_groups` cascades from BOTH parents; `menu_items_db.category_id → menu_categories` is **SET NULL**, which makes `clearMenu`'s delete ORDER load-bearing.)
+
+**A flag named for a behaviour is not proof of that behaviour.** `auto_close: false` does not stop the scheduler closing a demo overnight — its prior-day branch returns before `auto_close` is ever read. Read the condition, not the flag name.
+
+HatchGrab Engineering Reference Manual · V9.1

@@ -16,6 +16,31 @@ export async function GET(req: NextRequest) {
 
   if (!await verifyAdmin(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
+  // Last demo-cleanup run. This is the ONLY layer that can catch the job dying COMPLETELY — nothing
+  // inside a job that never fires can report that it never fired, which is exactly how the pg_cron edge
+  // functions died silently when the Vault secret was deleted. A human seeing a stale timestamp in the
+  // console they already use is the detector. Best-effort: if the table doesn't exist yet (migration
+  // 20260723 unapplied), return null rather than 500 the whole admin page.
+  if (section === 'demo_cleanup') {
+    try {
+      const { data } = await supabase
+        .from('demo_cleanup_log')
+        .select('run_at, ok, expired_deleted, orphans_deleted, error, gap_mins')
+        .order('run_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      // Age computed HERE, not in the client's render: Date.now() during render is impure (the
+      // react-hooks/purity rule this file's siblings already trip) and the server clock is the better
+      // reference anyway.
+      const ageMins = data?.run_at
+        ? Math.round((Date.now() - new Date(data.run_at as string).getTime()) / 60000)
+        : null
+      return NextResponse.json({ lastRun: data ? { ...data, ageMins } : null })
+    } catch {
+      return NextResponse.json({ lastRun: null })
+    }
+  }
+
   if (section === 'discovery') {
     const { data: discoveryTrucks } = await supabase
       .from('discovery_trucks')

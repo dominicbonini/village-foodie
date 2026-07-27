@@ -116,6 +116,10 @@ interface AddOrderPanelProps {
   /** Always-mounted tab pattern (manual s.22): panel stays mounted, data effects
    *  only run while the tab is visible. Basket state survives tab switches. */
   isActive?: boolean
+  /** DEMO: lock the EVENT controls (Change / Start / Restart) — SHOW them, but clicking opens the parent's
+   *  explainer instead of mutating. Order submit + stock stay fully live (the demo's central loop). */
+  isDemo?: boolean
+  onLockedEventAction?: () => void
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -130,6 +134,7 @@ export function AddOrderPanel({
   onEventChange, controlledEvent,
   isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
+  isDemo = false, onLockedEventAction,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -465,9 +470,12 @@ export function AddOrderPanel({
   // aren't already loading — so rapid re-opens never trigger redundant fetches
   // and never flash an empty list.
   const openEventPicker = useCallback(() => {
+    // DEMO HARD STOP (§3: styling is not enforcement). Switching events is locked; open the explainer
+    // instead of the picker. Belt-and-braces with the swapped onClick below.
+    if (isDemo) { onLockedEventAction?.(); return }
     if (upcomingEvents.length === 0 && !eventsLoading) fetchUpcomingEvents()
     setShowEventPicker(true)
-  }, [upcomingEvents.length, eventsLoading, fetchUpcomingEvents])
+  }, [isDemo, onLockedEventAction, upcomingEvents.length, eventsLoading, fetchUpcomingEvents])
 
   useEffect(() => {
     if (!requestEventPickerOpen) return
@@ -1330,16 +1338,19 @@ setItemModal({ item, modGroups, editCartKey })
                 return `${label} · ${formatTime(manualEvent.start_time)}–${formatTime(manualEvent.end_time)}`
               })()}</p>
             </div>
+            {/* Change event — SHOWN but locked in demo (opens the explainer via openEventPicker's guard). */}
             <button onClick={openEventPicker}
-              className="text-xs font-bold text-orange-600 border border-orange-300 rounded-lg px-2.5 py-1 shrink-0 hover:bg-orange-100 active:scale-95">
-              Change
+              className={`text-xs font-bold rounded-lg px-2.5 py-1 shrink-0 ${isDemo ? 'text-slate-400 border border-slate-300 cursor-pointer' : 'text-orange-600 border border-orange-300 hover:bg-orange-100 active:scale-95'}`}>
+              {isDemo && <span aria-hidden>🔒 </span>}Change
             </button>
           </div>
           {(manualEvent.status === 'confirmed' || manualEvent.status === 'closed') && onOpenEvent && (
+            // Start / Restart — SHOWN but locked in demo: clicking opens the explainer, never mutates
+            // (openEvent in the parent also hard-stops on isDemo as the handler-level backstop).
             <button
-              onClick={() => onOpenEvent(manualEvent.id)}
-              className="mt-2 w-full bg-orange-600 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-orange-700 active:scale-[0.98] transition-all">
-              {manualEvent.status === 'closed' ? 'Restart Event' : 'Start Event'}
+              onClick={() => isDemo ? onLockedEventAction?.() : onOpenEvent(manualEvent.id)}
+              className={`mt-2 w-full font-bold py-2.5 rounded-xl text-sm transition-all ${isDemo ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-pointer' : 'bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.98]'}`}>
+              {isDemo && <span aria-hidden>🔒 </span>}{manualEvent.status === 'closed' ? 'Restart Event' : 'Start Event'}
             </button>
           )}
         </div>

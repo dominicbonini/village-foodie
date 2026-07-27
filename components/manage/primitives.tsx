@@ -100,6 +100,65 @@ export function AllergenModeChooser({ value, onChange }: { value: 'per_dish' | '
   )
 }
 
+// ── Generic OPTION-CARD chooser (radio semantics — one selected at a time) ─────
+// The class strings below are LIFTED VERBATIM from AllergenModeChooser above, so any wizard step that
+// asks "which of these routes?" renders the same card treatment. AllergenModeChooser itself is NOT yet
+// routed through this — its rendering is deliberately untouched by the diff that added this — so the two
+// are identical BY COPY today. Pointing it here (see the retrofit note in the changelog) is what makes
+// them identical BY CONSTRUCTION; until then, any styling change must be made in BOTH places.
+//
+// EMOJI IS OPT-IN. `showEmoji` defaults to FALSE: a plain radio chooser is the default and the emoji
+// variant is the exception. An option may carry an `emoji` that simply doesn't render until a caller
+// asks for it — so the allergen retrofit is a one-prop change, and dropping allergens' emoji later is
+// deleting that one prop.
+//
+// STRUCTURAL NOTE vs AllergenModeChooser: it puts the border on the <button> itself. Here the border
+// moves one level up to a wrapping <div> so `body` (the accordion content) can sit INSIDE the same card
+// and hold its own interactive elements — a button can never nest a button. Same border, padding, radius
+// and hover target either way; the button still fills the card.
+export interface OptionCard<K extends string> {
+  key: K
+  title: string
+  desc: string
+  emoji?: string        // rendered ONLY when the caller passes showEmoji
+  badge?: string        // e.g. "Recommended"
+  disabled?: boolean    // locked row (dimmed, not clickable)
+  body?: ReactNode      // present → the card becomes an ACCORDION row, expanded while selected
+}
+
+export function OptionCardChooser<K extends string>({ options, value, onChange, showEmoji = false, chevron = false }: {
+  options: OptionCard<K>[]
+  value: K | null
+  onChange: (key: K) => void
+  showEmoji?: boolean
+  chevron?: boolean
+}) {
+  return (
+    <div className="grid gap-3">
+      {options.map(opt => {
+        const selected = value === opt.key
+        return (
+          <div key={opt.key}
+            className={`border-2 rounded-xl transition-colors ${selected ? 'border-orange-400 bg-orange-50/40 ring-2 ring-orange-300' : 'border-slate-200 hover:border-orange-300'} ${opt.disabled ? 'opacity-40' : ''}`}>
+            <button type="button" aria-pressed={selected} {...(opt.body ? { 'aria-expanded': selected } : {})}
+              onClick={() => onChange(opt.key)} disabled={opt.disabled}
+              className={`w-full text-left p-4 ${opt.disabled ? 'cursor-not-allowed' : ''}`}>
+              <div className="flex items-center gap-2 mb-1">
+                {showEmoji && opt.emoji && <span className="text-lg">{opt.emoji}</span>}
+                <span className="font-bold text-slate-900 text-sm">{opt.title}</span>
+                {opt.badge && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700">{opt.badge}</span>}
+                {chevron && <span className={`ml-auto text-slate-400 text-xs shrink-0 transition-transform ${selected ? 'rotate-180' : ''}`}>▾</span>}
+              </div>
+              <p className="text-xs text-slate-500">{opt.desc}</p>
+            </button>
+            {selected && opt.body && <div className="px-4 pb-4">{opt.body}</div>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export function AllergenToggles({ value, onChange }: { value: string[]; onChange: (next: string[]) => void }) {
   return (
     <div className="flex flex-wrap gap-2">

@@ -23,6 +23,7 @@ import { getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { isPreorderDeadlinePassed, isPreorderOpenYet, type PreorderConfig } from '@/lib/preorder'
 import { canAccess } from '@/lib/features'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail } from '@/lib/email'
+import { isDemoIdentifier } from '@/lib/demo'
 import { enforceStockLimits } from '@/lib/stock-availability'
 import { sendOrderPendingPush } from '@/lib/apns'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
@@ -347,6 +348,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
     }
 
+    // Demo trucks are exempt from the hidden-truck gate below and never send email — see both comments.
+    const isDemoTruck = isDemoIdentifier(truck.id)
+
     // HIDDEN-TRUCK GATE. Discovery gating (show_on_vf/show_on_hg/excluded) only governs the MAP — the
     // customer menu and events APIs resolve any truck by slug/id with no visibility filter, and this route
     // previously checked `active` alone. So anyone who knew or guessed the slug could place a REAL order on
@@ -354,7 +358,13 @@ export async function POST(req: NextRequest) {
     // `excluded` is the master hide — if it's set, the truck is not open for business. Checked here rather
     // than in the queries above so one condition covers both the slug and the id lookup. Deliberately the
     // SAME 404 as an unknown truck: a hidden truck should not confirm its own existence.
-    if (truck.excluded === true) {
+    //
+    // DEMO EXEMPTION: a demo truck is excluded=true by construction, but ordering on it IS the demo — the
+    // prospect opens their own QR/order link and watches the order land on the dashboard. Safe because the
+    // gate exists to stop a STRANGER guessing a slug: a demo slug is 130 bits of random (not a guessable
+    // name), the truck is absent from both discovery feeds, and every order dies with the truck at cleanup.
+    // Scoped to the `demo-` prefix ONLY — a real hidden/pre-trial truck is gated exactly as before.
+    if (truck.excluded === true && !isDemoTruck) {
       return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
     }
 
@@ -579,7 +589,9 @@ export async function POST(req: NextRequest) {
       const unmet: { item: string; soldOut?: boolean; group?: string; overMax?: number } | null = await (async () => {
         const { data: groupsRaw } = await supabase
           .from('modifier_groups')
-          .select('id, name, is_required, min_choices, max_choices')
+          // hide_name is selected so the customer-facing ERROR can avoid the internal group name — see
+          // the groupLabel helper below.
+          .select('id, name, is_required, min_choices, max_choices, hide_name')
           .eq('truck_id', resolvedTruckId)
         // Groups we must validate: REQUIRED (min ≥ 1) and/or CAPPED ("choose up to N", max_choices < 99).
         // The 99 sentinel = "choose many" (unlimited) → nothing to enforce.
@@ -619,10 +631,21 @@ export async function POST(req: NextRequest) {
         const overMaxFor = (groups: any[], selected: any[]): { group: string; max: number } | null => {
           for (const g of groups) {
             const max = g.max_choices ?? 99
-            if (max < 99 && selectedCountForGroup(g, selected) > max) return { group: g.name, max }
+            if (max < 99 && selectedCountForGroup(g, selected) > max) return { group: g.hide_name ? null : g.name, max }
           }
           return null
         }
+        // 🔴 CUSTOMER-FACING LABEL. A group with hide_name (every variant-inferred one) carries an
+        // INTERNAL name like "Mains - Protein 1" that the customer has never seen — the order page renders
+        // those as "Choose an option" (trucks/[slug]/order/page.tsx:2283). Echoing the raw name into an
+        // error would leak import machinery into a message a real customer reads.
+        // This path used to be unreachable because inferred groups committed OPTIONAL; they are required
+        // now, so it can fire. Returns null for a hidden group and the caller words it generically.
+        type LabelledGroup = { id?: string; name?: string; hide_name?: boolean }
+        const groupLabel = (g: LabelledGroup | undefined): string | null =>
+          !g || g.hide_name ? null : (g.name ?? null)
+        const findGroup = (gs: LabelledGroup[], id: string) => gs.find(g => g.id === id)
+
         for (const it of (items || [])) {
           const itemId = itemIdByName[it.name]
           if (!itemId) continue // unknown/renamed item → can't resolve → skip (never fail on a name miss)
@@ -631,10 +654,10 @@ export async function POST(req: NextRequest) {
           // §36 backstop: a required group with no selectable option → item is sold out (unorderable).
           if (hasUnsatisfiableRequiredGroup(groups)) return { item: it.name, soldOut: true }
           const selected = Array.isArray(it.modifiers) ? it.modifiers : []
-          const { unmetGroupNames } = validateModifierSelection(groups, selected)
-          if (unmetGroupNames.length > 0) return { item: it.name, group: unmetGroupNames[0] }
+          const { unmetGroupIds } = validateModifierSelection(groups, selected)
+          if (unmetGroupIds.length > 0) return { item: it.name, group: groupLabel(findGroup(groups, unmetGroupIds[0])) ?? undefined }
           const over = overMaxFor(groups, selected)
-          if (over) return { item: it.name, group: over.group, overMax: over.max }
+          if (over) return { item: it.name, group: over.group ?? undefined, overMax: over.max }
         }
         // DEAL-SLOT items (§29 fix): a slot item with a required group must have it satisfied via
         // deal.slotModifiers[slotKey] — same resolution as standalone, validated per slot.
@@ -648,10 +671,10 @@ export async function POST(req: NextRequest) {
             if (groups.length === 0) continue
             if (hasUnsatisfiableRequiredGroup(groups)) return { item: slots[slotKey], soldOut: true }
             const selected = Array.isArray(slotMods[slotKey]) ? slotMods[slotKey] : []
-            const { unmetGroupNames } = validateModifierSelection(groups, selected)
-            if (unmetGroupNames.length > 0) return { item: slots[slotKey], group: unmetGroupNames[0] }
+            const { unmetGroupIds } = validateModifierSelection(groups, selected)
+            if (unmetGroupIds.length > 0) return { item: slots[slotKey], group: groupLabel(findGroup(groups, unmetGroupIds[0])) ?? undefined }
             const over = overMaxFor(groups, selected)
-            if (over) return { item: slots[slotKey], group: over.group, overMax: over.max }
+            if (over) return { item: slots[slotKey], group: over.group ?? undefined, overMax: over.max }
           }
         }
         return null
@@ -662,8 +685,11 @@ export async function POST(req: NextRequest) {
             error: unmet.soldOut
               ? `Sorry, ${unmet.item} is sold out.`
               : unmet.overMax != null
-                ? `Please choose at most ${unmet.overMax} option${unmet.overMax !== 1 ? 's' : ''} for ${unmet.group} (${unmet.item}).`
-                : `Please choose ${unmet.group} for ${unmet.item}.`,
+                ? `Please choose at most ${unmet.overMax} option${unmet.overMax !== 1 ? 's' : ''} for ${unmet.group ?? 'your choices'} (${unmet.item}).`
+                : unmet.group
+                  ? `Please choose ${unmet.group} for ${unmet.item}.`
+                  // Hidden group → name the DISH, which the customer definitely recognises.
+                  : `Please choose an option for ${unmet.item}.`,
             requiredModifier: true,
           },
           { status: 400 },
@@ -939,7 +965,8 @@ export async function POST(req: NextRequest) {
     // gated — the customer confirmation below is untouched. Best-effort; never affects placement.
     try {
       const truckEmail = truck.contact_email
-      if (truckEmail && (truck as any).truck_order_email_enabled !== false) {
+      // DEMO: never send. See the customer-email guard below for the full reasoning.
+      if (truckEmail && !isDemoTruck && (truck as any).truck_order_email_enabled !== false) {
         const { subject, html, text } = formatNewOrderEmail({
           orderId,
           customerName,
@@ -968,7 +995,14 @@ export async function POST(req: NextRequest) {
     // (duplicate-order / divergence hazard). Wrapped to mirror the operator-email block (above) and
     // the send below: log and continue to the success response. (Pre-save failures still 500 — only
     // POST-save steps are best-effort. Does NOT touch placement/booking/slot-usage/rollup.)
-    try {
+    // 🔴 DEMO: NEVER EMAIL. A demo's "customer" address is whatever the prospect typed into their own test
+    // order — almost always fake or a throwaway. Sending produces hard bounces, which damage the shared
+    // sender reputation for every REAL truck's confirmations, and Brevo Free is a 300/day shared cap that
+    // stops sending SILENTLY once hit. The demo loses nothing: the order still saves, books a slot and
+    // appears on the dashboard, which is the whole point of the loop. Guards the WHOLE block (not just the
+    // send) so we don't build an email nobody receives.
+    if (isDemoTruck) console.log(`[submit] demo truck ${truck.id} — customer + truck emails suppressed`)
+    if (!isDemoTruck) try {
       const dealsWithPrice = (deals ?? []).map((d: AppliedDeal) => {
         const bundle = bundles?.find(b => b.name === d.name)
         return { ...d, price: bundle?.bundle_price }
@@ -1032,8 +1066,15 @@ export async function POST(req: NextRequest) {
           const { data: pref } = await supabase
             .from('van_notification_prefs').select('enabled').eq('van_id', vanId).eq('type', 'order_pending').maybeSingle()
           if (!pref || pref.enabled) {
+            // APNs-ONLY ALLOWLIST: sendOrderPendingPush POSTs to api.push.apple.com, which understands
+            // Apple device tokens only. A non-Apple token (e.g. an FCM token from an Android build) comes
+            // back as BadDeviceToken → the invalidTokens cleanup just below would NULL that row's push_token,
+            // silently and permanently disabling push for that device. So allowlist the Apple-compatible
+            // platforms; any future platform value is EXCLUDED by default until a sender exists for it.
+            // NULL is included: legacy rows predate the column being populated and are all iOS.
             const { data: devices } = await supabase
               .from('van_devices').select('device_id, push_token').eq('van_id', vanId).eq('notify_enabled', true).not('push_token', 'is', null)
+              .or('platform.eq.ios,platform.is.null')
             const tokens = (devices || []).map(d => d.push_token as string).filter(Boolean)
             if (tokens.length) {
               const res = await sendOrderPendingPush(tokens, { orderKey: order?.order_key ?? '', orderNumber: orderId, truckName: truck.name })

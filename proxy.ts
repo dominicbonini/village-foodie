@@ -18,6 +18,34 @@ const isStrictPublic = (p: string) =>
 const isGeneralPublic = (p: string) =>
   p === '/trucks' || p.startsWith('/trucks/')
 
+// ── DEMO DASHBOARD — the ONLY exception to the /dashboard session gate. ─────────────────────────────────
+// A demo visitor is anonymous by design: no account, no signup, therefore no Supabase session. The session
+// guard below would 307 them to /login before the page ever rendered, so the demo could not exist. The
+// APIs are already fine — /api/dashboard and /api/dashboard/action authenticate on `dashboard_token` alone
+// — so this is purely about the PAGE route. Same reasoning as /kds, which has never been session-gated
+// because it authenticates by `kds_token`.
+//
+// ⚠️ THIS EXCEPTION'S SAFETY RESTS ON AN INVARIANT HELD IN ANOTHER FILE. `lib/provision-truck.ts`
+// guarantees both halves:
+//   1. every demo truck's dashboard_token is `demo-` + 130 bits of random (demoIdentity), and
+//   2. NO operator truck can ever carry a `demo-` prefixed id/slug/token — assertReservedPrefix() throws
+//      before the insert, which is why it is an assertion and not a naming convention.
+// Half 2 is the load-bearing one. It is reachable by accident without it: a truck named "Demo Kitchen"
+// slugs to `demo-kitchen`, and the operator token convention is `<slug-base>-<hex>` — so that real
+// operator would have silently lost its session gate. If either half is ever weakened, this exception
+// becomes a hole. Do not change one without the other.
+//
+// ⚠️ FOR A DEMO TRUCK THE TOKEN IS THE ENTIRE SECURITY BOUNDARY. Real operators keep two layers (session
+// + token); a demo has only the token, because there is no account to sign in to. That is precisely why
+// demo tokens are 130-bit random rather than readable — and why this must match `/dashboard/demo-*` only,
+// never `/dashboard` as a whole.
+//
+// Path pattern only — NO database lookup. This runs in edge middleware on every request; the `demo-`
+// prefix is self-identifying by design so no round-trip is needed to classify a token.
+// Matches /dashboard/demo-<token> and its sub-routes (e.g. /dashboard/demo-<token>/kds); the trailing
+// (/|$) stops a partial segment match, and the required [a-z0-9]+ stops a bare `/dashboard/demo-`.
+const isDemoDashboard = (p: string) => /^\/dashboard\/demo-[a-z0-9]+(\/|$)/.test(p)
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -109,8 +137,10 @@ export async function proxy(request: NextRequest) {
 
   // Protected routes — require authentication
   // Note: /kds uses kds_token auth, not session auth — excluded here
+  // Note: /dashboard/demo-* is likewise token-authed (anonymous demo, no account to sign in to) — see
+  //       isDemoDashboard above for why that is safe and what invariant it depends on.
   const isProtected =
-    pathname.startsWith('/dashboard') ||
+    (pathname.startsWith('/dashboard') && !isDemoDashboard(pathname)) ||
     pathname.startsWith('/manage')
 
   // Public routes — always accessible

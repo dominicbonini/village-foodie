@@ -12,6 +12,8 @@ import { buildSlotIndicators } from '@/lib/slot-display'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
+import { isDemoIdentifier } from '@/lib/demo'
+import { rollDemoEventIfStale } from '@/lib/demo-event-refresh'
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
@@ -34,6 +36,31 @@ export async function GET(req: NextRequest) {
   if (error || !truck) {
     console.error('[dashboard] truck lookup failed:', error?.message, error?.details)
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
+  }
+
+  // ── DEMO: keep the event window alive ────────────────────────────────────────────────────────────
+  // A demo event is provisioned auto_close:false so the scheduler can't end a demo mid-session, which
+  // means its window just EXPIRES with the event still 'open'. Slots are generated for the window, so
+  // past the end time there is nothing bookable — VERIFIED: a demo whose window ended at 14:00 served
+  // 36 slots, 0 available, asap:null at 17:12, while still reporting "Live". The demo looked fine and
+  // its central loop could not happen.
+  //
+  // Rolled HERE because the dashboard is the demo's front door and it polls, so a demo self-heals while
+  // it's being used. No-op for real trucks (guarded inside), and no-op while the window is live — that
+  // path is one SELECT, which is the case that fires essentially always.
+  //
+  // ⚠️ Deliberately NOT fatal: a demo that can't roll is still worth serving. It is logged, not thrown —
+  // the alternative is a 500 on the dashboard of someone mid-evaluation.
+  if (isDemoIdentifier(truck.id)) {
+    try {
+      const rolled = await rollDemoEventIfStale(supabase, truck.id)
+      if (rolled.rolled) {
+        console.log(`[dashboard] demo event rolled ${rolled.from?.date} ${rolled.from?.start}-${rolled.from?.end} → ` +
+          `${rolled.to?.date} ${rolled.to?.start}-${rolled.to?.end} (${rolled.ordersShifted} orders shifted)`)
+      }
+    } catch (e) {
+      console.error('[dashboard] demo event roll failed:', e instanceof Error ? e.message : e)
+    }
   }
 
   // If there's a logged-in user, verify they own this truck

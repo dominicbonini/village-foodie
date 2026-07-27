@@ -41,6 +41,14 @@ const config: CapacitorConfig = {
     // web is unaffected. Do NOT remove without updating proxy.ts's isNativeApp check.
     appendUserAgent: 'HatchGrabNativeApp',
   },
+  android: {
+    backgroundColor: '#1C1C1E',
+    // MUST be byte-identical to ios.appendUserAgent above: proxy.ts's isNativeApp check substring-matches
+    // this exact string to defer the cookie-blind auth guard for native navigations. Without it every
+    // /dashboard and /manage navigation 307s to /login and the V8.7 login loop returns.
+    // No contentInset / scrollEnabled here — both are WKWebView-specific with no Android counterpart.
+    appendUserAgent: 'HatchGrabNativeApp',
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 1000,

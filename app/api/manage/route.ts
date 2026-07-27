@@ -9,6 +9,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { HATCHGRAB_SENDER, HATCHGRAB_LOGO_URL } from '@/lib/email-config'
 import { rebuildProductionSlotUsage } from '@/lib/slot-bookings'
+import { generateSlots } from '@/lib/slots'   // EXTRACTED from this file — now shared with the demo provisioner
 import { getSoleActiveVanId, getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes, getLocalDateInTz } from '@/lib/time-utils'
 import { canAccess } from '@/lib/features'
@@ -850,7 +851,7 @@ export async function POST(req: NextRequest) {
   // chips and per-feature override tickboxes all write there. Nothing ever wrote them through this path.
   // The rule: gating state is never writable by a credential the gated party holds.
   if (action === 'update_truck') {
-    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled']
+    const allowed = ['crew_mode', 'kds_mode', 'display_mode', 'extra_wait_mins', 'paused_until', 'whatsapp_sender', 'preferred_contact_method', 'allow_customer_cancellation', 'cancellation_cutoff_mins', 'default_auto_open', 'default_auto_close', 'qr_code_style', 'scraper_preference', 'schedule_url', 'scraper_rule', 'preorders_enabled', 'preorder_deadline_type', 'preorder_deadline_value', 'preorder_past_action', 'preorder_open_rule', 'truck_order_email_enabled', 'setup_step']
     const safeData = Object.fromEntries(
       Object.entries(body.data || {}).filter(([key]) => allowed.includes(key))
     )
@@ -1413,15 +1414,3 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
 }
 
-function generateSlots(start: string, end: string, intervalMins: number): string[] {
-  const slots: string[] = []
-  const [startH, startM] = start.split(':').map(Number)
-  const [endH, endM] = end.split(':').map(Number)
-  let mins = startH * 60 + startM
-  const endMins = endH * 60 + endM
-  while (mins <= endMins) {
-    slots.push(`${String(Math.floor(mins / 60)).padStart(2, '0')}:${String(mins % 60).padStart(2, '0')}`)
-    mins += intervalMins
-  }
-  return slots
-}

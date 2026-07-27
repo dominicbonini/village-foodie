@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { formatConfirmationEmail, formatNewOrderEmail, sendConfirmationEmail, renderOrderLinesHtml } from '@/lib/email'
+import { isDemoIdentifier } from '@/lib/demo'
 import { getVanOrderReadyDefault } from '@/lib/van-utils'
 import { hasValidEventTimes } from '@/lib/time-utils'
 import {
@@ -35,7 +36,40 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-async function notifyCustomer(email: string, subject: string, html: string, truckName?: string) {
+// ── 🔴 DEMO TRUCKS NEVER SEND EMAIL ────────────────────────────────────────────────────────────────────
+// A demo's order addresses are whatever the prospect typed into their own test order — fake or throwaway.
+// Sending produces hard bounces that damage the SHARED sender reputation every real truck's confirmations
+// depend on, and Brevo Free is a 300/day shared cap that stops sending SILENTLY once hit.
+//
+// This file had EIGHT send sites (ready / confirm / reject / cancel / edit / manual-customer / manual-truck
+// / bulk-update). Guarding each one individually would be eight chances to miss one — and a missed one is
+// invisible until the bounce rate moves. So every send goes through ONE wrapper: the guard cannot be
+// bypassed by adding a new call site that follows the existing pattern, and `sendConfirmationEmail` is no
+// longer called directly anywhere below.
+async function sendEmailUnlessDemo(
+  truck: { id?: string | null; name?: string | null } | null | undefined,
+  params: Parameters<typeof sendConfirmationEmail>[0],
+) {
+  if (isDemoIdentifier(truck?.id)) {
+    console.log(`[dashboard/action] demo truck ${truck?.id} — email to ${params.to} suppressed`)
+    return
+  }
+  await sendConfirmationEmail(params)
+}
+
+// Raw Brevo sender for the reject/cancel notices. Takes the TRUCK (not just its name) so it shares the
+// demo guard above — passing only truckName would have left these two sites unguarded.
+async function notifyCustomer(
+  truck: { id?: string | null; name?: string | null } | null | undefined,
+  email: string,
+  subject: string,
+  html: string,
+) {
+  const truckName = truck?.name ?? undefined
+  if (isDemoIdentifier(truck?.id)) {
+    console.log(`[dashboard/action] demo truck ${truck?.id} — email to ${email} suppressed`)
+    return
+  }
   const apiKey = process.env.BREVO_API_KEY
   if (!apiKey || !email) return
   try {
@@ -89,7 +123,7 @@ async function deliverReadyEmail(order: any, truck: any) {
     baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
     truckSlug: truck.slug ?? undefined,
   })
-  await sendConfirmationEmail({ to: order.customer_email, subject, html, text, senderName: truck.name })
+  await sendEmailUnlessDemo(truck, { to: order.customer_email, subject, html, text, senderName: truck.name })
 }
 
 export async function POST(req: NextRequest) {
@@ -158,7 +192,7 @@ export async function POST(req: NextRequest) {
           baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
           truckSlug: truck.slug ?? undefined,
         })
-        await sendConfirmationEmail({ to: order.customer_email, subject, html, text, senderName: truck.name })
+        await sendEmailUnlessDemo(truck, { to: order.customer_email, subject, html, text, senderName: truck.name })
       }
       return NextResponse.json({ success: true, status: 'confirmed' })
     }
@@ -185,14 +219,14 @@ export async function POST(req: NextRequest) {
       if (order.customer_email) {
         // Mirrors the cancel email's reasonLine — the operator's reason, escaped, shown to the customer.
         const reasonLine = rejectionReason ? `<p style="color:#475569">Reason: ${escapeHtml(rejectionReason)}</p>` : ''
-        await notifyCustomer(order.customer_email, `Order #${order.id} update`,
+        await notifyCustomer(truck, order.customer_email, `Order #${order.id} update`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px">
             <h2>Order update</h2>
             <p>Unfortunately <strong>${truck.name}</strong> is unable to fulfil order #${order.id}.</p>
             ${reasonLine}
             <p>Please order at the truck on arrival. Sorry for the inconvenience.</p>
             <p style="color:#64748b;font-size:13px">Powered by HatchGrab · hatchgrab.com</p>
-          </body>`, truck.name)
+          </body>`)
       }
       return NextResponse.json({ success: true, status: 'rejected' })
     }
@@ -216,7 +250,7 @@ export async function POST(req: NextRequest) {
       if (order.customer_email) {
         const reasonLine = cancellationReason ? `<p style="color:#475569">${cancellationReason}</p>` : ''
         const refundLine = order.paid_at ? `<p>Your refund will be processed automatically within 3–5 working days.</p>` : ''
-        await notifyCustomer(order.customer_email, `Your order has been cancelled — ${truck.name}`,
+        await notifyCustomer(truck, order.customer_email, `Your order has been cancelled — ${truck.name}`,
           `<body style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#334155">
             <p>Hi ${order.customer_name || 'there'},</p>
             <p>Your order <strong>#${order.id}</strong> from <strong>${truck.name}</strong> has been cancelled.</p>
@@ -225,7 +259,7 @@ export async function POST(req: NextRequest) {
             <p>We're sorry for any inconvenience.</p>
             <p>${truck.name}</p>
             <p style="color:#94a3b8;font-size:12px">Powered by HatchGrab · hatchgrab.com</p>
-          </body>`, truck.name)
+          </body>`)
       }
       return NextResponse.json({ success: true, status: 'cancelled' })
     }
@@ -422,7 +456,7 @@ export async function POST(req: NextRequest) {
           </body>`
         // Send via the shared, HatchGrab-branded, Brevo-verified sender (same path as the
         // confirmation/new-order emails) — replaces the inline notifyCustomer (Village Foodie).
-        await sendConfirmationEmail({
+        await sendEmailUnlessDemo(truck, {
           to: order.customer_email,
           subject: `Order #${order.id} updated`,
           html,
@@ -814,7 +848,7 @@ export async function POST(req: NextRequest) {
           baseUrl:                process.env.NEXT_PUBLIC_HATCHGRAB_URL,
           truckSlug:              truck.slug ?? undefined,
         })
-        await sendConfirmationEmail({ to: customerEmail, subject, html, text, truckName: truck.name })
+        await sendEmailUnlessDemo(truck, { to: customerEmail, subject, html, text, truckName: truck.name })
       }
 
       if (truck.contact_email && (truck as any).truck_order_email_enabled !== false) {
@@ -836,7 +870,7 @@ export async function POST(req: NextRequest) {
           venuePostcode: manualEventRow?.postcode ?? null,
           autoAccepted: true,
         })
-        await sendConfirmationEmail({
+        await sendEmailUnlessDemo(truck, {
           to: truck.contact_email,
           subject,
           html,
@@ -1108,7 +1142,7 @@ export async function POST(req: NextRequest) {
           baseUrl: process.env.NEXT_PUBLIC_HATCHGRAB_URL,
           truckSlug: truck.slug ?? undefined,
         })
-        await sendConfirmationEmail({
+        await sendEmailUnlessDemo(truck, {
           to: ord.customer_email,
           subject: `Your order #${ord.id} has been updated`,
           html,

@@ -56,6 +56,11 @@ import { NotificationSettings } from '@/components/native/NotificationSettings'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
 import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
+import { DemoWelcome } from '@/components/dashboard/DemoWelcome'
+import { DemoLockChip } from '@/components/dashboard/DemoLockChip'
+import { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'
+import { DemoModeBanner } from '@/components/DemoModeBanner'
+import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
@@ -104,6 +109,28 @@ async function pruneStaleEventCache(): Promise<void> {
 
 export default function DashboardPage({params}:{params:Promise<{token:string}>}) {
   const{token}=use(params)
+  // ── DEMO MODE ────────────────────────────────────────────────────────────────────────────────────────
+  // The prospect demo runs on THIS page (one dashboard, one codebase — every future improvement lands in
+  // the demo for free), so demo differences are conditional rendering, never a fork.
+  //
+  // DETECTION = the token prefix, the SAME signal proxy.ts keys on to waive the session gate, upheld by
+  // assertReservedPrefix() in lib/provision-truck.ts (no operator truck can ever carry a `demo-` token).
+  // Deliberately NOT truck.plan==='demo': per the onboarding spec (Stage 7) a SIGNED-UP pre-trial truck
+  // also sits on plan 'demo', and that one is a real operator who must keep the full console — the plan
+  // cannot tell the two apart. A trucks.is_test-style column is forbidden (reference-manual §824).
+  // Client-side from the route param → no fetch, no API change, correct on first paint.
+  const isDemo=token.startsWith('demo-')
+  // ── CUSTOMER-URL BASE ────────────────────────────────────────────────────────────────────────────
+  // DEMO uses the CURRENT ORIGIN so local testing stays local. Hardcoding NEXT_PUBLIC_HATCHGRAB_URL sent
+  // a localhost tester to PRODUCTION, where the truck doesn't exist (and, pre-deploy, where /api/orders/
+  // submit has no demo exception in the excluded gate) — so ordering died with "Truck not found".
+  //
+  // REAL TRUCKS KEEP THE ENV VAR, deliberately: their order link and QR get printed and shared, so they
+  // must always be the canonical production domain regardless of which host the operator happens to be
+  // on (a preview deploy, the native shell). Origin would be actively wrong there.
+  const customerUrlBase = isDemo && typeof window !== 'undefined'
+    ? window.location.origin
+    : (process.env.NEXT_PUBLIC_HATCHGRAB_URL ?? '')
   const searchParams=useSearchParams()
   const router=useRouter()
   const vanName=searchParams.get('van_name')??''
@@ -189,6 +216,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[upcomingEvents,setUpcomingEvents]=useState<TruckEvent[]>([])
   const[selectedEventId,setSelectedEventId]=useState<string|null>(null)
   const[showEventMenu,setShowEventMenu]=useState(false)
+  // DEMO: event actions are shown-but-locked; clicking any of them (event bar OR AddOrderPanel) opens this
+  // one explainer instead of mutating anything. Centralised here so both surfaces share it.
+  const[showDemoEventLock,setShowDemoEventLock]=useState(false)
   // Styled "finish event" confirm (replaces window.confirm). early → harder warning naming the end.
   const[finishConfirm,setFinishConfirm]=useState<{eventId:string;early:boolean;endTime:string}|null>(null)
   const[eventNoteInput,setEventNoteInput]=useState('')
@@ -229,7 +259,18 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // PER-DEVICE keep-screen-on pref (mirrors sound's hg_sound_${token}). Read SYNCHRONOUSLY here via a lazy
   // initializer — NOT a useEffect — so the value is known at first paint and the KeepAwakePrompt can't flash
   // for an operator who turned it off. SSR-guarded (localStorage is client-only). Default ON.
-  const[keepScreenOn,setKeepScreenOn]=useState(()=>typeof window==='undefined'?true:localStorage.getItem(`hg_keepawake_${token}`)!=='off')
+  // Per-device keep-screen-on pref. OPERATORS: unchanged — defaults ON (opt-OUT via 'off'), because a
+  // kitchen screen going dark mid-service is a real problem.
+  // DEMO: defaults OFF (opt-IN via 'on'). KeepAwakePrompt renders `iff pref ON && lock not held`, so an
+  // ON default means a prospect's very first paint carries an orange "Keep screen on 👆" call-to-action —
+  // unpolished, and meaningless to someone browsing a demo on a laptop. Flipping the DEFAULT (rather than
+  // suppressing the banner) keeps the Screen on/off toggle fully working: if the visitor deliberately turns
+  // it on, the pref writes 'on' and every normal behaviour — banner included — resumes.
+  const[keepScreenOn,setKeepScreenOn]=useState(()=>{
+    if(typeof window==='undefined')return !isDemo
+    const pref=localStorage.getItem(`hg_keepawake_${token}`)
+    return isDemo?pref==='on':pref!=='off'
+  })
   // ACTUAL keep-awake state (held / denied / unsupported / native), NOT the intent. The toggle reads this so
   // it can't claim "Screen on" while the lock was denied. Updates live (OS release, focus re-acquire).
   const[wakeState,setWakeState]=useState<WakeState>('off')
@@ -799,8 +840,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setShowKDSPicker(true)
   }
 
+  // The ONE customer order URL — copy link, QR and the demo welcome popup all read this, so they can't
+  // disagree about which host they point at. See customerUrlBase above for the demo/production split.
+  const customerOrderUrl = truck?.slug ? `${customerUrlBase}/trucks/${truck.slug}/order` : null
+
   const handleCopyOrderLink=async()=>{
-    const orderUrl=truck?.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:null
+    const orderUrl=customerOrderUrl
     if(!orderUrl){showToast('Order URL not available — slug not set','error');return}
     try{
       await navigator.clipboard.writeText(orderUrl)
@@ -810,7 +855,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const handleShowQR=async()=>{
-    const orderUrl=truck?.slug?`${process.env.NEXT_PUBLIC_HATCHGRAB_URL}/trucks/${truck.slug}/order`:null
+    const orderUrl=customerOrderUrl
     if(!orderUrl){showToast('Order URL not available — slug not set','error');return}
     setShowQRFullscreen(true)
     if(qrFullscreenDataUrl) return
@@ -818,7 +863,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     try{
       const{generateQRWithLogo}=await import('@/lib/generateQRCode')
       const showBrandedQr=hasFeature(truck.plan,'branded_qr_code')&&truck.qr_code_style==='branded'
-      setQrFullscreenDataUrl(await generateQRWithLogo(orderUrl,showBrandedQr?truck.logo:null))
+      // FIX 4 — DEMO renders the BRANDED composite with placeholder text where the logo would sit. It
+      // shows the branded-QR feature working and hints at what signing up adds, without faking a logo the
+      // visitor hasn't given us. Real trucks are unaffected (placeholder is ignored when a logo exists).
+      setQrFullscreenDataUrl(await generateQRWithLogo(
+        orderUrl,
+        showBrandedQr?truck.logo:null,
+        600,
+        isDemo?'Your logo here':null,
+      ))
     }catch(err){
       console.error('[QR] Generation failed:',err)
       setShowQRFullscreen(false)
@@ -877,6 +930,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   const toggleOfflineProtection=async(value:boolean)=>{
     if(!activeEvent)return
+    // DEMO HARD STOP. The card renders disabled, but styling is not enforcement — a disabled prop can be
+    // bypassed (devtools, a stray programmatic call, a future refactor that forgets). This is the single
+    // choke point every path to set_offline_protection goes through, so the guard belongs here.
+    if(isDemo)return
     if(value===true){
       const confirmed=window.confirm(OFFLINE_PROTECTION_ENABLE_CONFIRM)
       if(!confirmed)return
@@ -1243,6 +1300,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
 
   const openEvent=async(eventId:string)=>{
+    // DEMO HARD STOP (§3 Stage 3: styling is not enforcement). Start/Restart is locked in demo; this is the
+    // single choke point every caller (event-bar menu, AddOrderPanel) funnels through, so the guard belongs
+    // here — before any fetch. The locked buttons open the explainer instead of calling this.
+    if(isDemo)return
     const wasClosedEvent=upcomingEvents.find(e=>e.id===eventId)?.status==='closed'
     try{
       const res=await fetch('/api/events/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,action:'open',eventId,payload:{}})})
@@ -1635,7 +1696,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // responsive placements so the set/clear logic never diverges: mobile keeps it in the top controls
   // row; desktop (lg:) shows it stacked above Prep beside the stat boxes. `cls` carries the per-slot
   // width/visibility classes.
-  const renderExtraWait=(cls:string)=> waitMinutes>0?(
+  // DEMO: no way to ADD extra wait (same trap as Pause — set it, forget it, then the quoted collection
+  // times look wrong and the demo reads as broken). The CLEAR button below is left reachable whenever a
+  // wait is somehow active, so nothing can strand the demo. Gating here covers BOTH responsive placements
+  // at once — the whole reason this renderer exists as one definition.
+  // The demo-lock chip, in ONE place so every locked control reads identically. Sits on the TITLE LINE —
+  // "Offline protection · Not available in demo" — rather than under the toggle: the reader hits the
+  // constraint while they're still reading what the thing IS, instead of learning the name, reading the
+  // description, and only then discovering it's off-limits.
+  //
+  // COLOUR IS DELIBERATELY THE BANNER'S, EXACTLY: amber-100 ground / amber-900 text / amber-300 border
+  // (components/DemoModeBanner.tsx). Two reasons:
+  //   1. ONE visual language for demo CONSTRAINTS. The chip previously sat on amber-50 — near-white — next
+  //      to the banner's amber-100, which read as a different system saying the same thing.
+  //   2. It keeps ORANGE meaning exactly ONE thing across every demo surface: the action to take. Orange
+  //      was doing double duty as both "click this" and "you can't use this" — precisely the wrong signal
+  //      on a conversion surface, where the only orange on screen should be the way forward.
+  // Renders nothing outside demo, so call sites need no conditional of their own.
+  const demoLockChip = isDemo ? <DemoLockChip className="ml-2" /> : null
+
+  const renderExtraWait=(cls:string)=> (isDemo&&waitMinutes<=0)?null:waitMinutes>0?(
     <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_extra_wait',minutes:0,eventId:activeEvent?.id})});markPending('extraWaitMins',0);markPending('extraWaitStartedAt',null);setExtraWaitMins(0);setExtraWaitStartedAt(null)}} className={`py-2.5 rounded-xl text-sm font-black bg-orange-100 text-orange-700 border border-orange-300 hover:bg-orange-200 ${cls}`}>
       ⏱ +{waitMinutes}m active · Tap to clear
     </button>
@@ -1670,6 +1750,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <span>📴 Offline — orders &amp; stock save on this device; settings are locked</span>
         </div>
       )}
+      {/* DEMO MODE — persistent app-shell strip (same slim shrink-0 treatment as the offline chip). Sits on
+          EVERY tab so the visitor is never unclear about what they're looking at. Deliberately calm rather
+          than alarming: this is a prospect exploring the product, not an operator being warned. The
+          explanatory copy that used to live here moved to the one-time welcome popup — said once, properly,
+          rather than repeated on every screen forever. */}
+      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token}/>}/>}
+      {/* One-time orientation, shown BEFORE they see the board. Carries the customer order link, which is
+          the thing most likely to be missed and the one that closes the loop. */}
+      {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={searchParams.get('welcome')==='sample'}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
@@ -1679,8 +1768,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <DevOutboxInspector />
       <DeviceSetupGate token={token} />
       {/* Header */}
+      {/* FIX 7 — DEMO hides the truck name. It's a GENERATED internal id ("Demo Kitchen (f1dz70)") that the
+          spec says must never be shown; the visitor has no truck of their own yet. */}
       <AppHeader
-        truckName={truck?.name ? (vanName ? `${truck.name} — ${vanName}` : truck.name) : null}
+        truckName={isDemo ? null : (truck?.name ? (vanName ? `${truck.name} — ${vanName}` : truck.name) : null)}
         truckLogoUrl={truck?.logo || null}
         subtitle={truck?.venue_name || undefined}
       >
@@ -1691,26 +1782,45 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <span className="text-xs font-medium text-slate-500 select-none">
             {soundEnabled ? '🔔 Sound on' : '🔕 Sound off'}
           </span>
-          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${soundEnabled ? 'bg-green-500' : 'bg-slate-300'}`}>
-            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${soundEnabled ? 'translate-x-5' : 'translate-x-1'}`} />
+          {/* CANONICAL toggle values (w-11 h-6 · teal-500 · translate-x-6) — matched to the shared
+              <Toggle> in components/dashboard/OrderCard.tsx. This site is a BESPOKE inline copy because the
+              label + track share one click target and <Toggle> is itself a <button> (nesting them is
+              invalid HTML). Hand-matched classes are how this drifts — it was w-10/green-500 — so the
+              durable fix is a `label` prop on the shared component; logged as a follow-up. */}
+          <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${soundEnabled ? 'bg-green-500' : 'bg-slate-300'}`}>
+            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${soundEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
           </div>
         </button>
         {/* Screen toggle — desktop only (mobile → UserMenu). BINARY: green "Screen on" ONLY when the lock is
             actually HELD; grey "Screen off" otherwise. Failure is a toast on the tap, never a hedged label. */}
         <button onClick={toggleKeepScreenOn} title={screenHeld ? 'Screen will stay on' : 'Tap to keep the screen on'} className="hidden sm:flex items-center gap-2">
           <span className="text-xs font-medium text-slate-500 select-none">{screenHeld ? 'Screen on' : 'Screen off'}</span>
-          <div className={`relative w-10 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${screenHeld ? 'bg-green-500' : 'bg-slate-300'}`}>
-            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${screenHeld ? 'translate-x-5' : 'translate-x-1'}`} />
+          {/* CANONICAL toggle values — see the Sound toggle above. */}
+          <div className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 ${screenHeld ? 'bg-green-500' : 'bg-slate-300'}`}>
+            <div className={`absolute top-1 left-0 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${screenHeld ? 'translate-x-6' : 'translate-x-1'}`} />
           </div>
         </button>
+        {/* DEMO gating of the menu. Manage/Admin are whole consoles with no demo treatment, and Sign out is
+            a dead end with no session behind it — all hidden. The order utilities ALL stay: opening your own
+            order page, placing a test order and watching it land here and on the Kitchen screen is the demo's
+            full loop. Safe to hand out the URL — a demo slug is 130-bit random and absent from both discovery
+            feeds — and the KDS carries its own demo mode (see kds/page.tsx). */}
+        {/* DEMO: the whole profile menu is MOBILE-ONLY. Its remaining items (Screen, Sound, Order link,
+            QR) are all `sm:hidden` — desktop has them in the header and the tab bar — and Manage / Admin /
+            Sign out are hidden in demo, so on desktop the dropdown held nothing but an empty identity row.
+            An avatar that opens a blank panel reads as a broken profile setting, which a demo visitor has
+            no business seeing at all. Mobile still needs it, so it's hidden by breakpoint, not removed. */}
+        <span className={isDemo ? 'sm:hidden' : undefined}>
         <UserMenu
+          showIdentity={!isDemo}
           operatorName={currentUserName || currentUserFirstName || ''}
           userEmail={currentUserEmail}
           token={token}
           showScreenToggle
           showOrderUtilities
-          showManageLink={userRole==='owner'||userRole==='manager'}
-          isAdmin={isAdmin}
+          showManageLink={!isDemo&&(userRole==='owner'||userRole==='manager')}
+          isAdmin={!isDemo&&isAdmin}
+          showSignOut={!isDemo}
           keepScreenOn={screenHeld}
           onToggleScreenOn={toggleKeepScreenOn}
           soundEnabled={soundEnabled}
@@ -1720,6 +1830,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           onShowQR={handleShowQR}
           onOpenKDS={handleOpenKDS}
         />
+        </span>
       </AppHeader>
 
       {/* Tabs — bg-slate-900 must match HEADER_BG in lib/brand.ts.
@@ -1730,10 +1841,14 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         {/* Nav tabs row */}
         <div className="px-4 overflow-x-auto">
           <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center"}>
+            {/* In DEMO the Settings tab keeps only ONE card (Kitchen capacity — see the tab body), so it is
+                relabelled to match what's actually in it. "Settings" on a single-card tab reads as broken. */}
             {([['orders',(()=>{const c=activeEvent?pendingOrders.length:0;return`Orders${c>0?` (${c})`:''}`})()],['add','+ Add order'],['stock','Menu & Stock'],['settings','Settings']] as [typeof activeTab,string][]).map(([tab,label])=>(
               <button key={tab} onClick={()=>setActiveTab(tab)} className={`px-4 py-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab===tab?'border-orange-500 text-white':'border-transparent text-slate-400 hover:text-white'}`}>{label}</button>
             ))}
-            {/* Utility actions — desktop only */}
+            {/* Utility actions — desktop only. Desktop twins of the UserMenu items, so they must stay in
+                lockstep with it: all three available in DEMO (the test-order loop). Gating one surface and
+                not the other is how a "hidden" link stays reachable — change both or neither. */}
             <div className="ml-auto hidden sm:flex items-center">
               <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap">
                 {copiedOrderLink ? '✓ Copied' : 'Order link'}
@@ -1762,7 +1877,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <span className="block text-white text-sm font-medium truncate">
                     📍 {fmtVenue(activeEvent.venue_name,activeEvent.town)} · {formatTime(activeEvent.start_time)}–{formatTime(activeEvent.end_time)}
                   </span>
-                  {activeEvent.event_date&&(
+                  {/* FIX 8 — DEMO hides the date. The demo event is always "today" by construction, so the
+                      line carries no information and just dates the screenshot. */}
+                  {activeEvent.event_date&&!isDemo&&(
                     <span className="hidden sm:block text-xs font-medium text-slate-400 truncate mt-0.5">📅 {eventDateLabel(activeEvent.event_date)}</span>
                   )}
                 </div>
@@ -1782,10 +1899,23 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 )}
                 {/* Labeled, obviously-tappable trigger for the event-level actions (pause / +30 / finish /
                     cancel / note) — names the menu so those actions are discoverable, not hidden behind ⋯. */}
-                <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
-                  className="flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2.5 py-1 transition-colors">
-                  Event actions ▾
-                </button>
+                {/* DEMO: SHOW, don't hide (§3 Stage 3 — "a prospect can't want what they can't see"). Event
+                    actions render but are LOCKED: the chip sits beside the control, and clicking opens the
+                    explainer instead of the real menu (which stays !isDemo-gated below as a backstop). The
+                    handler enforcement lives in openEvent/openEventPicker, not here. */}
+                {isDemo?(
+                  // Padlock only — no chip. The explainer on click carries the "why"; a chip here too would
+                  // double the message on a control they haven't engaged with yet.
+                  <button onClick={()=>setShowDemoEventLock(true)}
+                    className="flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold text-slate-300 bg-slate-700/60 border border-slate-600 rounded px-2.5 py-1 cursor-pointer">
+                    <span aria-hidden>🔒</span> Event actions
+                  </button>
+                ):(
+                  <button onClick={()=>{setEventNoteInput(activeEvent.customer_note||'');setShowEventMenu(true)}}
+                    className="flex-shrink-0 text-xs font-semibold text-white bg-slate-700 border border-slate-500 hover:bg-slate-600 rounded px-2.5 py-1 transition-colors">
+                    Event actions ▾
+                  </button>
+                )}
               </>
             ):(
               <>
@@ -1827,8 +1957,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {/* @container: the order-card grids below size their column count off THIS content column's
                   width (not the viewport), so iPad gets 3-across in both orientations and desktop stays 3. */}
               <div className="@container lg:flex-1 lg:min-w-0">
-              {/* Prep time banner */}
-            {showPrepTimeBanner&&(
+              {/* DEMO — behaviour-triggered signup prompt. Fires when an order the visitor caused lands on
+                  this board (see the component for the baseline detection). Sits ABOVE the order list
+                  because that's where their eye returns; deliberately not a modal. */}
+              {isDemo&&(
+                <DemoLoopComplete
+                  token={token}
+                  orderKeys={orders.map(o=>o.order_key)}
+                  loaded={!loading&&!!truck}
+                />
+              )}
+              {/* Prep time banner — hidden in DEMO. Not just its "Edit categories" → /manage link: the whole
+                  card's copy instructs the reader to fix prep times *in Manage*, which a demo visitor cannot
+                  reach. Hiding only the link would leave instructions pointing nowhere. (Demo prep times are
+                  set by the provisioner's wizard assumptions, so the banner has nothing to tell them anyway.) */}
+            {showPrepTimeBanner&&!isDemo&&(
               <div className="bg-orange-50 border border-orange-200 rounded-xl px-4 py-3 mb-4 flex items-start gap-3">
                 <span className="text-orange-500 text-lg flex-shrink-0">⚙️</span>
                 <div className="flex-1">
@@ -2226,6 +2369,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           <div className={activeTab==='add'?'h-full min-h-0 flex flex-col':'hidden'}>
           <AddOrderPanel
             isActive={activeTab==='add'}
+            isDemo={isDemo}
+            onLockedEventAction={()=>setShowDemoEventLock(true)}
             truck={truck}
             truckMenu={truckMenu}
             menuGroups={menuGroups}
@@ -2274,8 +2419,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 <span>You&apos;re offline — reconnect to change these settings. (Printer &amp; notification settings still work offline.)</span>
               </div>
             )}
+            {/* ⚠️ DEMO MODE keeps this TAB but strips it to the Kitchen-capacity card alone.
+                Reason: "adjust kitchen capacity and watch slots respond" is one of the four things the demo
+                exists to show (spec Stage 3), and that control lives HERE — hiding the tab outright would
+                have removed a required demo capability. So each of the other cards is gated individually
+                below (auto-accept, sounds, offline protection, order-ready, printing, notifications), and
+                the tab is relabelled "Kitchen" in the tab bar. */}
             {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same
-                treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional). */}
+                treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional).
+                FIX 9 — DEMO: fully AVAILABLE and interactive, defaulted ON (set at provision). It genuinely
+                works end-to-end here, and toggling it then placing a test order is one of the more
+                convincing things a prospect can do. NOT locked. */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
               <div className={`flex items-center justify-between ${autoAccept?'pb-3':''}`}>
                 <div>
@@ -2303,8 +2457,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               )}
             </div>
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
-                fire; the on/off MASTER is the per-device header toggle. */}
-            {(()=>{
+                fire; the on/off MASTER is the per-device header toggle.
+                DEMO: HIDDEN. Was briefly shown-but-locked; reverted because the sound model is moving to
+                PER-DEVICE (the per-truck "which sounds" split is being retired — see the V9.0 note), so
+                advertising this card would be showing a prospect a control that won't exist where they'd
+                go looking for it. Better to show nothing than to promise the wrong shape. */}
+            {!isDemo&&(()=>{
               const sc=truck?.sound_config??DEFAULT_SOUND_CONFIG
               return (
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
@@ -2333,28 +2491,38 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               )
             })()}
+            {/* DEMO: VISIBLE BUT DISABLED, not hidden. Offline protection is a genuine selling point, so a
+                prospect should see that it exists — but must not be able to switch it on: it interacts with
+                the heartbeat-monitor auto-pause, and a demo that silently stops taking orders reads as
+                broken rather than as a feature working. Forced OFF, toggle disabled, and the ENABLE path is
+                additionally blocked in toggleOfflineProtection so a click can never write set_offline_
+                protection — the disabled state is enforced, not just styled. The ⚠️ operator explainer is
+                swapped for a calm one-liner; there is nothing here for a visitor to act on. */}
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Offline protection</p>
+                  <p className="text-sm font-semibold text-slate-800">Offline protection{demoLockChip}</p>
                   <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
-                  <p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>
+                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
                 </div>
-                <Toggle on={effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline}/>
+                <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
               </div>
             )}
             {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
                 order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
                 master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
                 Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
-                consistency with Offline protection / Auto-accept above. */}
+                consistency with Offline protection / Auto-accept above.
+                FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
+                headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
+                emails, so it stays non-interactive. */}
             {activeEvent&&(
               <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Order-ready notifications</p>
+                  <p className="text-sm font-semibold text-slate-800">Order-ready notifications{demoLockChip}</p>
                   <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
                 </div>
-                <Toggle on={effectiveOrderReady} onToggle={()=>setOrderReadyOverride(!effectiveOrderReady)} disabled={isOffline}/>
+                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
               </div>
             )}
             {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
@@ -2424,7 +2592,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories.
                       ITEMS column holds the kitchen_capacity ceiling, PREP column holds the WINDOW
                       (plain whole minutes — NOT PrepTimeSelect; the engine reads capacity_window_mins
-                      as minutes). Same saveKitchenCapacity / saveCapacityWindow writes. */}
+                      as minutes). Same saveKitchenCapacity / saveCapacityWindow writes.
+                      DEMO: SHOWN, and deliberately UNSET. Provisioning passes kitchen_capacity: null, so
+                      this renders its existing null state (∞ = no van-level ceiling) and the MAINS category
+                      batch alone governs — one number, one story. Same principle as offline protection:
+                      a real feature a prospect should see exists, not something to hide. */}
                   <div className={`${KITCHEN_CAPACITY_GRID} items-center ${truckMenu?.categories&&truckMenu.categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-semibold text-slate-800">Total capacity</span>
@@ -2473,9 +2645,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* Device-specific iPad-only cards LAST — both render null on web / non-native, so mobile & desktop
                 show none of this block and the SHARED settings above (auto-accept → offline protection →
                 order-ready → kitchen capacity) sit in the same relative order on every surface. Kitchen ticket
-                printing: iPad-native + Max-gated inside the component. Notifications: iPad-native, device-local. */}
-            {truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
-            <NotificationSettings token={token}/>
+                printing: iPad-native + Max-gated inside the component. Notifications: iPad-native, device-local.
+                DEMO: both hidden — hardware/device configuration a prospect has nothing to point at. */}
+            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
+            {!isDemo&&<NotificationSettings token={token}/>}
           </div>
         )}
 
@@ -2744,8 +2917,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
-      {/* Pause duration picker */}
-      {showPauseModal&&(
+      {/* Pause duration picker. DEMO: gated here too, not just at the entry point — belt-and-braces so a
+          stale showPauseModal can never render the one control we just removed. */}
+      {showPauseModal&&!isDemo&&(
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <h3 className="font-black text-slate-900 text-base text-center mb-1">Pause online orders</h3>
@@ -3111,8 +3285,31 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         </div>
       )}
 
+      {/* DEMO event-actions explainer — opened by any locked event control (event bar or AddOrderPanel).
+          Answers "why can't I?" and reframes it as a signup benefit, rather than a dead disabled button. */}
+      {showDemoEventLock&&(
+        <div className="fixed inset-0 bg-black/60 z-[60] flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowDemoEventLock(false)}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <h3 className="font-black text-slate-900 flex items-center gap-2"><span aria-hidden>🔒</span> Event actions</h3>
+              <button onClick={()=>setShowDemoEventLock(false)} aria-label="Close" className="text-slate-400 hover:text-slate-700 text-xl font-bold w-8 h-8 flex items-center justify-center leading-none">×</button>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">
+              This is where you start and close a service, pause orders when the queue gets long, or switch to a different event.
+            </p>
+            <p className="text-sm text-slate-600 mb-4">
+              We keep one event running in the demo so there&apos;s always something to play with. You get full control when you sign up.
+            </p>
+            <button onClick={()=>setShowDemoEventLock(false)}
+              className="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl text-sm hover:bg-slate-800">
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Event menu */}
-      {showEventMenu&&activeEvent&&(
+      {showEventMenu&&activeEvent&&!isDemo&&(
         <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4" onClick={e=>e.target===e.currentTarget&&setShowEventMenu(false)}>
           <div className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-2xl">
             <div className="flex items-center justify-between mb-4">
@@ -3149,8 +3346,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <button onClick={()=>{fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'set_paused',paused_until:null,eventId:activeEvent?.id})});markPending('pausedUntil',null);markPending('vanPausedUntil',null);setPausedUntil(null);setVanPausedUntil(null);setVanOnlinePausedUntil(null);setShowEventMenu(false)}}
                     className="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl hover:bg-red-700 text-sm">▶ Resume orders</button>
                 ):(
+                  /* DEMO: Pause hidden, Resume (the branch above) kept — see the KDS header for the full
+                     reasoning. Recovery must always be reachable; only the trap is removed. */
+                  !isDemo&&(
                   <button onClick={()=>{setShowEventMenu(false);setShowPauseModal(true)}}
                     className="w-full bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">⏸ Pause orders</button>
+                  )
                 )
               )}
               {/* Add extra wait — event-level buffer added to NEW-order time quotes (set_extra_wait). Moved
@@ -3180,7 +3381,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               : <div className="w-full h-full flex items-center justify-center"><div className="w-8 h-8 border-2 border-slate-300 border-t-orange-600 rounded-full animate-spin"/></div>
             }
           </div>
-          <p className="text-lg font-bold text-slate-900 mt-4">{truck?.name}</p>
+          {/* DEMO: the truck name is a generated internal id ("Demo Kitchen (12w7he)") — hidden everywhere
+              else in demo for exactly that reason. Strip the trailing "(code)" so the QR label reads a clean
+              "Demo Kitchen" instead of leaking the identifier. */}
+          <p className="text-lg font-bold text-slate-900 mt-4">{isDemo ? (truck?.name?.replace(/\s*\([^)]*\)\s*$/, '') || 'Demo') : truck?.name}</p>
           <p className="text-xs text-slate-500 mt-1">Powered by <span className="font-semibold text-orange-600">HatchGrab</span></p>
           <p className="text-xs text-slate-300 mt-4">Tap anywhere to close</p>
         </div>

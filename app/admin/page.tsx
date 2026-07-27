@@ -12,6 +12,7 @@ import UserMenu from '@/components/dashboard/UserMenu'
 import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { createSlug } from '@/lib/utils'   // slug preview in the create-truck modal — SAME fn provision-truck derives with
+import { formatTimeRange } from '@/lib/time-utils'   // canonical event-time rendering (never raw — no seconds)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 
 interface AdminTruck {
@@ -127,6 +128,34 @@ interface CreateTruckResponse {
   warnings: string[]
 }
 
+// ── Provision demo (TEMPORARY test scaffolding — see app/api/admin/provision-demo/route.ts) ──────────
+interface ProvisionDemoResponse {
+  mode: 'first-run' | 're-provision'
+  truck: { id: string; slug: string; dashboard_token: string; van_id: string | null }
+  event: {
+    id: string; event_date: string; start_time: string; end_time: string
+    status: string | null; opened_at: string | null; van_id: string | null; slotsGenerated: number
+  }
+  counts: { categories: number; items: number; slotCapacityRows: number; orders: number; seededOrders: number }
+  menu:
+    | { kind: 'imported'; inserted: number; partial: boolean; shortfall: number; commit: CommitSummary }
+    | { kind: 'template'; inserted: number; template: string; commit: CommitSummary }
+    | { kind: 'failed'; reason: string; commit?: CommitSummary }
+  urls: { dashboard: string; order: string; kds: string }
+  warnings: string[]
+}
+
+interface CommitSummary {
+  ok: boolean
+  inserted: number
+  skipped: number
+  failed: { type: string; name: string; error: string }[]
+  submitted: number
+  unaccounted: number
+  groupsCreated: number
+  optionsCreated: number
+}
+
 const PLAN_ORDER: Plan[] = ['starter', 'trial', 'tester', 'demo', 'pro', 'max']
 
 const OVERRIDEABLE_FEATURES: Feature[] = [
@@ -197,6 +226,24 @@ export default function AdminPage() {
   const [deleteBusy, setDeleteBusy] = useState(false)         // the destructive call itself
   const [deleteFailure, setDeleteFailure] = useState<DeleteFailure | null>(null)
 
+  // ── PROVISION DEMO (⚠️ TEMPORARY test scaffolding) ────────────────────────────────────────────────
+  // Exists only to drive lib/provision-demo against the live DB with a human watching, ahead of the real
+  // public upload entry point. Remove alongside the route when that lands.
+  const [showDemo, setShowDemo] = useState(false)
+  const [demoFile, setDemoFile] = useState<File | null>(null)
+  const [demoText, setDemoText] = useState('')
+  const [demoExistingId, setDemoExistingId] = useState('')
+  const [demoBusy, setDemoBusy] = useState(false)
+  const [demoError, setDemoError] = useState<{ message: string; truckId?: string } | null>(null)
+  const [demoResult, setDemoResult] = useState<ProvisionDemoResponse | null>(null)
+
+  // Last demo-cleanup run — the human-visible detector for the job dying silently (see
+  // app/api/cron/demo-cleanup/route.ts). Nothing inside a job that never fires can report that.
+  const [cleanupRun, setCleanupRun] = useState<{
+    run_at: string; ok: boolean; expired_deleted: number; orphans_deleted: number
+    error: string | null; gap_mins: number | null; ageMins: number | null
+  } | null | 'unknown'>('unknown')
+
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
 
@@ -211,6 +258,9 @@ export default function AdminPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTrucks(data.trucks)
+      // Best-effort: never let a missing cleanup log break the admin page.
+      fetch('/api/admin?section=demo_cleanup', { headers: h })
+        .then(r => r.json()).then(d => setCleanupRun(d.lastRun ?? null)).catch(() => setCleanupRun(null))
       if (discRes.ok) {
         const discData = await discRes.json()
         setDiscoveryTrucks(discData.discoveryTrucks || [])
@@ -450,6 +500,39 @@ export default function AdminPage() {
       setDeleteBusy(false)
     }
   }
+
+  const openDemo = () => {
+    setDemoFile(null); setDemoText(''); setDemoExistingId('')
+    setDemoError(null); setDemoResult(null); setShowDemo(true)
+  }
+
+  const submitDemo = async () => {
+    setDemoBusy(true)
+    setDemoError(null)
+    try {
+      // multipart, matching how the real public upload will arrive (and how process-menu already works).
+      const fd = new FormData()
+      if (demoFile) fd.append('file', demoFile)
+      if (demoText.trim()) fd.append('text', demoText.trim())
+      if (demoExistingId.trim()) fd.append('existingTruckId', demoExistingId.trim())
+      const res = await fetch('/api/admin/provision-demo', {
+        method: 'POST', headers: { ...await nativeAuthHeader() }, body: fd,
+      })
+      const data = await res.json()
+      if (!res.ok || !data.ok) {
+        setDemoError({ message: data.error || 'Provisioning failed', truckId: data.truckId })
+        return
+      }
+      setDemoResult(data as ProvisionDemoResponse)
+      await load()   // the new demo truck should appear in the table behind the modal
+    } catch (e) {
+      setDemoError({ message: e instanceof Error ? e.message : 'Network error' })
+    } finally {
+      setDemoBusy(false)
+    }
+  }
+
+  const demoCanSubmit = !!demoFile || !!demoText.trim() || !!demoExistingId.trim()
 
   // The slug (or id, when slug is null) the admin must type — mirrors the server's own expectation.
   const deleteExpected = deleteTarget ? (deleteTarget.truck.slug || deleteTarget.truck.id) : ''
@@ -692,11 +775,38 @@ export default function AdminPage() {
                 Customers only
               </label>
               <span className="text-xs text-slate-400">{filteredRows.length} trucks</span>
+              {/* Demo-cleanup health. Deliberately sits in the Trucks tab, which is the page you already
+                  open — a health signal on a page nobody visits detects nothing. Red once the last run is
+                  older than 3h (hourly schedule ⇒ two consecutive misses). */}
+              {cleanupRun !== 'unknown' && (() => {
+                if (!cleanupRun) {
+                  return <span className="text-[11px] text-slate-400" title="No demo-cleanup run recorded yet (migration applied?)">🧹 cleanup: never run</span>
+                }
+                const ageMins = cleanupRun.ageMins ?? 0
+                const stale = ageMins > 180
+                const bad = stale || !cleanupRun.ok
+                return (
+                  <span
+                    className={`text-[11px] font-medium ${bad ? 'text-red-600' : 'text-slate-400'}`}
+                    title={`last run ${cleanupRun.run_at} · expired ${cleanupRun.expired_deleted} · orphans ${cleanupRun.orphans_deleted}${cleanupRun.error ? ` · ${cleanupRun.error}` : ''}`}
+                  >
+                    🧹 cleanup {bad ? '⚠ ' : ''}{ageMins < 60 ? `${ageMins}m` : `${Math.round(ageMins / 60)}h`} ago
+                  </span>
+                )
+              })()}
               <button
                 onClick={openNewTruck}
                 className="ml-auto whitespace-nowrap text-sm px-3.5 py-2 bg-orange-600 text-white rounded-xl font-semibold hover:bg-orange-700"
               >
                 ＋ Create truck
+              </button>
+              {/* ⚠️ TEMPORARY test scaffolding — dashed border marks it as not-production furniture. */}
+              <button
+                onClick={openDemo}
+                className="whitespace-nowrap text-sm px-3.5 py-2 border-2 border-dashed border-purple-300 text-purple-700 rounded-xl font-semibold hover:bg-purple-50"
+                title="Temporary: drive lib/provision-demo against the live DB"
+              >
+                🧪 Provision demo
               </button>
             </div>
 
@@ -1190,6 +1300,224 @@ export default function AdminPage() {
                 >
                   Done
                 </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Provision demo (⚠️ TEMPORARY test scaffolding) ─────────────────────────────────────────── */}
+      {showDemo && (
+        <div className="fixed inset-0 bg-black/50 z-[60] flex items-start justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl w-full max-w-xl p-6 flex flex-col gap-4 my-8 border-2 border-dashed border-purple-300">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">🧪 Provision demo</h3>
+              <p className="text-xs text-purple-700 mt-1 bg-purple-50 border border-purple-200 rounded-lg px-2.5 py-1.5">
+                <strong>Temporary test scaffolding.</strong> The real entry point is a public upload on the
+                landing page with no auth. This exists so the same code path can be driven against the live
+                DB with a human watching first. It writes real rows — clean up with Delete truck.
+              </p>
+            </div>
+
+            {!demoResult ? (
+              <>
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Menu photo / PDF</label>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={e => setDemoFile(e.target.files?.[0] ?? null)}
+                    className="mt-1 w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">…or paste menu text</label>
+                  <textarea
+                    value={demoText}
+                    onChange={e => setDemoText(e.target.value)}
+                    rows={5}
+                    placeholder={'Margherita Pizza £9\nPepperoni Pizza £10.50\nGarlic Bread £4\nCoke £2'}
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
+
+                <div className="border-t border-slate-100 pt-3">
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                    …or re-provision an existing demo truck
+                  </label>
+                  <input
+                    type="text"
+                    value={demoExistingId}
+                    onChange={e => setDemoExistingId(e.target.value)}
+                    placeholder="demo-xxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    className="mt-1 w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Exercises the RETURN-VISIT path: keeps the truck and its menu, deletes the old event and
+                    its orders, and rebuilds the event + slot grid + seeded board for today. This is the path
+                    that must not create a second same-day event — <code className="bg-slate-100 px-1 rounded">slot_capacity</code> is
+                    keyed on (truck_id, event_date, slot), so a second one would overwrite the first&apos;s grid.
+                  </p>
+                </div>
+
+                {demoError && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
+                    <p className="text-sm text-red-700 font-semibold">Provisioning failed</p>
+                    <p className="text-xs text-red-600 mt-1">{demoError.message}</p>
+                    {demoError.truckId && (
+                      <p className="text-xs text-red-800 mt-2 font-mono bg-red-100 rounded-lg px-2 py-1.5">
+                        A truck row exists and may need sweeping: <strong>{demoError.truckId}</strong>
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button onClick={() => setShowDemo(false)}
+                    className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
+                  <button
+                    onClick={submitDemo}
+                    disabled={demoBusy || !demoCanSubmit}
+                    className="flex-1 bg-purple-600 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-purple-700"
+                  >
+                    {demoBusy ? 'Provisioning…' : 'Provision demo'}
+                  </button>
+                </div>
+                {demoBusy && (
+                  <p className="text-[11px] text-slate-400 text-center">
+                    Extraction calls Gemini and can take 10–30s. Don&apos;t re-submit.
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="text-center">
+                  <div className="text-3xl mb-1">✅</div>
+                  <h4 className="text-base font-semibold text-slate-900">
+                    Demo provisioned <span className="text-slate-400 font-normal">({demoResult.mode})</span>
+                  </h4>
+                </div>
+
+                {/* Menu outcome — the three-way result, stated honestly */}
+                {(() => {
+                  const m = demoResult.menu
+                  const tone = m.kind === 'failed' ? 'bg-red-50 border-red-200 text-red-800'
+                    : (m.kind === 'imported' && m.partial) ? 'bg-amber-50 border-amber-200 text-amber-900'
+                    : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                  return (
+                    <div className={`rounded-xl border px-3 py-2.5 ${tone}`}>
+                      <p className="text-sm font-bold">
+                        {m.kind === 'failed' ? '✗ Menu failed'
+                          : m.kind === 'template' ? `Template menu: ${m.template}`
+                          : m.partial ? '⚠ Imported (partial)' : '✓ Imported'}
+                      </p>
+                      {m.kind === 'failed'
+                        ? <p className="text-xs mt-1">{m.reason}</p>
+                        : <p className="text-xs mt-1">{m.inserted} items committed{m.kind === 'imported' && m.shortfall > 0 ? ` · ${m.shortfall} missing` : ''}</p>}
+                      {m.commit && (
+                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] font-mono opacity-80">
+                          <span>ok={String(m.commit.ok)}</span>
+                          <span>submitted={m.commit.submitted}</span>
+                          <span>inserted={m.commit.inserted}</span>
+                          <span>skipped={m.commit.skipped}</span>
+                          <span>failed={m.commit.failed.length}</span>
+                          <span className={m.commit.unaccounted > 0 ? 'font-bold' : ''}>unaccounted={m.commit.unaccounted}</span>
+                          <span>groups={m.commit.groupsCreated}</span>
+                          <span>options={m.commit.optionsCreated}</span>
+                        </div>
+                      )}
+                      {m.commit && m.commit.failed.length > 0 && (
+                        <ul className="mt-2 text-[11px] list-disc list-inside space-y-0.5 max-h-24 overflow-y-auto">
+                          {m.commit.failed.map((f, i) => <li key={`${f.type}-${f.name}-${i}`}>{f.type}: {f.name} — {f.error}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                  )
+                })()}
+
+                {/* Counts read back FROM THE DB, not from the provisioner's arithmetic */}
+                <div className="bg-slate-50 rounded-xl px-3 py-2.5">
+                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Read back from the DB</p>
+                  <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    {([
+                      ['categories', demoResult.counts.categories],
+                      ['menu items', demoResult.counts.items],
+                      ['slot_capacity rows', demoResult.counts.slotCapacityRows],
+                      ['orders on event', demoResult.counts.orders],
+                      ['seeded (reported)', demoResult.counts.seededOrders],
+                      ['slots generated', demoResult.event.slotsGenerated],
+                    ] as const).map(([label, n]) => (
+                      <div key={label} className="flex justify-between gap-2">
+                        <span className="text-slate-500 truncate">{label}</span>
+                        <span className={`font-mono font-bold ${n === 0 ? 'text-red-500' : 'text-slate-800'}`}>{n}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Event — status + opened_at read back, the specific pair this build had to get right */}
+                <div className="bg-slate-50 rounded-xl px-3 py-2.5 text-xs space-y-1">
+                  <div className="flex justify-between gap-2">
+                    <span className="text-slate-500">event</span>
+                    <span className="font-mono text-slate-800">
+                      {demoResult.event.event_date} {formatTimeRange(demoResult.event.start_time, demoResult.event.end_time)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span className="text-slate-500">status</span>
+                    <span className={`font-mono font-bold ${demoResult.event.status === 'open' ? 'text-emerald-700' : 'text-red-600'}`}>
+                      {demoResult.event.status ?? 'null'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span className="text-slate-500">opened_at</span>
+                    <span className={`font-mono ${demoResult.event.opened_at ? 'text-emerald-700' : 'text-red-600 font-bold'}`}>
+                      {demoResult.event.opened_at ? '✓ set' : 'NULL — inconsistent with status:open'}
+                    </span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span className="text-slate-500">van_id</span>
+                    <span className={`font-mono ${demoResult.event.van_id ? 'text-slate-800' : 'text-red-600 font-bold'}`}>
+                      {demoResult.event.van_id ? `${demoResult.event.van_id.slice(0, 8)}…` : 'NULL — no capacity model'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Jump straight in */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Test it</label>
+                  <div className="mt-1 flex flex-col gap-1.5">
+                    {([
+                      ['Dashboard', demoResult.urls.dashboard],
+                      ['Order page', demoResult.urls.order],
+                      ['Kitchen screen', demoResult.urls.kds],
+                    ] as const).map(([label, href]) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <span className="text-xs text-slate-500 w-24 shrink-0">{label}</span>
+                        <AppLink href={href} target="_blank" rel="noopener noreferrer"
+                          className="flex-1 text-xs font-mono text-teal-700 hover:underline truncate">{href}</AppLink>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Truck id <code className="bg-slate-100 px-1 rounded">{demoResult.truck.id}</code> — paste into
+                    the re-provision field to exercise the return-visit path, or use Delete truck to clean up.
+                  </p>
+                </div>
+
+                {demoResult.warnings.length > 0 && (
+                  <ul className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 text-[11px] text-amber-800 list-disc list-inside space-y-1 max-h-32 overflow-y-auto">
+                    {demoResult.warnings.map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                )}
+
+                <div className="flex gap-3">
+                  <button onClick={() => { setDemoResult(null); setDemoError(null) }}
+                    className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Provision another</button>
+                  <button onClick={() => setShowDemo(false)}
+                    className="flex-1 bg-slate-900 text-white font-semibold py-3 rounded-xl text-sm">Done</button>
+                </div>
               </>
             )}
           </div>

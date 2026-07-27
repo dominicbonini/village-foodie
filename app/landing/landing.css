@@ -21,7 +21,10 @@
    (offset by --nav-h, below the sticky nav).
    ───────────────────────────────────────────────────────────────────────── */
 
-.hg-landing {
+/* Tokens are shared with .hg-demo-modal — the demo upload modal PORTALS to <body>, so it sits outside
+   .hg-landing and could not otherwise see --orange. Only the TOKEN block is shared: the scoped reset
+   (`.hg-landing *`) deliberately stays behind, since it was what flattened the modal's padding. */
+.hg-landing, .hg-demo-modal {
   --paper: #FFFFFF;
   --wash: #F5F8FB;
   --head: #16314F;      /* headings — lifted navy, landing-local, provisional */
@@ -43,7 +46,13 @@
   --gut: clamp(1.25rem, 4vw, 2.5rem);
   --max: 1140px;
   --nav-h: 4.5rem;      /* fixed nav height — ALSO the sticky comparison-header offset (one var → they can't desync) */
+}
 
+/* PRESENTATION — .hg-landing ONLY, never .hg-demo-modal. Keeping these in the shared block above set
+   `background: var(--paper)` (#FFF) on the modal's full-screen overlay, which beat Tailwind's bg-black/60
+   (same specificity, this sheet loads later) and turned the whole screen WHITE behind the popup. The split
+   is the point: the modal borrows the TOKENS, never the page's own look. */
+.hg-landing {
   font-family: var(--body);
   color: var(--ink);
   background: var(--paper);
@@ -325,3 +334,9 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
   .hg-landing section h2 { text-align: center; }
   .hg-landing section .lede { text-align: center; margin-inline: auto; }
 }
+
+/* ---------- DEMO UPLOAD ---------- */
+/* The #try CTA is now a single <button> opening a modal (components/landing/DemoUpload.tsx); the modal's
+   internals are app-standard Tailwind, SHARING <MenuUploadFields> with the Manage importer. The inline-form
+   styles that used to live here are gone with the form. `.btn`/`.btn-primary`/`.btn-lg` above still style
+   the trigger, so it matches every other CTA on the page. */

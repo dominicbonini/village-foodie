@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { Archivo, Public_Sans, Courier_Prime } from 'next/font/google'
 import { HEADER_BG } from '@/lib/brand'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
+import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import {
   FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
   type FeatureValue,
@@ -93,6 +94,9 @@ function PlanPrice({ plan }: { plan: 'starter' | 'pro' | 'max' }) {
 
 export default function LandingPage() {
   return (
+    // DemoModalProvider is a CLIENT component taking server-rendered children — that's what lets every
+    // CTA below open one shared modal without the page itself becoming a client component.
+    <DemoModalProvider>
     <div className={`hg-landing ${archivo.variable} ${publicSans.variable} ${courierPrime.variable}`}>
 
       {/* ============ NAV ============ (slate bg = HEADER_BG from lib/brand.ts) */}
@@ -107,10 +111,10 @@ export default function LandingPage() {
             <a href="#pricing" className="btn btn-quiet nav-hide-sm">Pricing</a>
             <a href="#" className="btn btn-ghost nav-hide-sm">Log in</a>
             <a href="#" className="btn btn-quiet nav-only-sm">Log in</a>
-            <a href="#try" className="btn btn-primary nav-cta">
+            <DemoCta className="btn btn-primary nav-cta">
               <span className="cta-full">Upload my menu →</span>
               <span className="cta-short">Upload menu</span>
-            </a>
+            </DemoCta>
           </div>
         </div>
       </nav>
@@ -120,12 +124,12 @@ export default function LandingPage() {
         <div className="wrap hero-grid">
           <div>
             <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
-            <p className="hero-tag">Spend less time booking.<br />More time <span className="lean">cooking!</span></p>
+            <p className="hero-tag">Spend less time booking.<br />More time <span className="lean">cooking.</span></p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
-              <a href="#try" className="btn btn-primary btn-lg">Upload my menu →</a>
+              <DemoCta className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
               <div className="hero-cta-text">
-                <b>Upload a photo of your menu. See it working in under 30 seconds.</b>
+                <b>Upload a photo of your menu. See it working in under 60 seconds.</b>
                 <span>No signup, no account — just a working demo with your truck’s food in it.</span>
               </div>
             </div>
@@ -267,7 +271,7 @@ export default function LandingPage() {
                 <li>QR code &amp; discovery map listing</li>
                 <li>iPad kitchen app</li>
               </ul>
-              <a href="#try" className="btn btn-ghost">Try Free</a>
+              <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
 
             {/* Pro */}
@@ -286,7 +290,7 @@ export default function LandingPage() {
                 <li>WhatsApp auto-replies (Messenger &amp; Instagram coming soon)</li>
                 <li>Offline order protection</li>
               </ul>
-              <a href="#try" className="btn btn-primary">Try Free</a>
+              <DemoCta className="btn btn-primary">Try Free</DemoCta>
             </div>
 
             {/* Max */}
@@ -302,7 +306,7 @@ export default function LandingPage() {
                 <li>Kitchen ticket printing</li>
                 <li>Event &amp; festival pricing <span className="soon-inline">Coming soon</span></li>
               </ul>
-              <a href="#try" className="btn btn-ghost">Try Free</a>
+              <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
           </div>
 
@@ -393,7 +397,11 @@ export default function LandingPage() {
           </svg>
           <h2>Want to see how easy setup is?</h2>
           <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in about 30 seconds — your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
-          <a href="#" className="btn btn-primary btn-lg">Upload my menu now →</a>
+          {/* This section keeps its heading + copy; its button opens the SAME modal every other CTA on
+              the page opens. `#try` remains a valid anchor target (the return-link bounce uses it), but
+              nothing scrolls here to reach the upload any more. No ✨ on page CTAs — the sparkle is the
+              MODAL's cue (mirroring Manage's "✨ Import menu"), not the landing page's. */}
+          <DemoCta className="btn btn-primary btn-lg">Upload my menu now →</DemoCta>
           <ul className="proof">
             <li><Check /> First month 100% free, everything unlocked</li>
             <li><Check /> No card needed</li>
@@ -412,8 +420,8 @@ export default function LandingPage() {
             </div>
             <div className="foot-links">
               <a href="#pricing">Pricing</a>
-              <a href="#">Privacy</a>
-              <a href="#">Terms</a>
+              <a href="/privacy">Privacy</a>
+              <a href="/terms">Terms</a>
               <a href="#">Contact</a>
               <a href="#">Log in</a>
             </div>
@@ -424,6 +432,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      {/* Mounted ONCE — every DemoCta above drives this one instance. */}
+      <DemoModal />
     </div>
+    </DemoModalProvider>
   )
 }

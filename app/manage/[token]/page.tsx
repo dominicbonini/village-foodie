@@ -26,6 +26,7 @@ import { operatorSignOut } from '@/lib/native/signOut'
 import { nativeAuthHeader } from '@/lib/native/session'   // native app sends its Bearer; {} on web (cookie path unchanged)
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { useDragDrop } from '@/lib/useDragDrop'
+import { MenuUploadFields } from '@/components/menu/MenuUploadFields'
 import { formatTime, getLocalDateInTz } from '@/lib/time-utils'
 import { matchCardEntries, mergeAllergensUnion, cardEntryKey, type CardEntry, type DishRef, type CardMatchResult } from '@/lib/allergen-card-match'
 import { isExcluded } from '@/lib/schedule-extract'
@@ -34,14 +35,14 @@ import UserMenu from '@/components/dashboard/UserMenu'
 import { SpiceLevel } from '@/components/SpiceLevel'
 import AppHeader from '@/components/shared/AppHeader'
 import { configureStatusBar } from '@/lib/native/statusBar'
-import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles, AllergenModeChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
+import { Spinner, Badge, Btn, Input, Card, EmptyState, AllergenToggles, DietaryToggles, AllergenModeChooser, OptionCardChooser, ALLERGEN_VOCAB, DIETARY_VOCAB } from '@/components/manage/primitives'
 import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -72,7 +73,7 @@ function fmtDate(d: string) {
 function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label?: string }) {
   return (
     <button onClick={onToggle} className="flex items-center gap-2 group">
-      <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-teal-500' : 'bg-slate-300'}`}>
+      <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
       </div>
       {label && <span className="text-sm text-slate-600 font-medium group-hover:text-slate-900">{label}</span>}
@@ -598,7 +599,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // ══════════════════════════════════════════════════════════════
 // MENU TAB
 // ══════════════════════════════════════════════════════════════
-type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'allergens' | 'prep' | 'saving' | 'done'
+type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'allergens' | 'prep' | 'saving' | 'schedule' | 'done'
 
 // ── Variant-axis vocabulary for the deterministic regroup pass ───────────────────────────────
 // The single varying token that makes two same-base dishes a VARIANT of one item (vs two different
@@ -1620,6 +1621,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setEditingSubcatId(null)
   }
   const [importStep, setImportStep] = useState<ImportStep>('idle')
+  // DEMO→REAL MIGRATION: set when this import was bootstrapped from a claimed demo's stored extraction
+  // (deep-linked with ?import=demo from the setup wizard). It makes the ONE commit clear-before-retry, so
+  // a retry after a partial commit repairs instead of duplicating. Never set for a normal operator import.
+  const [demoImportMode, setDemoImportMode] = useState(false)
+  const demoImportTried = useRef(false)   // one-shot guard so the bootstrap can't re-fire on re-render
   // §65: the review is a 3-step wizard (1 Menu · 2 Extras · 3 Allergens). All edits live in
   // importResult, so stepping back/forward never loses progress — each step is just a different view.
   const [reviewStep, setReviewStep] = useState(1)
@@ -1650,6 +1656,28 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const [importCardOnlyText, setImportCardOnlyText] = useState('')
   const [importCardOnlyTranscribing, setImportCardOnlyTranscribing] = useState(false)
   const [wizardInitialMode, setWizardInitialMode] = useState<0 | 1 | 2>(0)   // 1 → open the post-commit wizard straight at the per-dish review (import per-item), skipping its chooser
+  // ── SCHEDULE STEP (SETUP MODE ONLY) — reached AFTER the menu is committed (commit-first). Wires the
+  // EXISTING ScheduleTab flows into the wizard: verify-schedule-url (Route A), process-schedule +
+  // upsert_event (Route B). Nothing here is critical — the menu is already durable; every route can be
+  // left. State is local to the wizard; ScheduleTab is untouched.
+  // Route C is DELIBERATELY STATELESS: it is explanatory copy + Continue, nothing more. It used to carry a
+  // one-date manual form (venue/date/town/postcode/start/end + schedSaveManual); that was REMOVED — a wizard
+  // step is the wrong place for a schedule manager and the Schedule tab already does this properly. Do not
+  // reintroduce it here.
+  const [scheduleRoute, setScheduleRoute] = useState<'chooser' | 'website' | 'photo' | 'manual'>('chooser')
+  const [finishingSetup, setFinishingSetup] = useState(false)   // set setup_step='done' in flight
+  // Route A (website)
+  const [schedUrl, setSchedUrl] = useState('')
+  const [schedVerifying, setSchedVerifying] = useState(false)
+  const [schedVerifyError, setSchedVerifyError] = useState<string | null>(null)
+  const [schedVerifiedEvents, setSchedVerifiedEvents] = useState<any[] | null>(null)   // display-only (Verify returns these; the scraper will pick them up)
+  // Route B (photo/text)
+  const [schedFile, setSchedFile] = useState<File | null>(null)
+  const [schedText, setSchedText] = useState('')
+  const [schedPhotoProcessing, setSchedPhotoProcessing] = useState(false)
+  const [schedExtracted, setSchedExtracted] = useState<any[] | null>(null)
+  const [schedSaving, setSchedSaving] = useState(false)
+  // Route C (add my dates myself) — NO STATE. Copy + Continue only; see the note above.
   // §68 (Stage B): per-(virtual-group, category) expand state for the step-2 matrix (mirrors manage's catOpen).
   const [importCatOpen, setImportCatOpen] = useState<Record<string, boolean>>({})
   // Grouping chooser (step 2): per-row grouped|separate selection. Absent key = 'grouped' (default).
@@ -1672,6 +1700,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     categories: string[]
     items: Array<{
       name: string; description?: string; price: number; category: string; price_missing?: boolean; _skip?: boolean;
+      // Explicit "this one's free" decision — resolves the price gate for an item the AI read as £0/absent,
+      // turning a silent £0 into a deliberate one. Internal to the wizard; commit-menu ignores it (a free
+      // item is just price 0). Distinct from price_missing: price_missing = "couldn't read", _free = "read
+      // it, meant it".
+      _free?: boolean;
       // Manually-added (via "+ Add item") rows. An empty-name manual row is INCOMPLETE — excluded from
       // the commit + the count, marked in the UI, and blocks a second blank add. AI items never set this.
       _manual?: boolean;
@@ -1694,10 +1727,6 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     existing_categories: string[]
   } | null>(null)
 
-  const { isDragging: isMenuDragging, dragProps: menuDragProps } = useDragDrop(
-    (file) => setImportFile(file),
-    ['image/*', '.pdf']
-  )
   const { isDragging: isAllergenDragging, dragProps: allergenDragProps } = useDragDrop(
     (file) => handleAllergenUploadAndProcess(file),
     ['image/*', '.pdf']
@@ -1739,6 +1768,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const resetImportState = () => {
     setImportStep('idle')
     setImportResult(null)
+    setDemoImportMode(false)
     setImportFile(null)
     setImportText('')
     setImportDoneSkipped(0)
@@ -1763,6 +1793,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setImportCardOnlyTranscribing(false)
     setShowCardUpload(false)
     setShowDiscardConfirm(false)
+    // Schedule step (setup mode)
+    setScheduleRoute('chooser')
+    setFinishingSetup(false)
+    setSchedUrl(''); setSchedVerifying(false); setSchedVerifyError(null); setSchedVerifiedEvents(null)
+    setSchedFile(null); setSchedText(''); setSchedPhotoProcessing(false); setSchedExtracted(null); setSchedSaving(false)
+    // (Route C has no state to reset — it is explanatory copy + Continue.)
   }
 
   // ── AI-import review: proposal mutation helpers (Stage 2, client-side only) ──────────────────
@@ -2128,20 +2164,100 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   }
   const groupingRows = computeGroupingRows(importResult?.items || [])
 
+  // ── DEMO→REAL MIGRATION BOOTSTRAP ─────────────────────────────────────────────────────────────────
+  // When the setup wizard deep-links here with ?import=demo, pre-load the review step from the demo's
+  // STORED extraction instead of a fresh upload. This is the whole reason the migration is a re-commit and
+  // not a row copy: demo_sessions.extraction is byte-for-byte the shape process-menu returns (both are
+  // extractMenu()), so it flows through the SAME transform the upload uses — and every downstream step
+  // (grouped-vs-separate, the price gate, allergens, kitchen) runs unchanged. Nothing here is reachable
+  // without the query param, so a normal operator open of Manage is completely untouched.
+  //
+  // Placed AFTER the transform helpers (autoSplitConflicts/ungroupAiVariantsForReview) so it references
+  // them post-declaration. MenuTab mounts only after the parent finished loading, so `truck` is present.
+  useEffect(() => {
+    if (demoImportTried.current || !truck) return
+    if (typeof window === 'undefined') return
+    if (new URLSearchParams(window.location.search).get('import') !== 'demo') return
+    demoImportTried.current = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/setup')            // GET → the operator's claimed demo extraction
+        const data = await res.json()
+        if (!data?.ok || !data.extraction) {
+          // Distinguish the two null cases the GET now reports:
+          //  • 'no_extraction' — they came from a demo but its menu is genuinely gone (swept, pre-migration,
+          //    or the persist failed). Say so, rather than a silent blank upload that reads as "we lost it".
+          //  • 'no_claim' / anything else — no demo behind this signup; a normal upload is unremarkable.
+          if (data?.reason === 'no_extraction') {
+            showToast('Your demo menu is no longer available — please upload it again to carry on.', 'error')
+          }
+          return
+        }
+        // SAME pipeline as handleProcessMenu — the extraction is the same shape process-menu returns.
+        setImportResult(withImpUids(ungroupAiVariantsForReview(autoSplitConflicts(data.extraction))))
+        setReviewStep(1)
+        setGroupingChoice({})
+        try {
+          const r = await api('get_vans')
+          const vs = (r.vans || []).map((v: { id: string; kitchen_capacity?: number | null; capacity_window_mins?: number | null }) =>
+            ({ id: v.id, kitchen_capacity: v.kitchen_capacity ?? null, capacity_window_mins: v.capacity_window_mins ?? null }))
+          setImportVans(vs)
+          setImportKitchenCapacity({ kitchen_capacity: vs[0]?.kitchen_capacity ?? null, capacity_window_mins: vs[0]?.capacity_window_mins ?? 5 })
+        } catch { /* non-fatal */ }
+        setImportKitchenDirty(false)
+        setDemoImportMode(true)
+        setImportStep('review')
+      } catch (e) {
+        console.error('[manage] demo import bootstrap failed:', e)
+      }
+    })()
+    // One-shot, guarded by demoImportTried — the setters/api/helpers are stable for this purpose.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [truck, token])
+
+  // ── PRICE GATE (🔴 applies to EVERY import, operator and demo) ────────────────────────────────────
+  // Items whose price the AI couldn't read (menu-extract sets price_missing when the price is absent OR £0)
+  // would otherwise commit at £0 — indistinguishable from a deliberately free item, and live on the menu.
+  // That is a revenue bug for Gusto/RTF exactly as much as for a new signup, so the gate is on the shared
+  // path, not scoped to onboarding.
+  //
+  // An item is UNRESOLVED when it is being committed (named, not skipped) and has neither a positive price
+  // NOR an explicit "this one's free" decision (_free). The gate reads PRICE + _free directly rather than
+  // the price_missing flag, so it can't disagree with what will actually be committed. price_missing still
+  // drives the initial amber highlight; from then on the two agree because the row styling uses this too.
+  //
+  // ⚠️ For a normal import where the AI read every price, EVERY item has price > 0 → zero unresolved →
+  // banner hidden, Next enabled → behaviour byte-identical to before this gate existed.
+  const priceUnresolved = (it: { name?: string; price?: number; _skip?: boolean; _free?: boolean }) =>
+    !it._skip && !!String(it.name || '').trim() && !(Number(it.price) > 0) && it._free !== true
+  const unresolvedPrices = importResult ? importResult.items.filter(priceUnresolved) : []
+
   // ── WIZARD FLOW — the stepper + nav adapt to whether extras exist ────────────────────────────────
   // Extras step only appears when there ARE groupable dishes. Kitchen setup (the 'prep' importStep) is
   // now a visible step too. So: extras → "1 Menu · 2 Extras · 3 Kitchen setup"; none → "1 Menu · 2
   // Kitchen setup", and Menu's Next skips straight to Kitchen setup.
   const hasExtras = groupingRows.length > 0
+  // ── SETUP-MODE SIGNAL ─────────────────────────────────────────────────────────────────────────────
+  // TRUE only while a brand-new operator is still inside the signup→menu journey (arrived via the demo
+  // modal / ?import=demo). Condition matches commit-menu (:35-36) EXACTLY: setup_step present and not 'done'.
+  // setup_step is already on the truck row (getTruck selects '*'); only the Truck type needed the field.
+  // 🔴 Every setup-only UI change below is gated on this — an existing operator (Gusto: setup_step NULL) hits
+  // none of them, so their import is byte-for-byte today's.
+  const inSetup = truck.setup_step != null && truck.setup_step !== 'done'
   // Allergens step is ALWAYS present (allergens are detected from the menu; the step also offers card upload
   // + "skip"). Order: Menu → Extras[if any] → Allergens → Kitchen setup.
   // Order: Menu → Extras → Allergens → Kitchen setup. The allergen review runs on STAGED data (importResult),
   // so it no longer needs committed items — Allergens sits before Kitchen, and the ONE atomic commit is at
   // Kitchen "Save". Nothing persists until then (abandon = nothing written).
-  type WizKey = 'menu' | 'extras' | 'allergens' | 'kitchen'
-  const wizardSteps: { key: WizKey; label: string }[] = hasExtras
+  type WizKey = 'menu' | 'extras' | 'allergens' | 'kitchen' | 'schedule'
+  const baseWizardSteps: { key: WizKey; label: string }[] = hasExtras
     ? [{ key: 'menu', label: 'Menu' }, { key: 'extras', label: 'Extras' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
     : [{ key: 'menu', label: 'Menu' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
+  // Setup mode APPENDS "Schedule" after "Kitchen setup" (item 5). Existing operators (not inSetup) never see it,
+  // so their stepper is byte-for-byte today's.
+  const wizardSteps: { key: WizKey; label: string }[] = inSetup
+    ? [...baseWizardSteps, { key: 'schedule', label: 'Schedule' }]
+    : baseWizardSteps
   // Advance to the Kitchen-setup ('prep') step. Seeds prep state for new categories WITHOUT clobbering
   // values already entered (so stepping back/forward is non-destructive).
   const goToKitchen = () => {
@@ -2179,25 +2295,189 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // After the card-upload page: per-dish → staged review; card → Kitchen (card display set at commit).
   const advanceFromCardPage = () => { if (pendingDisplayMode === 'per_dish') setAllergenSubStep('review'); else goToKitchen() }
   const goToStep = (key: WizKey) => {
+    // 'schedule' is post-commit and reached only from the Kitchen "Save" success path — never jump to it from
+    // the stepper (the menu isn't committed yet at earlier steps). Its pill is display-only.
+    if (key === 'schedule') return
     if (key === 'kitchen') { goToKitchen(); return }
     if (key === 'allergens') { goToAllergens(); return }
     setImportStep('review')
     setReviewStep(key === 'extras' ? 2 : 1)
   }
-  const renderWizardStepper = (currentKey: WizKey) => (
-    <div className="flex items-center gap-1.5 mt-2">
-      {wizardSteps.map((s, i) => (
-        <Fragment key={s.key}>
-          <button type="button" onClick={() => goToStep(s.key)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-colors ${currentKey === s.key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}>
-            <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${currentKey === s.key ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-600'}`}>{i + 1}</span>
-            {s.label}
-          </button>
-          {i < wizardSteps.length - 1 && <span className="text-slate-300 text-xs">›</span>}
-        </Fragment>
-      ))}
-    </div>
-  )
+  const renderWizardStepper = (currentKey: WizKey) => {
+    // In SETUP mode, prepend the completed "Your details" step so the operator sees ONE journey continuing —
+    // not a second wizard restarting at 1. It renders as complete (green ✓) and is NOT clickable (they can't
+    // go back to identity). The real steps then number from 2. When NOT inSetup the prefix is empty and the
+    // output is byte-for-byte today's (same list, same i+1 numbering, same clickable markup).
+    const prefix = inSetup ? [{ key: '__details__', label: 'Your details', done: true }] : []
+    const all = [...prefix, ...wizardSteps.map(s => ({ key: s.key as string, label: s.label, done: false }))]
+    // Extra classes ONLY in setup mode (the prepended pill can overflow the width); the non-setup path keeps
+    // today's exact container/button/chevron classes so nothing changes for existing operators.
+    const sk = inSetup ? ' shrink-0' : ''
+    return (
+      <div className={`flex items-center gap-1.5 mt-2${inSetup ? ' overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden' : ''}`}>
+        {all.map((s, i) => (
+          <Fragment key={s.key}>
+            {s.done ? (
+              <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-green-700 bg-green-50 shrink-0">
+                <span className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] bg-green-600 text-white">✓</span>
+                {s.label}
+              </span>
+            ) : (
+              <button type="button" onClick={() => goToStep(s.key as WizKey)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-colors${sk} ${currentKey === s.key ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}>
+                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${currentKey === s.key ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-600'}`}>{i + 1}</span>
+                {s.label}
+              </button>
+            )}
+            {i < all.length - 1 && <span className={`text-slate-300 text-xs${sk}`}>›</span>}
+          </Fragment>
+        ))}
+      </div>
+    )
+  }
+
+  // ── SCHEDULE STEP handlers (SETUP MODE) — wire the EXISTING flows; ScheduleTab is untouched ────────────
+  // Facebook/Instagram rejection reused VERBATIM from Settings (:6577-6584).
+  const SCHED_BLOCKED_DOMAINS = ['facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'instagr.am']
+  const schedIsBlockedDomain = (url: string): boolean => {
+    try {
+      const hostname = new URL(url).hostname.toLowerCase()
+      return SCHED_BLOCKED_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`))
+    } catch { return false }
+  }
+  const SCHED_BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can't be scraped automatically."
+
+  // Finish setup: setup_step='done' so inSetup goes false and the setup chrome stops haunting Manage. Single
+  // scoped write (update_truck → .eq('id', truck.id)). Best-effort by posture (item 6): if it fails we still
+  // move to the terminal 'done' screen so the operator is never trapped — but the setup chrome would reappear
+  // on next load until a later successful write, so we surface the error.
+  const finishSetup = async () => {
+    setFinishingSetup(true)
+    try {
+      await api('update_truck', { data: { setup_step: 'done' } })
+    } catch (e: any) {
+      showToast(e?.message || "Couldn't mark setup complete — you can still continue.", 'error')
+    } finally {
+      setFinishingSetup(false)
+      setImportStep('done')   // in setup mode 'done' does NOT auto-dismiss (item 2) — explicit exit only
+    }
+  }
+  // FINISH-WITHOUT-EVENTS. Reached from Route A's post-verify "Continue →", Route C's "Continue →", and the
+  // zero-events branch of schedSaveExtracted — every one of them a deliberate COMPLETION. NOT the header ×
+  // any more: that is a dismissal and routes to the shared "Finish setting up later?" confirm like every
+  // other step's ×, writing nothing. Do not re-point a dismiss control here. The separate footer "I'll do this later"
+  // link was REMOVED: Route C is now the deliberate "later" path and produced an identical outcome, so two
+  // differently-worded controls did the same thing. Keep this ONE function as every route's terminal move.
+  const skipSchedule = () => { void finishSetup() }
+
+  // 🔴 MUTUAL EXCLUSIVITY — one route's in-progress state at a time. Wipes EVERY route's transient state (the
+  // half-typed URL and the staged extracted events) so a switch can never leave a second route half-armed.
+  // (Route C has no state to clear — it is copy + Continue.) NOTE: schedVerifiedEvents is included, but the
+  // toggle below is LOCKED once it is set, so a switch never actually clears a completed verify — see
+  // toggleScheduleRoute.
+  const clearScheduleRoutes = () => {
+    setSchedUrl(''); setSchedVerifying(false); setSchedVerifyError(null); setSchedVerifiedEvents(null)
+    setSchedFile(null); setSchedText(''); setSchedPhotoProcessing(false); setSchedExtracted(null); setSchedSaving(false)
+  }
+  // Accordion toggle: open a different row, or collapse the open one — ANY switch clears the others' state so
+  // exactly one route can ever be armed. 🔴 Once a URL has verified+enrolled (schedVerifiedEvents set) the
+  // accordion is LOCKED: no switching, so a verified URL and photo-imported dates can never both be
+  // submitted — the only forward move is the website row's own "Continue →". A verify is an actual write
+  // (schedule_url + scraper_preference), so it cannot be silently discarded by switching away.
+  const toggleScheduleRoute = (key: 'website' | 'photo' | 'manual') => {
+    if (schedVerifiedEvents) return
+    const next = scheduleRoute === key ? 'chooser' : key
+    clearScheduleRoutes()
+    setScheduleRoute(next)
+  }
+
+  // ROUTE A — verify the schedule URL, and ONLY on found:true enrol (schedule_url + scraper_preference:'auto'
+  // together). Same endpoint + same reason→message mapping as Settings' handleVerifyUrl. No blur-save: a page
+  // the scraper can't read must never be enrolled silently.
+  const schedVerify = async () => {
+    const url = schedUrl.trim()
+    if (!url) return
+    if (schedIsBlockedDomain(url)) { setSchedVerifyError(SCHED_BLOCKED_DOMAIN_MSG); return }
+    setSchedVerifying(true); setSchedVerifyError(null); setSchedVerifiedEvents(null)
+    try {
+      const res = await fetch('/api/manage/verify-schedule-url', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, url }),
+      })
+      const data = await res.json().catch(() => ({} as any))
+      if (data.found) {
+        // 🔴 Enrol ONLY now — verification is the evidence the scraper can read this page.
+        try {
+          await api('update_truck', { data: { schedule_url: url, scraper_preference: 'auto' } })
+          setSchedVerifiedEvents(data.events || [])   // display only — NOT persisted; the scraper picks them up
+        } catch (e: any) {
+          setSchedVerifyError(e?.message || "We read your schedule, but couldn't save it just now — try again.")
+        }
+        return
+      }
+      const reason: string = data.reason || (res.status >= 500 ? 'launch_failed' : 'unreachable')
+      const VERIFY_MESSAGES: Record<string, string> = {
+        launch_failed: "Verification is temporarily unavailable. Please try again in a moment.",
+        blocked: "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
+        unreachable: "Couldn't reach this website. Check the URL and try again.",
+        no_content: "We couldn't load this page. Check the URL is correct and publicly accessible.",
+        no_events: "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
+      }
+      setSchedVerifyError(VERIFY_MESSAGES[reason] || VERIFY_MESSAGES.unreachable)
+    } catch {
+      setSchedVerifyError("Couldn't reach this website. Check the URL and try again.")
+    } finally {
+      setSchedVerifying(false)
+    }
+  }
+
+  // ROUTE B — photo/text → process-schedule (parse only). Review, then save via the SAME upsert_event calls
+  // saveExtractedEvents uses (no second save path). Does NOT set schedule_url / enrol (no URL to scrape).
+  const schedProcessPhoto = async () => {
+    if (!schedFile && !schedText.trim()) return
+    setSchedPhotoProcessing(true)
+    try {
+      const fd = new FormData()
+      if (schedFile) fd.append('file', schedFile)
+      if (schedText) fd.append('text', schedText)
+      fd.append('token', token)
+      const res = await fetch('/api/manage/process-schedule', { method: 'POST', body: fd })
+      const data = await res.json().catch(() => ({} as any))
+      setSchedExtracted(data.events || [])
+    } catch {
+      showToast("Couldn't read that schedule — try a clearer photo or type your dates in.", 'error')
+      setSchedExtracted([])
+    } finally {
+      setSchedPhotoProcessing(false)
+    }
+  }
+  const schedSaveExtracted = async () => {
+    const toSave = (schedExtracted || []).filter(e => e && (e.event_date || e.venue_name))
+    if (toSave.length === 0) { skipSchedule(); return }
+    setSchedSaving(true)
+    try {
+      for (const ev of toSave) {
+        const parts = (ev.event_date || '').split('/')
+        const isoDate = parts.length === 3 ? `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` : ev.event_date
+        const { lat, lng } = (ev.town || ev.postcode)
+          ? await geocodeLocation(ev.venue_name || '', ev.town || '', ev.postcode || '')
+          : { lat: null, lng: null }
+        await api('upsert_event', {
+          venue_name: ev.venue_name || '', town: ev.town || '', postcode: ev.postcode || '', address: ev.address || '',
+          event_date: isoDate, start_time: ev.start_time || '', end_time: ev.end_time || '', notes: ev.notes || '',
+          latitude: lat, longitude: lng, truck_id: truck.id,
+        })
+      }
+      await finishSetup()
+    } catch (e: any) {
+      showToast(e?.message || 'Failed to save events', 'error')
+      setSchedSaving(false)   // stay so they can retry or skip
+    }
+  }
+
+  // ROUTE C — no handler. Selecting it shows explanatory copy; its "Continue →" is skipSchedule, so the
+  // outcome is exactly the no-events finish (setup_step='done', nothing written). The old one-date
+  // upsert_event form lived here and was removed on purpose — see the state note at the top of this step.
 
   // ── Import ALLERGENS step handlers ────────────────────────────────────────────────────────────────
   // (cardEntryKey now lives in lib/allergen-card-match — shared by both wizards + CardUploadPage.)
@@ -2327,7 +2607,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       const res = await fetch('/api/manage/commit-menu', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, categories: importResult.categories, items: itemsToCommit, categoryPrep }),
+        // clearFirst only in the demo→real migration — makes a retry after a partial commit repair rather
+        // than duplicate. A normal operator import omits it (server default false → append, unchanged).
+        body: JSON.stringify({ token, categories: importResult.categories, items: itemsToCommit, categoryPrep, clearFirst: demoImportMode }),
       })
       const data = await res.json()
       if (data.ok) {
@@ -2361,11 +2643,36 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         if (chosenDisplayMode) { try { await api('update_settings', { allergen_display_mode: chosenDisplayMode }) } catch { /* non-fatal */ } }
         // The per-dish review already happened IN-FLOW on staged data → confirmed dishes commit verified=true
         // via _allergensChecked (atomic, here). No post-commit wizard auto-open.
-        setImportStep('done')
-        setTimeout(() => {
-          resetImportState()
-          reload()
-        }, 2500)
+        // COMMIT-FIRST: the menu is now durable. In SETUP mode a NEW, skippable step (Schedule) follows before
+        // 'done'; abandoning it loses nothing. Existing operators (not inSetup) keep today's behaviour EXACTLY:
+        // straight to 'done' + the 2.5s reset+reload auto-dismiss.
+        if (inSetup) {
+          setImportStep('schedule')
+        } else {
+          setImportStep('done')
+          setTimeout(() => {
+            resetImportState()
+            reload()
+          }, 2500)
+        }
+      } else {
+        // 🔴 THE MISSING ELSE (V8.5/V8.6 carried backlog). A 400 or {ok:false} does NOT throw, so without
+        // this branch importStep stayed 'saving' forever — an indefinite spinner, no error, and the
+        // operator never learns to retry (so clearFirst's retry path never runs). Land back on the Kitchen
+        // step ('prep') — the same place the catch recovers to, and where the "Save" button lives — so they
+        // can act. §10 Phase 1.7: an `else`, NOT a `finally` (a finally would clobber the success 'done').
+        //
+        // ⚠️ commit-menu is NON-TRANSACTIONAL and can return ok:false AFTER a partial write, so the copy
+        // must not claim nothing saved. "couldn't be completed" + "some items may have saved" is honest;
+        // clearFirst (demo migration) makes a clean retry safe, a plain operator retry may duplicate.
+        console.error('Menu commit returned not-ok:', data)
+        setImportStep('prep')
+        showToast(
+          data?.error
+            ? `Couldn’t finish saving the menu: ${data.error}. Some items may already have saved — check your menu before retrying.`
+            : 'Couldn’t finish saving the menu. Some items may already have saved — check your menu before retrying.',
+          'error',
+        )
       }
     } catch (err) {
       console.error('Menu commit failed:', err)
@@ -3625,7 +3932,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       </div>
                       <button type="button" aria-pressed={pe}
                         onClick={() => saveItemPatch({ preorder_enabled: !pe })}
-                        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${pe ? 'bg-teal-500' : 'bg-slate-300'}`}>
+                        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ${pe ? 'bg-green-500' : 'bg-slate-300'}`}>
                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${pe ? 'translate-x-6' : 'translate-x-1'}`} />
                       </button>
                     </div>
@@ -3661,39 +3968,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             <h3 className="font-black text-slate-900 mb-1">Import your menu</h3>
             <p className="text-slate-400 text-sm mb-5">Upload a photo of your menu board, a screenshot, a PDF, or paste your menu as text. Our AI reads it and builds your digital menu — you review everything before it saves.</p>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Upload menu file</label>
-                <label
-                  {...menuDragProps}
-                  className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl p-8 cursor-pointer transition-colors ${isMenuDragging ? 'border-orange-400 bg-orange-50' : 'border-slate-200 hover:border-orange-300 hover:bg-orange-50/30'}`}
-                >
-                  <span className="text-3xl">{isMenuDragging ? '📂' : importFile ? '✅' : '📷'}</span>
-                  <span className="text-sm text-slate-500 text-center">
-                    {isMenuDragging ? 'Drop your menu here' : importFile ? importFile.name : 'Drag and drop or tap to choose'}
-                  </span>
-                  {!isMenuDragging && !importFile && (
-                    <span className="text-xs text-slate-400">Image or PDF</span>
-                  )}
-                  <input type="file" accept="image/*,.pdf" className="sr-only" onChange={e => setImportFile(e.target.files?.[0] || null)} />
-                </label>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-slate-200" />
-                <span className="text-xs text-slate-400 font-medium">or</span>
-                <div className="flex-1 h-px bg-slate-200" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">Paste menu text</label>
-                <textarea
-                  value={importText}
-                  onChange={e => setImportText(e.target.value)}
-                  placeholder="Paste your menu here — item names, descriptions, prices..."
-                  rows={5}
-                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400"
-                />
-              </div>
-            </div>
+            {/* SHARED with the public demo modal — components/menu/MenuUploadFields.tsx. Extracted so
+                there is ONE dropzone; two would drift. */}
+            <MenuUploadFields
+              file={importFile} onFile={setImportFile}
+              text={importText} onText={setImportText}
+            />
             <div className="flex gap-2 mt-5">
               <Btn label="Cancel" colour="slate" onClick={() => { setImportStep('idle'); setImportFile(null); setImportText('') }} />
               <Btn
@@ -3748,8 +4028,22 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <div className="flex flex-col py-6">
                   <div className="mb-6">
                     <p className="text-slate-600 text-sm">{importResult.items.filter(i => !i._skip && String(i.name || '').trim()).length} items ready to add. Uncheck any you don&apos;t want.</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Names, prices, extras, allergens and dietary info can all be edited anytime in Settings.</p>
+                    <p className="text-xs text-slate-500 mt-0.5">Names, prices, extras, allergens and dietary info can all be edited anytime {inSetup ? 'later' : 'in Settings'}.</p>
                   </div>
+                  {/* PRICE BANNER — lives INSIDE the scroll content (not sticky) but sits at the top of it,
+                      and the count keeps it accurate as rows are resolved. Framed as "we couldn't read
+                      these", not "you did something wrong": the AI missed a price, and the fix is one tap. */}
+                  {unresolvedPrices.length > 0 && (
+                    <div className="mb-6 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-3">
+                      <p className="text-sm font-bold text-amber-900">
+                        {unresolvedPrices.length} item{unresolvedPrices.length === 1 ? '' : 's'} had no price we could read
+                      </p>
+                      <p className="text-xs text-amber-800 mt-0.5">
+                        Set a price for each, or mark it free — otherwise it would go live at £0. You can&apos;t
+                        continue until these are sorted.
+                      </p>
+                    </div>
+                  )}
                   {importResult.categories.map(cat => {
                     const catItems = importResult.items.filter(i => i.category === cat)
                     if (catItems.length === 0) return null
@@ -3785,11 +4079,31 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                       indicator (AI variant groups are un-grouped into separate lines here;
                                       grouping is purely a page-2 decision). */}
                                 </div>
-                                <div className="flex items-center gap-1 flex-shrink-0">
-                                  <span className="text-sm text-slate-400">£</span>
-                                  <input type="number" step="0.50" value={item.price || ''} placeholder="0.00"
-                                    onChange={e => patchImportItem(globalIdx, it => ({ ...it, price: parseFloat(e.target.value) || 0, price_missing: !e.target.value }))}
-                                    className={`w-16 text-sm text-right rounded-lg px-2 py-1 border focus:outline-none focus:ring-1 focus:ring-orange-400 ${item.price_missing ? 'border-amber-400 bg-amber-50' : 'border-slate-200'}`} />
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  {/* "This one's free" — turns £0 from an accident into a DECISION. Shown only
+                                      while the item is unresolved, so a normal priced item never sees it.
+                                      Ticking it resolves the row; typing a positive price below clears it. */}
+                                  {priceUnresolved(item) && (
+                                    <button type="button" onClick={() => patchImportItem(globalIdx, it => ({ ...it, _free: true, price: 0, price_missing: false }))}
+                                      className="text-[11px] font-semibold text-slate-400 hover:text-orange-600 underline whitespace-nowrap">
+                                      free?
+                                    </button>
+                                  )}
+                                  {item._free === true ? (
+                                    <button type="button" onClick={() => patchImportItem(globalIdx, it => ({ ...it, _free: false, price_missing: true }))}
+                                      className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 rounded-lg px-2 py-1 whitespace-nowrap">
+                                      Free ✕
+                                    </button>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-sm text-slate-400">£</span>
+                                      {/* value stays EMPTY for an unresolved item — never "0.00", which invites
+                                          skimming past it as if it were correct. */}
+                                      <input type="number" step="0.50" value={Number(item.price) > 0 ? item.price : ''} placeholder="0.00"
+                                        onChange={e => { const v = parseFloat(e.target.value); patchImportItem(globalIdx, it => ({ ...it, price: v > 0 ? v : 0, price_missing: !(v > 0), _free: v > 0 ? false : it._free })) }}
+                                        className={`w-16 text-sm text-right rounded-lg px-2 py-1 border focus:outline-none focus:ring-1 focus:ring-orange-400 ${priceUnresolved(item) ? 'border-amber-400 bg-amber-50' : 'border-slate-200'}`} />
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             )
@@ -3820,8 +4134,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                    The per-dish offer/option MATRIX returns later on the shared component — NOT this build. */
                 /* py-6: vertical breathing room (the scroller is px-6 only) — matches step 1. */
                 <div className="flex flex-col gap-5 py-6">
-                  <p className="text-sm text-slate-600">Some dishes can be set up as <span className="font-semibold">one customisable item</span> or kept as <span className="font-semibold">separate dishes</span>. Choose how each should appear. You can change this later in Settings.</p>
-                  <p className="text-xs text-slate-500">You can fine-tune extras, allergens, and dietary info anytime in Settings.</p>
+                  <p className="text-sm text-slate-600">Some dishes can be set up as <span className="font-semibold">one customisable item</span> or kept as <span className="font-semibold">separate dishes</span>. Choose how each should appear. You can change this{inSetup ? ' later' : ' later in Settings'}.</p>
                   {groupingRows.length === 0 ? (
                     <p className="text-sm text-slate-500">No groupable dishes — every item is a standalone dish.</p>
                   ) : (
@@ -3872,7 +4185,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                  action. Menu → Extras (if any) else straight to Kitchen setup; Extras → Kitchen setup.
                  The final commit lives on the Kitchen-setup step. */}
               {reviewStep === 1 ? (
-                <Btn label="Next →" onClick={() => hasExtras ? setReviewStep(2) : goToAllergens()} />
+                // Gated: the price banner above explains why. Disabled until every unread price is a price
+                // or an explicit "free". Only step 1 is gated — unresolved prices can only exist here.
+                <Btn label="Next →" disabled={unresolvedPrices.length > 0}
+                  onClick={() => { if (unresolvedPrices.length > 0) return; if (hasExtras) setReviewStep(2); else goToAllergens() }} />
               ) : (
                 <Btn label="Next →" onClick={goToAllergens} />
               )}
@@ -4098,46 +4414,251 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 <div className="flex-1" />
                 {/* Kitchen is the FINAL step → the ONE atomic commit (items + categories + prep + reviewed
                     allergens). Nothing was written before this. */}
-                <Btn label="Save & add to menu" onClick={() => handleCommitMenu()} loading={importStep === 'saving'} />
+                {/* Setup mode: Schedule follows, so this reads "Next →" like the other steps (it STILL commits
+                    the menu — commit-first — then advances to Schedule). Not inSetup: it's the terminal commit,
+                    so the label stays "Save & add to menu" exactly as today. */}
+                <Btn label={inSetup ? 'Next →' : 'Save & add to menu'} onClick={() => handleCommitMenu()} loading={importStep === 'saving'} />
               </div>
             </div>
           </div>
         )
       })()}
 
-      {/* AI Import — Done */}
-      {importStep === 'done' && (
+      {/* AI Import — SCHEDULE (SETUP MODE ONLY). Post-commit: the menu is durable, this is skippable. Same
+          shell/header/stepper as the other steps.
+          🔴 The × is a DISMISSAL, not a completion: it routes to the SAME "Finish setting up later?" confirm
+          as every other step's × (setShowDiscardConfirm → resetImportState on accept), so it writes NOTHING —
+          setup_step is left intact, inSetup stays true, and the setup chrome survives. It used to call
+          skipSchedule directly, silently writing setup_step='done' with no confirm and no route back: the same
+          control behaving differently on the last step of the same wizard.
+          DISTINCT BY DESIGN: Route C's "Continue →" DOES write setup_step='done' — choosing "I'll add my dates
+          myself" is a deliberate completion, not a dismissal. Dismiss ≠ finish; keep the two apart.
+          `disabled={finishingSetup}` is retained (the other steps don't need it): it stops the confirm being
+          opened while a Continue's finishSetup is in flight, where resetImportState and that call's
+          `finally { setImportStep('done') }` would race and re-show the done screen after dismissal. */}
+      {importStep === 'schedule' && inSetup && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
-            <p className="text-5xl mb-4">✅</p>
-            <p className="font-black text-slate-900 mb-1">Menu imported!</p>
-            <p className="text-slate-400 text-sm">Your items have been added to the menu.</p>
-            {importDoneSkipped > 0 && (
-              <p className="text-sm text-slate-400 mt-1">
-                {importDoneSkipped} duplicate{importDoneSkipped !== 1 ? 's' : ''} skipped
-              </p>
-            )}
-            {/* Non-blocking pointer: allergens/dietary import unverified — review in Settings before going live. */}
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
-              <p className="text-xs font-bold text-amber-800">⚠ Allergens &amp; dietary aren&apos;t set yet</p>
-              <p className="text-xs text-amber-700 mt-0.5">Review them in Settings before going live. Items are flagged &ldquo;allergens not set&rdquo; until you do.</p>
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
+            <div className="p-5 border-b border-slate-100 shrink-0">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-black text-slate-900">Add my schedule</h3>
+                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import" disabled={finishingSetup}
+                  className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0 disabled:opacity-40">×</button>
+              </div>
+              <p className="text-slate-500 text-sm mt-0.5">If your schedule lives on your website we can keep it up to date automatically — or add your dates yourself.</p>
+              {renderWizardStepper('schedule')}
+            </div>
+
+            {/* PLAIN RADIO CHOOSER + INLINE ACCORDION — the three options stay visible; selecting one EXPANDS
+                its content in place (no full-view swap, no Back). Rendered by the SHARED OptionCardChooser so
+                these cards and the allergen step's chooser can't drift. NO EMOJI here (showEmoji defaults off).
+                Each route's own forward action lives inside its section — there is no separate skip control:
+                Route C IS the "later" path, so a second differently-worded control would duplicate it. */}
+            <div className="overflow-y-auto flex-1 p-5 min-h-0">
+              <OptionCardChooser<'website' | 'photo' | 'manual'>
+                chevron
+                value={scheduleRoute === 'chooser' ? null : scheduleRoute}
+                onChange={toggleScheduleRoute}
+                options={[
+                  {
+                    key: 'website',
+                    title: 'My schedule is on my website',
+                    desc: "We'll check it regularly and send new dates for your approval.",
+                    // Once a URL is verified+enrolled the OTHER rows LOCK (can't stack a second route on top).
+                    // The open website row itself stays put; toggleScheduleRoute no-ops while verified.
+                    disabled: !!schedVerifiedEvents && scheduleRoute !== 'website',
+                    // ROUTE A — URL + Verify inline (same row + button-to-the-right layout as the Manage page).
+                    body: (
+                      <div className="flex flex-col gap-3">
+                          <div className="flex gap-2">
+                            <input
+                              type="url" value={schedUrl}
+                              onChange={e => { setSchedUrl(e.target.value); setSchedVerifyError(null) }}
+                              placeholder="https://yourtruck.co.uk/events"
+                              disabled={schedVerifying || !!schedVerifiedEvents}
+                              className={`flex-1 min-w-0 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${(schedVerifying || schedVerifiedEvents) ? 'opacity-60' : ''}`} />
+                            <button type="button" onClick={schedVerify} disabled={!schedUrl.trim() || schedVerifying || !!schedVerifiedEvents}
+                              className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                              {schedVerifying
+                                ? <><div className="w-3.5 h-3.5 border-2 border-slate-300 border-t-orange-500 rounded-full animate-spin" />Checking…</>
+                                : 'Verify'}
+                            </button>
+                          </div>
+                          {schedVerifying && (
+                            <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                              <div className="w-4 h-4 border-2 border-amber-300 border-t-amber-600 rounded-full animate-spin shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-sm font-semibold text-amber-800">Checking your website…</p>
+                                <p className="text-xs text-amber-700 mt-0.5">This can take up to 2 minutes — please keep this open.</p>
+                              </div>
+                            </div>
+                          )}
+                          {!schedVerifying && schedVerifyError && <p className="text-xs text-red-500">{schedVerifyError}</p>}
+                          {schedVerifiedEvents && (
+                            <div className="rounded-xl border border-green-200 bg-green-50 p-3">
+                              <p className="text-sm font-bold text-green-800">✓ We can read your schedule</p>
+                              <p className="text-xs text-green-700 mt-0.5">
+                                Found {schedVerifiedEvents.length} upcoming date{schedVerifiedEvents.length !== 1 ? 's' : ''}. We&apos;ll check your page regularly and send new dates for your approval — nothing goes live until you confirm it.
+                              </p>
+                              {schedVerifiedEvents.length > 0 && (
+                                <ul className="mt-2 flex flex-col gap-1">
+                                  {schedVerifiedEvents.slice(0, 5).map((ev: any, i: number) => (
+                                    <li key={i} className="text-xs text-green-800">• {ev.event_date || 'Date TBC'}{ev.venue_name ? ` — ${ev.venue_name}` : ''}</li>
+                                  ))}
+                                  {schedVerifiedEvents.length > 5 && <li className="text-xs text-green-700">…and {schedVerifiedEvents.length - 5} more</li>}
+                                </ul>
+                              )}
+                              <div className="mt-3"><Btn label="Continue →" onClick={skipSchedule} loading={finishingSetup} /></div>
+                            </div>
+                          )}
+                          {!schedVerifiedEvents && <p className="text-xs text-slate-500">Your own website — not a Facebook or Instagram page.</p>}
+                      </div>
+                    ),
+                  },
+                  {
+                    key: 'photo',
+                    title: 'Upload a photo of my schedule',
+                    desc: "Snap or paste your dates — we'll read them in for you to check.",
+                    disabled: !!schedVerifiedEvents && scheduleRoute !== 'photo',
+                    // ROUTE B — photo/text → read → review → save (same upsert_event path).
+                    body: (
+                      <div className="flex flex-col gap-3">
+                          {!schedExtracted ? (
+                            <>
+                              <label className="flex flex-col items-center justify-center gap-1 border-2 border-dashed border-slate-200 hover:border-orange-300 hover:bg-orange-50/30 rounded-xl h-28 px-4 cursor-pointer transition-colors">
+                                <span className="text-2xl">{schedFile ? '✅' : '📷'}</span>
+                                <span className="text-sm text-slate-500 text-center">{schedFile ? schedFile.name : 'Drag and drop or tap to choose'}</span>
+                                <span className="text-xs text-slate-400">Image or PDF</span>
+                                <input type="file" accept="image/*,application/pdf" className="sr-only" onChange={e => setSchedFile(e.target.files?.[0] || null)} />
+                              </label>
+                              <div className="flex items-center gap-3"><div className="flex-1 h-px bg-slate-200" /><span className="text-xs text-slate-400 font-medium">or</span><div className="flex-1 h-px bg-slate-200" /></div>
+                              <textarea value={schedText} onChange={e => setSchedText(e.target.value)} placeholder="Paste your dates here…" className="w-full h-24 border border-slate-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                              <div><Btn label="Read schedule" onClick={schedProcessPhoto} loading={schedPhotoProcessing} disabled={!schedFile && !schedText.trim()} /></div>
+                            </>
+                          ) : schedExtracted.length === 0 ? (
+                            <>
+                              <p className="text-sm text-slate-500">We couldn&apos;t find any dates in that — try a clearer photo, or add a date yourself.</p>
+                              <div><Btn label="Try again" colour="slate" onClick={() => setSchedExtracted(null)} /></div>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-sm text-slate-600">{schedExtracted.length} date{schedExtracted.length !== 1 ? 's' : ''} found — these will be added to your schedule.</p>
+                              <ul className="flex flex-col gap-1.5">
+                                {schedExtracted.map((ev: any, i: number) => (
+                                  <li key={i} className="text-sm text-slate-700 border border-slate-200 rounded-lg px-3 py-2">
+                                    <span className="font-semibold">{ev.event_date || 'Date TBC'}</span>{ev.venue_name ? ` · ${ev.venue_name}` : ''}{ev.start_time ? ` · ${ev.start_time}${ev.end_time ? `–${ev.end_time}` : ''}` : ''}
+                                  </li>
+                                ))}
+                              </ul>
+                              <div><Btn label={`Save ${schedExtracted.length} date${schedExtracted.length !== 1 ? 's' : ''}`} onClick={schedSaveExtracted} loading={schedSaving} /></div>
+                            </>
+                          )}
+                      </div>
+                    ),
+                  },
+                  {
+                    key: 'manual',
+                    title: "I'll add my dates myself",
+                    desc: 'Add them later in the Schedule tab — nothing to do now.',
+                    disabled: !!schedVerifiedEvents && scheduleRoute !== 'manual',
+                    // ROUTE C — EXPLANATORY COPY ONLY. No form, no write, no handler: "Continue →" is
+                    // skipSchedule, so this finishes setup exactly as the old skip link did (setup_step='done',
+                    // no events). This is the deliberate "later" path — do not grow a schedule manager here.
+                    body: (
+                      <div className="flex flex-col gap-3">
+                        <p className="text-sm text-slate-600">No problem. You can add and manage your dates any time from the Schedule tab in your account.</p>
+                        <div><Btn label="Continue →" onClick={skipSchedule} loading={finishingSetup} /></div>
+                      </div>
+                    ),
+                  },
+                ]}
+              />
             </div>
           </div>
         </div>
       )}
 
+      {/* AI Import — Done */}
+      {importStep === 'done' && (() => {
+        // 🔴 The allergen notice is GATED ON ACTUAL STATE — it must NOT tell a compliant operator "allergens
+        // aren't set". Keyed on the COMMITTED display mode (pendingDisplayMode → written to
+        // trucks.allergen_display_mode at commit, :2413/:2464) AND per-dish confirmation:
+        //   • mode === 'card'     → allergen setup is COMPLETE (a card is provided + shown to customers). The
+        //                           card path never sets per-dish _allergensChecked, so it must NOT be judged by
+        //                           it. → allergensComplete = true → NO notice.
+        //   • mode === 'per_dish' → complete ONLY if every committed dish (named, not skipped) carries
+        //                           `_allergensChecked === true` (the same flag the commit maps to
+        //                           allergens_verified). An unconfirmed per-dish import STILL warns.
+        //   • anything else       → genuinely unknown/indeterminate (e.g. the allergen step was skipped, mode
+        //                           null). FAIL LOUD → allergensComplete = false → SHOW the notice.
+        // Not gated on inSetup — a correctness fix for every import (Gusto included).
+        const mode = pendingDisplayMode   // the committed allergen_display_mode ('per_dish' | 'card' | null)
+        const committed = Array.isArray(importResult?.items)
+          ? importResult.items.filter((it: any) => !it._skip && String(it.name || '').trim())
+          : null
+        const perDishAllConfirmed = Array.isArray(committed) && committed.length > 0 && committed.every((it: any) => it._allergensChecked === true)
+        const allergensComplete = mode === 'card' ? true : mode === 'per_dish' ? perDishAllConfirmed : false
+        return (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
+              <p className="text-5xl mb-4">✅</p>
+              <p className="font-black text-slate-900 mb-1">Menu imported!</p>
+              <p className="text-slate-400 text-sm">Your items have been added to the menu.</p>
+              {importDoneSkipped > 0 && (
+                <p className="text-sm text-slate-400 mt-1">
+                  {importDoneSkipped} duplicate{importDoneSkipped !== 1 ? 's' : ''} skipped
+                </p>
+              )}
+              {/* Shown ONLY when the allergen setup isn't complete: card mode = complete; per_dish = complete
+                  only if every dish confirmed; unknown/skipped = fail-loud (show). */}
+              {!allergensComplete && (
+                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
+                  <p className="text-xs font-bold text-amber-800">⚠ Allergens &amp; dietary aren&apos;t set yet</p>
+                  <p className="text-xs text-amber-700 mt-0.5">Review them {inSetup ? 'before going live' : 'in Settings before going live'}. Items are flagged &ldquo;allergens not set&rdquo; until you do.</p>
+                </div>
+              )}
+              {/* SETUP MODE: 'done' is reached after the schedule step and must NOT auto-dismiss (item 2) —
+                  the 2.5s reset+reload only runs on the NON-setup commit path. Explicit exit only. */}
+              {inSetup && (
+                <button type="button" onClick={() => { resetImportState(); reload() }}
+                  className="mt-5 w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
+                  Go to my dashboard →
+                </button>
+              )}
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Discard confirmation — the X on any wizard step routes here (not an immediate close). Discard
           resets ALL import state (fresh on reopen); nothing was written to the van (capacity is deferred
-          to commit), so a discard is a clean in-memory throwaway. z-[60] sits above the wizard modals. */}
+          to commit), so a discard is a clean in-memory throwaway. z-[60] sits above the wizard modals.
+          In SETUP mode the SAME action (resetImportState — no DB write) leaves the account + truck +
+          setup_step intact, so the copy is a "finish later" reassurance + how to come back, NOT a scary
+          "your changes won't be saved" (which badly understates: a new operator would be stranded with a
+          truck and no menu). Existing operators (not inSetup) see today's discard copy unchanged. */}
       {showDiscardConfirm && (
         <div className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
-            <p className="font-black text-slate-900 mb-1">Discard this import?</p>
-            <p className="text-sm text-slate-500 mb-4">Your changes won&apos;t be saved — the imported items, prep times and kitchen capacity won&apos;t be added.</p>
-            <div className="flex gap-2 justify-center">
-              <Btn label="Keep editing" colour="slate" onClick={() => setShowDiscardConfirm(false)} />
-              <Btn label="Discard" colour="red" onClick={resetImportState} />
-            </div>
+            {inSetup ? (
+              <>
+                <p className="font-black text-slate-900 mb-1">Finish setting up later?</p>
+                <p className="text-sm text-slate-500 mb-4">Your account and truck are saved — nothing is lost. You can add your menu any time: sign in and tap <span className="font-semibold">Import menu</span> on your menu screen to pick up right here.</p>
+                <div className="flex gap-2 justify-center">
+                  <Btn label="Keep going" colour="slate" onClick={() => setShowDiscardConfirm(false)} />
+                  <Btn label="Finish later" colour="orange" onClick={resetImportState} />
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="font-black text-slate-900 mb-1">Discard this import?</p>
+                <p className="text-sm text-slate-500 mb-4">Your changes won&apos;t be saved — the imported items, prep times and kitchen capacity won&apos;t be added.</p>
+                <div className="flex gap-2 justify-center">
+                  <Btn label="Keep editing" colour="slate" onClick={() => setShowDiscardConfirm(false)} />
+                  <Btn label="Discard" colour="red" onClick={resetImportState} />
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -5281,7 +5802,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
                         </div>
                         <button
                           onClick={() => handleEventDealToggle(event.id, bundle.id, !isActive)}
-                          className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ml-3 ${isActive ? 'bg-teal-500' : 'bg-slate-300'}`}
+                          className={`relative w-10 h-6 rounded-full transition-colors flex-shrink-0 ml-3 ${isActive ? 'bg-green-500' : 'bg-slate-300'}`}
                         >
                           <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-1'}`} />
                         </button>
@@ -7505,7 +8026,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 <button
                   onClick={() => handleToggleAutoPause(van.id, !van.auto_pause_on_offline)}
                   className={`relative w-11 h-6 rounded-full transition-colors duration-200 flex-shrink-0 mt-0.5 ${
-                    van.auto_pause_on_offline ? 'bg-teal-500' : 'bg-slate-300'
+                    van.auto_pause_on_offline ? 'bg-green-500' : 'bg-slate-300'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
@@ -7558,7 +8079,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 <button
                   onClick={() => updateVanSetting(van.id, 'order_ready_enabled', !van.order_ready_enabled)}
                   className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
-                    van.order_ready_enabled ? 'bg-teal-500' : 'bg-slate-300'
+                    van.order_ready_enabled ? 'bg-green-500' : 'bg-slate-300'
                   }`}
                 >
                   <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${

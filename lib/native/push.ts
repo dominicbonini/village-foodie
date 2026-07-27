@@ -14,6 +14,17 @@ import { saveDeviceConfig } from './device'
  */
 export async function registerForPush(token: string, onOpenOrder?: (orderKey: string) => void): Promise<void> {
   if (!Capacitor.isNativePlatform()) return
+  // ANDROID GUARD — must be PREVENTED here, not handled below. @capacitor/push-notifications is FCM-backed
+  // on Android: with no google-services.json, PushNotificationsPlugin.register() (line 103) calls
+  // FirebaseMessaging.getInstance() and throws IllegalStateException "Default FirebaseApp is not initialized"
+  // NATIVELY, inside the bridge, before control ever returns to JS — so the try/catch below CANNOT catch it
+  // and the app PROCESS DIES (confirmed in logcat, reproduced twice). THE PLATFORMS ARE NOT SYMMETRIC: iOS is
+  // safe only because an unconfigured APNs sender no-ops (registration just never yields a token), whereas FCM
+  // hard-fails. Remove this guard only once a Firebase project + google-services.json exist.
+  if ((Capacitor?.getPlatform?.() ?? 'web') === 'android') {
+    console.warn('[push] skipped: push notifications are not yet configured on Android (no Firebase project / google-services.json)')
+    return
+  }
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications')
 

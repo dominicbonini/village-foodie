@@ -48,10 +48,18 @@ async function loadImageViaBlobUrl(url: string): Promise<HTMLImageElement | null
 
 // QR + centred square logo composite — no branding strip.
 // Used for the fullscreen customer-facing QR modal.
+/**
+ * QR with the branded centre plate.
+ *
+ * `placeholderText` (demo only) draws the plate with TEXT where the logo would go — "Your logo here". It
+ * shows off the branded-QR feature and hints at what signing up gets them, without faking a logo they
+ * don't have. Ignored when a real logoUrl is supplied.
+ */
 export async function generateQRWithLogo(
   url: string,
   logoUrl: string | null | undefined,
-  size = 600
+  size = 600,
+  placeholderText?: string | null,
 ): Promise<string> {
   const qrDataUrl = await QRCode.toDataURL(url, {
     width: size,
@@ -60,7 +68,8 @@ export async function generateQRWithLogo(
     errorCorrectionLevel: 'H',
   })
 
-  if (!logoUrl) return qrDataUrl
+  // Plain QR only when there's neither a logo NOR a placeholder to draw.
+  if (!logoUrl && !placeholderText) return qrDataUrl
 
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -72,8 +81,8 @@ export async function generateQRWithLogo(
   await new Promise<void>(resolve => { qrImg.onload = () => resolve(); qrImg.src = qrDataUrl })
   ctx.drawImage(qrImg, 0, 0, size, size)
 
-  const logo = await loadImageViaBlobUrl(logoUrl)
-  if (!logo) return qrDataUrl
+  const logo = logoUrl ? await loadImageViaBlobUrl(logoUrl) : null
+  if (!logo && !placeholderText) return qrDataUrl
 
   // Match the 29% logo size used in generateQRCodePNG (116px on 400px QR)
   const logoSize = Math.round(size * 0.29)
@@ -85,7 +94,40 @@ export async function generateQRWithLogo(
   ctx.fillStyle = '#ffffff'
   roundRect(ctx, logoX - padding, logoY - padding, logoSize + padding * 2, logoSize + padding * 2, 8)
   ctx.fill()
-  ctx.drawImage(logo, logoX, logoY, logoSize, logoSize)
+
+  if (logo) {
+    ctx.drawImage(logo, logoX, logoY, logoSize, logoSize)
+  } else if (placeholderText) {
+    // Dashed outline + centred text, sized to the same plate the logo would occupy. Error correction is
+    // 'H', so the centre can be covered without harming scannability — same budget the logo uses.
+    ctx.save()
+    ctx.strokeStyle = '#CBD5E1'
+    ctx.lineWidth = Math.max(2, Math.round(size * 0.005))
+    ctx.setLineDash([Math.round(size * 0.02), Math.round(size * 0.015)])
+    roundRect(ctx, logoX, logoY, logoSize, logoSize, 6)
+    ctx.stroke()
+    ctx.setLineDash([])
+
+    ctx.fillStyle = '#64748B'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    const fontPx = Math.round(logoSize * 0.16)
+    ctx.font = `600 ${fontPx}px system-ui, -apple-system, "Segoe UI", sans-serif`
+    // Wrap on spaces so "Your logo here" stacks inside the plate instead of overflowing it.
+    const words = placeholderText.split(' ')
+    const lines: string[] = []
+    let cur = ''
+    for (const w of words) {
+      const next = cur ? `${cur} ${w}` : w
+      if (ctx.measureText(next).width > logoSize * 0.82 && cur) { lines.push(cur); cur = w }
+      else cur = next
+    }
+    if (cur) lines.push(cur)
+    const lineH = fontPx * 1.25
+    const startY = cx - ((lines.length - 1) * lineH) / 2
+    lines.forEach((ln, i) => ctx.fillText(ln, cx, startY + i * lineH))
+    ctx.restore()
+  }
 
   return canvas.toDataURL('image/png')
 }

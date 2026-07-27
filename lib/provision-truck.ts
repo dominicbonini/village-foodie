@@ -16,6 +16,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Plan } from '@/lib/features'
 import { createSlug } from '@/lib/utils'
 import { deleteTruckCascade } from '@/lib/delete-truck'
+import { DEMO_PREFIX } from '@/lib/demo'
 
 // ── Reserved prefix ──────────────────────────────────────────────────────────────────────────────────
 // proxy.ts grants `/dashboard/demo-*` an exception from the session gate, so for a demo the TOKEN ALONE is
@@ -23,7 +24,9 @@ import { deleteTruckCascade } from '@/lib/delete-truck'
 // would silently lose its session gate. It is reachable by accident — a truck named "Demo Kitchen" slugs
 // to `demo-kitchen`, and the operator token convention is `<slug-base>-<hex>`. So this is asserted before
 // every insert (assertReservedPrefix), not left to convention.
-export const DEMO_PREFIX = 'demo-'
+// The constant itself lives in lib/demo.ts (a leaf module) so hot request paths can test the prefix without
+// importing this module's dependency graph. Re-exported here for callers already reaching for it.
+export { DEMO_PREFIX } from '@/lib/demo'
 
 // ── Identity generation ──────────────────────────────────────────────────────────────────────────────
 // Crockford-style base32: no i/l/o/u, so nothing is ambiguous when read aloud or pasted from a support
@@ -75,6 +78,9 @@ interface ProvisionProfile {
   nameRequired: boolean
   truckOrderEmailEnabled: boolean
   allergenDisplayMode: 'per_dish' | 'card' | 'both' | null
+  /** FIX 9 — demo defaults auto-accept ON so a visitor's first test order confirms itself and lands on the
+   *  board immediately. A prospect who places an order and sees it sit unactioned reads that as broken. */
+  autoAccept: boolean
 }
 
 const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
@@ -87,6 +93,7 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     nameRequired: true,
     truckOrderEmailEnabled: true,
     allergenDisplayMode: null,    // operator chooses in the wizard
+    autoAccept: false,            // an operator decides this deliberately
   },
   demo: {
     identity: 'random',
@@ -96,14 +103,16 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     // NEVER 'per_dish' for a demo: import commits every item allergens_verified=false, and the per-dish
     // customer-menu gate HIDES unverified items → the demo would render an EMPTY MENU.
     allergenDisplayMode: 'card',
+    autoAccept: true,
   },
 }
 
 // ── Public types ─────────────────────────────────────────────────────────────────────────────────────
 export interface ProvisionVanOptions {
   name?: string                   // default 'Van 1' — NOT NULL, no DB default
-  kitchen_capacity?: number       // default 5 — nullable with NO default, but without it upsert_event
-                                  // writes NO slot_capacity and the capacity engine is inert
+  /** Default 5. Pass an EXPLICIT null to leave it unset — a demo does that deliberately so the per-category
+   *  batch is the only ceiling (see lib/provision-demo). Omitting the key still gets the default. */
+  kitchen_capacity?: number | null
   capacity_window_mins?: number   // omit → DB default 5 (NOT NULL, CHECK 1–20)
 }
 
@@ -276,6 +285,7 @@ export async function provisionTruck(
         contact_email: opts.contactEmail ?? null,
         cuisine_type: opts.cuisineType ?? null,
         truck_order_email_enabled: profile.truckOrderEmailEnabled,
+        auto_accept: profile.autoAccept,
         allergen_display_mode: profile.allergenDisplayMode,
         // Read by upsert_event when creating events (`truck.default_auto_open ?? true`).
         default_auto_open: true,
@@ -318,8 +328,9 @@ export async function provisionTruck(
         truck_id: truckId,
         name: vanOpts.name?.trim() || 'Van 1',       // NOT NULL, no default
         active: true,
-        // Nullable with NO default — but leaving it null makes the capacity engine inert, so always set.
-        kitchen_capacity: vanOpts.kitchen_capacity ?? 5,
+        // `?? 5` would coerce an intentional null back to 5, so distinguish "omitted" from "explicitly
+        // null": omitted → 5 (a real truck wants a ceiling), explicit null → null (demo: batch-only).
+        kitchen_capacity: 'kitchen_capacity' in vanOpts ? vanOpts.kitchen_capacity : 5,
         // capacity_window_mins omitted deliberately — NOT NULL DEFAULT 5 is exactly what we want.
         ...(vanOpts.capacity_window_mins !== undefined
           ? { capacity_window_mins: vanOpts.capacity_window_mins }
