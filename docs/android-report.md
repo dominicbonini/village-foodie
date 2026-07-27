@@ -1,269 +1,175 @@
-# Task report — Android status-bar strip fixed + statusBar.ts hygiene · 2026-07-27
+# Task report — XML comment build break fixed (my defect) · 2026-07-27
 
-**TRANSIENT.** Overwritten every task. Durable log: `docs/android.md` (append-only).
-`docs/last-report.md` belongs to a separate workstream — not read, not written, not opened.
-
----
-
-## 0. Prompt integrity — three garbled spots, repaired not silently fixed
-
-| As received | Read as | Basis |
-| --- | --- | --- |
-| CONTEXT: *"the literal\n **ars** nowhere else in the repo"* | *"**appears** nowhere else in the repo"* | Truncated word at a line break; it restates my own §1.1 finding from the previous report. |
-| item 3: *"Fix or remove the **#3literal**"* | *"the **`#354F52`** literal"* | Characters dropped mid-token; only one hex literal exists in the file. |
-| item 5: *"If the platform has **alr   padded** the view"* | *"has **already** padded the view"* | Truncated word plus collapsed spacing. Recorded in `docs/android.md` in the repaired form. |
-
-None changed the work. Nothing else was garbled.
+**TRANSIENT.** Overwritten every task. Durable log: `docs/android.md` (append-only, **not
+touched** — no append requested). `docs/last-report.md` belongs to a separate workstream —
+not read, not written, not opened.
 
 ---
 
-## 1. Change 1 — the strip. Android theme only.
+## 0. Prompt integrity — one garbled spot
 
-### 1.1 `android/app/src/main/res/values/colors.xml` — NEW file
+> *"write your full report to docs/android-report.md, overwriting **whater** is there"*
 
-```xml
-<color name="hgHeaderNavy">#0F172A</color>
+Read as **"whatever is there"**. Same closing sentence as previous prompts. No effect.
+
+---
+
+## 1. My defect, and a correction to the suspected cause
+
+I broke the build. The comment I added to `styles.xml` in the previous task contained a
+literal double hyphen, which XML forbids inside `<!-- -->`, so AAPT's resource merge threw
+`SAXParseException` before anything else could run.
+
+**Correcting the premise in your prompt:** it was **not** an em-dash and not a `-- ` clause
+separator. An em-dash (`—`, U+2014) is a single character and is perfectly legal in an XML
+comment; my comments contained several and none of them was the problem. The actual cause
+was that **I wrote the CSS custom property name literally**:
+
+```
+line 32:  --safe-area-inset-top — see the comment in lib/native/statusBar.ts for why that double-pads. -->
+          ^^
 ```
 
-with a comment tying it to `HEADER_BG` in `lib/brand.ts` (`bg-slate-900`) and to
-`AppHeader`, and instructing that both move together.
+`--safe-area-inset-top` begins with the two hyphens that make a CSS custom property a custom
+property. So the token I was warning *against* using is what broke the file — the comment
+forbidding the double-pad could not survive naming the thing it forbade. Verified: it was
+the **only** internal `--` in either file (§3).
 
-**Why a new file:** `android/app/src/main/res/values/colors.xml` did not exist — the only
-colour resource in the whole project was `ic_launcher_background.xml`. The name
-`hgHeaderNavy` is deliberately distinctive so it cannot collide with anything a future
-`cap` regeneration adds. See §5 for a genuine oddity I found while checking this.
+---
 
-### 1.2 `android/app/src/main/res/values/styles.xml` — `AppTheme.NoActionBar` ONLY
+## 2. The rewrite — `android/app/src/main/res/values/styles.xml:12-38`
 
-```xml
-<style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
-    <item name="windowActionBar">false</item>
-    <item name="windowNoTitle">true</item>
-    <item name="android:background">@null</item>
-    <item name="android:windowBackground">@color/hgHeaderNavy</item>   <!-- ← added -->
-</style>
+Rewritten with **no double hyphen anywhere**, meaning preserved in full. Dashes replaced by
+commas and semicolons per your instruction; the two substantive points you named are intact:
+
+- **the strip is exposed by SystemBars inset padding** — kept verbatim in substance: *"on
+  Android 15+ Capacitor's core SystemBars plugin pads the WebView's PARENT view down by the
+  status bar height and zeroes the insets handed to the WebView … The WebView therefore
+  starts BELOW the status bar and cannot paint it, so the exposed strip shows the window
+  background, which for Theme.AppCompat.DayNight in light mode is WHITE."*
+- **this makes it continuous with the app header** — kept: *"Painting the window background
+  with the header navy makes the strip CONTINUOUS WITH THE APP HEADER (AppHeader =
+  bg-slate-900 = #0F172A) instead of a white band above it."*
+
+Also preserved: why `AppTheme.NoActionBar` specifically (BridgeActivity applies it at
+create) and why the other two themes were left alone; the "cosmetic continuity, not true
+immersion" caveat; and the cross-reference to `lib/native/statusBar.ts`.
+
+**Specific rewordings, so you can see nothing was quietly dropped:**
+
+| Before | After |
+| --- | --- |
+| `--safe-area-inset-top` | "the injected safe area inset custom property" (named in prose, cross-referenced to `statusBar.ts` which may safely contain it) |
+| `BridgeActivity.java:25-26` | "BridgeActivity.java lines 25 to 26" |
+| `status-bar height`, `near-invisible`, `non-passthrough`, `manifest-level`, `double-pads` | `status bar height`, `near invisible`, `non passthrough`, `manifest level`, `double pads` |
+| em-dash clause separators | commas and semicolons |
+
+Hyphens that are part of an identifier and cannot be reworded are retained as **single**
+hyphens and are harmless: `bg-slate-900`, `@capacitor/android`, `lib/native/statusBar.ts`.
+
+**I also added a guard at the top of the comment** so this cannot recur silently:
+
+> ⚠️ **NO DOUBLE HYPHENS ANYWHERE IN THIS FILE'S COMMENTS.** XML forbids the two hyphen
+> sequence inside a comment (SAXParseException at resource merging, which breaks the Gradle
+> build before anything else runs). That is why CSS custom property names are written in
+> prose below rather than literally. Use commas or semicolons, never a pair of hyphens.
+
+---
+
+## 3. Every comment I added to `android/**/*.xml` this session — each one inspected
+
+**Files I touched this session: exactly two.** `styles.xml` (edited) and `colors.xml`
+(created). No other file under `android/` was modified — the manifest and the rest were
+read-only. So the audit surface is these two files, and I inspected **every** comment in
+both, mine and the scaffold's.
+
+| File | Comment | Lines | Author | Internal `--`? | Action |
+| --- | --- | --- | --- | --- | --- |
+| `styles.xml` | `<!-- Base application theme. -->` | 4 | Capacitor scaffold | **No** | none |
+| `styles.xml` | `<!-- Customize your theme here. -->` | 6 | Capacitor scaffold | **No** | none |
+| `styles.xml` | The `AppTheme.NoActionBar` explanatory block | **12-38** | **mine** | **YES — line 32, `--safe-area-inset-top`** | **rewritten (§2)** |
+| `colors.xml` | The `hgHeaderNavy` block | **4-8** | **mine** | **No** | none needed; left as written |
+
+**`colors.xml` was clean.** Its comment contains one em-dash (line 6, *"continuous with the
+app header — see styles.xml"*) and several single hyphens (`status-bar`, `bg-slate-900`,
+`lib/brand.ts`), none of which form a `--` pair. I did **not** edit it, per "change nothing
+else". Note it is now **committed** (tracked as of `a4f3881 "android white bar"`), so it
+went into your tree in its verified-clean form.
+
+**One offending comment in total. One rewrite.**
+
+---
+
+## 4. Verification — an actual XML parse, not a grep
+
+A grep for `--` is not sufficient here: it cannot distinguish a delimiter (`<!--`, `-->`)
+from an internal violation, and a line carrying both would mask the second. So I parsed both
+files with Python's XML parser and separately extracted every comment body:
+
+```
+android/app/src/main/res/values/styles.xml: comments=3 internal '--' violations=0
+   XML well-formed ✓
+android/app/src/main/res/values/colors.xml: comments=1 internal '--' violations=0
+   XML well-formed ✓
 ```
 
-**Which theme, and why that one specifically** (you asked me not to change all of them
-blindly — there are three, and only one is right):
+The method: regex every `<!--…-->` span, test each **body** (delimiters excluded) for `--`,
+then `xml.dom.minidom.parseString` the whole file. **Zero violations, both files
+well-formed.** This is the same class of check that failed in AAPT (a conforming XML parser
+rejecting `--` in a comment), so it exercises the actual failure mode rather than
+approximating it.
 
-| Theme | Role | Changed? |
-| --- | --- | --- |
-| **`AppTheme.NoActionBar`** | **THE RUNTIME THEME.** Capacitor's `BridgeActivity` applies it itself at create — `BridgeActivity.java:25-26`, `getApplication().setTheme(R.style.AppTheme_NoActionBar)` **and** `setTheme(R.style.AppTheme_NoActionBar)`. It is in force the entire time the app is on screen, so its `windowBackground` is what shows through the exposed strip. | ✅ **yes** |
-| `AppTheme` | Manifest `<application android:theme>` (`AndroidManifest.xml:10`) — the default the Activity immediately overrides. Note it is **not** a parent of the other two: both declare explicit parents, which cancels the dot-notation inheritance, so setting it here would not propagate anyway. | ❌ no |
-| `AppTheme.NoActionBarLaunch` | The **splash** window (`AndroidManifest.xml:16`, `parent="Theme.SplashScreen"`, `android:background` = `@drawable/splash`). Changing it would alter the splash screen, not the running app. | ❌ no |
-
-A comment above the style records the whole causal chain: that `SystemBars` pads the
-WebView's parent down on Android 15+ so the WebView cannot paint the strip; that the strip
-therefore shows `windowBackground` (white under `Theme.AppCompat.DayNight` light); that
-painting it navy makes the strip **continuous with the app header**; and — stated plainly —
-that this is **cosmetic continuity, not true immersion**, since the WebView still begins
-below the strip. It also cross-references the `statusBar.ts` note forbidding CSS padding on
-top.
+**What this does NOT prove:** that the Gradle build now succeeds. I cannot run gradle, and
+resource merging does more than parse XML. It proves the specific `SAXParseException` you
+hit cannot recur from these two files. See §6 for the one pre-existing issue that could
+still bite.
 
 ---
 
-## 2. Change 2 — the `--safe-area-inset-top` prohibition, recorded inline
-
-Held as instructed; **nothing consumes it, and nothing new reads `env()` on Android.** The
-reason is written into `lib/native/statusBar.ts:37-47` so the next person does not "fix" the
-remaining gap the obvious way:
-
-> 🚫 **DO NOT ADD `env(safe-area-inset-top)` OR `--safe-area-inset-top` HANDLING FOR
-> ANDROID. ONLY ONE MECHANISM MAY OWN THE INSET.** On Android 15+ Capacitor's core
-> `SystemBars` plugin has ALREADY padded the WebView's parent down by the status-bar height
-> and zeroed the insets it hands the WebView. Adding CSS padding on top of that pads TWICE:
-> a second navy band inside the WebView, BELOW a strip we still would not have filled —
-> exactly the two-band bug V8.7 removed on iOS (where `contentInset` and the CSS `env()`
-> padding were both claiming the same inset). `AppHeader`'s `paddingTop:
-> env(safe-area-inset-top)` is safe precisely BECAUSE `env()` resolves to 0 there. Note
-> Capacitor 8 injects a CSS CUSTOM PROPERTY (`--safe-area-inset-top`), NOT `env()`, so
-> nothing here reads it today. This only becomes relevant on the PASSTHROUGH branch
-> (`WebView >= 140` AND `viewport-fit=cover`), where `env()` is populated natively and
-> `AppHeader` already works unchanged — so even then the variable is not needed. Passthrough
-> is UNVERIFIED on our devices.
-
----
-
-## 3. Change 3 — `lib/native/statusBar.ts` hygiene. iOS untouched.
-
-### 3.1 The `#354F52` literal — **removed with its call**, not recoloured
-
-You gave two options: pass the brand navy from `lib/brand.ts`, or remove the call if it is a
-no-op on the platforms we support and say so. **It is a no-op on both, so I removed it** —
-and that avoided adding a hex export to `brand.ts` (a web-shared file) for a call that
-cannot render anything.
-
-- **Android:** verified no-op for API ≥ 36. `StatusBar.java:66-68` wraps the entire method
-  body in `shouldSetStatusBarColor(...)`, and `:121-133` returns `false` unconditionally when
-  `deviceApi > VANILLA_ICE_CREAM`. That branches on the **device** `SDK_INT`, so lowering
-  `targetSdkVersion` would not bring it back.
-- **iOS:** no *visible* effect in our arrangement. `setOverlaysWebView(true)` — called on
-  the line above — removes the status-bar background view that `setBackgroundColor` colours
-  (`StatusBar.swift:114-121`), and we never call `setOverlaysWebView(false)`.
-- **The colour was wrong regardless:** `#354F52` is a slate-GREEN; the header is
-  `HEADER_BG` = `bg-slate-900` = `#0F172A`.
-
-**Precision on "iOS byte-identical":** the removed call did mutate one piece of iOS plugin
-state — `StatusBar.backgroundColor` — which is read only by
-`initializeBackgroundViewIfNeeded()`, reached only when overlay is set **false**. Nothing in
-this codebase ever does that. So iOS rendering is unchanged; the single hypothetical delta
-(if someone later disables overlay, the strip would use the plugin default `.black`
-(`StatusBarConfig.swift:5`) instead of the green) is recorded inline. I would rather state
-that than claim a literal byte-identity I cannot support.
-
-### 3.2 Which calls are verified no-ops — recorded inline with evidence
-
-`lib/native/statusBar.ts:14-35` now carries a per-call table with `file:line` citations into
-`node_modules`, so a future reader cannot assume these work:
-
-| Call | Status recorded | Evidence cited inline |
-| --- | --- | --- |
-| `setOverlaysWebView` | **INERT on Android 15+** — but **KEPT, load-bearing on iOS** (the V8.7 double-band fix) | `StatusBar.java:102-119` (deprecated systemUi flags only); `definitions.d.ts:197` "Not available on Android 15+"; `StatusBar.swift:114` (iOS removes the background view) |
-| `setStyle` | **The only one that still works on Android**; `Style.Dark` = "Light text for dark backgrounds" → LIGHT icons, correct against navy | `StatusBar.java:42-52` (ungated `setAppearanceLightStatusBars`); `definitions.d.ts:46-52` |
-| `setBackgroundColor` | **REMOVED** — no-op Android API ≥ 36, invisible on iOS under overlay, stale colour | `StatusBar.java:66-68`, `:121-133`; `StatusBar.swift:114-121`; `StatusBarConfig.swift:5` |
-
-### 3.3 One extra comment-accuracy fix
-
-The pre-existing paragraph at `:8-12` describes the OS *reserving* the strip and
-`overlay:true` *stopping* it — true on iOS, **false on Android 15+**. I scoped its opening
-line to **"THIS PARAGRAPH DESCRIBES iOS ONLY … see the Android note below"** rather than
-leaving a comment that contradicts the code beneath it. No behavioural change.
-
-### 3.4 What I deliberately did NOT do
-
-- **The `// TEMP` `console.log`s at `:7`, `:51`, `:53` are still there.** My previous report
-  proposed removing them, but this prompt specified *two* hygiene items — the literal and
-  the no-op comments — and log removal was not among them. Left in scope-discipline; they
-  are one line to delete if you want them gone (they currently fire on every mount across
-  four surfaces).
-- **`ios.contentInset`, `viewportFit`, `AppHeader`'s `paddingTop`** — untouched, as required.
-
----
-
-## 4. What a WebView ≥ 140 device shows after this fix
-
-**On the passthrough branch** (`shouldPassthroughInsets = getWebViewMajorVersion() >= 140 &&
-hasViewportCover`, `SystemBars.java`), `SystemBars` does **not** pad the parent and passes
-the real system-bar insets through, so Chromium populates `env(safe-area-inset-top)`.
-
-**Predicted result:** `AppHeader`'s existing `paddingTop: env(safe-area-inset-top)` picks up
-a real value, the WebView extends under the strip, and the navy header paints it —
-i.e. **genuine immersion, identical to the working iOS arrangement, with no further code
-change.** `viewport-fit=cover` is already set (`app/layout.tsx:71`), so the second
-precondition is already met.
-
-**Is the `styles.xml` change still correct there?** **Yes — correct, and redundant, in that
-order.** It becomes invisible rather than wrong: if the WebView paints the whole strip, the
-window background behind it is never seen. It stays valuable as a **fallback**, because the
-branch is chosen per-device at runtime from the installed WebView version — the same APK can
-take the padded branch on an older-WebView device and the passthrough branch on a current
-one. Removing it would make the white strip reappear on exactly the devices that cannot
-manage without it. The colours also agree (`#0F172A` both), so there is no seam either way.
-
-**Verified vs inferred here:**
-
-- **Verified from source:** the `shouldPassthroughInsets` condition and both branches; that
-  the padded branch calls `v.setPadding(...)` and zeroes the insets; that
-  `viewport-fit=cover` is set; that `hasViewportCover` is fed by
-  `native-bridge.js:370-373` → `onDOMReady` → the meta-viewport check.
-- **Inference:** the *rendered outcome* on either branch. I cannot build or run, so
-  "predicted result" above is reasoning from the code, not an observation. The AVD's WebView
-  version is still unmeasured — `adb shell dumpsys package com.google.android.webview | grep
-  versionName` remains the one command that settles which branch you are on.
-
----
-
-## 5. Flagged
-
-- ⚠️ **`AppTheme` references three colours that are defined nowhere.**
-  `styles.xml:7-9` uses `@color/colorPrimary`, `@color/colorPrimaryDark` and
-  `@color/colorAccent`, and I could find **no definition for any of them** anywhere under
-  `android/` — the only pre-existing colour resource was `ic_launcher_background`. An
-  unresolved `@color/` reference is normally a hard AAPT error, and `AppTheme` *is*
-  referenced (`AndroidManifest.xml:10`). Since your APK evidently builds, something must
-  resolve them that I cannot see without building. **I did not touch this** — my new
-  `colors.xml` deliberately defines only `hgHeaderNavy` and does not shadow those names.
-  Worth a look next time you build; if AAPT does complain, adding the three to `colors.xml`
-  is the fix.
-- **`android/` tracking has changed since my last report** — `styles.xml` now shows as
-  modified (`M`) rather than untracked, so the directory has been committed in between.
-  Good: my edit there is now revertible. `colors.xml` is new and shows as `??`, as expected.
-- **The fix is cosmetic, not immersive.** Worth being explicit: after this, the strip is
-  navy and the icons are legible, but the WebView still starts below it. If you want true
-  edge-to-edge on the padded branch, that is a different change (and per §2, *not* a CSS
-  one).
-- **Nothing here is device-verified** — no gradle, no build, no adb. Treat as **BUILT,
-  LIVE-TEST PENDING**.
-- **Still open from earlier in this workstream:** Fix 4 (the demo dashboard has no escape at
-  ≥640px), the notification lying-toggles, and the cook-screen session claim.
-
----
-
-## 6. Verification
-
-`npx tsc --noEmit` → **exit 0, zero output.** Run twice (after the code edits, and again
-after the comment-scoping edit).
-
-Note `tsc` covers only `lib/native/statusBar.ts` — **the two Android XML files are not
-type-checked or compiled by anything I am permitted to run**, so their correctness rests on
-review, not on a tool. They are small, and the resource reference (`@color/hgHeaderNavy` →
-`colors.xml`) is the only thing that could break; it matches.
-
-**Files changed:**
+## 5. Files changed
 
 | File | Change |
 | --- | --- |
-| `android/app/src/main/res/values/colors.xml` | **NEW** — `hgHeaderNavy` `#0F172A` |
-| `android/app/src/main/res/values/styles.xml` | `android:windowBackground` on `AppTheme.NoActionBar` + explanatory comment |
-| `lib/native/statusBar.ts` | `setBackgroundColor` removed; no-op/evidence comments; inset-ownership prohibition; iOS-scoping of the old paragraph |
-| `docs/android.md` | **Appended** 627 → 725 lines, nothing overwritten |
-| `docs/android-report.md` | This file, overwritten |
+| `android/app/src/main/res/values/styles.xml` | Comment block at `:12-38` rewritten, no double hyphen; guard note added at the top. **The `<style>` elements and every `<item>` are byte-identical**, including `android:windowBackground` → `@color/hgHeaderNavy`. File is 49 lines. |
+| `docs/android-report.md` | This file, overwritten. |
 
-**Not touched:** `app/layout.tsx`, `components/shared/AppHeader.tsx`, `capacitor.config.ts`,
-`AndroidManifest.xml`, `docs/reference-manual.md`.
+**Nothing else changed.** `colors.xml`, `lib/native/statusBar.ts`, `docs/android.md`, and
+every source file are untouched this task. No `tsc` was run — no TypeScript changed.
 
 ---
 
-## 7. `docs/android.md` — appended
+## 6. Flagged
 
-New entry `### 2026-07-27 — White status-bar strip on Android: window-background fix +
-statusBar.ts hygiene`: symptom, the verified root cause (SystemBars padding, the API-36
-guard, the one call that still works), what was built including which theme and why, the
-iOS-byte-identical statement, the tsc result, and the held `--safe-area-inset-top` decision.
-
-Then both invariant candidates for **manual §35** (`reference-manual.md:4327`), recorded
-verbatim as dictated:
-
-1. **"Only one mechanism may own a safe-area inset. If the platform has already padded the
-   view, additionally padding via CSS double-pads."** — logged with the note that this is
-   the **third** instance of the shape: iOS `contentInset` + `scrollEnabled` vs the CSS
-   `env()` padding (V8.7's double band), then the missing `setOverlaysWebView` with the OS
-   reserving *and* the CSS padding, and now Android. Each time the fix was to decide **who
-   owns the inset** and make the other side contribute zero — which is exactly why
-   `AppHeader`'s `env()` padding must be left resolving to 0 on Android.
-2. **"`lib/native/statusBar.ts` carried three calls that are no-ops on modern Android plus a
-   colour matching nothing in the brand. A native helper written for one platform must be
-   re-verified against the other, not assumed."** — logged with the sibling helpers worth
-   the same audit (`keepAwake.ts`, printing, the notification helpers already flagged on 26
-   July) and the sharpened audit question: *the answer must come from the installed plugin
-   source, not the docs — the docs describe an API that exists; the source shows the API
-   doing nothing.*
+- **The `--` rule applies to my comments in `AndroidManifest.xml` too, if I ever add any.**
+  I have not, and did not this session. Worth knowing the constraint is file-type wide, not
+  specific to `styles.xml`: any `android/**/*.xml` comment I write must avoid the pair. The
+  guard note now lives in `styles.xml` where the mistake happened.
+- **Still outstanding from §5 of the previous report, and it may be your next build error:**
+  `styles.xml:7-9` references `@color/colorPrimary`, `@color/colorPrimaryDark` and
+  `@color/colorAccent`, and I can find **no definition for any of them** anywhere under
+  `android/`. My `colors.xml` deliberately defines only `hgHeaderNavy` and does not shadow
+  them. If the build now gets past resource merging and fails on unresolved colours, that is
+  this — and adding the three to `colors.xml` is the fix. I have **not** done so, because
+  you said change nothing else and because guessing their values would put invented brand
+  colours into the theme.
+- **`lib/native/statusBar.ts` legitimately still contains `--safe-area-inset-top`** (in the
+  prohibition comment). That is correct and must stay: it is TypeScript, where the token is
+  not only legal but the precise thing being warned about. Only the XML copy had to lose it.
+- **My fault, plainly.** The XML comment restriction is not obscure and I should have
+  avoided a literal CSS custom property name inside one. The typecheck I ran last task
+  covered the TypeScript and gave no signal on the XML, which I noted at the time
+  ("the two Android XML files are not type-checked or compiled by anything I am permitted to
+  run") — I flagged the gap and then shipped a defect straight through it. The parse check in
+  §4 is the check I should have run then, and it costs nothing.
 
 ---
 
-## 8. What I could not do / did not do
+## 7. What I could not do / did not do
 
-- **Could not build, run, or measure** — no gradle, builds, `cap`, dev servers, `adb`,
-  installs. The XML is unvalidated by any tool; §4's rendering predictions are inference.
-- **Did not consume `--safe-area-inset-top` or add Android `env()` handling** — held, with
-  the reason recorded inline.
-- **Did not touch iOS** — `ios.contentInset`, `viewportFit`, `AppHeader.paddingTop`, and
-  `setOverlaysWebView` all unchanged.
-- **Did not remove the `// TEMP` console logs** — not among the two hygiene items specified
-  (§3.4).
-- **Did not resolve the missing `colorPrimary`/`colorPrimaryDark`/`colorAccent`
-  definitions** — flagged in §5, deliberately untouched.
-- **Did not edit `docs/reference-manual.md`** — the two §35 candidates sit in
-  `docs/android.md` for you to fold by hand.
+- **Could not run gradle or any build** — so "the build now succeeds" is unproven; what is
+  proven is that both files parse cleanly as XML (§4).
+- **Did not touch `colors.xml`** — inspected, verified clean, left exactly as committed.
+- **Did not touch `lib/native/statusBar.ts`**, `docs/android.md`, or any source file.
+- **Did not fix the missing `colorPrimary` / `colorPrimaryDark` / `colorAccent`
+  definitions** — flagged in §6, out of scope for "change nothing else".
 - **Did not touch `docs/last-report.md`** — not read, not written, not opened.
