@@ -539,3 +539,89 @@ So the honest state is **per-control**, not per-platform.
 component and the same mount effect. Doing them together is one coherent "make the
 notification card tell the truth" change; doing them separately risks the second rewriting
 the first.
+
+---
+
+### 2026-07-27 — Admin native launch landed on a demo dashboard: Fixes 1–3 BUILT
+
+**SYMPTOM.** Signing into the Android app as the **admin** landed on a DEMO-MODE dashboard
+(no chooser, no admin console). Signing in as the **RTF operator** worked correctly.
+Account-specific, not a general routing bug — the earlier "generic unauthenticated demo
+route" theory was disproven and is withdrawn.
+
+**ROOT CAUSE (three compounding defects).**
+
+1. `/api/native/my-trucks` `permittedTruckIds` gave an admin **every active truck**
+   (`trucks.select('id').eq('active', true)` — the V8.7 admin bypass) with **no demo
+   exclusion**; demo trucks are always `active: true` by design
+   (`lib/provision-truck.ts:50-51`).
+2. **No `ORDER BY` in either truck query**, so `trucksOut` came back in unspecified heap
+   order and `app/app/page.tsx`'s `trucks[0]` landing was **undefined, not merely wrong** —
+   it could differ between requests.
+3. **`/app` had no admin branch at all** — no `is_admin` check, and the endpoint never
+   returned the flag — so an unpinned admin fell through to `trucks[0]`.
+
+RTF was unaffected because a single-truck operator has exactly one candidate, which is why
+this survived: the bug is invisible for every operator and only reachable by an admin.
+
+**WHAT WAS BUILT** (native-only; Fix 4, the demo-dashboard escape, is deliberately HELD):
+
+- **Fix 1 — deterministic ordering.** `.order('created_at', { ascending: true })` on both
+  truck queries in `app/api/native/my-trucks/route.ts` (the admin id query, and the detail
+  query that `trucksOut` is actually built from). Same column and direction as the web
+  router (`app/dashboard/page.tsx:41,63`) — no new ordering rule invented.
+- **Fix 2 — demo trucks excluded from the ADMIN bypass only**, via the existing
+  `isDemoIdentifier` helper (`lib/demo.ts`). Non-admin owner/membership paths are untouched,
+  so an operator who genuinely owns a demo truck through the demo-signup claim still reaches
+  it.
+- **Fix 3 — admin branch on the native landing.** `my-trucks` now returns `is_admin`
+  (additive); `app/app/page.tsx` routes an admin to `/admin`. **Precedence: device pin →
+  admin → truck resolution**, so a bound kitchen device still boots to its configured
+  screen regardless of who is signed in.
+
+`permittedTruckIds` kept its exact signature (it now delegates to a new
+`resolvePermittedTrucks`), so `switch-truck`'s import and security gate are unchanged.
+`npx tsc --noEmit` → exit 0.
+
+**⚠️ PREFIX-AS-MARKER, recorded inline at the filter.** There is no demo flag on `trucks`;
+the `demo-` prefix is the only signal, so Fix 2 is a string convention standing in for a
+schema fact. **The durable fix is a real column** — `trucks.is_demo boolean not null default
+false`, backfilled from the prefix and written by `lib/provision-truck.ts`, after which the
+filter becomes `.eq('is_demo', false)`. **Proposed, not written — no DDL or migration was
+added; Dominic runs SQL by hand.**
+
+---
+
+## ⚠️ NEW CROSS-CUTTING INVARIANT — candidate for manual §35
+
+> **Porting a permission bypass without porting the routing branch that constrains it
+> widens access silently: the native landing inherited the web admin bypass but not the web
+> admin redirect.**
+
+**Home:** manual **§35 "Cross-cutting engineering invariants"**
+(`docs/reference-manual.md:4327`). Second candidate from this workstream, after the
+native-throw invariant logged on 27 July.
+
+**Why it generalises.** The V8.7 native port copied the admin bypass into the *data* layer
+(`permittedTruckIds` — "Mirrors the WEB admin model EXACTLY", per its own comment) but not
+the *routing* branch that makes the bypass harmless on web (`app/dashboard/page.tsx:30`,
+`is_admin → redirect('/admin')` **before** owner resolution). On web the admin never reaches
+truck resolution, so "all trucks" is never a landing set. On native it was both — and the
+comment claiming exact parity is precisely what made it look finished. **The audit question
+is not "did we port the check?" but "did we port everything that made the check safe?"**
+Note the shape it shares with the existing §35 entry *"a flag named for a behaviour is not
+proof of that behaviour"*: a faithful-looking copy that omits its own precondition.
+
+## Also for §35 — the unordered-first-row class
+
+The `trucks[0]` defect is another instance of the class **V7.8 §3** already fixed on the web
+router: `.single()` → LIST + **deterministic pick** ("2+ → first by `created_at`"). That
+session hardened the web path and left the native one, written days earlier from the same
+model, with neither the ordering nor the admin branch.
+
+> **An unordered query whose FIRST ROW is used as an answer has no answer.** If code takes
+> `[0]` from a query, that query needs an explicit `ORDER BY` — otherwise the behaviour is
+> undefined, varies between requests, and will not reproduce when you go looking for it.
+
+The non-reproducibility is the real cost: an admin who happened to land on a real truck one
+launch and a demo the next reads as "flaky", which is how this stayed unexplained.

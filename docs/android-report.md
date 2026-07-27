@@ -1,233 +1,260 @@
-# Task report — Android push crash guarded · 2026-07-27
+# Task report — Fixes 1–3 implemented (admin native landing) · 2026-07-27
 
 **TRANSIENT.** Overwritten every task. Durable log: `docs/android.md` (append-only).
 `docs/last-report.md` belongs to a separate workstream — not read, not written, not opened.
 
 ---
 
-## 0. Prompt integrity — two garbled spots, repaired not silently fixed
+## 0. Prompt integrity — three garbled spots, repaired not silently fixed
 
 | As received | Read as | Basis |
 | --- | --- | --- |
-| item 1: *"stating push is not yet configured on **Andr**\n**iOS** and web paths must be BYTE-IDENTICAL to now"* | *"…not yet configured on **Android**."* + a new sentence *"**iOS** and web paths must be BYTE-IDENTICAL to now"* | A word truncated at a line break, with the next sentence starting mid-line. Two separate requirements ran together: the warning's content, and the iOS/web constraint. Both were honoured — the warning names Android, and iOS/web are untouched. |
-| item 5: *"**APPENocs/android.md**"* | *"**APPEND to docs/android.md**"* | Characters dropped mid-token; matches the same instruction in the previous four prompts. |
+| item 1: *"Add `.order('created_at')` to BOTH queries in **/-trucks**"* | **`/api/native/my-trucks`** | Characters dropped mid-path; the only `my-trucks` route in the repo, and the file the whole task is about. |
+| item 3: *"REQUIRED PRECEDENCE — in this **or a pinned van_devices config** for a permitted truck wins FIRST"* | *"in this **ORDER: (a)** a pinned `van_devices` config for a permitted truck wins FIRST"* | The `(a)` label and the word `ORDER:` were swallowed, leaving `or` as a fragment. The following clauses are explicitly labelled `(b)` and `(c)`, so the missing label is `(a)`, and the sentence is a precedence list. Implemented exactly as (a) → (b) → (c). |
+| item 5: *"the native landing inherited the web admin bypass **bthe** web admin redirect"* | *"…the web admin bypass **but not the** web admin redirect"* | Only reading that makes the invariant true and matches the rest of the sentence ("widens access silently"). Recorded in `docs/android.md` in the repaired form. |
 
-Neither repair changed what I did. Nothing else was garbled.
-
----
-
-## 1. THE CORRECTION — my 26 July assessment was wrong
-
-Yesterday I assessed this exact scenario as **"silent no-op, logged — not a build failure,
-not a runtime throw that reaches React"**. The logcat says the process dies. I was wrong,
-and the reason matters more than the fact.
-
-My reasoning was: `registerForPush()` wraps its entire body — including `register()` — in
-one try/catch (`lib/native/push.ts:17-40`), therefore nothing escapes. **The wrapper is
-real; it just protects the wrong layer.** The throw is raised **natively**, inside
-`PushNotificationsPlugin.register()` (Java, line 103), *before control returns to JS*.
-There is no JS frame to unwind into and no promise to reject, so there is nothing for a JS
-`catch` to catch. I reasoned about the JS layer and silently assumed the native layer
-obeyed JS semantics.
-
-I did label the runtime behaviour as **inferred, not verified**, and said it needed a
-device. That label was correct and is why this was catchable — but a correctly-labelled
-wrong inference still shipped a wrong conclusion into the log, so I have recorded the
-correction in `docs/android.md` next to the original rather than leaving the two to be
-reconciled later.
+None of these changed the work; the precedence one is the only place a misreading would
+have mattered, and it is spelled out in §3 below so you can check it.
 
 ---
 
-## 2. Change 1 — the Android guard · `lib/native/push.ts:17-27`
+## 1. Fix 1 — deterministic ordering · `app/api/native/my-trucks/route.ts`
 
-Inserted immediately after the existing `isNativePlatform()` check (:16) and **before**
-the `try` (now :28):
+`.order('created_at', { ascending: true })` added to **both** truck queries — same column,
+same direction as the web router (`app/dashboard/page.tsx:41,63`). No new ordering invented.
+
+**:48** — the admin id-collection query inside `resolvePermittedTrucks`:
 
 ```ts
-  // ANDROID GUARD — must be PREVENTED here, not handled below. @capacitor/push-notifications is FCM-backed
-  // on Android: with no google-services.json, PushNotificationsPlugin.register() (line 103) calls
-  // FirebaseMessaging.getInstance() and throws IllegalStateException "Default FirebaseApp is not initialized"
-  // NATIVELY, inside the bridge, before control ever returns to JS — so the try/catch below CANNOT catch it
-  // and the app PROCESS DIES (confirmed in logcat, reproduced twice). THE PLATFORMS ARE NOT SYMMETRIC: iOS is
-  // safe only because an unconfigured APNs sender no-ops (registration just never yields a token), whereas FCM
-  // hard-fails. Remove this guard only once a Firebase project + google-services.json exist.
-  if ((Capacitor?.getPlatform?.() ?? 'web') === 'android') {
-    console.warn('[push] skipped: push notifications are not yet configured on Android (no Firebase project / google-services.json)')
-    return
-  }
+const { data: all } = await supabaseAdmin.from('trucks').select('id').eq('active', true).order('created_at', { ascending: true })
 ```
 
-**Platform idiom:** `Capacitor?.getPlatform?.() ?? 'web'` — copied from
-`lib/native/device.ts:69`, the existing usage you pointed at, rather than a bare
-`Capacitor.getPlatform()`. The optional chaining matches the surrounding code and is
-harmless.
+**:75** — the detail query in `GET`, with an inline note that this is the load-bearing one:
 
-**Change 2 (the inline "why") is the comment above** — it states that a JS try/catch
-cannot catch a native throw from a Capacitor plugin so this must be prevented at the call
-rather than handled, and that iOS is safe only because an unconfigured APNs sender no-ops
-while FCM hard-fails, i.e. the platforms are **not** symmetric.
+```ts
+// ORDER BY created_at ASC — THIS is the load-bearing one: `trucksOut` is built from THIS result, so
+// its order is what the caller's trucks[0] resolves to. Matches the web router's ordering exactly.
+supabaseAdmin.from('trucks').select('id, name, dashboard_token').in('id', ids).eq('active', true).order('created_at', { ascending: true }),
+```
 
-### iOS and web are byte-identical — how that is guaranteed
+**Why both, and why the second matters most:** `trucksOut` is mapped from the *detail*
+query's result, so ordering only the id query would have achieved nothing — the `Set`
+insertion order never reached the response. Ordering both means the id set and the emitted
+list agree, and `trucks[0]` is now a defined value.
 
-- **Web** returns at :16 as before; it never reaches the new `if`.
-- **iOS** evaluates `getPlatform() === 'android'` → false, falls through, and enters the
-  **unmodified** `try` block. Every line from :28 onward is untouched: the dynamic import,
-  `requestPermissions()`, the three `addListener` registrations, `register()`, and the
-  catch.
-- The function was **not restructured** — the guard is a pure insertion between two
-  existing statements. No existing line was edited, reordered, or reindented.
-
-### Verification
-
-`npx tsc --noEmit` → **exit 0, zero lines of output.** Clean.
-
-That is the only verification available here: gradle, builds, `cap`, dev servers, `adb`
-and installs are all forbidden, so **the crash fix itself is not device-verified by me**.
-The next Android launch is the real test — expect the `[push] skipped: …` warning in
-logcat and no `IllegalStateException`.
+Left deliberately unordered: the `truck_vans` query (its rows are folded into a `Map`,
+order is irrelevant) and the non-admin `owned` / `memberships` queries (they only populate a
+`Set` that the ordered detail query re-reads). Say the word if you want those ordered too
+for uniformity — it would be harmless, just noise.
 
 ---
 
-## 3. Change 3 — nothing else touched, as instructed
+## 2. Fix 2 — demo trucks excluded from the ADMIN bypass only
 
-- `components/native/OperatorDeviceConfig.tsx` — **not modified.** All three call sites
-  (:43, :49, :69) are exactly as they were.
-- **No `google-services.json`**, no Firebase project, no gradle change, no manifest change.
-- No other source file was modified.
+**The helper exists**: `isDemoIdentifier` in `lib/demo.ts` — imported at **:3**. I did not
+need to hand-roll a prefix check.
+
+**:49** — the filter, inside the admin branch and nowhere else:
+
+```ts
+all?.forEach((t: { id: string }) => { if (!isDemoIdentifier(t.id)) ids.add(t.id) })
+```
+
+**Scope is exactly as instructed.** The non-admin path (`owned` at :53, `memberships` at
+:56) is untouched, so **an operator who genuinely owns a demo truck through the demo-signup
+claim still reaches it** — only the all-trucks admin bypass is narrowed. Recorded in the
+in-code comment so a future reader does not "tidy" the filter upward into the shared path.
+
+I also corrected the header comment at **:20** — it said *"ADMIN → all active trucks"*,
+which the change makes false. It now reads *"ADMIN → all active NON-DEMO trucks"*. A comment
+that contradicts its own code is the same drift class this workstream keeps finding.
+
+### The fragility record, inline at :28-40
+
+Written into the file, not just this report:
+
+> ⚠️ **DEMO EXCLUSION IS PREFIX-AS-MARKER, AND THAT IS FRAGILE.** There is NO demo flag on
+> `trucks` — the `demo-` prefix on id/slug/dashboard_token (`lib/demo.ts`) is the ONLY
+> signal that a truck is a demo, so this filter is a string convention standing in for a
+> schema fact. **PRECEDENT FOR WHY THAT ROTS:** the `hg_outbox_seq` incident
+> (reference-manual §11) — a per-device COUNTER shared the op-key prefix `'hg_outbox_'`, so
+> every outbox enumerator swept the counter in as a malformed op and reported "1 order
+> syncing" forever, surviving reinstall. A prefix convention held for a while, then a
+> neighbouring key grew into it. **THE DURABLE FIX IS A REAL COLUMN** — `trucks.is_demo
+> boolean not null default false`, backfilled from the prefix and written by
+> `lib/provision-truck.ts` — after which this filter becomes `.eq('is_demo', false)` and
+> stops depending on how ids are spelled. Until then, do not weaken
+> `assertReservedPrefix()` (provision-truck.ts), which is what keeps the prefix trustworthy
+> at all.
+
+The `hg_outbox_seq` citation is verified against the manual (lines 2392–2396, under §11 —
+the fix there was to move op keys to the distinct `'hg_outbox_op_'` prefix plus an `isOpKey`
+/ `isOpShape` guard, precisely because the bare prefix was not a reliable marker).
+
+### Proposed migration — NOT written, NOT run
+
+```sql
+-- PROPOSAL ONLY. Not added to supabase/migrations/. Dominic runs SQL by hand.
+alter table trucks add column if not exists is_demo boolean not null default false;
+update trucks set is_demo = true where id like 'demo-%';
+```
+…then set `is_demo: true` in `lib/provision-truck.ts`'s demo insert, and swap the filter to
+`.eq('is_demo', false)`. **No DDL and no migration file was added by me**, per instruction.
 
 ---
 
-## 4. Step 4 — what the Android UI shows now (reported, NOT fixed)
+## 3. Fix 3 — admin branch on `/app`, with the required precedence
 
-### 4.1 `OperatorDeviceConfig.tsx` — unchanged, and correctly so
+### 3.1 Server: `is_admin` returned (additive)
 
-`registerForPush()` is `void`-ed at all three sites; its result is never awaited, stored,
-or rendered, and nothing in the component's JSX depends on it. With the guard it returns
-immediately instead of crashing, so the setup card behaves exactly as on iOS: bind the
-van, close the card, no visible difference. **It tells no lie** — it never mentioned push —
-**but it gives no signal either**, which is fine for a setup card and is not the problem.
+`permittedTruckIds` already had to know `is_admin` internally; it was computed and thrown
+away. Rather than issue a second `operators` lookup, I split the helper:
 
-### 4.2 `NotificationSettings.tsx` — YES. "New order alerts" is now guaranteed-false on Android
+- **:41** `resolvePermittedTrucks(userId): Promise<{ isAdmin: boolean; ids: Set<string> }>` —
+  the real implementation.
+- **:62** `permittedTruckIds(userId): Promise<Set<string>>` — **kept with its exact original
+  signature**, now delegating: `return (await resolvePermittedTrucks(userId)).ids`.
 
-The toggle at **:80-83**, under the copy *"Get notified when a customer order needs
-confirming."*, still turns on. Toggling it (`toggleNewOrder`, :55-60):
+**Why that matters:** `app/api/native/switch-truck/route.ts:8` imports `permittedTruckIds`
+and uses it as its security gate at `:29`. Its import, its call, and its behaviour are
+unchanged — no second query, no duplicated `is_admin` logic, one source of truth.
+(switch-truck does inherit the demo exclusion for admins, which is the intended symmetry:
+an admin can no longer *switch into* a demo truck either.)
 
-1. sets local state and persists `hg_notify_neworder` (:56),
-2. **POSTs `notify_enabled: true`** to `/api/native/bind-device` (:59),
-3. renders **ON**.
+Response, **:96-100**:
 
-And on Android **no notification can ever arrive**, for two independent reasons:
+```ts
+return NextResponse.json({ trucks: trucksOut, device, is_admin: isAdmin })
+```
 
-- The guard returns before the `registration` listener is added, so
-  `van_devices.push_token` is never written — it stays NULL.
-- The server's push query (`app/api/orders/submit/route.ts:1074`) filters
-  `.not('push_token','is',null)` **and** `.or('platform.eq.ios,platform.is.null')`; the
-  Android row's `platform` is `'android'` (written by `device.ts:69`), so it is excluded
-  **twice over** — by the null token and by the platform allowlist I added on 26 July.
+Additive — existing consumers read `trucks`/`device` and are unaffected. The empty-set early
+return at **:73** carries the flag too, so an admin with zero non-demo trucks still gets
+routed rather than falling through.
 
-**This is worse than the staleness bug I reported yesterday.** That one is *conditionally*
-false — true until the operator revokes the OS permission. This one is **unconditionally
-false on Android**: the control asserts a guarantee that is structurally impossible to
-deliver, and writes `notify_enabled: true` to the server on top of it. Same class as the
-wake-lock toggle (V8.9) and "will sync" — **a control must say what is TRUE.**
+### 3.2 Client: the branch, in the required order
 
-### 4.3 The distinction that matters: do NOT disable the whole card
+`app/app/page.tsx`. Type widened at **:39** (`is_admin?: boolean`), branch inserted at
+**:56-65**, between the device-pin block and the truck fallback:
 
-The other two controls are **honest on Android** and must stay working:
+| Precedence | Line | Behaviour |
+| --- | --- | --- |
+| **(a) pinned `van_devices` config for a permitted truck** | :48-54 (**unchanged**) | Still wins first — a bound kitchen device boots to its configured screen, admin or not. |
+| **(b) `is_admin`** | **:65 — new** | `return go('/admin')` |
+| **(c) existing truck resolution** | :68 (unchanged) | `trucks[0]`, now deterministic |
 
-| Control | Android reality |
+```tsx
+if (data.is_admin) return go('/admin')
+```
+
+The rationale is recorded in a comment above it, including *why* the branch is required
+rather than cosmetic (the bypass grants every active truck, so without it an unpinned admin
+falls through to an arbitrary truck's dashboard — in practice a demo, which has no
+sign-out).
+
+---
+
+## 4. Constraints — each one checked
+
+| Constraint | Status |
 | --- | --- |
-| Master "Allow notifications" (:69) | **Real** — governs the OS POST_NOTIFICATIONS grant, which Android 13+ genuinely requires. |
-| "Offline / paused alerts" (:85-91) | **Real** — a LOCAL notification via `@capacitor/local-notifications`, which needs **no Firebase**. Works on Android, subject only to the separate staleness bug. |
-| "New order alerts" (:80-83) | **Impossible** — FCM-backed, deferred. |
+| No change to the web `/dashboard` router or any web-visible behaviour | ✅ `app/dashboard/page.tsx` **not opened for edit**. Files changed: `app/api/native/my-trucks/route.ts`, `app/app/page.tsx` — that is all (`git status`). |
+| No change to `app/dashboard/[token]/page.tsx` (Fix 4 territory) | ✅ Untouched. Fix 4 **HELD** as instructed — the demo dashboard still has no escape at ≥640px. |
+| `my-trucks` is Bearer-only and native-only — still true after the edit? | ✅ **Confirmed, unchanged.** `GET` still starts `userIdFromBearer(req)` → `401` when there is no `Bearer` header (:67-68); there is no cookie path, and I added none. Client-side, both callers are native-gated: `app/app/page.tsx` is behind `isNativeApp()` (:21) and `lib/native/trucks.ts:9-10` returns early when `getNativeAccessToken()` is null, which it always is on web (`session.ts:37`). A browser cannot reach this endpoint usefully, so the changes are native-scoped by construction. |
+| No DDL / migration | ✅ None added. `trucks.is_demo` proposed only (§2). |
+| Fix 4 held | ✅ Not implemented. |
 
-The honest state is **per-control, not per-platform**.
-
-### 4.4 Proposed honest-state fix — implemented nothing
-
-1. **One source of truth.** Export from `lib/native/push.ts`:
-   `export function isPushSupported() { return Capacitor.isNativePlatform() && (Capacitor?.getPlatform?.() ?? 'web') !== 'android' }`
-   and have **both** the guard and the UI read it — so the register path and the toggle
-   cannot drift apart. Drift between a gate and its UI is exactly what produced this.
-2. **Render "New order alerts" as unavailable on Android** — `disabled`, visually off,
-   subtitle replaced with *"Not available on Android yet."* Prefer **disabled + explanation
-   over hiding**: hiding reads as "this feature does not exist"; disabled reads as "not
-   yet", which is the truth.
-3. **Do not POST `notify_enabled: true` from an Android device** (:59) when unsupported, so
-   the server never holds rows claiming to want a push they cannot receive.
-4. **Leave "Offline / paused alerts" fully enabled** — weakening it would trade one lie for
-   another.
-5. Optionally reuse the existing amber-notice pattern (:72-74) for a one-line explanation.
-
-**Sequencing:** this and the 26 July permission-staleness fix touch the same component and
-the same mount effect. They should be done **together** as one "make the notification card
-tell the truth" change; done separately, the second will rewrite the first.
+**Gusto blast radius: nil.** Gusto trades on the web. Neither changed file is in a web
+request path — `/app` renders only inside the Capacitor shell (web hits fall through to
+`/dashboard` at :21), and `/api/native/my-trucks` is unreachable without a native Bearer.
 
 ---
 
-## 5. Step 5 — appended to `docs/android.md` (404 → 541 lines, nothing overwritten)
+## 5. Verification
 
-New entry `### 2026-07-27 — Android push CRASH fixed (platform guard); the FCM prediction
-was wrong`, containing: the logcat trace and both PIDs; the explicit correction of my
-26 July assessment and *why* the inference failed; the guard as built with its file and
-line numbers; the iOS/web byte-identical statement; and the tsc result.
+`npx tsc --noEmit` → **exit 0, zero output.** Run twice (after the code edits, and again
+after the header-comment correction).
+
+That is the only check available here — gradle, builds, `cap`, dev servers, `adb` and
+installs are all forbidden, so **none of this is device-verified**. Per the manual's own
+rule, treat as **BUILT, LIVE-TEST PENDING**.
+
+**Suggested live tests, in order:**
+
+1. **Admin, fresh install, no pin** → should land on `/admin`. (The reported bug.)
+2. **RTF operator, fresh install** → should still land on RTF's dashboard. (Regression
+   check: the path that already worked.)
+3. **Admin on a device already pinned to a truck** → should still boot to that truck's
+   configured screen, *not* `/admin`. (Proves precedence (a) survived.)
+4. **Admin → 📱 This device → Truck** → the switcher list should no longer contain demo
+   trucks, and should be in `created_at` order.
+5. **Web**: sign in as Gusto on a browser → unchanged. (Should be, by construction.)
+
+---
+
+## 6. `docs/android.md` — appended (541 → 627 lines, nothing overwritten)
+
+New entry `### 2026-07-27 — Admin native launch landed on a demo dashboard: Fixes 1–3
+BUILT`: symptom, the three compounding root causes, why RTF was unaffected, what was built,
+the `permittedTruckIds`-signature note, the tsc result, and the prefix-as-marker record with
+the proposed `trucks.is_demo` column.
 
 Then two flagged sections:
 
-**⚠️ NEW CROSS-CUTTING INVARIANT — candidate for manual §35**
+**⚠️ NEW CROSS-CUTTING INVARIANT — candidate for manual §35** (`reference-manual.md:4327`):
 
-> On Android, a JS try/catch around a Capacitor plugin call does not protect against a
-> native throw inside that plugin. Guard at the call site by platform; do not rely on
-> catching it.
+> Porting a permission bypass without porting the routing branch that constrains it widens
+> access silently: the native landing inherited the web admin bypass but not the web admin
+> redirect.
 
-Recorded verbatim as dictated. **§35 is the right home and it exists** — manual
-**§35 "Cross-cutting engineering invariants"** at `docs/reference-manual.md:4327`, created
-in V9.1 precisely for lessons belonging to no single subsystem. I noted in the log that it
-sits naturally beside the existing §35 entries *"wiring is not data flow"* and *"a flag
-named for a behaviour is not proof of that behaviour"* — all three are cases where a
-structure that **looks** protective was verified at the wrong layer.
+Recorded with *why it generalises*: the V8.7 port copied the bypass into the data layer —
+its own comment claims it *"Mirrors the WEB admin model EXACTLY"* — but not
+`app/dashboard/page.tsx:30`, the redirect that stops an admin ever reaching truck resolution
+on web. On web "all trucks" is never a landing set; on native it was both. **The audit
+question is not "did we port the check?" but "did we port everything that made the check
+safe?"** Noted as the same shape as the existing §35 entry *"a flag named for a behaviour is
+not proof of that behaviour"* — a faithful-looking copy that omits its own precondition.
 
-I also recorded **why it generalises**: every `lib/native/*` helper in this repo uses the
-same shape — dynamic-import inside a `try`, `console.warn` in the `catch` — which is
-genuinely sufficient for JS-side failures and gives **no protection at all** against a
-native throw. The audit question for each is not "is it wrapped?" but "can this plugin
-throw natively on this platform, and is it configured?"
+**Also for §35 — the unordered-first-row class**, logged as an instance of what **V7.8 §3**
+already fixed on the web router (`.single()` → LIST + deterministic pick, "2+ → first by
+`created_at`"). That session hardened the web path and left the native one — written days
+earlier from the same model — with neither the ordering nor the admin branch. Stated as:
 
-**⚠️ Android notification UI after the guard** — §4 above, recorded in full.
+> An unordered query whose FIRST ROW is used as an answer has no answer. If code takes `[0]`
+> from a query, that query needs an explicit `ORDER BY`.
 
-`docs/reference-manual.md` was **not** edited; Dominic folds by hand.
-
----
-
-## 6. Flagged
-
-- **The fix is tsc-verified, not device-verified.** I cannot launch Android here. Per the
-  manual's own rule ("tsc-clean / simulated-pass" ≠ "works"), treat this as BUILT,
-  LIVE-TEST PENDING until an Android launch shows the warning and no crash.
-- **The guard is a deferral, not a solution.** It makes Android launch safely with push
-  silently absent. Whoever adds a Firebase project must remove this guard — the comment
-  says so explicitly, in the one place someone configuring FCM will be looking.
-- **`isPushSupported()` does not exist yet**, so the platform condition is currently
-  written in exactly one place (the guard) and the UI does not consult it. That is fine
-  today and becomes drift the moment the UI fix lands — hence proposal 1.
-- **Two open lying-toggle items now exist** on the same component: yesterday's
-  permission-staleness bug and today's guaranteed-false "New order alerts". Both are
-  unimplemented, and they should be fixed in one pass.
-- **`docs/android.md` and `android/` are both still untracked in git.** The log is now 541
-  lines of findings with no version history behind it.
+with the note that the non-reproducibility is the real cost — an admin landing on a real
+truck one launch and a demo the next reads as "flaky", which is how this stayed unexplained.
 
 ---
 
-## 7. What I could not do / did not do
+## 7. Flagged
 
-- **Did not device-verify the crash fix** — no gradle, builds, `cap`, dev servers, `adb`,
-  or installs, all forbidden. `npx tsc --noEmit` (exit 0) is the only check available.
-- **Did not implement the honest-state fix** — proposed and stopped, as instructed.
-- **Did not touch** the three `OperatorDeviceConfig.tsx` call sites, and added no
-  `google-services.json` or Firebase config.
-- **Did not edit `docs/reference-manual.md`** — the §35 invariant is flagged as a candidate
-  in `docs/android.md` only.
-- **Did not investigate the cook-screen session claim** — still parked, still needing
-  verification before any Max truck runs two screens.
-- **Did not touch `docs/last-report.md`** — not read, not written, not opened. Unchanged at
-  10,981 bytes, mtime 2026-07-26 09:20.
+- **Fix 4 is still open and still a trap.** With Fixes 1–3 an admin should no longer be
+  *sent* to a demo dashboard, but anyone who reaches one at ≥640px still has no sign-out, no
+  avatar menu and no switcher (`page.tsx:1813,1823`). Held per instruction; recommend it
+  next.
+- **`switch-truck` inherits the demo exclusion.** Intended (§3.1), but it is a behaviour
+  change beyond the strict letter of "the admin bypass in my-trucks": an admin can no longer
+  switch a device *into* a demo truck. Direct URL still works. Flagging so it is a known
+  consequence, not a surprise.
+- **The prefix filter is load-bearing on `assertReservedPrefix()`.** If that assertion is
+  ever weakened, a real operator truck could take a `demo-` id and silently vanish from the
+  admin's list — the same failure in the opposite direction. The `is_demo` column removes
+  the dependency entirely.
+- **`is_admin` now crosses the wire.** It is server-resolved from `operators.is_admin` and
+  only ever read for routing; the client never asserts it and no authorisation decision is
+  made from it. Worth knowing it exists in the payload.
+
+---
+
+## 8. What I could not do / did not do
+
+- **Could not device-verify anything** — no gradle, builds, `cap`, dev servers, `adb`,
+  installs. `npx tsc --noEmit` (exit 0) is the only check run. §5 lists the live tests.
+- **Could not confirm which truck an admin previously landed on** — that needed the SQL from
+  the last report, which you run by hand. The mechanism is fixed either way.
+- **Did not implement Fix 4** — held, as instructed.
+- **Did not add DDL or a migration** — `trucks.is_demo` proposed in §2 only.
+- **Did not touch** `app/dashboard/page.tsx`, `app/dashboard/[token]/page.tsx`,
+  `app/api/native/switch-truck/route.ts`, or `docs/reference-manual.md`.
+- **Did not touch `docs/last-report.md`** — not read, not written, not opened.
