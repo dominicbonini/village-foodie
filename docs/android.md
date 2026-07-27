@@ -845,3 +845,84 @@ send paths, the push transport seam (`lib/push/*`), the FCM transport, the (c) s
 `van_devices.id` (uuid), deliberately — `device_id` is `UNIQUE`, is the key every client
 already holds, and is what `bind-device` already upserts on. Called out because it diverges
 from the usual uuid-FK rule; a one-line change if Dominic prefers the PK.
+
+---
+
+### 2026-07-27 — Listener-ordering race: FCM token arrived and was DISCARDED. FIXED.
+
+**THE EVIDENCE** (Android emulator, deployed build `dpl_2MJdE35s…`, logcat):
+
+```
+Capacitor/PushNotificationsPlugin  V  Notifying listeners for event registration
+Capacitor/PushNotificationsPlugin  D  No listeners found for event registration
+```
+
+Registration **succeeded** — Firebase initialised, FCM returned a token, the plugin fired the
+`registration` event — and **nothing was listening**, so the token was dropped and
+`van_devices.push_token` stayed null. Two lines apart in the log: the whole bug.
+
+**THE CAUSE — confirmed in the code before fixing.** `lib/native/push.ts`, previous ordering:
+
+| Line | Call |
+| --- | --- |
+| :37 | `await import('@capacitor/push-notifications')` |
+| **:39** | **`await PushNotifications.requestPermissions()`** ← an await sat between the plugin becoming available and the listeners existing |
+| :43 / :46 / :50 | `addListener('registration' / 'registrationError' / 'pushNotificationActionPerformed')` — **none awaited**, so native-side registration was not guaranteed complete |
+| :56 | `await PushNotifications.register()` |
+
+**FCM caches the token**, so on any relaunch `register()` resolves almost immediately and the
+event fires effectively synchronously — the listener loses the race **deterministically**, not
+occasionally. A first-ever install (no cache, a real network round-trip) probably wins it,
+which is what makes this look intermittent and environment-dependent.
+
+**THE FIX (BUILT).** All three listeners are now attached **and awaited** immediately after the
+dynamic import, before `requestPermissions()` and before `register()` — guarded by a
+module-level `listenersAttached` flag. `npx tsc --noEmit` → exit 0.
+
+**Double-attach guard:** it was **not** previously handled — `registerForPush` is called from
+three sites (`OperatorDeviceConfig.tsx:43,49,69`) and `runSetup` can re-run (Retry button,
+remount), so every call stacked another set of listeners. Chose a **module-level flag** over
+`removeAllListeners()`: the flag costs no bridge round-trip and has no window in which a
+removed listener has not yet been re-added. The flag is set **after** a successful attach, not
+before, so a failed attach retries rather than permanently locking the device into the exact
+silent-drop this entry is about; the cost is a theoretical concurrent double-attach, which is
+harmless (two identical `saveDeviceConfig` calls, an idempotent upsert).
+
+**Platform impact.** Web is byte-identical (still returns at the `isNativePlatform` guard,
+never reaching this code). **iOS is NOT byte-identical and should not be described as such** —
+the same lines run there and are now reordered. What changes on iOS is only that a token which
+would have been dropped is captured; no other semantics move.
+
+**Does this explain iOS's 7 devices / 0 tokens since 2 July? No — verified.** There is **no
+`.entitlements` file anywhere under `ios/`**, and no `aps-environment` or
+`com.apple.developer.aps-environment` key anywhere in the iOS project. The **Push
+Notifications capability has never been added**, so `registerForRemoteNotifications()` cannot
+succeed and iOS fires `registrationError`, never `registration`. iOS never got far enough for
+this race to matter. It *would* have bitten the moment the capability was added — so the fix
+is still load-bearing for iOS, just not the explanation for its history.
+
+---
+
+## ⚠️ INVARIANT CANDIDATE for manual §35
+
+> **A Capacitor plugin event fires whether or not anyone is listening. Attach listeners before
+> any `await` that could let the triggering call run, and await the attach itself — the
+> native listener map is populated by a bridge round-trip, not by the JS call returning. A
+> cached native value (an FCM token, a stored location, a paired device) makes the trigger
+> effectively synchronous, so the race is lost deterministically rather than occasionally.**
+
+**Home:** manual **§35 "Cross-cutting engineering invariants"**
+(`docs/reference-manual.md:4327`). Third candidate from this workstream.
+
+**Why it belongs beside "wiring is not data flow":** that entry records
+`demo_sessions.extraction` having a column, a read, a route and a UI — and no writer. This is
+the same shape one layer over: permission, registration, listener, save helper, endpoint and
+column **all existed and were all correct**, and the event had no receiver at the instant it
+fired. Neither `tsc` nor a code review catches it, because nothing is missing — only the
+*ordering* is wrong. The generalisation: **for event-driven native APIs, "is the handler
+written?" is the wrong question; "was it registered before the thing that fires it?" is the
+right one.**
+
+Sibling call sites worth auditing on the same basis: `lib/native/notifications.ts` (local
+notification action handlers), the `@capacitor/app` resume/URL listeners, and
+`@capacitor-community/keep-awake`. Not audited yet.

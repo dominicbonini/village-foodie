@@ -7,6 +7,18 @@
 import { Capacitor } from '@capacitor/core'
 import { saveDeviceConfig } from './device'
 
+// Module-level, i.e. one per JS context (= one per page load in the WebView). registerForPush is called
+// from THREE sites in components/native/OperatorDeviceConfig.tsx (:43 already-configured, :49 single-van
+// auto-bind, :69 card save) and runSetup can re-run (the Retry button, or a remount), so without this the
+// listeners would stack a duplicate set on every call.
+// SET AFTER a successful attach, deliberately, NOT before: if attaching throws, the flag stays false and
+// the next call retries. The alternative (set-first) would permanently lock out a device whose first
+// attach failed — it would then call register() with no listener and drop the token silently, which is
+// exactly the bug this file is fixing. The cost of set-after is a theoretical concurrent double-attach,
+// which is harmless: two listeners both call saveDeviceConfig with the same token, and that write is an
+// idempotent upsert.
+let listenersAttached = false
+
 /**
  * Request push permission, register with APNs, and attach the resulting device token to THIS device's
  * van_devices row (via /api/native/bind-device). Also wires the tap handler → deep-link to the pending
@@ -36,22 +48,46 @@ export async function registerForPush(token: string, onOpenOrder?: (orderKey: st
   try {
     const { PushNotifications } = await import('@capacitor/push-notifications')
 
+    // ⚠️ LISTENERS FIRST — AND AWAITED — BEFORE requestPermissions() AND BEFORE register().
+    // A Capacitor plugin event FIRES WHETHER OR NOT ANYONE IS LISTENING. The native side keeps a listener
+    // map; notifyListeners() with an empty map logs "No listeners found for event <name>" and DROPS the
+    // payload. There is no queue and no replay — a token delivered to nobody is gone.
+    // THE BUG THIS FIXES (Android emulator, deployed build dpl_2MJdE35s…, logcat):
+    //     Capacitor/PushNotificationsPlugin  V  Notifying listeners for event registration
+    //     Capacitor/PushNotificationsPlugin  D  No listeners found for event registration
+    // Registration SUCCEEDED — Firebase initialised, FCM returned a token — and the token was discarded,
+    // leaving van_devices.push_token null. Previously `await requestPermissions()` sat BETWEEN the plugin
+    // becoming available and the listeners being attached, and the three addListener() calls were not
+    // awaited, so their native-side registration was not guaranteed to have completed before register()
+    // ran. FCM CACHES THE TOKEN, so on any relaunch register() resolves almost immediately and the event
+    // fires effectively synchronously — the listener loses the race deterministically, not occasionally.
+    // A first-ever install (no cached token, a real network round-trip) probably wins it, which is exactly
+    // what makes this the kind of bug that looks intermittent and "works on my machine".
+    // SAME FAMILY AS the manual's "wiring is not data flow": every layer existed and every layer was
+    // correct — permission, registration, listener, save, endpoint, column — and the event had no
+    // receiver at the instant it fired. Do not reorder these back above the awaits.
+    if (!listenersAttached) {
+      await Promise.all([
+        // FCM/APNs token → persist to this device's row so the server push path can target it.
+        PushNotifications.addListener('registration', (t: { value: string }) => {
+          void saveDeviceConfig(token, { push_token: t.value })
+        }),
+        PushNotifications.addListener('registrationError', (err: unknown) => {
+          console.warn('[push] registration error:', err)
+        }),
+        // Tapped a notification (app was background/closed) → deep-link into the pending order. Attached
+        // here too: a tap that LAUNCHES the app can fire this before any later attach point is reached.
+        PushNotifications.addListener('pushNotificationActionPerformed', (action: { notification: { data?: Record<string, unknown> } }) => {
+          const data = action?.notification?.data
+          const orderKey = data && typeof data.orderKey === 'string' ? data.orderKey : null
+          if (orderKey && onOpenOrder) onOpenOrder(orderKey)
+        }),
+      ])
+      listenersAttached = true
+    }
+
     const perm = await PushNotifications.requestPermissions()
     if (perm.receive !== 'granted') return
-
-    // APNs token → persist to this device's row so the server push path can target it.
-    PushNotifications.addListener('registration', (t: { value: string }) => {
-      void saveDeviceConfig(token, { push_token: t.value })
-    })
-    PushNotifications.addListener('registrationError', (err: unknown) => {
-      console.warn('[push] registration error:', err)
-    })
-    // Tapped a notification (app was background/closed) → deep-link into the pending order.
-    PushNotifications.addListener('pushNotificationActionPerformed', (action: { notification: { data?: Record<string, unknown> } }) => {
-      const data = action?.notification?.data
-      const orderKey = data && typeof data.orderKey === 'string' ? data.orderKey : null
-      if (orderKey && onOpenOrder) onOpenOrder(orderKey)
-    })
 
     await PushNotifications.register()
   } catch (e) {
