@@ -782,3 +782,66 @@ been run (Dominic runs SQL by hand) and no device launch has been observed. **Th
 to be completed with the actual result** — expected: a `van_devices` row with
 `platform = 'android'` and a non-null `push_token` after an Android launch. Until that is
 recorded here, Android registration is BUILT, UNVERIFIED.
+
+---
+
+### 2026-07-27 — Notification preference migrations DRAFTED (not run)
+
+Three SQL files written for the agreed final-state model (three per-device alert types).
+**None has been run.** Dominic runs all SQL by hand in the Supabase dashboard (project ref
+`ffphgwonshgxamtvefcv`) and pastes results back. **No application code was written against
+them, and `app/api/orders/submit/route.ts` was not touched.**
+
+| # | File | Classification |
+| --- | --- | --- |
+| 1 | `supabase/migrations/20260728_device_notification_prefs.sql` | **DEPLOY-COUPLED** — the Settings card and both send paths will read it; must precede that code. Safe to run today: nothing references it yet. |
+| 2 | `supabase/migrations/20260728_device_notification_prefs_backfill.sql` | **DEPLOY-COUPLED (same window as #1)** — not because readers hard-fail, but because they *tolerate* absence as "enabled", so without it a device an operator had muted silently unmutes. Run immediately after #1. |
+| 3 | `supabase/migrations/20260728_notification_prefs_retire_old_stores.sql` | **DEPLOY-COUPLED IN REVERSE — ⛔ DO NOT RUN YET.** Must run AFTER the new code is deployed and observed. Running it early breaks live order notifications on a trading truck. |
+
+**Deploy order this implies:** #1 → #2 (same sitting) → *write and deploy the code* → observe
+a real order → then #3. The one ordering that must not happen is #3 before the code drops its
+references to `van_notification_prefs` / `van_devices.notify_enabled`.
+
+**Migration path for the existing stores:**
+
+- **`van_notification_prefs` rows** — their *effect* is folded into the new per-device rows by
+  #2 (the backfill computes `van_devices.notify_enabled AND coalesce(van_notification_prefs.enabled, true)`),
+  so a muted van becomes a set of muted devices. The rows themselves are **left in place,
+  dormant**, until #3.
+- **`van_devices.notify_enabled`** (7 rows, 6 true at last verification) — read by #2 into the
+  `'order_pending'` rows, then **left dormant** until #3.
+- **Dropped or dormant?** **Dormant**, following the manual's precedent. Keeping both intact
+  through the switchover makes the rollback a code revert with no data loss; dropping them in
+  the same sitting as the create would make the riskiest day irreversible.
+- **Backfill needed?** Yes, and it is #2. Existing devices get explicit rows for all three
+  types so nothing changes behaviour on deploy.
+
+**Defaults, and the convention followed:** `enabled boolean not null default true`, and a
+**missing row reads as ENABLED**. This follows the established `preorders_enabled !== false` /
+`notes_require_review !== false` convention where a null/pre-migration value reads as the safe
+behaviour — and for an *alert*, the safe direction is to fire (a missed offline-protection
+alert means orders arriving at a device nobody is watching). That default governs **devices
+created after the migration**; existing devices get explicit rows instead:
+
+| Type | Seeded for existing devices | Why |
+| --- | --- | --- |
+| `order_pending` | the folded conjunction of today's two gates | preserves current behaviour exactly |
+| `offline_protection` | **false** | `hg_notify_master` is unset out of the box, so these alerts do **not** fire today for any device whose operator never enabled the master. `true` would start them unbidden. |
+| `schedule_received` | **false** | brand new; the scraper runs hourly, so default-on would start unsolicited alerts across every truck immediately. Opt in. |
+
+**⚠️ NOT YET BUILT — the outstanding item this creates.** A device whose operator *had*
+enabled offline alerts locally will read `false` after the backfill and go silent, because
+those prefs are device-local and invisible to SQL. The remedy is client-side and **must ship
+in the same release as the new Settings card**: on first run, migrate the local
+`hg_notify_master`/`hg_notify_offline` values into `device_notification_prefs` with a one-time
+upsert, then stop reading the local keys.
+
+**Also not built against these:** the Settings card rewrite, the per-device pref reads in the
+send paths, the push transport seam (`lib/push/*`), the FCM transport, the (c) send in
+`inbound-schedule`, and the retirement of the temporary
+`.or('platform.eq.ios,platform.is.null')` predicate at `app/api/orders/submit/route.ts:1077`.
+
+**One open question flagged in file #1's header:** the FK is `device_id` (text) rather than
+`van_devices.id` (uuid), deliberately — `device_id` is `UNIQUE`, is the key every client
+already holds, and is what `bind-device` already upserts on. Called out because it diverges
+from the usual uuid-FK rule; a one-line change if Dominic prefers the PK.
