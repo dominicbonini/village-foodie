@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback, use } from 'react';
 import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
-import { isDemoIdentifier } from '@/lib/demo'
+import { isDemoIdentifier, displayTruckName } from '@/lib/demo'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { getBundleSlotCategories as getSlotCats, calculateDealOriginalPrice as calcOrigPrice } from '@/lib/deal-utils'
@@ -162,7 +162,42 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
   const searchParams = useSearchParams()
   const eventIdParam = searchParams.get('event_id')
 
+  // ── THE STICKY STACK ────────────────────────────────────────────────────────────────────────────
+  // Bars pin in this order, each offset by everything above it:
+  //   page header      sticky top-0            h-[60px]   z-50   (Hdr)
+  //   DEMO MODE banner sticky top-[60px]       ~46px      z-40   (demo only — Hdr)
+  //   status banners   sticky HEADER_H(+demo)             z-40   (time-not-set / closed / paused)
+  //   category tabs    sticky HEADER_H(+demo)  61px       z-30   (multi-category menus only)
+  //   subcat headings  sticky the above + 61px            z-20
+  // Everything below the banner used to be hardcoded at top-[60px] / top-[121px], which counted the
+  // header but NOT the demo banner — so in demo every one of those bars pinned UNDERNEATH the banner
+  // and its first line was clipped. NON-DEMO IS UNAFFECTED: demoBannerH contributes 0, and the values
+  // resolve to exactly the 60 / 121 they always were.
+  const HEADER_H = 60   // Hdr's h-[60px]
+  const TABBAR_H = 61   // py-2 (16) + min-h-[44px] button + 1px border
+  const demoBannerRef = useRef<HTMLDivElement | null>(null)
+  // MEASURED, not hardcoded. The banner is 46px today (py-2 ×2 + min-h-[1.75rem] + border-b-2), but every
+  // one of those is a rem, so OS/browser text scaling changes it — the same class of bug the header logo
+  // was pinned to fixed px for (see Hdr). 46 is the first-paint fallback so the offset is right before the
+  // observer fires, then measurement takes over and self-corrects if the banner is ever restyled.
+  const [demoBannerH, setDemoBannerH] = useState(46)
+  useEffect(() => {
+    const el = demoBannerRef.current
+    if (!isDemo || !el || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setDemoBannerH(el.getBoundingClientRect().height))
+    ro.observe(el)
+    setDemoBannerH(el.getBoundingClientRect().height)
+    return () => ro.disconnect()
+  }, [isDemo])
+  const stickyTop = HEADER_H + (isDemo ? demoBannerH : 0)
+
   const [truck, setTruck] = useState<TruckData | null>(null)
+  // CUSTOMER-FACING name — the stored name minus any trailing "(code)". A demo truck is stored as
+  // "Demo Kitchen (ce1kh2)" so concurrent demos stay tellable apart in admin and in the DB; the code is
+  // meaningless to a customer and reads as a serial number on a business. Display only — nothing here
+  // writes trucks.name. See displayTruckName in lib/demo.ts. Use this EVERYWHERE the customer sees the
+  // name on this page; `truck.name` stays the raw value for anything that isn't display.
+  const truckName = displayTruckName(truck?.name)
   const [menu, setMenu] = useState<TruckMenu | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)  // customer menu category tab
 
@@ -1204,7 +1239,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           <p className="text-slate-500 mb-3 text-sm">
             {submittedAutoAccepted
               ? <>Thanks! We've received your order and it'll be ready soon.</>
-              : <><span className="font-semibold text-slate-700">{truck?.name}</span> will confirm your order shortly.</>
+              : <><span className="font-semibold text-slate-700">{truckName}</span> will confirm your order shortly.</>
             }
           </p>
 
@@ -1241,7 +1276,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 {asapMoved && (
                   <p className="text-orange-600 text-xs mt-0.5">Slightly later than the {formatTime(submittedAsapEstimate!)} we estimated.</p>
                 )}
-                <p className="text-orange-600 text-xs mt-0.5">{truck?.name} will confirm your collection time when they accept your order.</p>
+                <p className="text-orange-600 text-xs mt-0.5">{truckName} will confirm your collection time when they accept your order.</p>
               </div>
             ) : null
           )}
@@ -1310,7 +1345,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
              A full navigation (<a>) reloads a fresh form — the confirmation shares this
              URL, so a soft <Link> would just re-render the confirmation. */}
           <a href={`/trucks/${slug}/order`} className="block w-full bg-slate-900 text-white font-bold py-3 px-6 rounded-xl hover:bg-slate-800 transition-colors">
-            Back to {truck?.name}
+            Back to {truckName}
           </a>
         </div>
       </div>
@@ -1361,12 +1396,12 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
   return (
     <Shell>
-      <Hdr slug={slug} truck={truck} scrolled={isScrolled} />
+      <Hdr slug={slug} truck={truck} scrolled={isScrolled} bannerRef={demoBannerRef} />
 
       {/* Time-not-set banner — a null-time event can't be ordered against (engine needs the times). Shown
           INSTEAD of treating it as orderable; intentional + reassuring, never a broken/crash screen. */}
       {orderingTimeNotSet && !isClosed && (
-        <div className="sticky top-[60px] z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
+        <div style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering isn’t available for this event yet</p>
             <p className="text-xs text-slate-300 mt-0.5">The truck hasn’t set the event time yet — please check with them directly. You’ll be able to order here once it’s set.</p>
@@ -1376,7 +1411,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
 
       {/* Event closed banner — clock end (isEventClosed) OR operator finished (eventEnded, incl. early) */}
       {isClosed && (
-        <div className="sticky top-[60px] z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
+        <div style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering has closed</p>
             <p className="text-xs text-slate-300 mt-0.5">
@@ -1395,7 +1430,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           customer is actually ordering from. A pre-order event can't be offline-paused (the monitor
           only pauses live status='open' events), so it never shows the offline variant. */}
       {event && isPaused && !isClosed && (
-        <div className="sticky top-[60px] z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
+        <div style={{ top: stickyTop }} className="sticky z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
           <div className="flex items-start gap-3 max-w-lg mx-auto">
             <span className="text-xl flex-shrink-0">
               {truck?.pauseReason === 'offline' ? '📡' : '⏸️'}
@@ -1433,7 +1468,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="text-5xl mb-4">🕐</div>
             <h2 className="text-lg font-semibold text-slate-900 mb-2">Orders not open yet</h2>
             <p className="text-sm text-slate-500 max-w-xs">
-              {truck?.name} hasn&apos;t confirmed this event yet. Check back closer to the date or follow them on social media for updates.
+              {truckName} hasn&apos;t confirmed this event yet. Check back closer to the date or follow them on social media for updates.
             </p>
           </div>
         )}
@@ -1445,7 +1480,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
           {truck?.logo ? (
             <Image
               src={truck.logo}
-              alt={truck.name || ''}
+              alt={truckName}
               width={96}
               height={96}
               className="w-24 h-24 object-contain rounded-full border border-slate-200 shadow-md bg-white mx-auto mb-4"
@@ -1454,7 +1489,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
             <div className="w-24 h-24 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-4xl shadow-md mx-auto mb-4">🚚</div>
           )}
           <h1 className="text-2xl font-black text-slate-900">
-            Order from {truck?.name}
+            Order from {truckName}
           </h1>
           {/* Event details card.
               2b — HIDDEN IN DEMO. The whole block is the event card OR the chooser, and neither means
@@ -1479,7 +1514,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                 // the CTA hidden (already ordering for this event). "Change" returns to the profile
                 // chooser when there are alternatives.
                 <TruckListCard
-                  event={eventToVillage(event, truck?.name || '')}
+                  event={eventToVillage(event, truckName)}
                   slug={slug}
                   hideOrderButton
                   compact
@@ -1503,7 +1538,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     const poLabel = poNotOpenYet ? formatPreorderOpenLabel(truck?.preorder_open_rule, e.date_iso) : null
                     return (
                       <div key={e.id}>
-                        <TruckListCard event={eventToVillage(e, truck?.name || '')} slug={slug} forceOrderButton />
+                        <TruckListCard event={eventToVillage(e, truckName)} slug={slug} forceOrderButton />
                         {poLabel && <p className="text-[11px] text-amber-700 font-semibold text-center mt-1 mb-2">⏳ {poLabel}</p>}
                       </div>
                     )
@@ -1628,7 +1663,7 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
               category; subcategory headers (below) are preserved within it. Finger-sized (≥44px),
               horizontal-scroll on narrow. -mx-4 px-4 makes the white bar span the menu card's padding. */}
           {menuCategories.length > 1 && (
-            <div className="sticky top-[60px] z-30 -mx-4 px-4 py-2 mb-2 bg-white border-b border-slate-100">
+            <div style={{ top: stickyTop }} className="sticky z-30 -mx-4 px-4 py-2 mb-2 bg-white border-b border-slate-100">
               <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
                 {menuCategories.map(cat => (
                   <button
@@ -1677,14 +1712,15 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
                     STICKY (B1): pins directly beneath the category tab bar as you scroll within a
                     category, swapping to the next subcategory as it arrives (native nested-sticky —
                     each header's containing block is its own group <div>, so when a group scrolls out
-                    its header leaves with it and the next group's header takes over). Offset = 60 (the
-                    fixed h-[60px] page header) + 61 (the tab bar: py-2=16 + min-h-[44px] button + 1px
-                    border) = top-[121px]. When there's ONE category the tab bar isn't rendered, so the
-                    header pins flush under the page header at top-[60px]. z-20 sits BELOW the tab bar
+                    its header leaves with it and the next group's header takes over). Offset =
+                    stickyTop (the 60px page header, PLUS the DEMO MODE banner when it's there — see the
+                    sticky-stack note at the top of this component) + TABBAR_H. When there's ONE category
+                    the tab bar isn't rendered, so the header pins flush at stickyTop. Outside demo these
+                    resolve to the same 121 / 60 they were hardcoded to. z-20 sits BELOW the tab bar
                     (z-30) and the page header bars (z-40) and ABOVE the items. -mx-4 px-4 + bg-white
                     make it an opaque full-bleed band (matching the tab bar) so items don't bleed through. */}
                 {group.name && (
-                  <p className={`sticky ${menuCategories.length > 1 ? 'top-[121px]' : 'top-[60px]'} z-20 -mx-4 px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider`}>
+                  <p style={{ top: menuCategories.length > 1 ? stickyTop + TABBAR_H : stickyTop }} className="sticky z-20 -mx-4 px-4 py-2 bg-white text-sm font-black text-orange-500 uppercase tracking-wider">
                     {cap(group.name)}
                     {/* Sub-category pre-order pill — shown when every available item in THIS group is an
                         enabled pre-order item (shared global string). inline-block + whitespace-nowrap so
@@ -2491,13 +2527,15 @@ function Shell({ children }: { children: React.ReactNode }) {
   return <div className="min-h-screen bg-slate-50 flex flex-col">{children}</div>
 }
 
-function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: TruckData | null; scrolled: boolean; showBack?: boolean }) {
+function Hdr({ slug, truck, scrolled, showBack = true, bannerRef }: { slug: string; truck: TruckData | null; scrolled: boolean; showBack?: boolean; bannerRef?: React.Ref<HTMLDivElement> }) {
   // DEMO banner lives HERE, not at each render path: <Hdr> is the one component every state of this page
   // goes through (loading, error, no-event, ended, and the live menu), so one insertion covers all five and
   // a future sixth can't miss it. A demo truck's SLUG carries the `demo-` prefix (lib/demo.ts), so the page
   // needs no extra data to know. Sticky directly under the 60px header so it stays visible while scrolling
   // a long menu — a demo indicator that scrolls away isn't doing its job. Calm, matching the dashboard.
   const isDemo = isDemoIdentifier(slug)
+  // Customer-facing name — trailing "(code)" stripped for display only. See lib/demo.ts.
+  const truckName = displayTruckName(truck?.name)
   return (
     <>
     <header className="bg-slate-900 text-white py-3 px-4 sticky top-0 z-50 shadow-md h-[60px] flex items-center">
@@ -2516,11 +2554,11 @@ function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: 
                 its current size) so it no longer scales with OS text and grows into the VF zone. */}
             <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-[115px] sm:px-[145px] w-full">
               {truck.logo
-                ? <Image src={truck.logo} alt={truck.name} width={48} height={48} className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] object-contain rounded-full bg-white shadow-sm shrink-0" />
+                ? <Image src={truck.logo} alt={truckName} width={48} height={48} className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] object-contain rounded-full bg-white shadow-sm shrink-0" />
                 : <div className="w-[40px] h-[40px] sm:w-[48px] sm:h-[48px] bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-base shrink-0">🚚</div>
               }
               <h1 className="text-[13px] sm:text-[15px] font-bold sm:font-black tracking-tight leading-tight truncate max-w-[110px] sm:max-w-xs">
-                {truck.name}
+                {truckName}
               </h1>
             </div>
           </div>
@@ -2541,7 +2579,7 @@ function Hdr({ slug, truck, scrolled, showBack = true }: { slug: string; truck: 
     </header>
     {/* Shared with the dashboard and the KDS — components/DemoModeBanner.tsx. Sticky under the 60px header
         (this page isn't a flex shell), so it stays visible while scrolling a long menu. */}
-    {isDemo && <DemoModeBanner className="sticky top-[60px] z-40 shadow-sm" action={<DemoGetStarted slug={slug} />} />}
+    {isDemo && <DemoModeBanner innerRef={bannerRef} className="sticky top-[60px] z-40 shadow-sm" action={<DemoGetStarted slug={slug} />} />}
     </>
   )
 }

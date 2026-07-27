@@ -901,20 +901,22 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
                     className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
                   />
                   {error && <p className="text-sm text-red-600">{error}</p>}
-                  {/* Plain text, NO tinted box (§8 reassurance, but subordinate here — the free-month line
-                      gets its emerald block on the welcome popup, not on the action modal). Answers the one
-                      fear that setting up starts a clock. On the canSetup path this line moves to step 3
-                      (the actual commitment); here it stays for the email-only path where THIS is the commit. */}
-                  {!canSetup && (
-                    <p className="text-sm text-slate-600">
-                      Setting up won&apos;t start your free month. That begins when you pick your first live
-                      event — whenever you&apos;re ready.
-                    </p>
-                  )}
+                  {/* NO free-month line here. It used to render on exactly this branch (`!canSetup`), which
+                      is the branch where there IS NO SETUP BUTTON — the customer order page passes a slug,
+                      not a token, so canSetup is false and the only action is "Send me the link". Promising
+                      that "setting up won't start your free month" beside an offer that doesn't include
+                      setting up is a promise about something not on the table; it invites the reader to look
+                      for a signup control that isn't there. The line belongs WITH the primary setup button,
+                      and that is where it now lives exclusively: the canSetup wizard's step-3 commitment view
+                      (see the §4 comment above it). This branch is a save-your-demo offer and nothing more. */}
                   {/* RETROFIT: this capture has collected addresses since Phase 3 with no privacy notice
-                      near it — a live compliance gap, not a Phase 4 nicety. One line by design. */}
+                      near it — a live compliance gap, not a Phase 4 nicety. One line by design.
+                      The !canSetup half names ONLY what actually happens on this surface: we send the
+                      demo link. It used to add "and get you set up", which — like the free-month line
+                      removed just above — described a path this branch doesn't offer. A privacy notice
+                      that overstates what you'll be contacted about is the one line that must not. */}
                   <p className="text-xs text-slate-400">
-                    We&apos;ll only use this to {canSetup ? 'set up your truck and send your demo link' : 'send your demo link and get you set up'} — see our{' '}
+                    We&apos;ll only use this to {canSetup ? 'set up your truck and send your demo link' : 'send your demo link'} — see our{' '}
                     <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
                       privacy policy
                     </a>.

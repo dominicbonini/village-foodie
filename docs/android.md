@@ -1011,3 +1011,162 @@ both are cases where the **native toolchain rejects something the web toolchain 
 silently** — a filename with a space, a `--` inside a comment. Neither is visible to `tsc`,
 ESLint, or code review. **The general rule: when adding files to `android/` or `ios/`, the
 constraints are the platform's, not the repo's.**
+
+---
+
+### 2026-07-27 — Notification preference migrations APPLIED to prod (2 of 3). Baseline captured.
+
+Supabase project `ffphgwonshgxamtvefcv`. Run by hand by Dominic; results pasted back and
+recorded here. **This supersedes the "DRAFTED (not run)" entry above** — files #1 and #2 are
+now APPLIED and verified. File #3 is **NOT RUN and must not be** (preconditions restated below).
+
+The transient task report that carried the verification SQL has been overwritten since, which is
+why the numbers are recorded here in full. **This is the only durable copy of the baseline.**
+
+#### BASELINE — the pre-migration state, captured before anything ran
+
+| Fact | Value |
+| --- | --- |
+| `van_devices` rows | **9** |
+| `notify_enabled` | **8 true, 1 false** |
+| Platform split | **2 android, 7 ios** |
+| Devices with a `push_token` | **ONE** — the live Android emulator, 142 chars, written 21:07:48 |
+| `van_notification_prefs` | **EMPTY — zero rows** |
+
+**`van_notification_prefs` being empty settles the conditional in the expected counts.** Every
+`van_gate_raw` was null, so the `coalesce(p.enabled, true)` leg of the backfill's conjunction
+defaulted to enabled for every device, and the `order_pending` result was driven entirely by
+`van_devices.notify_enabled`. The predicted **8 enabled / 1 disabled was correct.** Had any van
+been muted there, the count would have been lower — which is exactly why the verification query
+recomputed it rather than asserting it.
+
+**⚠️ Gusto's device (`d687417b`, ios) has no push token. Gusto has never had a working push
+device.** Recorded because it is easy to misread a future "Gusto didn't get the notification"
+report as a regression in the new pref model. It is not — there has never been a token to send
+to. Only one device in the entire fleet can currently receive a push, and it is the Android
+emulator.
+
+**Correction to the transient report:** it assumed 8 devices with tokens and 1 without. The real
+figure is the inverse — **1 with, 8 without**. That assumption never reached the SQL (nothing in
+the backfill filters on `push_token`), so no count or seeded value was affected.
+
+#### 1. `20260728_device_notification_prefs.sql` — APPLIED, verified
+
+- Table created.
+- **FK confirmed against `van_devices(device_id)`** — the text natural key, not the uuid PK. This
+  was the deliberate divergence flagged in the file header; it landed as intended.
+- **RLS on, zero policies** (service-role only, as designed).
+- **Composite PK `(device_id, type)`** — and no redundant standalone index on `device_id`, which
+  the PK's leading column already serves.
+- **Table empty on creation.** The create seeds nothing; the backfill does that.
+
+#### 2. `20260728_device_notification_prefs_backfill.sql` — APPLIED, verified
+
+**27 rows seeded across 9 devices** (9 × 3 types).
+
+| Type | Enabled | Disabled |
+| --- | --- | --- |
+| `offline_protection` | 0 | 9 |
+| `order_pending` | **8** | **1** |
+| `schedule_received` | 0 | 9 |
+
+**Verification 5.c, 5.d and 5.e all returned zero rows.**
+
+- **5.c** — no device has anything other than 3 pref rows (no partial seeding).
+- **5.d** — no orphan prefs (no pref row whose device is gone).
+- **5.e — the real check.** It recomputes the pre-migration gate arithmetic
+  (`coalesce(notify_enabled, true) AND coalesce(van_notification_prefs.enabled, true)`) from the
+  old stores and diffs it against what actually landed in `order_pending`. **Zero rows means every
+  device's new pref reproduces its old behaviour exactly** — which is the entire purpose of the
+  backfill. A count matching expectations proves far less than this diff returning empty.
+
+**One row-count note for anyone reading the totals later:** the 27 includes the orphaned tokenless
+Android device (a reinstall that left a `van_devices` row behind). The backfill is an unqualified
+`select ... from van_devices` with no `push_token` filter, so it was seeded like any other device.
+That is correct and inert — the send path filters `.not('push_token','is',null)`, so an enabled
+pref on a tokenless device governs an event that cannot occur, and the FK's `on delete cascade`
+removes its three rows if the device row is ever tidied up. **If you expected 24, that is the
+difference.**
+
+---
+
+### 🚨 BLOCKER on the Settings-card work — the offline_protection coupling
+
+**This is a blocker, not a note. It must be resolved in the SAME RELEASE as the new Settings card.**
+
+**The backfill seeded `offline_protection = false` for all nine devices.** That was the faithful
+choice for the majority: `offlineAlertsEnabled()` (`lib/native/notifications.ts`) requires
+`hg_notify_master === 'true'`, and `hg_notify_master` is **unset out of the box**, so offline
+alerts do not fire today on any device whose operator never went into Settings and switched the
+master on. Seeding `true` would have started alerts unbidden on devices that have never made a
+sound — possibly in a kitchen at 6am.
+
+**But the converse is now live in prod:** any operator who *had* enabled offline alerts locally
+(`hg_notify_master` / `hg_notify_offline`) **will go silent** the moment the new Settings card
+ships and starts reading `device_notification_prefs` instead of the local keys. Those preferences
+are device-local Capacitor Preferences, invisible to SQL, so **no migration could have read them
+and none ever will.**
+
+**The remedy is client-side, and it is the blocker:**
+
+> On first run of the new Settings card, perform a **one-time migration** of the local
+> `hg_notify_master` / `hg_notify_offline` (and `hg_notify_neworder`) values into
+> `device_notification_prefs` with an upsert, then **stop reading the local keys**.
+
+**Shipping the Settings card without that one-time migration is a silent regression on every
+device whose operator had opted in.** Silent is the operative word: the alert simply never fires,
+there is no error, and the operator's toggle will show the new server value as though they had
+chosen it. It is also **precondition 4** of the sweep migration below, so the sweep cannot proceed
+until it has shipped and run.
+
+---
+
+### ⛔ `20260728_notification_prefs_retire_old_stores.sql` — NOT RUN, and must not be
+
+**Classification: DEPLOY-COUPLED IN REVERSE.** Every other migration runs *before* its code; this
+one runs *after*. It **drops `van_notification_prefs`** and **drops the `van_devices.notify_enabled`
+column**, and `app/api/orders/submit/route.ts` still reads **both** — `van_notification_prefs` at
+line 1067, `.eq('notify_enabled', true)` at line 1076. **Running it today means every customer
+order on a live trading truck hits a missing table and a missing column.** A `DROP` is not
+reversible.
+
+**The seven preconditions — restated here so they survive the transient report. All must be true;
+check them, do not assume:**
+
+1. `device_notification_prefs` exists and is populated. ✅ **Met as of today** (27 rows, verified).
+2. The order-submit push path reads `device_notification_prefs` and **no longer references**
+   `van_notification_prefs` or `van_devices.notify_enabled`.
+3. The Settings card writes `device_notification_prefs` and no longer writes `notify_enabled`.
+4. The **one-time client migration of the local `hg_notify_*` keys has shipped and run** — see the
+   blocker above. Otherwise offline-alert preferences still exist only in device localStorage and
+   dropping the server stores strands them.
+5. That code is **DEPLOYED** — not merely committed. *"tsc-clean" is not deployed.*
+6. A real order on a real truck has produced the expected notification behaviour post-deploy.
+7. `grep -rn "notify_enabled\|van_notification_prefs" app/ lib/ components/` returns nothing
+   outside comments.
+
+**Only precondition 1 is met.** 2 through 7 all depend on code that does not exist yet.
+
+**Snapshot before ever running it** — these two SELECTs are the only record of the old state once
+the drop completes, and the baseline table above does not replace them (it predates any later
+changes):
+
+```sql
+select * from van_notification_prefs order by van_id, type;
+select device_id, van_id, notify_enabled from van_devices order by device_id;
+```
+
+**Why the old stores stay dormant rather than being dropped alongside the create:** keeping them
+intact through the switchover makes the rollback for the whole notification rework a **code
+revert** — no data destroyed, the old readers still find what they expect, the new table simply
+ignored. Dropping them in the same sitting would have made the switchover irreversible on its
+riskiest day. Two dormant objects cost nothing; an unrollbackable deploy costs a trading day.
+
+#### Still not built against these tables
+
+The Settings card rewrite, the per-device pref reads in both send paths, the push transport seam
+(`lib/push/*`), the FCM transport, the (c) `schedule_received` send in `inbound-schedule`, and the
+retirement of the temporary `.or('platform.eq.ios,platform.is.null')` predicate at
+`app/api/orders/submit/route.ts:1077`. **That predicate still excludes Android from order push** —
+so the one device in the fleet with a working token is the one the send path filters out. The
+client half of Android push is verified end to end; the server half is not wired.

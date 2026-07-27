@@ -1,298 +1,224 @@
-# Last report — Scraper: disable the day-of-week learner + make failures visible
+# Last report — Privacy-line trim + displayTruckName in discovery metadata
 
-**Date:** 2026-07-27 · **File touched:** `scripts/run-scraper.js` **only**
-**Verification:** `node --check scripts/run-scraper.js` → clean. No `next dev`, no `next build`.
+**Date:** 2026-07-27 · **Files touched:** `components/DemoGetStarted.tsx`, `app/trucks/[slug]/page.tsx`
+**Verification:** `npx tsc --noEmit` → **clean, zero errors.** No `next dev`, no `next build`, as
+instructed.
 
-This report **overwrites** the previous one (the scheduling diagnostic of 2026-07-27).
+This report **overwrites** the previous one (the customer order page demo fixes of 2026-07-27), per
+the rolling convention.
 
-🔴 **Blast radius, stated first.**
-
-| Change | Effect on a truck that is currently working |
-|---|---|
-| **1. Learner disabled** | **YES — this changes behaviour for gusto.** It moves from ~3 scrapes/week to ~7. That is the fix, not a side effect: more scraping, never less, so nothing that works today can stop working. The costs are runner minutes and a little Gemini spend (§1). |
-| **2a. `main().catch` → exit 1** | No change to a healthy run. A run that already crashed now goes red instead of silently green. |
-| **2b. Secret guard / query error throw** | No change to a healthy run — both paths are only reachable when the run was already doing nothing. |
-| **2c. Per-truck crash logged** | Only affects a truck that throws. **One real behaviour change: a crashing truck's due-clock now resets** (§2c). |
-| **2d. `anyDue` no-op** | Log text only. Still exits 0. |
-
-Nothing in this diff touches the Gemini prompt, extraction, the rule-detection/retry logic from the
-previous diff, the workflow file, or anything outside `scripts/run-scraper.js`.
+**Prompt integrity:** no garbles this time. The prompt arrived intact.
 
 ---
 
-## 0. Prompt garbles — flagged, not silently fixed
+# 1. PRIVACY LINE — "and get you set up" removed from the `!canSetup` branch
 
-| Item | As received | Read as |
-|---|---|---|
-| 1 | "a behaviour switch, **neletion**" | "**not a deletion**" |
-| 2c | "If **writto** the log is what failed" | "If **writing to** the log is what failed" |
+**Site:** `components/DemoGetStarted.tsx:919` (the ternary inside the landing / email-capture view).
+
+### Before
+
+```jsx
+<p className="text-xs text-slate-400">
+  We&apos;ll only use this to {canSetup ? 'set up your truck and send your demo link' : 'send your demo link and get you set up'} — see our{' '}
+```
+
+### After
+
+```jsx
+<p className="text-xs text-slate-400">
+  We&apos;ll only use this to {canSetup ? 'set up your truck and send your demo link' : 'send your demo link'} — see our{' '}
+```
+
+**The `canSetup` half is byte-identical** — `'set up your truck and send your demo link'`, untouched.
+There, setting them up genuinely is what happens next: the wizard's step-1 → step-3 path creates the
+account, the operator and the truck. The promise matches the action.
+
+### What the branch reads as now, end to end
+
+On the customer order page (slug, no token → `canSetup` false):
+
+```
+Save your demo
+We'll keep it for 14 days and email you a link straight back.
+
+[ email input: you@yourtruck.co.uk ]
+We'll only use this to send your demo link — see our privacy policy.
+
+[            Send me the link            ]
+```
+
+**Heading, body, notice and button now all describe one action.** With the free-month line removed
+last task and this clause removed now, there is no remaining reference on this branch to setting up,
+signing up, a trial, or a clock. The privacy notice states exactly one use of the address, and it is
+the use the button performs.
+
+The reasoning is recorded above the line (`:912–917`) so it doesn't get "improved" back:
+
+```jsx
+/* … The !canSetup half names ONLY what actually happens on this surface: we send the
+   demo link. It used to add "and get you set up", which — like the free-month line
+   removed just above — described a path this branch doesn't offer. A privacy notice
+   that overstates what you'll be contacted about is the one line that must not. */
+```
+
+That last sentence is the point worth keeping: of everything on this modal, a **privacy notice** is
+the one element where overstating the use of a collected address is a compliance problem rather than
+a copy problem.
 
 ---
 
-## 1. Day-of-week learner disabled
+# 2. `displayTruckName()` APPLIED TO THE DISCOVERY-PROFILE METADATA
 
-### The switch (`:931-947`)
+**Site:** `app/trucks/[slug]/page.tsx`, `generateMetadata` — import added at `:4`, the derived name at
+`:57`, applied to all six interpolation sites at `:60–79`.
 
-```js
-// 🔴 DISABLED (behaviour switch, NOT a deletion — see the call site for the full reasoning).
-// Always true: the learned-day window is no longer a gate. The 23h due-window (isDueByLog) is now the
-// ONLY cadence control. The body below is intentionally preserved, unreachable, together with the
-// learner that writes scraper_update_day / scraper_learning_complete in recordRunAndLearn — the data
-// keeps accruing and this becomes a one-line re-enable (delete the `return true`) if truck volume ever
-// makes the saved page loads worth the missed-update risk.
-function shouldRunToday(truck) {
-  return true;
+```jsx
+const name = displayTruckName(truck.name);
 
-  // eslint-disable-next-line no-unreachable
-  const today = new Date().getDay();
-  if (!truck.scraper_learning_complete) return true;
-  …
-}
+return {
+  title: `${name} | Village Foodie`,
+  description: `Check out where ${name} is pitching up next! 🚚`,
+  openGraph: {
+    title: `${name} Schedule`,
+    description: `Check out where ${name} is pitching up next! 🚚`,
+    url: `${baseUrl}/trucks/${resolvedParams.slug}`,
+    siteName: 'Village Foodie',
+    images: imageUrl ? [{ url: imageUrl, alt: `${name} Logo` }] : [],
+    locale: 'en_GB',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${name} Schedule`,
+    description: `Check out where ${name} is pitching up next! 🚚`,
+    images: imageUrl ? [imageUrl] : [],
+  },
+};
 ```
 
-The original body is preserved verbatim below the `return true`. **Re-enabling is deleting one line.**
+### Confirmed: nothing else in that metadata carries the raw name
 
-**The learner itself is untouched** — `recordRunAndLearn` (`:1044-1059`) still computes and writes
-`scraper_update_day` and `scraper_learning_complete` on every run past day 30. The data keeps
-accruing, exactly as instructed; it is simply no longer consulted.
+`grep -n "truck.name" app/trucks/[slug]/page.tsx` returns **exactly one line — `:57`, the strip call
+itself.** Every one of the six previous sites is now `${name}`:
 
-Worth noting: because the truck now runs **every** day, the learner's future observations are drawn
-from all 7 weekdays rather than only the 3 it already believed in. If it is ever re-enabled, it will
-be re-enabled on *unbiased* data — the self-reinforcement described below is broken by this change,
-not merely bypassed.
+| Site | Field |
+| --- | --- |
+| `:60` | `title` — the browser tab |
+| `:61` | `description` — the meta description / search snippet |
+| `:63` | `openGraph.title` — the WhatsApp / Facebook card heading |
+| `:64` | `openGraph.description` — the card body |
+| `:67` | `openGraph.images[].alt` — the card image alt text |
+| `:75`, `:76` | `twitter.title`, `twitter.description` |
 
-### The reasoning, recorded at the call site (`:1226-1241`)
+The only other interpolations in the object are `baseUrl`, `resolvedParams.slug` and `imageUrl` —
+none derived from the name. The early return at `:42–44` is the static
+`{ title: 'Food Truck | Village Foodie' }` and carries no name at all.
 
-```js
-      //  (1) shouldRunToday — 🔴 NOW A NO-OP (hardcoded true). Kept in the chain so re-enabling is one line.
-      //  (2) isDueByLog     — forgiving due-window vs scraper_run_log (~24/n−1h; 3×/day → 7h). …
-      //
-      // 🔴 WHY THE LEARNED-DAY WINDOW WAS DISABLED. Once scraper_learning_complete flipped, a truck was
-      // eligible on only 3 days a week (learned day, +1, +2). Two trucks learned DISJOINT windows — gusto
-      // Mon/Tue/Wed, test-truck Thu/Fri/Sat — so no day ever ran both and SUNDAY ran neither. Gusto
-      // publishes on SUNDAY: the one day their learned window excluded. Their update sat unscraped until
-      // the window reopened the next day.
-      //
-      // The deeper defect is that the learner is SELF-REINFORCING and cannot correct itself. It learns
-      // from `events_changed` observed on days it actually ran, but it only runs on days it already
-      // believes in — so a truck can never be observed publishing outside its own window, and the evidence
-      // that would move the window can never be gathered. A single early coincidence becomes permanent.
-      // (`indexOf(maxChanges)` also breaks ties toward the lowest-numbered weekday, so sparse history
-      // decides the whole schedule.)
-      //
-      // Trade: we spend more page loads to stop missing updates. At 1×/day the 23h window still caps each
-      // truck at one scrape per day — the cost is bounded by scrape_times_per_day, not by this gate.
-```
+### ⚠️ A correction I owe you on the premise — this was never a reachable leak
 
-Both call sites are covered: the `anyDue` pre-check at `:1193` and the in-loop gate at `:1248`.
-Both now evaluate `shouldRunToday` to `true`, leaving `isDueByLog` as the sole pacing control.
+**I called this a leak in the last report. It is not one, and I should have checked before saying so.**
 
-### Added cost
+`getTruckMeta` (`:9–35`) does not read `trucks.name` from the database. It fetches a **Google Sheets
+CSV** (`TRUCKS_CSV_URL`, `:6`) and matches by `createSlug(rawName) === slug`. A demo truck is
+provisioned into Postgres and never appears in that sheet, so for any `demo-…` slug `getTruckMeta`
+returns `null` and the metadata is the generic `'Food Truck | Village Foodie'`. **The `(ce1kh2)`
+suffix could not have reached this page's tab title, OG card or Twitter card by any route.**
 
-The 23h window is unchanged, so **each truck is still capped at one scrape per ~23h**. The learner
-was only ever removing *days*, so the delta is days-per-week, not scrapes-per-day.
+Your reasoning for the change — that metadata travels further than on-page text — is exactly right in
+general, and it is why the same fix mattered on the order page. It just doesn't bite here, because
+the name on this page comes from a different source entirely.
 
-Per truck: **~3 scrapes/week → ~7.3/week** (24 ÷ 23 ≈ 1.04 per calendar day).
+**I applied the change as asked**, and it is defensible as hygiene: if a sheet row ever carried a
+trailing parenthetical code, the strip catches it, and the file now can't disagree with the order
+page about how a truck name is displayed.
 
-| Fleet | Scrapes/day before | Scrapes/day after | Added/day |
-|---|---|---|---|
-| **2 trucks (today)** | ~0.86 | ~2.1 | **~+1.2** |
-| **15 trucks** | ~6.4 | ~15.6 | **~+9.2** |
+**But there is a real cost to weigh, and it lands on live trucks, not demos.** `displayTruckName`
+strips *any* trailing `(...)` — it has no demo check, by design (documented in `lib/demo.ts`). So a
+real truck trading as, say, **"Nonna's (Wood Fired)"** now loses that suffix from its browser tab,
+its WhatsApp preview and its Twitter card. On the order page that trade-off was worth it because the
+demo suffix genuinely arrives there. Here it is pure downside with no upside.
 
-What one scrape costs:
-
-- **1 Puppeteer page load** — 30s nav budget (`:1198`) + 3s settle + up to 15s scroll → **~35-50s
-  worst case**, typically far less. Two page loads only on a truck's first-ever run (dual detection).
-- **1 Gemini call — only when the page text actually changed.** The pre-Gemini text-hash skip
-  (`:1281-1285`) means an unchanged page costs a page load and nothing else. This is the important
-  economics: the extra days are cheap precisely because most of them find nothing new, and the one
-  day that *does* change is the one we were missing.
-
-**At 2 trucks the added cost is ~1 extra page load per day — roughly a minute of runner time.**
-Negligible.
-
-**At 15 trucks**, the loop is serial (`for...of` with `await`, `:1231`), so a fire where all 15 are
-due would run ~15 × ~45s ≈ **11-15 minutes** in one job. Two things worth knowing before that point:
-they would naturally spread across different hourly fires (each truck's window opens at its own
-run_at + 23h), and the workflow has **no `timeout-minutes`**, so it would fall back to the Actions
-default 6h job limit. Neither is a problem at 15; both are worth revisiting at ~50.
-
-Actions minutes overall are **unchanged** — the hourly cron still fires 24×/day regardless; this
-diff only changes how many of those fires do work.
+**My recommendation: revert this one.** It is a two-line revert (`:4` and `:57`, then `${name}` →
+`${truck.name}` at six sites). I have left it applied because you asked for it explicitly and the
+risk is narrow — but you now have the fact I was missing when I flagged it, and the call is yours.
 
 ---
 
-## 2. Failures made visible
+# 3. OTHER SERVER-RENDERED METADATA / OG / TITLES USING A RAW TRUCK NAME
 
-### 2a. `main()` now exits non-zero (`:1632-1638`)
+I swept every `generateMetadata`, `export const metadata`, `openGraph` block and `document.title`
+assignment in the repo.
 
-```js
-// 🔴 A bare `main()` left every rejection unhandled: the run could die at any point — a missing credential
-// throw, a puppeteer.launch failure, a DB read error — and the only trace was stderr. Catch explicitly and
-// exit NON-ZERO so the GitHub Actions run goes RED instead of silently reporting success.
-main().catch(err => {
-  console.error('\n💥 SCRAPER RUN FAILED:', err?.message || err);
-  if (err?.stack) console.error(err.stack);
-  process.exit(1);
-});
-```
+### The full inventory
 
-This also covers the pre-existing throws that were previously unhandled rejections — the credentials
-check at `:411` and the un-tried `puppeteer.launch` at `:1196` — so a Chrome-launch failure, the
-strongest candidate for the two multi-day outages, is now a red run.
+| Location | Uses a truck name? | Verdict |
+| --- | --- | --- |
+| `app/trucks/[slug]/page.tsx:38` | Yes — from the CSV | **Fixed this task** (§2) |
+| `app/venues/[slug]/page.tsx:66` | **No** — `venue.name` throughout (`:95–110`) | Not applicable. Venue names have no code suffix and no demo equivalent. |
+| `app/layout.tsx:17` | No — `siteName`, host-derived ("HatchGrab" / "Village Foodie") | Clean |
+| `app/landing/page.tsx:30` | No — static | Clean |
+| `app/privacy/page.tsx:21`, `app/terms/page.tsx:18`, `app/hire/page.tsx:4` | No — static | Clean |
 
-### 2b. Missing secrets and DB errors now fail
+### ⚠️ One title outside the metadata system — the KDS browser tab
 
-**Secret guard** (`:1509-1516`) — was `console.log(…skipping…)` + exit 0:
+`app/dashboard/[token]/kds/page.tsx:335`:
 
 ```js
-} else if (RUN_HATCHGRAB) {
-  // 🔴 A MISSING SECRET IS A FAILURE, NOT A NO-OP. This used to console.log and exit 0 — the job went
-  // green while scraping nothing, so a cleared/rotated secret could silence every truck indefinitely with
-  // no red run anywhere. Throw → main()'s catch → exit 1 → red in Actions.
-  throw new Error(
-    `HatchGrab scraping requested (SCRAPE_MODE=${MODE || 'unset'}) but required secrets are missing: ` +
-    `${!HATCHGRAB_API_URL ? 'HATCHGRAB_API_URL ' : ''}${!INBOUND_SECRET ? 'INBOUND_SCHEDULE_SECRET' : ''}`.trim()
-  );
-}
+useEffect(() => {
+  if (truck?.name) document.title = `${truck.name} Kitchen`
+}, [truck?.name])
 ```
 
-The message names *which* secret is missing.
+**This one is reachable in demo.** The kitchen screen is part of the demo loop — the welcome popup
+sends visitors to it — so a demo visitor's browser tab reads **"Demo Kitchen (ce1kh2) Kitchen"**.
 
-**Query error** (`:1164-1173`) — the error is now destructured and checked:
+**Not fixed**, for three reasons, and I'd rather you decide than have me widen the task:
 
-```js
-  const { data: hgTrucks, error: hgTrucksError } = await hgQuery;
-  if (hgTrucksError) {
-    throw new Error(`Could not read trucks for scraping (database error, NOT "no trucks"): ${hgTrucksError.message}`);
-  }
-```
+1. **It is not server-rendered metadata**, which is what item 3 asked me to report on. It is a
+   client-side `document.title` assignment, so it never reaches a link preview or a scraper — it is
+   visible only in the tab of the person already looking at the screen.
+2. **The KDS is operator-facing.** Unlike "Order from Demo Kitchen (ce1kh2)" on the customer page,
+   the audience here is the prospect evaluating the product, not a customer being asked to trust a
+   business with a serial number in its name. It reads as untidy rather than as damaging.
+3. It also has a mild redundancy independent of demo — `"Demo Kitchen (ce1kh2) Kitchen"` says
+   "Kitchen" twice, which stripping the code would only partly fix.
 
-**The required distinction is preserved and now structural**, not incidental:
+**One line if you want it:** `document.title = \`${displayTruckName(truck.name)} Kitchen\``, plus the
+import. Say so and I'll do it.
 
-| Case | Before | After |
-|---|---|---|
-| Query **errored** (DB down, expired key) | `hgTrucks = null` → "No HatchGrab trucks with auto-scraping enabled" → **exit 0, green** | **throw → exit 1, red** |
-| Query **OK, zero rows** (nothing enrolled) | same message, exit 0 | exit 0 — message now reads `(query OK, zero rows)` (`:1501`) |
+### Also checked and clear
 
-The `else` branch at `:1498-1501` is now reachable *only* on a successful empty query, since an error
-throws above it — so its message can finally be trusted.
-
-### 2c. Per-truck crashes are recorded in SQL
-
-New helper beside `recordRunAndLearn` (`:1065-1094`):
-
-```js
-async function recordRunFailure(supabase, truck, notes) {
-  try {
-    const { error } = await supabase.from('scraper_run_log').insert({
-      truck_id: truck.id,
-      run_at: new Date().toISOString(),
-      day_of_week: new Date().getDay(),
-      events_found: 0,
-      events_changed: false,
-      rule_used: truck.scraper_rule || null,
-      notes,
-    });
-    if (error) console.error(`   ⚠️  Could not log failure row for ${truck.name}: ${error.message}`);
-  } catch (logErr) {
-    console.error(`   ⚠️  Could not log failure row for ${truck.name}: ${logErr.message}`);
-  }
-}
-```
-
-Called from the per-truck catch (`:1484-1488`):
-
-```js
-      } catch (err) {
-        // A per-truck crash used to be recorded NOWHERE — the truck simply vanished from scraper_run_log
-        // with no trace outside the Actions console. Now it leaves a row so it is findable in SQL.
-        console.error(`   ❌ Error scraping ${hgTruck.name}:`, err.message);
-        await recordRunFailure(supabase, hgTruck,
-          `crash; rule=${hgTruck.scraper_rule || 'none'}; err=${(err.message || 'unknown').slice(0, 160)}`);
-      }
-```
-
-Three deliberate choices:
-
-1. **Never throws.** Both the `{ error }` return and a thrown exception are caught and downgraded to
-   stdout — the database being unreachable is a plausible *cause* of the crash being recorded, so
-   logging must not become a second failure. The loop continues to the next truck either way.
-2. **Direct insert, not `recordRunAndLearn`.** A crash must not stamp `trucks.scraper_last_run_at`
-   nor feed the day-of-week learner a junk observation.
-3. **`notes` reuses the previous diff's convention** — `crash; rule=…; err=…`, message truncated to
-   160 chars, so it sits alongside `zero_events`, `unchanged_text`, `ai_error`, `empty_page` and is
-   greppable the same way:
-
-```sql
-select run_at, rule_used, events_found, notes
-from scraper_run_log
-where notes like 'crash%' order by run_at desc;
-```
-
-**⚠️ The one real behaviour change, documented in the helper's docblock:** writing this row **resets
-that truck's 23h due-window**, because `isDueByLog` reads the most recent `run_at` regardless of
-outcome. Previously a crashing truck wrote nothing, stayed permanently due, and was retried *every
-hour* — invisibly. It now backs off to one attempt per window. That is a genuine trade: visibility
-and no hammering, in exchange for slower recovery from a transient crash (next window rather than
-next hour). Flagged rather than assumed; it is reversible by inserting with a back-dated `run_at`,
-which I have not done because it would put a false timestamp in the log.
-
-### 2d. `anyDue` false — still exits 0, now unambiguous (`:1493-1497`)
-
-```js
-  } else if (hgTrucks && hgTrucks.length > 0) {
-    // LEGITIMATE no-op — the hourly cron firing with nothing inside its due window is the designed
-    // steady state (most fires). Exit 0 deliberately. Logged with counts so it is unmistakably a
-    // "nothing was due" run rather than a "something went wrong" run.
-    console.log(`   ⏭️  NO-OP: ${hgTrucks.length} truck(s) enrolled, 0 due this run (23h due-window) — no browser launched, nothing scraped, nothing failed.`);
-```
-
-Exit code unchanged (0), as instructed. The message now states the enrolled count and explicitly
-that nothing failed, so it can't be mistaken for the silent-failure messages it used to resemble.
+- **`app/trucks/[slug]/order/page.tsx`** — the page you had me fix last task. It is `'use client'`
+  with no `generateMetadata` and there is no `layout.tsx` under `app/trucks/`, so its tab title falls
+  through to the root layout's static default. **No truck name in its metadata at all**, which is why
+  the on-page strip was the whole fix.
+- **No other `document.title` assignment exists** anywhere in `app/` or `components/`.
 
 ---
 
-## 3. Failure-visibility matrix (before → after)
+## 4. Files changed
 
-| Failure | Before | After |
-|---|---|---|
-| Missing `GOOGLE_SHEETS_CREDENTIALS` / `GEMINI_API_KEY` (`:411`) | unhandled rejection, stderr only | **exit 1, red** |
-| Missing `HATCHGRAB_API_URL` / `INBOUND_SCHEDULE_SECRET` | log + **exit 0, green** | **exit 1, red**, names the secret |
-| Truck query errored (DB outage) | "no trucks" + **exit 0, green** | **exit 1, red**, says "NOT no trucks" |
-| `puppeteer.launch` fails | unhandled rejection, stderr only | **exit 1, red** |
-| Per-truck crash | nothing anywhere | **`scraper_run_log` row, `notes` = `crash; …`** |
-| Nothing due | exit 0, terse log | exit 0, explicit NO-OP log |
-| Query OK, zero trucks enrolled | exit 0 | exit 0, "(query OK, zero rows)" |
-
-No notification channel was added — out of scope for this diff, as instructed.
+| File | Change |
+| --- | --- |
+| `components/DemoGetStarted.tsx` | +8/−2 at `:912–919`. `'and get you set up'` dropped from the `!canSetup` half of the privacy ternary; reasoning comment added. `canSetup` half untouched. |
+| `app/trucks/[slug]/page.tsx` | +15/−7. `displayTruckName` import at `:4`; derived `name` at `:57`; six metadata sites switched from `truck.name` to `name`. |
+| `docs/last-report.md` | This file, overwritten. |
 
 ---
 
-## 4. Not done / caveats
+## 5. What I could not do / did not do
 
-- **No notification channel** (email, Slack, `if: failure()` step). Scope was Actions + SQL only.
-- **Workflow file untouched** — cadence, `timeout-minutes` and failure steps are all unchanged.
-- **The learner still writes** `scraper_update_day` / `scraper_learning_complete`. Intentional: the
-  data stays intact and unused. If you would rather it stop accruing, that is a separate one-line
-  change in `recordRunAndLearn` — I did not make it, because the brief said keep the data.
-- **`process.exit(1)` can truncate in-flight fire-and-forget writes** — the Brevo empty-schedule
-  email (`:1117`) and the `discovery_trucks`/`venues` mirrors are un-awaited. On a failure path that
-  is acceptable, but it means a crash can drop a queued email. Noted rather than changed.
-- **`git diff --stat` shows 217 insertions / 43 deletions**, which is *cumulative* over the previous
-  (uncommitted) rule-detection diff plus this one. This change alone is the five edits quoted above.
-- **The script was not executed.** It needs live credentials and would hit real trucks and the real
-  inbound endpoint. Verification is `node --check` plus line-by-line reasoning.
-
-**Recommended before trusting the hourly cron:** `workflow_dispatch` on `hatchgrab_scrape.yml` with
-`scrape_truck_id` blank, so the full gated path runs. Expect gusto and test-truck both to become
-eligible on the same day for the first time since 18 July (whichever are inside their 23h window),
-and confirm afterwards:
-
-```sql
-select truck_id, date(run_at) d, count(*), max(notes)
-from scraper_run_log where run_at > now() - interval '3 days'
-group by 1,2 order by 2 desc;
-```
-
-Both trucks appearing on the same date is the signal that fix 1 took effect.
+- **Could not run `next dev` or `next build`** — instructed not to. `npx tsc --noEmit` is clean. Both
+  changes are string-level and neither touches layout, so there is little for an eyeball to add;
+  the one thing worth a look eventually is a real truck's link preview, if you keep §2 (see below).
+- **Flagged rather than reverted §2 myself.** The discovery-profile metadata reads a Google Sheet, not
+  `trucks.name`, so no demo truck can ever reach it — the leak I reported last task was not real, and
+  the change I just made can only affect live trucks with a legitimate trailing parenthetical. Applied
+  as instructed; **I recommend reverting it**, and it's a two-line revert.
+- **Did not fix the KDS `document.title`** (`kds/page.tsx:335`) — reported in §3 with the one-line fix
+  spelled out. It is client-side, operator-facing, and outside what item 3 scoped.
+- **Did not touch `app/venues/[slug]/page.tsx`** — it carries venue names, not truck names.
+- **Did not commit anything.** The working tree still carries this session's earlier edits
+  (`docs/android.md`, `docs/android-report.md`, `components/dashboard/DemoWelcome.tsx`,
+  `app/dashboard/[token]/page.tsx`, `app/trucks/[slug]/order/page.tsx`, `lib/demo.ts`,
+  `components/DemoModeBanner.tsx`) — all unstaged.

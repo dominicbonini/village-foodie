@@ -26,16 +26,20 @@
 // The label is CENTRED ON THE BANNER, not centred in the space left over by the CTA — so it doesn't shift
 // depending on whether a button is present or how wide it is. The CTA is absolutely positioned right.
 
-export function DemoModeBanner({ className = '', action }: {
+export function DemoModeBanner({ className = '', action, innerRef }: {
   /** Positioning for the host surface. Defaults to the app-shell strip treatment (dashboard + KDS, which
    *  are h-dvh flex columns and need `shrink-0`). The customer order page passes its own sticky offset
    *  because it sits under a 60px sticky header rather than in a flex shell. */
   className?: string
   /** Right-aligned slot for the persistent CTA. */
   action?: React.ReactNode
+  /** Optional handle on the outer strip so a host can MEASURE it. The customer order page needs the
+   *  rendered height to offset the sticky bars that stack beneath this one — see the sticky-stack note in
+   *  app/trucks/[slug]/order/page.tsx. Purely additive: the dashboard and KDS pass nothing. */
+  innerRef?: React.Ref<HTMLDivElement>
 }) {
   return (
-    <div className={`w-full bg-orange-50 px-4 py-2 shrink-0 border-b-2 border-slate-900 ${className}`}>
+    <div ref={innerRef} className={`w-full bg-orange-50 px-4 py-2 shrink-0 border-b-2 border-slate-900 ${className}`}>
       <div className="relative w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex items-center justify-center min-h-[1.75rem]">
         <span className="text-base font-black text-orange-600">DEMO MODE</span>
         {action && (

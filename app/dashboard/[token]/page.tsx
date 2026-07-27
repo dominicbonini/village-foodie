@@ -1849,12 +1849,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {/* Utility actions — desktop only. Desktop twins of the UserMenu items, so they must stay in
                 lockstep with it: all three available in DEMO (the test-order loop). Gating one surface and
                 not the other is how a "hidden" link stays reachable — change both or neither. */}
+            {/* DEMO-ONLY mobile QR shortcut. The welcome popup now INSTRUCTS them to scan the QR, so it
+                has to be findable without opening the avatar menu — on mobile the utility row below is
+                `hidden sm:flex`, which buried it. Demo only: a live operator prints their QR once and
+                sticks it on the hatch, so promoting a setup control above the order queue during service
+                would be wrong. Availability is unchanged for everyone (the UserMenu twin still carries it
+                on mobile) — this adds reach in demo, it does not gate anything. Two `ml-auto` siblings is
+                intentional: exactly one is visible per breakpoint, so the spacer always lands correctly. */}
+            {isDemo&&(
+              <button onClick={handleShowQR} className="ml-auto sm:hidden flex items-center gap-1.5 my-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-sm font-bold hover:bg-orange-600 transition-colors whitespace-nowrap">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                QR code
+              </button>
+            )}
             <div className="ml-auto hidden sm:flex items-center">
               <button onClick={handleCopyOrderLink} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap">
                 {copiedOrderLink ? '✓ Copied' : 'Order link'}
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
               </button>
-              <button onClick={handleShowQR} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap">
+              {/* DEMO: filled orange, not a text link — the popup points at it by name. Non-demo keeps the
+                  plain utility styling; see the mobile shortcut above for why this is demo-only. */}
+              <button onClick={handleShowQR} className={isDemo
+                ? "flex items-center gap-1.5 my-1.5 px-3 py-1.5 rounded-lg bg-orange-500 text-white text-sm font-bold hover:bg-orange-600 transition-colors whitespace-nowrap"
+                : "flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-white transition-colors whitespace-nowrap"}>
+                {isDemo&&<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>}
                 QR code
               </button>
               <button onClick={handleOpenKDS} className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-500 hover:text-white transition-colors whitespace-nowrap">

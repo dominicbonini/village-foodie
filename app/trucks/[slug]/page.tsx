@@ -48,6 +48,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const baseUrl = 'https://villagefoodie.co.uk';
   const imageUrl = truck.logo.startsWith('/') ? `${baseUrl}${truck.logo}` : truck.logo;
 
+  // NAME IS USED RAW HERE, deliberately. Do NOT apply displayTruckName() (lib/demo.ts) to this block:
+  // getTruckMeta above reads the Google Sheets CSV, NOT trucks.name, so a demo truck — the only source
+  // of a trailing "(code)" suffix — can never reach this page. The strip would fix nothing and would
+  // mangle a live truck legitimately trading as "Name (Something)" in its tab title and link previews.
   return {
     title: `${truck.name} | Village Foodie`,
     description: `Check out where ${truck.name} is pitching up next! 🚚`,
