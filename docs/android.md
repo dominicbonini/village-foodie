@@ -926,3 +926,88 @@ right one.**
 Sibling call sites worth auditing on the same basis: `lib/native/notifications.ts` (local
 notification action handlers), the `@capacitor/app` resume/URL listeners, and
 `@capacitor-community/keep-awake`. Not audited yet.
+
+---
+
+### 2026-07-27 — `parseDebugLocalResources` failure: the source tree was CLEAN. Nothing deleted.
+
+**THE FAILURE.**
+
+```
+Execution failed for task ':app:parseDebugLocalResources'
+.../android/app/build/intermediates/packaged_res/debug/packageDebugResources/drawable/ic_launcher_background 2.xml
+Error: ' ' is not a valid file-based resource name character: File-based resource names
+must contain only lowercase a-z, 0-9, or underscore
+```
+
+**THE CAUSE — not what the error implies.** The working assumption was that a macOS "name 2"
+duplicate sat in `res/` and was copied into the build output. **It did not.** Verified:
+
+- `find android/app/src -name "* *"` → **zero results.**
+- `find android ios -name "* *" -not -path "*/build/*"` → **zero results.**
+- Repo-wide outside `build/`, `node_modules/`, `.git/`, `.next/` → only two long-standing web
+  files (`Village Foodie Master Context.txt`, `public/logos/village-foodie logo-sharing.png`),
+  neither an Android resource.
+
+The duplicates exist **only inside `android/app/build/`** — and not as one stray file:
+
+- **34** duplicates inside `intermediates/packaged_res/` (the actual input to the failing
+  task): every icon density, every splash, `values 2.xml`, `activity_main 2.xml`,
+  `config 2.xml`, `file_paths 2.xml`, both adaptive-icon XMLs.
+- **139** space-named entries across the whole `android/app/build/` tree, including many
+  `values-XX 2` directories under `mergeDebugResources/merged.dir`.
+
+**Signature: a file-sync/copy tool duplicated the build directory**, not a developer mistake in
+`res/`. The duplicates are **byte-identical** to their originals (`diff -q` on
+`ic_launcher_background 2.xml` → identical), carry the **original mtimes** (Jun 2 16:55), and
+have permissions **`-rw-------`** against the originals' **`-rw-r--r--@`** — no extended
+attributes. Copy-with-preserved-metadata, made by something that is not Gradle.
+
+**THE FIX: nothing in the repo. Build > Clean Project.** No file was deleted and no source
+file was touched — there was nothing to delete. Deleting the two files named in the error
+would have left 32 more in `packaged_res` alone.
+
+**⚠️ A CLEAN FIXES TODAY'S BUILD, NOT THE CAUSE.** Whatever duplicated 139 paths inside
+`build/` can do it again, and next time it may land in `android/app/src/main/res/`, where it
+becomes a real source defect. Corroboration that this has already reached the source tree once:
+`git log --all --diff-filter=A` shows **`app/manage/[token]/page 2.tsx` was committed** at some
+point in this repo's history. Same signature, in the web tree.
+
+Worth checking (not investigated — it is Dominic's filesystem, not the codebase): whether the
+project, which lives under `~/Desktop`, is inside iCloud "Desktop & Documents" sync.
+`~/Library/Mobile Documents/com~apple~CloudDocs` exists on the machine; `~/Desktop` is a real
+directory, not a symlink, and no `.icloud` placeholders were found near the project — so this
+is a hypothesis, not a finding. If some sync is running, excluding `android/app/build`,
+`.next` and `node_modules` from it is the durable fix.
+
+**Resource references confirmed (nothing orphaned):** `@color/ic_launcher_background` is
+referenced from `mipmap-anydpi-v26/ic_launcher.xml:3` and `ic_launcher_round.xml:3`, so
+`values/ic_launcher_background.xml` must NOT be deleted as a "duplicate" — it and
+`drawable/ic_launcher_background.xml` are two different, legitimate scaffold resources that
+merely share a name across resource types.
+
+**Suggested pre-build guard:** `find android/app/src ios -name "* *"` — expect zero output. It
+catches the dangerous case (a duplicate in SOURCE) in one second, and would have distinguished
+this failure from a real source defect immediately.
+
+---
+
+## ⚠️ INVARIANT CANDIDATE for manual §35
+
+> **Android resource filenames must be lowercase a-z, 0-9 or underscore. A macOS duplicate
+> ("name 2.xml") in `res/` fails the build with an error naming the BUILD OUTPUT path, not the
+> source. Same trap family as the XML double-hyphen comment failure: native tooling has
+> filename and content constraints the web codebase never enforces.**
+
+Recorded as dictated, with one refinement this incident adds: **in this case there was no
+source duplicate at all** — the duplicates existed only in build output. The error naming a
+`build/intermediates/...` path is precisely what makes it read as a source problem, so the
+first move must be `find <source> -name "* *"`, **not** deleting the file the error names.
+An error that names a generated path is evidence about the *generated* tree; it locates the
+symptom, not the cause.
+
+Fourth candidate from this workstream, and it pairs directly with the XML double-hyphen entry:
+both are cases where the **native toolchain rejects something the web toolchain accepts
+silently** — a filename with a space, a `--` inside a comment. Neither is visible to `tsc`,
+ESLint, or code review. **The general rule: when adding files to `android/` or `ios/`, the
+constraints are the platform's, not the repo's.**
