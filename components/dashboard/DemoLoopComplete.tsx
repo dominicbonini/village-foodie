@@ -51,6 +51,13 @@ const SNOOZE_MS = 10 * 60_000
  *  older WebKit, and never fires at all if the board is already in view and nothing actually moves). */
 const SCROLL_SETTLE_FALLBACK_MS = 900
 
+/** Must match .demo-order-highlight's animation duration in app/globals.css. The CSS already fades the
+ *  wash to nothing, so this is only about not leaving a spent class on the card: once the flash is over
+ *  the highlight state is dropped, which also lets a second "Show me" replay it. Small buffer so the
+ *  class is never pulled mid-animation. */
+const FLASH_MS = 2000
+const FLASH_CLEAR_MS = FLASH_MS + 250
+
 export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight }: {
   token: string
   /** Every order key currently on the board. */
@@ -141,6 +148,9 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
       document.removeEventListener('scrollend', settle, true)
       clearTimeout(timer)
       onHighlight?.(arrived.order_key)
+      // NO HELD STATE. The CSS fades the wash to nothing; this drops the class once it has, so the
+      // card carries no spent marker and a later "Show me" can replay the flash.
+      setTimeout(() => onHighlight?.(null), FLASH_CLEAR_MS)
     }
     // LISTENING ON document IN THE CAPTURE PHASE, not on window. The board scrolls inside the app
     // shell's <main …overflow-y-auto> (app/dashboard/[token]/page.tsx), so the scroll never reaches
@@ -160,35 +170,37 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
 
   return (
     <div className="bg-white border-2 border-orange-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
-      {/* The behavioural callback leads as an EYEBROW, not a heading — it's what earns the interruption,
-          but it isn't the offer. The offer below is the shared SIGNUP_OFFER wording, identical to the
-          modal this card's button opens, so the ask doesn't restate itself differently one click later. */}
+      {/* THREE LINES, ONE SUBJECT SHIFT. The drama line earns the interruption; the offer is the ask.
+          Anything else was competing with one of the two. */}
+
+      {/* Line 1 — the behavioural callback as an EYEBROW, not a heading, with "Show me" INLINE. It is
+          part of the same thought ("that's how one lands — here's yours"), so it does not earn its own
+          row. "LANDS", not "arrives": "how a real order arrives" can be read as describing this demo,
+          where "lands" describes the real thing. The order's number/customer/total used to sit on a
+          separate line and has gone — the drama line already says what happened, and "Show me" plus
+          the highlight identify WHICH order far better than a number they'd have to match by eye. */}
       <p className="text-xs font-bold text-orange-600 uppercase tracking-wide">
-        That&apos;s exactly how a real order arrives
+        That&apos;s exactly how a real order lands
+        {arrived && !ambiguous && (
+          <>
+            {' · '}
+            <button type="button" onClick={showMe}
+              className="font-bold underline underline-offset-2 hover:text-orange-800">
+              Show me
+            </button>
+          </>
+        )}
       </p>
 
-      {/* NAME IT, then offer to go to it. Rendered only when the diff gave exactly one key AND that
-          order is still on the board — otherwise the eyebrow above stands alone, as it did before.
-          Never a row of blanks: every field below is checked, not assumed. */}
-      {arrived && !ambiguous && (
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <p className="text-sm text-slate-700">
-            <span className="font-black text-slate-900">#{arrived.id}</span>
-            {arrived.customer_name?.trim() ? <> · {arrived.customer_name.trim()}</> : null}
-            {Number.isFinite(arrived.total) ? <> · <span className="font-bold">£{arrived.total.toFixed(2)}</span></> : null}
-          </p>
-          <button type="button" onClick={showMe}
-            className="text-sm font-bold text-orange-600 hover:text-orange-700 underline underline-offset-2">
-            Show me
-          </button>
-        </div>
-      )}
-
-      <p className="text-base font-black text-slate-900 mt-1.5">
+      {/* Lines 2-3 — the offer. SIGNUP_OFFER is the shared constant (components/DemoGetStarted.tsx), so
+          this card and the modal its button opens cannot drift apart. "No card needed" is appended;
+          "and nothing goes public until you say so" has gone — a third reassurance in a line that
+          already carries two reads as protesting too much. */}
+      <p className="text-base font-black text-slate-900 mt-2">
         {SIGNUP_OFFER.heading}
       </p>
       <p className="text-sm text-slate-600 mt-1">
-        {SIGNUP_OFFER.sub} No card needed, and nothing goes public until you say so.
+        {SIGNUP_OFFER.sub} No card needed.
       </p>
       <div className="mt-3 flex items-center justify-center gap-3">
         {/* SAME capture flow as the banner CTA — one path, two presentations, so they can't drift. */}

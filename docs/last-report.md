@@ -1,311 +1,245 @@
-# Last report — Demo loop-complete: name the order, scroll to it, settle a ring on it
+# Last report — Loop-complete border reverted; order highlight → fading green full-card flash
 
-**Date:** 2026-07-27 · **Files touched:** `components/dashboard/DemoLoopComplete.tsx`,
-`components/dashboard/OrderCard.tsx`, `app/dashboard/[token]/page.tsx`, `app/globals.css`
+**Date:** 2026-07-27 · **Files touched:** `app/globals.css`,
+`components/dashboard/DemoLoopComplete.tsx`
 **Verification:** `npx tsc --noEmit` → **clean, zero errors.** No `next dev`, no `next build`, as
 instructed.
 
-This report **overwrites** the previous one (the Gemini timeout / git-history investigation), per the
-rolling convention.
+This report **overwrites** the previous one (the three-line card tightening), per the rolling
+convention.
+
+**Prompt integrity:** no garbles. The prompt arrived intact.
 
 ---
 
-## 0. Prompt integrity — two garbled spots, repaired not silently fixed
+# 0. REVERTED — the loop-complete card's border and fill
 
-| As received | Read as | Basis |
-| --- | --- | --- |
-| item 3: *"Two or three pulse cycles, then **holc tint**."* | *"then **hold the tint**"* | `holc` is not a word; `d`→`c` is one key over, and the sentence that follows — *"Do not animate indefinitely"* — requires the animation to END in a persistent state. "Hold" is the only verb that satisfies it. |
-| item 6: *"the event provisioner, **oll**"* | *"the event provisioner, **or the roll**"* | Truncated. The identical do-not list has appeared in four earlier prompts this session, every time ending *"the event provisioner, or the roll"*. |
-
-Neither changed the work.
-
----
-
-# 1. NAME THE ORDER IN THE CARD
-
-## What the card shows now
-
-```
-THAT'S EXACTLY HOW A REAL ORDER ARRIVES
-#12 · Sarah Whitfield · £18.40          Show me
-
-Sign up for your free month now
-…No card needed, and nothing goes public until you say so.
-
-[ Save my menu ]   Not yet
-```
-
-`components/dashboard/DemoLoopComplete.tsx:159–178`.
-
-## The fields available on the arriving order, quoted
-
-From `components/dashboard/types.ts:27–46` — the arrived order is a full `Order`, taken from the
-board's own `orders` state, so every field is present:
-
-| Field | Declaration | Used as |
-| --- | --- | --- |
-| `id` | `:29` — *"Per-event display number ("Order #5"). Human-facing only — never a lookup key."* | **`#12`** |
-| `customer_name` | `:32` — `string` | **`Sarah Whitfield`** |
-| `total` | `:42` — `number` | **`£18.40`** |
-| `order_key` | `:31` — *"UUID row identity. Every lookup, update, React key…"* | The scroll target + highlight key (§4). Never displayed. |
-
-`id` is exactly right for display and exactly wrong for identity — the type says so — which is why
-those two roles are split between `id` and `order_key` here.
-
-## Nothing renders blank — every field is checked, not assumed
+`components/dashboard/DemoLoopComplete.tsx:172` is back to what it was before last task:
 
 ```jsx
-<span className="font-black text-slate-900">#{arrived.id}</span>
-{arrived.customer_name?.trim() ? <> · {arrived.customer_name.trim()}</> : null}
-{Number.isFinite(arrived.total) ? <> · <span className="font-bold">£{arrived.total.toFixed(2)}</span></> : null}
+<div className="bg-white border-2 border-orange-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
 ```
 
-- **`customer_name` can legitimately be empty.** The component's own header notes the card fires for
-  an operator-added walk-up too, and `AddOrderPanel` does not force a name. Empty → the separator and
-  the name are both dropped, so it reads `#12 · £18.40`, never `#12 ·  · £18.40`.
-- **`total`** is `number` and not optional, but `.toFixed()` on a `NaN` would print `£NaN`, so it is
-  gated on `Number.isFinite`.
-- **`id`** is `string` and non-optional; the whole block only renders when `arrived` is non-null.
+| | Last task | Now |
+| --- | --- | --- |
+| Fill | `bg-orange-100` | **`bg-white`** |
+| Border | *(none)* | **`border-2 border-orange-300`** |
+| Shadow | *(removed)* | **`shadow-sm`** |
+| Eyebrow | `text-orange-700` | **`text-orange-600`** |
+| "Show me" hover | `hover:text-orange-900` | **`hover:text-orange-800`** |
 
-**The whole named block is conditional** (`{arrived && !ambiguous && (…)}`, `:159`). If the order
-can't be resolved, the card renders exactly what it rendered before — the eyebrow and the offer — with
-no gap and no placeholder. See §4 for when that happens.
+The eyebrow and hover shades went back too — `orange-700`/`orange-900` existed only for contrast
+against the `orange-100` fill, so leaving them on a white card would have been a stray half-revert.
+
+**`text-center` is kept** — that came from the centring request, not the colour change, and you didn't
+ask for it back. The three-line copy from last task is also untouched.
 
 ---
 
-# 2. "SHOW ME" — scrolls the board to that order
+# 1. FULL-CARD WASH, NOT A BORDER
 
-`DemoLoopComplete.tsx:127–156` (`showMe`), wired to the button at `:174–177`. Plain text link beside
-the order line, not a second solid button — the primary action on this card is still **Save my menu**,
-and this must not compete with it.
+`app/globals.css:66–130`. The `box-shadow` ring is gone entirely; the highlight is now an overlay that
+covers the whole card.
 
-```jsx
-const el = document.getElementById(`demo-order-${arrived.order_key}`)
-if (!el) return
-onHighlight?.(null)          // clear first, so a second press re-runs the animation
+```css
+.demo-order-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+  background-color: rgb(34 197 94);
+  opacity: 0;
+  animation: demoOrderFlash 2000ms ease-out forwards;
+}
+```
+
+Your diagnosis was right and it is recorded in the file: **every card on that board already has a
+border**, so a ring competed with borders rather than standing out — and an orange one sat next to the
+red/amber urgency states, reading as another severity level. A wash has nothing to compete with.
+
+- **`pointer-events: none`** — the card stays fully clickable through the flash. The operator is meant
+  to work with this order, not wait for a decoration to finish.
+- **`border-radius: inherit`** — the wash follows the card's `rounded-2xl` instead of squaring off the
+  corners.
+
+---
+
+# 2. GREEN
+
+`rgb(34 197 94)` — Tailwind **green-500**.
+
+Chosen by elimination, from the board's actual palette (`components/dashboard/helpers.ts:149–158`):
+
+| Colour | Already means | Free? |
+| --- | --- | --- |
+| red | `late` (`bg-red-50` header, red-500 top rule) | ✗ |
+| amber | `warn` and `cooking` | ✗ |
+| orange | the primary action ("Save my menu", tab accents) | ✗ |
+| slate | `new` | ✗ |
+| **green** | `ready` — a *header* state, never a card-wide wash | **✓** |
+
+One honest note: green is not entirely unused — `ready` orders carry a `bg-green-50` header
+(`helpers.ts:151`). But `green-50` is a pale wash on a header strip, where this is `green-500` at ~0.5
+alpha across the **whole card**, and it lasts two seconds. There is no state in which a card is
+uniformly green, so the two cannot be confused. It remains the only family not spoken for by an urgency
+meaning.
+
+---
+
+# 3. FADES OUT COMPLETELY — no held state
+
+```css
+@keyframes demoOrderFlash {
+  0%   { opacity: 0.5; }
+  55%  { opacity: 0.42; }   /* hold most of the tint while they arrive, THEN fall away */
+  100% { opacity: 0; }
+}
+```
+
+**2000ms, `ease-out`, `forwards`, ending at `opacity: 0`.** The mid-stop at 55% is what makes it read
+as *"here"* rather than as a blink: the wash sits nearly full-strength for the first second — while the
+eye is still landing after the scroll — and only then falls away. A linear fade from 0.5 is half gone
+before they have looked.
+
+`forwards` pins the final `opacity: 0`, so nothing is held. Exactly the GitHub / Slack / Linear
+jump-to-item convention you named.
+
+## The DOM doesn't hold anything either
+
+`DemoLoopComplete.tsx:56–62` and `:150–152`:
+
+```js
+const FLASH_MS = 2000
+const FLASH_CLEAR_MS = FLASH_MS + 250
 …
-el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+onHighlight?.(arrived.order_key)
+// NO HELD STATE. The CSS fades the wash to nothing; this drops the class once it has, so the
+// card carries no spent marker and a later "Show me" can replay the flash.
+setTimeout(() => onHighlight?.(null), FLASH_CLEAR_MS)
 ```
 
-`block: 'center'` rather than `'start'` — the card lands in the middle of the viewport, clear of the
-sticky header and the tab bar above it.
-
-**The anchor** is a new optional `anchorId` prop on `OrderCard` (§5), set to
-`demo-order-${order_key}` on the demo board only.
+The CSS alone would leave the card visually clean but still carrying `demo-order-highlight`. Dropping
+the class afterwards means no spent flag on the element, and a later "Show me" re-adds it and replays
+the flash. The 250ms buffer keeps the class from being pulled mid-animation.
 
 ---
 
-# 3. HIGHLIGHT — three pulses, then a held ring
+# 4. 🔴 LAYERING OVER THE LATE-ORDER TINT — handled with `::after`, not `background-color`
 
-## Triggered on scroll COMPLETION, not on the order's arrival
+**This is the part that would have silently failed.** An `OrderCard` is a white box whose **header
+carries its own background** — `bg-red-50` on a late order, `bg-amber-50` cooking/warn, `bg-green-50`
+ready (`helpers.ts:151–157`). A `background-color` on the card root paints **behind** those children.
+So on the exact card this feature exists for — the 7m-late one with the pink header — the wash would
+have been invisible across the strip the eye actually lands on, and visible only on the body below it.
 
-`DemoLoopComplete.tsx:135–150`:
-
-```jsx
-let done = false
-const settle = () => {
-  if (done) return
-  done = true
-  document.removeEventListener('scrollend', settle, true)
-  clearTimeout(timer)
-  onHighlight?.(arrived.order_key)
-}
-const timer = setTimeout(settle, SCROLL_SETTLE_FALLBACK_MS)   // 900ms
-document.addEventListener('scrollend', settle, true)
-
-el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-```
-
-The ring is armed by `settle`, which runs when the scroll finishes — never before. A pulse spent while
-the card is off-screen is spent on nobody.
-
-### ⚠️ The listener is on `document` in the capture phase, and that detail matters
-
-My first attempt listened on `window`. **It would never have fired.** The board scrolls inside the app
-shell's `<main … overflow-y-auto>` (`app/dashboard/[token]/page.tsx:1958`), not the document, so the
-scroll never reaches `window`. Scroll events don't bubble — but the **capture path runs regardless of
-bubbling**, so one capturing listener on `document` catches whichever element actually moved. Fixed
-before typecheck; the reasoning is in the code so it doesn't regress.
-
-The 900ms timer is a real fallback, not a guess at the duration: `scrollend` is unsupported on older
-WebKit, **and it does not fire at all when the card is already in view and nothing moves** — which is
-a common case here, since the loop-complete card sits directly above the order list.
-
-## What I used, and where
-
-`app/globals.css:66–96` — plain CSS, no new dependency, no JS animation loop:
+**How it is handled** (`app/globals.css:105–118`):
 
 ```css
-@keyframes demoOrderPulse {
-  0%   { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-  50%  { box-shadow: 0 0 0 10px rgb(249 115 22 / 0.15), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-  100% { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-}
-
 .demo-order-highlight {
-  /* The HELD state — what remains once the three pulses finish. */
-  box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  animation: demoOrderPulse 850ms ease-in-out 3;
+  position: relative;
+}
+
+.demo-order-highlight::after {
+  position: absolute;
+  inset: 0;
+  z-index: 5;                          /* above the header strip and body, both static */
+  background-color: rgb(34 197 94);
+  …
 }
 ```
 
-**Three cycles, 850ms each — ~2.5s total, then it stops.** The mechanism for "stops without vanishing"
-is deliberate: the keyframes begin and end on **the same ring the base rule declares**, and there is no
-`animation-fill-mode`, so when the animation finishes the element simply keeps that ring. No second
-class, no timer to remove anything, no state to clean up. The card ends up marked, not flashing.
+- **The overlay paints ON TOP of every child**, header included. Positioned elements paint above static
+  ones, and the header divs (`OrderCard.tsx:373`, `:398`) are static; `z-index: 5` makes it explicit
+  rather than incidental.
+- **Uniform regardless of what's underneath.** Over `bg-red-50` (`#FEF2F2`), green-500 at 0.5 alpha
+  composites to roughly `#8FDCA9` — unmistakably green, not a pink that has shifted slightly. It reads
+  the same over amber, slate and plain white, so the flash means one thing on every card.
+- **`position: relative` is set in the CSS rule, not as a Tailwind class**, so a live operator's card
+  markup is unchanged — the property only exists while the demo class is on the element.
 
-The base `box-shadow` restates Tailwind's `shadow-sm` (`0 1px 2px 0 rgb(0 0 0 / 0.05)`) because a
-single `box-shadow` declaration replaces rather than merges — without it the card would lose its
-shadow while highlighted. `globals.css` imports `"tailwindcss"` on line 1, so this rule comes after the
-utilities and wins on equal specificity with no `!important`.
+## One risk I checked rather than assumed
 
-## prefers-reduced-motion — ✅ respected, and it was in from the start
+Adding `position: relative` to the card root creates a containing block for any absolutely-positioned
+descendant, which could reposition something. **`grep -c "absolute" components/dashboard/OrderCard.tsx`
+→ 1**, at `:25`, inside the `Toggle` helper — and its parent is already `relative w-11 h-6`. Nothing in
+the card resolves its position against the root, so this cannot move anything.
 
-`app/globals.css:91–96`:
+---
+
+# 5. prefers-reduced-motion — a static tint that clears
+
+`app/globals.css:120–130`:
 
 ```css
+@keyframes demoOrderFlashStatic {
+  0%   { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .demo-order-highlight {
-    animation: none;
+  .demo-order-highlight::after {
+    animation: demoOrderFlashStatic 2000ms steps(1, end) forwards;
   }
 }
 ```
 
-**The ring stays; only the movement goes.** Dropping the highlight entirely would be the wrong reading
-of the setting — the user has asked for less motion, not for the card to become unfindable after being
-scrolled to. With `animation: none` the base rule still applies, so the ring appears immediately and
-holds. Same outcome, arrived at without the pulse.
+`steps(1, end)` is the mechanism: opacity **holds flat at 0.4 for the full two seconds, then jumps to
+0** in one step. No interpolation, so there is nothing to watch — but the card is still unambiguously
+marked when they arrive, and still clear afterwards.
+
+Exactly your instruction, and worth stating why it isn't `animation: none`: that would leave the
+`::after` at its base `opacity: 0`, scrolling a reduced-motion user to a card with no indication at all
+— the failure you called out.
 
 ---
 
-# 4. 🔴 KEYED ON THE REAL ORDER ID FROM THE TRIGGERING UPDATE
+# 6. UNCHANGED — verified, not assumed
 
-## Where the id comes from — quoted
+| Item | State |
+| --- | --- |
+| The **"Show me"** button | Unchanged (`:182–194`) except the hover shade reverted with §0. |
+| The **scroll behaviour** | `showMe`'s `getElementById` → `onHighlight(null)` → capturing `scrollend` listener → 900ms fallback → `scrollIntoView({behavior:'smooth', block:'center'})` — all identical. The only line added inside it is the flash-clear timer, which is highlight lifecycle (item 3), not scroll. |
+| **Keying on the real `order_key`** | Unchanged. Still the baseline diff (`freshKeys`), still `orders.find(o => o.order_key === freshKeys[0])`, still suppressed when ambiguous. |
+| **`isDemo` gating** | Unchanged. `OrderCard`'s `highlight` prop is `isDemo&&o.order_key===highlightOrderKey` (`page.tsx:2321`, `:2327`) — `false` on every live card, so `.demo-order-highlight` never lands and `::after` never exists. **A live operator's board cannot flash.** |
+| **The trigger** | Unchanged — baseline detection, snooze, localStorage keys all untouched. |
 
-`DemoLoopComplete.tsx:96–110`. The detection effect already had to compute which keys were unseen in
-order to decide whether to fire; that array **is** the identity of what arrived:
-
-```jsx
-const seen = new Set(baseline)
-// Same condition as before — `filter(...).length === 0` is `!some(...)`. The array is kept rather
-// than discarded so the card can name and locate what arrived; the TRIGGER is unchanged.
-const fresh = keys.filter(k => !seen.has(k))
-if (fresh.length === 0) return                      // nothing new — loop not completed yet
-…
-const t = setTimeout(() => { setFreshKeys(fresh); setVisible(true) }, wait)
-```
-
-`keys` derives from the `orderKeys` prop, which the dashboard builds as `orders.map(o=>o.order_key)`
-(`app/dashboard/[token]/page.tsx:1990`) from the same `orders` state the realtime subscription and the
-60s poll write into. So the key is **the row identity carried by the update that fired the card** —
-`Order.order_key`, the UUID the type calls *"UUID row identity. Every lookup, update, React key"*.
-
-**The trigger condition is unchanged.** `filter(…).length === 0` is precisely `!some(…)`; the effect
-fires on exactly the same input it did before. The only difference is that the array is kept instead of
-discarded.
-
-## Not "newest", not a timestamp — and the ambiguous case is handled
-
-`:122–125`:
-
-```jsx
-const arrived = freshKeys.length > 0 ? orders.find(o => o.order_key === freshKeys[0]) ?? null : null
-const ambiguous = freshKeys.length > 1
-```
-
-- **`find` by key, never an index.** The board re-sorts (`sortByTimeThenId`, `page.tsx:1652`/`:1657`)
-  and splits by status across two grids, so position is not identity.
-- **The hazard you named is real and is why the diff is the right source.** A seeded order landing in
-  the same window would be the newest, and would share the window on `created_at` — either heuristic
-  would point at the wrong card. The diff cannot: a concurrent seeded order shows up as a **second
-  fresh key**, which is detectable rather than silently wrong.
-- **When it is ambiguous, nothing is named.** `ambiguous` suppresses the whole block (`:159`), so the
-  card falls back to its previous form. Naming the wrong order at the conversion moment is worse than
-  naming none.
-- **`arrived` is also null if the order has left the board** — status-filtered out, or the event
-  switched. Same graceful fallback, via the `?? null`.
+`OrderCard.tsx` and `app/dashboard/[token]/page.tsx` were **not opened for writing** this task.
 
 ---
 
-# 5. DEMO-ONLY — a live operator's board is unchanged
+# 7. NOT TOUCHED, as instructed
 
-## The gate
-
-`DemoLoopComplete` is already inside `{isDemo&&(…)}` at `page.tsx:1987`, unchanged. Everything new
-hangs off it.
-
-## `OrderCard` — two optional props, both inert when unset
-
-```jsx
-anchorId,
-highlight = false,
-```
-
-Root element (`OrderCard.tsx:365`):
-
-```jsx
-<div id={anchorId} className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${pendingSync ? 'border-amber-300' : 'border-slate-200'}${highlight ? ' demo-order-highlight' : ''}`}>
-```
-
-**Why this is byte-for-byte identical on a live board:**
-
-- **`id={undefined}`** — React omits the attribute entirely. Not `id=""`, not `id="undefined"`. The
-  rendered element is exactly what it was.
-- **`${highlight ? ' demo-order-highlight' : ''}`** appends the empty string when false. It is
-  concatenated with **no leading space in the template** — the space lives inside the truthy branch —
-  so the class attribute is character-identical, not merely equivalent.
-- **The call sites pass demo-conditional values** (`page.tsx:2321`, `:2327`):
-  `anchorId={isDemo?\`demo-order-${o.order_key}\`:undefined}` and
-  `highlight={isDemo&&o.order_key===highlightOrderKey}`. On a live board those are `undefined` and
-  `false` for every card, on every render, for the page's whole life.
-- **`highlightOrderKey`** (`page.tsx:376`) is only ever written by `setHighlightOrderKey`, passed
-  solely to `DemoLoopComplete`, which only mounts when `isDemo`. On a live board it is `null` from
-  mount to unmount.
-- **The CSS class is unreachable off the demo path** — `.demo-order-highlight` is applied nowhere else.
-
-**No live operator's board can be scrolled or flashed by any of this.** The scroll is triggered only by
-a click on a button inside a demo-only component; there is no automatic scroll anywhere, in either mode.
+`DemoLoopComplete`'s trigger · the scroll logic · the Gemini timeout · `provisionDemo` · `commitMenu` ·
+seeding · the event provisioner · the roll.
 
 ---
 
-# 6. NOT TOUCHED, as instructed
-
-The order-placement path · the realtime/poll subscription · **`DemoLoopComplete`'s trigger condition**
-(§4 shows the `some`→`filter` rewrite is the identical predicate) · the Gemini timeout ·
-`provisionDemo` · `commitMenu` · seeding · the event provisioner · the roll.
-
-Also untouched: the baseline-detection scheme, the localStorage keys, the snooze behaviour, the
-`SIGNUP_OFFER` copy, and both `DemoGetStarted` presentations.
-
----
-
-## 7. Files changed
+## 8. Files changed
 
 | File | Change |
 | --- | --- |
-| `components/dashboard/DemoLoopComplete.tsx` | +91/−9 (110 → 201 lines). `orders` + `onHighlight` props; `freshKeys` state; the named-order line; the "Show me" button; the scroll + scroll-completion handler. |
-| `components/dashboard/OrderCard.tsx` | +12/−2. Optional `anchorId` and `highlight` props, both inert when unset. |
-| `app/dashboard/[token]/page.tsx` | +11/−4. `highlightOrderKey` state (`:376`); two new props on `DemoLoopComplete` (`:1988–1992`); `anchorId`/`highlight` on both `OrderCard` grids (`:2321`, `:2327`). |
-| `app/globals.css` | +32. `@keyframes demoOrderPulse`, `.demo-order-highlight`, and the `prefers-reduced-motion` override. |
+| `app/globals.css` | +47/−19. `demoOrderPulse` ring replaced by `demoOrderFlash` + `.demo-order-highlight::after` overlay; new `demoOrderFlashStatic` for reduced motion. |
+| `components/dashboard/DemoLoopComplete.tsx` | Container reverted to `bg-white border-2 border-orange-300 … shadow-sm` (§0); eyebrow/hover shades reverted; `FLASH_MS`/`FLASH_CLEAR_MS` added; one flash-clear timer in `settle`. |
 | `docs/last-report.md` | This file, overwritten. |
 
 ---
 
-## 8. What I could not do / did not do
+## 9. What I could not do / did not do
 
-- **Could not run `next dev` or `next build`** — instructed not to. `npx tsc --noEmit` is clean, which
-  covers types and props but nothing behavioural. Four things want an eyeball:
-  1. **The `scrollend` capture listener actually firing** inside `<main overflow-y-auto>`. The 900ms
-     fallback makes the feature correct either way, but which path runs is unverified.
-  2. **The three-pulse-then-hold ending on the ring** rather than snapping off — this depends on the
-     keyframes' 0%/100% matching the base rule, which is right by inspection but unseen.
-  3. **`block: 'center'` clearing the sticky header** on a short viewport.
-  4. **The reduced-motion branch**, which needs the OS setting toggled.
-- **Did not add a way to clear the ring.** It is a held tint by design (item 3); it persists until the
-  card unmounts or the board re-filters. If you'd rather it faded after ~30s, that's a small addition.
-- **Did not handle the ambiguous multi-key case beyond suppressing the naming.** Distinguishing the
-  visitor's order from a concurrently-seeded one would need a signal the client doesn't have. Falling
-  back to the previous card is the honest outcome.
-- **Did not commit anything.** The working tree also still carries the uncommitted Gemini-timeout work
-  from earlier (`lib/menu-extract.ts` 90s, `components/landing/DemoUpload.tsx` 75s) — those remain
-  unstaged and undeployed, and per the last investigation prod is running the committed 120s.
+- **Could not run `next dev` or `next build`** — instructed not to. `tsc --noEmit` is clean, but this
+  is a visual change and four things want your eye:
+  1. **Green-500 at 0.5 over the pink `bg-red-50` header** — the compositing is arithmetic, but whether
+     it reads as "yours" rather than "a new state" is a judgement only the real board settles.
+  2. **The 55% hold** — if it still feels like a blink, raising the mid-stop to ~70% lengthens the
+     plateau without touching the 2s total.
+  3. **`steps(1, end)`** under an actual reduced-motion setting.
+  4. **`z-index: 5`** — correct by inspection (all card children are static), unverified in a browser.
+- **Did not tune the opacity per underlying state.** One value for all cards; a late card's pink is
+  pale enough that 0.5 green dominates it. If it looks weak specifically on late cards, that's a
+  targeted bump rather than a rethink.
+- **Did not touch the loop-complete card's copy or layout** beyond the §0 colour revert.
+- **Did not commit anything.** The tree also still carries the uncommitted Gemini-timeout work
+  (`lib/menu-extract.ts` 90s, `components/landing/DemoUpload.tsx` 75s) and this session's other demo
+  and Android edits — all unstaged.

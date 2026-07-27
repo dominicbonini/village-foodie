@@ -63,34 +63,69 @@ details[open] > summary .details-arrow {
   display: none;                /* iOS Safari / Chrome */
 }
 
-/* ── DEMO ONLY — the loop-complete order highlight ───────────────────────────────────────────────
+/* ── DEMO ONLY — the loop-complete order flash ───────────────────────────────────────────────────
    Applied by OrderCard's `highlight` prop, which only the demo dashboard ever sets (see
    components/dashboard/DemoLoopComplete.tsx). Nothing renders this on a live operator's board.
 
-   THREE PULSES, THEN HOLD. The animation ends at the same ring the base rule declares, and there is
-   no fill-mode, so when it stops the element simply keeps that ring — a settled tint rather than an
-   indefinite flash. A permanently flashing card would compete with the board it exists to point at.
+   ── WHY A FULL-CARD WASH, NOT A RING ──────────────────────────────────────────────────────────
+   The ring this replaces was orange, and every card on this board already carries a border — so it
+   competed with borders instead of standing out, and orange sat right next to the red/amber the late
+   states use, reading as another urgency level rather than "this one is yours". A background wash has
+   no such competition in a dense grid.
 
-   The base box-shadow also restates Tailwind's `shadow-sm` (the card root carries it) because a
-   single box-shadow declaration replaces rather than merges. This file is imported AFTER
-   "tailwindcss", so it wins on equal specificity without !important. */
-@keyframes demoOrderPulse {
-  0%   { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-  50%  { box-shadow: 0 0 0 10px rgb(249 115 22 / 0.15), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-  100% { box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+   ── WHY GREEN ─────────────────────────────────────────────────────────────────────────────────
+   Red = late, amber = warn/cooking (helpers.ts getHeaderStyle), orange = the primary action. All
+   three are spoken for. Green is unused by any order state on the orders screen and already reads as
+   new / fine / yours.
+
+   ── WHY ::after AND NOT background-color ──────────────────────────────────────────────────────
+   🔴 THE LAYERING POINT. An OrderCard is a white box whose HEADER carries its own background
+   (bg-red-50 on a late order, bg-amber-50 cooking/warn, bg-green-50 ready). A background-color on the
+   card root paints BEHIND those children, so on the exact card this feature exists for — a late one,
+   pink header — the wash would be invisible over the part the eye lands on. An absolutely positioned
+   ::after overlay paints ON TOP of every child instead, so the wash is uniform across header and body
+   whatever tint is underneath. `position: relative` is set here rather than as a Tailwind class so a
+   live card's markup is untouched; `pointer-events: none` keeps the card's buttons usable while it
+   fades — the operator is meant to work with this order, not wait for it.
+
+   ── FADES OUT COMPLETELY ──────────────────────────────────────────────────────────────────────
+   ~2s, ending at opacity 0 with `forwards`, so nothing is held. This is the jump-to-item convention
+   (GitHub, Slack, Linear): say "here", then get out of the way. A permanent marker on a card the
+   operator now has to work is just noise. DemoLoopComplete also drops the class shortly after, so the
+   DOM doesn't keep a spent flag either. */
+@keyframes demoOrderFlash {
+  0%   { opacity: 0.5; }
+  55%  { opacity: 0.42; }   /* hold most of the tint while they arrive, THEN fall away */
+  100% { opacity: 0; }
 }
 
 .demo-order-highlight {
-  /* The HELD state — what remains once the three pulses finish. */
-  box-shadow: 0 0 0 3px rgb(249 115 22 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  animation: demoOrderPulse 850ms ease-in-out 3;
+  position: relative;
 }
 
-/* A pulsing element is precisely what this setting exists for. Reduced motion keeps the ring — the
-   card must still be identifiable once you have been scrolled to it — and drops only the movement,
-   so the outcome is the same, arrived at without the animation. */
+.demo-order-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;                          /* above the header strip and body, both static */
+  pointer-events: none;                /* the card stays fully usable during the flash */
+  border-radius: inherit;              /* follow the card's rounded-2xl, no square corners */
+  background-color: rgb(34 197 94);    /* green-500 — see "WHY GREEN" above */
+  opacity: 0;
+  animation: demoOrderFlash 2000ms ease-out forwards;
+}
+
+/* Reduced motion must still ANSWER THE QUESTION "which one?" — dropping the flash entirely would
+   scroll someone to an unmarked card. So: the same wash, held flat and then cleared in a single step,
+   with no fade in between. steps(1, end) means opacity stays at the start value for the whole
+   duration and jumps to 0 at the end — a static tint that clears, not an animation to watch. */
+@keyframes demoOrderFlashStatic {
+  0%   { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .demo-order-highlight {
-    animation: none;
+  .demo-order-highlight::after {
+    animation: demoOrderFlashStatic 2000ms steps(1, end) forwards;
   }
 }
