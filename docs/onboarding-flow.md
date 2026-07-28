@@ -10,6 +10,8 @@
 >
 > **v4 changes (23 July, post-Step-4 session):** Phase 4 step 4 (menu migration) BUILT — but the session's headline finding is that the previous build was **unreachable**: `demo_sessions.extraction` had no writer, so `/api/setup` GET always returned null and the `?import=demo` bootstrap silently fell through to a blank upload. Fixed, plus four related changes (§9.3 #7–#9, §9.4 G4–G6, §12 O14). ⚠️ **Everything in this batch is tsc-clean and UNVERIFIED** — no live run, nothing committed. Test order is at the end of §10 Phase 4.
 
+> **v6 changes (27–28 July):** The demo event **roll is deleted**; an elapsed demo now ENDS and offers "Start a new service" (§10 Phase 2E). Seeded order count **scales with window length**, which also fixes the stride collapse (§9.3 #14). Signup copy centralised into one variant-keyed object with deliberate upload/sample divergence (§10 Phase 4D). `/api/dashboard` now serves a `demo` block, retiring the `?welcome=sample` param entirely; `canSetup` is admin-aware, so the signup path can be walked on production without opening signup publicly. Landing page promotes Android to available alongside iPad. 🔴 **Two live-schema findings:** `demo_sessions.extraction_source` existed in production with no migration (now written); and **kitchen ticket printing does not exist on any platform** while the compare table advertises it (§12 O18).
+
 > **v5 changes (24 July — the day the chain first worked):** 🎉 **Verification step 10 PASSED, walked end to end**: demo → save my menu → two-step signup wizard → the `now + 10` seeded floor, fresh-seed order scatter, and the window rule. Signup moved INTO the demo modal (§10 Phase 4); /setup's identity step is now bypassed; the import wizard is setup-aware (§10 Phase 4A); a schedule step was added after the menu commit (§10 Phase 4B). 🔴 **Two findings that outrank the UI work: the free month is not wired to anything (§12 O15), and /api/demo had NO maxDuration until today (§9.3 #10) — meaning the demo has never worked in production.** ⚠️ Still nothing committed; ~60+ paths across five days.
 
 ---
@@ -439,6 +441,26 @@ Fixed by portalling to `document.body`, matching `DemoUpload`'s existing SSR-gua
 **13. The scheduler's prior-day sweep ignores `auto_close`.**
 All three of 23 July's demo events were `status: 'closed'` with `auto_close: false` — systematic, not manual clicks. The scheduler's filter returns `true` for any prior-day open event **before `auto_close` is ever read**; `auto_close` gates only the same-day branch. So `auto_close: false` does not protect a demo overnight, contrary to the provisioner's comment.
 `rollDemoEventIfStale` now heals it on read (see §9.4 G7), but the scheduler will keep re-closing demos nightly until it either excludes `demo-` trucks from the prior-day sweep or honours `auto_close` there. Treating the symptom, knowingly.
+*(⚠️ 28 July: `rollDemoEventIfStale` is DELETED — see #15. The nightly re-closure is now healed by "Start a new service" (§10 Phase 2E) instead, which is a visitor action rather than an automatic one. The underlying scheduler defect is unchanged and still open.)*
+
+**14. The seeded board's gaps came from the STRIDE, not from `FILL_PATTERN`'s zeros.**
+`stride = slots.length / budgets.length`. The budget count capped near 16 regardless of window, so once a window fell to ≤~16 bookable slots the stride hit **1**, every slot got a budget, and the taper flattened into a solid block. A **threshold effect, not gradual degradation** — and the reason late-night demos looked broken while midday ones looked right.
+`FILL_PATTERN`'s zeros are filtered out at `:222` *before* the stride is computed, so the comment claiming "the zeros are what leave gaps" described an intent the code never implemented.
+**Fixed by scaling the order target to bookable slots** (`ORDERS_PER_SLOT ≈ 1.057`), which scales the budget count with it and keeps stride > 1 at every window size: 35 slots → 37 orders, stride 2.19; 5 slots → 5 orders, stride 2.50. Before the fix, a 5-slot window placed 14 of 37 and **silently dropped 23**.
+
+**15. The roll's healing was worse than the illness.**
+`rollDemoEventIfStale` shifted an elapsed demo forward on every dashboard load. Three faults, all confirmed against live data:
+- It wrote order slots **directly, bypassing the seeder**, and clamped overshoots with `Math.min(shifted, newEnd)` — **15 orders landed on `23:59`**, breaching the per-slot mains ceiling the seeder guarantees.
+- It preserved the old distribution, so a compressed board rolled forward compressed **forever**.
+- It shifted the **visitor's own test order** too: one placed at 23:40 reappeared at 09:45 the next morning, indistinguishable from a seeded one.
+Deleted entirely (218 lines). An elapsed demo now ends and offers a restart.
+
+**16. 🔴 A hand-applied column looks identical to a working migration — until a fresh environment.**
+`demo_sessions.extraction_source` was written and read by code and present in production, but **in no migration file**. It went missing because `extraction` and `extraction_source` are written in one `update` whose three siblings all got a phase-4 migration, and the write is best-effort:
+```js
+if (error) console.warn('[provision-demo] could not persist extraction … (migration applied?)', error.message)
+```
+**A missing column would have looked exactly like a working system** — a `console.warn` is the only signal this class of problem produces — right up until signup silently fell back to a blank upload. Second occurrence of this pattern after `place_order_atomic`. Now written as `add column if not exists`.
 
 ### 9.4 Structural gaps (open — not blockers, but they will bite)
 
@@ -447,13 +469,14 @@ All three of 23 July's demo events were `status: 'closed'` with `auto_close: fal
 | **G1** | **The demo bypasses the wizard's grouping pass.** `computeGroupingRows`/`makeGroupingRow` live inside the import wizard component, so the server-side provisioner can't call them. It re-implements the parts it needs — including forcing `isRequired`/`singleSelect` on `_inferredFromVariants` groups. | Two code paths now decide what an extracted menu becomes. They have **already diverged once** (required-flag on inferred variant groups). Every future grouping fix must be made twice or it silently regresses in demo. **Fix:** extract to `lib/` (logged in reference-manual backlog as option (b) — deliberately deferred because it restructures click targets on two live operator surfaces). |
 | **G2** | **The KDS grid caps visible orders at 8, and the hidden ones are unreachable.** `MAX_GRID_VISIBLE = 8`, introduced in WIP commit `1d3d73c` for a fixed-column grid that no longer exists. The panel already scrolls, and the "+N more" indicator is a `<div>`, not a button. | This is **not a demo bug — it's a live-operator bug** the demo merely surfaced (a demo board of 37 orders hits it instantly). On a busy real service, orders 9+ are invisible with no way to reach them. Removal is pending the user's list-mode scroll test. |
 | **G3** | **All demo saved-state is keyed per identifier.** `hg_demo_welcome_<token>`, `hg_demo_seen_orders_<token>`, `hg_demo_loop_<token>`. | Correct *today* — separate visitors must not inherit each other's dismissals. But **return-visit re-provisioning issues a new identifier**, so a returning visitor re-sees the welcome popup and gets a fresh loop-completion baseline as though they'd never been. Also leaves orphan localStorage keys. Decide at Phase 4 whether re-provision should carry the old key namespace forward. |
-| **G4** | **The roll does not re-apply the `now + 10` floor.** It shifts orders by a start-to-start delta only, so after a roll the board's earliest order can sit ~19 min in the past. | Far smaller than the pre-fix exposure, but the seeder's "no already-late orders" guarantee does **not** extend to rolled boards — the exact impression the floor exists to prevent. Re-flooring changes the order-shift from a pure delta, so it needs its own diff. |
+| **G4** | ✅ **CLOSED (28 July) — the roll is deleted.** *(Was: "the roll does not re-apply the `now + 10` floor" — it shifted orders by a start-to-start delta only, so after a roll the board's earliest order could sit ~19 min in the past.)* | There is no longer a code path that moves seeded orders without going through the seeder, so the "no already-late orders" guarantee now holds everywhere it is claimed. See §9.3 #15 for the three faults that ended the roll, and §10 Phase 2E for what replaced it. |
 | **G5** | **The customer order page has no demo exemption on its clock gate.** `isEventClosed` (`order/page.tsx:1324`) and the slot-picker's "no longer available" check both block on elapsed `end_time` with no `isDemo` branch — and the roll is reachable **only from `/api/dashboard`**. | An elapsed demo shows **closed on its own order link** — the demo's central loop — until someone opens the dashboard and triggers a roll. A returning visitor landing straight on their order link hits a dead page. The 3h window makes it rarer, not impossible. **Highest-value gap to close before real prospects.** |
 | **G6** | **The orphan sweep does not check `claimed_by_operator_id`.** Its gate is `if (hasMenu && hasEvent) continue`, so a fully-provisioned claimed demo is spared — but a claimed demo that is *momentarily eventless* (e.g. `replaceExisting` deleted the old event and the request died before the insert) and older than the 2h orphan window would be swept. | Narrow, but it arises exactly on the re-provision path. One `.is('claimed_by_operator_id', null)` closes it. Deliberately not widened in the same diff that added the expiry-sweep exclusion. |
-| **G7** | **The roll now recovers CLOSED demo events — and that is load-bearing, not defence-in-depth.** `rollDemoEventIfStale` previously acted only on `status='open'`, so a closed demo was unrecoverable by the visitor. Widened to `.in('status', ['open','closed'])`, reopening with `opened_at` set. Double-guarded on `isDemoIdentifier` (the function's first line and its only caller). | Since the scheduler closes every demo nightly (§9.3 #13), a returning next-day visitor **always** lands on a closed event. The reopen path is the only thing between them and a dead board. |
-| **G8** | **The customer order page still never rolls** (was G5, restated because it now matters more). The roll is reachable only from `/api/dashboard`. The welcome popup now explicitly tells the visitor to open their order link and place an order — and the scheduler guarantees nightly closure rather than it being incidental. | An elapsed demo shows **closed on its own order link** until someone opens the dashboard. Highest-value gap remaining before real prospects. |
+| **G7** | ⚠️ **STALE as of 28 July — the roll is deleted (§9.3 #15); a closed demo is now recovered by "Start a new service" (§10 Phase 2E), which is a VISITOR action rather than an automatic one. Not marked CLOSED here because the edit list did not cover G7 — see the task report.** *(Was:)* **The roll now recovers CLOSED demo events — and that is load-bearing, not defence-in-depth.** `rollDemoEventIfStale` previously acted only on `status='open'`, so a closed demo was unrecoverable by the visitor. Widened to `.in('status', ['open','closed'])`, reopening with `opened_at` set. Double-guarded on `isDemoIdentifier` (the function's first line and its only caller). | Since the scheduler closes every demo nightly (§9.3 #13), a returning next-day visitor **always** lands on a closed event. The reopen path is the only thing between them and a dead board. |
+| **G8** | ✅ **CLOSED, DIFFERENTLY (28 July) — with the roll gone there is nothing to roll.** *(Was: "the customer order page still never rolls"; was G5 before that.)* The page now shows an **honest closed state in demo mode**, naming the ended window as the product working correctly and telling them to open their dashboard and choose "Start a new service". | 🔴 **No link is possible.** A demo's `id`, `slug` and `dashboard_token` are three independent 130-bit values by design (`lib/provision-truck.ts` — *"leaking one must not hand over the others"*), so the order page cannot construct the dashboard URL. Making it possible would mean returning `dashboard_token` from a customer-facing response — the entire security boundary for `/dashboard/demo-*`. The copy therefore names the dashboard without pretending to navigate there. |
 | **G9** | **The import wizard cannot rename or add categories.** Items can be added and edited; categories cannot. | A signup operator whose AI-derived categories are wrong has no way to fix them inside the wizard. Backlog. |
-| **G10** | **`demo_sessions.email`, `extraction_source` and the saved-state flag are all client-side or URL-param signals.** The banner CTA reads `?welcome=sample` (does not survive a reload); the saved state is localStorage-keyed (does not survive to another device). | A sample-demo visitor sees "Save my menu" on every page view after the first — the false promise the `extraction_source` guard exists to prevent. **One fix closes all three: expose a small `demo: { extraction_source, email, expires_at }` block on `/api/dashboard`.** |
+| **G10** | ✅ **CLOSED (28 July).** *(Was: `demo_sessions.email`, `extraction_source` and the saved-state flag were all client-side or URL-param signals.)* `/api/dashboard` now serves `demo: { extraction_source, email, expires_at }` **for demo trucks only**, gated on `isDemoIdentifier(truck.id)` so the key is absent entirely for an operator truck, and **cached client-side on the config-seed branch** so it is not re-read on the 60s poll. | `?welcome=sample` is **removed** — it survived exactly one navigation, so a reloaded sample demo used to start calling itself "your menu". `email` and `expires_at` are exposed but **not yet consumed**. |
+| **G11** | **The KDS demo banner defaults to the `upload` copy variant on a sample demo**, because that page makes no `/api/auth/me` or `/api/dashboard` demo-block call. Same for `isAdmin`. | Fixing it means adding a request that page doesn't make — the trade deliberately declined. A sample-demo visitor reading the KDS banner sees "Save my menu" where the dashboard says "Set up my truck". Low impact; recorded so it isn't rediscovered. |
 
 ---
 
@@ -528,6 +551,23 @@ Everything below shipped. Structural gaps it left behind are **§9.4**; the thin
    - **`components/menu/MenuUploadFields.tsx`** — the dropzone shared between the operator wizard and the landing page, with an `accent` prop rather than a copy.
    - **`components/landing/DemoUpload.tsx`** — every landing CTA opens the same modal, **portalled to `document.body`** (the landing sheet's `.hg-landing * { margin:0; padding:0 }` reset beat Tailwind at equal specificity and flattened the modal in place).
    - **Admin scaffolding** — `/api/admin/provision-demo` (⚠️ temporary; surfaces provisioning errors in its response body, which is how the `venue_name` failure was finally read).
+
+### Phase 2E — An elapsed demo ENDS ⚠️ BUILT, UNVERIFIED (28 July)
+
+**Decided: no roll. A service ends; you start another.** That is what a real truck does, and it removes the drift where a visitor's own order kept reappearing at new times.
+
+**On "Start a new service"** (`lib/demo-restart.ts`, `POST /api/demo/restart`):
+delete ALL orders for the truck → delete ALL events → clear `slot_capacity` and `production_slot_usage` → provision a fresh window from `demoEventWindow(now)` → re-seed → rebuild occupancy. The menu is never touched.
+
+🔴 **Orders are deleted BEFORE events, and that ordering is load-bearing.** `orders.event_id` is `ON DELETE SET NULL`, so order rows outlive their event — deleting events first leaves every order dangling with a null `event_id`, still counted by the capacity engine, which reads by **date**, not by event.
+
+🔴 **Every delete is truck-wide, NOT date-scoped.** `provisionDemoEvent(replaceExisting)` scopes its deletes `.eq('event_date', date)` — the *new* date. Reusing it alone would sail straight past yesterday's event and leave the old orders live alongside the new ones, reproducing the exact bug this feature exists to fix. **The next-morning case is the whole point** and is the first thing to test.
+
+**Triple-guarded on the `demo-` prefix** — the token, the resolved truck id, and inside `restartDemoService` itself. This endpoint deletes every order on the truck it is given.
+
+**`DemoLoopComplete` state is reset** (`hg_demo_seen_orders_*`, `hg_demo_loop_*`); its baseline is a persisted list of order keys, every one of which has just been deleted, so without the reset the new seeded board would read as 37 orders the visitor caused and the prompt would fire on load.
+
+**The second occupancy rebuild is not redundant** (§9.3 #2): `provisionDemoEvent` runs one against an empty board, so without the second pass the seeded orders occupy nothing and every slot reads green.
 
 ### Phase 3 — Persistence + cleanup ✅ BUILT — ⚠️ NOT YET DEPLOYABLE
 12. **Email capture + return link** ✅ — `/api/demo/save-email` (accepts **token or slug**), `/api/demo/return` re-provisions before redirecting.
@@ -673,6 +713,26 @@ Photo import and manual entry create `truck_events` directly and do NOT enrol �
 
 **Skipping still completes setup.** On finish OR skip, `setup_step = 'done'`. Leaving it non-null keeps `inSetup` true forever and the setup chrome haunts their Manage page. The "no events yet" nudge should key on `truck_events` being empty — a better signal anyway, since an operator who adds an event a week later should stop being nagged. No new column.
 
+### Phase 4D — Signup copy centralised ⚠️ BUILT, UNVERIFIED (28 July)
+
+Copy in `DemoGetStarted` diverged per-surface **four times**, each fixed separately. The cause was not that variants existed — it was that they were scattered through the JSX as inline conditionals, so one got updated and the others didn't.
+
+**One object, three variants as sibling keys with identical shapes**, so editing one shows the others unchanged in the same diff hunk:
+
+| Variant | Banner button | Modal sub-line |
+|---|---|---|
+| `upload` | Save my menu → | Your menu carries straight over. |
+| `sample` | Set up my truck → | You'll upload your own menu next — takes a minute. |
+| `saveOnly` | Save my menu → | We'll keep it for 14 days and email you a link straight back. |
+
+**The upload/sample divergence is deliberate and chosen for conversion, not tidiness.** Someone who uploaded their own menu has made something and watched it work; naming that artifact and implying it is at risk converts better than naming a task. A sample demo has no such artifact — "save my menu" would be false, and the sample line instead answers the question actually in their head ("this isn't my menu, then what?"). ⚠️ Do not collapse `upload` and `sample` because they nearly match.
+
+`saveOnly` wins the derivation first: with no setup path on offer, upload-vs-sample is moot — both would promise a door that isn't there.
+
+**Variant is sourced from `extraction_source`** via the `demo` block, never a URL param. Default is `upload` when null: it is the common case, and "Save my menu" briefly shown on a sample is a milder error than "Set up my truck" shown to someone whose own menu is on screen unmentioned.
+
+**`canSetup` is now admin-aware** — `(NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin) && !!token` — so the signup path can be walked on production without opening signup publicly. This is not a client-trusted auth flag: `/api/signup` already allows an admin session through when `SIGNUP_PUBLIC` is unset, re-reading the session server-side and checking `operators.is_admin` against the database. Forging `isAdmin` in the browser gains a button and then a 403. `isAdmin` costs no new request — `/api/auth/me` already fires on demo dashboard load.
+
 ### Phase 5 — Setup + go-live
 16. **Expand the wizard** (Stage 6) — identity step, capacity re-set, schedule step.
 17. **Nomination / go-live** (B6, B7) — event selector, confirmation, the four-way switch.
@@ -710,6 +770,8 @@ Sample demos are **per-visitor clones from a fixed template menu** via the same 
 | **O15** | 🔴 **THE FREE MONTH IS NOT WIRED TO ANYTHING.** `trial_expires_at` is `null` at provision (`lib/provision-truck.ts`), null means all features on, and the **only** code that ever sets it is the admin panel — you, by hand. Nomination is the intended trigger and is deliberately Phase 5 (`lib/go-live-checks.ts`). So every promise the onboarding makes — the welcome popup's "your free month starts at your first live event", the signup modal's "setting up won't start your free month", §8's strongest conversion trigger — describes a mechanism that **does not exist**. A signed-up operator's trial is currently unbounded and starts only if you remember to stamp it. **DECIDED: accept manual stamping for now.** Two reasons: nomination is the intended home, and duplicating the trigger means two places that can stamp a trial expiry — customer money. The launch plan is 15 hand-picked trucks; fifteen manual stamps over months is not a burden when you're speaking to each of them. **What to build instead: an admin view listing operators with a confirmed event and no `trial_expires_at`** — turning "remember" into "check a screen". The copy stays honest either way: the policy is real, it is enforced by hand until Phase 5. | **ACCEPTED, with a mitigation to build** |
 | **O16** | **Route A of the schedule step gives no immediate payoff.** A verified URL means the scraper finds dates within the hour — but the operator sees nothing at that moment. Should Route A also offer "add my first date now"? | Open |
 | **O17** | **Should the setup-mode done screen point at the live order link?** After five steps, seeing their own ordering page is the natural payoff. | Open |
+| **O18** | 🔴 **Kitchen ticket printing is advertised but does not exist on any platform.** The compare table shows `Kitchen ticket printing — Max: ✓`, and the manual records printing as ready at launch. `lib/printing/` contains only `createStubTransport` ("Phase A, no hardware"); there is no BLE plugin, no Star/Epson SDK, and no `printer_class` column. Footnote 5 has been made platform-neutral ("the HatchGrab kitchen app") but the ✓ remains. **Also relevant to Android:** the recommended backend (`mfi`, Star/Epson via Apple's External Accessory framework) is **iOS-only by construction** — MFi has no Android equivalent, so Android printing means the `ble` path, which the code itself calls the budget fallback with "LIMITED/NO status + fiddlier reconnect". For a truck printing all service, "the printer silently stopped and nothing told you" is what an Android printing promise would underwrite. **Decision needed: ship it, mark the row `coming_soon`, or accept the claim.** | **OPEN — the sharpest claim on the pricing page** |
+| **O19** | **Should the seeded-order floor protect the hour after seeding, not just the moment of it?** `max(start+10, now+10)` guarantees no order is seeded into the past, but on a short window every order crosses the late threshold within minutes of the others and the board turns uniformly red. On a full 3h board the front goes red while the back is still grey — which reads as a working kitchen. The order-count scaling mitigates this; whether it fully solves it wants watching on a real late-night demo. | Open |
 
 ---
 
@@ -721,19 +783,20 @@ Signup becomes **"claim it"** rather than "save it" — lower friction still. Re
 
 ---
 
-## 14. Session carry-over (24 July) — read before resuming
+## 14. Session carry-over (28 July) — read before resuming
 
-**🔴 Nothing is committed.** ~60+ uncommitted paths across five days — the whole Phase 2/3/4 build, plus this session's signup-wizard, setup-aware-wizard and schedule-step work. Both touch the 8700-line live Manage component.
+**🔴 Nothing is committed.** ~60+ uncommitted paths across five days — the whole Phase 2/3/4 build, plus the signup-wizard, setup-aware-wizard and schedule-step work, plus this week's Android and demo-restart work. Both touch the 8700-line live Manage component.
 
 **Commit to a BRANCH, not `main`.** `main` is the Vercel production branch; pushing there deploys to production (reference-manual §33 deploy-coupling landmines: `ee31dbf` + `3da0855` must ship together or 441 orphaned events drop off the live site, and the both-paths smoke test has not been run). A short-lived `onboarding-phase4` branch gives the rollback point without the deploy. This is not a violation of the web-change→main rule — that rule explicitly sanctions feature branches; what it forbids is a long-lived native-named branch accumulating web work.
 
 **🔴 Login-path tests still owed, and they gate the merge.** `/login`'s post-login routing was changed and verified only via admin→dashboard, which does not enter the new block. Two tests remain: (a) a real login with a throwaway operator account, (b) blocking `/api/auth/post-login` to prove login falls through safely when the endpoint errors. Auth, on a codebase where a real truck trades.
 
-**Built 24 July, UNVERIFIED:** `commitMenu` read batching (143 → 85 round trips: batched the per-item existing-check and the max-sort read; inserts deliberately left per-row to preserve `failed[]` partial-write reporting); Gemini timeout (added at 25s — **wrong value, see below**); load-screen stages re-timed to 0/20/25/30/35 with a 2-second flush cap; the welcome popup; the 60s slow prompt and 90s sample offer; the honest-failure screen; the "we'll build it for you" email flow; `extraction_source` tagging + the template-carryover guard; a single unlabelled "See sample menu"; the portal fix; locked-but-visible event actions with an explainer; the roll's closed-event recovery; the two-step signup wizard; `inSetup` and everything in Phase 4B.
+**Built 27–28 July, UNVERIFIED:** the roll deleted and replaced with "Start a new service"; order count scaled to window; the order page's honest closed state; `canSetup` admin-aware; the `/api/dashboard` demo block; the `extraction_source` migration (applied to prod, returned success); the copy object with upload/sample variants; the loop-complete order naming, scroll and green flash; the focus-ring fix on the landing email field and privacy link; the landing page's Android promotion.
 
-🔴 **STILL UNBUILT, and the confirmed cause of a real failure today:**
-- The 25s Gemini abort → **60s per attempt, and NO retry on abort**
-- `warnings[]` logged server-side on the `/api/demo` failure branch
-- The zero-item event guard in `provisionDemo` (it still builds an event and slot grid for a truck with no menu — the `items=0, events=1` signature in the live data)
+**Verified live (the scraper work, 27 July):** Gusto pinned to `scroll_lazy`, 3 scrapes/day, `notes` populated, and their Sunday dates found at 13:34 after the fix deployed. That is the only part of this week's work confirmed working in production.
 
-**Decided and deliberately not built:** the interim trial trigger (O15); the `/api/dashboard` demo block (G10); the scheduler's prior-day sweep fix (§9.3 #13); cross-midnight demo windows (O14); wizard-shell extraction (G1).
+**Test order, when you next sit down to it:**
+1. **The full signup chain on hatchgrab.com** as admin — demo → set up my truck → account → truck → redirect → menu pre-loaded. Verification step 10 on the real site. Check the sample variant too, and check a reload.
+2. **The next-morning restart** — leave a demo overnight, open it, "Start a new service". The truck-wide delete exists for exactly this and has never been exercised.
+3. **The two login-path tests**, owed since 23 July. A brand-new signup exercises the first directly.
+4. A late-night demo, to see whether the scaled order count reads as quiet rather than broken.

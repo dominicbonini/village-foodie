@@ -4,6 +4,21 @@
 Transient per-task reports live in `docs/android-report.md` (overwritten each task).
 `docs/last-report.md` belongs to a **different workstream** — never read or write it.
 
+> ⚠️ **THE APPEND-ONLY RULE APPLIES TO THE TASK LOG, NOT TO THE WHOLE FILE.** This file holds two
+> kinds of content and they have opposite maintenance rules:
+>
+> - **TASK LOG** (from "## Task log" down) — **APPEND-ONLY, never rewritten.** It is a record of what
+>   was true at the time. An entry that has been overtaken is not wrong; it is history.
+> - **FACTS and WORK LIST** (the two sections above it) — **CURRENT-STATE. They MUST be corrected in
+>   place when they change.** Leaving a stale fact under a header that says *"do not re-derive"* is
+>   worse than having no header at all: it actively instructs a reader to build against a retired
+>   model. This is the V9.0 line-318-vs-line-54 problem — a reader who lands on the header first
+>   implements against the wrong thing and never reaches the log entry that superseded it.
+>
+> **When correcting a fact, NOTE the correction — do not edit silently.** Format:
+> *"9 rows as of 2026-07-27; was 7 on 2026-07-26."* The old value is what someone else's half-finished
+> work was built against, so it has to stay legible.
+
 > **File created 2026-07-26.** It did not exist before this entry, so there was no
 > prior work list to mark items against — the work list below was started here.
 > Nothing pre-existing was overwritten or discarded.
@@ -12,20 +27,36 @@ Transient per-task reports live in `docs/android-report.md` (overwritten each ta
 
 ## Facts (verified, do not re-derive)
 
-- `van_devices` has **7 rows, all `platform='ios'`, ZERO with a `push_token`.** Push has
-  never delivered. No NULL `platform` values exist today. (Verified against the live DB
-  by the user, 2026-07-26.)
+> **CURRENT-STATE SECTION — corrected in place, never appended to.** See the maintenance rule at the
+> top of this file. Superseded values are kept inline as `was …` so they stay legible.
+
+- `van_devices` has **9 rows as of 2026-07-27; was 7 on 2026-07-26.** Split: **7 `ios`, 2 `android`**
+  (*was: all `ios`*). **ONE row carries a `push_token`** — the live Android emulator, 142 chars,
+  written 2026-07-27 21:07:48 (*was: ZERO — "push has never delivered" is no longer true on the
+  client side*). The other Android row is an orphan from a reinstall and has no token. No NULL
+  `platform` values exist. (Verified against the live DB, 2026-07-27, as the baseline captured before
+  the notification-preference migrations.)
+  - ⚠️ **The CLIENT half of push is verified; the SERVER half is not.** `app/api/orders/submit/route.ts:1077`
+    still carries `.or('platform.eq.ios,platform.is.null')`, so the one device in the fleet with a
+    working token is the one the send path filters out.
+  - **Gusto's device (`d687417b`, ios) has no push token and never has.** Recorded because a future
+    "Gusto didn't get the notification" report is easy to misread as a regression.
 - `proxy.ts:164` is the native-app escape hatch: it substring-matches the UA marker
   `HatchGrabNativeApp` and, when present, defers the cookie-blind auth guard. Any
   platform whose webview does not append that exact string will 307-loop `/dashboard`
   and `/manage` to `/login` (the V8.7 login loop).
 - `lib/apns.ts` `sendOrderPendingPush` POSTs to `api.push.apple.com` — **Apple tokens
   only**. There is no FCM sender in the codebase.
-- **No Android toolchain on this machine** (checked 2026-07-26): `ANDROID_HOME` and
-  `ANDROID_SDK_ROOT` unset, no JDK (`java -version` → "Unable to locate a Java Runtime",
-  `/usr/libexec/java_home -V` likewise), no `/Applications/Android Studio.app`, no
-  `~/Library/Android/sdk`. Any `cap add android` / `cap sync android` / Gradle step is
-  blocked until a JDK + SDK are installed.
+- **The Android toolchain IS installed as of 2026-07-27** — Android Studio, **JDK 21** and
+  **SDK 36**. *(Was, on 2026-07-26: no toolchain at all — `ANDROID_HOME`/`ANDROID_SDK_ROOT` unset,
+  `java -version` → "Unable to locate a Java Runtime", no `/Applications/Android Studio.app`, no
+  `~/Library/Android/sdk`, and every `cap`/Gradle step therefore blocked.)* `cap add android` and
+  `cap sync android` both run; the project has been built and deployed to an emulator and to a
+  physical device.
+  - ⚠️ **SDK 36 matters beyond "it's installed":** API 35+ is where Capacitor 8's SystemBars pads the
+    WebView and zeroes `env()` insets, which is the enforcement an **Android 14** device sits below —
+    so a physical Android 14 tablet **masks** the inset behaviour the API-36 emulator exposes. Verify
+    insets on the emulator, not the Tab.
 - `@capacitor/android` is already on disk at **8.4.1** as a transitive dependency of
   `@aparajita/capacitor-biometric-auth` — declaring it in `package.json` is a
   declaration, not an install.
@@ -34,15 +65,18 @@ Transient per-task reports live in `docs/android-report.md` (overwritten each ta
 
 ## Work list
 
+> **CURRENT-STATE SECTION — ticked in place as items complete.** See the maintenance rule at the top.
+
 - [x] `capacitor.config.ts` — add an `android` block with the byte-identical
       `appendUserAgent: 'HatchGrabNativeApp'` marker + matching `backgroundColor`.
 - [x] `app/api/orders/submit/route.ts` — platform-aware `van_devices` push-token query
       (Apple-compatible allowlist, so a future FCM token is never posted to APNs).
 - [x] `package.json` — declare `@capacitor/android` at a version matching the other
       `@capacitor/*` packages.
-- [ ] Install a JDK + Android SDK (or move the Android build to a machine/CI that has
-      them) — blocks every `cap`/Gradle step.
-- [ ] `npx cap add android` + first `cap sync android` — **blocked** on the above.
+- [x] Install a JDK + Android SDK (or move the Android build to a machine/CI that has
+      them) — blocks every `cap`/Gradle step. **DONE 2026-07-27: Android Studio + JDK 21 + SDK 36.**
+- [x] `npx cap add android` + first `cap sync android` — ~~**blocked** on the above~~.
+      **DONE 2026-07-26** (scaffolded; see the task-log entry of that date). No longer blocked.
 - [ ] FCM sender path (`lib/fcm.ts` or equivalent) + a `platform='android'` branch in the
       push fan-out — until this exists, the allowlist in `submit/route.ts` correctly
       excludes Android devices rather than silently killing their tokens.
@@ -1170,3 +1204,150 @@ retirement of the temporary `.or('platform.eq.ios,platform.is.null')` predicate 
 `app/api/orders/submit/route.ts:1077`. **That predicate still excludes Android from order push** —
 so the one device in the fleet with a working token is the one the send path filters out. The
 client half of Android push is verified end to end; the server half is not wired.
+
+---
+
+### 2026-07-28 — iOS billing compliance (OPEN), manage scoping, a claim ahead of the product, and the Tab
+
+Decisions and open questions recorded on the day. **No code was changed for any of this** — it is the
+durable record of what was decided, what was rejected and why, and what remains unverified.
+
+---
+
+## ⚠️ 1. iOS BILLING / APP STORE COMPLIANCE — DECISION OPEN
+
+**Context.** Apple restricts in-app links to external purchase mechanisms outside the US storefront.
+HatchGrab is UK, so **the May-2025 US carve-out (external links allowed without an entitlement) does NOT
+apply to us.** Any design that assumes it does is designing against the wrong rule.
+
+### The three options weighed
+
+| | Option | Verdict |
+| --- | --- | --- |
+| **(a)** | **Keep manage in-app; hide the upgrade/billing UI on iOS at runtime.** One platform check, one surface. No external link, no signpost to one. Web and Android untouched. | ✅ **CURRENT PREFERRED** |
+| **(b)** | **Remove manage from the app, link out to the web portal.** | ❌ **REJECTED as a compliance answer.** The link *is* the restricted mechanism. Turning it into the only path makes it **more** prominent, not less — it fails the rule harder while looking like a concession to it. It also costs functionality. |
+| **(c)** | **Remove manage entirely, no link at all.** | Compliant, but a real degradation. Operators commonly run on ONE device and need a route to manage. |
+
+Note the shape of the (b) rejection: it is not "this is risky", it is **"this is the opposite of a
+fix"**. A link that is the only path is a more prominent link.
+
+### 🔴 THE OPEN QUESTION THAT CHANGES ALL OF THE ABOVE
+
+**Does HatchGrab incur an IAP obligation at all?**
+
+It is **B2B operator software**. The subscription buys a food truck the ability to run its business —
+a service consumed **outside the app**. Apple carves out goods and services delivered outside the app,
+and maintains separate allowances for multiplatform services and business services. **If that reading
+holds, there is no upgrade restriction to design around, and the correct answer is "change nothing".**
+
+**NOT VERIFIED.** It needs confirming against the **current text of 3.1.1, 3.1.3(b) and 3.1.3(e),
+read directly from Apple** — not from summaries, and not from the version any of us last read. It is
+also worth **professional App Store compliance advice before submission**.
+
+> ⚠️ **DO NOT RESTRUCTURE THE APP ON AN UNVERIFIED PREMISE.** Option (a) is cheap and reversible; (b)
+> and (c) both destroy functionality to satisfy a rule we have not confirmed applies. If the carve-out
+> reading holds, any of that work is wasted *and* the product is worse.
+
+### Where the gate would live, if one is ever needed
+
+**This is a WEB-BUNDLE concern.** The Billing tab renders from `lib/plan-features.ts` — the same shared
+source the landing page and Admin read — so it ships inside the web bundle that the native shell loads.
+It is not native code and there is no build-time split to hang it on.
+
+Therefore any gate must **key off the PLATFORM at runtime — not merely "am I native"**. `Capacitor.getPlatform() === 'ios'`, not `Capacitor.isNativePlatform()`.
+**Android has no such restriction**, and a native-vs-web check would silently strip billing from the
+Android app for no reason at all.
+
+---
+
+## 2. MANAGE-IN-APP SCOPING — a note, NOT yet investigated
+
+Recorded now so that if manage is ever scoped down (options (b)/(c) above, or any later trim), these are
+known in advance rather than discovered by an operator mid-service.
+
+**Some settings live in manage but govern DASHBOARD behaviour:**
+
+- **Kitchen capacity** — editable from *both* surfaces.
+- **Order-ready** — a Settings master switch.
+- **Offline protection** — has a per-event dashboard override, but its **default lives on the van**.
+
+**An operator must be able to fix capacity mid-service without a laptop.** That is the constraint any
+scoping exercise has to satisfy; a trim that takes capacity off the device fails it.
+
+**⚠️ And the security half:** `/api/manage` is **token-based and authorises as owner** (`app/api/manage/route.ts:3` — *"Authenticated via dashboard token + PIN (same as orders dashboard)"*).
+**Removing UI removes the SURFACE, not the ROUTE.** Anyone holding the token can still call it. Hiding
+the Billing tab is a presentation decision and must never be mistaken for an access control.
+
+---
+
+## ⚠️ 3. LANDING PAGE CLAIMS ANDROID IS AVAILABLE — IT IS NOT
+
+Today's landing-copy change promoted the Android kitchen app from "coming soon" to available:
+`app/landing/page.tsx:71`, `:171`, `:272`; `lib/plan-features.ts:77` (the merged compare row) and
+`:133` (footnote 3). The separate "Android kitchen app — Coming soon" row was deleted.
+
+**The product does not exist yet: no build has shipped, and no Play Store listing exists.**
+
+**Recorded as a CLAIM AHEAD OF THE PRODUCT** — the same class as the V9.0 lesson that
+*gate-enabled and advertised ≠ built*, and the COPY PRINCIPLE. It was made deliberately, as a forward
+commitment, which is a legitimate call — but it is now a debt with a date attached rather than a
+description of the software.
+
+### Exposure — /landing is NOINDEX but PUBLIC
+
+Checked rather than assumed:
+
+- `app/landing/page.tsx:31` — `robots: { index: false, follow: false }`. **Not indexed by search.**
+- **But it is NOT access-gated.** There is no `middleware.ts` at the repo root and nothing gates the
+  route; it is an ordinary public Next.js page, reachable by anyone with the URL.
+- **And it is linked from live surfaces:** `components/legal/LegalPage.tsx:26` (the logo link on the
+  Terms/Privacy pages) and `app/api/demo/return/route.ts:27` (the demo-return bounce target).
+
+**So: not discoverable, but not private either.** Anyone sent the link — or arriving from the legal
+pages or a failed demo return — sees a page stating an Android app is available. That is a narrower
+audience than a public launch page, and it is not zero.
+
+**The claim becomes true when a build ships to a store track. Until then it stays on this list.**
+
+---
+
+## 4. STATUS — physical Lenovo Tab (Android 14, 10.1") arriving today
+
+What it can and cannot settle. Stated up front so a green result on the Tab is not mistaken for
+coverage it does not provide.
+
+### ✅ CAN validate
+
+- A **run through a full service** end to end.
+- **Real network transitions** (not emulator-simulated).
+- **Outbox drain on reconnect.**
+- **Session survival across force-quit.**
+- **Heartbeat / auto-pause end to end.**
+- **The never-run order-flow click-through** — still outstanding from the §59 exclusion work.
+- **Touch ergonomics** at a real 10.1" size in a kitchen.
+
+### ❌ CANNOT validate — and this one will actively mislead
+
+**The edge-to-edge / status-bar inset behaviour.** The Tab is **Android 14, BELOW the API-35
+enforcement threshold**, so it will **MASK the inset bug the API-36 emulator exposes**. A clean status
+bar on the Tab is not evidence; it is the absence of the enforcement that causes the bug.
+
+> **Verify insets on the EMULATOR, not the Tab.** This is the trap: the more realistic device gives the
+> less realistic answer, for this one class of defect.
+
+### ⚠️ ALSO NOT REPRESENTATIVE
+
+**Near-stock Android.** It does not clear **aggressive OEM background-killing** — Samsung and Xiaomi are
+the ones that matter for a device left on a counter all service. A passing heartbeat/auto-pause result on
+the Tab does not predict either.
+
+---
+
+## 5. OPEN DECISIONS — still unanswered
+
+1. **Sideload vs Play internal track** for getting builds onto real devices.
+2. **App-lock default on a counter device** — a shared kitchen tablet is not a personal phone.
+3. **Whether `truck_user_vans` enforcement lands before or after Android.**
+
+Plus, from §1 above and outranking all three: **whether the iOS billing restriction applies to us at
+all.** That one is not a preference to settle — it is a fact to establish.

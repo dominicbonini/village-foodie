@@ -1,124 +1,118 @@
-# Last report — Loop-complete card drops its explicit `label`, so one screen has one label
+# Last report — Landing copy follow-ups: offline detail aligned, footnote 5 made platform-neutral
 
-**Date:** 2026-07-28 · **File touched:** `components/dashboard/DemoLoopComplete.tsx` **only**
+**Date:** 2026-07-28 · **Files touched:** `app/landing/page.tsx`, `lib/plan-features.ts`
 **Verification:** `npx tsc --noEmit` → **clean, zero errors.** No `next dev`, no `next build`, no SQL.
-**Diff: 1 file, +8/−2** — one prop removed, one comment added.
+**Diff: 2 files, 2 strings + one explanatory comment.**
 
-This report **overwrites** the previous one (the copy-object centralisation), per the rolling convention.
+This report **overwrites** the previous one (the Android promotion), per the rolling convention.
 
 **Prompt integrity:** no garbles. The prompt arrived intact.
 
 ---
 
-# 1. THE CHANGE
+# 1. `DETAIL_OVERRIDES['Offline Order Protection']` — aligned
 
-`components/dashboard/DemoLoopComplete.tsx:219–224`:
+`app/landing/page.tsx:71`:
 
-```jsx
-        <DemoGetStarted
-          token={token}
-          isAdmin={isAdmin}
-          extractionSource={extractionSource}
-          className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm"
-        />
-```
+| | |
+| --- | --- |
+| Before | "If you lose signal, online ordering pauses so customers can't place orders you won't see. **The iPad app** keeps you taking orders offline; the web dashboard needs a connection." |
+| After | "…**The iPad and Android app** keeps you taking orders offline; the web dashboard needs a connection." |
 
-`label="Save my menu"` is gone. `triggerLabel = label ?? copy.bannerButton`
-(`DemoGetStarted.tsx:312`) now falls through to the variant, exactly as it does on the banner.
+Three words, matching the feature card at `:171` exactly. **The two now give one answer to one
+question** — this string is the compare-table detail for the same capability the card describes, so a
+visitor who read the card and then opened the table was being told two different things about which
+device keeps working offline.
 
-The reasoning is written at the call site (`:212–218`) so the prop isn't reinstated as a "fix" later,
-including the line that separates the two concerns:
+The rest of the sentence is untouched, including the clause that actually carries the caveat — *"the web
+dashboard needs a connection"* — which is the true and unchanged distinction: native app vs browser, not
+iPad vs Android.
 
-> `className` is still passed — that is presentation (a full-size button rather than the banner's pill),
-> which legitimately differs per surface; the WORDS do not.
+**Note on where this lives:** `DETAIL_OVERRIDES` (`:69–72`) is a landing-page-only override map. The
+shared `FEATURE_SECTIONS` detail in `lib/plan-features.ts` is deliberately *not* modified by it, so
+Billing and Admin keep their own text. I changed only the override — the shared source's detail for that
+row names no platform, so it needed nothing.
 
 ---
 
-# 2. ✅ NOTHING ELSE PASSES AN EXPLICIT `label`
+# 2. Footnote 5 — platform-neutral, as proposed
 
+`lib/plan-features.ts:147`:
+
+| | |
+| --- | --- |
+| Before | "Kitchen ticket printing requires the HatchGrab **iPad app** and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre." |
+| After | "Kitchen ticket printing requires the HatchGrab **kitchen app** and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre." |
+
+**Two words, and both halves of the point are preserved:** the iPad-only claim is gone, and Android is
+*not* asserted in its place. "(neither supplied)" and the help-centre sentence are verbatim.
+
+## Why this is the right shape, recorded in the file
+
+I put the reasoning at the site (`:141–146`) rather than only in this report, because the next person to
+sweep for "iPad" will find this line and be tempted to complete the pattern — every other iPad mention on
+the page became "iPad and Android" in the last diff, and this one deliberately did not:
+
+```js
+    // PLATFORM-NEUTRAL, deliberately. It said "the HatchGrab iPad app"; it does NOT now say "iPad and
+    // Android", because printing is not the same kind of claim as a build target. The recommended
+    // backend ('mfi' — Star/Epson via Apple's External Accessory framework, lib/printing/transport.ts:6)
+    // is iOS-only by construction, and the cross-platform path ('ble') is documented there as the budget
+    // fallback with limited/no paper-out status. Naming Android here would underwrite that. "The
+    // HatchGrab kitchen app" stays true whichever backend lands first.
 ```
-$ grep -rn "<DemoGetStarted" -A 6 --include="*.tsx" . | grep -v node_modules | grep "label"
-(no output)
-```
 
-All four call sites, confirmed individually:
+**The wording is now robust to either outcome.** If MFi ships first (iOS only), the footnote is still
+true. If BLE ships first (both platforms), it is still true. It commits to the app being required —
+which is the operational fact a buyer needs — without committing to a platform matrix that isn't built.
 
-| Call site | Props passed | Label source |
+**Unchanged from the last report, and still worth knowing:** printing ships on *no* platform today.
+`lib/printing/` contains only `createStubTransport` ("Phase A, no hardware"); there is no BLE plugin, no
+vendor SDK, and no `printer_class` column. The compare table's `Kitchen ticket printing: max: true`
+(`:109`) is a pre-existing claim against that stub — untouched here, and the larger exposure of the two.
+
+---
+
+# 3. Sweep re-run — no iPad-only claim remains
+
+`grep -in "ipad"` across both files, every hit accounted for:
+
+| Location | Text | Status |
 | --- | --- | --- |
-| `app/dashboard/[token]/page.tsx:1819` (banner) | `token`, `isAdmin`, `extractionSource` | variant |
-| `components/dashboard/DemoLoopComplete.tsx:219` (card) | `token`, `isAdmin`, `extractionSource`, `className` | **variant — this diff** |
-| `app/dashboard/[token]/kds/page.tsx:731` (KDS banner) | `token` | variant (defaults to `upload`) |
-| `app/trucks/[slug]/order/page.tsx:2602` (order page) | `slug` | variant (`saveOnly` — `canSetup` is false) |
+| `page.tsx:71` | "The iPad and Android app keeps you taking orders offline" | ✅ **this diff** |
+| `page.tsx:171` | "Carry on taking orders with the iPad and Android app." | ✅ last diff |
+| `page.tsx:272` | "iPad and Android kitchen app" | ✅ last diff |
+| `plan-features.ts:77` | Row name — "iPad and Android kitchen app" | ✅ last diff |
+| `plan-features.ts:133` | Footnote 3 — "native kitchen apps for iPad and Android… An Apple iPad is recommended" | ✅ last diff. The remaining "iPad" here is the **recommendation**, which is intentional and not a claim of exclusivity |
+| `plan-features.ts:147` | Footnote 5 — now "the HatchGrab kitchen app" | ✅ **this diff** |
+| `plan-features.ts:73–74`, `:170`, `:172` | Comments + the `ipad_kds` enforcement key | Not copy. The key is the gate identifier in `lib/features.ts`; renaming it would need a data migration |
 
-**Zero explicit labels remain.** Every surface now reads the same object.
-
----
-
-# 3. WHAT CHANGES ON SCREEN — two strings, one of them the point
-
-| Demo type | Card button before | Card button after |
-| --- | --- | --- |
-| **Sample** (`extraction_source = 'template'`) | "Save my menu" | **"Set up my truck →"** ✅ the fix — it now matches the banner above it |
-| **Upload** (`'upload'` or absent) | "Save my menu" | **"Save my menu →"** ⚠️ gains the arrow |
-
-**⚠️ The upload case gains a `→` that wasn't there.** `DEMO_COPY.upload.bannerButton` is
-`'Save my menu →'` — the arrowed form, because it was written for the banner. The card's explicit prop
-was the plain form, and dropping the prop necessarily adopts the arrow.
-
-That is a real if small visible change on the common path, and I'm flagging it rather than letting you
-find it. **Three ways to read it, and I did the one you asked for:**
-
-- **As shipped** — one string per variant, arrow included. Consistent with the banner, which is the
-  property this diff is buying.
-- If you want the card plain, that needs a second key (`cardButton`) alongside `bannerButton` in each
-  variant — which reintroduces exactly the per-surface split the object exists to remove, for an arrow.
-- If you want the arrow gone everywhere, it is three characters in `DEMO_COPY`.
-
-Nothing else changed: the card's heading, the `SIGNUP_OFFER` lines, "Not yet", the snooze, the modal it
-opens, and every other surface are untouched.
+**Every user-facing iPad-only claim on the landing page is now either "iPad and Android", a stated
+recommendation, or platform-neutral.**
 
 ---
 
-# 4. ⚠️ The `label` prop is now unused — flagged, not removed
-
-No caller passes it. It survives as an escape hatch with a ~20-line doc comment
-(`DemoGetStarted.tsx:125–144`) arguing "WHY SAVE MY MENU" — reasoning that now **also** lives in
-`DEMO_COPY`'s header, in more detail and next to the strings it describes.
-
-**Two copies of the same argument in one file is the drift risk this whole exercise is about**, one
-level up: someone updates the rationale in one place and not the other.
-
-**I have not touched it** — you scoped this to the call site, and removing a prop is a signature change.
-**The tidy is: delete the `label` prop and its comment, keep `copy.bannerButton`.** Say the word.
-
----
-
-# 5. Files changed
+# 4. Files changed
 
 | File | Change |
 | --- | --- |
-| `components/dashboard/DemoLoopComplete.tsx` | +8/−2 at `:212–224`. `label` prop removed; comment recording why. |
+| `app/landing/page.tsx` | 1 string at `:71`. |
+| `lib/plan-features.ts` | 1 string at `:147`, plus a 6-line comment recording why it stops short of naming Android. |
 | `docs/last-report.md` | This file, overwritten. |
 
----
-
-# 6. NOT TOUCHED
-
-`DemoGetStarted`'s signature, `DEMO_COPY`, `DEMO_COPY_SHARED`, the variant derivation · the welcome popup ·
-the KDS and order-page call sites · `provisionDemo` · `commitMenu` · seeding · the event provisioner.
+**Untouched:** pricing figures, plan names, free-month copy, footnotes 1–4, the compare-table values, the
+`ipad_kds` Feature key, and everything outside the landing page and its copy source.
 
 ---
 
-## 7. What I could not do / did not do
+## 5. What I could not do / did not do
 
-- **Could not run `next dev` or `next build`** — instructed not to. `tsc --noEmit` is clean. Two things to
-  look at:
-  1. **A sample demo with the loop-complete card showing** — the card button and the banner above it
-     should now read the same words ("Set up my truck →"). That is the whole diff.
-  2. **An upload demo** — the card button now carries the arrow (§3). Worth a glance in the card's
-     layout, since it is a wider button than the banner pill.
-- **Did not remove the now-unused `label` prop** — §4, with the reason and the one-line tidy.
-- **Did not add a `cardButton` key** to keep the card's plain wording — §3 explains why that would
-  reintroduce the split.
+- **Could not run `next dev` or `next build`** — instructed not to. `tsc --noEmit` is clean. Both changes
+  are string literals inside existing structures, so the only thing worth an eyeball is that the
+  compare-table detail (`:71`) and the feature card (`:171`) now read the same when you expand the row.
+- **Did not change the "Kitchen ticket printing" row's `max: true`** — flagged again in §2. That claim
+  predates this work and asserts a shipped capability backed by a stub transport; it is a product
+  decision, not a copy one.
+- **Did not rename the `ipad_kds` Feature key** — enforcement identifier, not copy.
 - **Did not commit anything.** This joins the session's unstaged work, the untracked
   `20260728_demo_sessions_extraction_source.sql`, and the staged deletion of `lib/demo-event-refresh.ts`.

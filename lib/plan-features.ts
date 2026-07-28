@@ -70,9 +70,11 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
       { name: 'Instant sold out toggle',         detail: 'Mark any item sold out in one tap — it greys out for customers straight away.', starter: true,  pro: true,  max: true  },
       { name: 'Automated stock countdown',       detail: 'Set a stock count and HatchGrab counts it down as orders come in, then sells out automatically.', starter: true,  pro: true,  max: true  },
       { name: 'Online ordering — Pay at Hatch', footnote: '1', detail: 'Customers order ahead online and pay in person when they collect.', starter: true, pro: false, max: false },
-      { name: 'iPad kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
-      // Coming soon (kept at the bottom of the section)
-      { name: 'Android kitchen app', footnote: '3', detail: 'The same kitchen screen on an Android tablet.', starter: 'coming_soon', pro: 'coming_soon', max: 'coming_soon' },
+      // MERGED ROW. This was 'iPad kitchen app' (true/true/true) with a separate 'Android kitchen app'
+      // (coming_soon/coming_soon/coming_soon) beneath it. Android now launches alongside iPad, so the second
+      // row became a duplicate of this one and was removed. Both rows were UNIFORM across all three plans,
+      // so the merge needed no per-plan decision — see the report.
+      { name: 'iPad and Android kitchen app', footnote: '3', detail: 'The fullest way to run HatchGrab: a live kitchen screen, plus the only way to keep taking orders when you lose signal.', starter: true, pro: true, max: true },
     ],
   },
   {
@@ -128,7 +130,7 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   },
   {
     number: '3',
-    text: 'iPad not supplied. The kitchen app works on any iPad or tablet running a modern browser. An Apple iPad is recommended for the best experience.',
+    text: 'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser. An Apple iPad is recommended for the best experience.',
   },
   {
     number: '4',
@@ -136,7 +138,13 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   },
   {
     number: '5',
-    text: 'Kitchen ticket printing requires the HatchGrab iPad app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
+    // PLATFORM-NEUTRAL, deliberately. It said "the HatchGrab iPad app"; it does NOT now say "iPad and
+    // Android", because printing is not the same kind of claim as a build target. The recommended
+    // backend ('mfi' — Star/Epson via Apple's External Accessory framework, lib/printing/transport.ts:6)
+    // is iOS-only by construction, and the cross-platform path ('ble') is documented there as the budget
+    // fallback with limited/no paper-out status. Naming Android here would underwrite that. "The
+    // HatchGrab kitchen app" stays true whichever backend lands first.
+    text: 'Kitchen ticket printing requires the HatchGrab kitchen app and a compatible thermal printer (neither supplied). Compatible printers listed in our help centre.',
   },
 ]
 
@@ -157,7 +165,11 @@ const ROW_FEATURE_MAP: Record<string, Feature> = {
   'Instant sold out toggle': 'sold_out_toggle',
   'Automated stock countdown': 'stock_countdown',
   'Online ordering — Pay at Hatch': 'online_ordering_pay_at_hatch',
-  'iPad kitchen app': 'ipad_kds',
+  // ⚠️ Keyed on the ROW NAME, so renaming a row here without renaming it above silently drops that row
+  // from findPlanParityViolations() — the guard stops checking and reports clean. Renamed with the merge.
+  // The Feature key itself ('ipad_kds') is the ENFORCEMENT identifier in lib/features.ts and is NOT
+  // renamed: it gates one KDS capability on both platforms, and changing it would need a data migration.
+  'iPad and Android kitchen app': 'ipad_kds',
   'Offline Order Protection': 'offline_protection',
   'Online payments': 'online_payments',
   'Advance pre-ordering': 'advance_preordering',

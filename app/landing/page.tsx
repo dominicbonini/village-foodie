@@ -68,7 +68,7 @@ const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
 // RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
 // FEATURE_SECTIONS details (lib/plan-features.ts) are NOT modified — Billing/Admin keep the original text.
 const DETAIL_OVERRIDES: Record<string, string> = {
-  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPad app keeps you taking orders offline; the web dashboard needs a connection.",
+  'Offline Order Protection': "If you lose signal, online ordering pauses so customers can't place orders you won't see. The iPad and Android app keeps you taking orders offline; the web dashboard needs a connection.",
 }
 
 // One shared cell renderer (mirrors Billing: ✓ / — / Coming soon) so the table cannot drift from the source's
@@ -168,7 +168,7 @@ export default function LandingPage() {
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website — or send the photo you already post to Facebook. You just review and confirm.</p></div>
             <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re at the grill. Messenger and Instagram coming soon.</p></div>
-            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPad app (Android coming soon).</p></div>
+            <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPad and Android app.</p></div>
           </div>
         </div>
       </section>
@@ -269,7 +269,7 @@ export default function LandingPage() {
                 <li>Menu, meal deals &amp; upsells</li>
                 <li>Sold-out toggle &amp; stock countdown</li>
                 <li>QR code &amp; discovery map listing</li>
-                <li>iPad kitchen app</li>
+                <li>iPad and Android kitchen app</li>
               </ul>
               <DemoCta className="btn btn-ghost">Try Free</DemoCta>
             </div>
