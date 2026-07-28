@@ -12,8 +12,6 @@ import { buildSlotIndicators } from '@/lib/slot-display'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
-import { isDemoIdentifier } from '@/lib/demo'
-import { rollDemoEventIfStale } from '@/lib/demo-event-refresh'
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
@@ -38,30 +36,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
   }
 
-  // ── DEMO: keep the event window alive ────────────────────────────────────────────────────────────
-  // A demo event is provisioned auto_close:false so the scheduler can't end a demo mid-session, which
-  // means its window just EXPIRES with the event still 'open'. Slots are generated for the window, so
-  // past the end time there is nothing bookable — VERIFIED: a demo whose window ended at 14:00 served
-  // 36 slots, 0 available, asap:null at 17:12, while still reporting "Live". The demo looked fine and
-  // its central loop could not happen.
-  //
-  // Rolled HERE because the dashboard is the demo's front door and it polls, so a demo self-heals while
-  // it's being used. No-op for real trucks (guarded inside), and no-op while the window is live — that
-  // path is one SELECT, which is the case that fires essentially always.
-  //
-  // ⚠️ Deliberately NOT fatal: a demo that can't roll is still worth serving. It is logged, not thrown —
-  // the alternative is a 500 on the dashboard of someone mid-evaluation.
-  if (isDemoIdentifier(truck.id)) {
-    try {
-      const rolled = await rollDemoEventIfStale(supabase, truck.id)
-      if (rolled.rolled) {
-        console.log(`[dashboard] demo event rolled ${rolled.from?.date} ${rolled.from?.start}-${rolled.from?.end} → ` +
-          `${rolled.to?.date} ${rolled.to?.start}-${rolled.to?.end} (${rolled.ordersShifted} orders shifted)`)
-      }
-    } catch (e) {
-      console.error('[dashboard] demo event roll failed:', e instanceof Error ? e.message : e)
-    }
-  }
+  // ── DEMO: NO automatic event roll here. Deliberately. ───────────────────────────────────────────
+  // This used to call rollDemoEventIfStale on every dashboard load, shifting an elapsed demo window
+  // forward so the demo "self-healed". That is gone, along with lib/demo-event-refresh.ts, because the
+  // healing was worse than the illness:
+  //   • it wrote order slots directly, bypassing the seeder, and clamped overshoots onto the final slot
+  //     — 15 orders landed on 23:59, breaching the per-slot mains ceiling the seeder guarantees;
+  //   • it preserved the old distribution, so a compressed board rolled forward compressed forever;
+  //   • it shifted the VISITOR'S OWN test order too — one placed at 23:40 reappeared at 09:45 the next
+  //     morning, indistinguishable from a seeded one.
+  // An elapsed demo now ENDS, visibly, and the dashboard offers "Start a new service"
+  // (app/api/demo/restart → lib/demo-restart.ts), which wipes the old service and seeds a fresh board.
+  // Orders from a previous service are not real and must not carry over; a real truck's yesterday
+  // tickets don't either.
 
   // If there's a logged-in user, verify they own this truck
   const supabaseAuth = await createSupabaseServerClient()

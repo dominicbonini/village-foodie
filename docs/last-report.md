@@ -1,245 +1,205 @@
-# Last report — Loop-complete border reverted; order highlight → fading green full-card flash
+# Last report — Admin sees the setup path on production without opening signup publicly
 
-**Date:** 2026-07-27 · **Files touched:** `app/globals.css`,
-`components/dashboard/DemoLoopComplete.tsx`
-**Verification:** `npx tsc --noEmit` → **clean, zero errors.** No `next dev`, no `next build`, as
-instructed.
+**Date:** 2026-07-28 · **Files touched:** `components/DemoGetStarted.tsx`,
+`components/dashboard/DemoLoopComplete.tsx`, `app/dashboard/[token]/page.tsx`
+**Verification:** `npx tsc --noEmit` → **clean, zero errors.** No `next dev`, no `next build`, no SQL.
+**No env var changed. `/api/signup`'s gate untouched.**
 
-This report **overwrites** the previous one (the three-line card tightening), per the rolling
-convention.
-
-**Prompt integrity:** no garbles. The prompt arrived intact.
+This report **overwrites** the previous one (the order-page closed state), per the rolling convention.
 
 ---
 
-# 0. REVERTED — the loop-complete card's border and fill
+## 0. Prompt integrity — one garbled spot, repaired not silently fixed
 
-`components/dashboard/DemoLoopComplete.tsx:172` is back to what it was before last task:
-
-```jsx
-<div className="bg-white border-2 border-orange-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
-```
-
-| | Last task | Now |
+| As received | Read as | Basis |
 | --- | --- | --- |
-| Fill | `bg-orange-100` | **`bg-white`** |
-| Border | *(none)* | **`border-2 border-orange-300`** |
-| Shadow | *(removed)* | **`shadow-sm`** |
-| Eyebrow | `text-orange-700` | **`text-orange-600`** |
-| "Show me" hover | `hover:text-orange-900` | **`hover:text-orange-800`** |
-
-The eyebrow and hover shades went back too — `orange-700`/`orange-900` existed only for contrast
-against the `orange-100` fill, so leaving them on a white card would have been a stray half-revert.
-
-**`text-center` is kept** — that came from the centring request, not the colour change, and you didn't
-ask for it back. The three-line copy from last task is also untouched.
+| item 1: *"I do not want a new **requestdemo load** just to hide a button"* | *"a new **request on demo load**"* | A space lost across the word boundary. The sentence needs a noun then a timing phrase, and the preceding clause — *"If it requires a fetch the demo dashboard does not already make"* — establishes exactly that concern. |
 
 ---
 
-# 1. FULL-CARD WASH, NOT A BORDER
+## Your mid-turn note, and why I built it anyway
 
-`app/globals.css:66–130`. The `box-shadow` ring is gone entirely; the highlight is now an overlay that
-covers the whole card.
+> *"the only way into the demo currently is through admin so dont worry aobut a admin lock"*
 
-```css
-.demo-order-highlight::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  border-radius: inherit;
-  background-color: rgb(34 197 94);
-  opacity: 0;
-  animation: demoOrderFlash 2000ms ease-out forwards;
-}
-```
+**Understood, and it changes what this buys you — but not what I did, because the answer to item 1
+turned out to be "free".** The signal is already in state on the demo dashboard; wiring it into
+`canSetup` is **three props and one `||`**, with **no new request** and no new auth concept. That is
+less work than the alternatives I'd otherwise have had to propose under item 3.
 
-Your diagnosis was right and it is recorded in the file: **every card on that board already has a
-border**, so a ring competed with borders rather than standing out — and an orange one sat next to the
-red/amber urgency states, reading as another severity level. A wash has nothing to compete with.
+What it buys you given your correction:
 
-- **`pointer-events: none`** — the card stays fully clickable through the flash. The operator is meant
-  to work with this order, not wait for a decoration to finish.
-- **`border-radius: inherit`** — the wash follows the card's `rounded-2xl` instead of squaring off the
-  corners.
+- **Today** it is belt-and-braces. If demo access is admin-only, everyone reaching `DemoGetStarted`
+  is you, so the gate never excludes anyone.
+- **The moment the demo opens to the public** it becomes load-bearing — without it you'd either be
+  testing signup blind, or flipping `NEXT_PUBLIC_SIGNUP_PUBLIC` at build time and showing the setup
+  path to every visitor. That is the exact trap this task set out to avoid, and it arrives on the day
+  you stop thinking about it.
+- **It leaves nothing to re-tighten later.** No temporary flag to remember to remove.
+
+**If you'd rather not carry it, the revert is one line** — drop `|| isAdmin` from `:208`. The props are
+inert on their own.
 
 ---
 
-# 2. GREEN
+# 1. REPORT — the signal exists, and it is already fetched
 
-`rgb(34 197 94)` — Tailwind **green-500**.
+## Where `isAdmin` comes from
 
-Chosen by elimination, from the board's actual palette (`components/dashboard/helpers.ts:149–158`):
-
-| Colour | Already means | Free? |
-| --- | --- | --- |
-| red | `late` (`bg-red-50` header, red-500 top rule) | ✗ |
-| amber | `warn` and `cooking` | ✗ |
-| orange | the primary action ("Save my menu", tab accents) | ✗ |
-| slate | `new` | ✗ |
-| **green** | `ready` — a *header* state, never a card-wide wash | **✓** |
-
-One honest note: green is not entirely unused — `ready` orders carry a `bg-green-50` header
-(`helpers.ts:151`). But `green-50` is a pale wash on a header strip, where this is `green-500` at ~0.5
-alpha across the **whole card**, and it lasts two seconds. There is no state in which a card is
-uniformly green, so the two cannot be confused. It remains the only family not spoken for by an urgency
-meaning.
-
----
-
-# 3. FADES OUT COMPLETELY — no held state
-
-```css
-@keyframes demoOrderFlash {
-  0%   { opacity: 0.5; }
-  55%  { opacity: 0.42; }   /* hold most of the tint while they arrive, THEN fall away */
-  100% { opacity: 0; }
-}
-```
-
-**2000ms, `ease-out`, `forwards`, ending at `opacity: 0`.** The mid-stop at 55% is what makes it read
-as *"here"* rather than as a blink: the wash sits nearly full-strength for the first second — while the
-eye is still landing after the scroll — and only then falls away. A linear fade from 0.5 is half gone
-before they have looked.
-
-`forwards` pins the final `opacity: 0`, so nothing is held. Exactly the GitHub / Slack / Linear
-jump-to-item convention you named.
-
-## The DOM doesn't hold anything either
-
-`DemoLoopComplete.tsx:56–62` and `:150–152`:
+`app/dashboard/[token]/page.tsx:691–695` — an **unconditional** mount effect, with **no `isDemo`
+guard**, so it already runs on a demo dashboard:
 
 ```js
-const FLASH_MS = 2000
-const FLASH_CLEAR_MS = FLASH_MS + 250
-…
-onHighlight?.(arrived.order_key)
-// NO HELD STATE. The CSS fades the wash to nothing; this drops the class once it has, so the
-// card carries no spent marker and a later "Show me" can replay the flash.
-setTimeout(() => onHighlight?.(null), FLASH_CLEAR_MS)
+  useEffect(()=>{
+    // Native app sends its Bearer so /api/auth/me resolves is_admin (+ identity) without a cookie → the
+    // Admin link appears in-app. Web: nativeAuthHeader() returns {} → cookie path unchanged.
+    nativeAuthHeader().then(h=>fetch('/api/auth/me',{headers:h})).then(r=>r.json()).then(d=>{if(d.email)setCurrentUserEmail(d.email);if(d.first_name)setCurrentUserFirstName(d.first_name);if(d.is_admin)setIsAdmin(true)}).catch(()=>null)
+  },[])
 ```
 
-The CSS alone would leave the card visually clean but still carrying `demo-order-highlight`. Dropping
-the class afterwards means no spent flag on the element, and a later "Show me" re-adds it and replays
-the flash. The 250ms buffer keeps the class from being pulled mid-animation.
+State declared at `:287` (`const[isAdmin,setIsAdmin]=useState(false)`), already consumed at `:1875`
+(`isAdmin={!isDemo&&isAdmin}` on `UserMenu`).
+
+**Server side**, `app/api/auth/me/route.ts` resolves the cookie session (or a native Bearer), reads
+`operators.is_admin` from the database, and returns it. It is a real server-resolved fact, not a
+client-side guess — and it returns `is_admin: false` for a logged-out visitor, which is every demo
+visitor who isn't signed in.
+
+## ✅ Cost: ZERO new requests
+
+**The fetch already happens on demo dashboard load.** I did not add a request, a hook, an endpoint or
+an auth check — I read a value that was already sitting in component state and passed it down. Your
+item 1 constraint is met exactly.
+
+**Where the signal is NOT available**, and both are correctly left alone:
+
+| Surface | `isAdmin`? | Result |
+| --- | --- | --- |
+| Demo dashboard (`page.tsx:1811`) | ✅ already in state | setup path opens for an admin |
+| `DemoLoopComplete` (same page) | ✅ passed through | same |
+| KDS (`kds/page.tsx:731`) | ❌ no `/api/auth/me` call | prop omitted → `false` → today's behaviour. **I did not add the fetch** — that would be the new request you ruled out. |
+| Customer order page (`order/page.tsx:2602`) | ❌ and irrelevant | passes `slug`, not `token`, so `!!token` is false and `canSetup` is false regardless |
 
 ---
 
-# 4. 🔴 LAYERING OVER THE LATE-ORDER TINT — handled with `::after`, not `background-color`
+# 2. THE CHANGE
 
-**This is the part that would have silently failed.** An `OrderCard` is a white box whose **header
-carries its own background** — `bg-red-50` on a late order, `bg-amber-50` cooking/warn, `bg-green-50`
-ready (`helpers.ts:151–157`). A `background-color` on the card root paints **behind** those children.
-So on the exact card this feature exists for — the 7m-late one with the pink header — the wash would
-have been invisible across the strip the eye actually lands on, and visible only on the body below it.
+## `components/DemoGetStarted.tsx:208` — the one functional line
 
-**How it is handled** (`app/globals.css:105–118`):
-
-```css
-.demo-order-highlight {
-  position: relative;
-}
-
-.demo-order-highlight::after {
-  position: absolute;
-  inset: 0;
-  z-index: 5;                          /* above the header strip and body, both static */
-  background-color: rgb(34 197 94);
-  …
-}
+```js
+  const canSetup = (process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin) && !!token
 ```
 
-- **The overlay paints ON TOP of every child**, header included. Positioned elements paint above static
-  ones, and the header divs (`OrderCard.tsx:373`, `:398`) are static; `z-index: 5` makes it explicit
-  rather than incidental.
-- **Uniform regardless of what's underneath.** Over `bg-red-50` (`#FEF2F2`), green-500 at 0.5 alpha
-  composites to roughly `#8FDCA9` — unmistakably green, not a pink that has shifted slightly. It reads
-  the same over amber, slate and plain white, so the flash means one thing on every card.
-- **`position: relative` is set in the CSS rule, not as a Tailwind class**, so a live operator's card
-  markup is unchanged — the property only exists while the demo class is on the element.
+was
 
-## One risk I checked rather than assumed
+```js
+  const canSetup = process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' && !!token
+```
 
-Adding `position: relative` to the card root creates a containing block for any absolutely-positioned
-descendant, which could reposition something. **`grep -c "absolute" components/dashboard/OrderCard.tsx`
-→ 1**, at `:25`, inside the `Toggle` helper — and its parent is already `relative w-11 h-6`. Nothing in
-the card resolves its position against the root, so this cannot move anything.
+`&& !!token` is unchanged and still outside the OR, so the slug-only surface still cannot reach the
+setup path — an admin on the customer order page gets email capture, same as anyone, because the
+in-modal signup POSTs `{ demo: <token> }` and a slug can't drive that lookup.
 
----
+New optional prop, defaulting false:
 
-# 5. prefers-reduced-motion — a static tint that clears
+```js
+  /** Admin session (operators.is_admin), resolved from /api/auth/me by the host surface — NOT a claim this
+   *  component makes or verifies. … Defaults false, so any surface that doesn't pass it behaves exactly
+   *  as it does today. */
+  isAdmin?: boolean
+```
 
-`app/globals.css:120–130`:
+## Why this is not a client-trusted auth flag
 
-```css
-@keyframes demoOrderFlashStatic {
-  0%   { opacity: 0.4; }
-  100% { opacity: 0; }
-}
+Your item 3 was explicit, so it is argued in the file (`:203–214`) rather than assumed. **The server
+already sanctions this exact path** — `app/api/signup/route.ts:51–61`:
 
-@media (prefers-reduced-motion: reduce) {
-  .demo-order-highlight::after {
-    animation: demoOrderFlashStatic 2000ms steps(1, end) forwards;
+```js
+  // ── GATE ────────────────────────────────────────────────────────────────────────────────────────
+  if (process.env.SIGNUP_PUBLIC !== 'true') {
+    const supabaseAuth = await createSupabaseServerClient()
+    const { data: { user } } = await supabaseAuth.auth.getUser()
+    const { data: caller } = user
+      ? await supabase.from('operators').select('is_admin').eq('auth_user_id', user.id).maybeSingle()
+      : { data: null }
+    if (!caller?.is_admin) {
+      return NextResponse.json({ ok: false, error: 'Sign-up isn’t open yet.' }, { status: 403 })
+    }
   }
-}
 ```
 
-`steps(1, end)` is the mechanism: opacity **holds flat at 0.4 for the full two seconds, then jumps to
-0** in one step. No interpolation, so there is nothing to watch — but the card is still unambiguously
-marked when they arrive, and still clear afterwards.
+It re-reads the session **server-side** and checks `operators.is_admin` **against the database**. So:
 
-Exactly your instruction, and worth stating why it isn't `animation: none`: that would leave the
-`::after` at its base `opacity: 0`, scrolling a reduced-motion user to a card with no indication at all
-— the failure you called out.
+- **An admin completing signup while `SIGNUP_PUBLIC` is unset is expected behaviour**, not a hole —
+  the server was always going to allow it. The client flag only decides whether we *render the door
+  the server would have opened anyway.*
+- **Forging `isAdmin` in the browser gains a button and then a 403.** Which is what a non-admin gets
+  today, minus the button. No privilege is transferred.
+- The component's own header already frames this correctly — *"It's a mirror, not the source of truth:
+  the server flag still enforces; this only decides whether we OFFER the door."* The OR extends the
+  mirror to cover the second case the server already accepts.
 
----
+## What I did NOT change
 
-# 6. UNCHANGED — verified, not assumed
-
-| Item | State |
-| --- | --- |
-| The **"Show me"** button | Unchanged (`:182–194`) except the hover shade reverted with §0. |
-| The **scroll behaviour** | `showMe`'s `getElementById` → `onHighlight(null)` → capturing `scrollend` listener → 900ms fallback → `scrollIntoView({behavior:'smooth', block:'center'})` — all identical. The only line added inside it is the flash-clear timer, which is highlight lifecycle (item 3), not scroll. |
-| **Keying on the real `order_key`** | Unchanged. Still the baseline diff (`freshKeys`), still `orders.find(o => o.order_key === freshKeys[0])`, still suppressed when ambiguous. |
-| **`isDemo` gating** | Unchanged. `OrderCard`'s `highlight` prop is `isDemo&&o.order_key===highlightOrderKey` (`page.tsx:2321`, `:2327`) — `false` on every live card, so `.demo-order-highlight` never lands and `::after` never exists. **A live operator's board cannot flash.** |
-| **The trigger** | Unchanged — baseline detection, snooze, localStorage keys all untouched. |
-
-`OrderCard.tsx` and `app/dashboard/[token]/page.tsx` were **not opened for writing** this task.
+- **`SIGNUP_PUBLIC` and `NEXT_PUBLIC_SIGNUP_PUBLIC` values** — untouched, in code and in config. I did
+  not read or write any Vercel setting.
+- **`/api/signup`'s gate** — not opened for writing. The block quoted above is exactly as it was.
+- **No new endpoint, no new fetch, no new auth check**, per item 3.
 
 ---
 
-# 7. NOT TOUCHED, as instructed
+# 3. ✅ ITEM 4 — with neither the flag nor an admin session, behaviour is IDENTICAL to today
 
-`DemoLoopComplete`'s trigger · the scroll logic · the Gemini timeout · `provisionDemo` · `commitMenu` ·
-seeding · the event provisioner · the roll.
+The truth table, with `token` present (dashboard/KDS):
+
+| `NEXT_PUBLIC_SIGNUP_PUBLIC` | `isAdmin` | `canSetup` | What renders |
+| --- | --- | --- | --- |
+| unset / not `'true'` | `false` | **`false`** | **Email capture only — today's behaviour exactly** |
+| unset / not `'true'` | `true` | `true` | Setup wizard (new: the production-test path) |
+| `'true'` | `false` | `true` | Setup wizard (unchanged) |
+| `'true'` | `true` | `true` | Setup wizard (unchanged) |
+
+**Row 1 is the public's experience and it is bit-identical to before**, because `false || false ===
+false` — the same value the old expression produced, feeding the same `canSetup`. Concretely, an
+ordinary visitor still gets:
+
+- heading **"Save your demo"**, sub *"We'll keep it for 14 days and email you a link straight back."*
+  (`:602`, `:606–608`)
+- the email field, the privacy line, and **"Send me the link"** as the single solid button (`:973–976`)
+- **no "Set up my truck →" button, no wizard stepper, no dead-end** — the whole point of the gate.
+
+`canSetup` is the only consumer of these props; there is no second code path that reads `isAdmin`
+directly. So a non-admin's render is not merely equivalent, it is the same branch.
 
 ---
 
-## 8. Files changed
+# 4. Files changed
 
 | File | Change |
 | --- | --- |
-| `app/globals.css` | +47/−19. `demoOrderPulse` ring replaced by `demoOrderFlash` + `.demo-order-highlight::after` overlay; new `demoOrderFlashStatic` for reduced motion. |
-| `components/dashboard/DemoLoopComplete.tsx` | Container reverted to `bg-white border-2 border-orange-300 … shadow-sm` (§0); eyebrow/hover shades reverted; `FLASH_MS`/`FLASH_CLEAR_MS` added; one flash-clear timer in `settle`. |
+| `components/DemoGetStarted.tsx` | +14/−1. Optional `isAdmin` prop; `|| isAdmin` in `canSetup`; the not-a-hole rationale. |
+| `components/dashboard/DemoLoopComplete.tsx` | +4. Optional `isAdmin` prop, passed through to its `DemoGetStarted`. |
+| `app/dashboard/[token]/page.tsx` | +5/−1. `isAdmin` passed to both demo surfaces on this page, with a note that the value costs no request. |
 | `docs/last-report.md` | This file, overwritten. |
+
+**Three files, one behavioural line. No env var, no server gate, no new request.**
 
 ---
 
-## 9. What I could not do / did not do
+## 5. What I could not do / did not do
 
-- **Could not run `next dev` or `next build`** — instructed not to. `tsc --noEmit` is clean, but this
-  is a visual change and four things want your eye:
-  1. **Green-500 at 0.5 over the pink `bg-red-50` header** — the compositing is arithmetic, but whether
-     it reads as "yours" rather than "a new state" is a judgement only the real board settles.
-  2. **The 55% hold** — if it still feels like a blink, raising the mid-stop to ~70% lengthens the
-     plateau without touching the 2s total.
-  3. **`steps(1, end)`** under an actual reduced-motion setting.
-  4. **`z-index: 5`** — correct by inspection (all card children are static), unverified in a browser.
-- **Did not tune the opacity per underlying state.** One value for all cards; a late card's pink is
-  pale enough that 0.5 green dominates it. If it looks weak specifically on late cards, that's a
-  targeted bump rather than a rethink.
-- **Did not touch the loop-complete card's copy or layout** beyond the §0 colour revert.
-- **Did not commit anything.** The tree also still carries the uncommitted Gemini-timeout work
-  (`lib/menu-extract.ts` 90s, `components/landing/DemoUpload.tsx` 75s) and this session's other demo
-  and Android edits — all unstaged.
+- **Could not run `next dev` or `next build`** — instructed not to. `tsc --noEmit` is clean. Two things
+  to confirm on the deployed site, both quick:
+  1. **Signed in as admin on hatchgrab.com, open a demo dashboard** → "Set up my truck →" should
+     appear. If it doesn't, check `/api/auth/me` returns `is_admin: true` for that account — the
+     effect swallows errors with `.catch(()=>null)`, so a failed call silently leaves `isAdmin` false.
+  2. **In a private window (logged out), same demo** → email capture only.
+- **⚠️ There is a brief render before `/api/auth/me` resolves** where `isAdmin` is still `false`, so
+  an admin may see the email-capture layout for a moment before the setup button appears. Harmless for
+  a test path; worth knowing so it isn't read as the gate failing.
+- **Did not add the signal to the KDS.** `kds/page.tsx` makes no `/api/auth/me` call, and adding one
+  is the new request you ruled out. An admin testing from the KDS banner gets email capture; use the
+  dashboard banner or the loop-complete card.
+- **Did not touch the order page.** `slug`-only, so `!!token` keeps `canSetup` false there — correct
+  and unchanged.
+- **Did not commit anything.** This joins the session's unstaged work (demo restart, seeder scaling,
+  order-page closed state) and the staged deletion of `lib/demo-event-refresh.ts`.

@@ -374,6 +374,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // `isDemo&&` ternaries on the two OrderCard grids, so on a live board it is null for the page's whole
   // life and every card renders byte-for-byte what it did before.
   const[highlightOrderKey,setHighlightOrderKey]=useState<string|null>(null)
+  // DEMO ONLY — "Start a new service" (the elapsed-event card below).
+  const[restarting,setRestarting]=useState(false)
+  const[restartError,setRestartError]=useState<string|null>(null)
   const[showQRFullscreen,setShowQRFullscreen]=useState(false)
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
   const prevPendingCount=useRef(0)
@@ -857,6 +860,35 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setCopiedOrderLink(true)
       setTimeout(()=>setCopiedOrderLink(false),2000)
     }catch{/* clipboard permission denied — fail silently */}
+  }
+
+  // DEMO ONLY — wipe the finished service and provision a fresh one for now. The server does all the
+  // work (app/api/demo/restart → lib/demo-restart); this only clears the CLIENT-side demo state the
+  // server can't see, then re-fetches.
+  const startNewService=async()=>{
+    if(restarting)return
+    setRestarting(true); setRestartError(null)
+    try{
+      const res=await fetch('/api/demo/restart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})
+      const data=await res.json().catch(()=>({}))
+      if(!res.ok){setRestartError(data?.error||'Could not start a new service — try again.');return}
+      // RESET THE LOOP-COMPLETE STATE. Its baseline is a persisted list of order keys
+      // (components/dashboard/DemoLoopComplete.tsx) — every key in it has just been deleted, so without
+      // this the NEW seeded board reads as 37 orders the visitor caused and the prompt fires instantly
+      // on load. Clearing both keys means the fresh board is re-baselined on next load and the visitor
+      // gets the moment properly when they order on the new service. Same key names as the component.
+      try{
+        localStorage.removeItem(`hg_demo_seen_orders_${token}`)
+        localStorage.removeItem(`hg_demo_loop_${token}`)
+      }catch{/* private mode — the baseline just re-records itself */}
+      setHighlightOrderKey(null)
+      // Full re-fetch: the event id, the window, the slot grid and every order have changed.
+      await fetchAllRef.current()
+    }catch{
+      setRestartError('Could not start a new service — try again.')
+    }finally{
+      setRestarting(false)
+    }
   }
 
   const handleShowQR=async()=>{
@@ -1620,6 +1652,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   )
 
   const recentlyClosed=!!(activeEvent?.status==='closed'&&activeEvent.closed_at&&Date.now()-new Date(activeEvent.closed_at).getTime()<10*60*1000)
+
+  // DEMO — has this service finished? Two ways: the window ELAPSED (a demo is provisioned auto_close:false
+  // so it just runs out with status still 'open'), or the event was CLOSED. Either way the board is dead:
+  // slots are generated for the window, so past end_time there is nothing bookable and the demo's whole
+  // loop is impossible. Previously /api/dashboard silently rolled the window forward on every load; that
+  // is gone (see the note there), so the state is now surfaced instead of hidden.
+  // Venue-local comparison via the event's own date + end_time, matching how every other surface reads
+  // these columns — they are wall-clock, not UTC.
+  const demoServiceEnded=!!(isDemo&&activeEvent&&(
+    activeEvent.status==='closed'||
+    (activeEvent.event_date&&activeEvent.end_time&&
+      Date.now()>new Date(`${activeEvent.event_date}T${activeEvent.end_time}`).getTime())
+  ))
   const effectiveOfflineProtection=eventOfflineOverride!==null?eventOfflineOverride:vanAutoPause
 
   // Sort ascending by RESOLVED collection time (Manual s.6/s.9): null-slot ASAP
@@ -1760,7 +1805,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           than alarming: this is a prospect exploring the product, not an operator being warned. The
           explanatory copy that used to live here moved to the one-time welcome popup — said once, properly,
           rather than repeated on every screen forever. */}
-      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token}/>}/>}
+      {/* isAdmin comes from the /api/auth/me call this page ALREADY makes on mount (see the effect above
+          — unconditional, so it fires on a demo dashboard too). No new request. It opens the setup path
+          for a production tester while public signup stays off; /api/signup re-checks it server-side. */}
+      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin}/>}/>}
       {/* One-time orientation, shown BEFORE they see the board. Carries the customer order link, which is
           the thing most likely to be missed and the one that closes the loop. */}
       {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={searchParams.get('welcome')==='sample'}/>}
@@ -1983,13 +2031,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               {/* DEMO — behaviour-triggered signup prompt. Fires when an order the visitor caused lands on
                   this board (see the component for the baseline detection). Sits ABOVE the order list
                   because that's where their eye returns; deliberately not a modal. */}
-              {isDemo&&(
+              {/* DEMO — the service has finished. Shown INSTEAD of the loop-complete prompt: the board
+                  behind this is dead (nothing bookable past end_time), so a signup prompt would be
+                  pitching off the back of something that no longer works. One action, no dead ends. */}
+              {demoServiceEnded&&(
+                <div className="bg-white border-2 border-slate-300 rounded-2xl px-4 py-4 mb-4 shadow-sm text-center">
+                  <p className="text-base font-black text-slate-900">This service has ended</p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Start a new one and we&apos;ll set up a fresh service for right now — your menu stays as it is.
+                  </p>
+                  <button type="button" onClick={startNewService} disabled={restarting}
+                    className="mt-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-40 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm">
+                    {restarting?'Setting up…':'Start a new service'}
+                  </button>
+                  {restartError&&<p className="text-sm text-red-600 mt-2">{restartError}</p>}
+                </div>
+              )}
+              {isDemo&&!demoServiceEnded&&(
                 <DemoLoopComplete
                   token={token}
                   orderKeys={orders.map(o=>o.order_key)}
                   orders={orders}
                   loaded={!loading&&!!truck}
                   onHighlight={setHighlightOrderKey}
+                  isAdmin={isAdmin}
                 />
               )}
               {/* Prep time banner — hidden in DEMO. Not just its "Edit categories" → /manage link: the whole

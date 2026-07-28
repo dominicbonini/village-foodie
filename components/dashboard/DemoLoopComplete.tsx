@@ -58,8 +58,10 @@ const SCROLL_SETTLE_FALLBACK_MS = 900
 const FLASH_MS = 2000
 const FLASH_CLEAR_MS = FLASH_MS + 250
 
-export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight }: {
+export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight, isAdmin = false }: {
   token: string
+  /** Passed straight through to DemoGetStarted's canSetup — see that component. Defaults false. */
+  isAdmin?: boolean
   /** Every order key currently on the board. */
   orderKeys: string[]
   /** The board's orders — used ONLY at render time, to look up the arrived order's number / customer /
@@ -206,6 +208,7 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
         {/* SAME capture flow as the banner CTA — one path, two presentations, so they can't drift. */}
         <DemoGetStarted
           token={token}
+          isAdmin={isAdmin}
           label="Save my menu"
           className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm"
         />

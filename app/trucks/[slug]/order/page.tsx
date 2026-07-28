@@ -1409,13 +1409,33 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         </div>
       )}
 
-      {/* Event closed banner — clock end (isEventClosed) OR operator finished (eventEnded, incl. early) */}
+      {/* Event closed banner — clock end (isEventClosed) OR operator finished (eventEnded, incl. early).
+          DEMO gets a different SECOND LINE only: the heading, the container, the sticky offset and the
+          real-customer copy are all untouched, so a live truck's closed page is byte-for-byte what it was.
+
+          WHY DEMO NEEDS ITS OWN LINE: a demo event is provisioned auto_close:false, so its window simply
+          elapses with the event still 'open' and this clock backstop fires. Until now /api/dashboard
+          silently rolled the window forward on every dashboard load and the page healed itself; that roll
+          is gone (it breached the per-slot capacity ceiling and carried the visitor's own test order into
+          the next day — see lib/demo-restart.ts). So an elapsed demo now genuinely stays closed, and this
+          is the surface the welcome popup explicitly sends people to. "We hope to see you next time!" is
+          the wrong thing to say to someone evaluating the product: it reads as the demo being over, when
+          in fact a new service is one button away on the dashboard.
+
+          ⚠️ NO RESTART CONTROL HERE, and NO LINK. Starting a service is an OPERATOR action and this is the
+          customer view. And a link is not buildable: a demo's slug and dashboard_token are generated
+          INDEPENDENTLY (lib/provision-truck.ts:171-179 — "leaking one must not hand over the others"), so
+          this page holds the slug and cannot derive the dashboard URL. Exposing the token through a
+          customer-facing response to make a link possible would weaken that boundary for real trucks too.
+          Hence the copy names the dashboard without pretending to navigate there — see the report. */}
       {isClosed && (
         <div style={{ top: stickyTop }} className="sticky z-40 bg-slate-800 text-white px-4 py-3 shadow-md">
           <div className="max-w-lg mx-auto">
             <p className="font-black text-sm">Ordering has closed</p>
             <p className="text-xs text-slate-300 mt-0.5">
-              {eventEnded && !isEventClosed
+              {isDemo
+                ? 'This demo service has ended — that’s the event window running out, exactly as a real one would. Open your demo dashboard again and choose "Start a new service" to set up a fresh one. Your menu stays as it is.'
+                : eventEnded && !isEventClosed
                 ? 'This event has ended — no more orders are being taken.'
                 : `Online ordering for this event ended at ${formatTime(event?.end_time || '')}. We hope to see you next time!`}
             </p>

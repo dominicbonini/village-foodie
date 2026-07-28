@@ -46,8 +46,8 @@ export class DemoEventError extends Error {
  * WHY HALF-HOUR FLOOR + FIXED 3h (replaces the old "next whole hour, +2h"): the previous rule snapped the
  * END to a whole hour but left the START on its minute, producing a VARIABLE window length (2h05–3h00). A
  * fixed 3h length off a clean :00/:30 start makes the board reproducible and the same shape every time,
- * and — critically — makes the roll (lib/demo-event-refresh) able to re-derive an identical window instead
- * of propagating whatever legacy length a demo happened to be provisioned with.
+ * and — critically — means "Start a new service" (lib/demo-restart) re-derives an identical window rather
+ * than propagating whatever legacy length a demo happened to be provisioned with.
  *
  * ⚠️ THE START CAN BE UP TO 29 MIN IN THE PAST. That is deliberate (a clean :00/:30 anchor reads better on
  * the board than a 5-min grid time), and the seeder compensates: seed-demo-orders floors the first

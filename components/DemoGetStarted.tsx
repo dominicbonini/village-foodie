@@ -55,9 +55,14 @@ export const SIGNUP_OFFER = {
   sub: 'The clock doesn’t start until you decide to go live.',
 } as const
 
-export function DemoGetStarted({ token, slug, label = 'Save my menu →', className }: {
+export function DemoGetStarted({ token, slug, label = 'Save my menu →', className, isAdmin = false }: {
   token?: string
   slug?: string
+  /** Admin session (operators.is_admin), resolved from /api/auth/me by the host surface — NOT a claim this
+   *  component makes or verifies. Opens the setup path while public signup is off, so the flow can be
+   *  tested on production without a build-time env flip that would expose it to everyone. See canSetup.
+   *  Defaults false, so any surface that doesn't pass it behaves exactly as it does today. */
+  isAdmin?: boolean
   /** Trigger label. The banner uses the arrowed default; the loop-complete card passes a plain one.
    *
    *  ── WHY "SAVE MY MENU" ──────────────────────────────────────────────────────────────────────────
@@ -205,7 +210,19 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
   // by looking the truck up on dashboard_token — the customer order page surface only has a slug, which can't
   // drive that lookup, so setup is offered only where a token exists (dashboard + KDS). The slug surface
   // keeps the email-link path, which save-email accepts by slug.
-  const canSetup = process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' && !!token
+  //
+  // ── `|| isAdmin` — WHY, AND WHY IT IS NOT A HOLE ──────────────────────────────────────────────────
+  // NEXT_PUBLIC_* is baked at BUILD time, so flipping NEXT_PUBLIC_SIGNUP_PUBLIC in Vercel to test the
+  // demo→signup flow on production would reveal the setup path to every visitor, not just us. The admin
+  // OR gives the one production tester the door without opening it publicly.
+  //
+  // 🔴 THIS IS NOT A CLIENT-TRUSTED AUTH DECISION. /api/signup already admits an admin session while
+  // SIGNUP_PUBLIC is unset (app/api/signup/route.ts:52-61) — it re-reads the session server-side and
+  // checks operators.is_admin against the database. So an admin completing signup is EXPECTED behaviour
+  // that the server sanctions, and this flag only decides whether we RENDER the door the server would
+  // have opened anyway. Forging `isAdmin` in the browser reveals a button and then earns a 403 — exactly
+  // what a non-admin gets today, minus the button. The server is the gate; this is the mirror.
+  const canSetup = (process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin) && !!token
 
   // Shared capture for the "just email me a link" fallback (saveOnly). POSTs the address (same call, same
   // body, same ok:false handling as before) and returns the deletion date on success, or null on failure with

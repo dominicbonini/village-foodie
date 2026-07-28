@@ -23,8 +23,35 @@ const CUSTOMER_NAMES = [
  *  which is the opposite of the story. The kitchen needs runway ahead of its first collection. */
 const FIRST_COLLECTION_OFFSET_MINS = 10
 /** 37, not 40. A round number reads as generated; 37 reads as what actually happened. Spread across the
- *  WHOLE window rather than clustered at the front. */
+ *  WHOLE window rather than clustered at the front. This is the target for a FULL 3h window — short
+ *  windows scale down from it, see ORDERS_PER_SLOT. */
 const TARGET_ORDERS = 37
+
+/** Bookable slots in a full 3h window: first collection is start+10, the window ends at start+180, 5-min
+ *  grid → (170 / 5) + 1 = 35. */
+const FULL_WINDOW_SLOTS = 35
+
+/**
+ * 🔴 THE ORDER COUNT SCALES WITH THE WINDOW. It used to be a flat TARGET_ORDERS regardless of how much
+ * window there was, which broke in both directions on a short (midnight-clamped) window:
+ *
+ *   • The planner's budget loop is bounded by `i < slots.length`, so a 5-slot window could only budget
+ *     14 of the 43 mains those 37 orders need. The other 23 orders hit `if (!target) continue` and were
+ *     silently DROPPED — a board of 14 where the code claimed 37.
+ *   • Worse, `stride = slots.length / budgets.length` collapses to 1 once the slot count falls to the
+ *     budget count (~16). Stride > 1 is the ONLY thing that produces gaps between filled slots — the
+ *     zeros in FILL_PATTERN are filtered out at `nonZero` and never reach the stride. So a short window
+ *     produced one solid run of consecutive filled slots: the "bunching".
+ *
+ * Deriving the target from the slot count fixes both at the source. The budget loop is no longer
+ * slot-bound (it wants ~slots.length × 0.45 budgets for ~slots.length orders), so nothing is dropped,
+ * and the stride stays above 1 so the taper survives. ~37 over 35 slots; ~7 over 7.
+ */
+const ORDERS_PER_SLOT = TARGET_ORDERS / FULL_WINDOW_SLOTS   // ≈ 1.057
+
+/** Below this a board stops reading as a service at all. A window this short is already a poor demo;
+ *  4 orders is the floor at which the capacity story is still legible. */
+const MIN_TARGET_ORDERS = 4
 
 /** ORDER SHAPES — how many MAINS and how many accompaniments each order carries.
  *
@@ -161,7 +188,6 @@ export async function seedDemoOrders(
     tz?: string
   },
 ): Promise<SeededOrders> {
-  const target = args.count ?? TARGET_ORDERS
   const ceiling = Math.max(1, args.capacity)
 
   const { data: itemRows } = await supabase
@@ -206,6 +232,15 @@ export async function seedDemoOrders(
   const firstCollection = minsToHHMMLocal(firstMins)
   const slots = generateSlots(firstCollection, args.endTime, SLOT_INTERVAL_MINS)
   if (!slots.length) return { inserted: 0, mainsItems: 0, totalItems: 0, slotsUsed: [], skippedNoMenu: false, peakPerSlot: 0 }
+
+  // ── TARGET, DERIVED FROM THE WINDOW (see ORDERS_PER_SLOT) ─────────────────────────────────────────
+  // Computed HERE, after `slots`, not at the top of the function — the whole point is that it depends on
+  // how much window there actually is. An explicit `args.count` still wins (callers/tests that want a
+  // fixed board), and the result is clamped so it can never exceed the full-window figure.
+  const target = args.count ?? Math.max(
+    MIN_TARGET_ORDERS,
+    Math.min(TARGET_ORDERS, Math.round(slots.length * ORDERS_PER_SLOT)),
+  )
 
   // ── ORDER SHAPES → the mains bill ─────────────────────────────────────────────────────────────────
   const shapes = Array.from({ length: target }, (_, i) => ORDER_SHAPES[i % ORDER_SHAPES.length])
