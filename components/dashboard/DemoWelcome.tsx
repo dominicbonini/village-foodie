@@ -89,8 +89,10 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
       >
         <div className="px-6 pt-6 pb-4 shrink-0 text-center">
           <div className="text-3xl mb-1" aria-hidden>🎉</div>
-          {/* §11: a sample truck must be NAMED as a sample, never "here's your menu". Source comes from the
-              ?welcome=sample flag the demo redirect carries (one signal, read on the dashboard). */}
+          {/* §11: a sample truck must be NAMED as a sample, never "here's your menu". The source is
+              demo_sessions.extraction_source === 'template', served in /api/dashboard's `demo` block and
+              passed down as isSample. It was previously the ?welcome=sample redirect param, which did not
+              survive a reload — a stored column does. */}
           <h3 className="font-black text-slate-900">{isSample ? 'Here’s a sample truck' : 'Here’s your menu'}</h3>
         </div>
 

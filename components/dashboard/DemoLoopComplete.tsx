@@ -58,10 +58,14 @@ const SCROLL_SETTLE_FALLBACK_MS = 900
 const FLASH_MS = 2000
 const FLASH_CLEAR_MS = FLASH_MS + 250
 
-export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight, isAdmin = false }: {
+export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight, isAdmin = false, extractionSource = null }: {
   token: string
   /** Passed straight through to DemoGetStarted's canSetup — see that component. Defaults false. */
   isAdmin?: boolean
+  /** Passed straight through to DemoGetStarted's copy variant. Without it the modal opened from THIS card
+   *  would use the upload wording on a sample demo, while the banner's modal used the sample wording — the
+   *  per-surface divergence the copy object exists to stop. */
+  extractionSource?: string | null
   /** Every order key currently on the board. */
   orderKeys: string[]
   /** The board's orders — used ONLY at render time, to look up the arrived order's number / customer /
@@ -205,11 +209,17 @@ export function DemoLoopComplete({ token, orderKeys, orders, loaded, onHighlight
         {SIGNUP_OFFER.sub} No card needed.
       </p>
       <div className="mt-3 flex items-center justify-center gap-3">
-        {/* SAME capture flow as the banner CTA — one path, two presentations, so they can't drift. */}
+        {/* SAME capture flow as the banner CTA — one path, two presentations, so they can't drift.
+            NO `label` PROP, deliberately. This used to pass label="Save my menu", which won over the
+            copy variant — so on a SAMPLE demo this card said "Save my menu" while the DEMO MODE banner
+            directly above it said "Set up my truck": two labels for one action, on one screen, which is
+            the exact divergence DEMO_COPY exists to prevent. Omitting it lets the variant decide, like
+            every other surface. `className` is still passed — that is presentation (a full-size button
+            rather than the banner's pill), which legitimately differs per surface; the WORDS do not. */}
         <DemoGetStarted
           token={token}
           isAdmin={isAdmin}
-          label="Save my menu"
+          extractionSource={extractionSource}
           className="bg-orange-600 hover:bg-orange-700 text-white text-sm font-black px-5 py-2.5 rounded-xl shadow-sm"
         />
         <button type="button" onClick={snooze}

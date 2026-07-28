@@ -140,9 +140,14 @@ export async function POST(req: NextRequest) {
       outcome: result.menu.kind,          // 'imported' | 'template'
       itemsImported: result.menu.inserted,
       partial: result.menu.kind === 'imported' ? result.menu.partial : false,
-      // Carry the source to the welcome popup (a fresh dashboard load can't see the outcome otherwise). A
-      // template demo must be named as a SAMPLE, not "here's your menu" (§11). One signal, read once on load.
-      redirectTo: `/dashboard/${result.dashboardToken}${result.menu.kind === 'template' ? '?welcome=sample' : ''}`,
+      // No `?welcome=sample` here any more. It used to carry the outcome to the welcome popup because a
+      // fresh dashboard load couldn't see it — but a query param survives exactly one navigation, so a
+      // reloaded sample demo lost the signal and started calling itself "your menu" (§11 says a template
+      // truck must be NAMED as a sample). A fresh load CAN see the outcome now: /api/dashboard serves
+      // demo_sessions.extraction_source in its `demo` block, which survives reloads, tabs and devices.
+      // The param had zero readers repo-wide once that landed, and a param nothing consumes is a trap for
+      // whoever reads this next.
+      redirectTo: `/dashboard/${result.dashboardToken}`,
     })
   } catch (err) {
     if (err instanceof ProvisionDemoError) {

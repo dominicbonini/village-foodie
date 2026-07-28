@@ -55,7 +55,77 @@ export const SIGNUP_OFFER = {
   sub: 'The clock doesn’t start until you decide to go live.',
 } as const
 
-export function DemoGetStarted({ token, slug, label = 'Save my menu →', className, isAdmin = false }: {
+/**
+ * ── THE COPY, IN ONE PLACE, VARIANTS SIDE BY SIDE ───────────────────────────────────────────────────
+ *
+ * 🔴 THIS OBJECT EXISTS BECAUSE THE SCATTERING WAS THE BUG. These strings were inline ternaries spread
+ * through the JSX — a heading here, a sub-line 300 lines away, a privacy clause 300 lines after that.
+ * The copy diverged per surface FOUR times, and each time it was fixed in one place and not the others,
+ * because nothing in the file made the other variants visible while you edited one. Keeping the variants
+ * as sibling keys means an update to one leaves the other's staleness on screen, in the diff.
+ *
+ * ⚠️ DO NOT re-inline any of these, and DO NOT collapse `upload` and `sample` into one string because
+ * they "nearly match". They differ for a reason:
+ *
+ *   UPLOAD — they built something. They uploaded their own menu and watched it take orders, so there is
+ *   an ARTIFACT with their name on it. "Save my menu" names that artifact and implies it is at risk;
+ *   naming a task ("set up my truck") throws that away and asks for work instead. The sub-line does the
+ *   same job — it promises the thing they made survives the transition.
+ *
+ *   SAMPLE — there is no artifact. They picked a stand-in, so "Save my menu" is simply FALSE: it is not
+ *   their menu and saving it is worth nothing to them. The button therefore names the task, because the
+ *   task IS the offer here. And the sub-line answers the question actually in their head at that moment
+ *   — "this isn't my menu, so what happens to my real one?" — rather than reassuring them about a file
+ *   they never uploaded.
+ *
+ *   SAVE_ONLY — no setup path is on offer at all (canSetup false: signup closed, or the customer order
+ *   page, which holds a slug and cannot drive the token lookup /api/signup needs). "Save your demo" is
+ *   accurate here precisely because saving is genuinely all that happens. This variant is in the same
+ *   object so it cannot drift either.
+ */
+const DEMO_COPY = {
+  upload: {
+    bannerButton: 'Save my menu →',
+    heading:      'Set up your truck',
+    sub:          'Your menu carries straight over.',
+    privacyUse:   'set up your truck and send your demo link',
+  },
+  sample: {
+    bannerButton: 'Set up my truck →',
+    heading:      'Set up your truck',
+    sub:          'You’ll upload your own menu next — takes a minute.',
+    privacyUse:   'set up your truck and send your demo link',
+  },
+  saveOnly: {
+    bannerButton: 'Save my menu →',
+    heading:      'Save your demo',
+    sub:          'We’ll keep it for 14 days and email you a link straight back.',
+    privacyUse:   'send your demo link',
+  },
+} as const
+
+/** Strings that are the same whatever the variant. Here rather than inline so the file has ONE place to
+ *  look for anything this component says — a string in the JSX would be the start of the next drift. */
+const DEMO_COPY_SHARED = {
+  confirmationHeading: 'You’re all set',
+  /** The post-save trigger: they have saved, so the only thing left to offer is the setup path. */
+  postSaveButton:      'Set up my truck →',
+  /** Footer actions. Variant-independent — the button that ENTERS setup says the same thing whether or
+   *  not they brought a menu — but held here rather than inline because a label buried in one arm of a
+   *  three-way structural ternary is precisely how the last four divergences hid. */
+  enterSetupButton:    'Set up my truck →',
+  emailOnlyLink:       'Just email me a link to come back to this demo',
+  sendLinkButton:      'Send me the link',
+  savingButton:        'Saving…',
+  continueButton:      'Continue →',
+  createAccountButton: 'Create my account →',
+  retryButton:         'Try again',
+  backToDemoButton:    'Back to the demo',
+} as const
+
+type DemoCopyVariant = keyof typeof DEMO_COPY
+
+export function DemoGetStarted({ token, slug, label, className, isAdmin = false, extractionSource = null }: {
   token?: string
   slug?: string
   /** Admin session (operators.is_admin), resolved from /api/auth/me by the host surface — NOT a claim this
@@ -85,6 +155,19 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
   label?: string
   /** Trigger styling. Omitted → the small banner pill. The card passes a full-size button. */
   className?: string
+  /** `demo_sessions.extraction_source` — 'upload' | 'template' | null — served by /api/dashboard's demo
+   *  block and passed straight through. THE RAW VALUE, deliberately: this is the same single
+   *  sample-detection mechanism the welcome popup uses, not a second one, and a derived `isSample`
+   *  boolean would be exactly that second mechanism.
+   *
+   *  Sourced from the stored column rather than a URL param because THE BANNER IS PERSISTENT — a param
+   *  is gone after one navigation, so a reloaded sample demo would silently fall back to the upload copy
+   *  and start telling someone to "save my menu" about a menu they never uploaded.
+   *
+   *  Null/absent → UPLOAD. That is the common case, and it is the smaller error in the wrong direction:
+   *  "Save my menu" briefly shown on a sample is milder than "Set up my truck" shown to someone whose own
+   *  menu is sitting on screen unmentioned. */
+  extractionSource?: string | null
 }) {
   const key = token || slug || ''
   const storeKey = `hg_demo_saved_${key}`
@@ -223,6 +306,17 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
   // have opened anyway. Forging `isAdmin` in the browser reveals a button and then earns a 403 — exactly
   // what a non-admin gets today, minus the button. The server is the gate; this is the mirror.
   const canSetup = (process.env.NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin) && !!token
+
+  // ── THE ONE PLACE THE VARIANT IS DECIDED ────────────────────────────────────────────────────────
+  // Order matters. `saveOnly` wins first: when there is no setup path on offer, the upload/sample
+  // distinction is moot — both would be promising a door that isn't there. Only once setup IS offered
+  // does it matter whether they have a menu of their own to carry across.
+  const copyVariant: DemoCopyVariant =
+    !canSetup ? 'saveOnly' : extractionSource === 'template' ? 'sample' : 'upload'
+  const copy = DEMO_COPY[copyVariant]
+  // An explicit `label` still wins — the loop-complete card passes its own, and that call site's wording
+  // is its own decision. Omitted → the variant's button, which is what every banner uses.
+  const triggerLabel = label ?? copy.bannerButton
 
   // Shared capture for the "just email me a link" fallback (saveOnly). POSTs the address (same call, same
   // body, same ok:false handling as before) and returns the deletion date on success, or null on failure with
@@ -509,7 +603,7 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
           onClick={() => { setJustSaved(false); setOpen(true) }}
           className={className ?? 'shrink-0 bg-orange-600 hover:bg-orange-700 text-white text-xs font-black px-4 py-1.5 rounded-lg whitespace-nowrap shadow-sm'}
         >
-          Set up my truck →
+          {DEMO_COPY_SHARED.postSaveButton}
         </button>
       )
     }
@@ -546,7 +640,7 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
         onClick={() => setOpen(true)}
         className={className ?? 'shrink-0 bg-orange-600 hover:bg-orange-700 text-white text-xs font-black px-4 py-1.5 rounded-lg whitespace-nowrap shadow-sm'}
       >
-        {label}
+        {triggerLabel}
       </button>
 
       {/* PORTAL TO <body> — this modal is position:fixed, but DemoModeBanner's action slot
@@ -616,13 +710,11 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
               // LANDING / CONFIRMATION HEADER — the lightweight capture, unchanged.
               <div className="px-6 pt-6 pb-4 shrink-0 relative">
                 <h3 className="font-black text-slate-900 text-center px-6">
-                  {showConfirmation ? 'You’re all set' : canSetup ? 'Set up your truck' : 'Save your demo'}
+                  {showConfirmation ? DEMO_COPY_SHARED.confirmationHeading : copy.heading}
                 </h3>
                 {!showConfirmation && (
                   <p className="text-sm text-slate-600 text-center mt-1">
-                    {canSetup
-                      ? 'Everything you’ve just built carries straight over.'
-                      : 'We’ll keep it for 14 days and email you a link straight back.'}
+                    {copy.sub}
                   </p>
                 )}
                 {!busy && (
@@ -632,7 +724,19 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
               </div>
             )}
 
-            <div className={`flex-1 min-h-0 overflow-y-auto ${inWizard ? 'p-5' : 'px-6'}`}>
+            {/* ⚠️ THE `py-2` IS LOAD-BEARING — do not "tidy" it back to `px-6`.
+                This div is `overflow-y-auto`, which makes it a CLIPPING box. Its first and last children
+                sit flush against that edge, and `focus:ring-2` paints 2px OUTSIDE the input's border-box
+                (Tailwind rings have no offset), so with horizontal-only padding the ring was sliced off
+                along the top of the email field and along the bottom of the privacy link.
+                The wizard branch never showed this because `p-5` already gives it 20px on every side —
+                that padding is the whole reason those inputs are fine, not anything about the inputs
+                themselves. So the remedy here is the SAME remedy: vertical padding on this container.
+                NOT a per-input ring-offset, and NOT `overflow-visible` — the overflow is what makes the
+                fixed-height flex shell scroll on a short viewport (header shrink-0 · body flex-1 min-h-0
+                overflow-y-auto · footer shrink-0), and removing it would trap content off-screen on a
+                phone. 8px is comfortably more than the 2px the ring needs. */}
+            <div className={`flex-1 min-h-0 overflow-y-auto ${inWizard ? 'p-5' : 'px-6 py-2'}`}>
               {showConfirmation ? (
                 <div className="space-y-3">
                   <p className="text-sm text-slate-600">
@@ -933,7 +1037,7 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
                       removed just above — described a path this branch doesn't offer. A privacy notice
                       that overstates what you'll be contacted about is the one line that must not. */}
                   <p className="text-xs text-slate-400">
-                    We&apos;ll only use this to {canSetup ? 'set up your truck and send your demo link' : 'send your demo link'} — see our{' '}
+                    We&apos;ll only use this to {copy.privacyUse} — see our{' '}
                     <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
                       privacy policy
                     </a>.
@@ -946,13 +1050,13 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
               {showConfirmation ? (
                 <button type="button" onClick={closeModal}
                   className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-slate-800">
-                  Back to the demo
+                  {DEMO_COPY_SHARED.backToDemoButton}
                 </button>
               ) : step === 'truck' ? (
                 // STEP 1 → advance to "Your details". Validates step 1 on click (all at once); NO server write.
                 <button type="button" onClick={() => { if (validateTruckStep()) { setError(null); setStep('details') } }} disabled={busy}
                   className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                  Continue →
+                  {DEMO_COPY_SHARED.continueButton}
                 </button>
               ) : step === 'details' ? (
                 // ready → the confirmation beat's Continue, the ONLY place the redirect fires. While a creation
@@ -963,13 +1067,12 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
                 ready ? (
                   <button type="button" onClick={openTruck}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
-                    Continue →
+                    {DEMO_COPY_SHARED.continueButton}
                   </button>
                 ) : busy ? null : (
                   <button type="button" onClick={runSetup}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
-                    {inProgress ? 'Try again'
-                      : 'Create my account →'}
+                    {inProgress ? DEMO_COPY_SHARED.retryButton : DEMO_COPY_SHARED.createAccountButton}
                   </button>
                 )
               ) : canSetup ? (
@@ -978,20 +1081,20 @@ export function DemoGetStarted({ token, slug, label = 'Save my menu →', classN
                 <div className="space-y-2">
                   <button type="button" onClick={() => { setError(null); setStep('truck') }} disabled={!email.includes('@')}
                     className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                    Set up my truck →
+                    {DEMO_COPY_SHARED.enterSetupButton}
                   </button>
                   {/* SECONDARY — a text link, deliberately NOT a second solid button, so it reads as the
                       lower-intent fallback ("I'm not ready, just let me come back"). */}
                   <button type="button" onClick={saveOnly} disabled={busy || !email.includes('@')}
                     className="w-full text-slate-500 hover:text-slate-700 underline text-xs font-medium py-1 disabled:opacity-40">
-                    Just email me a link to come back to this demo
+                    {DEMO_COPY_SHARED.emailOnlyLink}
                   </button>
                 </div>
               ) : (
                 // Signup OFF (or slug-only surface) — email capture is the ONLY action, so it's the solid one.
                 <button type="button" onClick={saveOnly} disabled={busy || !email.includes('@')}
                   className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm disabled:opacity-40 hover:bg-orange-700">
-                  {busy ? 'Saving…' : 'Send me the link'}
+                  {busy ? DEMO_COPY_SHARED.savingButton : DEMO_COPY_SHARED.sendLinkButton}
                 </button>
               )}
             </div>

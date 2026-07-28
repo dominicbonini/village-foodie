@@ -12,6 +12,7 @@ import { buildSlotIndicators } from '@/lib/slot-display'
 import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-breach'
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
+import { isDemoIdentifier } from '@/lib/demo'
 
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
@@ -406,9 +407,53 @@ export async function GET(req: NextRequest) {
   // Header logo: operator upload → Village Foodie discovery fallback (shared resolver, Section 14/27).
   const truckLogo = await resolveTruckLogo(supabase, truck.id, truck.logo_storage_path)
 
+  // ── DEMO SESSION BLOCK ───────────────────────────────────────────────────────────────────────────
+  // Server-side facts the client otherwise has no durable way to know. Each of the three currently has
+  // a client-side stand-in that loses the answer the moment the context changes:
+  //   • extraction_source — the sample/upload signal. It replaced the ?welcome=sample URL param, which was
+  //     gone after one reload, so a reloaded sample demo started claiming to be "your menu".
+  //   • email / expires_at — localStorage-keyed, so they don't survive a different device.
+  // One block closes all three; only the first is consumed in this diff.
+  //
+  // 🔴 DEMO ONLY. Gated on the resolved truck id, so for an operator truck this runs no query and the
+  // `demo` key is ABSENT from the response — see the spread at the return.
+  //
+  // NULLS, NOT OMISSION, when there is no session row: an absent key means "not a demo", a present key
+  // with nulls means "a demo whose session we couldn't read". Collapsing those would make the client
+  // guess.
+  //
+  // ⚠️ select('*') and a try/catch, deliberately — NOT a named column list. `extraction_source` is
+  // written by lib/provision-demo.ts:314 but has NO migration in supabase/migrations (see the report).
+  // If the column is missing in an environment, a named select would 400 the whole dashboard; `*`
+  // returns whatever exists and the field simply reads undefined → null. Same best-effort posture as
+  // every other demo_sessions access (lib/demo-session.ts).
+  let demo: { extraction_source: string | null; email: string | null; expires_at: string | null } | null = null
+  if (isDemoIdentifier(truck.id)) {
+    demo = { extraction_source: null, email: null, expires_at: null }
+    try {
+      const { data: session } = await supabase
+        .from('demo_sessions').select('*').eq('truck_id', truck.id).maybeSingle()
+      if (session) {
+        demo = {
+          extraction_source: (session.extraction_source as string | null) ?? null,
+          email:             (session.email as string | null) ?? null,
+          expires_at:        (session.expires_at as string | null) ?? null,
+        }
+      }
+    } catch (e) {
+      // Keep the all-nulls block rather than dropping the key — the client's contract is "key present ⇒
+      // demo", and a read failure must not read as "not a demo".
+      console.warn('[dashboard] demo session read failed:', e instanceof Error ? e.message : e)
+    }
+  }
+
   return NextResponse.json({
     currentUserName,
     userRole,
+    // Conditional SPREAD, not `demo: demo` — for an operator truck `demo` is null and the key is absent
+    // entirely, so the response object is byte-for-byte what it was. See the report for how that is
+    // verified rather than assumed.
+    ...(demo ? { demo } : {}),
     truck: {
       id:          truck.id,
       name:        truck.name,

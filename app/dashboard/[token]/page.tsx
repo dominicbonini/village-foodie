@@ -374,6 +374,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // `isDemo&&` ternaries on the two OrderCard grids, so on a live board it is null for the page's whole
   // life and every card renders byte-for-byte what it did before.
   const[highlightOrderKey,setHighlightOrderKey]=useState<string|null>(null)
+  // DEMO ONLY — the server-side session block from /api/dashboard (see the route). Null for an operator
+  // truck, where the key isn't sent at all.
+  const[demoSession,setDemoSession]=useState<{extraction_source:string|null;email:string|null;expires_at:string|null}|null>(null)
   // DEMO ONLY — "Start a new service" (the elapsed-event card below).
   const[restarting,setRestarting]=useState(false)
   const[restartError,setRestartError]=useState<string|null>(null)
@@ -540,6 +543,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // ── CONFIG — operator-edited; seeded on nav only. ⚠️ Everything here is CONFIG by default; adding a
         //    LIVE field to this block would STOP it polling. Live state goes in the block below. ──
         setTruck(data.truck)
+        // DEMO session block (/api/dashboard). Read HERE, in the config branch, not the live one below:
+        // extraction_source never changes, and email/expires_at change at most once or twice in a session,
+        // so re-reading them on every 60s poll would be waste. Config seeding runs on nav/auth/event-switch
+        // only, which is exactly the cadence this data warrants. Absent key ⇒ not a demo ⇒ stays null.
+        if(data.demo!==undefined)setDemoSession(data.demo)
         // keep_screen_on is now a PER-DEVICE localStorage pref (see the keepScreenOn useState) — NOT read
         // from the truck row. (The trucks.keep_screen_on column is dormant; it was never in the /api/dashboard
         // truck map anyway, so this read always resolved to the default — the bug this fix removes.)
@@ -1808,10 +1816,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* isAdmin comes from the /api/auth/me call this page ALREADY makes on mount (see the effect above
           — unconditional, so it fires on a demo dashboard too). No new request. It opens the setup path
           for a production tester while public signup stays off; /api/signup re-checks it server-side. */}
-      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin}/>}/>}
+      {isDemo&&<DemoModeBanner action={<DemoGetStarted token={token} isAdmin={isAdmin} extractionSource={demoSession?.extraction_source??null}/>}/>}
       {/* One-time orientation, shown BEFORE they see the board. Carries the customer order link, which is
           the thing most likely to be missed and the one that closes the loop. */}
-      {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={searchParams.get('welcome')==='sample'}/>}
+      {/* isSample reads the SERVER's answer alone (demo_sessions.extraction_source, via /api/dashboard's
+          demo block). It replaced a `?welcome=sample` URL param, which was gone after one navigation — so
+          a reloaded sample demo used to start claiming "Here's your menu" about a menu nobody uploaded,
+          breaking the §11 rule DemoWelcome:93 exists to enforce. A stored column survives reloads, tabs
+          and devices; a query param survives none of them.
+          The param was briefly kept as an `||` fallback while it was unconfirmed whether the column
+          existed in prod (it is written by lib/provision-demo.ts but had no migration). Live schema
+          confirmed it present and populated on 2026-07-28, and the migration now exists
+          (20260728_demo_sessions_extraction_source.sql), so the fallback is gone. */}
+      {isDemo&&<DemoWelcome token={token} orderUrl={customerOrderUrl} isSample={demoSession?.extraction_source==='template'}/>}
       {/* Keep-screen-on prompt — full-width shrink-0 bar in the app-shell (visible on the service screen, not
           buried). Shows only when the pref is on but the lock isn't held; the operator's first tap dismisses
           AND acquires it. */}
@@ -2055,6 +2072,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   loaded={!loading&&!!truck}
                   onHighlight={setHighlightOrderKey}
                   isAdmin={isAdmin}
+                  extractionSource={demoSession?.extraction_source??null}
                 />
               )}
               {/* Prep time banner — hidden in DEMO. Not just its "Edit categories" → /manage link: the whole
