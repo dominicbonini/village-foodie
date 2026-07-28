@@ -16,6 +16,8 @@ import {
   rebuildProductionSlotUsage,
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
+import { loadPriceBook, repriceOrder, toMinor } from '@/lib/order-repricing'
+import type { DiscountCode } from '@/lib/order-calculations'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
@@ -355,43 +357,134 @@ export async function POST(req: NextRequest) {
 
     // ── EDIT ORDER ────────────────────────────────────────────────────────────
     if (action === 'edit') {
-      const { items, slot, notes, deals: editedDeals, customerName, customerEmail, customerPhone } = editedOrder || {}
+      const {
+        items, slot, notes, deals: editedDeals, customerName, customerEmail, customerPhone,
+        // The operator's explicit acknowledgement that lines which are NOT on the menu are being
+        // saved at their advisory price: the exact server total they were shown. Echoed back so we
+        // confirm the figure they saw, not whatever we happen to compute now.
+        confirmUnresolvedTotal,
+      } = editedOrder || {}
       const { data: order } = await supabase.from('orders').select('*').eq('order_key', orderKey).eq('truck_id', truck.id).single()
       if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
 
-      // Recompute the total DEAL-AWARE from the EDITED items + deals — the same formula
-      // Add Order uses (calculateOrderTotal): items subtotal + Σ(deal bundle_price + slot
-      // modifiers), less the order's existing discount. The previous delta carried the
-      // ORIGINAL order's deal contribution, so a newly-added/changed deal's price was
-      // dropped and the stored total went stale. Recomputed from the persisted items+deals
-      // so the total can never drift from the contents (identical to the Add Order path).
+      // ── SERVER-AUTHORITATIVE PRICING, PRICE-LOCKED ─────────────────────────────────────────────
+      // The request body's unit_price / modifier prices / deal price are ADVISORY ONLY — they say
+      // WHAT was selected, never what it costs.
+      //
+      // PRICE-LOCK: the authoritative price for a line ALREADY on this order is the one STORED on the
+      // row (`order.items` / `order.deals`, selected above). A menu price change since placement must
+      // never reach an existing order — it applies to future orders only. The live menu is loaded
+      // solely to price something this edit genuinely ADDS.
+      //
+      // The money arithmetic is delegated to calculateOrderTotal (lib/order-calculations) — the SAME
+      // function the customer path and Add Order use. This replaces the third inline formula that
+      // lived here, so subtotal now INCLUDES deals (order-calculations.ts:108) instead of being
+      // items-only, and discount_amt is RECOMPUTED (a percentage code rescales with the edited
+      // basket) instead of being read, subtracted and never written back.
       const effItems = items || order.items || []
       const effDeals = editedDeals !== undefined ? editedDeals : (order.deals || [])
-      const newItemsSubtotal = effItems.reduce((s: number, i: any) => s + parseFloat(i.unit_price) * parseFloat(i.quantity), 0)
-      const { data: bundleRows } = await supabase.from('bundles_db').select('name, bundle_price').eq('truck_id', truck.id)
-      const bundlePrice = (name: string) => Number(bundleRows?.find(b => b.name === name)?.bundle_price ?? 0)
-      const dealsTotal = (effDeals || []).reduce((s: number, d: any) => {
-        const modExtra = (Object.values(d.slotModifiers || {}) as any[]).flat().reduce((sm: number, m: any) => sm + (Number(m?.price) || 0), 0)
-        return s + bundlePrice(d.name) + modExtra
-      }, 0)
-      const discountAmt = Number(order.discount_amt) || 0
-      const newSubtotal = newItemsSubtotal
-      const newTotal = Math.max(0, newItemsSubtotal + dealsTotal - discountAmt)
+      const priceBook = await loadPriceBook(supabase, truck.id)
+
+      // DISCOUNT resolution. Deliberately NOT filtered on is_active: the order already carries this
+      // code, and an operator deactivating a code for NEW customers must not retroactively re-charge
+      // an existing one. If the code row is gone entirely we cannot rescale it, so we honour the
+      // amount already promised as a FIXED discount and flag it as unresolvable (below) so the
+      // operator sees that the server could not verify it. No discount_code ⇒ no discount, full stop:
+      // that is what makes discount_amt mean "money deducted" on every path (see §4b).
+      let discountCodeRow: DiscountCode | null = null
+      const unresolvedDiscount: { kind: 'discount'; name: string; advisoryPrice: number }[] = []
+      if (order.discount_code) {
+        const { data: codeRow } = await supabase
+          .from('discount_codes_db')
+          .select('code, type, value')
+          .eq('truck_id', truck.id)
+          .eq('code', String(order.discount_code).toUpperCase())
+          .maybeSingle()
+        if (codeRow) {
+          discountCodeRow = codeRow as unknown as DiscountCode
+        } else {
+          const stored = Number(order.discount_amt) || 0
+          discountCodeRow = { code: String(order.discount_code), type: 'fixed', value: stored }
+          unresolvedDiscount.push({ kind: 'discount', name: String(order.discount_code), advisoryPrice: stored })
+        }
+      }
+
+      // The stored row IS the price source. `order` was selected with `*` at the top of this handler,
+      // so items/deals here are exactly what is persisted — never anything from the request body.
+      const repriced = repriceOrder(
+        effItems, effDeals, priceBook,
+        { items: order.items, deals: order.deals },
+        discountCodeRow,
+      )
+      const newSubtotal = repriced.calculation.subtotal     // items + deals (order-calculations.ts:108)
+      const newDiscountAmt = repriced.calculation.discountAmt
+      // PENCE FIRST, then pounds from the pence. A percentage code is the one way an order total can
+      // land on a fraction of a penny (10% of £10.05 = £1.005); rounding to pence HERE and deriving
+      // `total` from that means total and total_minor are the same number by construction, instead of
+      // JS float rounding and Postgres numeric(8,2) rounding independently and disagreeing by 1p.
+      // For every total that is already 2dp — i.e. all of them today — this is an exact round-trip.
+      const newTotalMinor = toMinor(repriced.calculation.total)
+      const newTotal = newTotalMinor / 100
+      const unresolved = [...repriced.unresolved, ...unresolvedDiscount]
+
+      // ── CONFIRM UNPRICEABLE NEW LINES ──────────────────────────────────────────────────────────
+      // Under price-lock there is no menu-drift delta to surface: an existing line's price CANNOT
+      // move, and a new line is priced off the same live menu the operator's modal is showing, so
+      // client and server agree by construction. The only thing left worth stopping for is a
+      // genuinely NEW item / modifier / bundle whose name is not on the menu at all — there is no
+      // authoritative price for it, so we fall back to the advisory figure and make the operator say
+      // yes to that explicitly. Nothing is written on this branch.
+      //
+      // Rare by construction: the edit modal only offers names that exist on the live menu, so this
+      // needs the menu to have changed under the operator (or a hand-crafted request).
+      //
+      // A DELETED DISCOUNT CODE rides in the same set. It is not a "new line", but it is the same
+      // class of problem — a name we cannot price, where the fallback is a guess — and unlike a menu
+      // price it is not locked (a code must rescale to the edited basket). Silently applying a
+      // guessed discount is worse than asking, so it prompts too.
+      //
+      // Strictly `typeof number` — Number(null) and Number('') are 0, which would read as a genuine
+      // acknowledgement of a £0.00 total.
+      const acknowledged = typeof confirmUnresolvedTotal === 'number'
+        && Number.isFinite(confirmUnresolvedTotal)
+        && Math.abs(confirmUnresolvedTotal - newTotal) <= 0.005
+      if (unresolved.length > 0 && !acknowledged) {
+        return NextResponse.json({
+          needsPriceConfirm: true,
+          total:             newTotal,
+          subtotal:          newSubtotal,
+          discountAmt:       newDiscountAmt,
+          unresolved,
+        }, { status: 409 })
+      }
 
       // Persist deals in EXACTLY the Add Order shape {name, slots, slotModifiers, slotNotes,
-      // price} — set price = bundle_price (what OrderCard's deal price column reads, the same
-      // £15 the total uses) and drop UI-only fields (isNew / itemsTakenFromBasket). So an
-      // edit-saved deal renders byte-identically to an Add-Order deal.
-      const dealsToStore = editedDeals !== undefined
-        ? (editedDeals as any[]).map(d => ({
-            name: d.name, slots: d.slots, slotModifiers: d.slotModifiers, slotNotes: d.slotNotes,
-            price: bundlePrice(d.name),
-          }))
-        : order.deals
+      // price} — price is the AUTHORITATIVE bundle price (the stored one for a deal already on the
+      // order, the current bundles_db one for a newly added deal), which is the same figure the total
+      // uses and what OrderCard's deal price column reads. UI-only fields (isNew /
+      // itemsTakenFromBasket) are dropped, so an edit-saved deal renders byte-identically to an
+      // Add-Order deal.
+      const dealsCanonical = repriced.deals.map(d => ({
+        name: d.name,
+        slots: d.slots ?? {},
+        slotModifiers: d.slotModifiers ?? {},
+        slotNotes: d.slotNotes ?? {},
+        price: Number(d.price) || 0,
+      }))
+      // An untouched order that never had deals keeps its stored value (null stays null) — only an
+      // order that HAS deals, or whose deals were edited, gets the canonical array written.
+      const dealsToStore = (editedDeals === undefined && dealsCanonical.length === 0) ? order.deals : dealsCanonical
 
       const newSlot = slot !== undefined ? slot : order.slot
-      await supabase.from('orders').update({
-        items:    items    || order.items,
+      // CHECK THE WRITE. This update used to discard its result and the handler reported success
+      // regardless — a failed write looked identical to a saved edit, and the operator only found out
+      // when a later refetch showed the old order. Now a failure is a real error.
+      const { error: updateErr } = await supabase.from('orders').update({
+        // Items carry the AUTHORITATIVE unit_price (and modifier prices): the locked-in figure for a
+        // line already on the order, the current menu figure for one this edit added. Writing them
+        // back means the stored line prices and the stored total can never disagree — and it is what
+        // keeps the price locked for the NEXT edit too, since that edit reads this row.
+        items:    repriced.items,
         deals:    dealsToStore,
         slot:     newSlot,
         notes:    notes    !== undefined ? notes : order.notes,
@@ -401,11 +494,22 @@ export async function POST(req: NextRequest) {
         customer_name:  customerName  !== undefined ? ((customerName || '').trim() || 'Walk-up') : order.customer_name,
         customer_email: customerEmail !== undefined ? (customerEmail || null) : order.customer_email,
         customer_phone: customerPhone !== undefined ? (customerPhone || null) : order.customer_phone,
-        total:    newTotal,
-        subtotal: newSubtotal,
+        total:       newTotal,
+        subtotal:    newSubtotal,
+        discount_amt: newDiscountAmt,
+        // §4a — pence, derived server-side from the server total. Never client-supplied.
+        total_minor: newTotalMinor,
         status:   'modified',
-      }).eq('order_key', orderKey)
+      }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      if (updateErr) {
+        console.error('[edit] order update failed:', updateErr.message, updateErr.details, updateErr.hint)
+        return NextResponse.json({ error: 'Could not save the changes to this order' }, { status: 500 })
+      }
 
+      // Slot re-booking is reported, NOT rolled back: the order above is already saved and correct.
+      // A capacity-board write failure is a display/planning problem that the next rebuild self-heals
+      // — losing the operator's edit over it would be far worse.
+      let slotWarning: string | null = null
       if (order.event_date && (items || slot !== undefined)) {
         const itemCatMap = await buildItemCatMap(supabase, truck.id)
         // REMOVE uses the PRIOR stored state (old items + old deals) to subtract exactly
@@ -417,28 +521,33 @@ export async function POST(req: NextRequest) {
         const newLines = normaliseOrderLines(items || order.items || [], newDeals)
         // No slot gate: order.slot / newSlot may be null (ASAP) — both resolve to the
         // event-start window inside the helpers, so old usage is freed and new re-booked.
-        await removeOrderFromProductionSlot(
+        const unbooked = await removeOrderFromProductionSlot(
           supabase, truck.id, order.event_id, order.slot, oldLines, itemCatMap
         )
-        await addOrderToProductionSlot(
+        const rebooked = await addOrderToProductionSlot(
           supabase, truck.id, order.event_id, newSlot, newLines, itemCatMap
         )
+        const slotErrors = [unbooked.error, rebooked.error].filter(Boolean)
+        if (slotErrors.length) {
+          console.error('[edit] production slot re-booking failed (order WAS saved):', slotErrors.join(' | '))
+          slotWarning = 'Order saved, but the kitchen capacity board could not be updated — check the slot before relying on it.'
+        }
       }
 
       if (order.customer_email) {
-        const finalItems = items || order.items
-        const finalDeals = editedDeals !== undefined ? editedDeals : (order.deals || [])
-        // Route through the SHARED renderer (renderOrderLinesHtml) so the deal bundle price (£15)
-        // and per-modifier prices (+£1.50) render — the inline fork omitted them. Ensure each deal
-        // carries .price (bundlePrice is already resolved in this handler for newTotal/dealsToStore).
-        const emailDeals = (finalDeals || []).map((d: any) => ({
-          name: d.name,
-          slots: d.slots || {},
-          slotModifiers: d.slotModifiers || {},
-          slotNotes: d.slotNotes || {},
-          price: d.price != null ? Number(d.price) : bundlePrice(d.name),
+        // The SERVER-priced items/deals — the same figures that were just persisted, so the
+        // customer's email can never quote a price the order row doesn't hold.
+        const finalItems = repriced.items.map(i => ({
+          name: i.name,
+          quantity: i.quantity,
+          unit_price: i.unit_price,
+          modifiers: i.modifiers,
+          specialInstructions: typeof i.specialInstructions === 'string' ? i.specialInstructions : undefined,
         }))
-        const linesHtml = renderOrderLinesHtml(finalItems || [], emailDeals)
+        // Route through the SHARED renderer (renderOrderLinesHtml) so the deal bundle price (£15)
+        // and per-modifier prices (+£1.50) render — the inline fork omitted them.
+        const emailDeals = dealsCanonical
+        const linesHtml = renderOrderLinesHtml(finalItems, emailDeals)
         const slotToShow = slot !== undefined ? slot : order.slot
         const html = `<body style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:20px;color:#1e293b">
             <h2>Your order has been updated ✓</h2>
@@ -464,7 +573,12 @@ export async function POST(req: NextRequest) {
           truckName: truck.name,
         })
       }
-      return NextResponse.json({ success: true, status: 'modified' })
+      return NextResponse.json({
+        success: true,
+        status: 'modified',
+        total: newTotal,
+        ...(slotWarning ? { slotWarning } : {}),
+      })
     }
 
     // ── ITEM AVAILABILITY (sold out toggle) — PER-EVENT (Phase 5) ──────────────
@@ -523,7 +637,10 @@ export async function POST(req: NextRequest) {
 
     // ── MANUAL ORDER ──────────────────────────────────────────────────────────
     if (action === 'manual') {
-      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, total: passedTotal, subtotal, event_date: passedEventDate, event_id: passedEventId } = manualOrder
+      // §4b: `dealSavings` is a NOTIONAL "saved vs à la carte" figure, NOT money deducted — it used
+      // to be shipped in the discountAmt slot and stored as if it were a discount. It now has its own
+      // column (orders.deal_savings) and discountAmt means money-off on this path like every other.
+      const { customerName, customerPhone, customerEmail, slot, items, notes, discountAmt, dealSavings, total: passedTotal, subtotal, event_date: passedEventDate, event_id: passedEventId } = manualOrder
       const deals = manualOrder.deals ?? null
       if (!items?.length && !deals?.length) {
         return NextResponse.json({ error: 'Items required' }, { status: 400 })
@@ -738,6 +855,7 @@ export async function POST(req: NextRequest) {
         // walk-up is a no-op (order_key PK conflict → ignored), never a duplicate. Online walk-ups (no client
         // key) keep the server-default order_key + a plain insert, exactly as before.
         const clientOrderKey: string | undefined = typeof manualOrder?.order_key === 'string' ? manualOrder.order_key : undefined
+        const finalTotal = passedTotal || total
         const insertPayload: Record<string, any> = {
           id: newOrderId, truck_id: truck.id,
           customer_name: customerName || 'Walk-up', customer_phone: customerPhone || null,
@@ -745,7 +863,11 @@ export async function POST(req: NextRequest) {
           slot: slot || null, order_type: 'collection', event_date: eventDate,
           event_id: orderEventId,
           items, deals, discount_code: null,
-          subtotal: subtotal || total, discount_amt: discountAmt || 0, total: passedTotal || total,
+          subtotal: subtotal || total, discount_amt: discountAmt || 0, total: finalTotal,
+          // §4b — the notional deal saving, in its own column. Never subtracted from `total`.
+          deal_savings: Number(dealSavings) > 0 ? Number(dealSavings) : null,
+          // §4a — pence, derived here from the server-held total. Never client-supplied.
+          total_minor: toMinor(finalTotal),
           notes: notes || null, status: 'confirmed',
           payment_status: 'unpaid',
         }

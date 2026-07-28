@@ -732,7 +732,14 @@ setItemModal({ item, modGroups, editCartKey })
           slotNotes: d.slotNotes,
           price: d.bundle.bundle_price,
         })),
-        discountAmt: dealSavings,
+        // dealSavings is NOTIONAL ("saved vs buying the deal's items à la carte") — it is NOT money
+        // deducted from what the customer pays (manualTotal already IS the deal price). It used to be
+        // sent as discountAmt and stored in orders.discount_amt, where every reader treats it as money
+        // off: the edit path subtracted it AGAIN from the total, and the confirmation email printed it
+        // as a discount line. It now travels in its own field → orders.deal_savings, and discountAmt
+        // is a true zero here because a walk-up carries no discount code.
+        discountAmt: 0,
+        dealSavings,
         total: manualTotal,
         subtotal: manualItemsSubtotal,
         notes: manualNotes || null,

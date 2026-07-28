@@ -313,6 +313,9 @@ export async function seedDemoOrders(
       subtotal: total,
       discount_amt: 0,
       total,
+      // §4a — pence, derived from the total we just computed. Seeded rows carry it like every other
+      // write path so a demo dashboard reads the same shape production does.
+      total_minor: Math.round(total * 100),
       notes: null,
       // Confirmed, not pending: a pile of unactioned "New — action needed" cards reads as a backlog, not
       // a working kitchen.

@@ -78,6 +78,15 @@ import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { normaliseOrderLines } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/lib/slot-capacity'
 
+// A cheap fingerprint of the edit basket, used ONLY to invalidate a stale unpriceable-line banner:
+// the server's verdict was computed for one particular basket, and must not stay on screen naming a
+// line the operator has since removed. Names + modifier sets + quantities + deal names, order-
+// independent. Not a price and not an identity — see lineIdentity in lib/order-repricing.ts for that.
+function editBasketSignature(items: { name: string; quantity: number; modifiers?: { name: string }[] }[], deals: { name: string }[]): string {
+  const i = items.map(x => `${x.name}|${(x.modifiers || []).map(m => m.name).sort().join(',')}|${x.quantity}`).sort().join(';')
+  return `${i}#${deals.map(x => x.name).sort().join(',')}`
+}
+
 function makeCartKey(itemName: string, mods: { name: string }[], notes?: string): string {
   const parts: string[] = []
   const modStr = [...mods].map(m => m.name).sort().join('|')
@@ -364,7 +373,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[editPhone,setEditPhone]=useState('')
   const[editDeals,setEditDeals]=useState<Array<{name:string;slots:Record<string,string>;slotModifiers?:Record<string,{name:string;price:number}[]>;slotNotes?:Record<string,string>;isNew?:boolean;itemsTakenFromBasket?:string[]}>>([])
   const[showEditDealModal,setShowEditDealModal]=useState(false)
-  const[editOrderBaseline,setEditOrderBaseline]=useState<{total:number;itemsSubtotal:number;deals:Array<{name:string}>}|null>(null)
+  // `deals[].lockedValue` is what each stored deal actually contributes to the order total AS PLACED
+  // (its stored bundle price + its stored slot-modifier surcharges). Removing a deal must subtract
+  // that, not the deal's CURRENT menu price — prices on an existing order are locked server-side, so
+  // subtracting today's bundle price would make this preview disagree with what the save produces.
+  const[editOrderBaseline,setEditOrderBaseline]=useState<{total:number;itemsSubtotal:number;deals:Array<{name:string;lockedValue:number}>}|null>(null)
+  // UNPRICEABLE-LINE prompt. Prices on an existing order are LOCKED server-side (they come from the
+  // stored row), so there is no menu-drift delta to confirm — the only thing the server stops for is a
+  // NEWLY ADDED item / modifier / deal whose name is not on the live menu, which therefore has no
+  // authoritative price. NOTHING was written when this is set. `signature` is the basket this verdict
+  // was computed for, so the banner can hide itself the moment the operator changes anything.
+  const[editReprice,setEditReprice]=useState<{total:number;unresolved:Array<{kind:string;name:string;on?:string;advisoryPrice:number}>;signature:string}|null>(null)
   const[editItemModal,setEditItemModal]=useState<{item:MenuItem;modGroups:ModifierGroup[];allowNotes:boolean}|null>(null)
   const[editModalMods,setEditModalMods]=useState<{name:string;price:number}[]>([])
   const[editModalNotes,setEditModalNotes]=useState('')
@@ -379,6 +398,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[demoSession,setDemoSession]=useState<{extraction_source:string|null;email:string|null;expires_at:string|null}|null>(null)
   // DEMO ONLY — "Start a new service" (the elapsed-event card below).
   const[restarting,setRestarting]=useState(false)
+  // The SAME in-flight flag as `restarting`, held in a ref so the re-entry guard is SYNCHRONOUS.
+  // `disabled={restarting}` only takes effect on the next render, so two clicks inside one frame can
+  // both read restarting===false and fire two restarts — and the second would delete the orders the
+  // first just seeded. The ref closes that window; the state drives the button's busy label.
+  const restartingRef=useRef(false)
   const[restartError,setRestartError]=useState<string|null>(null)
   const[showQRFullscreen,setShowQRFullscreen]=useState(false)
   const[qrFullscreenDataUrl,setQrFullscreenDataUrl]=useState<string|null>(null)
@@ -872,30 +896,59 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
 
   // DEMO ONLY — wipe the finished service and provision a fresh one for now. The server does all the
   // work (app/api/demo/restart → lib/demo-restart); this only clears the CLIENT-side demo state the
-  // server can't see, then re-fetches.
+  // server can't see, then RELOADS THE PAGE.
+  //
+  // 🔴 WHY A RELOAD, NOT A REFETCH. A restart DELETES the event, every order and the slot map, and
+  // seeds new ones — so the client's event IDENTITY is destroyed, and a refetch cannot repair that:
+  //   • `selectedEventId` still names the DELETED event, and the auto-select effect that would pick a
+  //     new one bails on its first line whenever a selection is already set.
+  //   • `selectedOrDefaultEvent` therefore resolves to null, and the "never blank the event bar"
+  //     fallback (lastActiveEventRef) hands `activeEvent` back the deleted event object.
+  //   • Everything keyed on activeEvent then reads a dead event: the header window, the
+  //     New/Confirmed/Done counts (eventOrders filters orders on activeEvent.id, and the freshly
+  //     seeded orders carry the NEW event_id, so it matches nothing), and demoServiceEnded — which is
+  //     why the "service has ended" card survives its own button.
+  //   • Meanwhile slots/productionSlotUnits/capacity are set WHOLESALE from the /api/dashboard
+  //     response, and that route re-resolves the event server-side when the passed event_id no longer
+  //     exists — so the capacity strip shows the NEW window while everything else shows the old one.
+  //     That asymmetry is server-resolved data vs client-resolved identity, not a missing refetch.
+  // Patching each of those by hand would be re-deriving a whole page load in pieces. A reload rebuilds
+  // every derived value from one consistent server read, and this is a once-per-session action behind
+  // a deliberate button press, so the cost is irrelevant.
   const startNewService=async()=>{
-    if(restarting)return
+    // Synchronous re-entry guard — see restartingRef. A second restart mid-flight would delete the
+    // orders the first one just seeded.
+    if(restartingRef.current)return
+    restartingRef.current=true
     setRestarting(true); setRestartError(null)
     try{
       const res=await fetch('/api/demo/restart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})})
       const data=await res.json().catch(()=>({}))
-      if(!res.ok){setRestartError(data?.error||'Could not start a new service — try again.');return}
+      // 🔴 FAILURE PATH — NO RELOAD. The restart did not happen, so the board behind this card is still
+      // the dead one. Reloading would drop the operator back onto the same ended service with the error
+      // gone and nothing to press. Instead: keep the card, show the real error, re-enable the button.
+      if(!res.ok){
+        setRestartError(data?.error||'Could not start a new service — try again.')
+        restartingRef.current=false; setRestarting(false)
+        return
+      }
       // RESET THE LOOP-COMPLETE STATE. Its baseline is a persisted list of order keys
       // (components/dashboard/DemoLoopComplete.tsx) — every key in it has just been deleted, so without
       // this the NEW seeded board reads as 37 orders the visitor caused and the prompt fires instantly
       // on load. Clearing both keys means the fresh board is re-baselined on next load and the visitor
       // gets the moment properly when they order on the new service. Same key names as the component.
+      // MUST happen before the reload — localStorage outlives it, React state does not.
       try{
         localStorage.removeItem(`hg_demo_seen_orders_${token}`)
         localStorage.removeItem(`hg_demo_loop_${token}`)
       }catch{/* private mode — the baseline just re-records itself */}
-      setHighlightOrderKey(null)
-      // Full re-fetch: the event id, the window, the slot grid and every order have changed.
-      await fetchAllRef.current()
+      // SUCCESS, and only now. `restarting` is deliberately NOT cleared: the button stays disabled and
+      // reading "Setting up…" until the document is replaced, so it is never pressable again in the gap.
+      window.location.reload()
     }catch{
+      // Network/parse failure — same as above: the restart may not have happened, so stay put.
       setRestartError('Could not start a new service — try again.')
-    }finally{
-      setRestarting(false)
+      restartingRef.current=false; setRestarting(false)
     }
   }
 
@@ -1232,6 +1285,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   }
   const startEdit=(order:Order)=>{
     setEditingOrder(order)
+    setEditReprice(null)
     setEditSlots([]); setEditCapacityInputs(null); setEditServerCatConfigs({}); fetchEditSlots(order)
     setEditItems(order.items.map(i=>({...i,cartKey:makeCartKey(i.name,i.modifiers||[],i.specialInstructions)})))
     setEditDeals((order.deals||[]).map(d=>({name:d.name,slots:d.slots,slotModifiers:d.slotModifiers||{},slotNotes:d.slotNotes||{},isNew:false})))
@@ -1241,7 +1295,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     // it isn't shown as a pseudo-name (blank on save preserves the "Walk-up" default).
     setEditName(order.customer_name&&order.customer_name!=='Walk-up'?order.customer_name:''); setEditEmail(order.customer_email||''); setEditPhone(order.customer_phone||'')
     const itemsSubtotal=order.items.reduce((s,i)=>s+Number(i.unit_price)*i.quantity,0)
-    setEditOrderBaseline({total:Number(order.total),itemsSubtotal,deals:(order.deals||[]).map(d=>({name:d.name}))})
+    setEditOrderBaseline({total:Number(order.total),itemsSubtotal,deals:(order.deals||[]).map(d=>({
+      name:d.name,
+      lockedValue:(Number(d.price)||0)+Object.values(d.slotModifiers||{}).flat().reduce((s,m)=>s+(Number(m?.price)||0),0),
+    }))})
   }
   const addEditItem=(item:MenuItem,mods:{name:string;price:number}[]=[],notes='')=>{
     const key=makeCartKey(item.name,mods,notes)
@@ -1261,12 +1318,28 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     else{addEditItem(item)}
   }
   const closeEditItemModal=()=>{setEditItemModal(null);setEditModalMods([]);setEditModalNotes('')}
-  const submitEdit=async()=>{
+  // `confirmTotal` is the operator's explicit acknowledgement that lines the server could not price
+  // are being saved at their advisory figure: the exact total the banner showed them. Absent on a
+  // normal save. Existing prices are locked server-side, so an ordinary edit never sees the prompt —
+  // it only fires for a NEWLY ADDED name that is not on the live menu.
+  const submitEdit=async(confirmTotal?:number)=>{
     if(!editingOrder)return; setActionLoading(`edit-${editingOrder.id}`)
+    const sendItems=editItems.filter(i=>i.quantity>0)
     try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:editItems.filter(i=>i.quantity>0),deals:editDeals,slot:editSlot||null,notes:editNotes||null,customerName:editName,customerEmail:editEmail,customerPhone:editPhone}})})
-      const data=await res.json(); if(!res.ok)throw new Error(data.error)
-      showToast(`Order #${editingOrder.id} updated`); setEditingOrder(null); await fetchAll()
+      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,pin,action:'edit',order_key:editingOrder.order_key,editedOrder:{items:sendItems,deals:editDeals,slot:editSlot||null,notes:editNotes||null,customerName:editName,customerEmail:editEmail,customerPhone:editPhone,...(confirmTotal!==undefined?{confirmUnresolvedTotal:confirmTotal}:{})}})})
+      const data=await res.json()
+      // 409 + needsPriceConfirm: NOTHING was saved. Show what could not be priced and wait for an
+      // explicit confirm, tagged with the basket it was computed for.
+      if(res.status===409&&data?.needsPriceConfirm){
+        setEditReprice({total:Number(data.total),unresolved:data.unresolved||[],signature:editBasketSignature(sendItems,editDeals)})
+        return
+      }
+      if(!res.ok)throw new Error(data.error)
+      setEditReprice(null)
+      // A slot-rebooking failure does NOT undo the saved edit — the server reports it so the operator
+      // knows the capacity board is stale, and surfacing it must not read as "the edit failed".
+      showToast(data?.slotWarning??`Order #${editingOrder.id} updated`,data?.slotWarning?'error':'success')
+      setEditingOrder(null); await fetchAll()
     }catch(err:any){showToast(err.message||'Edit failed','error')}finally{setActionLoading(null)}
   }
 
@@ -1722,7 +1795,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const removedOriginalValue=editOrderBaseline.deals.reduce((s,od)=>{
       const stillPresent=editDeals.some(ed=>!ed.isNew&&ed.name===od.name)
       if(stillPresent)return s
-      return s+(truckMenu?.bundles?.find(b=>b.name===od.name)?.bundle_price??0)
+      // The value this deal contributed AS PLACED (locked), not its current menu price — see
+      // editOrderBaseline. Also includes its slot-modifier surcharges, which the previous
+      // current-price lookup silently dropped.
+      return s+od.lockedValue
     },0)
     const addedNewValue=editDeals.filter(d=>d.isNew).reduce((s,d)=>{
       const bundle=truckMenu?.bundles?.find(b=>b.name===d.name)
@@ -1731,6 +1807,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     },0)
     return Math.max(0,editOrderBaseline.total+itemDelta-removedOriginalValue+addedNewValue)
   })():Math.max(0,editItemsSubtotal)
+  // The server's unpriceable-line verdict is only meaningful for the basket it was computed against.
+  // Change anything and the banner disappears rather than naming a line that is no longer there;
+  // saving again simply re-asks. (Pure derivation — no effect, no extra state to keep in sync.)
+  const editRepriceActive=!!editReprice&&editReprice.signature===editBasketSignature(editItems.filter(i=>i.quantity>0),editDeals)
 
   // Relative event-date label for the header — "Today/Tomorrow/{Weekday} {D}th {Month}". "today" is
   // resolved in the EVENT tz (Europe/London) via getLocalDateInTz, NOT device-local / toISOString, so a
@@ -3324,9 +3404,35 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
               <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wide">Notes</label>
               <textarea value={editNotes} onChange={e=>setEditNotes(e.target.value)} rows={2} className="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 resize-none"/>
             </div>
+            {/* UNPRICEABLE NEW LINE. Everything already on this order keeps the price it was placed
+                at — the server reads those off the stored row, so a menu price change can never move
+                them and there is nothing to confirm. This fires only when the edit ADDS a name the
+                live menu doesn't have, which has no authoritative price. Nothing was saved.
+                Hidden the moment the basket changes: the verdict belonged to a different basket. */}
+            {editRepriceActive&&(
+              <div className="mb-3 rounded-xl border-2 border-amber-300 bg-amber-50 p-3">
+                <p className="text-sm font-black text-amber-800 mb-1">Not on the menu</p>
+                <p className="text-xs text-amber-800 mb-2">
+                  These are new to this order and aren&apos;t on the menu, so the price couldn&apos;t be checked.
+                  Everything already on the order keeps its original price. Nothing has been saved yet.
+                </p>
+                <div className="space-y-0.5">
+                  {editReprice!.unresolved.map((u,i)=>(
+                    <p key={`${u.name}-${i}`} className="text-xs text-amber-800">
+                      {u.kind==='deal'?'🎁 ':''}{u.name}{u.on?` (on ${u.on})`:''} — kept at <strong>£{u.advisoryPrice.toFixed(2)}</strong>
+                    </p>
+                  ))}
+                </div>
+                <div className="flex justify-between text-sm font-black text-amber-900 mt-2 pt-2 border-t border-amber-200">
+                  <span>Order total</span><span>£{editReprice!.total.toFixed(2)}</span>
+                </div>
+              </div>
+            )}
             <div className="flex gap-2">
               <button onClick={()=>setEditingOrder(null)} className="flex-1 bg-slate-100 text-slate-700 font-bold py-2.5 rounded-xl hover:bg-slate-200 text-sm">Cancel</button>
-              <button onClick={submitEdit} disabled={!!actionLoading?.startsWith('edit')||!isOrderNonEmpty(editItems,editDeals)} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">{actionLoading?.startsWith('edit')?'Saving...':'Save changes'}</button>
+              <button onClick={()=>submitEdit(editRepriceActive?editReprice!.total:undefined)} disabled={!!actionLoading?.startsWith('edit')||!isOrderNonEmpty(editItems,editDeals)} className="flex-1 bg-orange-600 text-white font-bold py-2.5 rounded-xl hover:bg-orange-700 text-sm disabled:opacity-50">
+                {actionLoading?.startsWith('edit')?'Saving...':editRepriceActive?`Save at £${editReprice!.total.toFixed(2)}`:'Save changes'}
+              </button>
             </div>
           </div>
         </div>

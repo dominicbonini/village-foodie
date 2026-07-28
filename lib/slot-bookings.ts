@@ -324,7 +324,13 @@ async function upsertProductionSlotUnits(
     { onConflict: 'truck_id,event_id,production_slot' }
   )
   if (error) console.warn('[production_slot_usage] upsert failed (drift risk):', error.message)
+  return { error: error ? error.message : null }
 }
+
+/** What the incremental book/unbook helpers report back. `error` non-null ⇒ the production_slot_usage
+ *  write FAILED and capacity for this event is now drifted (self-heals on the next rebuild, but the
+ *  caller should say so rather than pretend it booked). Callers that don't care may ignore it. */
+export interface SlotBookingResult { error: string | null }
 
 /** Batch count per collection_time (for slot picker UI). Event-scoped. */
 export async function getBatchCountsByCollectionTime(
@@ -353,8 +359,8 @@ export async function addOrderToProductionSlot(
   collectionTime: string | null,
   items: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>
-) {
-  if (!items.length || !eventId) return
+): Promise<SlotBookingResult> {
+  if (!items.length || !eventId) return { error: null }
   const meta = await getEventMeta(supabase, eventId)
   // DEFENSIVE LEGACY FALLBACK: callers now pass the SERVER-resolved boundary (order.slot is never
   // null post-submit-fix), so `collectionTime` is the real placed slot and matches what the rebuild
@@ -362,17 +368,17 @@ export async function addOrderToProductionSlot(
   // a legacy null/ASAP collectionTime; kept defensively, unreachable for new orders. (book + unbook
   // MUST share this so they target the identical slot.)
   const ct = collectionTime || meta.start
-  if (!ct || !meta.eventDate) return
+  if (!ct || !meta.eventDate) return { error: null }
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)
   const productionSlot = timeMap[ct] || ct
   const { units: slotUnits, reseeded } = await readProductionSlotUnits(supabase, truckId, eventId)
   // First order of an event: the cache was empty, so the read just REBUILT it from
   // `orders` (which already contains this order, inserted moments ago) and persisted it.
   // Re-merging would double-count this order — the reseed already booked it. Skip.
-  if (reseeded) return
+  if (reseeded) return { error: null }
   const current = slotUnits[productionSlot] || {}
   const merged = mergeQtyByCat(current, orderItemsToQtyByCat(items, itemCatMap))
-  await upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, merged)
+  return upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, merged)
 }
 
 /** Remove an order's items from its production window. collectionTime null → ASAP,
@@ -385,8 +391,8 @@ export async function removeOrderFromProductionSlot(
   collectionTime: string | null,
   items: { name: string; quantity: number }[],
   itemCatMap: Record<string, string>
-) {
-  if (!items.length || !eventId) return
+): Promise<SlotBookingResult> {
+  if (!items.length || !eventId) return { error: null }
   const meta = await getEventMeta(supabase, eventId)
   // DEFENSIVE LEGACY FALLBACK: callers now pass the SERVER-resolved boundary (order.slot is never
   // null post-submit-fix), so `collectionTime` is the real placed slot and matches what the rebuild
@@ -394,14 +400,14 @@ export async function removeOrderFromProductionSlot(
   // a legacy null/ASAP collectionTime; kept defensively, unreachable for new orders. (book + unbook
   // MUST share this so they target the identical slot.)
   const ct = collectionTime || meta.start
-  if (!ct || !meta.eventDate) return
+  if (!ct || !meta.eventDate) return { error: null }
   const timeMap = await fetchCollectionTimeMap(supabase, truckId)
   const productionSlot = timeMap[ct] || ct
   const slotUnits = await getProductionSlotUnits(supabase, truckId, eventId)
   const current = slotUnits[productionSlot] || {}
   const delta = orderItemsToQtyByCat(items, itemCatMap)
   const next = subtractQtyByCat(current, delta)
-  await upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, next)
+  return upsertProductionSlotUnits(supabase, truckId, eventId, meta.eventDate, productionSlot, next)
 }
 
 /**
