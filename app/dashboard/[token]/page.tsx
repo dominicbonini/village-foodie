@@ -240,8 +240,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // by /api/dashboard so the card can call getOrderBalance without a second fetch.
   const[showPaidStep,setShowPaidStep]=useState(false)
   const[savingShowPaidStep,setSavingShowPaidStep]=useState(false)
-  const[walkupPaymentDefault,setWalkupPaymentDefault]=useState<'at_order'|'at_collection'>('at_order')
-  const[savingWalkupDefault,setSavingWalkupDefault]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
@@ -476,7 +474,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     return Math.max(0,Math.ceil(extraWaitMins-elapsed))
   },[extraWaitMins,extraWaitStartedAt,waitTick])
 
-
   const saveProfile=async()=>{
     if(!editProfileName.trim())return
     setSavingProfile(true)
@@ -614,7 +611,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.payments !== undefined) setPayments(data.payments || {})
       if(data.truck?.show_paid_step !== undefined) setShowPaidStep(!!data.truck.show_paid_step)
-      if(data.truck?.default_walkup_payment !== undefined) setWalkupPaymentDefault(data.truck.default_walkup_payment)
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
@@ -1046,18 +1042,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingShowPaidStep(false)}
   }
 
-  const saveWalkupPaymentDefault=async(val:'at_order'|'at_collection')=>{
-    setSavingWalkupDefault(true)
-    try{
-      await fetch('/api/dashboard/action',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'set_default_walkup_payment',value:val})
-      })
-      setWalkupPaymentDefault(val)
-      showToast(val==='at_order'?'Walk-ups default to paying at order':'Walk-ups default to paying at collection')
-    }catch{showToast('Failed to save','error')}
-    finally{setSavingWalkupDefault(false)}
-  }
 
   const saveNotesRequireReview=async(val:boolean)=>{
     setSavingNotesReview(true)
@@ -2662,7 +2646,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
           </div>
         )}
 
-
         {/* SETTINGS TAB (setup-time config: printing, auto-accept, offline protection, order-ready
             notifications, kitchen capacity). The service-time Menu & Stock list renders in its own block
             below. Sections relocated VERBATIM from the old Menu & Stock tab — no behaviour change. */}
@@ -2714,12 +2697,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               )}
             </div>
-            {/* PAID STEP (V9.4) — same card/divide-y/Toggle treatment as auto-accept above, so the two
-                read as one settings language. OFF by default: with it off the operator surface is exactly
-                what it has always been (one "Mark paid & done" button). The walk-up default is a CHILD of
-                it — pl-4 indent, shown only when the paid step is on — mirroring the notes-review row. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
-              <div className={`flex items-center justify-between ${showPaidStep?'pb-3':''}`}>
+            {/* PAID STEP (V9.4) — same card/Toggle treatment as auto-accept above, so the two read as one
+                settings language. OFF by default: with it off the operator surface is exactly what it has
+                always been (one "Mark paid & done" button).
+                ONE toggle, deliberately. A `default_walkup_payment` companion setting shipped here on
+                29 July and was removed the next day: walk-ups and PHONE orders come through the same Add
+                Order panel with OPPOSITE payment timings, so any truck-level default was wrong about half
+                the time and the operator had to check and correct it on every order — worse than no
+                default. The confirm bar now offers two equal actions instead. Do not re-add it. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
                   <p className="text-slate-500 text-xs mt-0.5">Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over. Off keeps the single one-tap button.</p>
@@ -2729,22 +2716,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <Toggle on={showPaidStep} onToggle={()=>saveShowPaidStep(!showPaidStep)} disabled={isOffline}/>
                 </div>
               </div>
-              {showPaidStep&&(
-                <div className="pt-3 pl-4">
-                  <p className="text-sm font-semibold text-slate-800">Walk-ups usually pay</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Where the Add Order screen starts. You can still switch any single order the other way — that choice never sticks.</p>
-                  <div className="flex gap-2 mt-2">
-                    {([['at_order','When they order'],['at_collection','At collection']] as const).map(([val,label])=>(
-                      <button key={val}
-                        onClick={()=>saveWalkupPaymentDefault(val)}
-                        disabled={isOffline||savingWalkupDefault}
-                        className={`flex-1 text-xs font-semibold py-2 rounded-lg border transition-colors disabled:opacity-50 ${walkupPaymentDefault===val?'bg-slate-800 text-white border-slate-800':'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
                 fire; the on/off MASTER is the per-device header toggle.

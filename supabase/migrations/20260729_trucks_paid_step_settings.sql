@@ -1,6 +1,16 @@
 -- 20260729_trucks_paid_step_settings.sql
 -- Two truck-level settings for the PAID STEP. Payments phase 1b part 1 (V9.4, §37).
 --
+-- ⚠️ PARTIALLY SUPERSEDED — READ THIS FIRST (comment-only note added 30 July; NO DDL BELOW WAS CHANGED,
+-- because this file has already been applied and an applied migration must not be edited).
+--   • `show_paid_step`         — STILL CURRENT. Everything said about it below holds.
+--   • `default_walkup_payment` — REMOVED THE NEXT DAY by 20260730_drop_trucks_default_walkup_payment.sql.
+--     Walk-ups and PHONE orders arrive through the same Add Order panel with OPPOSITE payment timings,
+--     so a truck-level default was wrong about half the time and the operator had to correct it on every
+--     order — worse than no default. Replaced by two equal confirm actions with nothing pre-selected.
+--     The rationale written below for it is the reasoning that turned out to be WRONG; it is left intact
+--     rather than rewritten, because the file is applied and the mistake is worth being able to read.
+--
 -- ✅ CLASSIFICATION: **ADDITIVE**, and unusually safely so — both columns carry NOT NULL DEFAULTs that
 -- encode EXACTLY today's behaviour, so every existing truck keeps the current one-tap
 -- "Mark paid & done" flow with no visible change until an operator opts in.

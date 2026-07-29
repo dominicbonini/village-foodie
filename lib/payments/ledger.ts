@@ -136,10 +136,40 @@ export function getOrderBalance(order: BalanceableOrder, ledgerRows: LedgerRow[]
   return { paidMinor, balanceMinor, status }
 }
 
-/** The deterministic idempotency key for the single "Mark paid & done" charge on an order.
- *  See recordCollectionPayment() for why this shape, and why an undo frees it. */
-export function collectIdempotencyKey(orderKey: string): string {
-  return `collect:${orderKey}`
+/**
+ * The idempotency key for an in-person charge — a STATE-TRANSITION key: *"from this ledger position,
+ * settle this amount"*.
+ *
+ * 🔴 IT WAS `collect:{order_key}`, A CONSTANT PER ORDER, AND THAT SILENTLY SWALLOWED EVERY CHARGE AFTER
+ * THE FIRST. Pay £9.50 → edit up to £15 → tap "Mark £5.50 paid" → 23505 → treated as a successful
+ * no-op → the money was never recorded, with no error. The phase-1a migration header explicitly rejected
+ * a composite unique index so that "£10 cash now, £5 later" would stay possible; the constant key
+ * forbade it anyway. Header and implementation disagreed from day one and nobody noticed because
+ * part-paid had never been exercised.
+ *
+ * ── WHY paidBefore:balance, AND NOT total OR balance ALONE ─────────────────────────────────────────
+ * Both simpler schemes have holes, found by simulation before adopting either (7 sequences × 4 schemes):
+ *   • `:{balance}`  — collides when the same amount is settled twice. Pay a £9.50 order IN FULL, then
+ *                     the customer doubles it to £19.00: the outstanding balance is £9.50 AGAIN, same
+ *                     key, charge vanishes. Also breaks on equal successive top-ups. Very plausible.
+ *   • `:{total}`    — survives that, but collides when a total repeats: pay, edit up, pay, edit back
+ *                     down, refund, edit up to the SAME total again.
+ *   • `:{paidBefore}:{balance}` — survives both. It encodes the actual transition, so it only collides
+ *                     if the LEDGER STATE returns to a previous position AND the same amount is settled
+ *                     from it again.
+ *
+ * ⚠️ NO PURELY SERVER-DERIVED KEY CAN BE COMPLETE, and this one is not. If the key is a function of
+ * ledger state, then any sequence that returns the ledger to an earlier state and repeats the same
+ * transition WILL collide — that is a property of determinism, not a bug in the choice. The one
+ * remaining case is a REFUND that exactly reverses a charge, followed by re-charging the same amount
+ * (refunds are not built yet; see §37). A client-minted per-tap key is the only complete answer — the
+ * outbox already mints `op_id` for exactly this purpose but never transmits it (see the audit review).
+ * Adopting it means changing the live offline gate, so it is deliberately NOT done here.
+ * INSTEAD: recordCollectionPayment carries an expected-vs-actual detector that makes any residual
+ * collision LOUD rather than silent. Read that before changing this function.
+ */
+export function collectIdempotencyKey(orderKey: string, paidBeforeMinor: number, balanceMinor: number): string {
+  return `collect:${orderKey}:${paidBeforeMinor}:${balanceMinor}`
 }
 
 async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<LedgerRow[]> {
@@ -234,7 +264,11 @@ export async function recordPaymentEvent(
 
   let inserted = true
   if (error) {
-    if (error.code === '23505') inserted = false          // idempotent replay — the event is already recorded
+    // 23505 = the idempotency key already exists. USUALLY a genuine replay, whose money is already
+    // recorded — but NOT always, and this function cannot tell the difference on its own (it does not
+    // know what the caller expected). Callers that intend a specific amount must check the resulting
+    // balance; see recordCollectionPayment's expected-vs-actual detector.
+    if (error.code === '23505') inserted = false
     else throw new Error(`[ledger] insert failed for ${event.orderKey}: ${error.message}`)
   }
 
@@ -278,10 +312,32 @@ export async function recordCollectionPayment(
     channel: 'in_person_other',
     amountMinor: before.balanceMinor,
     state: 'succeeded',
-    idempotencyKey: collectIdempotencyKey(opts.orderKey),
+    idempotencyKey: collectIdempotencyKey(opts.orderKey, before.paidMinor, before.balanceMinor),
     note: 'Mark paid & done — taken at the hatch',
     createdBy: opts.createdBy ?? null,
   })
+
+  // ── EXPECTED-VS-ACTUAL DETECTOR ────────────────────────────────────────────────────────────────
+  // A swallowed duplicate (23505) is CORRECT for a genuine replay and WRONG for anything else, and the
+  // two are distinguishable — this is how:
+  //   genuine replay  — the row this key names already exists, so its money is already counted. The
+  //                     recalc therefore shows a SMALLER balance than we measured before the insert
+  //                     (normally zero). Silent success is right; the payment is recorded.
+  //   real collision  — the key belongs to some OTHER, older charge, so nothing was added and the
+  //                     balance is UNCHANGED. A charge was expected and none landed. Money has been
+  //                     taken at the hatch that the ledger does not know about. This MUST surface.
+  // (In practice a genuine replay usually never reaches here at all — the balance-zero guard above
+  // short-circuits first. This covers the concurrent-race case where two requests both read a positive
+  // balance before either commits.)
+  const swallowedButNothingSettled = !inserted && balance.balanceMinor === before.balanceMinor
+  if (swallowedButNothingSettled) {
+    throw new Error(
+      `[ledger] charge of ${before.balanceMinor} for ${opts.orderKey} was SWALLOWED as a duplicate but the ` +
+      `balance is unchanged (${balance.balanceMinor}) — an idempotency-key collision, not a replay. ` +
+      `The payment has NOT been recorded.`,
+    )
+  }
+
   return { inserted, balance, chargedMinor: inserted ? before.balanceMinor : 0 }
 }
 
@@ -318,13 +374,24 @@ export async function reverseCollectionPayment(
     beforeDelete?: (row: DeletedCollectRow) => Promise<void>
   },
 ): Promise<{ reversal: 'deleted' | 'refunded' | 'none'; balance: OrderBalance }> {
-  const key = collectIdempotencyKey(opts.orderKey)
-
+  // ── LOOK UP BY SHAPE, NEVER BY IDEMPOTENCY KEY ─────────────────────────────────────────────────
+  // 🔴 LIVE-DATA COMPATIBILITY REQUIREMENT, not a tidy-up. This used to match
+  // `.eq('idempotency_key', 'collect:{order_key}')`. The key format changed (see
+  // collectIdempotencyKey), so a key-based lookup would silently fail to find any row written under
+  // the OLD format — every payment taken before this deploy would become un-undoable, and undo would
+  // report 'none' while leaving the money on the order.
+  // Matching on the row's SHAPE instead is format-agnostic: it finds old-format rows, new-format rows
+  // and (once refunds exist) rows with no key at all. `channel != 'online'` preserves the original
+  // intent — only an in-person charge is a candidate for the delete-vs-compensate rule below.
+  // Newest first: with successive part-payments, undo reverses the one just taken, matching what the
+  // 7-second toast and the paid-chip affordance both mean by "undo".
   const { data: rows, error } = await supabase
     .from('order_payments')
     .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by')
     .eq('order_key', opts.orderKey)
-    .eq('idempotency_key', key)
+    .eq('kind', 'charge')
+    .neq('channel', 'online')
+    .order('created_at', { ascending: false })
   if (error) throw new Error(`[ledger] could not read the collect row for ${opts.orderKey}: ${error.message}`)
 
   const row = (rows ?? [])[0] as DeletedCollectRow | undefined

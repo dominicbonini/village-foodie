@@ -654,11 +654,9 @@ setItemModal({ item, modGroups, editCartKey })
     setManualName(''); setManualEmail(''); setManualPhone(''); setManualNotes('')
     setManualSlot(''); setManualItems([]); setAppliedDeals([])
     setActiveDealBundle(null)
-    // 🔴 The per-order payment flip is RESET here, deliberately. It must never persist as a setting:
-    // the next order returns to the truck default so the taps are identical every time. A control that
-    // remembered the last choice would make the sequence depend on history, which is exactly what a
-    // fast-tap surface must not do.
-    setTakePaymentNow(truckDefaultTakeNow)
+    // Clear the per-order payment choice. Nothing is remembered between orders by design — the next
+    // order presents both actions again with neither pre-selected.
+    takePaymentRef.current = false
   }
 
   // ── slot change handler ─────────────────────────────────────────────────────
@@ -678,13 +676,15 @@ setItemModal({ item, modGroups, editCartKey })
   // submit (see resetManual). Entirely inert when the truck has not opted in: showPaidStep false means
   // the confirm bar renders exactly as it did before, and `paymentTaken` is never sent.
   const showPaidStep = truck?.show_paid_step === true
-  const truckDefaultTakeNow = (truck?.default_walkup_payment ?? 'at_order') === 'at_order'
-  const [takePaymentNow, setTakePaymentNow] = useState(truckDefaultTakeNow)
-  // Follow the truck default if it changes under us (settings saved in another tab / a poll), but only
-  // while the sheet is closed — never yank the control out from under an operator mid-order.
-  useEffect(() => {
-    if (!showOrderSheet) setTakePaymentNow(truckDefaultTakeNow)
-  }, [truckDefaultTakeNow, showOrderSheet])
+  // 🔴 NO REMEMBERED DEFAULT — open-check semantics. Walk-ups and phone orders come through THIS panel
+  // with OPPOSITE payment timings, so any truck-level default is wrong about half the time and the
+  // operator has to check and flip on every order anyway — worse than no default at all. Instead the
+  // confirm bar offers TWO equal actions and the operator picks one per order, at the moment of sale,
+  // which is what they are doing regardless.
+  // A REF, not state: it is set at the instant of the tap and read inside submitManual, so it survives
+  // the override/re-submit recursion (submitManual(true, true) retries) without threading a parameter
+  // through three call sites, and it never triggers a render or looks like a sticky selection.
+  const takePaymentRef = useRef(false)
 
   // ── submit ──────────────────────────────────────────────────────────────────
   // override=false: normal submit, runs the atomic stock check. On a shortfall the server
@@ -869,7 +869,7 @@ setItemModal({ item, modGroups, editCartKey })
         // V9.4 — the operator took the money as part of placing this order. Only ever sent when the
         // truck has opted into the paid step; the server also re-checks show_paid_step before acting on
         // it, so a stale client cannot book a payment on a truck that has not enabled the flow.
-        paymentTaken: showPaidStep ? takePaymentNow : false,
+        paymentTaken: showPaidStep ? takePaymentRef.current : false,
       }
       // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
       const result = await gatedAction({
@@ -1085,32 +1085,37 @@ setItemModal({ item, modGroups, editCartKey })
       />
       {slotSelector}
       {contactDetails}
-      {/* ── PAYMENT DECISION (V9.4) ────────────────────────────────────────────────────────────────
-          🔴 A STATE OF THE CONFIRM BAR, NOT A MODAL. §10's fast-tap rule: no popup, no extra
-          confirmation dialog, no second screen. The primary button says what will happen and one tap
-          does it; the secondary text action flips this order the other way and is deliberately quiet.
-          Renders nothing at all when the truck has not opted in. */}
-      {showPaidStep && hasItems && !takePaymentNow && (
-        <p className="text-sm text-slate-500 text-center -mb-1">Paying at collection</p>
-      )}
-      <button
-        onClick={() => submitManual()}
-        disabled={loading || !hasItems || !manualEvent}
-        className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
-      >
-        {loading ? 'Confirming...'
-          : !manualEvent ? 'Select an event to confirm'
-          : showPaidStep && takePaymentNow && manualTotal > 0 ? `Confirm and take £${manualTotal.toFixed(2)}`
-          : showPaidStep && !takePaymentNow ? 'Confirm order'
-          : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
-      </button>
-      {showPaidStep && hasItems && (
+      {/* ── PAYMENT DECISION (V9.4) — TWO EQUAL ACTIONS, NEITHER PRE-SELECTED ──────────────────────
+          Open-check semantics: the operator decides per order, at the moment of sale. Both buttons are
+          the same size and the same colour so neither reads as the default, and each is ONE tap — no
+          toggle to set first, no modal, no confirmation dialog (§10's fast-tap rule). "Confirm and
+          take £X" is listed first only because it is the more common walk-up case; that is ordering,
+          not preference, and nothing is remembered between orders.
+          Renders as the single original button when the truck has not opted in. */}
+      {showPaidStep ? (
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={() => { takePaymentRef.current = true; void submitManual() }}
+            disabled={loading || !hasItems || !manualEvent}
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+          >
+            {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Confirm and take £${manualTotal.toFixed(2)}`}
+          </button>
+          <button
+            onClick={() => { takePaymentRef.current = false; void submitManual() }}
+            disabled={loading || !hasItems || !manualEvent}
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+          >
+            {loading ? 'Confirming...' : 'Confirm order'}
+          </button>
+        </div>
+      ) : (
         <button
-          onClick={() => setTakePaymentNow(v => !v)}
-          disabled={loading}
-          className="w-full text-sm font-semibold text-slate-500 hover:text-slate-700 underline underline-offset-2 py-1 disabled:opacity-50"
+          onClick={() => submitManual()}
+          disabled={loading || !hasItems || !manualEvent}
+          className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
         >
-          {takePaymentNow ? 'Pay at collection instead' : 'Take payment now instead'}
+          {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
         </button>
       )}
     </div>

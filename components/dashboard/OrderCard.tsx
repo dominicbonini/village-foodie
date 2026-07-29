@@ -146,6 +146,10 @@ export function OrderCard({
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
   const expanded = true
 
+  /** Inline "Remove payment?" confirm, revealed by tapping the paid chip. Local and transient — it
+   *  auto-clears whenever the order's payment state changes (see the effect below). */
+  const [confirmRemovePayment, setConfirmRemovePayment] = useState(false)
+
   // ── PAYMENT STATE — DERIVED, NEVER RECOMPUTED HERE (V9.4) ───────────────────────────────────────
   // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status
   // can never disagree. Do not add arithmetic on amount_paid/total here: one derivation, one place.
@@ -153,6 +157,13 @@ export function OrderCard({
   const isPaid = balance.status === 'paid' || balance.status === 'refunded'
   const isPartPaid = balance.status === 'part_paid'
   const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
+
+  // Dismiss the inline confirm whenever the payment state moves underneath it — the removal landed, or
+  // another device changed it — so a stale "Remove payment?" can never sit over an order that is no
+  // longer in that state.
+  useEffect(() => { setConfirmRemovePayment(false) }, [balance.status, balance.paidMinor])
+
+  const isLoading = (action: string) => actionLoading === `${action}-${order.order_key}`
 
   // ── THE COMPLETION BUTTON (V9.4) ────────────────────────────────────────────────────────────────
   // ONE button that RELABELS by payment state — not a second button, and not a double-tap gesture.
@@ -173,19 +184,59 @@ export function OrderCard({
     return (
       <Btn
         label={isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
-        colour="teal" loading={isLoading('mark_paid')}
+        // 🔴 DARK SLATE, like every other state of this button. §9 reserves SOLID GREEN for the ready
+        // state and specifies that "Mark paid & done" uses dark slate deliberately, to differentiate it
+        // from Ready. The paid step changes the LABEL, not the visual language — a green/teal here would
+        // collide with the Ready button sitting on the same board.
+        colour="dark" loading={isLoading('mark_paid')}
         onClick={() => onAction('mark_paid', order.order_key)}
       />
     )
   }
 
-  // The money chip beside the price. Paid = a settled fact worth seeing at a glance; part paid states the
-  // outstanding balance because that is the number the operator has to ask for. Null when the truck has
-  // not opted in, or when nothing has been paid — an unpaid order is the norm and needs no decoration.
-  const paidChip = !showPaidStep ? null
+  // ── THE MONEY CHIP, AND THE PERSISTENT PAYMENT REVERSAL (V9.4) ──────────────────────────────────
+  // The chip states the payment fact: paid at a glance, or the outstanding balance when part paid,
+  // because that is the number the operator has to ask for. Nothing when the truck has not opted in or
+  // nothing has been paid — an unpaid order is the norm and needs no decoration.
+  //
+  // 🔴 THE CHIP IS ALSO THE UNDO ROUTE AFTER THE TOAST HAS GONE. The 7-second toast is a mis-tap catch,
+  // not a correction mechanism: an operator who realises ten minutes later that they marked the WRONG
+  // order paid previously had no route at all. Tapping the chip reveals a small inline confirm.
+  // WHY THIS INTERACTION:
+  //   • It hangs off the thing it describes — you correct the payment by tapping the payment.
+  //   • It is a CORRECTION, not a primary action, so it must not compete with the main button: it lives
+  //     in the header beside the price, at 10px, while the primary action is a full-width button at the
+  //     bottom of the card. The two are at opposite ends and cannot be confused.
+  //   • TWO deliberate taps (chip → "Remove"), so a stray tap reveals a confirm and nothing more. There
+  //     is no destructive single-tap target anywhere on this path.
+  //   • INLINE, not a modal — §10's fast-tap rule. It replaces the chip in place and dismisses itself.
+  // It calls `undo_mark_paid`, which is the SAME server path the undo toast already uses: audit FIRST
+  // (abort the delete if the audit write fails), then delete the ledger row, then recalc. No second
+  // reversal implementation exists.
+  const paidChipStatic = !showPaidStep ? null
     : isPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
     : isPartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
     : null
+
+  const paidChip = paidChipStatic === null ? null : confirmRemovePayment ? (
+    <span className="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
+      <span className="text-[10px] font-bold text-slate-500">Remove payment?</span>
+      <button
+        onClick={() => { setConfirmRemovePayment(false); onAction('undo_mark_paid', order.order_key) }}
+        disabled={isLoading('undo_mark_paid')}
+        className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50">
+        {isLoading('undo_mark_paid') ? '…' : 'Remove'}
+      </button>
+      <button onClick={() => setConfirmRemovePayment(false)}
+        className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200">
+        Keep
+      </button>
+    </span>
+  ) : (
+    <button onClick={() => setConfirmRemovePayment(true)} title="Tap to remove this payment" className="flex-shrink-0">
+      {paidChipStatic}
+    </button>
+  )
 
   /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
   const completionBtnDisabled = () => (
@@ -259,7 +310,6 @@ export function OrderCard({
     })
   }
 
-  const isLoading = (action: string) => actionLoading === `${action}-${order.order_key}`
   const showPrices = viewMode !== 'cook'
 
   type CookLine = { name: string; quantity: number; modifiers?: { name: string; price: number }[]; note?: string; dealName?: string; dealPrice?: number }

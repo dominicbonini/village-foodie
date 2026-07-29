@@ -1453,22 +1453,10 @@ export async function POST(req: NextRequest) {
     // ── set_auto_accept ──────────────────────────────────────────────────────
     // ── PAID STEP SETTINGS (V9.4) ─────────────────────────────────────────────
     // show_paid_step=false is today's behaviour EXACTLY and is the default; nothing in the operator
-    // surface changes until a truck opts in. default_walkup_payment only seeds the Add Order confirm
-    // bar — it is a UI default, never a payment record.
+    // surface changes until a truck opts in.
     if (action === 'set_show_paid_step') {
       const { value } = body
       const { error } = await supabase.from('trucks').update({ show_paid_step: !!value }).eq('id', truck.id)
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-      return NextResponse.json({ success: true })
-    }
-
-    if (action === 'set_default_walkup_payment') {
-      const { value } = body
-      // Mirrors the DB CHECK. Rejected here too so a bad value fails as a 400 rather than a 23514.
-      if (value !== 'at_order' && value !== 'at_collection') {
-        return NextResponse.json({ error: 'Invalid payment default' }, { status: 400 })
-      }
-      const { error } = await supabase.from('trucks').update({ default_walkup_payment: value }).eq('id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })
     }
