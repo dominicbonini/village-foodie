@@ -49,7 +49,10 @@
 //            else 'part_paid' end
 //    order by o.created_at desc;
 //
-import { SupabaseClient } from '@supabase/supabase-js'
+// `import type` (not a value import) is load-bearing: getOrderBalance is called from CLIENT components
+// (OrderCard, AddOrderPanel) and a value import would pull the supabase client into the browser bundle.
+// The server-only functions below are simply never called there.
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { toMinor, fromMinor } from '@/lib/order-repricing'
 
 export type PaymentKind = 'charge' | 'refund'

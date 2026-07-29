@@ -100,6 +100,10 @@ export interface TruckData {
   slug?: string | null
   paused?: boolean
   auto_accept?: boolean
+  /** V9.4 paid step. FALSE (the DB default) = today's behaviour exactly, everywhere. */
+  show_paid_step?: boolean
+  /** V9.4 — seeds the Add Order confirm bar per order; a per-order flip is never persisted. */
+  default_walkup_payment?: 'at_order' | 'at_collection'
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'

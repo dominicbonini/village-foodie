@@ -234,6 +234,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[pendingOpenEventPicker,setPendingOpenEventPicker]=useState(false)
   const[autoAccept,setAutoAccept]=useState(false)
   const[savingAutoAccept,setSavingAutoAccept]=useState(false)
+  // ── PAID STEP (V9.4) ──────────────────────────────────────────────────────────────────────────
+  // showPaidStep=false (the DB default) means every paid-step affordance below is inert and the
+  // operator surface is byte-identical to before. payments = order_key → order_payments rows, shipped
+  // by /api/dashboard so the card can call getOrderBalance without a second fetch.
+  const[showPaidStep,setShowPaidStep]=useState(false)
+  const[savingShowPaidStep,setSavingShowPaidStep]=useState(false)
+  const[walkupPaymentDefault,setWalkupPaymentDefault]=useState<'at_order'|'at_collection'>('at_order')
+  const[savingWalkupDefault,setSavingWalkupDefault]=useState(false)
+  const[payments,setPayments]=useState<Record<string,any[]>>({})
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
@@ -603,6 +612,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setExtraWaitStartedAt(applyPending('extraWaitStartedAt',data.truck?.extra_wait_started_at||null))
       if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
+      if(data.payments !== undefined) setPayments(data.payments || {})
+      if(data.truck?.show_paid_step !== undefined) setShowPaidStep(!!data.truck.show_paid_step)
+      if(data.truck?.default_walkup_payment !== undefined) setWalkupPaymentDefault(data.truck.default_walkup_payment)
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
@@ -1021,6 +1033,32 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingAutoAccept(false)}
   }
 
+  const saveShowPaidStep=async(val:boolean)=>{
+    setSavingShowPaidStep(true)
+    try{
+      await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_show_paid_step',value:val})
+      })
+      setShowPaidStep(val)
+      showToast(val?'Paid step enabled':'Paid step disabled')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingShowPaidStep(false)}
+  }
+
+  const saveWalkupPaymentDefault=async(val:'at_order'|'at_collection')=>{
+    setSavingWalkupDefault(true)
+    try{
+      await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_default_walkup_payment',value:val})
+      })
+      setWalkupPaymentDefault(val)
+      showToast(val==='at_order'?'Walk-ups default to paying at order':'Walk-ups default to paying at collection')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingWalkupDefault(false)}
+  }
+
   const saveNotesRequireReview=async(val:boolean)=>{
     setSavingNotesReview(true)
     try{
@@ -1260,8 +1298,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       // "Ready" → status commits now but the customer email is DEFERRED 4s (defer_email above): an Undo
       // within 4s cancels the email (clears the per-order timer) AND reverts the status. The toast's tap
       // auto-dismisses it (handled in the render), so the run handlers only do the action.
-      if(action==='collected'){
-        showToast(`Order #${num} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
+      // ── TWO-STAGE UNDO (V9.4) ──────────────────────────────────────────────────────────────────
+      // With the paid step split there are TWO undoable actions, so each gets its OWN toast naming the
+      // stage it reverses. Undo is never ambiguous after a fast double tap: whichever toast is on screen
+      // is the one for the tap you just made, and it reverses exactly that stage. Undoing "Done" leaves
+      // the payment standing (the server does the same — see undo_collected's splitPaidStep branch).
+      if(action==='mark_paid'){
+        showToast(`Order #${num} marked paid`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_mark_paid',orderKey)}})
+      }else if(action==='undo_mark_paid'){
+        showToast('Undone — payment removed')
+      }else if(action==='undo_collected'){
+        showToast('Undone — order not collected')
+      }else if(action==='collected'){
+        showToast(showPaidStep?`Order #${num} done`:`Order #${num} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
       }else if(action==='ready'){
         scheduleReadyEmail(orderKey)
         showToast(`Order #${num} ready`,'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
@@ -2502,13 +2551,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} ledgerRows={payments[o.order_key]}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} ledgerRows={payments[o.order_key]}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -2661,6 +2710,38 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <div className="flex items-center gap-2 shrink-0 ml-3">
                     {savingNotesReview&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
                     <Toggle on={notesRequireReview} onToggle={()=>saveNotesRequireReview(!notesRequireReview)} disabled={isOffline}/>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* PAID STEP (V9.4) — same card/divide-y/Toggle treatment as auto-accept above, so the two
+                read as one settings language. OFF by default: with it off the operator surface is exactly
+                what it has always been (one "Mark paid & done" button). The walk-up default is a CHILD of
+                it — pl-4 indent, shown only when the paid step is on — mirroring the notes-review row. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
+              <div className={`flex items-center justify-between ${showPaidStep?'pb-3':''}`}>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over. Off keeps the single one-tap button.</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  {savingShowPaidStep&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={showPaidStep} onToggle={()=>saveShowPaidStep(!showPaidStep)} disabled={isOffline}/>
+                </div>
+              </div>
+              {showPaidStep&&(
+                <div className="pt-3 pl-4">
+                  <p className="text-sm font-semibold text-slate-800">Walk-ups usually pay</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Where the Add Order screen starts. You can still switch any single order the other way — that choice never sticks.</p>
+                  <div className="flex gap-2 mt-2">
+                    {([['at_order','When they order'],['at_collection','At collection']] as const).map(([val,label])=>(
+                      <button key={val}
+                        onClick={()=>saveWalkupPaymentDefault(val)}
+                        disabled={isOffline||savingWalkupDefault}
+                        className={`flex-1 text-xs font-semibold py-2 rounded-lg border transition-colors disabled:opacity-50 ${walkupPaymentDefault===val?'bg-slate-800 text-white border-slate-800':'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
+                        {label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}

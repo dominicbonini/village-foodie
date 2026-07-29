@@ -121,6 +121,8 @@ export async function GET(req: NextRequest) {
   // selected event there is nothing to show (Section 5 — empty dashboard).
   let activeOrders: any[] = []
   let doneToday: any[] = []
+  /** order_key → its order_payments rows. Fed straight into getOrderBalance client-side. */
+  const payments: Record<string, any[]> = {}
   if (selectedEventId) {
     let activeOrdersQuery = supabase
       .from('orders')
@@ -147,6 +149,31 @@ export async function GET(req: NextRequest) {
     const [{ data: a }, { data: d }] = await Promise.all([activeOrdersQuery, doneOrdersQuery])
     activeOrders = a || []
     doneToday = d || []
+
+    // ── PAYMENT LEDGER ROWS FOR THE VISIBLE ORDERS (V9.4) ──────────────────────────────────────────
+    // The card derives its paid/part-paid/balance state from getOrderBalance(order, rows) — the SAME
+    // pure function the server rollup uses — so the two can never disagree. That needs the ledger rows
+    // client-side, and orders.select('*') carries only the DERIVED CACHES (payment_status, amount_paid).
+    // Recomputing a balance from those caches in the component would be a second derivation of payment
+    // state, which is exactly what lib/payments/ledger.ts exists to prevent. So the rows ride along here:
+    // one extra query per dashboard load, keyed on the orders we just fetched, grouped by order_key.
+    // Additive to the response — existing consumers are unaffected by a new field.
+    const visibleKeys = [...activeOrders, ...doneToday].map(o => o.order_key).filter(Boolean)
+    if (visibleKeys.length) {
+      const { data: payRows, error: payErr } = await supabase
+        .from('order_payments')
+        .select('order_key, kind, channel, amount_minor, state, external_ref')
+        .in('order_key', visibleKeys)
+      if (payErr) {
+        // Non-blocking: the dashboard must render. An empty map makes every order read 'unpaid', which
+        // is visibly wrong rather than silently wrong, and it self-heals on the next poll.
+        console.error('[dashboard] order_payments fetch failed — cards will read unpaid this poll:', payErr.message)
+      } else {
+        for (const r of payRows ?? []) {
+          ;(payments[r.order_key] ||= []).push(r)
+        }
+      }
+    }
   }
 
   // Dedupe by order_key (UUID) — id is the per-event display number and is NOT
@@ -456,6 +483,7 @@ export async function GET(req: NextRequest) {
     lastOfflinePauseAt: eventLastOfflinePauseAt, // durable offline-pause marker (popup trigger)
     offlinePauseEventId: selectedEventId,         // the event the marker belongs to (ack key)
     orders:  orders || [],
+    payments,                                       // order_key → order_payments rows (V9.4) → getOrderBalance
     slots:   slotsWithCapacity,
     productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)
     capacityBreaches,                               // Piece 2 — slots genuinely over a ceiling (reconnect flag)

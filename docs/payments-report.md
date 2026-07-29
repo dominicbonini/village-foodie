@@ -1,324 +1,320 @@
-# Action audit log + actor attribution — BUILD REPORT
+# Payments phase 1b part 1 — THE PAID STEP (BUILD REPORT)
 
 **Date:** 29 July 2026 · **Repo:** `/Users/dominicbonini/dev/village-foodie` · **Branch:** `main`
-**Status: ✅ BUILT.** `tsc --noEmit` clean; 7/7 source-detection cases and 16/16 ledger-derivation cases pass.
-**Migration NOT applied. `next dev` / `next build` NOT run.** No UI, no PIN model, no Stripe.
+**Status: ✅ BUILT.** `tsc --noEmit` clean; 16/16 ledger-derivation + 10/10 button-state cases pass.
+**Migration NOT applied. `next dev` / `next build` NOT run.** No Stripe.
 
-> This file replaces the previous fail-open build report. That content is not preserved anywhere.
+> This file replaces the previous audit-log build report. That content is not preserved anywhere.
 
 **Prompt integrity:** no span read as garbled or truncated.
 
-**Nothing in the VERIFIED-BY-YOUR-OWN-REVIEW block disagrees with what I found.** All six statements
-re-confirmed while editing.
+---
+
+## 🔴 CONFIRMATION: `show_paid_step = false` CHANGES NOTHING
+
+This is the claim that matters most, so here is the evidence rather than the assertion.
+
+- **The column defaults to `false`** and is `NOT NULL`, so every existing truck — Gusto included — reads
+  false the instant the migration lands, with no backfill and no window where it is undefined.
+- **Every new affordance is gated on it**, in all three surfaces: `showPaidStep` appears 6× in
+  `OrderCard.tsx`, 7× in `AddOrderPanel.tsx`, and the server re-checks `truck.show_paid_step === true`
+  twice before acting on any client claim.
+- **The button is byte-identical when off.** `completionBtn()`'s first branch returns exactly the
+  original JSX — `<Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')}
+  onClick={() => onAction('collected', order.order_key)} />` — for all six live call sites.
+  **Asserted by harness cases 1-3**: off + unpaid and off + paid both yield `Mark paid & done`, and the
+  chip is `null` even for a fully-paid order.
+- **`undo_collected` keeps its phase-1a behaviour exactly** when off (reverses status *and* payment);
+  only the `splitPaidStep` branch is new.
+- **Add Order sends `paymentTaken: false`** when off, and the server's `manual` block is skipped
+  entirely, so walk-up creation is unchanged.
+- **The confirm bar renders its original label** when off — the new label branches are all
+  `showPaidStep && …`.
+
+The only unconditional changes are: two nullable-by-default columns, one extra query in the dashboard
+GET, and a 4px spacing increase on the notes block in window mode (see §D-notes).
 
 ---
 
-## 1. How the identity resolution is shared, and why
+## DIAGNOSE-FIRST ANSWERS
 
-**One implementation, in a new module, imported by both routes.** No second resolver was written.
+### D1 — AddOrderPanel's submit path
 
-`lib/audit/actor.ts` is a faithful extraction of the inline block at
-`app/api/dashboard/route.ts:55-109` — same cookie-then-Bearer order, same
-`operators` → `is_admin` all-access → `truck_users` membership cascade, same value fallbacks
-(`name || email || null`), same role defaulting.
+**The confirm button** ([AddOrderPanel.tsx:1066-1072](components/dashboard/AddOrderPanel.tsx#L1066), pre-change):
 
-**Why extract rather than import from the route:** a Next.js route module cannot be imported by another
-route without dragging its handler and its whole import graph along. Extraction was the only way to have
-one implementation. It also directly addresses the `makeCartKey` triplication class — `truck_users` is
-already queried inline in eight routes with three different shapes, and identity is a far worse thing to
-let drift than a cache key.
+```tsx
+<button onClick={() => submitManual()} disabled={loading || !hasItems || !manualEvent}
+  className="w-full bg-orange-600 …">
+  {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm'
+    : `Confirm order${manualTotal > 0 ? ` · £${manualTotal.toFixed(2)}` : ''}`}
+</button>
+```
 
-### The one design problem I hit, and how I resolved it
+**The handler** is `submitManual(override = false, skipFitCheck = false, capacityAck = false)`
+([:680](components/dashboard/AddOrderPanel.tsx#L680)). It builds a `manualOrder` object
+([:816-851](components/dashboard/AddOrderPanel.tsx#L816)) and posts through the offline gate
+([:853-857](components/dashboard/AddOrderPanel.tsx#L853)):
 
-The original block **returns a 403 mid-resolution** (`route.ts:105`) for a user whose operator record
-belongs to a different truck. A helper that returns a `NextResponse` would drag that refusal into the
-action route — the exact thing you forbade.
+```ts
+const result = await gatedAction({
+  url: '/api/dashboard/action',
+  kind: 'create', order_key: orderKey, provisional_id: provisional, online: isOnline(),
+  body: { token, pin, action: 'manual', manualOrder },
+})
+```
 
-**So the helper returns data, never a response.** It reports `foreignOperator: boolean`; the dashboard GET
-inspects that flag and issues its own 403, unchanged. The action route ignores the flag entirely.
+**Where a payment intent attaches without disturbing anything:** as one more field *inside*
+`manualOrder`. That object is already the single payload the gate serialises, so a new key rides through
+the outbox untouched (`enqueue` stores `body` verbatim) and replays intact. It does **not** touch the
+optimistic row — that is built separately at [:862-869](components/dashboard/AddOrderPanel.tsx#L862) and
+I left it alone. Adding a top-level body key instead would have been the riskier choice: the outbox's
+malformed-op guard and the replay path both reason about the body's shape.
 
-### The behaviour change I found in my own first attempt, and reverted
+### D2 — The order card's action area
 
-My first version wrapped the whole resolution in `try/catch` returning `'unknown'`. That would have been
-a **silent semantic change to the GET route**: the original block has no `try/catch`, so an auth-service
-error surfaced as a 500 — and with a blanket catch, a foreign operator holding a valid token would have
-been *admitted* during an auth outage instead of refused, because `foreignOperator` would default false.
+**The button**, six live sites, all identical
+([OrderCard.tsx:316,319,340,354,357](components/dashboard/OrderCard.tsx#L316) + two disabled
+placeholders at :327,:335):
 
-Fixed by splitting the entry points:
+```tsx
+<Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')}
+     onClick={() => onAction('collected', order.order_key)} />
+```
 
-| Function | Posture | Caller |
-|---|---|---|
-| `resolveActor()` | **May throw**, exactly like the original inline block | `/api/dashboard` (GET) — error semantics preserved byte-for-byte |
-| `resolveActorSafe()` | Never throws; degrades to `'unknown'` | `/api/dashboard/action` — attribution can never break an action |
+**The handler** is `doAction(action, orderKey)` in the dashboard page, which posts through `gatedAction`
+([page.tsx:1222](app/dashboard/[token]/page.tsx#L1222)).
 
-The two postures live in the helper, not the routes, so neither caller can accidentally acquire the
-other's. Flagging this because it was a real defect in an intermediate state of this build, not a
-hypothetical.
+**The 7-second undo toast** ([page.tsx:1263-1264](app/dashboard/[token]/page.tsx#L1263), pre-change):
+
+```ts
+if(action==='collected'){
+  showToast(`Order #${num} completed`,'success',
+            {duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
+}
+```
+
+Undo is triggered by tapping the toast's action, and it calls `doAction('undo_collected', orderKey)` —
+a normal server round-trip, not a local rollback. (Offline has a separate path: `removePendingStatusOp`
+deletes the queued op instead.)
+
+### D3 — Can `getOrderBalance` be used client-side?
+
+**The function itself: yes, after a one-word change.** It is pure and has no I/O. But
+`lib/payments/ledger.ts` opened with `import { SupabaseClient } from '@supabase/supabase-js'` — a
+*value* import used only as a type, which would pull the client into the browser bundle. Changed to
+`import type`. ([ledger.ts:47](lib/payments/ledger.ts#L47))
+
+**The data: no — and this was the real finding.** `/api/dashboard` selects
+`from('orders').select('*')` ([route.ts:126-139](app/api/dashboard/route.ts#L126)), so the dashboard
+receives the **derived caches** (`payment_status`, `amount_paid`, `total_minor`) but **not a single
+`order_payments` row**. Grep for `order_payments` in that route returned nothing.
+
+So the card had two options, and I rejected the tempting one:
+
+- ❌ Recompute from `amount_paid`/`total_minor` in the component. That is a *second derivation of
+  payment state*, which is precisely what `lib/payments/ledger.ts` exists to prevent — and it would
+  drift the moment the branch ordering changed (the `refunded`-vs-`unpaid` trap).
+- ✅ **Ship the rows.** The dashboard GET now fetches `order_payments` for the visible orders in one
+  extra query and returns them grouped as `payments: { [order_key]: rows[] }`
+  ([route.ts:147-172](app/api/dashboard/route.ts#L147)). The card then calls the **real**
+  `getOrderBalance(order, rows)`.
+
+No second client fetch, one derivation, and the card can never disagree with `orders.payment_status`.
+The query failure path is non-blocking and logs — the dashboard must render.
+
+### D4 — The Settings tab boolean pattern
+
+`auto_accept` is the template, and I matched it in all three layers.
+
+**Server** ([action/route.ts](app/api/dashboard/action/route.ts)):
+```ts
+if (action === 'set_auto_accept') {
+  const { value } = body
+  await supabase.from('trucks').update({ auto_accept: !!value }).eq('id', truck.id)
+  return NextResponse.json({ success: true })
+}
+```
+
+**Client saver** ([page.tsx:1011-1022](app/dashboard/[token]/page.tsx#L1011)): `setSaving…(true)` →
+`fetch('/api/dashboard/action', { action:'set_auto_accept', value })` → set local state → `showToast` →
+`finally setSaving…(false)`.
+
+**Render** ([page.tsx:2642-2666](app/dashboard/[token]/page.tsx#L2642)): a
+`bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100` card, a
+title + `text-slate-500 text-xs` description, a `Saving…` pulse, and `<Toggle>`; the dependent
+sub-option is `pt-3 pl-4` and conditionally rendered. **I copied this exactly**, including the
+`${showPaidStep?'pb-3':''}` conditional padding and the `pl-4` child indent.
+
+### D5 — Does `show_paid_step` already exist?
+
+**No.** `grep -rn "show_paid_step|paid_step|default_walkup_payment|walkup_payment"` across `app`, `lib`,
+`components` and `supabase/migrations` returns **zero matches**. Neither column exists and nothing
+resembling them exists. Both are created by this pass's migration.
 
 ---
 
-## 2. Exactly what each of the six caller types resolves to now
+## THE NOTES / BUTTON SPACING FINDING
 
-`verifyToken(token, pin)` still runs first and unchanged for all six; the table below is what the **audit
-row** now records.
+**You were right to ask, and window/KDS mode was worse than solo.**
 
-| Caller | `actor_kind` | `actor_id` | `actor_label` | `source` |
+- The notes block was `bg-slate-50 … px-3 py-2 mx-3 mb-2` — **8px** below it
+  ([OrderCard.tsx:629](components/dashboard/OrderCard.tsx#L629)).
+- The action area is `flex flex-col gap-2 mt-auto`
+  ([:655](components/dashboard/OrderCard.tsx#L655)).
+- **In solo mode** a ghost Edit/Cancel row sits between them
+  ([:656](components/dashboard/OrderCard.tsx#L656)) — roughly 34px of button plus an 8px gap, acting as
+  an accidental buffer.
+- **In window/KDS mode that row is not rendered at all** — it is `viewMode === 'solo'`-gated. So the
+  note sat **8px** above the completion button, with nothing between them, **in the densest layout on
+  the smallest column**. That is the Square complaint's exact geometry.
+
+**What I changed:** the notes block's bottom margin is now `mb-2` in solo (unchanged) and **`mb-3`
+(12px) in window/KDS**, with a comment recording that the spacing is a safety property and must not be
+reduced. A 4px change is modest — I did not want to alter card density unilaterally — so **flagging it
+for your call: I would go further (16px, or reinstating a spacer row in window mode) if you want it.**
+
+**The split button also reduces the consequence independently:** with `show_paid_step` on, the first tap
+on an unpaid order now hits **"Mark paid"**, which does not move the order out of the queue and is
+reversible from its own toast. A mis-reach that used to complete an order now, at worst, marks it paid.
+
+---
+
+## EXACT BUTTON COPY IN EVERY STATE
+
+**Order card completion button** (`completionBtn()`,
+[OrderCard.tsx:166-190](components/dashboard/OrderCard.tsx#L166)) — all ten rows harness-asserted:
+
+| `show_paid_step` | Payment state | Label | Colour | Action fired |
 |---|---|---|---|---|
-| **(a) dashboard token only** | `token` | null | null | `web` |
-| **(b) logged-in owner cookie** | `owner` | `auth.users.id` | operator `name \|\| email` | `web` |
-| **(c) logged-in staff** | `staff` | `auth.users.id` | truck_user `name \|\| email` | `web` |
-| **(d) native Bearer** | `owner` or `staff` (same cascade) | `auth.users.id` | as above | `native` |
-| **(e) KDS per-van token** | `token` | null | null | `web` |
-| **(f) offline replay** | whatever the replaying device resolves to at **drain** time | ditto | ditto | `offline_replay` |
-| *(auth lookup itself fails)* | `unknown` | null | null | as detected |
+| **off** | any | `Mark paid & done` | dark | `collected` |
+| on | unpaid | `Mark paid` | teal | `mark_paid` |
+| on | part paid | `Mark £5.50 paid` *(the outstanding balance)* | teal | `mark_paid` |
+| on | paid / refunded | `Done` | dark | `collected` |
 
-Every row was previously identical and anonymous; (b), (c) and (d) are newly attributable.
+Disabled cooking-gate placeholders use the same labels with no action.
 
-**Notes, all of them limitations rather than wins:**
+**The chip beside the price** (both the solo header and the window two-row header):
 
-- **(e) is unchanged and cannot be improved by this work.** `app/kds/[kds_token]/page.tsx:32` exchanges
-  the van token for the truck-wide `dashboard_token` and redirects, so by the time an action is posted
-  the van scope is gone. A KDS on a shared tablet still records `token`.
-- **(f) records who was logged in on the device *at replay time*, not who tapped the button.** And
-  `created_at` is the replay time — `client_ts` exists on the op envelope but is "display only — NEVER
-  used for reconciliation" (`outbox.ts:62`) and is never transmitted. The `source` value exists precisely
-  so a reader can tell the timestamp is not the action time.
-- **`manager` collapses to `staff`.** `actor_kind`'s vocabulary is the four values you specified; the
-  precise role survives in the GET response's `userRole` but is **not persisted** to the log. A manager
-  and a staff member are indistinguishable in the audit trail today.
-- **`token` vs `unknown` is the honesty split** you asked for, modelled on
-  `allergen_audit_log.auth_method`: `token` = resolution ran cleanly and there was no session (a shared
-  token acted — a fact); `unknown` = resolution itself failed (we don't know). Both carry a null
-  `actor_id`, so `actor_kind` is the only thing separating them.
+| State | Chip |
+|---|---|
+| off, any | *(none)* |
+| on, unpaid | *(none — an unpaid order is the norm and needs no decoration)* |
+| on, paid | `PAID` (green) |
+| on, part paid | `£4.00 / £5.50 due` (amber) |
 
----
+**Add Order confirm bar** ([AddOrderPanel.tsx:1066-1097](components/dashboard/AddOrderPanel.tsx#L1066)):
 
-## 3. Confirmation: attribution cannot refuse an action
-
-**Confirmed, and verified mechanically rather than by inspection alone.**
-
-- `verifyToken` at [action/route.ts:139-140](app/api/dashboard/action/route.ts#L139) is still the only
-  gate, unchanged, and still the only refusal before the action branches.
-- `grep -cE "throw|NextResponse|status: *[0-9]" lib/audit/actor.ts` → **2 hits, both inside comments**
-  (lines 27 and 46). There is no code path in the module that constructs a response or a status.
-- `grep -c "foreignOperator" app/api/dashboard/action/route.ts` → **1 hit, in a comment** (line 152)
-  explaining that it is deliberately ignored. It is never read as a value in that file.
-- The action route calls **`resolveActorSafe`**, whose every failure path returns `UNKNOWN`.
-
-So: absent cookie, malformed Bearer, Supabase auth outage, foreign-operator session — **every one of
-these proceeds**, and the action completes exactly as it would have before this change. The only
-observable difference is which values land in the log.
-
----
-
-## 4. The audit rows written for collect → undo → re-collect
-
-Walking your exact fraud sequence. Assume order `a1b2…` on `pizzeria-gusto`, £9.50, an owner logged in on
-the web, `total_minor` 950.
-
-**1 — collect.** Ledger row inserted (`collect:a1b2…`, 950). Audit row appended:
-
-```
-action        = 'collected'
-truck_id      = 'pizzeria-gusto'
-order_key     = 'a1b2…'
-amount_minor  = 950
-before_state  = { "status": "confirmed", "paid_at": null, "collected_at": null }
-after_state   = { "status": "collected", "paid_at": "…T18:31:02Z", "collected_at": "…T18:31:02Z",
-                  "charged_minor": 950, "ledger_failed": false }
-actor_kind    = 'owner'   actor_id = '9f3c…'   actor_label = 'Dominic Bonini'
-source        = 'web'     created_at = …T18:31:02Z
-```
-
-**2 — undo.** Audit row appended **first**; only then is the ledger row deleted:
-
-```
-action        = 'undo_collected'
-amount_minor  = 950
-before_state  = { "status": "collected",
-                  "ledger_row": { "id": "7c1e…", "kind": "charge", "channel": "in_person_other",
-                                  "amount_minor": 950, "currency": "GBP", "state": "succeeded",
-                                  "external_ref": null, "note": "Mark paid & done — taken at the hatch",
-                                  "idempotency_key": "collect:a1b2…", "created_at": "…T18:31:02Z",
-                                  "created_by": "9f3c…" } }
-after_state   = { "ledger_row": null, "ledger_row_deleted": true, "status": "ready" }
-actor_kind    = 'owner'   actor_id = '9f3c…'   actor_label = 'Dominic Bonini'
-source        = 'web'     created_at = …T18:31:09Z
-```
-
-The deleted row is captured **in full** — every column including `idempotency_key`, `created_at` and
-`created_by` — so the deletion is reconstructable from the log alone.
-
-**3 — re-collect.** New ledger row (the key was freed by the delete, as designed). Third audit row,
-identical in shape to #1 with a later `created_at`.
-
-**Net: three permanent rows for a sequence that previously left nothing.** The ledger still shows exactly
-one charge — correct, because one charge is what is owed — while the log shows the full history and who
-did each step. That is the ledger/audit split working as intended.
-
----
-
-## 5. The undo rule, adjusted — and the two opposite failure postures
-
-`undo_collected` still **DELETES**; that ruling stands untouched. What changed is ordering and posture.
-
-`reverseCollectionPayment` gained an optional `beforeDelete(row)` callback
-([ledger.ts:289-312](lib/payments/ledger.ts#L289)), awaited immediately before the delete and
-**deliberately not wrapped in try/catch** — a throw aborts the delete, leaves the ledger row intact, and
-propagates. The route passes `logActionOrThrow` there. Its `select` was widened to read every column
-(`currency`, `note`, `idempotency_key`, `created_at`, `created_by`) so `before_state` is complete.
-
-| Branch | Posture | Helper | Reasoning (recorded in a comment at each branch) |
+| State | Above the button | Primary button | Secondary text action |
 |---|---|---|---|
-| `collected` | **Fails OPEN** | `logAction` (swallows) | Nothing is destroyed — ledger and order rows both persist, so a lost audit row is a gap, not an erasure. Blocking a hatch mid-service is worse. |
-| `undo_collected` | **Fails CLOSED** | `logActionOrThrow` | It DELETES a payment row. An erased payment record with no log of the erasure is precisely the fraud vector this table exists to prevent. Losing an undo is recoverable; losing the evidence of one is not. |
+| off | — | `Confirm order · £9.50` | — |
+| on, taking payment | — | `Confirm and take £9.50` | `Pay at collection instead` |
+| on, paying later | `Paying at collection` | `Confirm order` | `Take payment now instead` |
 
-The `'refunded'` and `'none'` undo paths destroy nothing, so they log **after** the fact, best-effort
-([action/route.ts:452-460](app/api/dashboard/action/route.ts#L452)) — added so that *every* undo appears
-in the trail, not only the deleting one.
+🔴 **No modal, no popup, no confirmation dialog** — the payment decision is a *state of the confirm
+bar*, per §10's fast-tap rule. The secondary action is a quiet underlined text button, deliberately
+lower-contrast than the primary.
 
-`order_payments.created_by` is now populated from `actor.actorId` on both the collect and the reversal
-paths. It remains null for `token`/`unknown` actors — correctly, since there is no user to name.
+⚠️ **The per-order flip never persists.** `setTakePaymentNow(truckDefaultTakeNow)` is called in
+`resetManual()` ([:658](components/dashboard/AddOrderPanel.tsx#L658)), so the next order returns to the
+truck default. A `useEffect` also re-syncs it if the truck default changes — but only while the sheet is
+**closed**, so the control is never yanked out from under an operator mid-order.
 
 ---
 
-## 6. Files and lines changed
+## UNDO — TWO STAGES, TWO TOASTS
+
+Each action carries its **own** toast that reverses **only that stage**, so a fast double tap is never
+ambiguous: whichever toast is on screen belongs to the tap you just made.
+
+| Tap | Toast | Undo label | Undo calls | Result toast |
+|---|---|---|---|---|
+| `mark_paid` | `Order #12 marked paid` (7s) | `↩ Undo` | `undo_mark_paid` | **`Undone — payment removed`** |
+| `collected` (split on) | `Order #12 done` (7s) | `↩ Undo` | `undo_collected` | **`Undone — order not collected`** |
+| `collected` (split off) | `Order #12 completed` (7s) | `↩ Undo` | `undo_collected` | *(unchanged)* |
+
+**The server enforces the same one-stage rule**
+([action/route.ts](app/api/dashboard/action/route.ts), `undo_collected`): a new `splitPaidStep` branch
+means that when `show_paid_step` is **on**, undoing "Done" reverts the **status only** and leaves the
+payment standing — the payment has its own undo. When **off**, it reverses both, exactly as phase 1a
+did. Without this the toast would say one thing and the server would do another.
+
+`undo_mark_paid` follows the existing rule verbatim: **audit FIRST** via `logActionOrThrow` passed as
+`beforeDelete`, so a failed audit write aborts the delete and refuses the undo (**fails closed**); the
+row is **deleted** rather than compensated because it is a mis-tap where no real money moved.
+
+---
+
+## FILES AND LINES CHANGED
 
 | File | Change |
 |---|---|
-| **`lib/audit/actor.ts`** *(new, 150 lines)* | `resolveActor` (may throw — GET), `resolveActorSafe` (never throws — action), `resolveActorSource`, the `ActorKind`/`ActorSource` types and the `token`/`unknown` doctrine |
-| **`lib/audit/actionAudit.ts`** *(new, 84 lines)* | `logAction` (best-effort) and `logActionOrThrow` (strict); the `AuditEntry` shape, designed so `cancel`/`reject`/`edit`/stock need no signature change |
-| [app/api/dashboard/route.ts:7](app/api/dashboard/route.ts#L7), [:54-64](app/api/dashboard/route.ts#L54) | **+13/−56** — 55 inline lines replaced by the shared call; the 403 preserved via `foreignOperator` |
-| [app/api/dashboard/action/route.ts:21-22](app/api/dashboard/action/route.ts#L21) | imports |
-| [action/route.ts:142-157](app/api/dashboard/action/route.ts#L142) | actor + source resolution, with the "logging never authorises" rule in comment |
-| [action/route.ts:348-370](app/api/dashboard/action/route.ts#L348) | `collected` — `createdBy` passed; audit row appended after (fail-open) |
-| [action/route.ts:412-460](app/api/dashboard/action/route.ts#L412) | `undo_collected` — audit **before** delete via `beforeDelete`, fail-closed; non-deleting paths logged after |
-| [lib/payments/ledger.ts:78-87](lib/payments/ledger.ts#L78) | new `DeletedCollectRow` type (full stored shape) |
-| [lib/payments/ledger.ts:289-312](lib/payments/ledger.ts#L289) | `beforeDelete` hook; widened `select`; **the delete rule itself is unchanged** |
-| **`supabase/migrations/20260729_action_audit_log.sql`** *(new)* | see §7 |
+| **`supabase/migrations/20260729_trucks_paid_step_settings.sql`** *(new)* | see below |
+| [lib/payments/ledger.ts:44-48](lib/payments/ledger.ts#L44) | `import` → **`import type`** for `SupabaseClient`, so `getOrderBalance` is client-importable |
+| [components/dashboard/types.ts:103-106](components/dashboard/types.ts#L103) | `show_paid_step?`, `default_walkup_payment?` on `TruckData` |
+| [app/api/dashboard/route.ts:124](app/api/dashboard/route.ts#L124), [:147-172](app/api/dashboard/route.ts#L147), [:509](app/api/dashboard/route.ts#L509) | `payments` map: one extra query, grouped by `order_key`, returned in the payload |
+| [app/api/dashboard/action/route.ts](app/api/dashboard/action/route.ts) | `set_show_paid_step`, `set_default_walkup_payment`, **`mark_paid`** (fail-open), **`undo_mark_paid`** (fail-closed, audit-first); `undo_collected` gains the `splitPaidStep` branch; `manual` gains the paid-at-order block (fail-open) |
+| [components/dashboard/OrderCard.tsx:9](components/dashboard/OrderCard.tsx#L9), [:105-155](components/dashboard/OrderCard.tsx#L105), [:157-197](components/dashboard/OrderCard.tsx#L157) | `showPaidStep` + `ledgerRows` props; `getOrderBalance` derivation; `completionBtn()` / `completionBtnDisabled()` / `paidChip`; all 8 button sites routed through the helpers; chip at both price sites; notes `mb-3` in window mode |
+| [components/dashboard/AddOrderPanel.tsx:671-682](components/dashboard/AddOrderPanel.tsx#L671), [:658](components/dashboard/AddOrderPanel.tsx#L658), [:855](components/dashboard/AddOrderPanel.tsx#L855), [:1066-1097](components/dashboard/AddOrderPanel.tsx#L1066) | `takePaymentNow` state + reset; `paymentTaken` in `manualOrder`; the confirm-bar payment decision |
+| [app/dashboard/[token]/page.tsx](app/dashboard/[token]/page.tsx) | 5 state vars incl. `payments`; two savers; payload hydration; both `<OrderCard>` sites get `showPaidStep`/`ledgerRows`; the Settings card; the two-stage undo toasts |
 
-Diff totals: `action/route.ts` +70/−3, `dashboard/route.ts` +13/−56, `ledger.ts` +31/−3.
-**No other file touched.** No UI, no toast wiring, no PIN model, no `cancel`/`reject`/`edit`/stock
-wiring, no backfill, no outbox change, nothing Stripe.
+**No other file touched.** Out-of-scope confirmed absent: no KDS ticket payment display, no customer
+manage page, no `paymentWarning` toast wiring, nothing Stripe, no backfill, no refund-copy edits, no
+cash-vs-own-card channel split (every row is `in_person_other`).
 
 ---
 
-## 7. Migration
+## MIGRATION
 
-**`supabase/migrations/20260729_action_audit_log.sql` — ✅ ADDITIVE.**
-New table, nothing deployed reads or writes it; applying it changes nothing for the running app.
+**`supabase/migrations/20260729_trucks_paid_step_settings.sql` — ✅ ADDITIVE.**
 
-**RUN ORDER: apply BEFORE deploying.** Additive is not the same as order-free, and the consequence
-differs by branch — this is in the header:
+Two columns on `trucks`, both `NOT NULL` with defaults that encode today's behaviour
+(`show_paid_step = false`, `default_walkup_payment = 'at_order'`), plus a CHECK on the latter. Idempotent
+(`add column if not exists`; the constraint is dropped-then-added so re-running converges).
 
-- `collected` writes **best-effort** → a missing table logs to console and the collection still
-  completes. Degraded, not broken.
-- `undo_collected` writes **strictly** → a missing table throws, which aborts the ledger delete and
-  **refuses the undo with a 500**. Deploying the code first would break undo on a live path.
+**RUN ORDER: before deploying.** The Settings tab reads and writes both columns, and PostgREST rejects
+an update naming a column it cannot see (PGRST204), so deploying first would break the two new toggles.
+The reverse order is a no-op — the columns are defaulted and old code never reads them.
 
-Twelve columns exactly as specified, verified: `id`, `action`, `truck_id`, `order_key`, `amount_minor`,
-`before_state`, `after_state`, `actor_kind`, `actor_id`, `actor_label`, `source`, `created_at`.
-
-**🔴 NO FOREIGN KEYS — confirmed, and asserted by the verification block** (`fk_count` → expect 0).
-`truck_id`, `order_key` and `actor_id` are plain values. CHECKs on `actor_kind` and `source` only.
-`action` is deliberately free text: a CHECK would make every future caller a deploy-coupled migration,
-which is how an audit log quietly stops being written to.
-
-**RLS posture — it matches the house pattern, with one caveat I have to state.** The migration does
-`enable row level security` with **no policy** and the `-- service-role only, no anon policy` comment.
-⚠️ **That does not match `allergen_audit_log` itself, which enables no RLS at all** — the only
-application table in the repo in that state, and (per my earlier review) apparently an oversight rather
-than a decision. I matched its *siblings* (`order_payments`, `device_notification_prefs`,
-`booking_locks`, `whatsapp_logs`, `excluded_terms`), which is the stricter and, I believe, intended
-posture. Flagging rather than silently choosing.
-
-**Append-only is stated in the migration header and at the write helper**, as asked.
-⚠️ It is enforced **by convention only** — the service role bypasses RLS, so nothing at the database
-level prevents a `delete`. A dedicated insert-only role would be the real enforcement and is not built.
-Code-side: `grep` confirms the only `update|delete|upsert` mention of `action_audit_log` anywhere is the
-comment forbidding it.
+The verification block reads resulting **state**: `information_schema.columns` for types/defaults,
+`pg_constraint` for the CHECK, and a `group by` proving **every existing truck reads `f | at_order`** —
+i.e. that nothing changed for anyone.
 
 ---
 
-## 8. REPORT BUT DO NOT FIX — `order_payments` cascade
-
-**Current state.** [20260729_order_payments_ledger.sql:57,60](supabase/migrations/20260729_order_payments_ledger.sql#L57):
-
-```sql
-order_key uuid not null references orders(order_key) on delete cascade,
-truck_id  text not null references trucks(id)        on delete cascade,
-```
-
-Deleting an order, or a truck, silently destroys its entire payment history. `deleteTruckCascade`
-deletes `orders` first (`lib/delete-truck.ts:37`), so the order-level cascade fires on every truck
-teardown — including the **hourly** demo-cleanup cron.
-
-**What I would change it to.** Drop both `on delete cascade` and replace with **`on delete set null`**,
-keeping the columns nullable — or, matching `allergen_audit_log` and the new audit table, **drop the FKs
-entirely** and store plain values. My recommendation is **`set null` on `order_key`, and no FK on
-`truck_id`**: it keeps referential integrity where it is cheap (an order that exists is guaranteed to be
-the right one) while ensuring the money record outlives its subject. `truck_id` is the column you would
-aggregate fees by, and it must never go null.
-
-**What it would cost.**
-
-- **Migration:** one `alter table … drop constraint` + `add constraint` per FK, plus making `order_key`
-  nullable. **Additive-ish but not free** — dropping a NOT NULL is trivial, but the FK swap needs the
-  constraint names, which (as with `orders_payment_status_check`) are Postgres-assigned and asserted
-  nowhere in this repo, so it needs the same `DO`-loop-over-`pg_constraint` treatment.
-- **Code:** `lib/payments/ledger.ts` reads and groups by `order_key` throughout; a nullable `order_key`
-  means `recalcOrderPayment` and the reconciliation query need a null guard. **INFERRED** ~10-20 lines.
-- **Semantics:** the reconciliation query currently joins `orders` to `order_payments`; orphaned rows
-  would stop appearing in it, so it needs a companion "orphaned payments" query or they become invisible.
-- **The real cost is deciding what an orphaned payment row *means* for the 0.99% fee calculation** —
-  whether revenue from a deleted truck still counts. That is a §37 commercial question, not a schema one,
-  and it is the reason I would not change this without your ruling.
-
-**Interim mitigation, already in place:** the new `action_audit_log` row for every collect carries
-`truck_id`, `order_key` and `amount_minor` with **no FKs**, so even if a cascade wipes the ledger the
-*fact and amount* of each collection survives. It is not a full ledger, but it is not nothing.
-
----
-
-## 9. What I verified by reading vs by running
+## VERIFIED BY READING vs BY RUNNING
 
 **By RUNNING:**
-- `npx tsc --noEmit` → **exit 0, clean** (run after every edit, including the final safe/throw split).
-- **7/7 behavioural cases on `resolveActorSource`** (pure function, extracted byte-identically to a
-  scratchpad harness, run under Node 22 `--experimental-strip-types`): plain web; native UA marker;
-  `expected_from` → `offline_replay`; **replay wins over native UA**; missing UA header; non-array
-  `expected_from` ignored; empty array still counts as replay.
-- **16/16 ledger-derivation cases re-run** after the `ledger.ts` changes → still all pass, confirming
-  `beforeDelete` and the widened `select` did not disturb the rollup.
-- The greps quoted in §3 — `throw`/`NextResponse`/`status` in `actor.ts` (comments only),
-  `foreignOperator` in the action route (comment only), `update|delete|upsert` on `action_audit_log`
-  (comment only), migration column count (12) and FK count (0).
+- `npx tsc --noEmit` → **exit 0**, re-run after every edit.
+- **16/16 ledger-derivation cases** re-run after the `import type` change → all pass.
+- **10/10 button-state cases** on logic mirroring `completionBtn()`/`paidChip`: off+unpaid, off+paid,
+  off+chip-suppressed, on+unpaid, on+paid, on+part-paid label with the correct balance, on+chip states,
+  and two part charges settling to `Done`.
+- Greps confirming the gating counts in §Confirmation and that all 8 button sites route through the
+  shared helpers.
 
-**By READING only:** the extraction's fidelity to `dashboard/route.ts:55-109` (compared line by line via
-`git diff`); the `expected_from` replay marker (`orderGate.ts:135`); the native UA marker
-(`proxy.ts:164`); the `deleteTruckCascade` ordering; the `allergen_audit_log` RLS gap.
+**By READING only:** everything in D1-D5; the outbox's verbatim body handling; the `divide-y`/`Toggle`
+settings pattern; the notes/ghost-button geometry (measured from Tailwind classes, **not rendered**).
 
 ---
 
-## 10. What I could NOT verify
+## WHAT I COULD NOT VERIFY
 
-- **The migration has not been applied.** The table does not exist. Nothing in the SQL is verified
-  against a real database, and every `VERIFY AFTER APPLYING` query is written but unrun.
-- **No audit row has ever been written.** Every field value in §4 is derived from reading the code, not
-  observed. The `before_state` JSON shape in particular is my construction and has never round-tripped
-  through Postgres.
-- **`resolveActor` has never executed.** Its cookie path needs `next/headers`, its Bearer path needs a
-  real JWT, and neither runs outside a request. **The six-row table in §2 is reasoned from the code, not
-  measured** — I could not test even one caller type end to end. This is the largest untested surface in
-  this pass.
-- **The GET route refactor is unverified at runtime.** I preserved its error semantics deliberately, but
-  I have not loaded a dashboard. A regression here would affect every operator on every page load.
-- **The fail-closed undo has not been exercised** — I have not forced an audit-insert failure and
-  observed the delete being aborted. Verified by reading the control flow (`beforeDelete` awaited,
-  uncaught, before the `delete`), not by running it.
-- **Whether `actor_kind` will in practice be dominated by `'token'`** is unknown. If the counter tablet
-  runs without a logged-in session, attribution gains nothing in the real deployment — worth checking on
-  Gusto's device before assuming this pass solved the attribution problem.
-- **No `next dev` / `next build`** — per constraint. tsc-clean does not prove the routes bundle, and
-  `lib/audit/actor.ts` imports `next/headers` transitively, which is build-sensitive.
+- **The migration has not been applied**, so neither column exists. Every code path gated on
+  `show_paid_step` is currently unreachable in the running app, and the verification block is unrun.
+- **Nothing has been rendered.** No `next dev` per constraint — so the confirm bar's three-state layout,
+  the chip's fit beside the price in the 240px KDS column, and the notes spacing change are **unverified
+  visually**. The chip in the window header is my main visual concern: that row is already
+  `#12` + `£9.50` + `✓` and a `£4.00 / £5.50 due` chip is wide. `whitespace-nowrap` will keep it on one
+  line but it may push the layout.
+- **No action has been executed.** `mark_paid`, `undo_mark_paid`, the `splitPaidStep` undo branch and the
+  walk-up paid-at-order block have never run against Postgres.
+- **The two-stage undo has not been exercised**, including the fast-double-tap case the design targets.
+- ⚠️ **Offline behaviour of `mark_paid` is reasoned, not tested.** It routes through `gatedAction` with
+  `kind:'status'`; `OFFLINE_STATUS_MAP` has no `mark_paid` entry, so `offlineStatusPatch` returns null
+  and no optimistic status change occurs — correct, but it also means **an offline "Mark paid" shows no
+  optimistic paid state** until the drain. I did not change the offline path. Worth a decision before
+  Gusto enables this on a tablet that goes offline.
+- **`data.truck.show_paid_step` hydration assumes the dashboard payload includes the new columns** —
+  it does, because that route selects `trucks.select('*')`, but I confirmed that by reading, not by
+  observing a response.
 - **Nothing observed on a device**, and no real order placed on `test-truck`.

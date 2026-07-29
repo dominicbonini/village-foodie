@@ -6,6 +6,7 @@ import type { Order, TruckData, Slot, TruckEvent } from './types'
 import { STATUS } from './types'
 import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle, resolveCollectionTime, getOrderCookSecs, cookAmberLeadMins } from './helpers'
 import type { CatConfig } from '@/lib/prep-utils'
+import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -101,6 +102,8 @@ export function OrderCard({
   pendingSync = false,
   anchorId,
   highlight = false,
+  showPaidStep = false,
+  ledgerRows,
 }: {
   order: Order
   truck: TruckData | null
@@ -133,9 +136,63 @@ export function OrderCard({
    *  the demo dashboard once the scroll to this card has finished; false everywhere else, and false
    *  appends nothing to the class string. */
   highlight?: boolean
+  /** trucks.show_paid_step. FALSE (default) = today's behaviour exactly: one "Mark paid & done" button,
+   *  no chip, no split. Every paid-step affordance in this component is gated on it. */
+  showPaidStep?: boolean
+  /** This order's order_payments rows, supplied by /api/dashboard. Fed straight to getOrderBalance —
+   *  the card NEVER derives payment state itself. Undefined/empty ⇒ nothing paid. */
+  ledgerRows?: LedgerRow[]
 }) {
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
   const expanded = true
+
+  // ── PAYMENT STATE — DERIVED, NEVER RECOMPUTED HERE (V9.4) ───────────────────────────────────────
+  // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status
+  // can never disagree. Do not add arithmetic on amount_paid/total here: one derivation, one place.
+  const balance = getOrderBalance(order as any, ledgerRows ?? [])
+  const isPaid = balance.status === 'paid' || balance.status === 'refunded'
+  const isPartPaid = balance.status === 'part_paid'
+  const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
+
+  // ── THE COMPLETION BUTTON (V9.4) ────────────────────────────────────────────────────────────────
+  // ONE button that RELABELS by payment state — not a second button, and not a double-tap gesture.
+  // That matters for the fast-tap rule (§10): there is no timing window, no debounce and no delayed
+  // first action. Two quick taps do paid-then-done naturally because the second tap lands on a button
+  // that has already become "Done"; tapping once and stopping is a complete, valid action either way.
+  //   showPaidStep OFF → "Mark paid & done", firing 'collected' — byte-identical to today.
+  //   unpaid           → "Mark paid"            → 'mark_paid'  (order stays put in the queue)
+  //   part paid        → "Mark £X.XX paid"      → 'mark_paid'  (charges the outstanding balance only)
+  //   paid             → "Done"                 → 'collected'
+  const completionBtn = () => {
+    if (!showPaidStep) {
+      return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+    }
+    if (isPaid) {
+      return <Btn label="Done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+    }
+    return (
+      <Btn
+        label={isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+        colour="teal" loading={isLoading('mark_paid')}
+        onClick={() => onAction('mark_paid', order.order_key)}
+      />
+    )
+  }
+
+  // The money chip beside the price. Paid = a settled fact worth seeing at a glance; part paid states the
+  // outstanding balance because that is the number the operator has to ask for. Null when the truck has
+  // not opted in, or when nothing has been paid — an unpaid order is the norm and needs no decoration.
+  const paidChip = !showPaidStep ? null
+    : isPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
+    : isPartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
+    : null
+
+  /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
+  const completionBtnDisabled = () => (
+    <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">
+      {!showPaidStep ? 'Mark paid & done' : isPaid ? 'Done' : isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+    </button>
+  )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
   const [showContact, setShowContact] = useState(false)
 
@@ -313,10 +370,10 @@ export function OrderCard({
     if (viewMode === 'window') {
       if (!kdsMode) {
         if (['confirmed', 'modified'].includes(order.status)) {
-          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+          return completionBtn()
         }
         if (order.status === 'ready') {
-          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+          return completionBtn()
         }
       } else {
         // Cooking gate active
@@ -324,7 +381,7 @@ export function OrderCard({
           return (
             <>
               <span className="text-xs font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-500">⏳ Waiting</span>
-              <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
+              {completionBtnDisabled()}
             </>
           )
         }
@@ -332,12 +389,12 @@ export function OrderCard({
           return (
             <>
               <span className="text-xs font-bold px-2 py-1 rounded-full bg-amber-100 text-amber-700">🔥 Cooking…</span>
-              <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">Mark paid & done</button>
+              {completionBtnDisabled()}
             </>
           )
         }
         if (order.status === 'ready') {
-          return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+          return completionBtn()
         }
       }
     }
@@ -351,10 +408,10 @@ export function OrderCard({
     if (['confirmed', 'modified'].includes(order.status)) {
       return readyStepEnabled
         ? <Btn label={`${truck?.truck_emoji || "🍕"} Ready`} colour="green" loading={isLoading('ready')} onClick={() => onAction('ready', order.order_key)} />
-        : <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+        : completionBtn()
     }
     if (order.status === 'ready') {
-      return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+      return completionBtn()
     }
     if (order.status === 'collected') {
       return <Btn label="↩ Undo" colour="slate" loading={isLoading('undo_collected')} onClick={() => onAction('undo_collected', order.order_key)} />
@@ -440,6 +497,7 @@ export function OrderCard({
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${s.bg} ${s.text}`}>{s.label}</span>
                 )}
                 <span className="font-bold text-sm flex-shrink-0">£{Number(order.total).toFixed(2)}</span>
+                {paidChip}
               </div>
             </>
           ) : (
@@ -452,6 +510,7 @@ export function OrderCard({
                 <span className="text-3xl font-bold">#{order.id}</span>
                 <div className="flex items-baseline gap-1.5 flex-shrink-0">
                   <span className="font-bold text-base">£{Number(order.total).toFixed(2)}</span>
+                  {paidChip}
                   {allStruck && <span className="font-black text-xs opacity-70">✓</span>}
                 </div>
               </div>
@@ -624,9 +683,15 @@ export function OrderCard({
             </div>
           )}
 
-          {/* Order notes */}
+          {/* Order notes.
+              ⚠️ SPACING IS A SAFETY PROPERTY HERE, not a cosmetic one. A Square KDS complaint on record
+              is operators accidentally COMPLETING an order while reaching in to read a note. In SOLO the
+              ghost Edit/Cancel row sits between this block and the primary button and acts as a buffer —
+              but in WINDOW/KDS mode those ghost buttons are not rendered (they are solo-gated), so the
+              note sat mb-2 (8px) above "Mark paid & done" in the DENSEST layout, with nothing between
+              them. Raised to mb-3 (12px) in window mode only; solo is untouched. Do not reduce it. */}
           {order.notes && (
-            <div className="bg-slate-50 border border-slate-200 text-slate-700 px-3 py-2 mx-3 mb-2 rounded-md flex items-start gap-2 text-sm">
+            <div className={`bg-slate-50 border border-slate-200 text-slate-700 px-3 py-2 mx-3 rounded-md flex items-start gap-2 text-sm ${viewMode === 'solo' ? 'mb-2' : 'mb-3'}`}>
               <span className="flex-shrink-0 mt-0.5">📝</span>
               <span>{order.notes}</span>
             </div>

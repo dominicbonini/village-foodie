@@ -424,8 +424,25 @@ export async function POST(req: NextRequest) {
       // before_state carries the FULL contents of the row about to be destroyed (amount, channel,
       // idempotency_key, created_at, created_by, note, currency, state, external_ref, id) so the deletion
       // is fully reconstructable from the log alone.
+      // ── TWO-STAGE UNDO (V9.4) — WHETHER THIS ALSO REVERSES THE PAYMENT DEPENDS ON THE PAID STEP ────
+      // show_paid_step OFF (default, and today's behaviour): "Mark paid & done" is ONE action, so its
+      //   undo must reverse BOTH halves — status and payment. Unchanged from phase 1a.
+      // show_paid_step ON: paying and completing are two separate taps with two separate toasts, so an
+      //   undo must reverse exactly ONE stage. Undoing "Done" reverts the STATUS ONLY and leaves the
+      //   payment standing; the payment has its own undo (undo_mark_paid) on its own toast. Reversing
+      //   both here would silently undo a tap the operator did not just make.
+      const splitPaidStep = truck.show_paid_step === true
       let reversal: 'deleted' | 'refunded' | 'none' = 'none'
       try {
+        if (splitPaidStep) {
+          // Status-only revert. Nothing is destroyed, so there is nothing to capture before the fact.
+          await logAction(supabase, {
+            action: 'undo_collected', truckId: truck.id, orderKey, amountMinor: null,
+            beforeState: { status: 'collected' },
+            afterState: { status: revertTo, reversal: 'status_only', payment_left_intact: true },
+            actor, source: actorSource,
+          })
+        } else {
         const res = await reverseCollectionPayment(supabase, {
           orderKey, truckId: truck.id, createdBy: actor.actorId,
           beforeDelete: async (deletedRow) => {
@@ -439,14 +456,16 @@ export async function POST(req: NextRequest) {
           },
         })
         reversal = res.reversal
+        }
       } catch (err) {
         console.error(`[undo_collected] REFUSED for order_key=${orderKey} truck_id=${truck.id} — ledger reversal or its audit write failed; the payment row was NOT deleted and the order was NOT reverted:`, err)
         return NextResponse.json({ error: err instanceof Error ? err.message : 'Payment could not be reversed' }, { status: 500 })
       }
-      // The 'deleted' path already logged inside beforeDelete (it HAD to, before the row vanished). The
-      // other two destroy nothing — 'refunded' appends a compensating row, 'none' found nothing to
-      // reverse — so they log here, best-effort, purely so that EVERY undo appears in the trail.
-      if (reversal !== 'deleted') {
+      // The 'deleted' path already logged inside beforeDelete (it HAD to, before the row vanished), and
+      // the split-paid-step path logged its status-only revert above. The other two destroy nothing —
+      // 'refunded' appends a compensating row, 'none' found nothing to reverse — so they log here,
+      // best-effort, purely so that EVERY undo appears in the trail.
+      if (!splitPaidStep && reversal !== 'deleted') {
         await logAction(supabase, {
           action: 'undo_collected', truckId: truck.id, orderKey, amountMinor: null,
           beforeState: { status: 'collected' },
@@ -1128,7 +1147,34 @@ export async function POST(req: NextRequest) {
         })
       }
 
-      return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: true })
+      // ── WALK-UP PAID AT ORDER (V9.4) ────────────────────────────────────────────────────────────
+      // The operator took the money as part of placing the order (the confirm bar's "Confirm and take
+      // £X.XX"). Books the same ledger row a later "Mark paid" would, under the same
+      // `collect:{order_key}` key — the money event is identical, only the moment differs.
+      // ⚠️ FAILS OPEN, matching `collected` and `mark_paid`: the order is ALREADY CREATED above and must
+      // stay created. An accounting failure must never undo or block order entry at the hatch — the
+      // warning rides back on the success response and the reconciliation query surfaces the gap.
+      // Only runs when the truck has opted into the paid step AND this order was marked paid; otherwise
+      // this whole block is inert and walk-up creation is byte-identical to before.
+      let manualPaymentWarning: string | null = null
+      if (truck.show_paid_step === true && manualOrder?.paymentTaken === true && manualOrderKey) {
+        let chargedMinor = 0
+        try {
+          const res = await recordCollectionPayment(supabase, { orderKey: manualOrderKey, truckId: truck.id, createdBy: actor.actorId })
+          chargedMinor = res.chargedMinor
+        } catch (err) {
+          console.error(`[manual] LEDGER WRITE FAILED for order_key=${manualOrderKey} truck_id=${truck.id} — the ORDER WAS STILL CREATED (fail-open). Re-run recalcOrderPayment to repair:`, err)
+          manualPaymentWarning = 'Order created, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.'
+        }
+        await logAction(supabase, {
+          action: 'manual_paid_at_order', truckId: truck.id, orderKey: manualOrderKey, amountMinor: chargedMinor,
+          beforeState: { payment: 'none', order: 'created' },
+          afterState: { charged_minor: chargedMinor, ledger_failed: manualPaymentWarning !== null },
+          actor, source: actorSource,
+        })
+      }
+
+      return NextResponse.json({ success: true, orderId: newOrderId, autoConfirmed: true, ...(manualPaymentWarning ? { paymentWarning: manualPaymentWarning } : {}) })
     }
 
     // ── GET STOCK ─────────────────────────────────────────────────────────────
@@ -1405,6 +1451,81 @@ export async function POST(req: NextRequest) {
     //  trucks.keep_screen_on is dormant, to be dropped with the interface field in a cleanup pass.)
 
     // ── set_auto_accept ──────────────────────────────────────────────────────
+    // ── PAID STEP SETTINGS (V9.4) ─────────────────────────────────────────────
+    // show_paid_step=false is today's behaviour EXACTLY and is the default; nothing in the operator
+    // surface changes until a truck opts in. default_walkup_payment only seeds the Add Order confirm
+    // bar — it is a UI default, never a payment record.
+    if (action === 'set_show_paid_step') {
+      const { value } = body
+      const { error } = await supabase.from('trucks').update({ show_paid_step: !!value }).eq('id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true })
+    }
+
+    if (action === 'set_default_walkup_payment') {
+      const { value } = body
+      // Mirrors the DB CHECK. Rejected here too so a bad value fails as a 400 rather than a 23514.
+      if (value !== 'at_order' && value !== 'at_collection') {
+        return NextResponse.json({ error: 'Invalid payment default' }, { status: 400 })
+      }
+      const { error } = await supabase.from('trucks').update({ default_walkup_payment: value }).eq('id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true })
+    }
+
+    // ── MARK PAID (V9.4) — the FIRST half of the split "Mark paid & done" ─────
+    // Takes the full OUTSTANDING balance and does NOT touch order status: the order stays exactly where
+    // it is in the queue. Reuses recordCollectionPayment, so it books the same ledger row under the same
+    // `collect:{order_key}` key that a one-tap completion would — the money event is identical, only the
+    // moment differs. Re-firing is therefore a safe no-op (balance already zero).
+    // Fails OPEN, like `collected`: the operator has the cash in hand, so an accounting failure must not
+    // strand the order. The warning rides back on the success response.
+    if (action === 'mark_paid') {
+      let paymentWarning: string | null = null
+      let charged = 0
+      try {
+        const res = await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
+        charged = res.chargedMinor
+      } catch (err) {
+        console.error(`[mark_paid] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order was NOT marked paid in the ledger (fail-open; status untouched). Re-run recalcOrderPayment to repair:`, err)
+        paymentWarning = 'Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.'
+      }
+      await logAction(supabase, {
+        action: 'mark_paid', truckId: truck.id, orderKey, amountMinor: charged,
+        beforeState: { payment: 'outstanding' },
+        afterState: { charged_minor: charged, ledger_failed: paymentWarning !== null },
+        actor, source: actorSource,
+      })
+      return NextResponse.json({ success: true, chargedMinor: charged, ...(paymentWarning ? { paymentWarning } : {}) })
+    }
+
+    // ── UNDO MARK PAID (V9.4) — the payment half of the two-stage undo ────────
+    // Same rule as undo_collected's reversal and for the same reason: this is a mis-tap seconds old, no
+    // real money moved, so the row is DELETED rather than compensated (a refund row for a payment that
+    // never happened would corrupt the §37 fee figures). Audit FIRST — if the audit write fails the
+    // delete is aborted and the undo refused. FAILS CLOSED, deliberately: erasing a payment record with
+    // no log of the erasure is the exact state action_audit_log exists to prevent.
+    if (action === 'undo_mark_paid') {
+      try {
+        await reverseCollectionPayment(supabase, {
+          orderKey, truckId: truck.id, createdBy: actor.actorId,
+          beforeDelete: async (deletedRow) => {
+            await logActionOrThrow(supabase, {
+              action: 'undo_mark_paid', truckId: truck.id, orderKey,
+              amountMinor: deletedRow.amount_minor,
+              beforeState: { ledger_row: deletedRow },
+              afterState: { ledger_row: null, ledger_row_deleted: true },
+              actor, source: actorSource,
+            })
+          },
+        })
+      } catch (err) {
+        console.error(`[undo_mark_paid] REFUSED for order_key=${orderKey} truck_id=${truck.id} — the payment row was NOT deleted:`, err)
+        return NextResponse.json({ error: err instanceof Error ? err.message : 'Payment could not be reversed' }, { status: 500 })
+      }
+      return NextResponse.json({ success: true })
+    }
+
     if (action === 'set_auto_accept') {
       const { value } = body
       await supabase.from('trucks').update({ auto_accept: !!value }).eq('id', truck.id)
