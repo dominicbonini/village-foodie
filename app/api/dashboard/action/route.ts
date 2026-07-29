@@ -17,6 +17,7 @@ import {
 } from '@/lib/slot-bookings'
 import { nextOrderId } from '@/lib/order-utils'
 import { loadPriceBook, repriceOrder, toMinor } from '@/lib/order-repricing'
+import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
 import type { DiscountCode } from '@/lib/order-calculations'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
@@ -324,7 +325,40 @@ export async function POST(req: NextRequest) {
       // ready, confirmed/modified if collected directly) — never a hardcoded 'confirmed'. Guard against
       // re-firing on an already-collected order: don't overwrite a real prior status with 'collected'.
       const fromStatus = order?.status && order.status !== 'collected' ? order.status : null
-      await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now, ...(fromStatus ? { status_before_collected: fromStatus } : {}) }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // ── PAYMENT FIRST, FULFILMENT SECOND — AND FAIL OPEN (V9.4) ────────────────────────────────────
+      // The ledger row is booked BEFORE the status write so a failure cannot pass unnoticed. But it must
+      // NOT block the collection: SURFACING a failure is not the same as REFUSING the action. The
+      // operator is at the hatch with cash already in hand — refused mid-service they cannot clear the
+      // order from the board, the queue backs up and customers wait. What failed is an ACCOUNTING write
+      // for money that has ALREADY physically moved.
+      // So the failure is surfaced three ways instead of one: the order is still collected, a
+      // paymentWarning rides back on the success response (the slotWarning shape, :546 — same reasoning,
+      // the operator's action is never rolled back over a secondary write), and the server log carries
+      // the order_key so the reconciliation query in lib/payments/ledger.ts has something to correlate
+      // against. Recovery is re-running recalcOrderPayment for that order: the ledger is the truth, it is
+      // repairable, and an order collected-with-no-payment-record is a detectable, fixable state. An
+      // operator stuck at the hatch is neither.
+      // ⚠️ EXPIRY CONDITION — REVISIT WHEN THIS STOPS BEING TRUE. Fail-open is correct only while the
+      // ledger is PASSIVE: today it drives no UI, no platform fee and no Stripe reconciliation, so a
+      // missing row costs nothing until it is repaired. Once it drives the 0.99% fee or Stripe
+      // settlement (§37), a missing row IS A MISSING FEE — money silently not charged — and this branch
+      // must be reconsidered deliberately, not inherited.
+      let paymentWarning: string | null = null
+      try {
+        await recordCollectionPayment(supabase, { orderKey, truckId: truck.id })
+      } catch (err) {
+        console.error(`[collected] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order WAS still marked collected (fail-open). Re-run recalcOrderPayment for this order_key to repair; the reconciliation query in lib/payments/ledger.ts will list it until then:`, err)
+        paymentWarning = 'Order completed, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.'
+      }
+      const { error: collectErr } = await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now, ...(fromStatus ? { status_before_collected: fromStatus } : {}) }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      if (collectErr) {
+        // Still fail-CLOSED, and correctly so: this is the FULFILMENT write, not the accounting one. If
+        // it fails the order genuinely is not collected, so there is nothing to fail open about — the
+        // operator must see that the action did not take. (A ledger row may or may not have been booked
+        // above; the reconciliation query surfaces the orphan and a retry is idempotent on its key.)
+        console.error(`[collected] status update FAILED for order_key=${orderKey} — order is NOT collected:`, collectErr)
+        return NextResponse.json({ error: collectErr.message }, { status: 500 })
+      }
       // Free kitchen usage on collect by REBUILDING the date's production_slot_usage from the live
       // orders (deterministic), not an incremental subtract. The order is now 'collected' so the
       // rebuild (buildUnitsFromOrders filters pending/confirmed/modified) excludes it → its capacity
@@ -334,7 +368,7 @@ export async function POST(req: NextRequest) {
       if (order?.event_date) {
         await rebuildProductionSlotUsage(supabase, truck.id, order.event_date)
       }
-      return NextResponse.json({ success: true, status: 'collected' })
+      return NextResponse.json({ success: true, status: 'collected', ...(paymentWarning ? { paymentWarning } : {}) })
     }
 
     // ── UNDO COLLECTED ────────────────────────────────────────────────────────
@@ -344,7 +378,25 @@ export async function POST(req: NextRequest) {
       // was ready, 'confirmed'/'modified' if collected directly. Fallback 'confirmed' for legacy rows with
       // no recorded from-status (pre-migration) — the old behaviour, but only as a fallback now.
       const revertTo = order?.status_before_collected || 'confirmed'
-      await supabase.from('orders').update({ status: revertTo, status_before_collected: null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      // ── REVERSE THE PAYMENT, THEN THE FULFILMENT STATE (V9.4) ──────────────────────────────────────
+      // Mirrors 'collected': ledger first so a failure leaves the order collected-and-paid (a coherent
+      // state the operator can retry) rather than reverted-but-still-paid. Errors SURFACE.
+      try {
+        await reverseCollectionPayment(supabase, { orderKey, truckId: truck.id })
+      } catch (err) {
+        console.error('[undo_collected] ledger reversal failed — order NOT reverted:', err)
+        return NextResponse.json({ error: err instanceof Error ? err.message : 'Payment could not be reversed' }, { status: 500 })
+      }
+      // paid_at AND collected_at are BOTH cleared (V9.4). Previously neither was: an order reverted to
+      // confirmed/ready kept both timestamps, so the operator-cancel path (:254) and the event-cancel
+      // path (events/action:202) — which both read paid_at — would promise a cash customer a refund on
+      // an order that was never paid. payment_status is now canonical; paid_at remains only as a
+      // compatibility timestamp, so it must not be left contradicting the ledger.
+      const { error: undoErr } = await supabase.from('orders').update({ status: revertTo, status_before_collected: null, paid_at: null, collected_at: null }).eq('order_key', orderKey).eq('truck_id', truck.id)
+      if (undoErr) {
+        console.error('[undo_collected] status update failed after the ledger was reversed:', undoErr)
+        return NextResponse.json({ error: undoErr.message }, { status: 500 })
+      }
       // Rebuild the date's production_slot_usage from the live orders (deterministic, idempotent — two undo
       // entry points: toast + completed list). Capacity follows the reverted status automatically because
       // the rebuild reads it AFTER this update: revert→'ready' stays FREED (buildUnitsFromOrders excludes
@@ -868,6 +920,13 @@ export async function POST(req: NextRequest) {
           deal_savings: Number(dealSavings) > 0 ? Number(dealSavings) : null,
           // §4a — pence, derived here from the server-held total. Never client-supplied.
           total_minor: toMinor(finalTotal),
+          // OVER-CAPACITY ACKNOWLEDGEMENT. Set only when the operator was shown the over-capacity
+          // modal (AddOrderPanel, submit-time fresh fit check) and chose "Place it anyway". The
+          // TIMESTAMP is server-minted — the client sends a boolean intent, never a time it could
+          // backdate. Null = no acknowledgement, which is every other order: a normal placement, or
+          // one that arrived unattended (offline collision / sync race). Nothing reads it yet;
+          // narrowing the breach banner to unacknowledged breaches is a later task.
+          capacity_ack_at: manualOrder?.capacityAcknowledged === true ? new Date().toISOString() : null,
           notes: notes || null, status: 'confirmed',
           payment_status: 'unpaid',
         }

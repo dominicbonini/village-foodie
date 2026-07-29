@@ -1351,3 +1351,121 @@ the Tab does not predict either.
 
 Plus, from §1 above and outranking all three: **whether the iOS billing restriction applies to us at
 all.** That one is not a preference to settle — it is a fact to establish.
+
+---
+
+# 6. NATIVE-THROW AUDIT — findings and remediation (28 July 2026)
+
+Follow-up to §35's *"a JS `try`/`catch` around a Capacitor plugin call does not protect against a native
+throw"*. Three passes: a read-only audit of every awaited plugin call, a follow-up that **disproved the
+audit's own mechanism**, and this remediation. Everything below is from source in this repo or
+`node_modules` at pinned versions — none from typings, README prose, or memory.
+
+**Versions audited:** `@capacitor/core` 8.4.0 · `@capacitor/android` 8.4.1 · `push-notifications` 8.1.1 ·
+`local-notifications` 8.2.0 · `preferences` 8.0.1 · `status-bar` 8.0.2 · `@capacitor-community/keep-awake` 8.0.1
+
+## 6.1 The mechanism, verified
+
+Framework-level, not plugin-specific. Two independent death paths in `@capacitor/android` 8.4.1:
+
+1. **`Bridge.callPluginMethod` (`Bridge.java:839-852`)** wraps `plugin.invoke(...)` and, on any exception,
+   logs *"Serious error executing plugin"* and **`throw new RuntimeException(ex)`** — on `taskHandler`, a
+   background `HandlerThread` (`:141`, `:217`). Uncaught on that thread ⇒ process death. The JS promise
+   never settles. `call.reject()` is the only path that reaches JS.
+2. **`Bridge.executeOnMainThread` (`:909-913`)** is a bare `mainHandler.post(runnable)` with **no
+   `try`/`catch`**. Anything thrown inside such a Runnable escapes to the main looper ⇒ also fatal. Both
+   StatusBar and KeepAwake do all their real work inside these Runnables.
+
+**Consequence:** the invariant holds for *every* plugin, not just push. A `catch` around a Capacitor call
+handles exactly two things — the dynamic `import()` failing, and a bridge **rejection** — and nothing else.
+
+## 6.2 🔴 The first audit's severity ratings were wrong
+
+The audit rated KeepAwake/StatusBar HIGH on the theory that `getActivity()` returns null during teardown,
+NPE-ing inside a posted Runnable. **That is disproven:**
+
+- `Bridge.java:114` — `private final AppCompatActivity context;`, assigned in the constructor.
+  `getActivity()` (`:493-495`) returns it directly. **It cannot be null**, ever, for that Bridge's lifetime.
+- `android/app/src/main/AndroidManifest.xml:13` —
+  `configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"`.
+  **Rotation, fold, split-screen resize, dark-mode, locale and density do NOT recreate the Activity.**
+  Remaining recreation triggers: `fontScale`, process death/restore, "Don't keep activities", low-memory kill.
+
+**Still unknown, flagged as unknown:** whether `Activity.getWindow()` can return null, and whether flag
+mutation on a *detached* Window throws. Neither is determinable without Android framework source, which is
+not in `node_modules` and was not fetched.
+
+**No `guardedInvoke` wrapper was built.** It would narrow a race whose mechanism is disproven while looking
+like protection against native throws — the anti-pattern `lib/native/push.ts:44-47` already warns about.
+
+## 6.3 Definitive inventory — SIXTEEN calls, not ten
+
+| # | Site | Call | `try`/`catch`? | Call-site guarded? |
+|---|---|---|---|---|
+| 1-3 | `push.ts:72,75,80` | `PushNotifications.addListener()` ×3 | ✅ | no |
+| 4 | `push.ts:89` | `PushNotifications.requestPermissions()` | ✅ | no |
+| 5 | `push.ts:92` | `PushNotifications.register()` | ✅ | **YES — build-time** |
+| 6 | `notifications.ts:21` | `LocalNotifications.requestPermissions()` | ✅ | no |
+| 7 | `notifications.ts:34` | `LocalNotifications.schedule()` | ✅ | no |
+| 8-9 | `notifications.ts:43,45` | `Preferences.get()` ×2 | ❌ → **now ✅** | no |
+| 10 | `notifications.ts:52` | `LocalNotifications.schedule()` | ✅ | no |
+| 11-12 | `notifications.ts:62,63` | `requestPermissions()` + `schedule()` | ✅ | no |
+| 13 | `keepAwake.ts:98` | `KeepAwake.keepAwake()` | ❌ → **now ✅** | no |
+| 14 | `keepAwake.ts:129` | `KeepAwake.allowSleep()` | ❌ → **now ✅** | no |
+| 15-16 | `statusBar.ts:49,50` | `setOverlaysWebView()` + `setStyle()` | ✅ | no |
+
+**1 guarded / 15 unguarded; of the 15, 12 behind an ineffective `catch` and 4 previously behind none.**
+
+Throw-path findings for the rest (read from Java, not inferred): `LocalNotifications.schedule` rejects
+rather than throws on both its failure modes (`LocalNotificationManager.java:133-138`, `:141-146`); the
+exact-alarm `SecurityException` is unreachable because our payloads carry no `schedule`/`at` (`:235`) and
+`setExactIfPossible` guards with `canScheduleExactAlarms()` (`:374-395`) anyway; bad icon/sound names fall
+back to `RESOURCE_ID_ZERO_VALUE` rather than throwing (`LocalNotification.java:87-98`); both
+`requestPermissions` implementations are pure SDK-version branches with no throw path.
+
+## 6.4 ⭐ The real fix — the `allowSleep()` cleanup was redundant
+
+`FLAG_KEEP_SCREEN_ON` is a **Window** flag scoped to that window's visibility. It is **not** a wake lock we
+own and must release:
+
+| Transition | Flag | Cleanup needed? |
+|---|---|---|
+| Activity backgrounded | no effect while not visible | **no** |
+| Activity destroyed | destroyed with the Window | **no** |
+| Activity recreated | fresh Window, default flags — **not restored** | **no** (opposite: must re-apply) |
+
+So no OS path strands the screen on. Worse, on the dashboard the cleanup fired on **every dep change**
+(deps `[authenticated, keepScreenOn]`), not just unmount: toggling OFF ran `allowSleep()` twice; toggling
+ON ran `allowSleep()` then immediately `prepareKeepAwake()` — a release/re-acquire flicker between two
+states that agree.
+
+**Removed from both screens.** Nothing depended on it: the pref `hg_keepawake_${token}` is written only by
+the toggle handlers (`page.tsx:1101`, `kds/page.tsx:392`) — `allowSleep()` never touches storage — and KDS
+re-acquires on mount (`kds/page.tsx:245`).
+
+### ✅ The navigation delta is INTENDED
+
+Capacitor is single-Activity, so without the cleanup the flag persists across client-side routes (e.g. into
+`/manage`). **That is the correct behaviour, settled as a product decision 28 July:** keep-awake is a
+**DEVICE preference**, not a per-page one. It means *"this screen stays on"*, not *"stays on while looking
+at orders"*. An operator who steps into Settings mid-service and returns to a slept screen is strictly worse
+off. The reasoning is recorded inline at both sites so nobody "fixes" it back.
+
+## 6.5 Upstream check (`npm view`, 28 July — registry read only, nothing installed)
+
+| Plugin | Installed | Latest | Verdict |
+|---|---|---|---|
+| `@capacitor-community/keep-awake` | **8.0.1** | **8.0.1** | already on latest; no newer release exists |
+| `@capacitor/status-bar` | **8.0.2** | **8.0.3** | one patch behind (`^8.0.2` would take it on a fresh install) |
+
+⚠️ **Whether 8.0.3 touches this area is UNDETERMINED.** Neither package ships a `CHANGELOG` in
+`node_modules` (both contain only `README.md`), and reading the upstream release notes needs a repo fetch,
+which was out of scope. The installed 8.0.2 `StatusBar.java:42-43`, `:102` has no null check and no `try`.
+
+## 6.6 `patch-package` — viable, rejected
+
+Technically workable: `cap sync` copies web assets and updates plugin *references*, it does not re-download
+`node_modules`, so a patched plugin survives; `patch-package` re-applies on `npm install`, which is the step
+that would otherwise revert it. **Rejected because** the repo uses no `patch-package` today (no dependency,
+no `postinstall`, no `patches/`), and adopting it would fork two upstream plugins permanently to defend a
+path never demonstrated reachable. Revisit only if a crash log implicates one.

@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V9.2
+HatchGrab Engineering Reference Manual · V9.4
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 9.2**
+**Version 9.3**
 
 July 2026
 
@@ -15,6 +15,54 @@ July 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V9.4 — 29 July 2026
+
+Delta over V9.3 — the **28–29 July payments-foundation workstream**. Two themes. First, **a read-before-building pass on payments turned into a schema-truth audit**: four columns the manual and the code disagreed about, in both directions, all on `orders`/`operators`. Second, **a live customer-ordering outage caused by a migration that reported success and did nothing** — a new and nastier member of the recorded-as-applied family. **Step zero shipped** (server-authoritative pricing, price-lock on edits, integer minor units). **The capacity investigation closed with no defect found** — the warning was correct and the display was not. **Three columns added and verified in production.** **The payments commercial model is now locked** (new §37). **Status: Stripe Connect is NOT built and no Stripe account exists. Step zero is committed (`5208cbe`), migrations applied, deployed, customer path verified.**
+
+- **🔴 A NEW FAILURE CLASS — *present-but-never-written*.** `orders.source` **exists** (text, default `'web'`, CHECK `web|manual|whatsapp`) and **nothing has ever written it**: all 356 rows read `'web'` by default, including walk-ups. Order channel is instead inferred from `customer_email IS NULL` (`app/api/manage/route.ts:1248-1249`), whose own comment claims *"No source/is_manual column exists yet"* — it does exist, it was just always empty. The inference misclassifies **walk-ups where the operator captured an email for a receipt** as online, always in that one direction. This is worse than a phantom column: a phantom throws `42703` and you know immediately, while a defaulted column returns a plausible value on every row and reads as data. **It misled this planning chat into a wrong conclusion about which orders an operator had placed.**
+
+- **🔴 `create or replace function` SUCCEEDING PROVES THE SQL PARSED, NOT THAT IT WORKS.** PL/pgSQL resolves column references at **execution**, not creation. A function body naming a column that does not exist applies cleanly, reports success, and then throws `42703` on the first real call. On 28 July this took **customer ordering down for ~15 minutes on a live trading evening** (Gusto, Belchamp, 17:00–20:00). **A function that references a column is not applied until a probe has executed it.** See §35.
+
+- **FULL-FILE PASTE INTO THE SUPABASE SQL EDITOR CAN SILENTLY RUN NOTHING.** The same migration's `add column if not exists` statements *and* its function block were both skipped while the editor reported success. **Run `create or replace function` blocks ALONE, in an empty tab**, and verify with `pg_get_functiondef(...) like '%new_column%'`.
+
+- **CUSTOMER-PATH OUTAGES ARE INVISIBLE FROM THE OPERATOR SIDE — second instance.** Walk-ups use a **direct insert**; customer orders use **`place_order_atomic`**. During the outage the operator dashboard was fully functional. This is the §65 shape exactly. Recovery check: `increment_event_order_counter` advances *before* the insert, so **a rolled-back order permanently consumes its display number** — gaps in the sequence are the fingerprint of failed attempts. (Verified none: counter 15, highest order 15, 15 saved.)
+
+- **FOUR SCHEMA CORRECTIONS.** (1) **`operators.stripe_customer_id` DOES NOT EXIST** — asserted by V3 §13 and §16 and never true. (2) **`operators.billing` DOES NOT EXIST** — same. (3) **`orders.payment_status` and `orders.amount_paid` DO exist and were undocumented** — `payment_status` text default `'unpaid'` with CHECK `unpaid|paid|refunded|failed`; `amount_paid` numeric(8,2), unpopulated on all 346 rows. (4) **The §16 `orders` entry listed ten columns for a thirty-two-column table** and read as exhaustive — which is how `payment_status` stayed invisible to both the planning chat and the coding chat for two months.
+
+- **MONEY IS SAFE BY ACCIDENT: POSTGRES IS THE ROUNDING LAYER.** `orders.total`, `subtotal`, `discount_amt`, `amount_paid` are all **`numeric(8,2)`**, so the JS float error (`12.20 + 0.10 = 12.299999999999999`, reproducible from `lib/order-calculations.ts`'s own composition rule) is annihilated at the insert boundary. Verified: **0 of 346 rows** exceed 2dp. `round(total * 100)` is therefore exact. This shrank step zero considerably — but it is protection nobody designed, and it caps a single order at £999,999.99.
+
+- **THE DEAL AND DISCOUNT DIVERGENCES ARE LATENT, NOT LIVE.** **Zero** orders in production have ever carried a deal, a `discount_code`, or a non-zero `discount_amt`. So the known incoherences (`total ≠ subtotal − discount_amt` when deals are present; `AddOrderPanel` shipping `dealSavings` into the `discountAmt` slot) are traps waiting for the first operator to switch deals on, not data to repair.
+
+- **🔴 THE CUSTOMER-PATH PRICE VALIDATION IS A NO-OP AND STILL IS.** `calculateOrderTotal` reads `item.price`; the customer page posts `unit_price`. The multiplication yields `NaN`, every `Math.abs(submitted − NaN) > tolerance` comparison returns `false`, and **the guard passes unconditionally** — client-supplied totals have been stored verbatim since the path was written. `[ORDER VALIDATION]` has never logged because it cannot. **NOT FIXED** — see §27. Under price-lock this is now the single point where a price becomes authoritative for the life of an order, including any refund derived from it.
+
+- **PRICE IS LOCKED AT PLACEMENT (new rule).** Once an order is placed its prices are frozen; a later menu change applies only to future orders. Existing lines re-price from the **stored order row**, matched by item name + modifier-name set; only genuinely **new** lines take the current menu price. This reversed a same-day design decision that had re-priced everything from the live menu. Note the stored shape supports a stricter variant (per-modifier prices are stored, so `lockedBase = unit_price − Σ modifiers[].price` is exact) — **not built**; today an existing item whose modifiers change re-prices its whole line.
+
+- **STEP ZERO BUILT AND DEPLOYED (`5208cbe`).** Server-authoritative re-pricing on the operator edit path (client `unit_price` is now advisory only); `discount_amt` recomputed **and written** on edit; `dealSavings` moved to its own column so `discount_amt` means money-deducted everywhere; the edit handler now checks its own `.update()` result instead of returning `{success:true}` unconditionally; `lib/slot-bookings.ts` returns its write errors. **Verified in production: a £9.50 customer order wrote `total_minor` 950.**
+
+- **THE CAPACITY WARNING WAS CORRECT — THE DISPLAY WAS NOT.** Window 18:15–18:20 genuinely held 4 pizzas against a ceiling of 2. No engine defect. But the banner named `18:20` (a collection time at which nothing is over), named order `#10` by **string-matching its collection slot rather than its contribution** (`lib/capacity-breach.ts:86,:107`) — and #10 was the only innocent party, a 2-pizza order at a 2-pizza ceiling flagged because two operator walk-ups at 18:30 reach backward into its window. `over_total` and `over_cats` are computed, shipped to the browser, and read only by the dismiss-signature function.
+
+- **FULL IS NOT OVER.** `buildSlotIndicators` exposed only `tone`, which goes red at `concurrency >= ceiling`, so an at-capacity slot and an over-subscribed one were **indistinguishable**. `overTotal` added to the returned interface; **`❗` marks strictly-over slots only**, in both pickers, permanently — it does not clear on acknowledgement.
+
+- **THREE COLUMNS ADDED, ALL DEPLOY-COUPLED, ALL VERIFIED LIVE.** `orders.total_minor` (integer — authoritative charge amount in pence), `orders.deal_savings` (numeric(8,2)), `orders.capacity_ack_at` (timestamptz, **server-minted**). Migrations `20260728_orders_total_minor_deal_savings.sql` and `20260728_orders_capacity_ack.sql`.
+
+- **THE OVER-CAPACITY CONFIRM MODAL IS REBUILT AT SUBMIT.** A richer slot-select modal existed and was deleted 15 June (`448130f`, *"operator-only friction"*; tombstone at `AddOrderPanel.tsx:636-643`). It read the **stale** `capacityInputs` cache — which has no poll and no realtime invalidation — which is why it warned about slots that were fine. The rebuild keeps the **submit-time** trigger and its `cache:'no-store'` fetch, and now uses `fit.bound_by` (previously computed and discarded) for the copy. Note `consider()` keeps the **first** red and the per-category loop runs first, so a category bind wins over the global ceiling.
+
+- **NEW §37 — the payments commercial model, locked.** Rates, allowance, trial suppression, the payment ledger design, Connect account shape, currency/country rules, and the Tap-to-Pay platform constraint.
+
+## V9.3 — 28 July 2026
+
+Delta over V9.2 — the **native-throw remediation**, later the same day. One theme: **a finding that survived contact with its own evidence, and a mechanism that did not.** V9.2's §35 native-throw invariant is **strengthened** (it is framework-level, not push-specific), while the **severity ratings built on top of it are withdrawn** — the null-`getActivity()` path they assumed does not exist. **One new §35 invariant.** **One §35 entry corrected and its sweep recounted.** **A §36 VERIFICATION STATUS block**, because the gap between *built*, *reasoned* and *observed* had stopped being legible. **Two §27 items.** **Status: unchanged — no Android build has shipped, no store listing exists, and the full order-flow click-through remains unrun on either platform since V6.3.**
+
+- **§35 GAINED ONE INVARIANT — the fail-closed/fail-open pair.** `device_notification_prefs` reads a missing row as **ENABLED**; `offlineAlertsEnabled()`'s new catch reads an unreadable pref as **DISABLED**. They are both correct and are **allowed to disagree**, because a stored default encodes **intent** while a runtime fallback encodes **certainty**. Recorded specifically so a later "harmonise these" tidy does not break one of them.
+
+- **§35 NATIVE-THROW ENTRY CORRECTED — mechanism strengthened, severity withdrawn.** The invariant is **framework-level**: `Bridge.callPluginMethod` rethrows any `@PluginMethod` exception as `RuntimeException` on a background `HandlerThread` (`Bridge.java:848-851`), and `executeOnMainThread` is a bare `post()` with **no catch** (`:909-913`) — so it holds for **every** plugin, not just push. But an earlier report's HIGH ratings rested on `getActivity()` returning null, and **`Bridge.java:114` declares it `private final`** — it cannot. `AndroidManifest.xml:13`'s `configChanges` list further removes rotation, fold, split-screen and dark-mode from the reachable states. **Two unknowns are left flagged as unknowns** (whether `getWindow()` can return null; whether flag mutation on a detached Window throws), and **no `guardedInvoke` wrapper was built** — it would have *looked* like protection against native throws while providing none, which is the anti-pattern the invariant itself warns about.
+
+- **SWEEP RECOUNTED: SIXTEEN awaited plugin calls, not ten** — **1 call-site guarded / 15 unguarded**, of which **12 sit behind an ineffective `catch`** and **4 had none at all**. Those four are now caught, for **JS-side rejection and import failure only**, with comments saying so at each site. The earlier "nine behind an ineffective catch" framing was wrong about the two that mattered most.
+
+- **THE REAL FIX WAS A DELETION.** `FLAG_KEEP_SCREEN_ON` is **window-scoped**, not a wake lock we own: backgrounded ⇒ no effect, destroyed ⇒ gone with the Window, recreated ⇒ not even restored. The `allowSleep()` cleanup was therefore redundant on every OS path — and on the dashboard it fired on **every dep change**, making toggle-off a double release and toggle-on a release/re-acquire flicker. Removed from both screens. **The resulting navigation delta is INTENDED and is now recorded inline at both sites:** keep-awake is a **DEVICE preference**, meaning *"this screen stays on"*, not *"stays on while looking at orders"*.
+
+- **§16 GAINED A CLOSED QUESTION.** `POST_NOTIFICATIONS` is **not** in our manifest — it arrives by **manifest merge** from `@capacitor/local-notifications`. `@capacitor/push-notifications` declares no permissions and relies on it, so **removing local-notifications would silently strip the permission from push as well.**
 
 ## V9.2 — 28 July 2026
 
@@ -2587,7 +2635,9 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 
 ## Operators own trucks
 
-- **operators** — account holder. id, name, first_name, last_name, email (unique, login), phone, auth_user_id, is_admin (V6), billing, stripe_customer_id.
+- **operators** — account holder. id, name, first_name, last_name, email (unique, login), phone, auth_user_id, is_admin, terms_accepted_at, terms_version, marketing_opt_in, created_at, updated_at. **That is the complete list (live-verified 29 July).**
+
+> **🔴 CORRECTION (V9.4) — there is NO `operators.stripe_customer_id` and NO `operators.billing`.** Both were asserted by V3 and carried forward unchallenged; neither has ever existed. `select stripe_customer_id from operators` errors `42703`. This is the `trucks.is_test` class — a column that exists only in documentation — and it must not be re-added from the manual. When Stripe Connect is built, decide the account's home deliberately (§37), do not assume a column is waiting.
 - **trucks.operator_id** is a nullable FK to operators.id. One operator can own multiple trucks.
 
 ## Single vs multi-truck UI
@@ -2818,7 +2868,7 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 
 - **scraper_preference** (text, 'manual'|'auto', default 'manual'), **schedule_url** (text), **scraper_rule** (text, 'scroll_lazy'|'scroll_next' — semantics in Section 24 "Scroll rules"), **scraper_last_changed_at** (timestamptz), **scraper_update_day** (smallint 0–6), **scraper_learning_complete** (boolean default false), **scraper_last_empty_notify_at** (timestamptz), **scraper_first_run_at** (timestamptz), **scraper_last_hash** (text). See Section 24.
 
-- **operators** — first_name, last_name, phone, email, auth_user_id, is_admin (V6), billing.
+- **operators** — id, auth_user_id, email, name, first_name, last_name, phone, is_admin, terms_accepted_at, terms_version, marketing_opt_in, created_at, updated_at. **Thirteen columns, complete, live-verified 29 July.** **NO `billing`. NO `stripe_customer_id`.** See the §13 correction.
 - **truck_vans** — auto_pause_on_offline (offline-protection creation default), show_cooking_step, kitchen_capacity, **capacity_window_mins** (V6.7, integer NOT NULL DEFAULT 5, CHECK 1–20 — the concurrency ceiling's own window cadence, independent of category prep; Section 6), display_layout, split_screen, kds_token, name, active, last_heartbeat_at (device-online property), online_paused_until (VESTIGIAL post-V6.6), paused_until (VESTIGIAL post-V6.6). (V6.6 — pause moved to truck_events; the van keeps only `auto_pause_on_offline` as the default and `last_heartbeat_at` as the live device property. Section 5 / Section 11.)
 - **truck_users** — role (owner/manager/staff), email, name, auth_user_id, invited_at, accepted_at.
 - **truck_user_vans** — staff ↔ vehicle access junction.
@@ -2829,7 +2879,21 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 - **bundles_db** — bundle_price, original_price, slot_1..6_category, apply_to_new_events, is_available, start/end_time.
 - **event_deals** — event_id, bundle_id, active, overridden.
 - **truck_events** — event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6), latitude/longitude, scraped_signature (dedup), order_counter (V6.3), auto_open / auto_close (per-event, seeded from trucks.default_auto_* at confirm), **venue_id** (V6.6, uuid, FK venues(id) ON DELETE SET NULL), **venue_id_source** (V6.6, text: scraper|operator|manual|backfill — only operator|manual count as validated for history-prior), **venue_match_confidence** (V6.6, text: high|low|none→NULL), **paused_until** (V6.6, timestamptz — event-scoped manual pause), **online_paused_until** (V6.6, timestamptz — event-scoped offline auto-pause), **extra_wait_mins** (V6.6, integer), **extra_wait_started_at** (V6.6, timestamptz). (V6.5: `town`/`postcode` are what the venue matcher resolves. V6.6 added `venue_id` as the keystone for anchors/history-prior, and the four pause/extra-wait columns to make those event-scoped — Sections 5, 25.) Index `idx_truck_events_venue_id`.
-- **orders** — order_key (V6.3, uuid, PRIMARY KEY — the only identifier in any WHERE/URL/FK/dedupe/React key), id (text — per-event DISPLAY number, restarts at 1, NEVER a lookup key), items (JSONB — carries frozen item NAMES, no item id), deals (JSONB), status, paid_at, collected_at, event_id, van_id, slot. Two partial unique indexes: `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` and `UNIQUE (truck_id, id) WHERE event_id IS NULL`. See Section 18a.
+- **orders** — **thirty-five columns as of V9.4. The list below is COMPLETE and live-verified (29 July). Earlier manual versions listed ten and read as exhaustive, which is how `payment_status` stayed invisible for two months — if you extend this table, extend this list.**
+
+  `order_key` (uuid, **PRIMARY KEY** — the only identifier in any WHERE/URL/FK/dedupe/React key), `id` (text — per-event DISPLAY number, restarts at 1, **NEVER a lookup key**), `truck_id` (text FK), `customer_name`, `customer_phone`, `customer_email`, `slot`, `order_type` (CHECK `collection|table`), `table_ref`, `event_date` (date NOT NULL), `items` (JSONB — frozen item NAMES, no item id), `extras` (JSONB), `bundle`, `discount_code`, `subtotal` **numeric(8,2)**, `discount_amt` **numeric(8,2)**, `total` **numeric(8,2)**, **`total_minor` (integer, V9.4 — the authoritative charge amount in pence)**, **`deal_savings` (numeric(8,2), V9.4)**, `notes`, `status`, `modify_type`, `modify_data`, **`payment_status`**, **`amount_paid`** (numeric(8,2)), `created_at`, `updated_at`, `deals` (JSONB), **`source`**, `paid_at`, `collected_at`, `event_id` (uuid FK), `cancellation_reason`, `van_id` (uuid FK), `rejection_reason`, `status_before_collected`, **`capacity_ack_at` (timestamptz, V9.4)**.
+
+  Two partial unique indexes: `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` and `UNIQUE (truck_id, id) WHERE event_id IS NULL`. See Section 18a.
+
+> **CHECK constraints on `orders` (live-verified):** `status` ∈ `pending|confirmed|rejected|modified|cancelled|cooking|ready|collected` — **no payment value**, payment is orthogonal to fulfilment by construction. `payment_status` ∈ `unpaid|paid|refunded|failed`. `source` ∈ `web|manual|whatsapp`. `order_type` ∈ `collection|table`. `modify_type` ∈ `slot|item_sub|item_remove`.
+
+> **🔴 RULE (V9.4) — `orders.source` EXISTS AND IS NEVER WRITTEN.** Text, default `'web'`, correctly constrained — and all **356** rows hold the default, walk-ups included. Order channel is currently inferred from `customer_email IS NULL` (`app/api/manage/route.ts:1248-1249`), which **misclassifies a walk-up whose operator captured an email as online**, always in that direction. Reliable discriminators until `source` is populated: **`van_id IS NULL` + `items[0].cartKey` present ⇒ walk-up** (the customer path sets `van_id` from the event row and never writes `cartKey`; the operator path does the opposite). **This is a present-but-never-written column, the most dangerous shape in this schema** — it returns a plausible value on every row and reads as data. Populate it on write (three insert sites), then retire the inference; do not leave both.
+
+> **RULE (V9.4) — `paid_at` currently means "cash taken at the hatch, at collection".** Live: 128 collected orders, 128 with `paid_at`, 128 with `collected_at`, **zero paid-but-uncollected**. `payment_status` reads `unpaid` on all 346 rows including those 128, so **the two payment records already contradict each other**. Before online payments ship, one must be declared canonical (§37 proposes `payment_status`, with `paid_at` demoted to its timestamp) and the 128 rows backfilled. Any code relying on *`paid_at` implies `collected_at`* breaks silently on the first card payment.
+
+> **RULE (V9.4) — money columns are `numeric(8,2)`, and that is load-bearing.** `lib/order-calculations.ts` composes in binary64 pounds with **no rounding in the arithmetic** (rounding happens only at `.toFixed(2)` render time, independently per call site), so `12.20 + 0.10` really does produce `12.299999999999999` in Node. **Postgres rounds it away at the insert boundary** — 0 of 346 rows exceed 2dp. Therefore `round(total * 100)` is exact and `total_minor` needed no cleanup. This is protection nobody designed: do not remove the scale, and do not assume the same safety for any value that never reaches a `numeric(8,2)` column (a cumulative monthly fee total, for example — precision 8 also caps a single order at £999,999.99).
+
+> **RULE (V9.4) — `orders` has TWO `updated_at` triggers.** `orders_set_updated_at` (documented, from `20260703`) and `orders_updated_at` calling `update_updated_at()` (**undocumented, predates the migrations directory, and `orders` is the only table using it**). Postgres fires row triggers alphabetically, so **`orders_updated_at` runs second and wins** — the documented trigger is not the effective one. Harmless today (both stamp `now()`), but `lib/orders/mergeOrders.ts` version-guards on this value, so the function nobody knew about decides it.
 - **event_item_stock (V6.5, +no_item_cap V6.6)** — per-event item stock OVERRIDE. PK `(event_id, item_name)`. Columns: event_id (uuid, FK truck_events(id) on delete cascade), item_name (text — matches menu_items_db.name and the frozen order-line name), stock_count (int nullable — the per-event ceiling override), available (boolean nullable — per-event sold-out override), **no_item_cap (V6.6, boolean default false — true = no individual cap this event → ceiling resolves to null → follows the category pool; distinct from stock_count=null which means "use default")**. A row exists ONLY when the dashboard has edited that item's stock for that event; absence means "read the live Settings default". RLS service-role only. See Section 30.
 - **event_category_stock (V6.5)** — per-event category stock OVERRIDE. PK `(event_id, category)`. Columns: event_id (uuid, FK), category (text), stock_count (int nullable). Same sparse-override semantics. RLS service-role only. See Section 30.
 - **collection_times / slot_capacity** — fixed slot definitions and per-slot capacity rows.
@@ -3606,6 +3670,38 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 # 27. Open backlog (June 2026)
 
+## 🔴 V9.4 — added 29 July 2026 (payments workstream)
+
+### CRITICAL — unfixed defects found by diagnosis, not yet built
+- **The customer-path price validation is a NO-OP.** `calculateOrderTotal` reads `item.price`; `/api/orders/submit` posts `unit_price` → `NaN` → every tolerance comparison returns `false` → **client-supplied totals stored verbatim since the path was written**. `[ORDER VALIDATION]` has never logged. **Land it in LOG-ONLY mode first** (compute, log the delta, reject nothing) for a trading day before enforcing — turning it on cold would start rejecting live customer orders. This is the single point where a price becomes authoritative for the life of an order, including any refund derived from it. **Highest priority in the payments workstream.**
+- **`orders.source` is never written.** Populate at all three insert sites (`web` / `manual` / `whatsapp` — the CHECK already permits them), then **retire** the `customer_email IS NULL` inference at `app/api/manage/route.ts:1248`. Do not leave both. Blocks trustworthy channel reporting and the in-person-vs-online fee split.
+- **The operator EDIT path has ZERO capacity-engine calls** anywhere in `app/api/dashboard/action/route.ts` — no capacity check, no stock guard, no booking lock, and it re-books via a non-atomic remove-then-add. Same over-acceptance class the capacity engine was rebuilt to close. The edit modal already fetches `editCapacityInputs`, so the plumbing exists. **Required before the CapacityBreachBanner can be narrowed to offline-only** — unchecked edits keep producing unacknowledged breaches.
+- **The CapacityBreachBanner names the wrong things.** It reports a collection time rather than the cooking window, and names contributors by `o.slot === window_start` string equality rather than by contribution — so it can name an order that contributed nothing, and can show a breach with NO order reference when every contributor collects later. `over_total` / `over_cats` are already shipped to the browser and never rendered. **Two lines max**: window + load/limit, then contributors with their own quantities.
+- **`counts_toward_capacity` is bypassed entirely for `prep_secs > 0`** (gate at `lib/slot-availability.ts:647`). Every Gusto category stores `false` while Pizza demonstrably counts. **Display trap:** the dashboard renders Pizza's box ticked-and-disabled while the column stores `false`. Either the flag governs what its name says or the UI must stop implying it does.
+- **`orders` has two `updated_at` triggers**, the undocumented one winning. Consolidate or document deliberately.
+
+### PAYMENTS — the build sequence (see §37)
+1. **Payment ledger + rollup + channel + currency/country snapshot + minor-units helper**; `payment_status` widened (**deploy-coupled**) and demoted to a derived cache; the paid-step toggle and two-tap UI; balance display on the order card, the KDS ticket and the customer manage page; fix `undo_collected` clearing `paid_at` and the dual-field refund copy. **Zero Stripe — testable with cash and a PDQ on Gusto.**
+2. **Connect onboarding + online payments + refunds** (refunds ship WITH payments — `manage/page.tsx:85` already promises them).
+3. **Pay-by-QR at the hatch** — small delta on 2, delivers auto-mark-paid with no native work.
+4. **Terminal / Tap to Pay** — only after the native app has actually shipped.
+5. **Landing page** — after 2, and only once the "1.49%" decision has landed in the copy.
+
+**Prerequisite (Dominic, manual):** create the Stripe platform account, enable Connect in **test mode**, complete the platform profile, set Connect branding (name, colour, icon — hosted onboarding requires it). Nothing can be built or investigated until this exists. **Enable on `test-truck` only.**
+
+**Open decisions blocking the architecture:** charge-at-order vs auth-and-capture; refund the 0.99% pro-rata; Connect account on `operators` vs `trucks`; walk-up payment method on truck vs van.
+
+### O15 becomes load-bearing
+`trial_expires_at` suppresses the platform fee under §37, so **the free month stops being an admin convenience and becomes an input to a revenue calculation**. It is null at provision and the ONLY writer is the admin panel by hand. **The fee logic needs an explicit, LOUD answer for null** — a truck with a null `trial_expires_at` and a live Connect account is either permanently free or immediately billed, and neither may happen silently.
+
+### Smaller, carried forward
+- **`makeCartKey` is triplicated byte-identically across three files**, and `lineIdentity` (V9.4) is a fourth near-copy that deliberately differs. Four string-keyed identity functions, two semantics, nothing type-checking the relationship — the `ROW_FEATURE_MAP` drift class.
+- **The stricter modifier-change rule.** Stored per-modifier prices make `lockedBase = unit_price − Σ modifiers[].price` exact, so an existing item whose modifiers change could keep its locked base and price only the delta. Today the whole line re-prices, which charges a base increase on something already ordered — contradicting the price-lock rule. Contained: one branch of `repriceOrder` plus the modal preview.
+- **Nothing records an operator override of the walk-up capacity prompt** beyond `capacity_ack_at` (V9.4, written but **not yet read**). Narrowing the banner to unacknowledged breaches is the follow-up.
+- **The `❗` inside a native `<select>` `<option>`** is unverified on a real iPad; emoji rendering in option labels varies by platform.
+- **The over-capacity modal has never been rendered** — no `next dev` during the build. Layout on a narrow iPad column is unverified.
+- **Client-side capacity checking has a ceiling.** There is a gap between the `no-store` fetch and the insert; the manual path takes `acquireEventLock` but runs **no capacity check inside it**, so the lock does not close it. Only a server-side check inside the lock would. Not built — the operator may override anyway.
+
 ## Built this session (V7.8 §22–§38)
 
 ### §22 — Per-option sold-out + standing stock in the dashboard Menu & Stock tab (item 3); ALSO fixes a Stage-B regression. [BUILT, tsc-clean, RUNTIME-VERIFIED on test-truck; LIVE-TEST PENDING]
@@ -4077,6 +4173,8 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **`ipad_kds` is now a stale name for a cross-platform feature.** It is the enforcement identifier in `lib/features.ts`, so renaming it needs a data migration — not copy.
 - **Portal hardening (extended):** `p-5`/`px-6` scroll containers appear throughout `app/manage/[token]/page.tsx`; any with horizontal-only padding and a focusable first or last child has the clipped-focus-ring bug. **The class is understood (§35) but the sweep has not been done.**
 - **`DemoGetStarted`'s form labels, placeholders and error messages are still inline** rather than in the copy object. **Deliberate** — the bug was variant drift, not string location, and error messages belong next to the branches that raise them. Recorded so the decision isn't relitigated.
+- **`@capacitor/status-bar` is ONE PATCH BEHIND — look at that diff deliberately, don't discover it in a build.** Installed **8.0.2**, latest **8.0.3** (`npm view`, 28 July). The declared range is **`^8.0.2`**, so **a fresh `npm install` picks it up SILENTLY** — and `lib/native/statusBar.ts` is precisely the file carrying **three verified no-ops on modern Android** and the **unresolved null-window question** (§35's native-throw invariant: `StatusBar.java:42`, `:102` dereference `activity.getWindow()` inside an unprotected `executeOnMainThread` Runnable). **Whether 8.0.3 touches this area is UNDETERMINED** — **no changelog ships in `node_modules`** (both this package and `keep-awake` contain only `README.md`), so answering it needs the upstream repo. For contrast, `@capacitor-community/keep-awake` **is already on latest (8.0.1)** — nothing to chase there.
+- **`app/dashboard/[token]/kds/page.tsx:245` calls `prepareKeepAwake()` UNCONDITIONALLY, ignoring `keepScreenOn`**; the separate `[keepScreenOn]` effect at `:253` then applies the real pref. So **mounting KDS with the pref OFF acquires the lock and immediately releases it.** Harmless in effect, but it is the **lying-toggle family** — for one render the published state is not what the pref says, and `lib/native/keepAwake.ts:8-13` exists specifically to publish the ACTUAL state rather than the intended one. Fix is to gate `:245` on the pref like the dashboard already does.
 
 # 28. Anti-scraping and rate limiting (V6.3)
 
@@ -4410,11 +4508,19 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 > **The seven below came from the July 2026 Android workstream (V9.2).** Most are NOT Android-specific — they are asymmetries that only became visible once a second native platform existed. Full detail in `docs/android.md`.
 
-**A JS `try`/`catch` around a Capacitor plugin call does NOT protect against a NATIVE throw inside that plugin.** The wrapper is real; it protects the wrong layer. When the native side throws, there is **no promise to reject** — the exception surfaces on the native thread and takes the process with it, past a `catch` that never runs. **Guard at the CALL SITE, by platform.** *Evidence:* `PushNotificationsPlugin.register()` threw `IllegalStateException` (Firebase not initialised) and killed the process **despite** `registerForPush`'s `try`/`catch`. ⚠️ **iOS and Android are NOT symmetric here:** an unconfigured APNs sender **no-ops**; an unconfigured FCM sender **hard-fails**. A wrapper that has looked safe for a year on iOS is untested, not proven. **SWEEP: OPEN — 10 awaited plugin calls across `lib/native/{push,notifications,keepAwake,statusBar}.ts`; only the `push.register()` site is call-site guarded. The other nine are unaudited for native-throw behaviour on Android.**
+**A JS `try`/`catch` around a Capacitor plugin call does NOT protect against a NATIVE throw inside that plugin.** The wrapper is real; it protects the wrong layer. When the native side throws, there is **no promise to reject** — the exception surfaces on the native thread and takes the process with it, past a `catch` that never runs. **Guard at the CALL SITE, by platform.** *Evidence:* `PushNotificationsPlugin.register()` threw `IllegalStateException` (Firebase not initialised) and killed the process **despite** `registerForPush`'s `try`/`catch`. ⚠️ **iOS and Android are NOT symmetric here:** an unconfigured APNs sender **no-ops**; an unconfigured FCM sender **hard-fails**. A wrapper that has looked safe for a year on iOS is untested, not proven.
+
+> **MECHANISM (verified in `@capacitor/android` 8.4.1, 28 July).** This is framework-level, not plugin-specific. `Bridge.callPluginMethod` catches every exception from a `@PluginMethod` and **rethrows it as `RuntimeException` on `taskHandler`**, a background `HandlerThread` (`Bridge.java:848-851`, `:141`, `:217`) → uncaught on that thread → process death, JS promise never settles. Separately, `Bridge.executeOnMainThread` (`:909-913`) is a bare `mainHandler.post(runnable)` with **no `try`/`catch`**, so anything thrown inside such a Runnable escapes to the main looper — also fatal. `call.reject()` is the ONLY path that reaches JS. **The invariant is therefore stronger than first recorded: it holds for every plugin, not just push.**
+
+**SWEEP: OPEN — RECOUNTED 28 July. SIXTEEN awaited plugin calls** across `lib/native/{push,notifications,keepAwake,statusBar}.ts` (verified by enumeration), not ten. Split: **1 call-site guarded** (`push.register()`, guarded at BUILD time by `google-services.json` + a matching `applicationId` — no JS guard is possible), **15 unguarded**, of which **12 sit behind a `try`/`catch` that cannot catch a native throw** and **4 had no `catch` at all** (`keepAwake.ts:98`, `:129`; `notifications.ts:43`, `:45`). Those four are now caught — for **JS-side rejection and import failure only**, which is genuinely all a `catch` can do; the comments there say so explicitly so nobody mistakes them for native-throw protection.
+
+⚠️ **CORRECTION — an earlier report's HIGH severity ratings rested on a mechanism since DISPROVEN.** It claimed the risk was an unchecked `getActivity()` returning null inside a posted Runnable (`KeepAwakePlugin.java:15-30`, `StatusBar.java:42`, `:102`). **`getActivity()` cannot return null:** `Bridge.java:114` declares `private final AppCompatActivity context`, assigned in the constructor. And `android/app/src/main/AndroidManifest.xml:13` sets `configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"`, so **rotation, fold, split-screen resize and dark-mode do NOT recreate the Activity** — removing most of the states the report speculated about. What survives is the framework finding above; what does not is the specific null-window path. **Two unknowns remain flagged as unknowns:** whether `Activity.getWindow()` can ever return null, and whether flag mutation on a *detached* Window throws — neither is determinable without Android framework source. **No `guardedInvoke`-style wrapper was built, deliberately:** it would narrow a race whose mechanism is disproven while *looking* like protection against native throws, which is the exact anti-pattern this invariant warns about.
 
 **Only ONE mechanism may own a safe-area inset.** If the platform has already padded the view, padding again in CSS **double-pads**. *Evidence:* Capacitor 8's SystemBars pads the WebView on API 35+ **and zeroes `env()`** — so consuming `--safe-area-inset-top` on Android would have recreated the two-band bug V8.7 removed on iOS. **SWEEP: CLOSED on the top axis — one consumer (`components/shared/AppHeader.tsx:24`, `paddingTop: env(safe-area-inset-top)`), which resolves to 0 both in a browser and on Android 15+ (Capacitor zeroes it), leaving iOS as its only live owner.** The rule is recorded at the source: `lib/native/statusBar.ts:38` carries an explicit *"🚫 DO NOT ADD `env(safe-area-inset-top)` OR `--safe-area-inset-top` HANDLING FOR ANDROID"*. Bottom-inset consumers (order page ×2, dev overlays ×2) are a different axis and unaffected.
 
 **When two APIs front the same OS grant, they do not report it with equal honesty.** *Evidence:* `local-notifications` and `push-notifications` both map to Android's `POST_NOTIFICATIONS`, but the **push** plugin returns a hardcoded `"granted"` below Android 13, while **local** derives from the real `areNotificationsEnabled()`. Two calls, one grant, two answers — and the confident one is the wrong one. **Check permission via the API that DERIVES from real state, not the one that asserts.** Same family as *a flag named for a behaviour is not proof of that behaviour*, one layer down. **SWEEP: CLOSED — both plugins are used, and the honest source (`LocalNotifications`) is the one the Settings surface reads.**
+
+> **CLOSED 28 July — where `POST_NOTIFICATIONS` actually comes from.** It is **NOT** in `android/app/src/main/AndroidManifest.xml`, which declares only `INTERNET`. It arrives by **manifest merge** from `@capacitor/local-notifications` (`node_modules/@capacitor/local-notifications/android/src/main/AndroidManifest.xml`, which also contributes `WAKE_LOCK` and `RECEIVE_BOOT_COMPLETED`). `@capacitor/push-notifications` declares **no** permissions and relies on that merge. Both plugins are installed, so the permission is present and both `requestPermissions()` paths are viable. ⚠️ **Consequence to remember: removing `@capacitor/local-notifications` would silently strip `POST_NOTIFICATIONS` from push as well.** (Merge behaviour inferred from standard Gradle rules — the merged manifest was not built or inspected.)
 
 **A repo inside a synced folder gets conflict copies written INTO it.** iCloud "Desktop & Documents", Dropbox and equivalents write `name 2.ext` beside the original. In a build tree this surfaces as a **Gradle error naming the BUILD OUTPUT path** — sending you to look in source, where nothing is wrong. **iCloud has no per-folder exclusion, so the only fix is keeping repos outside synced folders.** *Evidence:* **139 duplicates** across `android/app/build/`, 34 in `packaged_res` alone; the failing task named a `build/intermediates/…` path while `find android/app/src -name "* *"` returned nothing. **This also explains `app/manage/[token]/page 2.tsx`, which V7.0 recorded as a one-off stray — it was the same cause, in the web tree, where it broke nothing loudly.** **SWEEP: CLOSED — `find android ios -name "* *" -not -path "*/build/*"` returns zero; the two remaining space-named files repo-wide (`Village Foodie Master Context.txt`, `public/logos/village-foodie logo-sharing.png`) are legitimate and non-native.** Cheap guard before a native build: `find android/app/src ios -name "* *"` — expect nothing.
 
@@ -4432,7 +4538,38 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **Deletion order is load-bearing wherever a foreign key is SET NULL rather than CASCADE.** `orders.event_id` is `ON DELETE SET NULL`, so order rows outlive their event. Deleting events before orders leaves every order dangling with a null `event_id` — still counted by the capacity engine, which reads by **date**, not by event. The same shape as `clearMenu`, where `menu_items_db.category_id → menu_categories` is SET NULL and items must therefore be deleted before categories (see "Verify the cascade you actually depend on" above, which found that relationship; this is the rule it generalises to). **Check the delete rule, not just the relationship**, and where the correct order is non-obvious, say so in a comment: a later "tidy" that reorders the statements will otherwise look harmless.
 
-# 36. Android app platform notes (V9.2)
+> **The one below came from the 28 July native-throw remediation (V9.3).**
+
+**A catch that fails CLOSED and a database default that fails OPEN are both correct, and they are allowed to disagree.** `device_notification_prefs` treats a **MISSING ROW as ENABLED** — for an alert, failing to fire is the dangerous direction (§16, *Notification preferences*). `offlineAlertsEnabled()`'s new catch treats an **UNREADABLE pref as DISABLED** (`lib/native/notifications.ts:41-56`). They point opposite ways because **they answer different questions**: the DB default is about **what the operator opted into** — absence there means "never configured", and the safe reading of an unconfigured alert is on. The runtime catch is about **what we can PROVE at that moment** — a failed read means we know nothing, and asserting an opt-in we cannot demonstrate is how a device starts firing alerts nobody asked for. **Do not "harmonise" them.** A future tidy that makes both fail the same way will break one of the two: fail-open everywhere fires unrequested alerts on any transient read failure; fail-closed everywhere silences every device that has never opened Settings. The general form: **a stored default encodes intent; a runtime fallback encodes certainty. Same field, different questions, legitimately opposite answers.**
+
+**A `CREATE OR REPLACE FUNCTION` that succeeds has PARSED, not WORKED.** PL/pgSQL resolves column references at **execution time**, not creation time. A function body naming a column that does not exist is accepted, reports success, and then raises `42703` on the first real call. On 28 July a migration whose `add column` statements had silently not run left `place_order_atomic` referencing `total_minor` against a table without it — **customer ordering was down for ~15 minutes during a live trading evening** while the operator dashboard stayed fully functional. **A function that references a column is NOT applied until a probe has executed it:**
+>
+> ```sql
+> select place_order_atomic('{"customer_name":"probe","subtotal":10.00,"total":10.00,"items":[]}'::jsonb,
+>                           null, 'confirmed', null, 'test-truck', current_date, null);
+> ```
+>
+> Then delete the probe row by the returned `order_key`. Note the probe **consumes a display number** — `increment_event_order_counter` advances before the insert, so gaps in the sequence are the permanent fingerprint of failed or rolled-back attempts, and are also how you audit whether a real customer hit an outage.
+
+**A full-file paste into the Supabase SQL editor can silently run NOTHING.** In the same incident both the short `alter table ... add column if not exists` statements and the long `create or replace function` block were skipped while the editor reported success. The function block spans many lines with `$function$` dollar-quoting in the middle, which is what a chunking editor mishandles. **Run `create or replace function` blocks ALONE in an empty tab**, then verify the body actually changed with `pg_get_functiondef(oid) like '%new_thing%'` — and verify the columns separately with `information_schema.columns`. Checking one does not check the other; on 28 July the function check passed while the columns did not exist.
+
+**"Success" from a SQL editor means the statement executed, not that it did what you wanted.** `add column if not exists` succeeds whether or not it added anything; `delete` succeeds whether or not it matched rows; `create or replace function` succeeds whether or not the columns it names are real. **Every migration in this codebase must ship with a verification query in its header that reads the resulting STATE, not the statement's return.** This is now three distinct members of the recorded-as-applied family: *recorded-as-applied-but-not-applied* (§65), *recorded-as-pending-but-actually-applied* (V9.2), and *reported-success-but-did-nothing* (V9.4).
+
+**A column that exists, is correctly constrained, and is never written is more dangerous than one that is missing.** A missing column throws `42703` and you know immediately. A defaulted column returns a plausible value on **every** row, reads as authoritative to anything that queries it, and silently encodes a fact nobody established. `orders.source` did exactly this: default `'web'` on all 356 rows, walk-ups included, while a code comment three files away asserted the column did not exist and built an inference instead. **Before trusting any column as a source of truth, confirm something has actually written it** — `select col, count(*) from t group by col` costs nothing and settles it.
+
+**A premise handed to a coding chat is a premise it will build on.** Twice in one session this planning chat asserted a schema fact — that the customer path re-priced from the menu, and that `orders.source` recorded order channel — which the coding chat accepted and reasoned from, producing correct work on a false foundation. **State the provenance of every load-bearing fact in a prompt** (live-verified / read from code / assumed) and instruct the chat to flag rather than accept anything it cannot check. The coding chat caught both, but only after building.
+
+**Payment state must stay orthogonal to fulfilment state.** `orders.status` is a fulfilment machine (pending → confirmed → cooking → ready → collected); payment can land at any point on that line. Making "paid" a ninth status serialises two independent things and the kitchen board immediately misreports where food is. The schema already agrees — the `status` CHECK has eight operational values and none of them is a payment. See §37.
+
+**Red is not one state.** `buildSlotIndicators`'s tone went red at `concurrency >= ceiling`, conflating *at capacity* with *over capacity* — two materially different operator situations rendering identically, in a UI whose entire job is to distinguish them at a glance. The distinction existed in the data (`remainingTotal`, `over_total`) and simply was not carried to the renderer. **When a status colour has to answer more than one question, check whether the underlying computation already knows the answer and is discarding it** — `over_total` and `over_cats` were being computed, shipped to the browser, and read only by a dismiss-signature function.
+
+**Naming a contributor by a matching key is not the same as naming a contributor.** `lib/capacity-breach.ts` identified the order responsible for a breached cooking window by string-matching `o.slot === window_start` — so it named the one order whose *collection time* happened to equal the window label, while the orders actually supplying the load (collecting ten minutes later, cooking backward into it) went unnamed. The result was a warning that pointed at the only innocent party. **Attribution must follow the causal path the engine actually computed, not a key that looks similar.**
+
+**Some attributions are impossible in principle, and the code should say so.** `production_slot_usage` sums units per slot before the engine sees them, so when five pizzas at 18:30 spill backward into an earlier window, those spilled units belong to their source orders **jointly** — `CookInterval` carries no provenance and the source deadline is discarded during seating. No server change recovers this. **Where an attribution cannot be made, return the coarser fact (the contributing slots) and let the UI list orders by slot with their own quantities** — never compute a plausible-looking split. The helper's return type is the right place to enforce that: `contributingProductionSlots` returns slots, never orders.
+
+**A guard that fails open, on a path with no server-side equivalent, is not a guard.** The operator walk-up path bypasses ALL capacity gating by design (`app/api/dashboard/action/route.ts:763-766`), leaving a dismissible client prompt whose `catch` proceeds on any error. The edit path has **zero** capacity-engine calls anywhere in the route file. Both are defensible product decisions — the operator is present and knows their kitchen — but it means **the only record of over-capacity is a display**, and until V9.4 nothing distinguished an operator's informed override from orders that landed unattended during an offline sync. `capacity_ack_at` now records the former; the latter remains the banner's real purpose.
+
+# 36. Android app platform notes (V9.2, verification status V9.3)
 
 > The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. **STATUS: no build has shipped and no store listing exists.**
 
@@ -4449,6 +4586,108 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 ⚠️ **CORRECTION — a native helper written for one platform must be RE-VERIFIED against the other, not assumed.** `lib/native/statusBar.ts` carried **three calls that are verified no-ops on modern Android** — `setBackgroundColor` (ignored for API >= 36) and `setOverlaysWebView` (ignored on Android 15+) — plus a **hardcoded colour matching nothing in the brand**. The helper was correct for iOS and had simply been assumed to generalise. The status-bar strip is instead handled at the platform layer (`android/app/src/main/res/values/styles.xml`'s `windowBackground`, painted with `@color/hgHeaderNavy` = `#0F172A`, which MUST match `HEADER_BG` in `lib/brand.ts`). See §35's safe-area invariant for the related trap.
 
-**Verification asymmetry, worth knowing before trusting a device result:** a physical Android 14 tablet is **below the API-35 enforcement threshold**, so it **masks** the edge-to-edge/inset behaviour an API-36 emulator exposes. For that one class of defect the more realistic device gives the less realistic answer — **verify insets on the emulator**. A near-stock device also does not clear aggressive OEM background-killing (Samsung, Xiaomi), which is the case that matters for a tablet left on a counter all service.
+## VERIFICATION STATUS (V9.3, 28 July 2026)
 
-HatchGrab Engineering Reference Manual · V9.2
+> **Stated plainly so nothing later reads as settled that isn't.** The distinction that matters is between *built*, *reasoned*, and *observed*. Most of the Android work is the first two. Anything not listed under VERIFIED has **not been seen working**, however confident the code comments sound. (This supersedes the standalone verification-asymmetry paragraph that stood here in V9.2 — same content, folded in below so §36 states it once.)
+
+**✅ VERIFIED ON DEVICE (Android emulator, API 36):**
+
+- The **UA marker clears `proxy.ts`'s auth guard** — the V8.7 login loop does **not** recur.
+- **Authenticated operator login reaches a real truck dashboard.**
+- **FCM registration returns a token and it reaches `van_devices.push_token`** — 142 chars, `platform='android'`.
+- The **navy status-bar strip renders continuous with the header**.
+
+**🔨 BUILT BUT NOT EXERCISED:**
+
+- The **four new catches** in `lib/native/keepAwake.ts` / `lib/native/notifications.ts` — **shape verified by `tsc`; behaviour on failure REASONED ONLY, never forced.** No bridge rejection was induced.
+- The **`allowSleep()` cleanup removal.** The claim that the OS clears `FLAG_KEEP_SCREEN_ON` on background/destroy follows from the **documented window-scoped contract, NOT from an observed run.**
+
+**🚫 NEVER RUN ON ANY DEVICE, EITHER PLATFORM:**
+
+- The **full order-flow click-through** (place order → KDS → confirmation email) — **outstanding since V6.3**.
+- **Heartbeat / auto-pause** end to end.
+- **Keep-awake through a full service.**
+- **Outbox drain on reconnect.**
+- **Session survival across force-quit.**
+
+**⚠️ CANNOT BE VERIFIED ON THE PHYSICAL TAB** (Lenovo, Android 14 — below the API-35 threshold): the **edge-to-edge / status-bar inset behaviour**. The Tab **MASKS** the bug the API-36 emulator exposes. For that one class of defect **the more realistic device gives the less realistic answer** — **verify insets on the emulator.**
+
+**⚠️ NOT REPRESENTATIVE:** near-stock Android does **not** clear aggressive **OEM background-killing** (Samsung, Xiaomi) — the case that matters most for a tablet left on a counter all service.
+
+# 37. Payments — commercial model and architecture decisions (V9.4)
+
+> **STATUS: NOTHING IS BUILT.** There is no Stripe account, no Stripe SDK dependency, no `STRIPE_*` env var, no webhook route, and no `stripe_*` column anywhere in the schema (the two the manual claimed are corrected in §13). This section records **decisions**, so the build does not re-litigate them. Everything below is settled unless marked OPEN.
+
+## The commercial model — locked
+
+- **We quote only our own numbers.** £29/mo Pro, £49/mo Max, plus **0.99% above a monthly allowance**. Card processing is a **third, separate line** — Stripe's, at their rates, charged by them.
+- **🔴 Card processing and the platform fee must NEVER be conflated in the implementation.** The public promise — *"guaranteed 50% saving on platform fees in year 1"* — is scoped deliberately to platform fees, not the blended bill, so that it stays true at every realistic volume. If the code merges the two numbers the promise becomes unverifiable.
+- **Drop "1.49%".** It appears nowhere in the codebase and was never ours to quote. On **direct charges with `fees.payer = account`** (the Standard-account default) the connected account pays Stripe directly and **the platform never touches the card fee at all** — so the separation is structural, not arithmetic. The defensible copy is *"plus Stripe's card processing fees, charged by Stripe directly at their standard rates — we never touch them"*, with any figure in a footnote as *"from 1.5% + 20p for UK cards"*. A single quoted rate is false for anyone with negotiated pricing, non-UK cards, or Amex.
+- **Allowance:** £1,500/month online orders (Pro), £2,000 (Max). Below it, zero platform fee.
+- **In-person payments NEVER incur the 0.99% and NEVER count toward the allowance.** Consistent with the existing "walk-up orders are 0% on all tiers" rule.
+- **Platform fee is ZERO during trial**, whatever the trial length. Trial length is **per-truck and negotiated** (1 month, 3 months, or as agreed).
+- **First 15 trucks:** 3 months free + 3 months half price + 50% platform-fee guarantee.
+- **Pay-at-hatch is gated on CONNECT STATE, not plan tier.** It remains available until a truck actually connects payment processing, and returns whenever charges are not currently enabled. ⚠️ `lib/features.ts` currently models it as a **tier** property (`starter` holds `online_ordering_pay_at_hatch`; pro/max/trial do not) — that is a change to what the gate MEANS and must flow through `features.ts`, the marketing table and the parity guard together.
+- **The paid step is operator-toggleable**, but a payment taken through Stripe (online, reader, Tap to Pay, QR) **always logs itself automatically** regardless of the toggle. The toggle removes a button, never information: a part-paid order shows its balance either way.
+- **Operators choose per truck** whether walk-ups go through Stripe or their own PDQ.
+
+## The payment ledger — the design, not yet built
+
+A four-state enum cannot express an order edited after payment. Order paid £30, operator adds an item → £35 total, £5 due: `paid` is wrong and `unpaid` is wrong. **The canonical record is a ledger — one row per money event:**
+
+`order_key · kind (charge|refund) · channel (online|in_person_stripe|in_person_other) · amount (INTEGER MINOR UNITS) · currency · stripe reference · state · created_at · created_by · gross_amount · fee_computed · fee_charged · fee_waived_reason · rate_applied · allowance_applied`
+
+Everything the operator sees derives from it: `amount_paid = Σcharges − Σrefunds`; `balance = total_minor − amount_paid`; **balance > 0 ⇒ part paid, £X due**; **balance < 0 ⇒ refund of £X due**.
+
+- **`orders.payment_status` and `orders.amount_paid` become DERIVED CACHES, never hand-written.** One rollup function recomputes them from the ledger, called by every path that inserts a ledger row. `payment_status`'s CHECK needs widening for `part_paid` / `refund_due` — **deploy-coupled**, since code writing a value the constraint rejects fails the write outright.
+- **The rollup write is STRUCTURAL, not a convenience.** A ledger row in a separate table does not touch `orders.updated_at`, and `lib/orders/mergeOrders.ts` version-guards on it — so without the rollback write to `orders`, a cached dashboard never learns a balance changed.
+- **Channel is required, not optional.** `payment_status = 'paid'` cannot tell you whether 0.99% applies; only the channel can.
+- **Shadow accounting from day one.** Always compute the fee; separately record what was actually taken and why it differed (`trial` / `allowance` / `guarantee_50pct` / `none`). Waivers **stack** — a truck can hit all three in one month — so record them in order. Snapshot `rate_applied` and `allowance_applied` **as they applied**, or changing the rate later silently rewrites every historical statement. This is what makes the monthly bill and the 50% guarantee producible.
+
+## Order edits and payment
+
+- **Operator-only edits today.** The difference is taken **at collection** — an increase creates a balance due, it must NOT silently re-charge a saved card. Customer-initiated edits are a later feature and drop into the ledger as another `online` row with no schema change.
+- **A downward edit creates a refund owed, operator-confirmed with the amount pre-filled.** Auto-refunding on every edit means a fat-fingered edit moves real money.
+- **OPEN:** charge-at-order versus **auth-at-order / capture-at-approval**. §510 already leans to the latter, and it is materially better — a downward edit before approval costs nothing, you simply capture less than you authorised, with no refund and no money leaving and returning. The two are different integrations, not a setting. **Decide before building.**
+- **OPEN:** refund the 0.99% pro-rata on partial refunds? (Stripe supports `refund_application_fee`.) Recommendation: yes.
+
+## Stripe Connect — the flow
+
+- **Standard accounts + Stripe-hosted onboarding via Account Links.** Hosted handles the existing-account case for free — the same button whether the operator has a Stripe account or not. ⚠️ **Account type is IMMUTABLE after creation.** So is `fees.payer`. One-way door.
+- **Readiness is a LIVE state, not a one-time flag.** Verifications run continuously and a capability can transition out of `active` months later. Design it as *"card payments available iff charges are currently enabled, else pay-at-hatch"* — the onboarding gap then solves itself as a special case, and so does a failed re-verification in six months.
+- **Do not confirm readiness from a single value.** Check `charges_enabled` **together with** the capabilities and requirements hashes. Listen to `account.updated`; returning to `return_url` does **not** mean onboarding completed.
+- **Account Links are short-lived and single-use**, and must not be emailed or texted. A "finish your setup" email points at Manage; Manage mints a fresh link.
+- **Store the livemode flag with the account id.** Months of test connected accounts are coming; a test `acct_` against live keys fails in a way that looks like a permissions bug.
+- **RECOMMENDED (open for confirmation): the Connect account belongs on `operators`, not `trucks`** — it represents a legal business with a bank account. Plan, allowance and the 0.99% stay per-truck. ⚠️ `trucks.operator_id` is **nullable**, so a truck with no operator cannot have payments; that is a checked precondition, not a null-deref.
+- **The subscription (£29/£49) is a DIFFERENT Stripe product** — Stripe Billing, with the operator as a **customer** of the platform and a saved card on the platform account. The connected account is where they *receive* money and cannot be debited for it. Same physical card, different object. **Not being built now**; upgrade buttons keep emailing hello@hatchgrab.com, which is faster and more flexible for fifteen negotiated trials.
+
+## In-person Stripe — the platform constraint
+
+**Tap to Pay is delivered through the Stripe Terminal iOS/Android SDKs.** Those are **native** SDKs; the HatchGrab app is a Capacitor **remote-URL shell** loading the live site in a WebView. A native payments SDK cannot run inside it. Supporting Tap to Pay means a Capacitor plugin wrapping the Terminal SDK on both platforms, plus Apple's Tap to Pay entitlement — on an app that has never shipped and has no `.entitlements` file.
+
+- **Interim answer: pay-by-QR at the hatch.** A per-order payment link, the customer taps their own phone, the same Connect webhook flips it to paid automatically. No Terminal SDK, no native work, no hardware, and it reuses the online-payments build entirely.
+- If the operator takes payment in **Stripe's own Dashboard app** (no-code Tap to Pay), that payment has no link to the HatchGrab order and **cannot auto-mark** — they tap "Paid" manually.
+- A generic PDQ the truck already owns (Worldpay, SumUp) **cannot** be driven by Stripe Terminal. "They already have a card machine" means the attestation path, not the integration path.
+
+## Currency and country
+
+- **Ledger amounts are integer minor units with a currency code on every row.** Not decimals. Conversion goes through a helper, **never a hardcoded ×100** — zero-decimal currencies exist.
+- **Snapshot currency AND country onto the order at creation.** Read live from the truck and changing a truck's currency retroactively reprices every historical order and every past fee calculation. `trucks.currency` (NOT NULL, default `GBP`) and `trucks.country` (NOT NULL, default `GB`) already exist.
+- **A truck trades in exactly ONE currency.** Multi-currency means multiple trucks. £1,500 cannot be compared against a mixed GBP/EUR total.
+- **The allowance is a lookup keyed on `(country, plan)`**, holding `{amount_minor, currency, rate}` — not a bare constant, and not a display string. ⚠️ `PLAN_ALLOWANCES` today holds **display strings** (`'First £1,500 of online orders included, then 0.99%'`); the marketing string must be **generated from** the enforcement value, not maintained alongside it. An unknown `(country, plan)` is a **loud failure**, never a silent fallback to the UK number.
+
+## Fee mechanics
+
+- **The 0.99% is never billed — it is deducted.** `application_fee_amount` on the PaymentIntent; Stripe splits at settlement and the operator's balance simply increases by less. No collection risk, no failed payment, no chasing.
+- **It is per-charge and immutable once set** — which is the hard part, because **the allowance is monthly and cumulative**. The fee engine must decide, at the instant of each charge, how much of *this* order sits above the truck's month-to-date online total, and an order can straddle the threshold. **This does not compose cleanly and is the single hardest requirement in the model.**
+- **The threshold binds in reality.** Gusto took £2,633.20 across 108 orders in July — over the Pro allowance in their first month. This cannot be a v2 item.
+- **🔴 Exclude demo trucks from every fee and threshold calculation.** Five `demo-*` trucks generated ~£3,170 of synthetic gross in July — **more than Gusto's real trade**. The exclusion belongs in ONE shared helper, not remembered per call site.
+
+## Refunds
+
+- **Online and in-person are different mechanisms.** A Stripe payment refunds through the API against the original charge; a cash or own-PDQ payment refunds by the operator handing money back and the ledger recording an **attestation**. Never offer a Stripe refund button on an order never paid through Stripe.
+- **`app/order/[id]/manage/page.tsx:85` promises every cancelling customer a 5–10 day refund, unconditionally.** That is a live commitment which forces refunds into the payments pass rather than after it, and the sentence must become conditional on the ledger.
+- **Two cancel paths currently key their refund copy off DIFFERENT fields** — `/api/orders/cancel` reads `payment_status`, `/api/events/action` reads `paid_at`. Both collapse onto the ledger.
+- **`undo_collected` does not clear `paid_at`**, so a reverted order keeps a payment timestamp and the operator-cancel email can promise a cash customer a refund. Fix with the ledger.
+
+HatchGrab Engineering Reference Manual · V9.4

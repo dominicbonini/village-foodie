@@ -46,7 +46,11 @@ export interface Order {
   status: OrderStatus
   modify_type: ModifyType | null
   modify_data: any | null
-  payment_status: 'unpaid' | 'paid' | 'refunded' | 'failed'
+  // DERIVED CACHES — recomputed from the order_payments ledger by lib/payments/ledger.ts. Never written
+  // by hand. 'part_paid'/'refund_due' (V9.4) are DEPLOY-COUPLED: they require
+  // 20260729_orders_payment_status_widen_check.sql to have run, or the write is rejected by the CHECK.
+  payment_status: 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'refund_due' | 'failed'
+  /** POUNDS (numeric(8,2)), not minor units — the ledger is pence. Cross via fromMinor(). */
   amount_paid: number | null
   created_at: string
   updated_at: string

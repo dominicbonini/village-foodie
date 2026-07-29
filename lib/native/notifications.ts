@@ -40,9 +40,19 @@ export async function notifyLocal(title: string, body: string): Promise<void> {
 /** Offline/paused LOCAL alerts enabled? master ON AND the offline-type toggle not explicitly off (default ON). */
 export async function offlineAlertsEnabled(): Promise<boolean> {
   if (!Capacitor.isNativePlatform()) return false
-  const master = (await Preferences.get({ key: NOTIFY_KEYS.master })).value === 'true'
-  if (!master) return false
-  return (await Preferences.get({ key: NOTIFY_KEYS.offline })).value !== 'false'   // default ON
+  // Both reads were previously UNCAUGHT — a rejection propagated to callers that have no handler, i.e. an
+  // unhandled promise rejection. That is a JS-side failure a catch genuinely DOES handle (bridge
+  // call.reject, or the plugin proxy failing), unlike a native throw, which no JS catch can reach
+  // (Bridge.java:848-851 — see the note in keepAwake.ts). FAIL CLOSED: if we cannot read the prefs we do not
+  // know the operator opted in, and firing an unwanted alert is worse than missing one.
+  try {
+    const master = (await Preferences.get({ key: NOTIFY_KEYS.master })).value === 'true'
+    if (!master) return false
+    return (await Preferences.get({ key: NOTIFY_KEYS.offline })).value !== 'false'   // default ON
+  } catch (err) {
+    console.warn('[Notifications] offlineAlertsEnabled pref read failed — treating as disabled:', err)
+    return false
+  }
 }
 
 export async function playNewOrderAlert(orderNumber: string) {

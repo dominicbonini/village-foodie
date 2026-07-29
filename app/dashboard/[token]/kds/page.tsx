@@ -243,7 +243,14 @@ export default function KdsPage() {
   useEffect(() => {
     configureStatusBar()
     prepareKeepAwake() // native acquires now; web waits for the KeepAwakePrompt button's click (Safari needs a user activation)
-    return () => { allowSleep() }
+    // 🚫 NO `return () => { allowSleep() }` — removed deliberately (2026-07-28). FLAG_KEEP_SCREEN_ON is a
+    // WINDOW flag scoped to window visibility, not a wake lock we own: backgrounded ⇒ no effect, Activity
+    // destroyed ⇒ Window destroyed with it, Activity recreated ⇒ fresh Window with default flags (not even
+    // restored). So no OS path strands the screen on, and the release was pure churn against the
+    // [keepScreenOn] effect below, which already owns the on/off state.
+    // ✅ The persistence across client-side routes (single-Activity Capacitor) is INTENDED: keep-awake is a
+    // DEVICE pref (hg_keepawake_${token}) meaning "this screen stays on", not "stays on while on the KDS".
+    // See the fuller note at app/dashboard/[token]/page.tsx (the keepScreenOn effect).
   }, [])
 
   useEffect(() => {

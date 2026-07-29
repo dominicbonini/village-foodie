@@ -17,6 +17,14 @@ export interface SlotIndicator {
   tone: SlotTone
   emoji: string
   label: string
+  /** Units this window is STRICTLY OVER the kitchen_capacity ceiling; 0 when it is at-or-under.
+   *
+   *  `tone` alone cannot express this: it goes red at `conc >= ceiling` (slot-availability.ts:737),
+   *  so a legitimately FULL window and a genuinely over-subscribed one render identically. This is
+   *  the same strictly-over test the breach detector applies (`remainingTotal < -EPS`,
+   *  lib/capacity-breach.ts:100) — full is not over. Read by the pickers to mark over-capacity slots.
+   *  Display-only: it never feeds tone, placement or any fit decision. */
+  overTotal: number
   /** Raw occupancy for capacity fit-checks (cookingByCat / rateByCat / totalCooking).
    *  Same data the tone/label derive from — consumers must not recompute a parallel calc. */
   occ: WindowOccupancy | null
@@ -109,7 +117,11 @@ export function buildSlotIndicators(
           .join(', ')
       : ''
 
-    out.set(s.collection_time, { tone, emoji, label, occ: null as WindowOccupancy | null })
+    // STRICTLY over only — same rule (and same raw field) as the breach detector. `remainingTotal`
+    // is Infinity when no ceiling is set, so the subtraction can never produce a false positive.
+    const overTotal = w && w.remainingTotal < -1e-9 ? Math.round(-w.remainingTotal) : 0
+
+    out.set(s.collection_time, { tone, emoji, label, overTotal, occ: null as WindowOccupancy | null })
   }
   return out
 }

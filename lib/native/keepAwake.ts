@@ -94,10 +94,24 @@ export async function keepAwake(): Promise<WakeState> {
   // NATIVE FIRST — `isNativePlatform()` is SYNCHRONOUS (no activation spent). The dynamic import lives on this
   // branch only, so it never delays the web request. The plugin holds the lock with no gesture required.
   if (Capacitor.isNativePlatform()) {
-    const { KeepAwake } = await import('@capacitor-community/keep-awake')
-    await KeepAwake.keepAwake()
-    setWakeState('native')
-    return 'native'
+    // ⚠️ WHAT THIS CATCH IS AND IS NOT. It handles the JS-side failures a catch CAN handle: the dynamic
+    // import failing, and the bridge REJECTING the call (call.reject → a real rejected Promise). Without it
+    // those surfaced as an unhandled rejection, because this call had no catch at all.
+    // It does NOT — and cannot — protect against a NATIVE throw. Android's Bridge rethrows a plugin
+    // exception as RuntimeException on a background HandlerThread (Bridge.java:848-851) and
+    // executeOnMainThread is a bare post() with no catch (Bridge.java:909-913), so a native throw kills the
+    // process before control returns here. Do not read this as protection against that; see push.ts:44-47.
+    try {
+      const { KeepAwake } = await import('@capacitor-community/keep-awake')
+      await KeepAwake.keepAwake()
+      setWakeState('native')
+      return 'native'
+    } catch (err) {
+      // The lock was NOT acquired — report the truth so the toggle shows off rather than lying.
+      console.warn('[KeepAwake] native keepAwake failed:', err)
+      setWakeState('off')
+      return 'off'
+    }
   }
   // WEB — fire the request with NOTHING awaited before it. requestWebLock runs its sync guards then awaits the
   // request() call itself, so request() is reached synchronously within the caller's click handler.
@@ -124,9 +138,21 @@ export function prepareKeepAwake(): void {
 }
 
 export async function allowSleep(): Promise<void> {
-  const plugin = await getPlugin()
-  if (plugin) {
-    await plugin.KeepAwake.allowSleep()
+  // Same scope as the catch in keepAwake(): JS-side rejection + import failure only, NEVER a native throw
+  // (Bridge.java:848-851 / :909-913 — see the note there). Previously uncaught, so a rejection here became
+  // an unhandled promise rejection in a caller that has no handler of its own.
+  try {
+    const plugin = await getPlugin()
+    if (plugin) {
+      await plugin.KeepAwake.allowSleep()
+      setWakeState('off')
+      return
+    }
+  } catch (err) {
+    // Releasing failed. The screen may stay on until the OS drops the flag on its own (it is window-scoped,
+    // so backgrounding or teardown clears it regardless) — report 'off' because our INTENT is off, and a
+    // stuck-on screen is self-correcting whereas a stuck 'native' state would misreport the toggle forever.
+    console.warn('[KeepAwake] native allowSleep failed:', err)
     setWakeState('off')
     return
   }

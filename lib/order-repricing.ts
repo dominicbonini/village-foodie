@@ -423,3 +423,11 @@ export function repriceOrder(
 export function toMinor(amount: number): number {
   return Math.round(num(amount) * 100)
 }
+
+/** pence → pounds. The INVERSE of toMinor, and the only way back: the payment ledger holds integer minor
+ *  units while orders.amount_paid is numeric(8,2) pounds, so every crossing of that boundary goes through
+ *  this pair. NEVER hardcode ×100 or ÷100 at a call site — one open-coded conversion is all it takes for a
+ *  money value to be out by two orders of magnitude with nothing to catch it. */
+export function fromMinor(minor: number): number {
+  return Math.round(num(minor)) / 100
+}

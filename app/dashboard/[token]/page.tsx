@@ -833,8 +833,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(!authenticated)return
     // Native acquires now; web can't (Safari denies a request outside a user activation) so this only sets
     // intent + reflects state — the KeepAwakePrompt BUTTON (a real click) acquires the web lock.
+    //
+    // 🚫 DO NOT ADD `return()=>{allowSleep()}` HERE. It was removed deliberately (2026-07-28); putting it
+    // back reintroduces two problems and fixes none.
+    //
+    // 1. REDUNDANT AGAINST THE OS. FLAG_KEEP_SCREEN_ON is a WINDOW flag, scoped to that window being
+    //    visible — it is not a wake lock we own and must release. Backgrounded ⇒ no effect. Activity
+    //    destroyed ⇒ the Window goes with it. Activity recreated ⇒ a fresh Window with DEFAULT flags, so
+    //    it isn't even restored. There is no OS path where a missing release strands the screen on.
+    // 2. IT MISFIRED ON EVERY DEP CHANGE, not just unmount. With deps [authenticated,keepScreenOn] the
+    //    cleanup ran before every re-run: toggling OFF was allowSleep() twice, toggling ON was
+    //    allowSleep() immediately followed by prepareKeepAwake() — a release/re-acquire flicker between
+    //    two states that agree. The body below already handles both branches; the cleanup only duplicated it.
+    //
+    // ✅ THE NAVIGATION DELTA IS THE INTENDED BEHAVIOUR, not an oversight. Capacitor is single-Activity, so
+    // without the cleanup the flag persists across client-side routes (e.g. into /manage). That is correct:
+    // keep-awake is a DEVICE preference (hg_keepawake_${token}, per-token, default ON) meaning "this screen
+    // stays on" — NOT "stays on while looking at orders". An operator who steps into Settings mid-service and
+    // comes back to a slept screen is strictly worse off than one whose screen stayed lit. Product decision,
+    // settled 2026-07-28.
+    //
+    // The pref is written ONLY by applyKeepScreenOn (the toggle handler, :1101) — allowSleep() never touches
+    // storage — so removing this cleanup cannot affect what persists.
     if(keepScreenOn){prepareKeepAwake()}else{allowSleep()}
-    return()=>{allowSleep()}
   },[authenticated,keepScreenOn])
   useEffect(()=>{
     // NEW-ORDER sound. Fires iff master (soundEnabled, per-device) && per-truck config.new_orders:
@@ -3376,9 +3397,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                       if(s.is_grace)return<option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing{isCurrent?' · (current)':''}</option>
                       // Same oven-occupancy indicator as Add Order (shared helper): tone +
                       // per-category composition label ("4 Pizza, 2 Other"). (current) is edit-only.
-                      const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:''}
+                      // ❗ = STRICTLY over the ceiling, not merely full — red alone conflates the two
+                      // (tone goes red at conc >= ceiling). Same mark, same rule as the Add Order
+                      // picker. Permanent property of the slot's load; unaffected by any acknowledgement.
+                      const ind=editSlotIndicators.get(s.collection_time)??{emoji:'🟢',label:'',overTotal:0}
                       const label=`${ind.label?` ${ind.label}`:''}${isCurrent?' · (current)':''}`
-                      return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{label}</option>
+                      return<option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.overTotal>0?'❗':''}{label}</option>
                     })}
                   </select>
                 )

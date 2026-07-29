@@ -609,6 +609,56 @@ function placeInstantPoints(
   return { points, runsOffFront: false }
 }
 
+/**
+ * Which STORED production slots have cooking load overlapping the window span [fromMins, toMins)?
+ *
+ * DISPLAY-ONLY, for naming the orders an operator would have to move. Shares the seating cadence with
+ * projectBackwardOccupancy below (same `numWindows = ceil(N/batch)` reaching back `numWindows*prep`
+ * from the deadline) so the two can't disagree about which slots feed a window.
+ *
+ * 🔴 HARD LIMIT — this returns SLOTS, never orders, and that is not a shortcut. `productionSlotUnits`
+ * is a per-slot AGGREGATE: 5 pizzas at 18:30 may be two orders, and the units that spill backward from
+ * it into an earlier window belong to those orders JOINTLY. There is no information anywhere in the
+ * projection that could attribute a spilled unit to one order — CookInterval carries no provenance and
+ * the source deadline is discarded during seating. Callers must list orders BY COLLECTION SLOT with
+ * their own quantities, and must not imply which order supplied which unit.
+ */
+export function contributingProductionSlots(
+  productionSlotUnits: Record<string, QtyByCat>,
+  catConfigs: Record<string, CatConfig>,
+  fromMins: number,
+  toMins: number,
+  capacityWindowMins: number = 5,
+): string[] {
+  const capacityStep = Math.max(1, Math.round(capacityWindowMins))
+  const out: string[] = []
+  for (const [ps, units] of Object.entries(productionSlotUnits || {})) {
+    const deadline = parseMins(ps)
+    let overlaps = false
+    for (const [catRaw, rawN] of Object.entries(units || {})) {
+      const cfg = catConfigs[catRaw.toLowerCase()]
+      const N = Number(rawN) || 0
+      if (!cfg || N <= 0) continue
+      if (!cfg.secs) {
+        // Ticked instant load seats as a single point at deadline − capacityStep (see the seating loop).
+        if (cfg.countsToCapacity) {
+          const at = deadline - capacityStep
+          if (at >= fromMins && at < toMins) overlaps = true
+        }
+        continue
+      }
+      const batch = Math.max(1, cfg.batch)
+      const prep = Math.max(1, Math.round(cfg.secs / 60))
+      const numWindows = Math.ceil(N / batch)
+      // Cooking occupies [deadline − numWindows*prep, deadline). Overlaps the span iff it starts
+      // before the span ends AND ends after the span starts.
+      if (deadline - numWindows * prep < toMins && deadline > fromMins) overlaps = true
+    }
+    if (overlaps) out.push(ps)
+  }
+  return out.sort((a, b) => parseMins(a) - parseMins(b))
+}
+
 export function projectBackwardOccupancy(
   productionSlotUnits: Record<string, QtyByCat>,
   catConfigs: Record<string, CatConfig>,
@@ -885,7 +935,19 @@ export function fitOrderBackward(
   // window rejects new load. Default {} = legacy (new order only) for callers that don't pass it; an
   // EMPTY slot is unchanged either way (existing 0 ⇒ nwCombined == nw).
   existingAtSlot: QtyByCat = {},
-): { tone: SlotTone; bound_by: string | null; fits: boolean } {
+): {
+  tone: SlotTone
+  bound_by: string | null
+  fits: boolean
+  /** Window-scoped PEAK concurrency including this order — the figure the ceiling was judged against.
+   *  0 when there is no ceiling or the order has no counted load. ADDITIVE: existing callers that
+   *  destructure { tone, bound_by, fits } are unaffected. Display-only. */
+  peak: number
+  /** Earliest cooking-window start this order occupies (minutes from midnight), so a caller can name
+   *  the real window span [spanFromMins, slotMins) rather than just the collection time. Null when the
+   *  order has no cooking load (instant-only). Display-only. */
+  spanFromMins: number | null
+} {
   // Order's COOKING load on the PREP grid (drives per-category batch tones) + its concurrency
   // intervals; counted-instant items are tallied for capacity-cadence placement below.
   const orderLoad = new Map<number, Record<string, number>>()
@@ -969,9 +1031,12 @@ export function fitOrderBackward(
   // case (no window over cap, or the order itself over cap) is byte-identical; only an unrelated
   // breach-elsewhere stops red-ing every slot. Per-instant COUNT is unchanged (all covering batches,
   // incl. boundary-spanning, still counted) — only the evaluated instant SET is narrowed.
+  // reportedPeak is captured for the CALLER's message only — it never influences tone/fits below.
+  let reportedPeak = 0
   if (kitchenCapacity != null) {
     const realIntervals = [...back.intervals, ...orderCookIntervals]
     const cookingPeak = windowScopedPeak(realIntervals, orderCookIntervals)
+    reportedPeak = cookingPeak
     if (cookingPeak > kitchenCapacity + EPS) {
       consider('red', 'global ceiling')
     } else {
@@ -983,14 +1048,21 @@ export function fitOrderBackward(
         const peak = points.length
           ? windowScopedPeak([...realIntervals, ...points], [...orderCookIntervals, ...points])
           : cookingPeak
+        reportedPeak = peak
         if (peak >= kitchenCapacity - EPS) consider('amber', 'global ceiling')
       }
     }
   }
 
+  // Earliest window this order occupies — the start of the span the caller can name.
+  let spanFromMins: number | null = null
+  for (const iv of orderCookIntervals) {
+    if (spanFromMins === null || iv.startMins < spanFromMins) spanFromMins = iv.startMins
+  }
+
   // fits derived from bindRank (number) — `tone` is closure-mutated, so a direct
   // `tone !== 'red'` would mis-narrow to the literal 'green'.
-  return { tone, bound_by, fits: bindRank < RANK.red }
+  return { tone, bound_by, fits: bindRank < RANK.red, peak: Math.round(reportedPeak), spanFromMins }
 }
 
 // ── ASAP / auto-placement (Stage 3): earliest collection slot that BACKWARD-FITS ──

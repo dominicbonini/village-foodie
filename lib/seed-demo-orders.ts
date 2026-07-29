@@ -12,6 +12,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { generateSlots } from '@/lib/slots'
+import { toMinor } from '@/lib/order-repricing'
 
 const CUSTOMER_NAMES = [
   'Sarah', 'Dave', 'Priya', 'Tom', 'Aisha', 'Mark', 'Chloe', 'Raj', 'Ellie', 'Ben',
@@ -315,7 +316,7 @@ export async function seedDemoOrders(
       total,
       // §4a — pence, derived from the total we just computed. Seeded rows carry it like every other
       // write path so a demo dashboard reads the same shape production does.
-      total_minor: Math.round(total * 100),
+      total_minor: toMinor(total),
       notes: null,
       // Confirmed, not pending: a pile of unactioned "New — action needed" cards reads as a backlog, not
       // a working kitchen.

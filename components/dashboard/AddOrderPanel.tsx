@@ -8,7 +8,8 @@ import type {
 import { getAsapSlot, calcReadyTime, getCatConfig } from '@/components/dashboard/helpers'
 import { isSlotPast } from '@/lib/slot-utils'
 import { calcQueueAwareReadySecs, calcQueuePushSecs } from '@/lib/prep-utils'
-import { earliestBackwardFitSlot, projectBackwardOccupancy, fitOrderBackward } from '@/lib/slot-availability'
+import { earliestBackwardFitSlot, projectBackwardOccupancy, fitOrderBackward, backwardWindowStepMins, contributingProductionSlots } from '@/lib/slot-availability'
+import { normaliseOrderLines } from '@/lib/slot-bookings'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
@@ -223,6 +224,28 @@ export function AddOrderPanel({
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
+  // OVER-CAPACITY CONFIRMATION. Set at SUBMIT time (never at slot-select — that trigger was removed in
+  // 448130f as operator friction and stays removed) when the fresh fit check fails. Holds everything the
+  // modal renders; `override` carries the stock-override flag through the re-entry so accepting here
+  // can't silently drop a stock decision the operator already made. Null ⇒ no modal.
+  const [capacityConfirm, setCapacityConfirm] = useState<{
+    slot: string
+    /** 'filled' = the window got worse while they were building the order; 'over' = it already was, or
+     *  this basket is what tips it; 'toosoon' = a LEAD failure, not a capacity one (see the copy). */
+    variant: 'over' | 'filled' | 'toosoon'
+    /** Start of the cooking window span this order occupies, "HH:MM". Null ⇒ no cooking load. */
+    windowFrom: string | null
+    /** The binding constraint, already resolved from fit.bound_by. */
+    bind: { kind: 'ceiling'; limit: number; needed: number }
+        | { kind: 'category'; cat: string; limit: number; needed: number }
+        | { kind: 'lead' }
+    unitWord: string
+    /** Orders collecting at the slots that feed this window, with their OWN quantities.
+     *  🔴 NOT an attribution of spilled units — see contributingProductionSlots. */
+    contributors: Array<{ id: string; slot: string; qty: number }>
+    thisOrderQty: number
+    override: boolean
+  } | null>(null)
 
   // ── derived ─────────────────────────────────────────────────────────────────
   const manualAsapSlot = getAsapSlot(manualSlots, manualEvent?.event_date, eventTz)
@@ -300,7 +323,7 @@ export function AddOrderPanel({
   }, [capacityInputs, manualSlots, serverCatConfigs, categoryOrder])
 
   const slotIndicatorFor = (s: Slot): SlotIndicator =>
-    slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', occ: null }
+    slotIndicators.get(s.collection_time) ?? { tone: 'green', emoji: '🟢', label: '', overTotal: 0, occ: null }
 
   // ASAP "ready around" slot — the BASKET-AWARE earliest BACKWARD-FITTING slot (Stage 3):
   // the earliest collection slot whose cooking windows have room for this order, via the SAME
@@ -650,7 +673,11 @@ setItemModal({ item, modGroups, editCartKey })
   // returns 409 {stock} WITHOUT inserting — we show the real remaining and let the operator
   // choose. override=true (resubmit after "Proceed anyway"): the operator has SEEN the shortfall
   // and deliberately oversells — the server still runs the check, then inserts past it.
-  const submitManual = async (override = false, skipFitCheck = false) => {
+  // capacityAck: the operator pressed "Place it anyway" on the over-capacity modal. Distinct from
+  // skipFitCheck (a re-entry guard) because it is PERSISTED — it becomes orders.capacity_ack_at, so a
+  // deliberate, informed over-capacity placement is later distinguishable from one that arrived via an
+  // offline collision. Never set by any other path.
+  const submitManual = async (override = false, skipFitCheck = false, capacityAck = false) => {
     if (!hasItems) return
     const effectiveSlot = manualSlot || adjustedAsapSlot?.collection_time || null
 
@@ -699,11 +726,82 @@ setItemModal({ item, modGroups, editCartKey })
             (ci.productionSlotUnits || {})[effectiveSlot] || {},
           )
           if (!fit.fits) {
-            const proceed = window.confirm(
-              `This slot is already booked up for what you're adding.\n\nUse it anyway? You may need to move another customer's slot.\n\nOK = book at ${effectiveSlot} anyway   ·   Cancel = pick another slot`
-            )
-            if (proceed) { await submitManual(override, true); return }
-            return // Cancel — keep the basket, operator re-picks the slot
+            const slotMins = readyToMins(effectiveSlot)
+            const capWord = (c: string) => c.charAt(0).toUpperCase() + c.slice(1)
+            const isCounted = (cat: string) => {
+              const cf = freshCfgs[(cat || '').toLowerCase()] as { secs?: number; countsToCapacity?: boolean } | undefined
+              return !!(cf && (cf.secs || cf.countsToCapacity))
+            }
+
+            // ── WHICH COPY? Compare LIKE WITH LIKE ────────────────────────────────────────────
+            // `slotIndicators` is the basket-agnostic window state the operator has been LOOKING AT —
+            // capacityInputs has no poll and no realtime invalidation, so it genuinely is what was on
+            // screen when they picked. Measure the same thing from THIS fresh read. Worse now than
+            // then ⇒ the board moved under them ⇒ "filled up". Otherwise ⇒ "over capacity": either it
+            // already was when they chose it, or this basket is what tips it — in both cases nothing
+            // changed while they worked, so blaming another order would be a lie.
+            const seenTone = slotIndicators.get(effectiveSlot)?.tone ?? 'green'
+            const freshStep = backwardWindowStepMins(freshCfgs)
+            const freshW = back.pileByStart.get(slotMins) ?? back.byStart.get(slotMins - freshStep) ?? null
+            const freshTone = freshW?.tone ?? 'green'
+
+            // ── THE BINDING CONSTRAINT, from fit.bound_by (previously computed and discarded) ──
+            // "too soon (insufficient lead)" | "global ceiling" | "<Cat> used/batch".
+            const bb = fit.bound_by ?? ''
+            const catMatch = bb.match(/^(.+?) (\d+)\/(\d+)$/)
+            const bind: NonNullable<typeof capacityConfirm>['bind'] =
+              bb.startsWith('too soon')
+                ? { kind: 'lead' }
+                : catMatch
+                  ? { kind: 'category', cat: catMatch[1], limit: Number(catMatch[3]), needed: Number(catMatch[2]) }
+                  : { kind: 'ceiling', limit: ci.kitchenCapacity ?? 0, needed: fit.peak }
+
+            // Unit noun: only honest when the basket's counted load is a SINGLE category —
+            // kitchen_capacity is a global item ceiling across every cooked category, so naming one
+            // category's word for a mixed basket would misdescribe the limit.
+            const cookedCats = Object.keys(basketByCat).filter(isCounted)
+            const singleCat = cookedCats.length === 1 ? cookedCats[0] : null
+            const thisOrderQty = cookedCats.reduce((s, c) => s + (basketByCat[c] || 0), 0)
+            const unitWord = singleCat
+              ? (thisOrderQty === 1 ? capWord(singleCat) : `${capWord(singleCat)}s`).toLowerCase()
+              : 'items'
+
+            // ── CONTRIBUTING ORDERS (variant 'over' only) ─────────────────────────────────────
+            // 🔴 BY COLLECTION SLOT, with each order's OWN quantity. productionSlotUnits is a per-slot
+            // aggregate, so a unit that spilled backward out of a later slot belongs to every order at
+            // that slot JOINTLY — there is nothing anywhere that could attribute it to one of them.
+            // We therefore never say which order supplied which unit, only who is cooking in the span.
+            const spanFrom = fit.spanFromMins ?? (slotMins - freshStep)
+            const feedSlots = new Set(contributingProductionSlots(
+              ci.productionSlotUnits || {}, freshCfgs, spanFrom, slotMins, ci.capacityWindowMins ?? 5,
+            ))
+            const OCCUPYING = new Set(['pending', 'confirmed', 'modified', 'cooking'])
+            const contributors = (orders || [])
+              .filter(o => o.slot && feedSlots.has(o.slot) && OCCUPYING.has(o.status)
+                && (!manualEvent?.id || !o.event_id || o.event_id === manualEvent.id))
+              .map(o => ({
+                id: String(o.id),
+                slot: o.slot as string,
+                // Deal constituents counted via the SAME shared extractor every capacity path uses.
+                qty: normaliseOrderLines(o.items || [], o.deals ?? null)
+                  .reduce((s, l) => s + (isCounted(itemCategoryMap[l.name] || '') ? l.quantity : 0), 0),
+              }))
+              .filter(c => c.qty > 0)
+              .sort((a, b) => a.slot.localeCompare(b.slot) || a.id.localeCompare(b.id))
+
+            const fmtMins = (m: number) => `${String(Math.floor(((m % 1440) + 1440) % 1440 / 60)).padStart(2, '0')}:${String(((m % 1440) + 1440) % 1440 % 60).padStart(2, '0')}`
+
+            setCapacityConfirm({
+              slot: effectiveSlot,
+              variant: bind.kind === 'lead' ? 'toosoon' : (seenTone !== 'red' && freshTone === 'red') ? 'filled' : 'over',
+              windowFrom: fit.spanFromMins != null ? fmtMins(fit.spanFromMins) : null,
+              bind,
+              unitWord,
+              contributors,
+              thisOrderQty,
+              override,
+            })
+            return // NOTHING is submitted — the modal's buttons decide.
           }
         }
       } catch { /* FAIL OPEN — a flaky check must never block a manual order */ }
@@ -746,6 +844,10 @@ setItemModal({ item, modGroups, editCartKey })
         event_id: manualEvent?.id || null,
         event_date: manualEvent?.event_date || null,
         override,
+        // The operator was shown the over-capacity modal and chose "Place it anyway". Persisted as
+        // orders.capacity_ack_at so an INFORMED over-capacity placement is later distinguishable from
+        // one that arrived unattended (offline collision / sync race). Nothing reads it yet.
+        capacityAcknowledged: capacityAck,
       }
       // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
       const result = await gatedAction({
@@ -864,7 +966,11 @@ setItemModal({ item, modGroups, editCartKey })
           {manualSlots.filter(s => s.is_grace || !isSlotPast(s, eventTz, manualEvent?.event_date)).map(s => {
             if (s.is_grace) return <option key={s.collection_time} value={s.collection_time}>⚠️ {s.collection_time} · After closing</option>
             const ind = slotIndicatorFor(s)
-            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.label ? ` ${ind.label}` : ''}</option>
+            // ❗ = this window is STRICTLY OVER the ceiling, not merely full. Red alone conflates the
+            // two (tone goes red at conc >= ceiling), so an at-capacity slot and an over-subscribed
+            // one were indistinguishable. A permanent property of the slot's load — it does NOT clear
+            // when an operator acknowledges a placement. Mark only, no wording, by design.
+            return <option key={s.collection_time} value={s.collection_time}>{s.collection_time} {ind.emoji}{ind.overTotal > 0 ? '❗' : ''}{ind.label ? ` ${ind.label}` : ''}</option>
           })}
         </select>
       ) : (
@@ -1446,6 +1552,79 @@ setItemModal({ item, modGroups, editCartKey })
               {cartLines}
             </div>
             {submitPanel}
+          </div>
+        </div>
+      )}
+
+      {/* ── Over-capacity confirmation ──────────────────────────────────────────────────────────
+          Fires at SUBMIT, off the fresh cache:'no-store' read — never at slot-select (that trigger
+          was removed in 448130f and stays removed). Replaces a native window.confirm() that showed
+          one fixed sentence and threw away fit.bound_by. INFORMED CONSENT, not a block: the operator
+          can always proceed, and their choice is recorded (capacity_ack_at). Nothing has been
+          submitted at this point — both buttons decide. */}
+      {capacityConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative bg-white rounded-2xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="px-5 pt-5 pb-5">
+              <h3 className="font-black text-slate-900 text-lg mb-1">
+                {capacityConfirm.variant === 'toosoon'
+                  ? `${capacityConfirm.slot} is too soon`
+                  : capacityConfirm.variant === 'filled'
+                    ? `${capacityConfirm.slot} has filled up`
+                    : `${capacityConfirm.slot} is over capacity`}
+              </h3>
+
+              {capacityConfirm.variant === 'filled' && (
+                <p className="text-sm text-slate-600 mb-2">Another order came in while you were adding this one.</p>
+              )}
+
+              <p className="text-sm text-slate-600">
+                {capacityConfirm.bind.kind === 'lead'
+                  ? `There isn't enough time to make this order by ${capacityConfirm.slot}.`
+                  : capacityConfirm.bind.kind === 'category'
+                    ? `${capacityConfirm.bind.cat} can be made ${capacityConfirm.bind.limit} at a time.${capacityConfirm.windowFrom ? ` Around ${capacityConfirm.windowFrom}–${capacityConfirm.slot}` : ' Here'} it would need ${capacityConfirm.bind.needed}.`
+                    : `The oven holds ${capacityConfirm.bind.limit} ${capacityConfirm.unitWord} at a time.${capacityConfirm.windowFrom ? ` Around ${capacityConfirm.windowFrom}–${capacityConfirm.slot}` : ' Here'} it would be making ${capacityConfirm.bind.needed}.`}
+              </p>
+
+              {/* Orders already cooking in that window, BY COLLECTION SLOT with their own quantities.
+                  Deliberately not an attribution of which order caused the overage — see the 🔴 note
+                  in contributingProductionSlots. Variant 'over' only: on 'filled' the point is that
+                  something arrived late, and on 'toosoon' the list is meaningless. */}
+              {capacityConfirm.variant === 'over' && capacityConfirm.contributors.length > 0 && (
+                <div className="mt-3 border-t border-slate-100 pt-3 space-y-1">
+                  {capacityConfirm.contributors.map(c => (
+                    <div key={`${c.slot}-${c.id}`} className="flex justify-between text-sm text-slate-600">
+                      <span>#{c.id} · {c.slot}</span>
+                      <span className="tabular-nums">{c.qty}</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between text-sm font-black text-slate-900 pt-1">
+                    <span>This order</span>
+                    <span className="tabular-nums">{capacityConfirm.thisOrderQty} {capacityConfirm.unitWord}</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2 mt-5">
+                <button
+                  type="button"
+                  onClick={() => { setManualSlot(''); setCapacityConfirm(null) }}
+                  className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 text-sm"
+                >Pick another time</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const ov = capacityConfirm.override
+                    setCapacityConfirm(null)
+                    // skipFitCheck=true so the modal can't re-loop; capacityAck=true so the decision
+                    // is persisted. `ov` carries any stock override already granted.
+                    void submitManual(ov, true, true)
+                  }}
+                  className="flex-1 bg-orange-600 text-white font-bold py-3 rounded-xl hover:bg-orange-700 text-sm"
+                >Place it anyway</button>
+              </div>
+            </div>
           </div>
         </div>
       )}
