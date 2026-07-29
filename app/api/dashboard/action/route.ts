@@ -18,6 +18,8 @@ import {
 import { nextOrderId } from '@/lib/order-utils'
 import { loadPriceBook, repriceOrder, toMinor } from '@/lib/order-repricing'
 import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
+import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
+import { logAction, logActionOrThrow } from '@/lib/audit/actionAudit'
 import type { DiscountCode } from '@/lib/order-calculations'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
@@ -138,6 +140,22 @@ export async function POST(req: NextRequest) {
 
     const truck = await verifyToken(token, pin)
     if (!truck) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
+
+    // ── ACTOR ATTRIBUTION (V9.4) — LOGGING ONLY, NEVER AUTHORISATION ───────────────────────────────
+    // This route previously discarded identity entirely: verifyToken above resolves a TRUCK from a
+    // shared per-truck token, and nothing ever asked who the human was — even though the cookie was
+    // sitting right there on every web request. resolveActor is the SAME implementation the dashboard
+    // GET uses (lib/audit/actor.ts, extracted from app/api/dashboard/route.ts).
+    //
+    // 🔴 THE GATE IS UNCHANGED AND STAYS UNCHANGED. verifyToken above is still the only thing that can
+    // refuse a request. resolveActor never throws and never returns a refusal — it reports what it could
+    // determine, and every failure path degrades to actor_kind 'unknown'. In particular `foreignOperator`
+    // (which the dashboard GET turns into a 403) is DELIBERATELY IGNORED here: a logging concern must
+    // never become a new way for a live operator action to be refused at the hatch mid-service.
+    // Where identity is genuinely not determinable, that FACT is recorded — actor_kind 'token' with a
+    // null actor_id — so the log distinguishes "a shared token acted" from "we failed to ask".
+    const actor = await resolveActorSafe(req, supabase, truck)
+    const actorSource = resolveActorSource(req, body)
 
     // ── Offline-replay conflict guard (Phase 1) ───────────────────────────────
     // A status op replayed from the offline outbox carries `expected_from` (the statuses it may apply FROM,
@@ -344,12 +362,25 @@ export async function POST(req: NextRequest) {
       // settlement (§37), a missing row IS A MISSING FEE — money silently not charged — and this branch
       // must be reconsidered deliberately, not inherited.
       let paymentWarning: string | null = null
+      let chargedMinor: number | null = null
       try {
-        await recordCollectionPayment(supabase, { orderKey, truckId: truck.id })
+        const res = await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
+        chargedMinor = res.chargedMinor
       } catch (err) {
         console.error(`[collected] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order WAS still marked collected (fail-open). Re-run recalcOrderPayment for this order_key to repair; the reconciliation query in lib/payments/ledger.ts will list it until then:`, err)
         paymentWarning = 'Order completed, but the payment record could not be saved — the takings figure for this order may be wrong until it is repaired.'
       }
+      // AUDIT (append-only, best-effort). Written AFTER the fact because nothing is destroyed here — the
+      // ledger row and the order row both persist, so a lost audit row is a gap, not an erasure. It uses
+      // the swallowing `logAction` for the same reason the ledger write fails open: a logging failure must
+      // not block a hatch mid-service. Contrast undo_collected below, which fails CLOSED.
+      // `ledger_failed` is recorded so the log itself shows when the money record is known-missing.
+      await logAction(supabase, {
+        action: 'collected', truckId: truck.id, orderKey, amountMinor: chargedMinor,
+        beforeState: { status: order?.status ?? null, paid_at: null, collected_at: null },
+        afterState: { status: 'collected', paid_at: now, collected_at: now, charged_minor: chargedMinor, ledger_failed: paymentWarning !== null },
+        actor, source: actorSource,
+      })
       const { error: collectErr } = await supabase.from('orders').update({ status: 'collected', paid_at: now, collected_at: now, ...(fromStatus ? { status_before_collected: fromStatus } : {}) }).eq('order_key', orderKey).eq('truck_id', truck.id)
       if (collectErr) {
         // Still fail-CLOSED, and correctly so: this is the FULFILMENT write, not the accounting one. If
@@ -381,11 +412,47 @@ export async function POST(req: NextRequest) {
       // ── REVERSE THE PAYMENT, THEN THE FULFILMENT STATE (V9.4) ──────────────────────────────────────
       // Mirrors 'collected': ledger first so a failure leaves the order collected-and-paid (a coherent
       // state the operator can retry) rather than reverted-but-still-paid. Errors SURFACE.
+      //
+      // 🔴 THIS BRANCH FAILS CLOSED, AND THAT IS THE INVERSE OF 'collected' ON PURPOSE.
+      // 'collected' fails OPEN because blocking an operator at the hatch with cash in hand is worse than
+      // a recoverable accounting gap the reconciliation query will surface. Undo is the opposite case: it
+      // DELETES a payment row, and an erased payment record with no log of the erasure is precisely the
+      // fraud vector this table exists to prevent (mark paid → take cash → undo → no trace). So the audit
+      // row is written FIRST, via logActionOrThrow, and passed as `beforeDelete` — if that insert fails
+      // the delete never runs, the ledger row survives, and the undo is refused with a 500. Losing an
+      // undo is recoverable; losing the evidence of one is not.
+      // before_state carries the FULL contents of the row about to be destroyed (amount, channel,
+      // idempotency_key, created_at, created_by, note, currency, state, external_ref, id) so the deletion
+      // is fully reconstructable from the log alone.
+      let reversal: 'deleted' | 'refunded' | 'none' = 'none'
       try {
-        await reverseCollectionPayment(supabase, { orderKey, truckId: truck.id })
+        const res = await reverseCollectionPayment(supabase, {
+          orderKey, truckId: truck.id, createdBy: actor.actorId,
+          beforeDelete: async (deletedRow) => {
+            await logActionOrThrow(supabase, {
+              action: 'undo_collected', truckId: truck.id, orderKey,
+              amountMinor: deletedRow.amount_minor,
+              beforeState: { ledger_row: deletedRow, status: 'collected' },
+              afterState: { ledger_row: null, ledger_row_deleted: true, status: revertTo },
+              actor, source: actorSource,
+            })
+          },
+        })
+        reversal = res.reversal
       } catch (err) {
-        console.error('[undo_collected] ledger reversal failed — order NOT reverted:', err)
+        console.error(`[undo_collected] REFUSED for order_key=${orderKey} truck_id=${truck.id} — ledger reversal or its audit write failed; the payment row was NOT deleted and the order was NOT reverted:`, err)
         return NextResponse.json({ error: err instanceof Error ? err.message : 'Payment could not be reversed' }, { status: 500 })
+      }
+      // The 'deleted' path already logged inside beforeDelete (it HAD to, before the row vanished). The
+      // other two destroy nothing — 'refunded' appends a compensating row, 'none' found nothing to
+      // reverse — so they log here, best-effort, purely so that EVERY undo appears in the trail.
+      if (reversal !== 'deleted') {
+        await logAction(supabase, {
+          action: 'undo_collected', truckId: truck.id, orderKey, amountMinor: null,
+          beforeState: { status: 'collected' },
+          afterState: { status: revertTo, reversal },
+          actor, source: actorSource,
+        })
       }
       // paid_at AND collected_at are BOTH cleared (V9.4). Previously neither was: an order reverted to
       // confirmed/ready kept both timestamps, so the operator-cancel path (:254) and the event-cancel

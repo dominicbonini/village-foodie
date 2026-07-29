@@ -66,6 +66,18 @@ export interface LedgerRow {
   external_ref?: string | null
 }
 
+/** The full stored shape of a collect row, as read immediately before deletion. Every column is
+ *  included deliberately: this is what gets written to action_audit_log.before_state, and the deletion
+ *  must be fully reconstructable from the log alone. */
+export interface DeletedCollectRow extends LedgerRow {
+  id: string
+  currency?: string | null
+  note?: string | null
+  idempotency_key?: string | null
+  created_at?: string | null
+  created_by?: string | null
+}
+
 /** The minimum an order must supply to be balanced. total_minor is authoritative; `total` is the
  *  fallback for rows written before 20260728_orders_total_minor_deal_savings.sql populated it. */
 export interface BalanceableOrder {
@@ -288,18 +300,31 @@ export async function recordCollectionPayment(
  */
 export async function reverseCollectionPayment(
   supabase: SupabaseClient,
-  opts: { orderKey: string; truckId: string; createdBy?: string | null },
+  opts: {
+    orderKey: string
+    truckId: string
+    createdBy?: string | null
+    /**
+     * Called with the FULL contents of the collect row immediately BEFORE it is deleted, and awaited.
+     * 🔴 IF THIS THROWS, THE DELETE DOES NOT HAPPEN and the error propagates to the caller.
+     * That is the point: the row is about to stop existing, so this is the last moment its contents can
+     * be captured. The route passes the append-only audit write here, so a payment record can never be
+     * erased without a log of the erasure. Not called on the 'refunded' or 'none' paths — nothing is
+     * destroyed there.
+     */
+    beforeDelete?: (row: DeletedCollectRow) => Promise<void>
+  },
 ): Promise<{ reversal: 'deleted' | 'refunded' | 'none'; balance: OrderBalance }> {
   const key = collectIdempotencyKey(opts.orderKey)
 
   const { data: rows, error } = await supabase
     .from('order_payments')
-    .select('id, kind, channel, amount_minor, state, external_ref')
+    .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by')
     .eq('order_key', opts.orderKey)
     .eq('idempotency_key', key)
   if (error) throw new Error(`[ledger] could not read the collect row for ${opts.orderKey}: ${error.message}`)
 
-  const row = (rows ?? [])[0] as (LedgerRow & { id: string }) | undefined
+  const row = (rows ?? [])[0] as DeletedCollectRow | undefined
   if (!row) {
     // Nothing to reverse (never collected, or already undone). Recalc anyway so the cache is correct.
     return { reversal: 'none', balance: await recalcOrderPayment(supabase, opts.orderKey) }
@@ -308,6 +333,9 @@ export async function reverseCollectionPayment(
   const noRealMoneyMoved = row.external_ref == null && row.state === 'succeeded' && row.channel !== 'online'
 
   if (noRealMoneyMoved) {
+    // CAPTURE BEFORE DESTROY. Awaited, and deliberately NOT wrapped in try/catch — a throw here must
+    // abort the delete, leaving the ledger row intact and the undo refused.
+    if (opts.beforeDelete) await opts.beforeDelete(row)
     const { error: delErr } = await supabase.from('order_payments').delete().eq('id', row.id)
     if (delErr) throw new Error(`[ledger] could not delete the collect row for ${opts.orderKey}: ${delErr.message}`)
     return { reversal: 'deleted', balance: await recalcOrderPayment(supabase, opts.orderKey) }

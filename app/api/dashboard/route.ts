@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { resolveActor } from '@/lib/audit/actor'
 import { resolveTruckLogo } from '@/lib/truck-logo'
 import { getProductionSlotUnits } from '@/lib/slot-bookings'
 import { buildSlotAvailability } from '@/lib/slot-availability'
@@ -51,62 +51,19 @@ export async function GET(req: NextRequest) {
   // Orders from a previous service are not real and must not carry over; a real truck's yesterday
   // tickets don't either.
 
-  // If there's a logged-in user, verify they own this truck
-  const supabaseAuth = await createSupabaseServerClient()
-  const { data: { user: cookieUser } } = await supabaseAuth.auth.getUser()   // WEB (cookie) — unchanged
-  let user = cookieUser
-
-  // ADDITIVE (native app): the app has NO cookie, but sends its Supabase session as a Bearer so the
-  // SAME operator/is_admin/role resolution below applies (app-admin → owner-equivalent, exactly like web).
-  // Only runs when there's no cookie user → the web cookie path above is untouched; no header → token-only
-  // fallback is untouched. Bearer is validated via the service client's getUser(jwt).
-  if (!user) {
-    const authz = req.headers.get('authorization')
-    const jwt = authz?.startsWith('Bearer ') ? authz.slice(7) : null
-    if (jwt) {
-      const { data: { user: bearerUser } } = await supabase.auth.getUser(jwt)
-      if (bearerUser) user = bearerUser
-    }
+  // If there's a logged-in user, verify they own this truck.
+  // The resolution itself now lives in lib/audit/actor.ts, shared with /api/dashboard/action (which used
+  // to discard identity entirely). Behaviour here is unchanged: same cookie-then-Bearer order, same
+  // operators → is_admin → truck_users cascade, same values, same 403 — the helper reports
+  // `foreignOperator` and THIS route still makes the authorisation decision. The helper never refuses.
+  const actor = await resolveActor(req, supabase, truck)
+  if (actor.foreignOperator) {
+    // User has an operator account for a different truck → deny
+    return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
   }
-
-  let currentUserName: string | null = null
-  let userRole: 'owner' | 'manager' | 'staff' | null = null
-
-  if (user) {
-    const { data: operator } = await supabase
-      .from('operators')
-      .select('id, name, email, is_admin')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    const isOwner = !!(operator && truck.operator_id && truck.operator_id === operator.id)
-
-    // Admins (operators.is_admin) get owner-equivalent ALL-ACCESS to any truck's dashboard, regardless
-    // of ownership/membership (interim — a distinct "admin view" role is backlogged). Folding it into
-    // the owner branch means the non-member 403 below is never reached for an admin.
-    if (isOwner || operator?.is_admin) {
-      currentUserName = operator!.name || operator!.email || null
-      userRole = 'owner'
-    } else {
-      // Not the owner — check truck_users membership (staff/manager, or invited user
-      // whose operators record was created during invite but doesn't own any truck)
-      const { data: truckUser } = await supabase
-        .from('truck_users')
-        .select('name, email, role')
-        .eq('auth_user_id', user.id)
-        .eq('truck_id', truck.id)
-        .maybeSingle()
-
-      if (truckUser) {
-        currentUserName = truckUser.name || truckUser.email || null
-        userRole = (truckUser.role as 'owner' | 'manager' | 'staff') || 'staff'
-      } else if (operator && truck.operator_id) {
-        // User has an operator account for a different truck → deny
-        return NextResponse.json({ error: 'Unauthorised' }, { status: 403 })
-      }
-      // No operator record + no truck_users → token-only access (KDS/anonymous), userRole stays null
-    }
-  }
+  // No operator record + no truck_users → token-only access (KDS/anonymous), userRole stays null
+  const currentUserName = actor.currentUserName
+  const userRole = actor.userRole
 
   // Check PIN if set
   if (truck.dashboard_pin && truck.dashboard_pin !== pin) {
