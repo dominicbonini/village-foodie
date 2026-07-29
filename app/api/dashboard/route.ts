@@ -14,6 +14,47 @@ import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 
+// ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
+// 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
+// This response's `truck` object used to be a hand-maintained list of ~20 fields. A `trucks.*` column
+// the dashboard reads but nobody remembered to add arrived `undefined` and SILENTLY fell back to its
+// default — breaking a feature with no error anywhere. Members: `sound_config` (V8.9),
+// `keep_screen_on` (V9.0), `show_paid_step` (V9.4). The class was documented three times, swept, and
+// declared closed — and the very next field added reopened it, four lines below a comment warning about
+// exactly this.
+//
+// An INCLUDE list fails by OMISSION, which is silent and breaks things.
+// A REDACT list fails by LEAKAGE, which is visible, harmless to the operator's own dashboard, and
+// catchable. So: spread the row and remove what must not travel.
+//
+// ⚠️ TWO LAYERS, deliberately. The explicit set below is the known list. `SECRETISH` is defence in depth
+// for columns nobody in this repo references: `trucks` predates supabase/migrations/, so its full column
+// list CANNOT be derived from this codebase (lib/delete-truck.ts:9-10 makes the same point). Two known
+// examples — `messenger_page_token` and `kds_pin` — exist on the table and appear NOWHERE in the code.
+// The pattern is segment-anchored so it catches `api_key` / `page_token` / `kds_pin` without catching an
+// innocent field that merely contains those letters.
+const TRUCK_REDACT = new Set([
+  'dashboard_token',      // the bearer credential for this whole surface; the client already has it from
+                          // the URL, so sending it again only widens where it can be logged or cached
+  'dashboard_pin',        // auth secret
+  'kds_pin',              // auth secret (exists on the table; unreferenced anywhere in this repo)
+  'messenger_page_token', // Meta provider credential (ditto — exists, unreferenced here)
+  'whatsapp_sender',      // provider-linked sender config. NOT proven sensitive — it reaches customers in
+                          // confirmation emails — but no dashboard client reads it, so redacted by default
+  'sheet_id',             // dead legacy Google Sheets id (NOT NULL, no default — see provision-truck)
+])
+/** Segment-anchored: matches dashboard_pin / page_token / api_key / *_secret, not "shipping"/"keyboard". */
+const SECRETISH = /(^|_)(token|secret|password|credential|pin|key)(_|$)/i
+
+function publicTruckFields(row: Record<string, any>): Record<string, any> {
+  const out: Record<string, any> = {}
+  for (const [k, v] of Object.entries(row ?? {})) {
+    if (TRUCK_REDACT.has(k) || SECRETISH.test(k)) continue
+    out[k] = v
+  }
+  return out
+}
+
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token')
   const pin   = req.nextUrl.searchParams.get('pin')
@@ -439,32 +480,34 @@ export async function GET(req: NextRequest) {
     // verified rather than assumed.
     ...(demo ? { demo } : {}),
     truck: {
-      id:          truck.id,
-      name:        truck.name,
-      mode:        truck.mode,
-      venue_name:  truck.venue_name,
-      auto_accept:         truck.auto_accept ?? false,
-      notes_require_review: truck.notes_require_review ?? true,   // safe-by-default (undefined ⇒ ON)
+      // EVERY non-redacted column, so a new trucks.* setting is delivered WITHOUT anyone remembering to
+      // add it here. See publicTruckFields above for why this is a redact list and not an include list.
+      ...publicTruckFields(truck),
+
+      // ── DELIBERATE OVERRIDES — these are NOT the raw column values, and must stay AFTER the spread ──
       // Pause + extra-wait are EVENT-scoped now — sourced from the selected event, not the truck.
       // (Legacy trucks.* columns left unread; the badge reads these via the response.)
       paused_until:        null,
       extra_wait_mins:     (selectedEvent as any)?.extra_wait_mins ?? 0,
       extra_wait_started_at: (selectedEvent as any)?.extra_wait_started_at ?? null,
-      kds_mode:            truck.kds_mode ?? false,
-      crew_mode:           truck.crew_mode ?? 'solo',
+      logo: truckLogo,                                            // resolved URL, not the stored path
+
+      // ── SAFE-DEFAULT COERCIONS — preserved verbatim from the old map ──────────────────────────────
+      // The spread alone would deliver a NULL column as null; these keep the exact semantics the client
+      // has always seen. notes_require_review in particular is safe-by-default (undefined/null ⇒ ON).
+      auto_accept:          truck.auto_accept ?? false,
+      notes_require_review: truck.notes_require_review ?? true,
+      kds_mode:             truck.kds_mode ?? false,
+      crew_mode:            truck.crew_mode ?? 'solo',
       display_mode:        (truck.display_mode ?? 'list') as 'list' | 'grid',
       plan:                (truck.plan ?? 'starter') as 'starter' | 'pro' | 'max' | 'trial',
-      trial_expires_at:    truck.trial_expires_at ?? null,
+      trial_expires_at:     truck.trial_expires_at ?? null,
       feature_overrides:   (truck.feature_overrides ?? null) as Record<string, boolean> | null,
-      logo: truckLogo,
-      qr_code_style: (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
-      truck_emoji:   truck.truck_emoji ?? null,
-      slug:          truck.slug ?? null,
-      // ⚠️ This truck object is a HAND-PICKED subset (not the raw select('*') row) — a field omitted here is
-      // undefined on the client. sound_config was missing → the dashboard Sounds panel + its sound triggers
-      // always read the DEFAULT, and the reseed after an optimistic edit wiped it → the flip-back. Any new
-      // trucks.* setting the dashboard reads MUST be added to this map.
-      sound_config:  truck.sound_config ?? null,
+      qr_code_style:       (truck.qr_code_style ?? 'standard') as 'standard' | 'branded',
+      truck_emoji:          truck.truck_emoji ?? null,
+      slug:                 truck.slug ?? null,
+      sound_config:         truck.sound_config ?? null,
+      show_paid_step:       truck.show_paid_step ?? false,        // V9.4 — the third member of the class
     },
     todayEvent: todayEvent
       ? { id: todayEvent.id, event_date: todayEvent.event_date, start_time: todayEvent.start_time, end_time: todayEvent.end_time, venue_name: todayEvent.venue_name ?? null }

@@ -1,264 +1,196 @@
-# Collect idempotency key — LIVE BUG FIX (build report)
+# Confirm-order orange restored + the cash/card split — BUILD REPORT
 
 **Date:** 30 July 2026 · **Repo:** `/Users/dominicbonini/dev/village-foodie` · **Branch:** `main`
-**Status: ✅ FIXED.** `tsc --noEmit` clean; 18/18 ledger cases, 10/10 label cases, 4/4 detector cases,
-and a 7-scenario × 4-scheme key simulation, all passing.
-**No migration written or applied. `next dev` / `next build` NOT run.**
-**Only `lib/payments/ledger.ts` changed (+76/−9).**
+**Status: ✅ BOTH BUILT.** `tsc --noEmit` clean; 18/18 ledger + 10/10 label regressions pass.
+**Migration written, NOT applied. `next dev` / `next build` NOT run.**
+**Six files changed:** `supabase/migrations/20260730_takes_cash_and_payment_method.sql` *(new)*,
+`lib/payments/ledger.ts`, `app/api/dashboard/action/route.ts`, `components/dashboard/OrderCard.tsx`,
+`components/dashboard/AddOrderPanel.tsx`, `components/dashboard/types.ts`,
+`app/dashboard/[token]/page.tsx`.
 
-> This file replaces the previous fix-pass report. That content is not preserved anywhere.
+> This file replaces the previous revert-pass report. That content is not preserved anywhere.
 
 **Prompt integrity:** no span read as garbled or truncated.
 
-**Your reasoning was right about the bug and right that my `totalMinor` proposal had a hole.
-It was wrong about the balance-based key being the fix — I found a second, more likely hole in it, and
-it turns out to be *worse* than the scheme it replaces. Detail in §Verdict.**
+---
+
+## 1. "CONFIRM ORDER" RESTORED TO ORANGE
+
+**The original class at `HEAD`** (`AddOrderPanel.tsx:1116`):
+
+```
+w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base
+disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]
+```
+
+**Restored fill — exact, not a close value:** `bg-orange-600 hover:bg-orange-700 text-white`, together
+with `font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors
+active:scale-[0.98]`.
+
+The only classes that differ from HEAD are the **layout** ones the side-by-side row requires, which you
+said stay: `w-full` → `flex-1 min-w-0`, and `py-4 text-base` → `py-3 text-sm` to sit level with the pay
+button. **The fill is byte-identical to the original.**
+
+### ⚠️ How orange and blue read together — flagging, not resolving
+
+**They fight.** Measured:
+
+| | |
+|---|---|
+| Relative luminance | orange-600 **0.245**, blue-600 **0.153** |
+| Contrast *between the two fills* | **1.45:1** |
+
+Two saturated solids of near-identical visual weight, equal width, side by side. Nothing recedes, so
+**neither reads as secondary** — the eye has no entry point and the operator must read both labels every
+time. That is the "which is the default?" problem the row was meant to remove, relocated from vertical
+to horizontal rather than solved. The neutral outline I had (wrongly, unasked) used was doing that job;
+brand orange does not.
+
+⚠️ **Second finding, separate from the aesthetics:** **white on orange-600 is 3.56:1 — below the 4.5:1 AA
+floor** you have applied consistently. It is the pre-existing brand primary and it fails that bar today
+in its original full-width form too, so restoring it changes nothing about the compliance picture — but
+you should know the number, because the button next to it now passes at 5.17:1 and the asymmetry is
+visible in the data if not on screen.
+
+**Per your instruction I changed nothing else.** Options if you want it addressed — all one-liners, all
+yours to pick, none applied: keep as-is; make Confirm an orange *outline* (brand colour, clear
+hierarchy); or darken the orange for contrast.
 
 ---
 
-## D1 — `collectIdempotencyKey` and every caller
+## 2. THE CASH/CARD SPLIT
 
-**Before** ([ledger.ts:141-143](lib/payments/ledger.ts#L141)):
+### The migration
 
-```ts
-/** The deterministic idempotency key for the single "Mark paid & done" charge on an order.
- *  See recordCollectionPayment() for why this shape, and why an undo frees it. */
-export function collectIdempotencyKey(orderKey: string): string {
-  return `collect:${orderKey}`
-}
-```
-
-**Callers — three, all inside `lib/payments/ledger.ts`; nothing outside the module ever touched it:**
-
-| Site | Use |
-|---|---|
-| `ledger.ts:281` | `recordCollectionPayment` → the key on every in-person charge |
-| `ledger.ts:321` | `reverseCollectionPayment` → the lookup for the row to delete |
-| — | `grep -rn "collectIdempotencyKey" app lib components` returns only these two plus the definition |
-
-Because `recordCollectionPayment` is the single charge path, **all three of these flows shared one
-constant key per order**: `collected` ([action/route.ts:367](app/api/dashboard/action/route.ts#L367)),
-`mark_paid` ([:1475](app/api/dashboard/action/route.ts#L1475)), and the walk-up paid-at-order block
-([:1163](app/api/dashboard/action/route.ts#L1163)).
-
-## D2 — the 23505 handling, and whether callers can tell
-
-**The handling** ([ledger.ts:235-239](lib/payments/ledger.ts#L235), before this pass):
-
-```ts
-let inserted = true
-if (error) {
-  if (error.code === '23505') inserted = false          // idempotent replay — the event is already recorded
-  else throw new Error(`[ledger] insert failed for ${event.orderKey}: ${error.message}`)
-}
-const balance = await recalcOrderPayment(supabase, event.orderKey)
-return { inserted, balance }
-```
-
-**Confirmed: indistinguishable in practice, though the information was technically present.**
-
-`recordCollectionPayment` does return `{ inserted, chargedMinor }`, and a swallowed duplicate returns
-`inserted: false, chargedMinor: 0`. So the data existed. But:
-
-1. **It is the same return shape as the legitimate "nothing outstanding" early exit**
-   ([ledger.ts:268-272](lib/payments/ledger.ts#L268)), which also returns `inserted: false,
-   chargedMinor: 0`. The two cases were **genuinely** indistinguishable at the API boundary.
-2. **No caller inspected it.** All three sites do `const res = await recordCollectionPayment(...)` and
-   read only `res.chargedMinor` for the audit row. None branch on `inserted`. The `mark_paid` handler
-   returns `{ success: true, chargedMinor: 0 }` — a 200, with the audit row recording
-   `charged_minor: 0, ledger_failed: false`. **The operator saw a success, and the audit log recorded a
-   successful action that moved no money.**
-
-## D3 — `reverseCollectionPayment` looked up by key
-
-**Confirmed** ([ledger.ts:321-329](lib/payments/ledger.ts#L321), before this pass):
-
-```ts
-const key = collectIdempotencyKey(opts.orderKey)
-const { data: rows, error } = await supabase
-  .from('order_payments')
-  .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by')
-  .eq('order_key', opts.orderKey)
-  .eq('idempotency_key', key)          // ← the key-based lookup
-```
-
-This is why the change is mandatory rather than cosmetic: changing the key format without changing this
-would make every pre-deploy payment **un-undoable**, and `reverseCollectionPayment` would return
-`reversal: 'none'` while silently leaving the money on the order.
-
-## D4 — how many rows carry the OLD format
-
-**What the code assumed:** that **every** reversible in-person charge has `idempotency_key` exactly
-`collect:{order_key}`. There was no other format, because `recordCollectionPayment` was the only writer
-and it always used that constant.
-
-So the repo's understanding is: **old-format rows = every manual charge ever written**, i.e. every row
-with `kind='charge' AND channel='in_person_other'`, from the day `20260729_order_payments_ledger.sql`
-was applied until this deploy. Given `show_paid_step` is on only for test-truck, that should be a
-handful — but the code never depended on the count, and after this change **it depends on nothing about
-the key at all**. To confirm the live number:
+**`supabase/migrations/20260730_takes_cash_and_payment_method.sql` — ✅ ADDITIVE.**
 
 ```sql
-select case when idempotency_key like 'collect:%:%:%' then 'new (paid:balance)'
-            when idempotency_key like 'collect:%'     then 'OLD (constant)'
-            else 'no key' end as fmt,
-       count(*)
-  from order_payments where kind = 'charge' group by 1;
+alter table trucks         add column if not exists takes_cash boolean not null default false;
+alter table order_payments add column if not exists method text;
+alter table order_payments add constraint order_payments_method_chk
+  check (method is null or method in ('cash','card'));
 ```
 
----
+**RUN ORDER: before deploying.** Settings writes `takes_cash` and the ledger writes `method`; PostgREST
+rejects a write naming a column it cannot see (PGRST204). The reverse order is a no-op — defaulted and
+nullable, and old code never names them.
 
-## VERDICT ON THE BALANCE-BASED KEY — tested, and rejected
+**No backfill**, as ruled: existing rows keep `method = NULL`, which is the honest value — `takes_cash`
+was off, so nobody was ever asked. The verification block asserts both "every truck reads `f`" and
+"every payment row reads `null`".
 
-I simulated the real ledger semantics (balance-zero guard, 23505 → swallowed, undo deletes the row)
-across **7 sequences × 4 key schemes**. Money-lost outcomes:
+The header records the `method`-not-`channel` reasoning verbatim so it is not re-litigated, including
+the specific failure it avoids: widening `channel` would make every fee query an `in (...)` over a
+growing list, and one forgotten member **silently charges a platform fee on cash**.
 
-| Scenario | constant (today) | `:{total}` (mine) | `:{balance}` (yours) | `:{paidBefore}:{balance}` |
-|---|---|---|---|---|
-| A simple pay once | ✅ | ✅ | ✅ | ✅ |
-| B replay of one tap (offline drain) | ✅ | ✅ | ✅ | ✅ |
-| C pay, edit up, pay balance | ❌ **lost** | ✅ | ✅ | ✅ |
-| D pay, two *equal* upward edits | ❌ **lost** | ✅ | ✅ | ✅ |
-| E pay, edit up, pay, edit **down**, refund, edit up again *(your case)* | ❌ **lost** | ❌ **lost** | ❌ **lost** | ❌ **lost** |
-| F pay, undo, re-pay (key must free) | ✅ | ✅ | ✅ | ✅ |
-| G pay, edit up, pay, replay **both** taps | ❌ **lost** | ✅ | ✅ | ✅ |
-| **H pay in FULL, then customer DOUBLES the order** | ❌ **lost** | ✅ | ❌ **lost** | ✅ |
-| **I three equal top-ups of +£9.50** | ❌ **lost** | ✅ | ❌ **lost** | ✅ |
+### Ledger
 
-**The hole in the balance key (H).** Pay a £9.50 order in full → the customer adds another £9.50 of food
-→ total £19.00 → **the outstanding balance is £9.50 again** → same key → charge silently vanishes. That
-is not contrived; it is "they came back for another round", and it is *more likely at a hatch than your
-edit-down-refund-edit-up case*. Scenario I is the same failure repeating. **So the balance key is worse
-than the total key I originally proposed, not better.**
+`lib/payments/ledger.ts` gains `PaymentMethod = 'cash' | 'card'`, threaded through `recordPaymentEvent`
+and `recordCollectionPayment` to the insert. **`getOrderBalance` is untouched** — verified by grep:
+zero occurrences of `method` inside the derivation. A method is a label on a money event, never a term
+in it.
 
-**You were right that `:{total}` has a hole** — E, exactly as you described.
+### One tap either way — and how the pending state stays per-button
 
-### What I adopted: `collect:{order_key}:{paidBeforeMinor}:{balanceMinor}`
+🔴 **No modal.** Two buttons, one tap each, exactly as specified.
 
-A **state-transition** key — *"from this ledger position, settle this amount"*. It passes everything the
-other schemes pass, plus H and I, because a repeated *balance* no longer collides when the *paid
-position* differs.
+⚠️ **A design detail worth recording, because it is the same bug you caught on the confirm bar:** the
+card's loading key is `` `${action}-${order_key}` ``, so if Cash and Card both fired `mark_paid` they
+would **both** grey out and spin on either tap. So the client sends **distinct action names** —
+`mark_paid_cash` / `mark_paid_card` — and the server maps all three names to one handler, deriving the
+method from the suffix ([action/route.ts:1488-1497](app/api/dashboard/action/route.ts#L1488)). Plain
+`mark_paid` stays valid for a truck that does not split. Pending state is per-button by construction, no
+new plumbing.
 
-### ⚠️ It still fails E, and that is not fixable with any deterministic key
+### Where the buttons appear
 
-Stated plainly rather than glossed: **if the key is a function of ledger state, then any sequence that
-returns the ledger to an earlier state and repeats the same transition will collide.** That is a
-property of determinism. E does exactly that — the refund puts `paid` back to 950 and the re-edit puts
-the balance back to 550, so the transition `950 → +550` recurs.
-
-The complete answer is a **client-minted per-tap key**. The outbox already mints `op_id` for precisely
-this purpose and never transmits it (established in the audit review). I did **not** adopt it here
-because it means changing the live offline gate, and you asked for this to land alone so a failure is
-attributable. It is the right next step if you want E closed properly.
-
-E also requires refunds, which are **not built** (§37) — so it is currently unreachable.
-
----
-
-## THE DETECTOR — how a genuine replay is distinguished from a real collision
-
-You asked me to tell you how I distinguish them, or say plainly that I cannot. **I can, and it is
-exact:**
-
-| | Genuine replay | Real key collision |
+| Surface | `takes_cash` off | `takes_cash` on |
 |---|---|---|
-| The named row | is *this* charge — its money is already counted | belongs to some **other**, older charge |
-| Balance after recalc | **fell** (normally to zero) | **unchanged** |
-| Correct behaviour | silent success | **surface** |
+| **Order card** | `Mark paid` / `Mark £5.50 paid` (blue) | **`Cash`** and **`Card`** — bare, no amounts, both blue |
+| **Add Order confirm bar** | `Take payment` / `£8.00` (blue) | **`Cash £8.00`** and **`Card £8.00`**, both blue, amount stacked |
+| **Cooking-gate row** | one disabled placeholder | **unchanged — still one placeholder**, not split |
 
-Implemented in `recordCollectionPayment` ([ledger.ts:316-333](lib/payments/ledger.ts#L316)):
-
-```ts
-const swallowedButNothingSettled = !inserted && balance.balanceMinor === before.balanceMinor
-if (swallowedButNothingSettled) throw new Error(`[ledger] charge of … was SWALLOWED as a duplicate but the balance is unchanged …`)
-```
-
-**This is the important safety property: it does not depend on the key scheme.** Any residual
-collision — E, or something neither of us has thought of — becomes loud instead of silent.
-
-Verified with 4 targeted cases:
-
-```
-PASS  genuine replay of a settled charge is SILENT      → surfaced=false
-PASS  scenario E collision is SURFACED, not silent      → surfaced=true
-PASS  legitimate top-up does NOT surface                → surfaced=false
-PASS  LIVE BUG (constant key) would have SURFACED       → surfaced=true
-```
-
-The last one is the useful one: **had this detector existed, the bug you are fixing would have
-announced itself on the first part-payment instead of hiding.**
-
-⚠️ **No false positive on the concurrent race.** Two in-flight requests both read balance 550; A
-inserts, B collides — but B's recalc reads the ledger *after* A's insert, so B sees balance 0 ≠ 550 and
-stays silent. That is the case the unique index exists for, and it still works.
-
-⚠️ **How it surfaces:** the throw is caught by the existing fail-open handlers, so the operator action
-still completes and the failure comes back as `paymentWarning` + a loud server log + an audit row with
-`ledger_failed: true`. Consistent with the `collected` ruling. **Note the `paymentWarning` toast wiring
-is still deferred to part 2, so today it surfaces in the log and the audit trail, not on screen.**
+All settled rulings honoured: bare labels on cards, amounts only in the confirm bar, gate row not split.
+**Both buttons are blue** — both are money actions; no fourth colour introduced.
 
 ---
 
-## `reverseCollectionPayment` — the change and its old-format proof
+## 3. `takes_cash = false` LEAVES EVERYTHING EXACTLY AS IT IS
 
-Now matches on **row shape, never on the key**
-([ledger.ts:373-393](lib/payments/ledger.ts#L373)):
+The column is `NOT NULL DEFAULT false`, so every truck reads false the moment the migration lands.
+Every new affordance sits behind an explicit gate:
 
-```ts
-.eq('order_key', opts.orderKey)
-.eq('kind', 'charge')
-.neq('channel', 'online')
-.order('created_at', { ascending: false })     // newest first
-```
+| Gate | Location |
+|---|---|
+| `if (takesCash) { … }` — card buttons | [OrderCard.tsx:192](components/dashboard/OrderCard.tsx#L192) |
+| `{takesCash ? ( … ) : ( … )}` — confirm bar | [AddOrderPanel.tsx:1123](components/dashboard/AddOrderPanel.tsx#L1123) |
+| `{showPaidStep&&( … )}` — the Settings row is not even rendered | `page.tsx` |
+| `method` resolves to `null` unless the action name carries a suffix | [action/route.ts:1495](app/api/dashboard/action/route.ts#L1495) |
 
-**Compatibility proof — which rows each lookup matches:**
+With it off: one `Mark paid` button, one `Take payment` button, `method` written as `NULL`, and the
+ledger, rollup and `getOrderBalance` behave identically. **And with `show_paid_step` off, the cash
+toggle is not reachable at all** — it is a child row of the paid-step card.
 
-| Row | OLD (`.eq idempotency_key`) | NEW (kind + channel) |
-|---|---|---|
-| **OLD-format charge** `collect:X` | ✅ | ✅ |
-| **NEW-format charge** `collect:X:0:950` | ❌ **would break** | ✅ |
-| **NEW top-up** `collect:X:950:550` | ❌ **would break** | ✅ |
-| refund row | ❌ | ❌ correctly excluded |
-| online charge | ❌ | ❌ correctly excluded |
-| `in_person_stripe` charge | ❌ | ✅ matched — then the existing `noRealMoneyMoved` test sees its `external_ref` and **compensates rather than deletes**, which is correct |
-
-**Confirmed against both formats: old-format rows written before this deploy still reverse correctly**,
-which is the live-data requirement. `order by created_at desc` means undo reverses the payment just
-taken — matching what both the 7-second toast and the paid-chip affordance mean by "undo".
+⚠️ The `takes_cash` value reaches the client **automatically**, with no map edit — because of the
+spread-and-redact projection built two passes ago. This is the first new truck setting since that
+change, and it is the first one that could not silently fail to arrive. Worth noting as evidence the fix
+did what it was for.
 
 ---
 
-## Verified by READING vs by RUNNING
+## 4. DENSITY
 
-**By RUNNING:**
-- `npx tsc --noEmit` → **exit 0** after every edit.
-- **Key simulation**, 7 scenarios × 4 schemes, modelling the real semantics (balance-zero guard,
-  23505 → swallowed, undo deletes). Produced the table above and found hole **H** in your proposal.
-- **Detector**, 4 cases (above).
-- **Regression: 18/18** ledger-derivation cases (16 existing + 2 new key-distinctness assertions) and
-  **10/10** button-label cases.
-  ⚠️ One existing case failed first and was a **stale assertion**, not a regression: case 16 still called
-  the one-argument signature. Updated to the new contract rather than silenced.
-- The compatibility table above was computed, not eyeballed.
+**Card action row** — `flex gap-2`, two `flex-1` buttons, `Btn` padding `px-4`:
 
-**By READING only:** D1-D4 in full; that no caller inspects `inserted`; that `idempotency_key` appears
-nowhere outside `lib/payments/ledger.ts`.
+| Layout | Card | Body | Per button | Label box | `Cash` ≈29px |
+|---|---|---|---|---|---|
+| **KDS window grid** (`minmax(240px,1fr)`) | 247px | 215px | 104px | **72px** | ✅ fits |
+| **Dashboard solo, 3-col iPad** | 260px | 228px | 110px | **78px** | ✅ fits |
+| **Dashboard solo, 2-col** | 380px | 348px | 170px | **138px** | ✅ comfortable |
+
+**Bare labels are what make this fit**, and the numbers show why the settled ruling was right: at the
+240px KDS column the label box is 72px, and `Cash £5.50` needs ~73px — it would clip at the exact
+narrowest case. `Mark £5.50 paid` (~109px) would clip badly. Amounts genuinely do not fit beside a
+second button.
+
+**KDS cook mode: unaffected.** `renderButtons` returns `null` for cook mode outside cooking/ready — the
+completion button has never existed there, so nothing was added.
+
+**Cooking-gate row: unchanged**, one disabled placeholder, per the settled ruling.
+
+**Solo grid, both settings on** — the full stack is: notes → `[Edit | Cancel]` ghost row → `[Cash | Card]`.
+Two rows of two, plus notes. Vertically that is fine (`py-2.5` ghosts, `py-3` primaries, `gap-2`); the
+card grows by one row versus today. ⚠️ **It is busier than any card has been so far** — four tap targets
+plus a note in a 260px column. I would want a look at that before Gusto turns both on, but nothing
+clips and nothing overlaps.
 
 ---
 
-## What I could NOT verify
+## 5. Verified by READING vs by RUNNING
 
-- **Nothing has run against Postgres.** The 23505 behaviour, the unique partial index actually firing,
-  and the `.neq('channel','online')` PostgREST filter are all **reasoned from the contract, not
-  observed**. The simulation models what I believe the DB does; it is not the DB.
-- **No live row has been reversed under either key format.** The compatibility proof is a truth table
-  over the lookup predicates, not an executed query.
-- **The live old-format row count is unknown** — the query is in D4 for you to run.
-- **The detector has never fired in production.** Its no-false-positive-on-race claim is reasoned from
-  read-after-write ordering; I did not run concurrent requests.
-- **Scenario E remains open by design** and is untestable today because refunds do not exist.
-- ⚠️ **`chargedMinor` semantics changed subtly:** a swallowed duplicate now throws rather than returning
-  `chargedMinor: 0`, so the fail-open handlers convert it into a `paymentWarning`. I have not observed
-  that path end to end, and **the warning is not yet rendered on screen** (part 2).
-- **No `next dev` / `next build`** per constraint; tsc-clean does not prove the bundle.
-- **Nothing observed on a device**, and no real order placed on `test-truck`.
+**By RUNNING:** `npx tsc --noEmit` → exit 0 after each step (it caught the missing `takes_cash` on
+`TruckData`); all contrast and luminance figures via WCAG relative luminance; the density arithmetic;
+greps confirming the four `takesCash` gates, both card sites receiving the prop, and zero `method`
+references inside `getOrderBalance`; regressions **18/18** ledger and **10/10** button-label.
+
+**By READING:** the original Confirm class recovered from `git show HEAD`; the loading-key collision
+that drove the distinct action names; that cook mode returns `null` before the completion button.
+
+---
+
+## 6. What I could NOT verify
+
+- 🔴 **The orange/blue judgement is arithmetic, not a look.** 1.45:1 between two fills of near-identical
+  luminance is strong evidence they compete, but **whether they actually fight on screen is a visual
+  question I cannot settle without rendering.** Treat my recommendation as a prediction to check.
+- **Nothing was rendered.** No `next dev`. The Cash/Card pair on a card, the two-button confirm bar, the
+  restored orange, and the busier solo card are all **unobserved**.
+- **The migration has not been applied**, so `takes_cash` and `method` do not exist yet. Every code path
+  gated on them is currently unreachable, and both `VERIFY AFTER APPLYING` blocks are unrun.
+- **No Cash or Card tap has ever executed.** The suffixed action names, the method reaching the insert,
+  and the per-button pending behaviour are traced by reading, not run.
+- **Density is computed** from Tailwind values and a ~0.52em average character advance, not measured in
+  a browser. The KDS 72px-vs-73px margin on `Cash £5.50` is *why* the bare-label ruling holds, but it is
+  close enough that it would be worth one real look if that decision is ever revisited.
+- **The busier solo card** (four targets + notes) is my main visual concern and is unassessed.
+- **No `next build`** — tsc-clean does not prove the bundle.

@@ -7,6 +7,7 @@ import { STATUS } from './types'
 import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHeaderStyle, resolveCollectionTime, getOrderCookSecs, cookAmberLeadMins } from './helpers'
 import type { CatConfig } from '@/lib/prep-utils'
 import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
+import { BTN_COLOURS } from '@/lib/ui-tokens'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -32,16 +33,7 @@ export function Toggle({ on, onToggle, disabled }: { on: boolean; onToggle: () =
 export function Btn({ label, colour, loading, onClick }: {
   label: string; colour: string; loading: boolean; onClick: () => void
 }) {
-  const colours: Record<string, string> = {
-    green:  'bg-green-600 hover:bg-green-700 text-white',
-    red:    'bg-red-500 hover:bg-red-600 text-white',
-    blue:   'bg-blue-600 hover:bg-blue-700 text-white',
-    teal:   'bg-teal-600 hover:bg-teal-700 text-white',
-    dark:   'bg-slate-800 hover:bg-slate-900 text-white',
-    slate:  'bg-slate-500 hover:bg-slate-600 text-white',
-    amber:  'bg-amber-500 hover:bg-amber-600 text-white',
-    orange: 'bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200',
-  }
+  const colours = BTN_COLOURS
   return (
     <button onClick={onClick} disabled={loading}
       className={`${colours[colour] || colours.slate} font-bold text-sm px-4 py-3 rounded-xl transition-colors active:scale-95 disabled:opacity-50 flex-1 min-w-[72px]`}>
@@ -103,6 +95,7 @@ export function OrderCard({
   anchorId,
   highlight = false,
   showPaidStep = false,
+  takesCash = false,
   ledgerRows,
 }: {
   order: Order
@@ -139,6 +132,9 @@ export function OrderCard({
   /** trucks.show_paid_step. FALSE (default) = today's behaviour exactly: one "Mark paid & done" button,
    *  no chip, no split. Every paid-step affordance in this component is gated on it. */
   showPaidStep?: boolean
+  /** trucks.takes_cash. FALSE (default) = one "Mark paid" button, exactly as now. TRUE splits it into
+   *  "Cash" and "Card" — two buttons, one tap each, never a modal. Only meaningful with showPaidStep. */
+  takesCash?: boolean
   /** This order's order_payments rows, supplied by /api/dashboard. Fed straight to getOrderBalance —
    *  the card NEVER derives payment state itself. Undefined/empty ⇒ nothing paid. */
   ledgerRows?: LedgerRow[]
@@ -181,14 +177,32 @@ export function OrderCard({
     if (isPaid) {
       return <Btn label="Done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
+    // BLUE — a MONEY action, and the third colour on this card by design. GREEN means a KITCHEN state
+    // advancing (Ready, ✓ Confirm) and SLATE means completion (Done). Green previously meant both
+    // "ready" and "mark paid", so on adjacent cards a kitchen step and a money action read as the same
+    // class of thing. blue-600 is 5.17:1 on white. See lib/ui-tokens.ts.
+    //
+    // CASH/CARD SPLIT: BOTH are money actions, so both are blue — no fourth colour. Two buttons, ONE
+    // TAP either way; deliberately NOT "Mark paid" → modal → choose, which §10's fast-tap rule forbids.
+    // Distinct action names (mark_paid_cash / mark_paid_card) keep the pending state PER BUTTON — a
+    // shared `mark_paid` key would grey out and spin both, the bug fixed on the confirm bar.
+    // Labels are BARE on the card, no amounts: the amount already appears twice (the price, and the
+    // part-paid chip's balance), and at the 240px KDS column an amount would not fit beside a second
+    // button. Amounts belong in the Add Order confirm bar, which has the width for them.
+    if (takesCash) {
+      return (
+        <>
+          <Btn label="Cash" colour="blue" loading={isLoading('mark_paid_cash')}
+            onClick={() => onAction('mark_paid_cash', order.order_key)} />
+          <Btn label="Card" colour="blue" loading={isLoading('mark_paid_card')}
+            onClick={() => onAction('mark_paid_card', order.order_key)} />
+        </>
+      )
+    }
     return (
       <Btn
         label={isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
-        // 🔴 DARK SLATE, like every other state of this button. §9 reserves SOLID GREEN for the ready
-        // state and specifies that "Mark paid & done" uses dark slate deliberately, to differentiate it
-        // from Ready. The paid step changes the LABEL, not the visual language — a green/teal here would
-        // collide with the Ready button sitting on the same board.
-        colour="dark" loading={isLoading('mark_paid')}
+        colour="blue" loading={isLoading('mark_paid')}
         onClick={() => onAction('mark_paid', order.order_key)}
       />
     )

@@ -657,6 +657,7 @@ setItemModal({ item, modGroups, editCartKey })
     // Clear the per-order payment choice. Nothing is remembered between orders by design — the next
     // order presents both actions again with neither pre-selected.
     takePaymentRef.current = false
+    paymentMethodRef.current = null
   }
 
   // ── slot change handler ─────────────────────────────────────────────────────
@@ -676,6 +677,7 @@ setItemModal({ item, modGroups, editCartKey })
   // submit (see resetManual). Entirely inert when the truck has not opted in: showPaidStep false means
   // the confirm bar renders exactly as it did before, and `paymentTaken` is never sent.
   const showPaidStep = truck?.show_paid_step === true
+  const takesCash = truck?.takes_cash === true
   // 🔴 NO REMEMBERED DEFAULT — open-check semantics. Walk-ups and phone orders come through THIS panel
   // with OPPOSITE payment timings, so any truck-level default is wrong about half the time and the
   // operator has to check and flip on every order anyway — worse than no default at all. Instead the
@@ -685,6 +687,16 @@ setItemModal({ item, modGroups, editCartKey })
   // the override/re-submit recursion (submitManual(true, true) retries) without threading a parameter
   // through three call sites, and it never triggers a render or looks like a sticky selection.
   const takePaymentRef = useRef(false)
+  // 🔴 WHICH button is submitting — NOT just "is something submitting". `loading` is one shared boolean,
+  // so both confirm buttons read it and BOTH switched to "Confirming…". Only the pressed one should say
+  // that; the other must simply disable with its label intact, or the operator cannot tell which action
+  // they actually triggered at the moment it matters most.
+  // State, not a ref: this drives a LABEL, and a ref change does not re-render.
+  const [submitting, setSubmitting] = useState<'take' | 'take-cash' | 'take-card' | 'plain' | null>(null)
+  /** WHICH tender, when the truck splits cash from card. Null when it does not — the payment is still
+   *  taken, its method simply is not recorded, which is the honest value. Ref for the same reason as
+   *  takePaymentRef: it must survive the override/re-submit recursion. */
+  const paymentMethodRef = useRef<'cash' | 'card' | null>(null)
 
   // ── submit ──────────────────────────────────────────────────────────────────
   // override=false: normal submit, runs the atomic stock check. On a shortfall the server
@@ -826,6 +838,7 @@ setItemModal({ item, modGroups, editCartKey })
     }
 
     setLoading(true)
+    setSubmitting(takePaymentRef.current ? (paymentMethodRef.current ? `take-${paymentMethodRef.current}` as const : 'take') : 'plain')
     try {
       // Client-mint the identity so an OFFLINE create is idempotent on replay (order_key) and carries a
       // stable device-prefixed provisional number until the server assigns the real one.
@@ -870,6 +883,7 @@ setItemModal({ item, modGroups, editCartKey })
         // truck has opted into the paid step; the server also re-checks show_paid_step before acting on
         // it, so a stale client cannot book a payment on a truck that has not enabled the flow.
         paymentTaken: showPaidStep ? takePaymentRef.current : false,
+        paymentMethod: showPaidStep && takePaymentRef.current ? paymentMethodRef.current : null,
       }
       // Through the offline GATE: online → normal write; native + unreachable → durable outbox + queued.
       const result = await gatedAction({
@@ -891,7 +905,7 @@ setItemModal({ item, modGroups, editCartKey })
         } as unknown as Order
         onOrderPlaced(optimistic)
         showToast(`Order ${provisional} saved on this device — will sync when back online`, 'success')
-        resetManual(); setShowOrderSheet(false); setLoading(false)
+        resetManual(); setShowOrderSheet(false); setLoading(false); setSubmitting(null)
         return
       }
       const data = result.data ?? {}
@@ -964,6 +978,7 @@ setItemModal({ item, modGroups, editCartKey })
       showToast(err.message || 'Failed', 'error')
     } finally {
       setLoading(false)
+      setSubmitting(null)
     }
   }
 
@@ -1085,29 +1100,61 @@ setItemModal({ item, modGroups, editCartKey })
       />
       {slotSelector}
       {contactDetails}
-      {/* ── PAYMENT DECISION (V9.4) — TWO EQUAL ACTIONS, NEITHER PRE-SELECTED ──────────────────────
-          Open-check semantics: the operator decides per order, at the moment of sale. Both buttons are
-          the same size and the same colour so neither reads as the default, and each is ONE tap — no
-          toggle to set first, no modal, no confirmation dialog (§10's fast-tap rule). "Confirm and
-          take £X" is listed first only because it is the more common walk-up case; that is ordering,
-          not preference, and nothing is remembered between orders.
-          Renders as the single original button when the truck has not opted in. */}
+      {/* ── PAYMENT DECISION (V9.4) — TWO EQUAL ACTIONS, SIDE BY SIDE, NEITHER PRE-SELECTED ────────
+          A ROW, not a stack. Two stacked full-width primaries create a "which one is the default?"
+          problem and put the second target directly under the thumb's travel from the first — a
+          mis-tap that records money. Toast puts fire-to-kitchen and Pay in a bottom row; Square splits
+          "save cart" from "Charge $X" the same way.
+          "Take payment" carries the AMOUNT deliberately: the number on the button is the last
+          confirmation before money is recorded, and it distinguishes the two buttons by SHAPE rather
+          than by wording alone. The total also appears above; that redundancy is conventional, not an
+          oversight. The amount is stacked under the label so it can never clip at narrow widths —
+          see the width note in the report.
+          Both actions confirm the order; only one records payment. Neither is remembered. */}
       {showPaidStep ? (
-        <div className="flex flex-col gap-2">
-          <button
-            onClick={() => { takePaymentRef.current = true; void submitManual() }}
-            disabled={loading || !hasItems || !manualEvent}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
-          >
-            {loading ? 'Confirming...' : !manualEvent ? 'Select an event to confirm' : `Confirm and take £${manualTotal.toFixed(2)}`}
-          </button>
+        <div className="flex gap-2">
           <button
             onClick={() => { takePaymentRef.current = false; void submitManual() }}
             disabled={loading || !hasItems || !manualEvent}
-            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+            className="flex-1 min-w-0 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
           >
-            {loading ? 'Confirming...' : 'Confirm order'}
+            {submitting === 'plain' ? 'Confirming…' : !manualEvent ? 'Select an event' : 'Confirm order'}
           </button>
+          {takesCash ? (
+            /* CASH/CARD — both blue (both are money actions; no fourth colour), one tap each, no modal.
+               Distinct `submitting` keys keep the pending label per button. The amount rides on BOTH
+               because this bar has the width the order card does not. */
+            <>
+              <button
+                onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'cash'; void submitManual() }}
+                disabled={loading || !hasItems || !manualEvent}
+                className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight"
+              >
+                {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : (
+                  <><span className="text-sm">Cash</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                )}
+              </button>
+              <button
+                onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'card'; void submitManual() }}
+                disabled={loading || !hasItems || !manualEvent}
+                className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight"
+              >
+                {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : (
+                  <><span className="text-sm">Card</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                )}
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = null; void submitManual() }}
+              disabled={loading || !hasItems || !manualEvent}
+              className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight"
+            >
+              {submitting === 'take' ? <span className="text-sm">Confirming…</span> : (
+                <><span className="text-sm">Take payment</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+              )}
+            </button>
+          )}
         </div>
       ) : (
         <button

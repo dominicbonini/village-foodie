@@ -240,6 +240,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // by /api/dashboard so the card can call getOrderBalance without a second fetch.
   const[showPaidStep,setShowPaidStep]=useState(false)
   const[savingShowPaidStep,setSavingShowPaidStep]=useState(false)
+  const[takesCash,setTakesCash]=useState(false)
+  const[savingTakesCash,setSavingTakesCash]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
@@ -611,6 +613,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.payments !== undefined) setPayments(data.payments || {})
       if(data.truck?.show_paid_step !== undefined) setShowPaidStep(!!data.truck.show_paid_step)
+      if(data.truck?.takes_cash !== undefined) setTakesCash(!!data.truck.takes_cash)
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
@@ -1040,6 +1043,19 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       showToast(val?'Paid step enabled':'Paid step disabled')
     }catch{showToast('Failed to save','error')}
     finally{setSavingShowPaidStep(false)}
+  }
+
+  const saveTakesCash=async(val:boolean)=>{
+    setSavingTakesCash(true)
+    try{
+      await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_takes_cash',value:val})
+      })
+      setTakesCash(val)
+      showToast(val?'Cash and card split on':'Cash and card split off')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingTakesCash(false)}
   }
 
 
@@ -2535,13 +2551,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} ledgerRows={payments[o.order_key]}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} takesCash={takesCash} ledgerRows={payments[o.order_key]}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} ledgerRows={payments[o.order_key]}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} takesCash={takesCash} ledgerRows={payments[o.order_key]}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -2705,8 +2721,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 Order panel with OPPOSITE payment timings, so any truck-level default was wrong about half
                 the time and the operator had to check and correct it on every order — worse than no
                 default. The confirm bar now offers two equal actions instead. Do not re-add it. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <div className="flex items-center justify-between">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
+              <div className={`flex items-center justify-between ${showPaidStep?'pb-3':''}`}>
                 <div>
                   <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
                   <p className="text-slate-500 text-xs mt-0.5">Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over. Off keeps the single one-tap button.</p>
@@ -2716,6 +2732,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                   <Toggle on={showPaidStep} onToggle={()=>saveShowPaidStep(!showPaidStep)} disabled={isOffline}/>
                 </div>
               </div>
+              {/* Cash/card split — a CHILD of the paid step (pl-4, shown only when it is on), mirroring
+                  the notes-review row under auto-accept. Off by default: one payment button, as now. */}
+              {showPaidStep&&(
+                <div className="pt-3 pl-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">Do you take cash at the hatch?</p>
+                    <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. Off keeps a single button.</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0 ml-3">
+                    {savingTakesCash&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                    <Toggle on={takesCash} onToggle={()=>saveTakesCash(!takesCash)} disabled={isOffline}/>
+                  </div>
+                </div>
+              )}
             </div>
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
                 fire; the on/off MASTER is the per-device header toggle.

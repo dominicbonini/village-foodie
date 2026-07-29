@@ -7,6 +7,7 @@
 // single source for Card / Btn / Input / Badge / EmptyState / allergen+dietary toggles.
 // ══════════════════════════════════════════════════════════════
 import { type ReactNode, type HTMLAttributes } from 'react'
+import { GREEN_SOLID } from '@/lib/ui-tokens'
 
 export function Spinner() { return <div className="w-5 h-5 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" /> }
 
@@ -20,7 +21,7 @@ export function Btn({ label, colour = 'orange', size = 'md', loading = false, di
     orange: 'bg-orange-600 hover:bg-orange-700 text-white',
     red:    'bg-red-50 hover:bg-red-100 text-red-600 border border-red-200',
     slate:  'bg-slate-100 hover:bg-slate-200 text-slate-700',
-    green:  'bg-green-600 hover:bg-green-700 text-white',
+    green:  GREEN_SOLID,   // shared — see lib/ui-tokens.ts. Was a second copy at green-600 (3.30:1).
     ghost:  'hover:bg-slate-100 text-slate-600 border border-slate-200',
   }
   const sizes = { sm: 'text-xs px-2.5 py-1.5', md: 'text-sm px-4 py-2' }

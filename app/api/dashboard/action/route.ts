@@ -1160,7 +1160,9 @@ export async function POST(req: NextRequest) {
       if (truck.show_paid_step === true && manualOrder?.paymentTaken === true && manualOrderKey) {
         let chargedMinor = 0
         try {
-          const res = await recordCollectionPayment(supabase, { orderKey: manualOrderKey, truckId: truck.id, createdBy: actor.actorId })
+          const manualMethod: 'cash' | 'card' | null =
+            manualOrder?.paymentMethod === 'cash' || manualOrder?.paymentMethod === 'card' ? manualOrder.paymentMethod : null
+          const res = await recordCollectionPayment(supabase, { orderKey: manualOrderKey, truckId: truck.id, createdBy: actor.actorId, method: manualMethod })
           chargedMinor = res.chargedMinor
         } catch (err) {
           console.error(`[manual] LEDGER WRITE FAILED for order_key=${manualOrderKey} truck_id=${truck.id} — the ORDER WAS STILL CREATED (fail-open). Re-run recalcOrderPayment to repair:`, err)
@@ -1461,6 +1463,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // Cash/card split. Only meaningful when show_paid_step is also on; the client hides the control
+    // otherwise. Stored as a plain truck setting — it is a UI default, never a payment record.
+    if (action === 'set_takes_cash') {
+      const { value } = body
+      const { error } = await supabase.from('trucks').update({ takes_cash: !!value }).eq('id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true })
+    }
+
     // ── MARK PAID (V9.4) — the FIRST half of the split "Mark paid & done" ─────
     // Takes the full OUTSTANDING balance and does NOT touch order status: the order stays exactly where
     // it is in the queue. Reuses recordCollectionPayment, so it books the same ledger row under the same
@@ -1468,20 +1479,33 @@ export async function POST(req: NextRequest) {
     // moment differs. Re-firing is therefore a safe no-op (balance already zero).
     // Fails OPEN, like `collected`: the operator has the cash in hand, so an accounting failure must not
     // strand the order. The warning rides back on the success response.
-    if (action === 'mark_paid') {
+    // Three action names, ONE handler. The cash/card split sends `mark_paid_cash` / `mark_paid_card`
+    // rather than `mark_paid` + a body field, so the client's per-button loading key
+    // (`${action}-${order_key}`) is naturally DISTINCT per button — without that, tapping Cash would
+    // put BOTH buttons into the pending state, which is exactly the bug fixed on the confirm bar.
+    // `mark_paid` (no suffix) stays valid for a truck that does not split, and still honours an explicit
+    // body.method if one is ever sent.
+    if (action === 'mark_paid' || action === 'mark_paid_cash' || action === 'mark_paid_card') {
       let paymentWarning: string | null = null
       let charged = 0
+      // HOW the money arrived. Validated against the same vocabulary as the DB CHECK so a bad value
+      // fails as a 400 rather than a 23514. Absent/invalid ⇒ null ⇒ "not recorded", the honest value
+      // for a truck that does not split cash from card.
+      const method: 'cash' | 'card' | null =
+        action === 'mark_paid_cash' ? 'cash'
+        : action === 'mark_paid_card' ? 'card'
+        : (body.method === 'cash' || body.method === 'card' ? body.method : null)
       try {
-        const res = await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId })
+        const res = await recordCollectionPayment(supabase, { orderKey, truckId: truck.id, createdBy: actor.actorId, method })
         charged = res.chargedMinor
       } catch (err) {
         console.error(`[mark_paid] LEDGER WRITE FAILED for order_key=${orderKey} truck_id=${truck.id} — the order was NOT marked paid in the ledger (fail-open; status untouched). Re-run recalcOrderPayment to repair:`, err)
         paymentWarning = 'Payment could not be recorded — the takings figure for this order may be wrong until it is repaired.'
       }
       await logAction(supabase, {
-        action: 'mark_paid', truckId: truck.id, orderKey, amountMinor: charged,
+        action, truckId: truck.id, orderKey, amountMinor: charged,
         beforeState: { payment: 'outstanding' },
-        afterState: { charged_minor: charged, ledger_failed: paymentWarning !== null },
+        afterState: { charged_minor: charged, method, ledger_failed: paymentWarning !== null },
         actor, source: actorSource,
       })
       return NextResponse.json({ success: true, chargedMinor: charged, ...(paymentWarning ? { paymentWarning } : {}) })

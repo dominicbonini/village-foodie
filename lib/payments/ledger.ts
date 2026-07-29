@@ -58,6 +58,10 @@ import { toMinor, fromMinor } from '@/lib/order-repricing'
 export type PaymentKind = 'charge' | 'refund'
 export type PaymentChannel = 'online' | 'in_person_stripe' | 'in_person_other'
 export type PaymentEventState = 'pending' | 'succeeded' | 'failed'
+/** HOW the money physically arrived. ORTHOGONAL to channel — see the migration header. Null = not
+ *  recorded (every pre-split row, and every Stripe row whose method is implicit in its channel).
+ *  ⚠️ Affects NO arithmetic: getOrderBalance never reads it. It is a label on a money event. */
+export type PaymentMethod = 'cash' | 'card'
 export type PaymentStatus = 'unpaid' | 'paid' | 'part_paid' | 'refunded' | 'refund_due' | 'failed'
 
 /** A row of `order_payments`. amount_minor is ALWAYS POSITIVE — `kind` carries the sign. */
@@ -242,6 +246,7 @@ export async function recordPaymentEvent(
     idempotencyKey?: string | null
     createdBy?: string | null
     currency?: string
+    method?: PaymentMethod | null
   },
 ): Promise<{ inserted: boolean; balance: OrderBalance }> {
   if (!Number.isInteger(event.amountMinor) || event.amountMinor <= 0) {
@@ -260,6 +265,7 @@ export async function recordPaymentEvent(
     note: event.note ?? null,
     idempotency_key: event.idempotencyKey ?? null,
     created_by: event.createdBy ?? null,
+    method: event.method ?? null,
   })
 
   let inserted = true
@@ -293,7 +299,7 @@ export async function recordPaymentEvent(
  */
 export async function recordCollectionPayment(
   supabase: SupabaseClient,
-  opts: { orderKey: string; truckId: string; createdBy?: string | null },
+  opts: { orderKey: string; truckId: string; createdBy?: string | null; method?: PaymentMethod | null },
 ): Promise<{ inserted: boolean; balance: OrderBalance; chargedMinor: number }> {
   const [order, rows] = await Promise.all([readOrder(supabase, opts.orderKey), readLedger(supabase, opts.orderKey)])
   const before = getOrderBalance(order, rows)
@@ -315,6 +321,7 @@ export async function recordCollectionPayment(
     idempotencyKey: collectIdempotencyKey(opts.orderKey, before.paidMinor, before.balanceMinor),
     note: 'Mark paid & done — taken at the hatch',
     createdBy: opts.createdBy ?? null,
+    method: opts.method ?? null,
   })
 
   // ── EXPECTED-VS-ACTUAL DETECTOR ────────────────────────────────────────────────────────────────

@@ -102,6 +102,9 @@ export interface TruckData {
   auto_accept?: boolean
   /** V9.4 paid step. FALSE (the DB default) = today's behaviour exactly, everywhere. */
   show_paid_step?: boolean
+  /** V9.4 cash/card split. FALSE (the DB default) = one payment button, exactly as now. Only
+   *  meaningful when show_paid_step is also on. */
+  takes_cash?: boolean
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'
