@@ -19,12 +19,30 @@ import { nextOrderId } from '@/lib/order-utils'
 import { loadPriceBook, repriceOrder, toMinor } from '@/lib/order-repricing'
 import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
+import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { logAction, logActionOrThrow } from '@/lib/audit/actionAudit'
 import type { DiscountCode } from '@/lib/order-calculations'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
 import { getLiveItemCounts, enforceStockLimits } from '@/lib/stock-availability'
 import { acquireEventLock, releaseEventLock, checkStockShortfall, checkClosedCategories } from '@/lib/stock-guard'
 import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-stock'
+
+
+/** Resolve the paid-step settings for ONE event, server-side, through the SAME helper the client uses.
+ *  🔴 The ?? chain lives in lib/payments/paid-step.ts and nowhere else — this only supplies the event
+ *  row. A second inline `?? truck.show_paid_step` anywhere would let the server and the order card
+ *  disagree about whether the paid step is split, which is the divergence this design exists to make
+ *  impossible. A missing eventId resolves to the truck default, which is the correct fallback. */
+async function paidStepFor(truck: any, eventId: string | null | undefined) {
+  if (!eventId) return resolvePaidStep(truck, null)
+  const { data: ev } = await supabase
+    .from('truck_events')
+    .select('show_paid_step_override')
+    .eq('id', eventId)
+    .eq('truck_id', truck.id)
+    .maybeSingle()
+  return resolvePaidStep(truck, ev as any)
+}
 
 async function verifyToken(token: string, pin?: string) {
   const { data: truck } = await supabase
@@ -431,7 +449,7 @@ export async function POST(req: NextRequest) {
       //   undo must reverse exactly ONE stage. Undoing "Done" reverts the STATUS ONLY and leaves the
       //   payment standing; the payment has its own undo (undo_mark_paid) on its own toast. Reversing
       //   both here would silently undo a tap the operator did not just make.
-      const splitPaidStep = truck.show_paid_step === true
+      const splitPaidStep = (await paidStepFor(truck, (order as any)?.event_id)).showPaidStep
       let reversal: 'deleted' | 'refunded' | 'none' = 'none'
       try {
         if (splitPaidStep) {
@@ -1157,7 +1175,7 @@ export async function POST(req: NextRequest) {
       // Only runs when the truck has opted into the paid step AND this order was marked paid; otherwise
       // this whole block is inert and walk-up creation is byte-identical to before.
       let manualPaymentWarning: string | null = null
-      if (truck.show_paid_step === true && manualOrder?.paymentTaken === true && manualOrderKey) {
+      if ((await paidStepFor(truck, manualOrder?.event_id)).showPaidStep && manualOrder?.paymentTaken === true && manualOrderKey) {
         let chargedMinor = 0
         try {
           const manualMethod: 'cash' | 'card' | null =
@@ -1456,18 +1474,15 @@ export async function POST(req: NextRequest) {
     // ── PAID STEP SETTINGS (V9.4) ─────────────────────────────────────────────
     // show_paid_step=false is today's behaviour EXACTLY and is the default; nothing in the operator
     // surface changes until a truck opts in.
-    if (action === 'set_show_paid_step') {
-      const { value } = body
-      const { error } = await supabase.from('trucks').update({ show_paid_step: !!value }).eq('id', truck.id)
-      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-      return NextResponse.json({ success: true })
-    }
-
-    // Cash/card split. Only meaningful when show_paid_step is also on; the client hides the control
-    // otherwise. Stored as a plain truck setting — it is a UI default, never a payment record.
-    if (action === 'set_takes_cash') {
-      const { value } = body
-      const { error } = await supabase.from('trucks').update({ takes_cash: !!value }).eq('id', truck.id)
+    // ── set_show_paid_step_override ── EVENT-scoped (truck_events), mirrors set_order_ready_override.
+    // 🔴 This writes truck_events ONLY. The truck DEFAULT (trucks.show_paid_step) is owned by
+    // Manage → Settings; the dashboard must never write it. Writes a concrete true/false for THIS event,
+    // which is what makes it survive a later change to the default — see lib/payments/paid-step.ts.
+    if (action === 'set_show_paid_step_override') {
+      const { value, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      const { error } = await supabase.from('truck_events')
+        .update({ show_paid_step_override: !!value }).eq('id', eventId).eq('truck_id', truck.id)
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
       return NextResponse.json({ success: true })
     }

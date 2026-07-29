@@ -249,5 +249,8 @@ export interface TruckEvent {
   // true/false (seeded at creation + bulk-set by the Settings master switch); a legacy NULL falls back to
   // the van's order_ready_enabled default server-side → effectiveOrderReady.
   order_ready_override?: boolean | null
+  /** Per-event paid-step override. NULL = inherit trucks.show_paid_step. Resolved ONLY by
+   *  lib/payments/paid-step.ts — never read directly. */
+  show_paid_step_override?: boolean | null
   event_deals?: { id?: string; bundle_id: string; active: boolean; overridden: boolean }[]
 }

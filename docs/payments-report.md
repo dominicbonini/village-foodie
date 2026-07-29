@@ -1,196 +1,120 @@
-# Confirm-order orange restored + the cash/card split — BUILD REPORT
+# Order settings grouping — Manage → Settings (PRESENTATION ONLY)
 
 **Date:** 30 July 2026 · **Repo:** `/Users/dominicbonini/dev/village-foodie` · **Branch:** `main`
-**Status: ✅ BOTH BUILT.** `tsc --noEmit` clean; 18/18 ledger + 10/10 label regressions pass.
-**Migration written, NOT applied. `next dev` / `next build` NOT run.**
-**Six files changed:** `supabase/migrations/20260730_takes_cash_and_payment_method.sql` *(new)*,
-`lib/payments/ledger.ts`, `app/api/dashboard/action/route.ts`, `components/dashboard/OrderCard.tsx`,
-`components/dashboard/AddOrderPanel.tsx`, `components/dashboard/types.ts`,
-`app/dashboard/[token]/page.tsx`.
+**Status: ✅ BUILT.** `tsc --noEmit` clean.
+**One file changed this pass: `app/manage/[token]/page.tsx`.**
+**No migration. No column change. No save-path change. The `update_truck` allowlist was NOT edited.**
 
-> This file replaces the previous revert-pass report. That content is not preserved anywhere.
+> This file replaces the previous report. That content is not preserved anywhere.
 
 **Prompt integrity:** no span read as garbled or truncated.
 
 ---
 
-## 1. "CONFIRM ORDER" RESTORED TO ORANGE
+## Answering item 2's conditional first
 
-**The original class at `HEAD`** (`AddOrderPanel.tsx:1116`):
-
-```
-w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 rounded-xl text-base
-disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]
-```
-
-**Restored fill — exact, not a close value:** `bg-orange-600 hover:bg-orange-700 text-white`, together
-with `font-semibold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors
-active:scale-[0.98]`.
-
-The only classes that differ from HEAD are the **layout** ones the side-by-side row requires, which you
-said stay: `w-full` → `flex-1 min-w-0`, and `py-4 text-base` → `py-3 text-sm` to sit level with the pay
-button. **The fill is byte-identical to the original.**
-
-### ⚠️ How orange and blue read together — flagging, not resolving
-
-**They fight.** Measured:
-
-| | |
-|---|---|
-| Relative luminance | orange-600 **0.245**, blue-600 **0.153** |
-| Contrast *between the two fills* | **1.45:1** |
-
-Two saturated solids of near-identical visual weight, equal width, side by side. Nothing recedes, so
-**neither reads as secondary** — the eye has no entry point and the operator must read both labels every
-time. That is the "which is the default?" problem the row was meant to remove, relocated from vertical
-to horizontal rather than solved. The neutral outline I had (wrongly, unasked) used was doing that job;
-brand orange does not.
-
-⚠️ **Second finding, separate from the aesthetics:** **white on orange-600 is 3.56:1 — below the 4.5:1 AA
-floor** you have applied consistently. It is the pre-existing brand primary and it fails that bar today
-in its original full-width form too, so restoring it changes nothing about the compliance picture — but
-you should know the number, because the button next to it now passes at 5.17:1 and the asymmetry is
-visible in the data if not on screen.
-
-**Per your instruction I changed nothing else.** Options if you want it addressed — all one-liners, all
-yours to pick, none applied: keep as-is; make Confirm an orange *outline* (brand colour, clear
-hierarchy); or darken the orange for contrast.
+**The auto open/close settings ARE in this Settings tab** — `default_auto_open` and `default_auto_close`
+rendered as two loose rows at `app/manage/[token]/page.tsx:7807-7827` (pre-change), immediately after the
+payment rows. So nothing had to move between tabs; they were grouped in place.
 
 ---
 
-## 2. THE CASH/CARD SPLIT
+## 1. THE SUB-CARD HEADINGS
 
-### The migration
-
-**`supabase/migrations/20260730_takes_cash_and_payment_method.sql` — ✅ ADDITIVE.**
-
-```sql
-alter table trucks         add column if not exists takes_cash boolean not null default false;
-alter table order_payments add column if not exists method text;
-alter table order_payments add constraint order_payments_method_chk
-  check (method is null or method in ('cash','card'));
-```
-
-**RUN ORDER: before deploying.** Settings writes `takes_cash` and the ledger writes `method`; PostgREST
-rejects a write naming a column it cannot see (PGRST204). The reverse order is a no-op — defaulted and
-nullable, and old code never names them.
-
-**No backfill**, as ruled: existing rows keep `method = NULL`, which is the honest value — `takes_cash`
-was off, so nobody was ever asked. The verification block asserts both "every truck reads `f`" and
-"every payment row reads `null`".
-
-The header records the `method`-not-`channel` reasoning verbatim so it is not re-litigated, including
-the specific failure it avoids: widening `channel` would make every fee query an `in (...)` over a
-growing list, and one forgotten member **silently charges a platform fee on cash**.
-
-### Ledger
-
-`lib/payments/ledger.ts` gains `PaymentMethod = 'cash' | 'card'`, threaded through `recordPaymentEvent`
-and `recordCollectionPayment` to the insert. **`getOrderBalance` is untouched** — verified by grep:
-zero occurrences of `method` inside the derivation. A method is a label on a money event, never a term
-in it.
-
-### One tap either way — and how the pending state stays per-button
-
-🔴 **No modal.** Two buttons, one tap each, exactly as specified.
-
-⚠️ **A design detail worth recording, because it is the same bug you caught on the confirm bar:** the
-card's loading key is `` `${action}-${order_key}` ``, so if Cash and Card both fired `mark_paid` they
-would **both** grey out and spin on either tap. So the client sends **distinct action names** —
-`mark_paid_cash` / `mark_paid_card` — and the server maps all three names to one handler, deriving the
-method from the suffix ([action/route.ts:1488-1497](app/api/dashboard/action/route.ts#L1488)). Plain
-`mark_paid` stays valid for a truck that does not split. Pending state is per-button by construction, no
-new plumbing.
-
-### Where the buttons appear
-
-| Surface | `takes_cash` off | `takes_cash` on |
+| Group | Heading | Sub-label |
 |---|---|---|
-| **Order card** | `Mark paid` / `Mark £5.50 paid` (blue) | **`Cash`** and **`Card`** — bare, no amounts, both blue |
-| **Add Order confirm bar** | `Take payment` / `£8.00` (blue) | **`Cash £8.00`** and **`Card £8.00`**, both blue, amount stacked |
-| **Cooking-gate row** | one disabled placeholder | **unchanged — still one placeholder**, not split |
+| `show_paid_step` + `takes_cash` | **Taking payment** | "When you take the money, and how it reaches you." |
+| `default_auto_open` + `default_auto_close` | **Opening and closing** | "When your events start and stop taking online orders." |
 
-All settled rulings honoured: bare labels on cards, amounts only in the confirm bar, gate row not split.
-**Both buttons are blue** — both are money actions; no fourth colour introduced.
+**"Taking payment"** — your suggestion, adopted. It covers both members honestly: one is *when*, the
+other is *how*, and neither is subordinate to the other.
+
+**"Opening and closing"** — chosen over alternatives like "Online ordering window" because the two rows
+already say "Open for orders automatically" / "Close for orders automatically"; a heading echoing that
+vocabulary reads as a grouping rather than as a new concept.
+
+Each sub-label exists because the Sounds card has one and the two would otherwise look like a different
+species of panel.
+
+## Both match the existing Sounds treatment exactly
+
+```
+outer:   pt-3 border-t border-slate-100
+panel:   bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70
+heading: pb-3  ·  text-sm font-bold text-slate-800  +  text-xs text-slate-500 mt-0.5
+rows:    flex items-center justify-between gap-3 py-3
+```
+
+Copied from the Sounds panel at [:7734-7737](app/manage/[token]/page.tsx#L7734) and the auto-accept group
+at [:7698](app/manage/[token]/page.tsx#L7698). There are now **four** panels using that class string —
+auto-accept, Sounds, Taking payment, Opening and closing — so the tab reads as one language.
+
+## ⚠️ Siblings inside a group, NOT nested — and recorded as such
+
+Both payment rows are direct children of the panel with **identical** markup and indentation. Neither
+carries a `pl-4` indent, neither is conditional on the other, and there is no `{showPaidStep && …}`
+wrapper. The comment at the block states why, so the nesting is not reintroduced:
+
+> They answer different questions — "WHEN do we take money" (`show_paid_step`, which the dashboard can
+> override per event) and "HOW does it arrive" (`takes_cash`, truck-level, no override). The cash split
+> was briefly rendered as a CHILD of the paid step; that implied a dependency which does not exist.
 
 ---
 
-## 3. `takes_cash = false` LEAVES EVERYTHING EXACTLY AS IT IS
+## 2. EVERY LINE CHANGED
 
-The column is `NOT NULL DEFAULT false`, so every truck reads false the moment the migration lands.
-Every new affordance sits behind an explicit gate:
+One contiguous region replaced: **`app/manage/[token]/page.tsx:7776-7827` → 7776-7845**.
 
-| Gate | Location |
+| Change | Nature |
 |---|---|
-| `if (takesCash) { … }` — card buttons | [OrderCard.tsx:192](components/dashboard/OrderCard.tsx#L192) |
-| `{takesCash ? ( … ) : ( … )}` — confirm bar | [AddOrderPanel.tsx:1123](components/dashboard/AddOrderPanel.tsx#L1123) |
-| `{showPaidStep&&( … )}` — the Settings row is not even rendered | `page.tsx` |
-| `method` resolves to `null` unless the action name carries a suffix | [action/route.ts:1495](app/api/dashboard/action/route.ts#L1495) |
+| Wrapped the two payment rows in `pt-3 border-t` + `bg-slate-50 … divide-y` panel, with a heading block | presentation |
+| Wrapped the two auto open/close rows the same way, with a heading block | presentation |
+| Each row's class `flex items-center justify-between py-3 border-t border-slate-100` → `flex items-center justify-between gap-3 py-3` | presentation — the outer-card row divider is replaced by the panel's own `divide-y`, matching Sounds |
+| Row markup re-indented by 4 spaces (now inside two more `<div>`s) | whitespace |
+| Comment above the payment block extended to record the siblings-not-nested decision | comment |
+| New comment above the auto open/close block | comment |
 
-With it off: one `Mark paid` button, one `Take payment` button, `method` written as `NULL`, and the
-ledger, rollup and `getOrderBalance` behave identically. **And with `show_paid_step` off, the cash
-toggle is not reachable at all** — it is a child row of the paid-step card.
+**No line of `<Toggle>` logic, no `on=` expression, no `onToggle` body, and no `saveSetting` call was
+altered.**
 
-⚠️ The `takes_cash` value reaches the client **automatically**, with no map edit — because of the
-spread-and-redact projection built two passes ago. This is the first new truck setting since that
-change, and it is the first one that could not silently fail to arrive. Worth noting as evidence the fix
-did what it was for.
+## 3. CONFIRMATION: NO BEHAVIOUR OR SAVE PATH MOVED
 
----
+**The four handlers, whitespace-normalised, before vs after:**
 
-## 4. DENSITY
+| Setting | Result |
+|---|---|
+| `default_auto_open` | **byte-identical** (indentation aside) ✅ |
+| `default_auto_close` | **byte-identical** (indentation aside) ✅ |
+| `show_paid_step` | unchanged from the previous pass ✅ |
+| `takes_cash` | unchanged from the previous pass ✅ |
 
-**Card action row** — `flex gap-2`, two `flex-1` buttons, `Btn` padding `px-4`:
+⚠️ **One thing that looks alarming in a naive diff and is not.** A `git diff` against `HEAD` reports
+`show_paid_step` and `takes_cash` as *added* lines, with HEAD having zero. That is because those two
+controls were created in the **previous** (uncommitted) pass and are not in `HEAD` yet — not because this
+pass touched them. The same applies to the `update_truck` allowlist: its diff vs `HEAD`
+(`…'setup_step', 'show_paid_step', 'takes_cash']`) is entirely the previous pass's addition.
 
-| Layout | Card | Body | Per button | Label box | `Cash` ≈29px |
-|---|---|---|---|---|---|
-| **KDS window grid** (`minmax(240px,1fr)`) | 247px | 215px | 104px | **72px** | ✅ fits |
-| **Dashboard solo, 3-col iPad** | 260px | 228px | 110px | **78px** | ✅ fits |
-| **Dashboard solo, 2-col** | 380px | 348px | 170px | **138px** | ✅ comfortable |
+**The allowlist did not need editing and was not edited this pass** — regrouping the rendered rows
+changes no key name, so `update_truck`'s filter is unaffected. If a heading or a wrapper had *renamed* a
+key, the save would have silently vanished; nothing here does.
 
-**Bare labels are what make this fit**, and the numbers show why the settled ruling was right: at the
-240px KDS column the label box is 72px, and `Cash £5.50` needs ~73px — it would clip at the exact
-narrowest case. `Mark £5.50 paid` (~109px) would clip badly. Amounts genuinely do not fit beside a
-second button.
-
-**KDS cook mode: unaffected.** `renderButtons` returns `null` for cook mode outside cooking/ready — the
-completion button has never existed there, so nothing was added.
-
-**Cooking-gate row: unchanged**, one disabled placeholder, per the settled ruling.
-
-**Solo grid, both settings on** — the full stack is: notes → `[Edit | Cancel]` ghost row → `[Cash | Card]`.
-Two rows of two, plus notes. Vertically that is fine (`py-2.5` ghosts, `py-3` primaries, `gap-2`); the
-card grows by one row versus today. ⚠️ **It is busier than any card has been so far** — four tap targets
-plus a note in a 260px column. I would want a look at that before Gusto turns both on, but nothing
-clips and nothing overlaps.
+**Everything you asked me to leave alone is untouched:** "Auto-accept orders" + "Review orders with
+notes" (still their own group at [:7698](app/manage/[token]/page.tsx#L7698)), "Sounds"
+([:7734](app/manage/[token]/page.tsx#L7734)), and "Email order notifications" (still a loose row at
+[:7767](app/manage/[token]/page.tsx#L7767), deliberately not grouped).
 
 ---
 
-## 5. Verified by READING vs by RUNNING
+## 4. What I could NOT verify
 
-**By RUNNING:** `npx tsc --noEmit` → exit 0 after each step (it caught the missing `takes_cash` on
-`TruckData`); all contrast and luminance figures via WCAG relative luminance; the density arithmetic;
-greps confirming the four `takesCash` gates, both card sites receiving the prop, and zero `method`
-references inside `getOrderBalance`; regressions **18/18** ledger and **10/10** button-label.
-
-**By READING:** the original Confirm class recovered from `git show HEAD`; the loading-key collision
-that drove the distinct action names; that cook mode returns `null` before the completion button.
-
----
-
-## 6. What I could NOT verify
-
-- 🔴 **The orange/blue judgement is arithmetic, not a look.** 1.45:1 between two fills of near-identical
-  luminance is strong evidence they compete, but **whether they actually fight on screen is a visual
-  question I cannot settle without rendering.** Treat my recommendation as a prediction to check.
-- **Nothing was rendered.** No `next dev`. The Cash/Card pair on a card, the two-button confirm bar, the
-  restored orange, and the busier solo card are all **unobserved**.
-- **The migration has not been applied**, so `takes_cash` and `method` do not exist yet. Every code path
-  gated on them is currently unreachable, and both `VERIFY AFTER APPLYING` blocks are unrun.
-- **No Cash or Card tap has ever executed.** The suffixed action names, the method reaching the insert,
-  and the per-button pending behaviour are traced by reading, not run.
-- **Density is computed** from Tailwind values and a ~0.52em average character advance, not measured in
-  a browser. The KDS 72px-vs-73px margin on `Cash £5.50` is *why* the bare-label ruling holds, but it is
-  close enough that it would be worth one real look if that decision is ever revisited.
-- **The busier solo card** (four targets + notes) is my main visual concern and is unassessed.
-- **No `next build`** — tsc-clean does not prove the bundle.
+- 🔴 **Nothing was rendered.** No `next dev` per constraint. The two new panels, their spacing against
+  the existing Sounds and auto-accept panels, and whether four stacked grey sub-panels in one card reads
+  as organised or as busy are **all unobserved**. Grouping is a visual judgement and this is the one
+  change where the code tells you least — **worth a look before you trust the layout.**
+- **No toggle has been operated.** The handlers are proven textually identical, not exercised; I have not
+  watched a value save and re-load through the regrouped markup.
+- **The `divide-y divide-slate-200/70` divider behaviour with exactly three children** (heading + two
+  rows) is assumed to match Sounds, which has four. Structurally the same, visually unconfirmed.
+- **`tsc` proves the JSX is well-formed, not that it looks right** — as ever, necessary and not
+  sufficient.
+- **No `next build`.**

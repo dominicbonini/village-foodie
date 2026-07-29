@@ -35,6 +35,8 @@ function fmtVenue(venueName?: string | null, town?: string | null): string {
 }
 import { DealsModal } from '@/components/dashboard/DealsModal'
 import { AddOrderPanel } from '@/components/dashboard/AddOrderPanel'
+import { resolvePaidStep } from '@/lib/payments/paid-step'
+import { readSoundConfig, writeSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 import { DayLoadStrip } from '@/components/dashboard/DayLoadStrip'
 import UserMenu from '@/components/dashboard/UserMenu'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
@@ -238,10 +240,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // showPaidStep=false (the DB default) means every paid-step affordance below is inert and the
   // operator surface is byte-identical to before. payments = order_key → order_payments rows, shipped
   // by /api/dashboard so the card can call getOrderBalance without a second fetch.
-  const[showPaidStep,setShowPaidStep]=useState(false)
-  const[savingShowPaidStep,setSavingShowPaidStep]=useState(false)
-  const[takesCash,setTakesCash]=useState(false)
-  const[savingTakesCash,setSavingTakesCash]=useState(false)
+  // The dashboard no longer OWNS these — the truck defaults live in Manage → Settings. What it owns is
+  // the per-EVENT override, written to truck_events.show_paid_step_override for the current event only.
+  const[savingPaidStepOverride,setSavingPaidStepOverride]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
@@ -299,6 +300,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const screenHeld = wakeState==='held'||wakeState==='native'
   // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON (a truck wants to hear orders).
   const[soundEnabled,setSoundEnabled]=useState(true)
+  // PER-DEVICE sound CONFIG. Lazy initializer, SSR-guarded — read at FIRST PAINT, not in a useEffect,
+  // per the keep-screen-on lesson (an effect runs after paint; for sound that window could ding).
+  // null = this device has never seeded; the seed effect below fills it from trucks.sound_config.
+  const[storedSoundCfg,setStoredSoundCfg]=useState<SoundConfig|null>(()=>typeof window==='undefined'?null:readSoundConfig(token))
+  // 🔴 SEED-ON-FIRST-LOAD. Runs only when this device has NO stored config AND the truck's value has
+  // actually arrived. Waiting for truck.sound_config is the whole point: seeding from the hardcoded
+  // default in the pre-load window would silently reset a truck that configured sound deliberately.
+  useEffect(()=>{
+    if(storedSoundCfg!==null)return
+    if(truck?.sound_config===undefined)return          // payload not in yet — wait, do NOT default
+    setStoredSoundCfg(seedSoundConfig(token,truck.sound_config))
+  },[storedSoundCfg,truck?.sound_config,token])
+  // ONE resolution point for every consumer on this surface.
+  const soundCfg=effectiveSoundConfig(storedSoundCfg,truck?.sound_config)
   const[currentUserName,setCurrentUserName]=useState<string|null>(null)
   const[currentUserFirstName,setCurrentUserFirstName]=useState<string|null>(null)
   const[currentUserEmail,setCurrentUserEmail]=useState<string|null>(null)
@@ -612,8 +627,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
       if(data.payments !== undefined) setPayments(data.payments || {})
-      if(data.truck?.show_paid_step !== undefined) setShowPaidStep(!!data.truck.show_paid_step)
-      if(data.truck?.takes_cash !== undefined) setTakesCash(!!data.truck.takes_cash)
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
       if(data.activeVanName !== undefined) setActiveVanName(data.activeVanName)
@@ -876,7 +889,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     //   'off'              → never
     // orders is event-scoped server-side. Fire only within the SAME event — an event SWITCH bringing in a
     // different set must not ping (soundEventRef guards it; on switch we just reset the baselines).
-    const mode=(truck?.sound_config??DEFAULT_SOUND_CONFIG).new_orders
+    const mode=soundCfg.new_orders
     const count=orders.filter(o=>o.status==='pending').length
     const ordersEventId=orders.find(o=>o.event_id)?.event_id??selectedEventId??null
     const sameEvent=ordersEventId===soundEventRef.current
@@ -889,7 +902,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     soundEventRef.current=ordersEventId
     prevPendingCount.current=count
     prevOrderKeysRef.current=new Set(orders.map(o=>o.order_key))
-  },[orders,authenticated,selectedEventId,soundEnabled,truck?.sound_config])
+  },[orders,authenticated,selectedEventId,soundEnabled,soundCfg])
 
   useEffect(()=>{setQrFullscreenDataUrl(null)},[truck?.logo,truck?.qr_code_style])
 
@@ -1032,30 +1045,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingAutoAccept(false)}
   }
 
-  const saveShowPaidStep=async(val:boolean)=>{
-    setSavingShowPaidStep(true)
+  // PER-EVENT ONLY. This writes truck_events.show_paid_step_override for the CURRENT event and must
+  // NEVER write trucks.show_paid_step — that default belongs to Manage → Settings.
+  const savePaidStepOverride=async(val:boolean)=>{
+    if(!activeEvent)return
+    setSavingPaidStepOverride(true)
     try{
       await fetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'set_show_paid_step',value:val})
+        body:JSON.stringify({token,pin,action:'set_show_paid_step_override',value:val,eventId:activeEvent.id})
       })
-      setShowPaidStep(val)
-      showToast(val?'Paid step enabled':'Paid step disabled')
+      await fetchAll()
+      showToast(val?'Paid step on for this event':'Paid step off for this event')
     }catch{showToast('Failed to save','error')}
-    finally{setSavingShowPaidStep(false)}
-  }
-
-  const saveTakesCash=async(val:boolean)=>{
-    setSavingTakesCash(true)
-    try{
-      await fetch('/api/dashboard/action',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'set_takes_cash',value:val})
-      })
-      setTakesCash(val)
-      showToast(val?'Cash and card split on':'Cash and card split off')
-    }catch{showToast('Failed to save','error')}
-    finally{setSavingTakesCash(false)}
+    finally{setSavingPaidStepOverride(false)}
   }
 
 
@@ -1072,17 +1075,15 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingNotesReview(false)}
   }
 
-  // Per-truck SOUND POLICY. Writes the SAME trucks.sound_config as Manage → Settings (one column, one
-  // source of truth → the two surfaces mirror automatically). §23 optimistic: patch truck.sound_config
-  // (the trigger effects read it → react immediately), no reload; revert on failure.
-  const saveSoundConfig=async(next:SoundConfig)=>{
-    const prev=truck?.sound_config??DEFAULT_SOUND_CONFIG
-    setTruck(t=>t?{...t,sound_config:next}:t)
-    try{
-      const res=await fetch('/api/dashboard/action',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'set_sound_config',value:next})})
-      if(!res.ok)throw new Error()
-    }catch{setTruck(t=>t?{...t,sound_config:prev}:t);showToast('Failed to save','error')}
+  // PER-DEVICE sound config (V9.5). Writes localStorage for THIS device only and deliberately does NOT
+  // write trucks.sound_config — that column is now a one-way SEED for devices that have never loaded.
+  // No network call, so no optimistic/revert dance: the write is local and synchronous.
+  // ⚠️ A failed write is SURFACED, not swallowed (see lib/sound-prefs.ts). The setting still applies for
+  // this session; the toast tells the operator it will not survive a reload, which is the fact that
+  // matters and the thing keep-screen-on's silent catch hid.
+  const saveSoundConfig=(next:SoundConfig)=>{
+    setStoredSoundCfg(next)
+    if(!writeSoundConfig(token,next)) showToast('Sound saved for now, but this device could not store it — it will reset on reload','error')
   }
 
   const toggleOfflineProtection=async(value:boolean)=>{
@@ -1310,7 +1311,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }else if(action==='undo_collected'){
         showToast('Undone — order not collected')
       }else if(action==='collected'){
-        showToast(showPaidStep?`Order #${num} done`:`Order #${num} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
+        showToast(effectivePaidStep?`Order #${num} done`:`Order #${num} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
       }else if(action==='ready'){
         scheduleReadyEmail(orderKey)
         showToast(`Order #${num} ready`,'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
@@ -1657,6 +1658,9 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Fall back to the last known event when upcomingEvents is transiently empty
   // (failed refetch) but the selection is still live — never blank the event bar
   const activeEvent:TruckEvent|null=resolvedEvent
+  // The SAME resolver every other consumer uses — the dashboard's own reads (the toggle's position and
+  // the collected/undo toast wording) must agree with the card and the server.
+  const {showPaidStep:effectivePaidStep}=resolvePaidStep(truck,activeEvent)
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
@@ -1668,7 +1672,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // sound matches the card colour exactly. Default OFF (can get chatty). NOTE: fires from a TIMER, not a
   // click, so it's silently dropped until the audio context is gesture-unlocked (the Settings UI says so).
   useEffect(()=>{
-    const cfg=truck?.sound_config??DEFAULT_SOUND_CONFIG
+    const cfg=soundCfg
     if(!soundEnabled||!authenticated||!cfg.order_due) return
     const scan=()=>{
       const seen=new Set<string>()
@@ -1689,7 +1693,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     scan()
     const id=setInterval(scan,15000)
     return()=>clearInterval(id)
-  },[orders,authenticated,soundEnabled,truck?.sound_config,activeEvent,catConfigs,itemCategoryMap])
+  },[orders,authenticated,soundEnabled,soundCfg,activeEvent,catConfigs,itemCategoryMap])
 
   // OFFLINE-AWARE capacity for the day-load strip (Piece 1). ONLINE / no optimistic orders → returns the
   // server `slots` UNCHANGED (deviceQueuedOrders is ONLY ever populated by an OFFLINE create, so online this
@@ -2551,13 +2555,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} takesCash={takesCash} ledgerRows={payments[o.order_key]}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} showPaidStep={showPaidStep} takesCash={takesCash} ledgerRows={payments[o.order_key]}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -2713,39 +2717,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               )}
             </div>
-            {/* PAID STEP (V9.4) — same card/Toggle treatment as auto-accept above, so the two read as one
-                settings language. OFF by default: with it off the operator surface is exactly what it has
-                always been (one "Mark paid & done" button).
-                ONE toggle, deliberately. A `default_walkup_payment` companion setting shipped here on
-                29 July and was removed the next day: walk-ups and PHONE orders come through the same Add
-                Order panel with OPPOSITE payment timings, so any truck-level default was wrong about half
-                the time and the operator had to check and correct it on every order — worse than no
-                default. The confirm bar now offers two equal actions instead. Do not re-add it. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
-              <div className={`flex items-center justify-between ${showPaidStep?'pb-3':''}`}>
+            {/* PAID STEP — PER-EVENT OVERRIDE (V9.5). The truck DEFAULT lives in Manage → Settings;
+                this control changes THIS EVENT ONLY and never writes trucks.show_paid_step.
+                Resolution is truck_events.show_paid_step_override ?? trucks.show_paid_step, done in
+                lib/payments/paid-step.ts — the same helper the order card, the Add Order panel and both
+                server handlers use, so nothing here can disagree with them.
+                No modal and no confirmation: the scope is carried by the WORDING and the sub-label, per
+                §10. "This event only" is the whole message; the sub-label names the event so there is no
+                ambiguity about which one, and states where the default lives so the operator knows this
+                is not the place to change it permanently. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
-                  <p className="text-slate-500 text-xs mt-0.5">Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over. Off keeps the single one-tap button.</p>
+                  <p className="text-sm font-semibold text-slate-800">Separate paid step — this event only</p>
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over.
+                    {activeEvent ? ` Applies to ${activeEvent.venue_name || 'this event'} only — your usual setting is unchanged.` : ' Select an event to change it.'}
+                    {' '}Set your default in Manage → Settings.
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
-                  {savingShowPaidStep&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                  <Toggle on={showPaidStep} onToggle={()=>saveShowPaidStep(!showPaidStep)} disabled={isOffline}/>
+                  {savingPaidStepOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={effectivePaidStep} onToggle={()=>savePaidStepOverride(!effectivePaidStep)} disabled={isOffline||!activeEvent}/>
                 </div>
               </div>
-              {/* Cash/card split — a CHILD of the paid step (pl-4, shown only when it is on), mirroring
-                  the notes-review row under auto-accept. Off by default: one payment button, as now. */}
-              {showPaidStep&&(
-                <div className="pt-3 pl-4 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">Do you take cash at the hatch?</p>
-                    <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. Off keeps a single button.</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0 ml-3">
-                    {savingTakesCash&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
-                    <Toggle on={takesCash} onToggle={()=>saveTakesCash(!takesCash)} disabled={isOffline}/>
-                  </div>
-                </div>
-              )}
             </div>
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
                 fire; the on/off MASTER is the per-device header toggle.
@@ -2754,7 +2749,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 advertising this card would be showing a prospect a control that won't exist where they'd
                 go looking for it. Better to show nothing than to promise the wrong shape. */}
             {!isDemo&&(()=>{
-              const sc=truck?.sound_config??DEFAULT_SOUND_CONFIG
+              const sc=soundCfg
               return (
                 <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
                   <div className="pb-3">

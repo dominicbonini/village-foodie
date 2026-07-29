@@ -18,6 +18,7 @@ import { DEFAULT_SOUND_CONFIG } from '@/components/dashboard/types'
 import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
+import { readSoundConfig, seedSoundConfig, effectiveSoundConfig } from '@/lib/sound-prefs'
 import { formatTime, formatTimeRange } from '@/lib/time-utils'
 import { getNetworkStatus, addNetworkListener } from '@/lib/native/network'
 import { requestNotificationPermission } from '@/lib/native/notifications'
@@ -116,6 +117,12 @@ export default function KdsPage() {
   // Per-truck sound policy, mirrored to a ref so the realtime callback (a stale closure) reads the
   // current value. The header toggle stays the per-device MASTER; this is WHICH new orders ding.
   const soundConfigRef = useRef<SoundConfig>(DEFAULT_SOUND_CONFIG)
+  // PER-DEVICE sound CONFIG (V9.5) — the SAME localStorage key the dashboard uses (hg_soundcfg_${token}),
+  // so "which sounds fire" is one concept in one place on this device. Lazy initializer, SSR-guarded.
+  // null = never seeded; the effect below seeds it from trucks.sound_config once the payload arrives.
+  const [storedSoundCfg, setStoredSoundCfg] = useState<SoundConfig | null>(
+    () => (typeof window === 'undefined' ? null : readSoundConfig(token)),
+  )
   const [deviceOpen, setDeviceOpen] = useState(false)   // "This device" sheet (native-only)
   const [isOffline, setIsOffline] = useState(false)
   const [pendingSyncCount, setPendingSyncCount] = useState(0)
@@ -238,7 +245,19 @@ export default function KdsPage() {
     soundEnabledRef.current = soundEnabled
     if (typeof window !== 'undefined') localStorage.setItem(`hg_kds_sound_${token}`, soundEnabled ? 'on' : 'off')
   }, [soundEnabled, token])
-  useEffect(() => { soundConfigRef.current = truck?.sound_config ?? DEFAULT_SOUND_CONFIG }, [truck?.sound_config])
+  // 🔴 SEED-ON-FIRST-LOAD — identical rule to the dashboard: only when this device has nothing stored
+  // AND the truck's value has actually arrived. Never seed from the hardcoded default in the pre-load
+  // window; that would reset a truck that configured sound deliberately.
+  useEffect(() => {
+    if (storedSoundCfg !== null) return
+    if (truck?.sound_config === undefined) return
+    setStoredSoundCfg(seedSoundConfig(token, truck.sound_config))
+  }, [storedSoundCfg, truck?.sound_config, token])
+  // The trigger reads a ref (it runs inside a realtime callback), so keep it pointed at the resolved
+  // per-device value rather than the truck column.
+  useEffect(() => {
+    soundConfigRef.current = effectiveSoundConfig(storedSoundCfg, truck?.sound_config)
+  }, [storedSoundCfg, truck?.sound_config])
 
   useEffect(() => {
     configureStatusBar()

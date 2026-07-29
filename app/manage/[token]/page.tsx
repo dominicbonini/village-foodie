@@ -42,7 +42,7 @@ import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -7725,7 +7725,15 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
 
         {/* SOUNDS — WHICH alerts fire (per-truck policy). The on/off MASTER is a per-device switch on the
             dashboard/KDS header (physical mute) — this only chooses which events make sound. §23 optimistic:
-            setForm + saveFormField({sound_config}); no reload. */}
+            setForm + saveFormField({sound_config}); no reload.
+            ⚠️ V9.5 — THIS PANEL NOW WRITES A SEED, NOT A LIVE SETTING. Sound config became PER-DEVICE
+            (localStorage, lib/sound-prefs.ts). A device seeds from trucks.sound_config the first time it
+            loads and is authoritative from then on, so editing here changes nothing for any device that
+            has already loaded. The copy says so.
+            🔴 DO NOT RETIRE trucks.sound_config / set_sound_config / this panel / the update_settings
+            allowlist entry YET. This column is the seed source. Retirement requires that EVERY device has
+            loaded at least once since the V9.5 deploy — a device that has not would seed from nothing and
+            silently get the hardcoded default instead of the truck's real settings. Later release. */}
         {(() => {
           const sc = ((form as any).sound_config ?? { new_orders: 'needs_confirming', order_due: false }) as { new_orders: 'needs_confirming' | 'all' | 'off'; order_due: boolean }
           const setSc = (patch: Partial<typeof sc>) => { const next = { ...sc, ...patch }; setForm(p => ({ ...p, sound_config: next } as any)); saveFormField({ sound_config: next }) }
@@ -7735,7 +7743,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
                 <div className="pb-3">
                   <p className="text-sm font-bold text-slate-800">Sounds</p>
-                  <p className="text-xs text-slate-500 mt-0.5">The on/off switch is on each screen; every device controls its own sound.</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Sets the starting point for new devices. Each device then controls its own sound from its own screen — changing this won't affect devices already in use.</p>
                 </div>
                 <div className="py-3">
                   <p className="text-sm font-semibold text-slate-800 mb-1.5">New order sound</p>
@@ -7773,26 +7781,76 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
           />
         </div>
 
-        <div className="flex items-center justify-between py-3 border-t border-slate-100">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
-            <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
+        {/* ── TAKING PAYMENT (V9.5) — one neutral sub-panel, same treatment as Sounds and the
+            auto-accept group, so the two payment settings read as a grouped section rather than loose
+            rows at the bottom of the card.
+            ⚠️ SIBLINGS INSIDE A GROUP, NOT NESTED. They answer different questions — "WHEN do we take
+            money" (show_paid_step, which the dashboard can override per event) and "HOW does it arrive"
+            (takes_cash, truck-level, no override). The cash split was briefly rendered as a CHILD of the
+            paid step; that implied a dependency which does not exist. Do not reintroduce the nesting.
+            Both resolved only by lib/payments/paid-step.ts.
+            ⚠️ Both keys must stay on update_truck's `allowed` list (app/api/manage/route.ts:854) — that
+            list SILENTLY DROPS anything not on it, so a missing key means the toggle appears to save,
+            returns {ok:true}, and writes nothing. This regrouping changes no key and no save path. */}
+        <div className="pt-3 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+            <div className="pb-3">
+              <p className="text-sm font-bold text-slate-800">Taking payment</p>
+              <p className="text-xs text-slate-500 mt-0.5">How your team records payment on the order screen.</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
+                <p className="text-xs text-slate-500 mt-0.5">Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over.</p>
+              </div>
+              <Toggle
+                on={(form as any).show_paid_step === true}
+                onToggle={() => { const next = (form as any).show_paid_step !== true; setForm(p => ({...p, show_paid_step: next} as any)); saveSetting('show_paid_step', next) }}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
+                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till.</p>
+              </div>
+              <Toggle
+                on={(form as any).takes_cash === true}
+                onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
+              />
+            </div>
           </div>
-          <Toggle
-            on={form.default_auto_open}
-            onToggle={() => { const next = !form.default_auto_open; setForm(p => ({...p, default_auto_open: next})); saveSetting('default_auto_open', next) }}
-          />
         </div>
 
-        <div className="flex items-center justify-between py-3 border-t border-slate-100">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
-            <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
+        {/* ── OPENING AND CLOSING — same sub-panel treatment. These two were loose rows describing one
+            thing (when an event starts and stops taking online orders), so they group. Presentation
+            only: same columns, same saveSetting calls, same defaults. */}
+        <div className="pt-3 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+            <div className="pb-3">
+              <p className="text-sm font-bold text-slate-800">Opening and closing</p>
+              <p className="text-xs text-slate-500 mt-0.5">When your events start and stop taking online orders.</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Open for orders automatically</p>
+                <p className="text-xs text-slate-500 mt-0.5">Events open for online orders at your event start time</p>
+              </div>
+              <Toggle
+                on={form.default_auto_open}
+                onToggle={() => { const next = !form.default_auto_open; setForm(p => ({...p, default_auto_open: next})); saveSetting('default_auto_open', next) }}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Close for orders automatically</p>
+                <p className="text-xs text-slate-500 mt-0.5">Events stop taking orders at your event end time</p>
+              </div>
+              <Toggle
+                on={form.default_auto_close}
+                onToggle={() => { const next = !form.default_auto_close; setForm(p => ({...p, default_auto_close: next})); saveSetting('default_auto_close', next) }}
+              />
+            </div>
           </div>
-          <Toggle
-            on={form.default_auto_close}
-            onToggle={() => { const next = !form.default_auto_close; setForm(p => ({...p, default_auto_close: next})); saveSetting('default_auto_close', next) }}
-          />
         </div>
       </Card>
 

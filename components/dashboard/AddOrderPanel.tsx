@@ -22,6 +22,8 @@ import { isOrderNonEmpty, consumeBasketItemsForDeal, dealConsumedCartKeys, tally
 import { OptionStockBadge } from '@/components/OptionStockBadge'
 import { formatTime, localTodayIso, pickDefaultEventByTime, getNowMinsInTz, getLocalDateInTz } from '@/lib/time-utils'
 import { gatedAction, nextProvisionalId, seedProvisionalSeq } from '@/lib/native/orderGate'
+import { ORANGE_SOLID, ORANGE_OUTLINE } from '@/lib/ui-tokens'
+import { resolvePaidStep } from '@/lib/payments/paid-step'
 import { isNativeApp } from '@/lib/native/device'
 import { newUuid } from '@/lib/native/outbox'
 import { isOnline } from '@/lib/native/reachability'
@@ -676,8 +678,10 @@ setItemModal({ item, modGroups, editCartKey })
   // Whether THIS order takes money now. Seeded from the truck default and reset to it after every
   // submit (see resetManual). Entirely inert when the truck has not opted in: showPaidStep false means
   // the confirm bar renders exactly as it did before, and `paymentTaken` is never sent.
-  const showPaidStep = truck?.show_paid_step === true
-  const takesCash = truck?.takes_cash === true
+  // Resolved by the SHARED helper against the event this order is being placed into — never inline.
+  // manualEvent is the panel's own selected event, so a walk-up added to Saturday's festival gets
+  // Saturday's setting even if the operator is looking at the dashboard on Friday.
+  const { showPaidStep, takesCash } = resolvePaidStep(truck, manualEvent as any)
   // 🔴 NO REMEMBERED DEFAULT — open-check semantics. Walk-ups and phone orders come through THIS panel
   // with OPPOSITE payment timings, so any truck-level default is wrong about half the time and the
   // operator has to check and flip on every order anyway — worse than no default at all. Instead the
@@ -1116,7 +1120,7 @@ setItemModal({ item, modGroups, editCartKey })
           <button
             onClick={() => { takePaymentRef.current = false; void submitManual() }}
             disabled={loading || !hasItems || !manualEvent}
-            className="flex-1 min-w-0 bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+            className={`flex-1 min-w-0 ${ORANGE_OUTLINE} font-semibold py-3 rounded-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98]`}
           >
             {submitting === 'plain' ? 'Confirming…' : !manualEvent ? 'Select an event' : 'Confirm order'}
           </button>
@@ -1128,19 +1132,19 @@ setItemModal({ item, modGroups, editCartKey })
               <button
                 onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'cash'; void submitManual() }}
                 disabled={loading || !hasItems || !manualEvent}
-                className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight"
+                className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
                 {submitting === 'take-cash' ? <span className="text-sm">Confirming…</span> : (
-                  <><span className="text-sm">Cash</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                  <><span className="text-sm">💷 Cash</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
                 )}
               </button>
               <button
                 onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = 'card'; void submitManual() }}
                 disabled={loading || !hasItems || !manualEvent}
-                className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight"
+                className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
               >
                 {submitting === 'take-card' ? <span className="text-sm">Confirming…</span> : (
-                  <><span className="text-sm">Card</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
+                  <><span className="text-sm">💳 Card</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>
                 )}
               </button>
             </>
@@ -1148,7 +1152,7 @@ setItemModal({ item, modGroups, editCartKey })
             <button
               onClick={() => { takePaymentRef.current = true; paymentMethodRef.current = null; void submitManual() }}
               disabled={loading || !hasItems || !manualEvent}
-              className="flex-1 min-w-0 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight"
+              className={`flex-1 min-w-0 ${ORANGE_SOLID} font-semibold py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors active:scale-[0.98] flex flex-col items-center justify-center leading-tight`}
             >
               {submitting === 'take' ? <span className="text-sm">Confirming…</span> : (
                 <><span className="text-sm">Take payment</span><span className="text-base font-black">£{manualTotal.toFixed(2)}</span></>

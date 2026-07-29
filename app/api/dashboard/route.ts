@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override')
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')

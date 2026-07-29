@@ -1,34 +1,33 @@
-# Manual update report — V9.3 → V9.4 payments deltas
+# Manual update report — V9.4 → V9.5 deltas
 
-**Date:** 29 July 2026
-**Source:** `~/Downloads/manual-v94-deltas.md` (read from disk, UTF-8, 44,880 bytes)
+**Date:** 30 July 2026
+**Source:** `~/Downloads/manual-v95-deltas.md` (read from disk, UTF-8, 23,815 bytes)
 **Target:** `docs/reference-manual.md`
-**Status: ✅ COMPLETE — all seven edits applied, all eight checks pass.**
+**Status: ✅ COMPLETE — all five edits applied. 6 of 7 checks pass as written; check 5 differs from its
+stated estimate but the content is provably complete (detail in §Check 5).**
 
 ---
 
 ## Pre-flight
 
-**Source path.** The instruction named `docs/manual-v94-deltas.md`; that path does not
-exist. The file was found on disk at `~/Downloads/manual-v94-deltas.md` and read from
-there. The chat attachment of the same file was **mojibake-corrupted again** (its own
-glyph-integrity line rendered as `Â§ Â£ â â â â â  â Ã Î£ â ð´ â ï¸`) and was
-**not used** — confirming the corruption is a chat-transfer artifact, not a source defect.
+**Source path.** The instruction named `docs/manual-v95-deltas.md`; that path does not exist. The file
+was found on disk at `~/Downloads/manual-v95-deltas.md` and read from there — the same location as the
+previous two passes. The chat attachment of the same file was **mojibake-corrupted again** (its own
+glyph line rendered as `Â§ Â£ â â â â â  â Ã Î£ â ð· ð³ ð´ â ï¸`) and was **not used**.
+That is now three transfers in a row where the attachment was corrupt and the on-disk copy was clean.
 
-**Glyph-integrity gate — PASS.** The on-disk file's line 5 renders correctly:
+**🔴 Glyph-integrity gate — PASS.** The on-disk file's line 5:
 
 ```
-§ £ — – → ↔ ≠ − × Σ ❗ 🔴 ⚠️
+§ £ — – → ↔ ≠ − × Σ ❗ 💷 💳 🔴 ⚠️
 ```
 
-All thirteen glyphs intact, so no repairs were attempted or needed.
+All fifteen glyphs intact, including the two new ones (`💷` `💳`). No repairs attempted or needed.
 
-**Method.** Applied by script, with the seven blocks extracted **byte-exactly** from the
-deltas file between its `<<<BEGIN …>>>` / `<<<END …>>>` markers. Nothing was retyped,
-reworded, re-punctuated or restructured. Anchors were likewise extracted from the
-deltas' own fenced blocks. The script verified every anchor count **before** writing a
-single byte — a mismatch would have aborted the whole run. A pre-edit backup was taken
-to the session scratchpad.
+**Method.** Applied by script. The four insert blocks were extracted **byte-exactly** from between the
+deltas' own `<<<BEGIN INSERT>>>` / `<<<END INSERT>>>` markers — nothing retyped, reworded or
+re-punctuated. Anchor counts were asserted **before** a single byte was written; a mismatch would have
+aborted the whole run. A pre-edit backup was taken to the session scratchpad.
 
 ---
 
@@ -36,116 +35,93 @@ to the session scratchpad.
 
 | Edit | Target | Matches | Expected |
 |---|---|---|---|
-| 1 | `# Changelog` + `## V9.3 — 28 July 2026` | 1 | 1 ✅ |
-| 2 | §13 `operators` line (phantom columns) | 1 | 1 ✅ |
-| 3 | §16 `operators` line | 1 | 1 ✅ |
-| 4 | §16 `orders` line | 1 | 1 ✅ |
-| 5 | `# 27. Open backlog (June 2026)` | 1 | 1 ✅ |
-| 6 | `# 36. Android app platform notes (V9.2, verification status V9.3)` | 1 | 1 ✅ |
-| 7 | `HatchGrab Engineering Reference Manual · V9.3` | 2 | 2 ✅ (by design) |
+| 1 | `# Changelog` + `## V9.4 — 29 July 2026` | 1 | 1 ✅ |
+| 2 | `# 36. Android app platform notes (V9.2, verification status V9.3)` | 1 | 1 ✅ |
+| 3 | `> **STATUS: NOTHING IS BUILT.**` | 1 | 1 ✅ |
+| 4 | `# 27. Open backlog (June 2026)` | 1 | 1 ✅ |
+| 5 | `HatchGrab Engineering Reference Manual · V9.4` | 2 | 2 ✅ (by design) |
 
 ## Edits applied
 
-1. **V9.4 changelog entry** inserted between `# Changelog` and `## V9.3 — 28 July 2026`,
-   blank line either side. V9.4 now sits above V9.3.
-2. **§13 `operators`** — phantom `billing` / `stripe_customer_id` removed, replaced with
-   the thirteen live-verified columns plus the 🔴 correction blockquote.
-3. **§16 `operators`** — replaced with the complete thirteen-column list.
-4. **§16 `orders`** — replaced with the complete thirty-five-column list, the CHECK-
-   constraint blockquote and four V9.4 RULE blockquotes.
-5. **§27** — V9.4 backlog block inserted immediately after the heading, before
-   `## Built this session (V7.8 §22–§38)`. Heading itself unchanged.
-6. **§35** — ten new invariants appended, immediately before the §36 heading.
-   **The §36 heading text was not altered.**
-7. **§37 Payments** appended before the footer; both version strings bumped to `· V9.4`.
+1. **V9.5 changelog** inserted between `# Changelog` and `## V9.4 — 29 July 2026`, blank line either
+   side. V9.5 (line 19) now sits above V9.4 (line 47).
+2. **Nine new §35 invariants** appended at the end of §35, immediately before the §36 heading
+   (last invariant at line 4643, heading at 4645). **§36 heading text unaltered.**
+3. **§37 status update** inserted immediately before the existing `STATUS: NOTHING IS BUILT` blockquote
+   (new block 4692-4694, original intact at 4695).
+4. **V9.5 backlog block** inserted immediately after the `# 27.` heading, before the existing V9.4 block.
+   Heading unchanged.
+5. **Both version strings** bumped to `· V9.5`.
 
-**Block fidelity:** all seven blocks confirmed present **verbatim** in the output
-(33, 3, 1, 15, 31, 26 and 75 lines respectively).
+**Block fidelity — all four present verbatim:**
+
+| Block | Lines | Verbatim |
+|---|---|---|
+| EDIT 1 changelog | 27 | ✅ |
+| EDIT 2 invariants | 21 | ✅ |
+| EDIT 3 §37 status | 3 | ✅ |
+| EDIT 4 backlog | 23 | ✅ |
 
 ---
 
-## VERIFICATION — 8 of 8 PASS
+## VERIFICATION — 7 checks
 
-**1. `grep -c "^# "` → 37** ✅ (was 36)
+**1. `grep -c "^# "` → 37** ✅ Unchanged, as required — no new section this pass.
 
-**2. `grep -c "· V9.3"` → 0** ✅
-The §36 heading's `verification status V9.3` is untouched, as instructed — it is not a
-`· V9.3` version string and correctly does not match.
+**2. `grep -c "· V9.5"` → 2** ✅ Line 1 (title) and the final line (footer).
 
-**3. `grep -c "· V9.4"` → 2** ✅ — line 1 (title) and the final line (footer).
+**3. `grep -c "· V9.4"` → 0** ✅
+The historical labels are untouched and correctly did **not** match: the §37 heading still reads
+`# 37. Payments — commercial model and architecture decisions (V9.4)` (line 4690), and **8 other
+`(V9.4)` labels** remain in place. None is a `· V9.4` version string.
 
-**4. `stripe_customer_id`** ✅ **on intent; one literal discrepancy worth recording.**
-The original phantom assertion is gone (`grep -c "billing, stripe_customer_id"` → **0**),
-and **zero** occurrences claim the column exists. It now appears three times, all
-stating it does **not** exist:
+**4. Changelog order** ✅ `## V9.5 — 30 July 2026` (line 19) sits above `## V9.4 — 29 July 2026`
+(line 47), above V9.3 (line 81).
+**The V9.4 entry is byte-identical to before** — verified with `cmp` on the extracted 35-line block.
 
-| Line | Location |
-|---|---|
-| 31 | V9.4 changelog, "FOUR SCHEMA CORRECTIONS" |
-| 2640 | **§13 correction** — the one the check names |
-| 2871 | §16 entry, "NO `stripe_customer_id`" |
+**5. `wc -l` → 4,769** ⚠️ **The number does not match the estimate, but nothing is missing.**
 
-The check as written says "appears ONLY inside the §13 correction". Taken literally that
-is false — but the two extra occurrences are text **the deltas file itself mandates**
-(blocks 1 and 3), so the check is internally inconsistent with its own instructions. The
-substantive condition — no surviving claim that the column exists — is met. Flagged
-rather than silently marked green.
+The check expects "roughly +130 lines" on the 4,693 baseline. The actual delta is **+76**.
 
-**5. `wc -l` → 4,693** ✅ (deltas estimated ~4,697; the `~` covers it)
-Net **+185** lines, reconciled exactly:
+I chased this rather than accepting it, and it fully reconciles:
 
 ```
-+34 (E1)  +2 (E2)  +0 (E3)  +14 (E4)  +32 (E5)  +27 (E6)  +76 (E7)  =  +185
-4,508 + 185 = 4,693 ✓
+block lines:  27 + 21 + 3 + 23        = 74
+blank separators (edits 1, 2, 3, 4)   =  4
+                                        ──
+net insertions                          78
+git numstat: 78 insertions, 2 deletions → net +76 ✅
 ```
 
-Every line is accounted for, so the 4-line gap is estimation slack, not lost content.
+The two deletions are the title and footer lines replaced by EDIT 5. **All four blocks are present
+verbatim** (asserted by substring match against the source, table above), so **the ~+130 figure was the
+deltas author's estimate, not a measurement.** The blocks use very long single lines — each changelog
+bullet and each invariant is one line — so a prose-length estimate overshoots the line count
+substantially. **Content complete; the estimate was loose.**
 
-**6. Changelog order** ✅ — `## V9.4 — 29 July 2026` (line 19) sits above
-`## V9.3 — 28 July 2026` (line 53), above V9.2 (line 67).
-**The V9.3 entry is byte-identical to before** — verified with `cmp` on the extracted
-15-line block. Not renumbered, not merged, content untouched.
+**6. Heading diff** ✅ `diff` of `grep "^# "` before vs after → **IDENTICAL**. No heading added, removed
+or reworded.
 
-**7. Heading diff** ✅ — the only difference is one addition:
-
-```
-36a37
-> # 37. Payments — commercial model and architecture decisions (V9.4)
-```
-
-Nothing removed, nothing reworded, nothing reordered.
-
-**8. `git diff --stat`** ✅ — the modified-file set is **identical to the session-start
-baseline** (11 files). The other ten carry pre-existing uncommitted work from the
-Android and capacity workstreams and were **not touched**. Only
-`docs/manual-update-report.md` is newly untracked, which is this report.
-
-`docs/reference-manual.md`: **248 insertions, 9 deletions** vs `HEAD`. The 9 deletions
-reconcile exactly — 6 from the pre-existing Android work, 3 from this pass (the single
-replaced lines in edits 2, 3 and 4):
-
-```
--HatchGrab Engineering Reference Manual · V9.2        (Android bump, now → V9.4)
--**Version 9.2**                                       (Android)
--- **operators** — account holder. … stripe_customer_id.   ← EDIT 2
--- **operators** — first_name, … billing.                  ← EDIT 3
--- **orders** — order_key (V6.3, uuid, PRIMARY KEY …       ← EDIT 4
--**A JS `try`/`catch` around a Capacitor plugin call …** (Android)
--# 36. Android app platform notes (V9.2)                (Android)
--**Verification asymmetry, worth knowing …**            (Android)
--HatchGrab Engineering Reference Manual · V9.2          (Android bump, now → V9.4)
-```
-
-**Android work confirmed still present:** `VERIFICATION STATUS (V9.3, 28 July 2026)`,
-the fail-closed/fail-open invariant, and both `Bridge.callPluginMethod` references.
+**7. `git diff --stat`** ✅ `docs/reference-manual.md | 80 ++++--` — **78 insertions, 2 deletions**, and
+it is the **only** file this pass modified. (The other files showing as modified in `git status` are the
+pre-existing, uncommitted payments work from earlier today; none was touched here, and this report is
+the only other file written.)
 
 ---
 
 ## Notes
 
-- No file other than `docs/reference-manual.md` and this report was modified.
-- The §36 heading remains `# 36. Android app platform notes (V9.2, verification status V9.3)`.
+- The `⚠️`, `🔴`, `❗`, `💷` and `💳` markers, the blockquote markers, bold and every `§` reference are
+  preserved verbatim — the blocks were copied, never retyped.
 - The file still ends with a trailing newline; the footer is the last line.
-- `❗` (U+2757) appears as specified in the EDIT 1 and EDIT 5 blocks.
-- Backup of the pre-edit file retained in the session scratchpad as
-  `reference-manual.BEFORE.md` (md5 `e429f3d6cfcb3dab844841df76950d53`, 4,508 lines).
+- Nothing outside the five edits was reformatted, reflowed, reordered or tidied.
+
+## What I could NOT verify
+
+- **The manual was not read end to end for coherence** — the edits are mechanically correct and
+  byte-faithful, but I did not check whether any new statement contradicts existing manual content
+  elsewhere.
+- **The `~+130` estimate's origin is inferred.** I reconciled the actual count exactly and proved all
+  four blocks present, but I cannot know what the author was counting when they wrote 130.
+- **No rendering check** — the markdown was not previewed, so I have not confirmed the new blockquotes
+  and nested list items render as intended.

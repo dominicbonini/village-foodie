@@ -18,7 +18,8 @@
 //                                  operator decision after it was moved to green-700 (5.02:1) and then
 //                                  to green-500 (2.28:1). Do NOT "fix" it back up: the ratio is known
 //                                  and the call was made deliberately. Raise it only if asked.
-//   blue-600  #2563eb  5.17:1  ✅   (blue-500 3.68:1 ❌)
+//   orange-600 #ea580c  3.56:1  ⚠️  brand primary, white text — pre-existing, below AA
+//   orange-700 #c2410c  5.18:1  ✅  as TEXT on white (the outline variant)
 //   slate-800 #1e293b 14.63:1  ✅
 // If you change one of these, recompute the ratio. Do not eyeball it.
 
@@ -27,15 +28,25 @@
 // than forcing one palette lets both import the same green without pretending they are the same button.
 /** Kitchen state advancing — Ready, ✓ Confirm. 3.30:1 — see the note above before changing. */
 export const GREEN_SOLID = 'bg-green-600 hover:bg-green-700 text-white'
-/** A MONEY action — Mark paid, Take payment. 5.17:1. Deliberately not green. */
-export const BLUE_SOLID  = 'bg-blue-600 hover:bg-blue-700 text-white'
+/** A MONEY action — Mark paid, Cash, Card, Take payment. The page's vocabulary is orange/slate/green,
+ *  so money is BRAND ORANGE, not a foreign accent colour. Hierarchy (solid vs outline) separates
+ *  "confirm" from "pay"; an ICON separates cash from card. Colour encodes what KIND of action something
+ *  is — never which variant of it. ⚠️ white on orange-600 is 3.56:1, below the 4.5:1 AA floor; it is the
+ *  pre-existing brand primary and is used here for consistency with the rest of the page. */
+export const ORANGE_SOLID = 'bg-orange-600 hover:bg-orange-700 text-white'
+/** SECONDARY of the same brand colour — "Confirm order" beside "Cash"/"Card". Orange-700 TEXT is
+ *  5.18:1 on white (AA pass); the orange-600 border is 3.56:1, clearing the 3:1 UI-component bar.
+ *  ⚠️ Contrast is SYMMETRIC — "orange text on white" is NOT automatically safer than the reverse:
+ *  text-orange-600 on white is the same 3.56:1 as white on orange-600. 700 is what makes it pass. */
+export const ORANGE_OUTLINE = 'bg-white hover:bg-orange-50 text-orange-700 border border-orange-600'
 /** Completion — Done, Mark paid & done. 14.63:1. */
 export const DARK_SOLID  = 'bg-slate-800 hover:bg-slate-900 text-white'
 
 /** The dashboard order-card Btn palette. */
 export const BTN_COLOURS: Record<string, string> = {
   green:  GREEN_SOLID,
-  blue:   BLUE_SOLID,
+  money:  ORANGE_SOLID,
+  'money-outline': ORANGE_OUTLINE,
   dark:   DARK_SOLID,
   red:    'bg-red-500 hover:bg-red-600 text-white',
   teal:   'bg-teal-600 hover:bg-teal-700 text-white',

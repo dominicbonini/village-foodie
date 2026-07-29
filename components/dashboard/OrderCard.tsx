@@ -8,6 +8,7 @@ import { getCategoryTime, getTicketAge, getSlotOffset, getCombinedUrgency, getHe
 import type { CatConfig } from '@/lib/prep-utils'
 import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
 import { BTN_COLOURS } from '@/lib/ui-tokens'
+import { resolvePaidStep } from '@/lib/payments/paid-step'
 
 export type ViewMode = 'solo' | 'window' | 'cook'
 
@@ -94,8 +95,6 @@ export function OrderCard({
   pendingSync = false,
   anchorId,
   highlight = false,
-  showPaidStep = false,
-  takesCash = false,
   ledgerRows,
 }: {
   order: Order
@@ -129,12 +128,6 @@ export function OrderCard({
    *  the demo dashboard once the scroll to this card has finished; false everywhere else, and false
    *  appends nothing to the class string. */
   highlight?: boolean
-  /** trucks.show_paid_step. FALSE (default) = today's behaviour exactly: one "Mark paid & done" button,
-   *  no chip, no split. Every paid-step affordance in this component is gated on it. */
-  showPaidStep?: boolean
-  /** trucks.takes_cash. FALSE (default) = one "Mark paid" button, exactly as now. TRUE splits it into
-   *  "Cash" and "Card" — two buttons, one tap each, never a modal. Only meaningful with showPaidStep. */
-  takesCash?: boolean
   /** This order's order_payments rows, supplied by /api/dashboard. Fed straight to getOrderBalance —
    *  the card NEVER derives payment state itself. Undefined/empty ⇒ nothing paid. */
   ledgerRows?: LedgerRow[]
@@ -145,6 +138,12 @@ export function OrderCard({
   /** Inline "Remove payment?" confirm, revealed by tapping the paid chip. Local and transient — it
    *  auto-clears whenever the order's payment state changes (see the effect below). */
   const [confirmRemovePayment, setConfirmRemovePayment] = useState(false)
+
+  // ── PAID-STEP SETTINGS — RESOLVED BY THE SHARED HELPER, NEVER INLINE (V9.5) ─────────────────────
+  // The card already receives `truck` and `event`, so it resolves its own settings rather than taking
+  // them as props. That removes any chance of the card and the server disagreeing about whether the
+  // paid step is split for THIS event — they run the same function over the same two inputs.
+  const { showPaidStep, takesCash } = resolvePaidStep(truck, event)
 
   // ── PAYMENT STATE — DERIVED, NEVER RECOMPUTED HERE (V9.4) ───────────────────────────────────────
   // getOrderBalance is the SAME pure function the server rollup uses, so the card and orders.payment_status
@@ -177,13 +176,19 @@ export function OrderCard({
     if (isPaid) {
       return <Btn label="Done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
-    // BLUE — a MONEY action, and the third colour on this card by design. GREEN means a KITCHEN state
-    // advancing (Ready, ✓ Confirm) and SLATE means completion (Done). Green previously meant both
-    // "ready" and "mark paid", so on adjacent cards a kitchen step and a money action read as the same
-    // class of thing. blue-600 is 5.17:1 on white. See lib/ui-tokens.ts.
+    // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
+    // (Ready, ✓ Confirm) and SLATE means completion (Done). Blue was tried here and was foreign to a
+    // page whose vocabulary is orange/slate/green. See lib/ui-tokens.ts.
     //
-    // CASH/CARD SPLIT: BOTH are money actions, so both are blue — no fourth colour. Two buttons, ONE
-    // TAP either way; deliberately NOT "Mark paid" → modal → choose, which §10's fast-tap rule forbids.
+    // CASH/CARD SPLIT: both are the SAME solid orange, distinguished by ICON, not colour.
+    // 🔴 COLOUR ENCODES WHAT KIND OF ACTION SOMETHING IS, NEVER WHICH VARIANT OF IT. Two near-identical
+    // oranges would read as a rendering mistake; a third and fourth colour would make the row noisy.
+    // Cash and card are a genuine either/or with no default, so parity is correct — and a thumb finds
+    // an ICON faster than it reads a word.
+    // Icons are EMOJI because that is the icon vocabulary this codebase already uses on buttons
+    // (✓ Confirm, ✏ Edit, ↩ Undo, 🔥 Cooking) — there is no icon library in package.json and adding
+    // one for two glyphs would be a dependency for nothing.
+    // Two buttons, ONE TAP either way; deliberately NOT "Mark paid" → modal → choose (§10 fast-tap).
     // Distinct action names (mark_paid_cash / mark_paid_card) keep the pending state PER BUTTON — a
     // shared `mark_paid` key would grey out and spin both, the bug fixed on the confirm bar.
     // Labels are BARE on the card, no amounts: the amount already appears twice (the price, and the
@@ -192,9 +197,9 @@ export function OrderCard({
     if (takesCash) {
       return (
         <>
-          <Btn label="Cash" colour="blue" loading={isLoading('mark_paid_cash')}
+          <Btn label="💷 Cash" colour="money" loading={isLoading('mark_paid_cash')}
             onClick={() => onAction('mark_paid_cash', order.order_key)} />
-          <Btn label="Card" colour="blue" loading={isLoading('mark_paid_card')}
+          <Btn label="💳 Card" colour="money" loading={isLoading('mark_paid_card')}
             onClick={() => onAction('mark_paid_card', order.order_key)} />
         </>
       )
@@ -202,7 +207,7 @@ export function OrderCard({
     return (
       <Btn
         label={isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
-        colour="blue" loading={isLoading('mark_paid')}
+        colour="money" loading={isLoading('mark_paid')}
         onClick={() => onAction('mark_paid', order.order_key)}
       />
     )
@@ -221,9 +226,10 @@ export function OrderCard({
   //   • It is a CORRECTION, not a primary action, so it must not compete with the main button: it lives
   //     in the header beside the price, at 10px, while the primary action is a full-width button at the
   //     bottom of the card. The two are at opposite ends and cannot be confused.
-  //   • TWO deliberate taps (chip → "Remove"), so a stray tap reveals a confirm and nothing more. There
-  //     is no destructive single-tap target anywhere on this path.
-  //   • INLINE, not a modal — §10's fast-tap rule. It replaces the chip in place and dismisses itself.
+  //   • TWO deliberate taps (chip → "Remove payment"), so a stray tap while scanning a card opens a
+  //     dialog and nothing more. There is no destructive single-tap target anywhere on this path.
+  //   • A MODAL, not an inline confirm — see removePaymentModal below for why that changed and why
+  //     §10's fast-tap rule does not govern it.
   // It calls `undo_mark_paid`, which is the SAME server path the undo toast already uses: audit FIRST
   // (abort the delete if the audit write fails), then delete the ledger row, then recalc. No second
   // reversal implementation exists.
@@ -232,24 +238,47 @@ export function OrderCard({
     : isPartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
     : null
 
-  const paidChip = paidChipStatic === null ? null : confirmRemovePayment ? (
-    <span className="flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
-      <span className="text-[10px] font-bold text-slate-500">Remove payment?</span>
-      <button
-        onClick={() => { setConfirmRemovePayment(false); onAction('undo_mark_paid', order.order_key) }}
-        disabled={isLoading('undo_mark_paid')}
-        className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 hover:bg-red-200 disabled:opacity-50">
-        {isLoading('undo_mark_paid') ? '…' : 'Remove'}
-      </button>
-      <button onClick={() => setConfirmRemovePayment(false)}
-        className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200">
-        Keep
-      </button>
-    </span>
-  ) : (
+  const paidChip = paidChipStatic === null ? null : (
     <button onClick={() => setConfirmRemovePayment(true)} title="Tap to remove this payment" className="flex-shrink-0">
       {paidChipStatic}
     </button>
+  )
+
+  // ── THE REMOVE-PAYMENT MODAL ────────────────────────────────────────────────────────────────────
+  // 🔴 §10's FAST-TAP RULE DOES NOT APPLY HERE, and that is a deliberate reading rather than an
+  // oversight. That rule governs PRIMARY SERVICE actions — adding items, taking payment — where a popup
+  // mid-transaction costs the operator time they do not have. Removing a payment is the opposite: a
+  // deliberate CORRECTION, made after the fact, of a record that says money changed hands. A
+  // confirmation step there is appropriate, not friction to be eliminated.
+  // It replaced an INLINE two-tap confirm that physically did not fit: the card header already carries
+  // the price and the PAID chip, so "Remove payment? Remove Keep" clipped off the card edge — the
+  // "Keep" escape was unreachable, which is the worst possible thing to lose from a destructive confirm.
+  // ⚠️ It calls `undo_mark_paid` — the SAME server path the undo toast uses. No third implementation:
+  // audit FIRST, abort the delete if the audit write fails, then delete the ledger row, then recalc.
+  const removePaymentModal = !confirmRemovePayment ? null : (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+      onClick={e => e.target === e.currentTarget && setConfirmRemovePayment(false)}>
+      <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
+        <div>
+          <h3 className="text-lg font-semibold text-slate-900">Remove payment?</h3>
+          <p className="text-sm text-slate-500 mt-2">
+            This removes the <strong className="text-slate-700">{money(balance.paidMinor)}</strong> recorded
+            against order <strong className="text-slate-700">#{order.id}</strong>. The order stays where it is;
+            only the payment record is removed.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={() => setConfirmRemovePayment(false)}
+            className="flex-1 border border-slate-200 text-slate-600 py-3 rounded-xl text-sm">Cancel</button>
+          <button
+            onClick={() => { setConfirmRemovePayment(false); onAction('undo_mark_paid', order.order_key) }}
+            disabled={isLoading('undo_mark_paid')}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-50">
+            {isLoading('undo_mark_paid') ? '…' : 'Remove payment'}
+          </button>
+        </div>
+      </div>
+    </div>
   )
 
   /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
@@ -487,6 +516,12 @@ export function OrderCard({
 
   return (
     <div id={anchorId} className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${pendingSync ? 'border-amber-300' : 'border-slate-200'}${highlight ? ' demo-order-highlight' : ''}`}>
+
+      {/* Rendered from inside the card but positioned `fixed inset-0`, so it escapes the card's
+          `overflow-hidden` and its grid cell entirely — it centres on the VIEWPORT and is therefore
+          identical in solo, window and grid, at any column width. That is precisely what the inline
+          confirm could not do. */}
+      {removePaymentModal}
 
       {/* Full-width coloured header — age-driven */}
       {viewMode === 'cook' ? (
