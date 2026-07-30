@@ -114,7 +114,10 @@ export async function GET(req: NextRequest) {
   // Resolve the dashboard event context BEFORE reading orders, so the order lists
   // can be scoped to the selected event (V6.4: orders belong to an event, never a
   // pooled date). collection_times is fetched alongside (retained as-is).
-  const [{ data: staticTimes }, { data: todayEvents }] = await Promise.all([
+  const [
+    { data: staticTimes, error: timesErr },
+    { data: todayEvents, error: eventsErr },
+  ] = await Promise.all([
     supabase
       .from('collection_times')
       .select('collection_time, production_slot')
@@ -122,12 +125,38 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override')
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override, takes_cash_override')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
       .order('start_time', { ascending: true }),
   ])
+
+  // ── 🔴 THE EVENTS QUERY MUST NEVER FAIL SILENTLY (V9.5) ───────────────────────────────────────────
+  // This destructure used to drop its error, and that single omission produced the worst failure this
+  // route has had: a NAMED select here (unlike orders/trucks, which use select('*')) referenced two
+  // columns whose migration had not been applied, PostgREST returned 42703, `todayEvents` came back
+  // null, every selectedEventId branch below requires it non-null, the orders block never ran, and the
+  // route returned **HTTP 200 with `orders: []`**. An empty board is a SUPPORTED state here (no event
+  // selected ⇒ nothing to show), so the bug wore the disguise of normal behaviour — no error, no failed
+  // request, nothing in any log. It took a full read of the route to find.
+  //
+  // ⚠️ WE LOG, WE DO NOT 500. An empty board with a loud log is recoverable: the operator can see
+  // something is wrong and report it, and the next poll self-heals once the cause is fixed. A 500 takes
+  // the dashboard down entirely, and an operator mid-service is worse off with a dead page than with a
+  // visibly empty one. That is a deliberate choice, not an oversight — do not "harden" it into a throw.
+  if (eventsErr) {
+    console.error(
+      `[dashboard] EVENTS QUERY FAILED for truck ${truck.id} on ${date} — the board will render EMPTY ` +
+      `(no event resolves, so the orders query is skipped entirely and the response is a 200 with ` +
+      `orders: []). If this names a column, its migration has not been applied:`, eventsErr.message,
+    )
+  }
+  if (timesErr) {
+    // Lower stakes: only the production_window_key map is built from this, so slots fall back to their
+    // own collection_time as the key. Day-load dots may read against the wrong key, not disappear.
+    console.error('[dashboard] collection_times fetch failed — slot window keys fall back to collection_time:', timesErr.message)
+  }
 
   // Use first event for slot generation (if truck has multiple same-day events,
   // the client will select one and re-fetch; first is the best default)
@@ -187,7 +216,13 @@ export async function GET(req: NextRequest) {
       doneOrdersQuery   = doneOrdersQuery.or(`van_id.eq.${vanId},van_id.is.null`)
     }
 
-    const [{ data: a }, { data: d }] = await Promise.all([activeOrdersQuery, doneOrdersQuery])
+    const [{ data: a, error: activeErr }, { data: d, error: doneErr }] = await Promise.all([activeOrdersQuery, doneOrdersQuery])
+    // Same class as the events query above: a failure here yields null → `|| []` → a silently empty
+    // board. These use select('*') so they cannot 42703 on a missing column, but an RLS change, a bad
+    // `.or()` van filter or a connection fault would all land here unannounced. Log, do not throw —
+    // rendering the half that succeeded beats losing the page.
+    if (activeErr) console.error(`[dashboard] ACTIVE ORDERS query failed for event ${selectedEventId} — the live board will render EMPTY:`, activeErr.message)
+    if (doneErr)   console.error(`[dashboard] DONE ORDERS query failed for event ${selectedEventId} — the collected/cancelled list will render EMPTY:`, doneErr.message)
     activeOrders = a || []
     doneToday = d || []
 
@@ -248,7 +283,10 @@ export async function GET(req: NextRequest) {
       : []
     ).map(s => ({ ...s, production_window_key: timeMap[s.collection_time] || s.collection_time }))
 
-  const [{ data: categories }, { data: menuItemsForMap }] = await Promise.all([
+  const [
+    { data: categories, error: catsErr },
+    { data: menuItemsForMap, error: itemsErr },
+  ] = await Promise.all([
     supabase
       .from('menu_categories')
       .select('id, name, prep_secs, batch_size, sort_order, counts_toward_capacity')
@@ -260,6 +298,13 @@ export async function GET(req: NextRequest) {
       .select('name, category_id')
       .eq('truck_id', truck.id),
   ])
+
+  // ⚠️ BOTH ARE NAMED SELECTS — the same 42703 exposure the events query had. A failure here does not
+  // empty the board, it DEGRADES prep timing: no catConfigs ⇒ every item scores 0 prep secs and nothing
+  // counts toward capacity, and no item→category map ⇒ items group under the fallback. Wrong numbers on
+  // a board that still looks right is precisely the failure mode worth logging.
+  if (catsErr)  console.error('[dashboard] menu_categories fetch failed — prep secs read 0 and NOTHING counts toward capacity this poll:', catsErr.message)
+  if (itemsErr) console.error('[dashboard] menu_items_db fetch failed — items cannot be mapped to categories this poll:', itemsErr.message)
 
   const catConfigs: Record<string, CatConfig> = {}
   ;(categories || []).forEach(c => {
@@ -337,11 +382,20 @@ export async function GET(req: NextRequest) {
     // day shows the right event's capacity, not the date's first event.
     const capacityEvent = selectedEvent
     if (capacityEvent?.van_id) {
-      const { data: van } = await supabase
+      const { data: van, error: vanErr } = await supabase
         .from('truck_vans')
         .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, show_cooking_step, order_ready_enabled')
         .eq('id', capacityEvent.van_id)
         .single()
+      // Another NAMED select, and every consumer below has a `?? <default>` — so a failure here reads as
+      // "this van has no capacity limit, no cooking step and no order-ready step", which is a plausible
+      // configuration rather than a visible fault. Exactly the wrong-value-not-a-crash shape.
+      if (vanErr) {
+        console.error(
+          `[dashboard] van ${capacityEvent.van_id} lookup failed — capacity, cooking step and order-ready ` +
+          `all fall back to their defaults this poll:`, vanErr.message,
+        )
+      }
       kitchenCapacity = van?.kitchen_capacity ?? null
       capacityWindowMins = van?.capacity_window_mins ?? 5
       activeVanName = van?.name ?? null
@@ -456,8 +510,14 @@ export async function GET(req: NextRequest) {
   if (isDemoIdentifier(truck.id)) {
     demo = { extraction_source: null, email: null, expires_at: null }
     try {
-      const { data: session } = await supabase
+      const { data: session, error: sessionErr } = await supabase
         .from('demo_sessions').select('*').eq('truck_id', truck.id).maybeSingle()
+      // The try/catch below only catches a THROWN error; PostgREST RETURNS its errors, so without this
+      // check a failed read is indistinguishable from "no demo session row" and silently keeps the
+      // all-nulls block. Demo-only, so the stakes are low — but it is the same omission.
+      if (sessionErr) {
+        console.warn('[dashboard] demo session read failed — demo fields stay null:', sessionErr.message)
+      }
       if (session) {
         demo = {
           extraction_source: (session.extraction_source as string | null) ?? null,

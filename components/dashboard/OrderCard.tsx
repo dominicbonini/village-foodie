@@ -165,16 +165,16 @@ export function OrderCard({
   // That matters for the fast-tap rule (§10): there is no timing window, no debounce and no delayed
   // first action. Two quick taps do paid-then-done naturally because the second tap lands on a button
   // that has already become "Done"; tapping once and stopping is a complete, valid action either way.
-  //   showPaidStep OFF → "Mark paid & done", firing 'collected' — byte-identical to today.
+  //   showPaidStep OFF → "Paid & collected", firing 'collected' — the ACTION name is unchanged.
   //   unpaid           → "Mark paid"            → 'mark_paid'  (order stays put in the queue)
   //   part paid        → "Mark £X.XX paid"      → 'mark_paid'  (charges the outstanding balance only)
-  //   paid             → "Done"                 → 'collected'
+  //   paid             → "Collected"            → 'collected'
   const completionBtn = () => {
     if (!showPaidStep) {
-      return <Btn label="Mark paid & done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+      return <Btn label="Paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     if (isPaid) {
-      return <Btn label="Done" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
+      return <Btn label="Collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
     // (Ready, ✓ Confirm) and SLATE means completion (Done). Blue was tried here and was foreign to a
@@ -284,7 +284,7 @@ export function OrderCard({
   /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
   const completionBtnDisabled = () => (
     <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">
-      {!showPaidStep ? 'Mark paid & done' : isPaid ? 'Done' : isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+      {!showPaidStep ? 'Paid & collected' : isPaid ? 'Collected' : isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
     </button>
   )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})

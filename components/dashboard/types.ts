@@ -252,5 +252,8 @@ export interface TruckEvent {
   /** Per-event paid-step override. NULL = inherit trucks.show_paid_step. Resolved ONLY by
    *  lib/payments/paid-step.ts — never read directly. */
   show_paid_step_override?: boolean | null
+  /** Per-event cash/card override. NULL = inherit trucks.takes_cash. Resolved ONLY by
+   *  lib/payments/paid-step.ts — never read directly. */
+  takes_cash_override?: boolean | null
   event_deals?: { id?: string; bundle_id: string; active: boolean; overridden: boolean }[]
 }

@@ -35,12 +35,29 @@ import { findSoldOutOption, checkOptionCeilingShortfall } from '@/lib/option-sto
  *  impossible. A missing eventId resolves to the truck default, which is the correct fallback. */
 async function paidStepFor(truck: any, eventId: string | null | undefined) {
   if (!eventId) return resolvePaidStep(truck, null)
-  const { data: ev } = await supabase
+  const { data: ev, error: evErr } = await supabase
     .from('truck_events')
-    .select('show_paid_step_override')
+    .select('show_paid_step_override, takes_cash_override')
     .eq('id', eventId)
     .eq('truck_id', truck.id)
     .maybeSingle()
+  // ── ⚠️ THIS FAILS TO A WRONG VALUE, NOT TO A CRASH (V9.5) ────────────────────────────────────────
+  // A NAMED select on the two override columns, so it carries the same 42703 exposure that emptied the
+  // dashboard board. Here the consequence is quieter and therefore worse: `ev` is null, resolvePaidStep
+  // falls back to the TRUCK DEFAULTS, and `collected` / `undo_collected` / the walk-up paid-at-order path
+  // all proceed with the event's override SILENTLY IGNORED. Today both defaults are false so the
+  // fallback happens to be right — and it will not stay right. The first operator to enable cash for one
+  // event would get card-only behaviour server-side with no signal anywhere.
+  //
+  // We log and continue: refusing the action would block a collection mid-service, which is a far worse
+  // outcome than resolving one setting from the default. The log is what makes the divergence findable.
+  if (evErr) {
+    console.error(
+      `[action] paid-step lookup FAILED for event ${eventId} (truck ${truck.id}) — falling back to the ` +
+      `TRUCK DEFAULTS, so any per-event show_paid_step/takes_cash override is being IGNORED for this ` +
+      `action:`, evErr.message,
+    )
+  }
   return resolvePaidStep(truck, ev as any)
 }
 
@@ -1481,10 +1498,38 @@ export async function POST(req: NextRequest) {
     if (action === 'set_show_paid_step_override') {
       const { value, eventId } = body
       if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
-      const { error } = await supabase.from('truck_events')
+      // ── SERVER-CONFIRMED UPDATE (V9.6) ─────────────────────────────────────────────────────────
+      // Returns the UPDATED ROW so the client can set state FROM THE RESPONSE instead of guessing
+      // (optimistic) or re-reading (full refetch). The response IS the source, so it cannot refresh the
+      // wrong object — the failure that made a saved paid-step invisible to Add Order.
+      // ⚠️ select('*'), NOT a named list: a named select naming a column that does not exist fails the
+      // WHOLE statement with 42703 (§35). '*' cannot, and it returns a complete row the client can merge.
+      // ⚠️ NO .single(): it throws PGRST116 on zero rows, which would turn a no-op into a 500. An array
+      // lets a zero-row result fall through to `event: null` → the client's refetch fallback.
+      const { data: rows, error } = await supabase.from('truck_events')
         .update({ show_paid_step_override: !!value }).eq('id', eventId).eq('truck_id', truck.id)
+        .select('*')
       if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-      return NextResponse.json({ success: true })
+      // Row absent ⇒ still success. The UPDATE and the representation are ONE PostgREST statement, so
+      // `error` unset means the write committed; a missing row is not a failed write and must never be
+      // reported as one. The client falls back to its refetch.
+      return NextResponse.json({ success: true, event: rows?.[0] ?? null })
+    }
+
+    // ── set_takes_cash_override ── EVENT-scoped (truck_events), mirrors set_show_paid_step_override.
+    // 🔴 Writes truck_events ONLY. The truck DEFAULT (trucks.takes_cash) is owned by Manage → Settings.
+    // The intended use is a card terminal failing mid-service: cash on for TONIGHT, from the dashboard.
+    // Nothing is seeded onto future events, so the override expires by itself.
+    if (action === 'set_takes_cash_override') {
+      const { value, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      // Server-confirmed update — same contract as set_show_paid_step_override above; the reasoning for
+      // select('*'), the absent .single() and the row-absent-is-still-success rule is recorded there.
+      const { data: rows, error } = await supabase.from('truck_events')
+        .update({ takes_cash_override: !!value }).eq('id', eventId).eq('truck_id', truck.id)
+        .select('*')
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true, event: rows?.[0] ?? null })
     }
 
     // ── MARK PAID (V9.4) — the FIRST half of the split "Mark paid & done" ─────

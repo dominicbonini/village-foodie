@@ -205,6 +205,38 @@ export function AddOrderPanel({
   const serverCatConfigs = Object.keys(apiCatConfigs).length ? apiCatConfigs : (offlineForThisEvent?.catConfigs ?? {})
   const [showEventPicker, setShowEventPicker] = useState(false)
   const [upcomingEvents, setUpcomingEvents] = useState<EventRecord[]>([])
+  // ── 🔴 liveEvent — THE FRESH VERSION OF WHICHEVER EVENT manualEvent NAMES (V9.6) ─────────────────
+  // THE BUG THIS CLOSES: manualEvent is a PRIVATE COPY, seeded once by `useState(todayEvent)`. Its
+  // re-sync effect is keyed on `controlledEvent?.id` AND early-returns when the id matches, so a change
+  // to a field on the SAME event (a paid-step or cash override toggled in dashboard Settings) never
+  // reached it. The panel is hidden via CSS and never unmounted — deliberately, so the basket survives
+  // a tab switch — so only a full page refresh ever refreshed the copy.
+  // Two fields had already been patched through that hole one at a time (`status` had its own effect);
+  // this was the third. So: stop copying VALUES, and read them live.
+  //
+  // ⚠️ IDENTITY vs VALUES — the distinction the whole fix turns on:
+  //   • manualEvent still decides WHICH event the order is for. Unchanged. It is how an operator takes a
+  //     phone pre-order for Saturday while looking at Friday, and it is what keeps the basket alive.
+  //   • liveEvent is the SAME event, with FRESH FIELDS. It never changes which event is selected.
+  // 🔴 Resolving against controlledEvent alone would be WRONG: the payment is recorded against the event
+  // the ORDER is for, so a settings lookup must follow manualEvent's identity, not the dashboard's.
+  //
+  // Precedence, freshest first:
+  //   1. controlledEvent when it names the same event — the parent re-fetches it via fetchAll() on every
+  //      poll and after every settings save, so it is the only genuinely live source here.
+  //   2. this panel's own upcomingEvents entry — fetched when the event picker loaded. Fresher than the
+  //      mount-time copy for an event the operator picked later.
+  //   3. manualEvent itself — right identity, possibly stale fields. Never null-ier than before.
+  // ⚠️ CASE 2/3 CAN STILL BE STALE, and there is no live source for them in this component:
+  // `upcomingEvents` here is LOCAL STATE (fetched once when empty), not a prop. This does not affect the
+  // reported bug — the operator toggling a setting is on the dashboard's active event, which is case 1 —
+  // but if a non-active event's settings ever need to be live, the fix is to pass the PARENT's
+  // upcomingEvents down as a prop rather than to add another sync effect.
+  const liveEvent: EventRecord | null = !manualEvent
+    ? (controlledEvent ?? null)
+    : (controlledEvent?.id === manualEvent.id ? controlledEvent : null)
+      ?? upcomingEvents.find(e => e.id === manualEvent.id)
+      ?? manualEvent
   const [eventsLoading, setEventsLoading] = useState(false)
   // True once a fetch has SUCCEEDED at least once — so "No events" only shows
   // after a confirmed-empty load, never on cold start or a failed fetch (S5).
@@ -536,13 +568,12 @@ export function AddOrderPanel({
     wasOfflineRef.current = isOffline
   }, [isOffline, isActive, manualEvent, fetchManualSlots])
 
-  // Sync status-only changes on the same event (e.g. after open/close)
-  useEffect(() => {
-    if (!controlledEvent) return
-    if (controlledEvent.id !== manualEvent?.id) return
-    if (controlledEvent.status === manualEvent?.status) return
-    setManualEvent(prev => prev ? { ...prev, status: controlledEvent.status } : controlledEvent)
-  }, [controlledEvent?.status]) // eslint-disable-line react-hooks/exhaustive-deps
+  // ── ⚠️ THE status-ONLY SYNC EFFECT THAT USED TO LIVE HERE IS GONE (V9.6) ────────────────────────
+  // It existed to patch ONE field (`status`) through the hole described at `liveEvent` below. Every
+  // server-owned field read now goes through `liveEvent`, which is always fresh, so there is nothing
+  // left for it to patch — keeping it would have re-introduced a copy of a value we already read live.
+  // 🔴 DO NOT ADD A REPLACEMENT FOR THE NEXT FIELD. If a server-owned field reads stale, the fix is to
+  // read it from `liveEvent`, not to add a fourth sync effect. That pattern is what produced this bug.
 
   useEffect(() => {
     if (manualEvent || upcomingEvents.length === 0) return
@@ -679,9 +710,11 @@ setItemModal({ item, modGroups, editCartKey })
   // submit (see resetManual). Entirely inert when the truck has not opted in: showPaidStep false means
   // the confirm bar renders exactly as it did before, and `paymentTaken` is never sent.
   // Resolved by the SHARED helper against the event this order is being placed into — never inline.
-  // manualEvent is the panel's own selected event, so a walk-up added to Saturday's festival gets
-  // Saturday's setting even if the operator is looking at the dashboard on Friday.
-  const { showPaidStep, takesCash } = resolvePaidStep(truck, manualEvent as any)
+  // ⚠️ Reads `liveEvent`, NOT `manualEvent` — see the note at liveEvent. Same event, fresh fields:
+  // a walk-up added to Saturday's festival still gets SATURDAY's setting even if the operator is
+  // looking at the dashboard on Friday, because liveEvent preserves manualEvent's IDENTITY and only
+  // refreshes its VALUES.
+  const { showPaidStep, takesCash } = resolvePaidStep(truck, liveEvent as any)
   // 🔴 NO REMEMBERED DEFAULT — open-check semantics. Walk-ups and phone orders come through THIS panel
   // with OPPOSITE payment timings, so any truck-level default is wrong about half the time and the
   // operator has to check and flip on every order anyway — worse than no default at all. Instead the
@@ -1531,7 +1564,8 @@ setItemModal({ item, modGroups, editCartKey })
     </button>
   ) : null
 
-  const eventBanner = manualEvent?.status !== 'open' ? (
+  // status read via liveEvent — the dedicated status-sync effect is gone (see the note where it was).
+  const eventBanner = liveEvent?.status !== 'open' ? (
     <div className="hidden sm:block mb-4">
       {manualEvent ? (
         <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-2.5">
@@ -1556,13 +1590,13 @@ setItemModal({ item, modGroups, editCartKey })
               {isDemo && <span aria-hidden>🔒 </span>}Change
             </button>
           </div>
-          {(manualEvent.status === 'confirmed' || manualEvent.status === 'closed') && onOpenEvent && (
+          {(liveEvent?.status === 'confirmed' || liveEvent?.status === 'closed') && onOpenEvent && (
             // Start / Restart — SHOWN but locked in demo: clicking opens the explainer, never mutates
             // (openEvent in the parent also hard-stops on isDemo as the handler-level backstop).
             <button
               onClick={() => isDemo ? onLockedEventAction?.() : onOpenEvent(manualEvent.id)}
               className={`mt-2 w-full font-bold py-2.5 rounded-xl text-sm transition-all ${isDemo ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-pointer' : 'bg-orange-600 text-white hover:bg-orange-700 active:scale-[0.98]'}`}>
-              {isDemo && <span aria-hidden>🔒 </span>}{manualEvent.status === 'closed' ? 'Restart Event' : 'Start Event'}
+              {isDemo && <span aria-hidden>🔒 </span>}{liveEvent?.status === 'closed' ? 'Restart Event' : 'Start Event'}
             </button>
           )}
         </div>
@@ -1888,7 +1922,7 @@ setItemModal({ item, modGroups, editCartKey })
               )}
 
               {/* Info when today's confirmed (not yet open) event is selected */}
-              {manualEvent && manualEvent.event_date === todayIso && manualEvent.status === 'confirmed' && (
+              {manualEvent && manualEvent.event_date === todayIso && liveEvent?.status === 'confirmed' && (
                 <div className="mx-3 mb-2 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-xl px-3 py-2">
                   <span className="text-blue-500 flex-shrink-0 text-sm">ℹ️</span>
                   <p className="text-xs text-blue-700">

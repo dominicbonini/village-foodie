@@ -1249,7 +1249,11 @@ export async function POST(req: NextRequest) {
       // No source/is_manual column exists yet — customer_email IS NULL is the best available signal.
       // order_key (uuid) is the STABLE React key for the report list — `id` is the per-event DISPLAY
       // number and is NOT unique across events (a multi-event date would collide keys).
-      .select('order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date')
+      // event_id (V9.6): the VAN FILTER selects EVENTS, and an order is in scope iff its event is.
+      // 🔴 orders.van_id is deliberately NOT selected and plays NO part in reporting — it is a KDS
+      // ROUTING field with no accounting meaning (NULL on ~78% of live orders, because the walk-up path
+      // never sets it while the customer path does). Filtering money by it would silently drop revenue.
+      .select('order_key, id, customer_name, customer_email, status, slot, total, discount_amt, created_at, items, deals, event_date, event_id')
       .eq('truck_id', truck.id)
       // Reports exclude cancelled/rejected orders (confirmed/collected/etc. only). Revenue already excludes
       // them client-side (:7008) — this server filter keeps the list + the revenue calc consistent.
@@ -1258,13 +1262,13 @@ export async function POST(req: NextRequest) {
     // Resolve event date filter and build eventsMap for venue name lookup
     let eventsQuery = supabase
       .from('truck_events')
-      .select('event_date, venue_name, town')
+      .select('id, event_date, venue_name, town, van_id')
       .eq('truck_id', truck.id)
 
     if (eventId) {
       const { data: ev } = await supabase
         .from('truck_events')
-        .select('event_date, venue_name, town')
+        .select('id, event_date, venue_name, town, van_id')
         .eq('id', eventId)
         .eq('truck_id', truck.id)
         .single()
@@ -1297,10 +1301,25 @@ export async function POST(req: NextRequest) {
       eventsQuery,
     ])
 
-    // Build event_date → {venue_name, town} map for client-side venue lookup
-    const eventsMap: Record<string, { venue_name: string | null; town: string | null }> = {}
+    // ── EVENT LOOKUP MAPS (V9.6) ───────────────────────────────────────────────────────────────────
+    // eventsMap is now keyed by event ID, not event_date. Every consumer is a DISPLAY LABEL (the order
+    // history row's venue, the Orders CSV "Event" column, the Items CSV "Event" column) — none feeds a
+    // total — so the re-key cannot change a number.
+    // 🔴 KEYING BY DATE WAS A LATENT BUG, NOT A FEATURE: `if (!eventsMap[ev.event_date])` meant the FIRST
+    // event on a date won, so on a two-event date every order was labelled with the wrong venue half the
+    // time. Same class as `id` (the per-event display number) vs `order_key`. This is a FIX.
+    // van_id rides along so the client can filter by the EVENT's van.
+    const eventsMap: Record<string, { venue_name: string | null; town: string | null; van_id: string | null }> = {}
     for (const ev of (eventRows || [])) {
-      if (!eventsMap[ev.event_date]) eventsMap[ev.event_date] = { venue_name: ev.venue_name, town: ev.town }
+      eventsMap[ev.id] = { venue_name: ev.venue_name, town: ev.town, van_id: ev.van_id ?? null }
+    }
+    // ⚠️ DATE FALLBACK, RETAINED DELIBERATELY. An order with a NULL event_id (pre-event_id history, or any
+    // path that never stamped it) would otherwise drop from "Unknown event" labelling that today resolves
+    // via its date. Same first-wins rule as the old map, so those rows label EXACTLY as they do now — the
+    // re-key is a strict improvement with no regression for anyone.
+    const eventsByDate: Record<string, { venue_name: string | null; town: string | null }> = {}
+    for (const ev of (eventRows || [])) {
+      if (!eventsByDate[ev.event_date]) eventsByDate[ev.event_date] = { venue_name: ev.venue_name, town: ev.town }
     }
 
     const whatsappStats = waLogs && waLogs.length > 0 ? {
@@ -1360,6 +1379,7 @@ export async function POST(req: NextRequest) {
         whatsappStats,
         orders,
         eventsMap,
+        eventsByDate,
         itemCategories,
         categoryOrder,
       },

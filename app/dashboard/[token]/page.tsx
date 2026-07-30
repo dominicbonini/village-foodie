@@ -80,6 +80,10 @@ import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { normaliseOrderLines } from '@/lib/slot-bookings'
 import { orderItemsToQtyByCat, mergeQtyByCat, buildOfflineOccupancy } from '@/lib/slot-capacity'
 
+/** The ONLY list of valid ?tab= values, shared by the tab bar and the URL validator — so a tab cannot be
+ *  added to the UI without becoming linkable, or removed without ceasing to be. */
+const TAB_VALUES = ['orders','add','stock','settings'] as const
+
 // A cheap fingerprint of the edit basket, used ONLY to invalidate a stale unpriceable-line banner:
 // the server's verdict was computed for one particular basket, and must not stay on screen naming a
 // line the operator has since removed. Names + modifier sets + quantities + deal names, order-
@@ -215,7 +219,17 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
   const[lastRefresh,setLastRefresh]=useState(new Date())
-  const[activeTab,setActiveTab]=useState<'orders'|'add'|'stock'|'settings'>('orders')
+  // ── ?tab= RESTORES THE ACTIVE TAB (V9.6) ─────────────────────────────────────────────────────────
+  // A reload used to land on Orders whatever the operator was doing. Straight into the useState
+  // INITIALISER — no ref and no effect needed, unlike ?event=, because this validates against a
+  // hardcoded list rather than against fetched data, so the answer is available at mount.
+  // ⚠️ A MEMBERSHIP TEST, NOT A TYPE ASSERTION. `as typeof activeTab` on a URL string compiles happily
+  // and would put an impossible value into state; `.includes()` cannot.
+  // Unknown or absent falls through to 'orders' — same rule as ?event=, silently, no error.
+  const[activeTab,setActiveTab]=useState<'orders'|'add'|'stock'|'settings'>(()=>{
+    const t=searchParams.get('tab')
+    return (TAB_VALUES as readonly string[]).includes(t??'') ? (t as 'orders'|'add'|'stock'|'settings') : 'orders'
+  })
   const[actionLoading,setActionLoading]=useState<string|null>(null)
   // Shared stacked-toast system (lib/useToasts) + the ready-email-undo machinery (lib/useReadyEmailUndo,
   // wired below after fetchAll). Extracted so KDS + manage can reuse the SAME implementation.
@@ -243,6 +257,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // The dashboard no longer OWNS these — the truck defaults live in Manage → Settings. What it owns is
   // the per-EVENT override, written to truck_events.show_paid_step_override for the current event only.
   const[savingPaidStepOverride,setSavingPaidStepOverride]=useState(false)
+  const[savingTakesCashOverride,setSavingTakesCashOverride]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
@@ -443,6 +458,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // Selected event {id,date} for scoping /api/dashboard. Held in a ref so the
   // realtime/interval refetches (which call fetchAllRef with no args) stay scoped.
   const selectedEventRef=useRef<{id:string,date:string}|null>(null)
+  // The ?event= param AS IT WAS AT MOUNT. A ref, not state: it is consumed exactly once by the
+  // auto-select effect (priority 0) and must not react to the replaceState the sync effect performs,
+  // or the URL would re-select on every change. Null when absent ⇒ the no-param path is untouched.
+  const urlEventParamRef=useRef<string|null>(searchParams.get('event'))
   const fetchAllRef=useRef<()=>void>(()=>{})     // LIVE refetch (poll / orders-realtime / vans-realtime) — never re-seeds config
   const reseedRef=useRef<()=>void>(()=>{})       // CONFIG reseed (event-switch / trucks-realtime / reconnect) — forceSeed
   // CONFIG is seeded on nav/auth/trucks-change ONLY, never by the order poll. Flag flips true after the first
@@ -689,6 +708,29 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   useEffect(()=>{
     if(selectedEventId||!upcomingEvents.length) return
     console.log('[auto-select] running, upcomingEvents:', upcomingEvents.length)
+    // ── PRIORITY 0 — THE ?event= URL PARAM (V9.6) ─────────────────────────────────────────────────
+    // WHY THIS EXISTS: selectedEventId was plain useState(null) with no persistence, so a reload threw
+    // the selection away and priority 1 below grabbed today's OPEN event. An operator who selected
+    // tomorrow's event, changed a per-event setting (cash, paid step, order-ready, offline protection)
+    // and reloaded landed back on the live event — where that event's override reads NULL and inherits
+    // the truck default. The write was CORRECT and INVISIBLE, which is far worse than a failed write.
+    //
+    // 🔴 OWNERSHIP IS VALIDATED BY MEMBERSHIP, NOT BY TRUST. upcomingEvents comes from
+    // /api/events/manage?token=… which is `.eq('truck_id', truck.id)` server-side, so a param naming
+    // ANOTHER TRUCK'S event simply is not in this list and is ignored. Never look the id up directly.
+    // The same membership test also drops a DELETED event, a CANCELLED one (the route filters
+    // `.neq('status','cancelled')`) and a PAST one (`upcoming=true` ⇒ `event_date >= today`). All four
+    // fall through to the priority chain below, which is exactly the no-param behaviour.
+    //
+    // ONE-SHOT: consumed on the first resolution attempt whether or not it matched, so a later
+    // replaceState (the sync effect below) can never feed back in and re-hijack the operator's choice.
+    const fromUrl=urlEventParamRef.current
+    if(fromUrl){
+      urlEventParamRef.current=null
+      const owned=upcomingEvents.find(e=>e.id===fromUrl)
+      if(owned){console.log('[auto-select] priority 0 url param:',owned.id);setSelectedEventId(owned.id);return}
+      console.warn('[auto-select] ?event= names an event not belonging to this truck (or deleted/past/cancelled) — ignoring:',fromUrl)
+    }
     const now=new Date()
     const todayStr=localTodayIso() // LOCAL date (s.7) — UTC midnight must not misclassify "today"
     // Priority 1: currently open event (started, not ended)
@@ -709,6 +751,35 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .sort((a,b)=>new Date(`${a.event_date}T${a.start_time}`).getTime()-new Date(`${b.event_date}T${b.start_time}`).getTime())[0]
     if(nextEvent){console.log('[auto-select] priority 3 next:',nextEvent.id,nextEvent.event_date);setSelectedEventId(nextEvent.id)}
   },[upcomingEvents,selectedEventId])
+  // ── KEEP ?event= AND ?tab= IN STEP WITH THE VIEW (V9.6) ─────────────────────────────────────────
+  // 🔴 ONE EFFECT WRITES BOTH PARAMS. Do NOT add a second replaceState effect for a future param.
+  // Two effects each doing `new URL(window.location.href)` → mutate → replaceState in the same commit
+  // only work because React flushes effects in declaration order, so the second happens to read the URL
+  // the first just wrote. Reorder them, or add a third, and one write silently clobbers another.
+  // Keyed on [selectedEventId, activeTab]; a third param joins this effect and this dependency array.
+  // ⚠️ replaceState, NOT router.push/replace. Two reasons, both load-bearing:
+  //   • REPLACE, NOT PUSH — an operator comparing two events would otherwise stack a history entry per
+  //     switch, and the back button would walk them backwards through every selection instead of
+  //     leaving the dashboard.
+  //   • history.replaceState, NOT router.replace — this is a pure URL rewrite with no Next navigation,
+  //     so it triggers no re-render and no refetch. router.replace would re-run the route for a change
+  //     that is purely cosmetic to the address bar.
+  // The initial param was captured into a REF at mount, so this write cannot feed back into selection.
+  // Clearing the selection (e.g. cancelling an event) DROPS the param rather than leaving a stale id in
+  // a URL the operator might bookmark or send to someone.
+  useEffect(()=>{
+    if(typeof window==='undefined')return
+    const url=new URL(window.location.href)
+    const before=url.search
+    if(selectedEventId) url.searchParams.set('event',selectedEventId)
+    else url.searchParams.delete('event')
+    // 'orders' is the default, so it is written as the ABSENCE of the param — a bare dashboard URL keeps
+    // meaning "the default view", and today's links are unchanged.
+    if(activeTab!=='orders') url.searchParams.set('tab',activeTab)
+    else url.searchParams.delete('tab')
+    if(url.search===before)return   // nothing moved — do not touch history
+    window.history.replaceState(null,'',url.toString())
+  },[selectedEventId,activeTab])
   useEffect(()=>{
     // Event-scoped offline-override read (anon SELECT is permitted; only the WRITE was RLS-blocked —
     // that now goes through the service-role action). Keyed on selectedEventId ONLY (was also
@@ -764,19 +835,41 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'trucks',filter:`id=eq.${truck.id}`},
         ()=>reseedRef.current())
       .subscribe()
-    // Van pause lives on truck_vans (paused_until / online_paused_until), set by this
-    // dashboard, other screens, AND the heartbeat-monitor — subscribe so a pause/unpause
-    // (incl. offline auto-pause) propagates live without a manual refresh.
-    const vansChannel=supabaseBrowser
-      .channel(`vans:${truck.id}`)
-      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'truck_vans',filter:`truck_id=eq.${truck.id}`},
-        ()=>fetchAllRef.current())
-      .subscribe()
+    // ── 🔴 THERE IS NO truck_vans SUBSCRIPTION HERE, AND THERE MUST NOT BE. READ THIS FIRST. ────────
+    // IF YOU ARE HERE BECAUSE VAN PAUSE FEELS SLOW ON A SECOND DEVICE: that is expected. Cross-device
+    // van pause propagates on the 60s poll below (fallbackInterval), and that is ACCEPTED, not a gap.
+    // Adding `truck_vans` to the Supabase realtime publication would fix the latency and break the app.
+    //
+    // WHY PUBLISHING truck_vans IS NOT AN OPTION:
+    //   • `last_heartbeat_at` lives on truck_vans, and /api/heartbeat UPDATEs it EVERY 15 SECONDS PER
+    //     DEVICE (kds/page.tsx setInterval(sendHeartbeat, 15000)).
+    //   • postgres_changes filters by ROW, not by COLUMN — `filter: truck_id=eq.X` cannot say "watch
+    //     paused_until but ignore last_heartbeat_at". There is no column-level subscription.
+    //   • So publishing it would make every heartbeat, from every van, fire a full /api/dashboard
+    //     refetch on EVERY connected dashboard — a self-sustaining storm scaling with devices × vans.
+    //   This is the same "wrong ratio" argument that declined a truck_events subscription (see the
+    //   propagation ruling above savePaidStepOverride), an order of magnitude worse: 15 seconds versus
+    //   a setting changed once a service.
+    //
+    // A subscription DID exist here until 30 July 2026. It had NEVER FIRED — truck_vans is not in the
+    // realtime publication (live query: only `orders` and `trucks` are) — and its stated main case had
+    // silently moved out from under it: the offline auto-pause now writes truck_events.online_paused_until,
+    // NOT truck_vans (see the header of app/api/heartbeat/route.ts). It was dead twice over.
+    //
+    // WHAT ALREADY COVERS VAN PAUSE — nothing was lost by removing it:
+    //   • the 60s poll below calls the SAME handler the subscription did (fetchAllRef.current());
+    //   • vanPausedUntil / vanOnlinePausedUntil are set in fetchAll's LIVE block, OUTSIDE the seed gate,
+    //     so every poll refreshes them;
+    //   • the device that pauses is instant already (markPending('vanPausedUntil') + setVanPausedUntil);
+    //   • offlinePausedDisplay makes a device's own reconnect instant regardless of DB state.
+    //
+    // ⚠️ IF INSTANT CROSS-DEVICE PROPAGATION IS EVER GENUINELY WANTED, the prerequisite is moving
+    // `last_heartbeat_at` OFF truck_vans (its own table, or a column on something not watched) — NOT
+    // publishing this one. Do that first, or not at all.
     const fallbackInterval=setInterval(()=>fetchAllRef.current(),60000)
     return()=>{
       supabaseBrowser.removeChannel(ordersChannel)
       supabaseBrowser.removeChannel(truckChannel)
-      supabaseBrowser.removeChannel(vansChannel)
       clearInterval(fallbackInterval)
     }
   },[truck?.id])
@@ -1045,20 +1138,89 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingAutoAccept(false)}
   }
 
+  // ── SERVER-CONFIRMED EVENT PATCH (V9.6) ───────────────────────────────────────────────────────────
+  // The handler returns the UPDATED ROW, so state is set FROM THE RESPONSE. Merged into upcomingEvents
+  // by id — which is what activeEvent, the Settings toggles, OrderCard's `event` prop and AddOrderPanel's
+  // liveEvent all derive from, so one patch reaches every consumer.
+  //
+  // 🔴 THIS IS NOT THE FLIP-BACK CLASS AND NEEDS NO applyPending GUARD. That class was OPTIMISTIC state
+  // set BEFORE (or independently of) the commit, so a poll racing in between read the OLD value and
+  // clobbered the new one. Here the value arrives in a response that the server sent AFTER committing,
+  // so there is nothing to revert and any later read returns the same value or newer. A poll issued
+  // AFTER this patch cannot carry stale data.
+  // ⚠️ The one residual race, stated honestly: a poll issued BEFORE the commit but landing AFTER this
+  // patch would overwrite with the pre-write value. It is unchanged from the previous `await fetchAll()`
+  // (which had the identical exposure), it is bounded by one request round-trip, and the next poll
+  // corrects it within 60s. Not introduced here, and not worth an optimistic guard.
+  //
+  // ⚠️ FALLBACK RETAINED, DELIBERATELY. No row (a zero-row update, or an older deploy that still returns
+  // a bare {success:true}) ⇒ full refetch, i.e. exactly the previous behaviour. Never a silent no-update.
+  const applyEventPatch=async(res:Response)=>{
+    let ev:any=null
+    try{ ev=(await res.clone().json())?.event ?? null }catch{ ev=null }
+    if(ev?.id){
+      setUpcomingEvents(prev=>prev.map(e=>e.id===ev.id?{...e,...ev}:e))
+      setTodayEvents(prev=>prev.map(e=>e.id===ev.id?{...e,...ev}:e))
+      return
+    }
+    await fetchAll()
+  }
+
   // PER-EVENT ONLY. This writes truck_events.show_paid_step_override for the CURRENT event and must
   // NEVER write trucks.show_paid_step — that default belongs to Manage → Settings.
+  //
+  // ── 🔴 PROPAGATION IS A DECISION, NOT AN ACCIDENT. ──────────────────────────────────────────────
+  // ⚠️ DO NOT "IMPROVE" THIS INTO AN OPTIMISTIC UPDATE OR A REALTIME SUBSCRIPTION. Ruled 30 July 2026
+  // after all four options were costed:
+  //   A · optimistic local update — REJECTED. It only speeds up the device that just saved, and it adds
+  //       an optimistic/revert path in a class that has bitten THREE times (offline-protection,
+  //       category-available, sound_config — the reason applyPending exists). New risk, no new coverage.
+  //   B · refetch after the write — SUPERSEDED. It was correct but coarse, and it refreshed a source a
+  //       consumer had privately COPIED, so a saved paid step stayed invisible to Add Order.
+  //       ✅ NOW: applyEventPatch above — SERVER-CONFIRMED, state set from the returned row, with the
+  //       refetch RETAINED as the no-row fallback. Strictly better than B and not optimistic: see the
+  //       flip-back note on applyEventPatch. Other devices still pick the change up on the 60s poll.
+  //   C · subscribe to truck_events — REJECTED. truck_events UPDATEs also fire on open/close, pause and
+  //       every order_counter increment — potentially EVERY ORDER — so this would refetch config
+  //       constantly to propagate a setting changed once a service. Wrong ratio.
+  //   D · subscribe + compare the override columns to skip irrelevant UPDATEs — the RIGHT SHAPE, but it
+  //       needs REPLICA IDENTITY FULL on truck_events, i.e. a MIGRATION. Cost it only if the
+  //       multi-device story ever demands it; it is not warranted by anything today.
+  // 🔴 truck_events is deliberately NOT in the realtime subscriptions — which are `orders` and `trucks`,
+  // AND ONLY THOSE TWO. Those are also the only two tables in the Supabase realtime publication, so any
+  // other subscription would be silently dead on arrival (a truck_vans one was, for months — see the
+  // note in the subscription effect). That is not an oversight: it is option C, declined.
+  // **Cross-device settings propagation at 60s is ACCEPTED.**
   const savePaidStepOverride=async(val:boolean)=>{
     if(!activeEvent)return
     setSavingPaidStepOverride(true)
     try{
-      await fetch('/api/dashboard/action',{
+      const res=await fetch('/api/dashboard/action',{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({token,pin,action:'set_show_paid_step_override',value:val,eventId:activeEvent.id})
       })
-      await fetchAll()
+      await applyEventPatch(res)
       showToast(val?'Paid step on for this event':'Paid step off for this event')
     }catch{showToast('Failed to save','error')}
     finally{setSavingPaidStepOverride(false)}
+  }
+
+  // PER-EVENT ONLY, same rule as the paid step: writes truck_events.takes_cash_override for the CURRENT
+  // event and NEVER trucks.takes_cash. The case this exists for is a card terminal failing mid-service.
+  // ⚠️ The `await fetchAll()` here is the SAME ruled decision recorded above savePaidStepOverride —
+  // option B, refetch. Do not convert it to an optimistic update or a truck_events subscription.
+  const saveTakesCashOverride=async(val:boolean)=>{
+    if(!activeEvent)return
+    setSavingTakesCashOverride(true)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_takes_cash_override',value:val,eventId:activeEvent.id})
+      })
+      await applyEventPatch(res)
+      showToast(val?'Cash and card on for this event':'Cash and card off for this event')
+    }catch{showToast('Failed to save','error')}
+    finally{setSavingTakesCashOverride(false)}
   }
 
 
@@ -1294,7 +1456,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       const labels:Record<string,string>={confirm:'confirmed',reject:'rejected',ready:'ready',collected:'collected',undo_collected:'restored',cancel:'cancelled'}
       const done=orders.find(o=>o.order_key===orderKey)
       const num=done?.id??''
-      // "Mark paid & done" → a 7s Undo toast (undo_collected reverts ONE stage to the order's actual
+      // "Paid & collected" → a 7s Undo toast (undo_collected reverts ONE stage to the order's actual
       // previous status — ready if it was ready, else confirmed — AND rebuilds capacity to match).
       // "Ready" → status commits now but the customer email is DEFERRED 4s (defer_email above): an Undo
       // within 4s cancels the email (clears the per-order timer) AND reverts the status. The toast's tap
@@ -1311,7 +1473,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       }else if(action==='undo_collected'){
         showToast('Undone — order not collected')
       }else if(action==='collected'){
-        showToast(effectivePaidStep?`Order #${num} done`:`Order #${num} completed`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
+        showToast(`Order #${num} collected`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
       }else if(action==='ready'){
         scheduleReadyEmail(orderKey)
         showToast(`Order #${num} ready`,'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
@@ -1660,7 +1822,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const activeEvent:TruckEvent|null=resolvedEvent
   // The SAME resolver every other consumer uses — the dashboard's own reads (the toggle's position and
   // the collected/undo toast wording) must agree with the card and the server.
-  const {showPaidStep:effectivePaidStep}=resolvePaidStep(truck,activeEvent)
+  const {showPaidStep:effectivePaidStep,takesCash:effectiveTakesCash}=resolvePaidStep(truck,activeEvent)
     ??(selectedEventId&&lastActiveEventRef.current?.id===selectedEventId?lastActiveEventRef.current:null)
   if(resolvedEvent)lastActiveEventRef.current=resolvedEvent
 
@@ -2686,6 +2848,26 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 have removed a required demo capability. So each of the other cards is gated individually
                 below (auto-accept, sounds, offline protection, order-ready, printing, notifications), and
                 the tab is relabelled "Kitchen" in the tab bar. */}
+            {/* ── OFFLINE PROTECTION — FIRST CARD IN THIS TAB (V9.5). Moved to the top deliberately:
+                it is the setting with the largest consequence on this screen (it can stop the truck
+                taking orders), so it should not sit below three lower-stakes toggles.
+                DEMO: VISIBLE BUT DISABLED, not hidden. Offline protection is a genuine selling point, so a
+                prospect should see that it exists — but must not be able to switch it on: it interacts with
+                the heartbeat-monitor auto-pause, and a demo that silently stops taking orders reads as
+                broken rather than as a feature working. Forced OFF, toggle disabled, and the ENABLE path is
+                additionally blocked in toggleOfflineProtection so a click can never write set_offline_
+                protection — the disabled state is enforced, not just styled. The ⚠️ operator explainer is
+                swapped for a calm one-liner; there is nothing here for a visitor to act on. */}
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Offline protection{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
+                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
+                </div>
+                <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
+              </div>
+            )}
             {/* Auto-accept + its dependent "review notes" sub-option read as ONE group (divide-y rows, same
                 treatment as the Sounds card). Notes-review only applies when auto-accept is on (conditional).
                 FIX 9 — DEMO: fully AVAILABLE and interactive, defaulted ON (set at provision). It genuinely
@@ -2717,31 +2899,92 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               )}
             </div>
-            {/* PAID STEP — PER-EVENT OVERRIDE (V9.5). The truck DEFAULT lives in Manage → Settings;
-                this control changes THIS EVENT ONLY and never writes trucks.show_paid_step.
-                Resolution is truck_events.show_paid_step_override ?? trucks.show_paid_step, done in
-                lib/payments/paid-step.ts — the same helper the order card, the Add Order panel and both
-                server handlers use, so nothing here can disagree with them.
-                No modal and no confirmation: the scope is carried by the WORDING and the sub-label, per
-                §10. "This event only" is the whole message; the sub-label names the event so there is no
-                ambiguity about which one, and states where the default lives so the operator knows this
-                is not the place to change it permanently. */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
-              <div className="flex items-center justify-between">
+            {/* ── TAKING PAYMENT — PER-EVENT OVERRIDES (V9.5) ────────────────────────────────────────
+                BOTH settings are now truck DEFAULT + per-event override, so they group cleanly and the
+                mixed-scope problem that blocked this grouping is gone. Each writes truck_events only and
+                NEVER the trucks column — the defaults belong to Manage → Settings.
+                Resolution for both is lib/payments/paid-step.ts, the same helper the order card, the Add
+                Order panel and both server handlers use, so nothing here can disagree with them.
+                ⚠️ NO GROUP HEADING HERE (V9.6). This card is titled by its SETTING ("Separate paid step"),
+                like every other card on this tab, with "Do you take cash?" nested beneath it as a child —
+                structurally identical to the auto-accept card two rows above. A "TAKING PAYMENT" group
+                label was tried and removed: it is only needed in MANAGE, where three groups share one
+                Order settings card, and here the nesting already carries what it was saying. Do not
+                reinstate it — and note SUBCARD_HEADING is a MANAGE token; this file no longer imports it. */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 divide-y divide-slate-100">
+              {/* ── 🔴 DO NOT ADD PER-EVENT SCOPE WORDING TO THESE ROWS. ────────────────────────────
+                  SCOPE IS A PROPERTY OF THE SCREEN, NOT OF EACH SETTING. Dashboard → Settings is
+                  PER-EVENT; Manage → Settings is TRUCK-WIDE. That holds for EVERY option on this tab,
+                  not just these two, which is exactly why it does not belong in any single row's copy.
+                  A row's description says what the setting DOES. The screen says what it applies to.
+                  This is a DESIGN DECISION, NOT AN UNCLOSED GAP. Scope wording was removed deliberately
+                  on 30 July 2026 — from the heading sub-label ("This event only. Your usual settings
+                  live in Manage → Settings.") and from the cash row ("…it switches back after this
+                  event"). ⚠️ Do NOT reinstate either, and do NOT add equivalent wording to any other row
+                  on this tab. Repeating a screen-level fact per row is what made the card read as a
+                  box of unrelated exceptions.
+                  Behaviour is unaffected and always was: both toggles write truck_events overrides for
+                  the ACTIVE EVENT ONLY and never touch the trucks columns (resolved by
+                  lib/payments/paid-step.ts). The toasts still name the event after a tap. */}
+              <div className="flex items-center justify-between gap-3 pb-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Separate paid step — this event only</p>
-                  <p className="text-slate-500 text-xs mt-0.5">
-                    Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over.
-                    {activeEvent ? ` Applies to ${activeEvent.venue_name || 'this event'} only — your usual setting is unchanged.` : ' Select an event to change it.'}
-                    {' '}Set your default in Manage → Settings.
-                  </p>
+                  <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Splits "Paid &amp; collected" into "Mark paid" then "Collected", so you can take money before the food is handed over.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-3">
                   {savingPaidStepOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
                   <Toggle on={effectivePaidStep} onToggle={()=>savePaidStepOverride(!effectivePaidStep)} disabled={isOffline||!activeEvent}/>
                 </div>
               </div>
+              {/* ── 🔴 NESTED AS A CHILD OF THE PAID STEP (V9.6). READ BEFORE RE-FLATTENING. ──────────
+                  ⚠️ THESE TWO WERE DELIBERATELY DE-NESTED ONCE AND RE-NESTED ON A LAYOUT ARGUMENT. The
+                  de-nesting rationale ("they answer different questions") is still in the git history
+                  and was the WRONG TEST — two settings can answer different questions and still have
+                  one DEPEND on the other, and structure should show the DEPENDENCY, not the semantics.
+                  With the paid step OFF, one tap means "paid AND collected" (the button reads
+                  `Paid & collected`); a Cash/Card split there would make each button also collect,
+                  which "Cash" does not say, and the honest `Cash & collected` needs ~110px against a
+                  72px label box at the 240px KDS column. There is no honest way to render the split
+                  when the button also collects. Full reasoning at the Manage copy of this row.
+                  INDENT + TYPE SCALE copied from the notes-review sub-option above (pl-4, same
+                  text-sm/text-xs pair) — one nesting treatment per card, not a new one.
+                  ⚠️ Unlike that sub-option this is NOT conditionally rendered: it stays visible and goes
+                  DISABLED with the reason inline. Structure shows the relationship, text explains it.
+                  Gated on effectivePaidStep — the RESOLVED value for THIS event, not the truck default —
+                  so an event that overrides the paid step ON unlocks cash here even when Manage's truck
+                  default reads off. That is correct, and it is the one case where this toggle is live
+                  while Manage shows the paid step off.
+                  ⚠️ Does NOT auto-enable the paid step; does NOT write takes_cash_override=false when
+                  the paid step goes off — the stored override is left exactly as the operator set it. */}
+              <div className="pt-3 pl-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
+                  <p className="text-slate-500 text-xs mt-0.5">Splits the payment button into "Cash" and "Card".</p>
+                  {!effectivePaidStep&&<p className="text-xs text-amber-600 mt-1">Needs the separate paid step turned on.</p>}
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  {savingTakesCashOverride&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={effectiveTakesCash} onToggle={()=>saveTakesCashOverride(!effectiveTakesCash)} disabled={isOffline||!activeEvent||!effectivePaidStep}/>
+                </div>
+              </div>
             </div>
+            {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
+                order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
+                master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
+                Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
+                consistency with Offline protection / Auto-accept above.
+                FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
+                headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
+                emails, so it stays non-interactive. */}
+            {activeEvent&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Order-ready notifications{demoLockChip}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
+                </div>
+                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
+              </div>
+            )}
             {/* SOUNDS — same trucks.sound_config as Manage → Settings (mirrors automatically). Which alerts
                 fire; the on/off MASTER is the per-device header toggle.
                 DEMO: HIDDEN. Was briefly shown-but-locked; reverted because the sound model is moving to
@@ -2777,40 +3020,6 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               )
             })()}
-            {/* DEMO: VISIBLE BUT DISABLED, not hidden. Offline protection is a genuine selling point, so a
-                prospect should see that it exists — but must not be able to switch it on: it interacts with
-                the heartbeat-monitor auto-pause, and a demo that silently stops taking orders reads as
-                broken rather than as a feature working. Forced OFF, toggle disabled, and the ENABLE path is
-                additionally blocked in toggleOfflineProtection so a click can never write set_offline_
-                protection — the disabled state is enforced, not just styled. The ⚠️ operator explainer is
-                swapped for a calm one-liner; there is nothing here for a visitor to act on. */}
-            {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Offline protection{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{OFFLINE_PROTECTION_CARD_DESCRIPTION}</p>
-                  {!isDemo&&<p className="text-xs text-amber-600 mt-1">⚠️ <strong>{OFFLINE_PROTECTION_EXPLAINER_LEAD}</strong> {OFFLINE_PROTECTION_EXPLAINER_BODY}</p>}
-                </div>
-                <Toggle on={isDemo?false:effectiveOfflineProtection} onToggle={()=>toggleOfflineProtection(!effectiveOfflineProtection)} disabled={isOffline||isDemo}/>
-              </div>
-            )}
-            {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
-                order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
-                master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
-                Ready button (effectiveOrderReady) — NOT the email (model A). Shared <Toggle> for size/colour
-                consistency with Offline protection / Auto-accept above.
-                FIX 7 — DEMO: SHOWN but locked. Customers being emailed the moment their food is ready is a
-                headline feature worth seeing; but it emails real addresses and the seeded orders carry NULL
-                emails, so it stays non-interactive. */}
-            {activeEvent&&(
-              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">Order-ready notifications{demoLockChip}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers by email when their order is ready.</p>
-                </div>
-                <Toggle on={isDemo?false:effectiveOrderReady} onToggle={()=>{if(isDemo)return;setOrderReadyOverride(!effectiveOrderReady)}} disabled={isOffline||isDemo}/>
-              </div>
-            )}
             {/* The offline-pause alert ALWAYS fires (the per-device suppression toggle was removed) —
                 an operator must never be able to silence "your orders were paused while you were away".
                 The per-event ack still prevents re-firing for the same pause. */}

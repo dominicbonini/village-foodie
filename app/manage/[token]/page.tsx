@@ -40,6 +40,8 @@ import { AllergenChip, DietaryChip } from '@/components/MenuAllergenChips'
 import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
+import { SUBCARD_HEADING } from '@/lib/ui-tokens'
+import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean }
@@ -70,9 +72,11 @@ function fmtDate(d: string) {
 // Spinner / Badge / Btn / Input / Card / EmptyState + the allergen/dietary toggles now live in
 // @/components/manage/primitives (imported above) so the manage page and <ExtrasEditor> share ONE
 // definition. Usages below are unchanged.
-function Toggle({ on, onToggle, label }: { on: boolean; onToggle: () => void; label?: string }) {
+// `disabled` is OPTIONAL and defaults to undefined, so every existing call site is unchanged. Added for
+// the cash toggle, which must render visibly disabled (not hidden) when the separate paid step is off.
+function Toggle({ on, onToggle, label, disabled }: { on: boolean; onToggle: () => void; label?: string; disabled?: boolean }) {
   return (
-    <button onClick={onToggle} className="flex items-center gap-2 group">
+    <button onClick={onToggle} disabled={disabled} className="flex items-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed">
       <div className={`relative w-11 h-6 rounded-full transition-colors ${on ? 'bg-green-500' : 'bg-slate-300'}`}>
         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-6' : 'translate-x-1'}`} />
       </div>
@@ -5221,6 +5225,10 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
   const [editSaving, setEditSaving] = useState(false)
   const [vans, setVans] = useState<{ id: string; name: string }[]>([])
+  // TRANSIENT VIEW STATE — a filter is a way of looking, not a setting. Deliberately NOT persisted to the
+  // DB, localStorage or the URL: an operator who filters to Van 2 to check tomorrow must not come back
+  // later to a schedule that silently hides half their events. Per-surface, and it resets on remount.
+  const [vanFilter, setVanFilter] = useState<VanFilterValue>(VAN_FILTER_ALL)
   const [addMode, setAddMode] = useState<'manual' | 'upload'>('manual')
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [uploadText, setUploadText] = useState('')
@@ -5835,10 +5843,23 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
   const isPastEvent = (e: TruckEvent) =>
     e.end_time ? now > new Date(`${e.event_date}T${e.end_time}`) : new Date(e.event_date) < today
   // Single-truck console: events are already token-scoped to this truck (events/manage). No truck filter.
-  const upcoming = events.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
+  // ── VAN FILTER — CLIENT-SIDE, APPLIED ONCE, HERE (V9.6) ───────────────────────────────────────────
+  // Filtering the ALREADY-FETCHED array rather than refetching: the events are all in memory, the filter
+  // is a view concern, and a refetch would put a network round-trip behind a dropdown that should feel
+  // instant. One filter here feeds BOTH `upcoming` and `past`, so every downstream list (open,
+  // scraper-unconfirmed, operator-unconfirmed, confirmed, other, past) narrows consistently — there is
+  // no second place to forget.
+  // 🔴 `events` ITSELF IS DELIBERATELY NOT FILTERED. Two consumers must see the whole truck:
+  //   • detectEventConflicts(event, events) — a double-booking against a van you have filtered OUT is
+  //     still a double-booking. Filtering here would hide exactly the conflict worth seeing.
+  //   • the onPendingCount effect feeding the parent's Schedule badge — a view filter must never change
+  //     a count that says "these need your attention".
+  const vanFilteredEvents = events.filter(e => matchesVanFilter(e.van_id, vanFilter))
+  const hasUnassignedEvents = events.some(e => !e.van_id)
+  const upcoming = vanFilteredEvents.filter(e => e.status !== 'cancelled' && !isPastEvent(e))
   // Past events list most-recent FIRST (descending), working backwards. Upcoming/confirmed stay
   // soonest-first (ascending, source order) — deliberately not re-sorted here.
-  const past = events
+  const past = vanFilteredEvents
     .filter(e => isPastEvent(e) || e.status === 'cancelled')
     .sort((a, b) => {
       const ka = `${a.event_date}T${a.end_time || a.start_time || '00:00'}`
@@ -6411,6 +6432,9 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
             Change in Settings
           </button>
         </p>
+        {/* Renders NOTHING for a single-van truck — the gate lives inside VanFilter, so this row is
+            byte-identical to before for Gusto and every other one-van operator. */}
+        <VanFilter vans={vans} value={vanFilter} onChange={setVanFilter} showUnassigned={hasUnassignedEvents} />
       </div>
 
       {upcoming.length === 0 && (
@@ -7696,6 +7720,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             when auto-accept is on — the block below is already conditional on it). Neutral sub-panel, same
             treatment as Sounds. Toggles use the shared <Toggle> (canonical w-11/h-6/teal) — no bespoke inline. */}
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+          <div className="pb-3">
+            <p className={SUBCARD_HEADING}>Accepting orders</p>
+            <p className="text-xs text-slate-500 mt-0.5">What happens when a new order arrives.</p>
+          </div>
           <div className="flex items-center justify-between gap-3 pb-3">
             <div>
               <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
@@ -7723,50 +7751,12 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
           )}
         </div>
 
-        {/* SOUNDS — WHICH alerts fire (per-truck policy). The on/off MASTER is a per-device switch on the
-            dashboard/KDS header (physical mute) — this only chooses which events make sound. §23 optimistic:
-            setForm + saveFormField({sound_config}); no reload.
-            ⚠️ V9.5 — THIS PANEL NOW WRITES A SEED, NOT A LIVE SETTING. Sound config became PER-DEVICE
-            (localStorage, lib/sound-prefs.ts). A device seeds from trucks.sound_config the first time it
-            loads and is authoritative from then on, so editing here changes nothing for any device that
-            has already loaded. The copy says so.
-            🔴 DO NOT RETIRE trucks.sound_config / set_sound_config / this panel / the update_settings
-            allowlist entry YET. This column is the seed source. Retirement requires that EVERY device has
-            loaded at least once since the V9.5 deploy — a device that has not would seed from nothing and
-            silently get the hardcoded default instead of the truck's real settings. Later release. */}
-        {(() => {
-          const sc = ((form as any).sound_config ?? { new_orders: 'needs_confirming', order_due: false }) as { new_orders: 'needs_confirming' | 'all' | 'off'; order_due: boolean }
-          const setSc = (patch: Partial<typeof sc>) => { const next = { ...sc, ...patch }; setForm(p => ({ ...p, sound_config: next } as any)); saveFormField({ sound_config: next }) }
-          return (
-            <div className="pt-3 border-t border-slate-100">
-              {/* One neutral sub-panel so Sounds reads as a single grouped section, not loose parts. */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
-                <div className="pb-3">
-                  <p className="text-sm font-bold text-slate-800">Sounds</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Sets the starting point for new devices. Each device then controls its own sound from its own screen — changing this won't affect devices already in use.</p>
-                </div>
-                <div className="py-3">
-                  <p className="text-sm font-semibold text-slate-800 mb-1.5">New order sound</p>
-                  <div className="space-y-1">
-                    {([['needs_confirming', 'Only orders needing confirming'], ['all', 'All new orders']] as const).map(([val, label]) => (
-                      <button key={val} onClick={() => setSc({ new_orders: val })} className="flex items-center gap-2.5 w-full text-left py-1">
-                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${sc.new_orders === val ? 'border-orange-500' : 'border-slate-300'}`}>{sc.new_orders === val && <span className="w-2 h-2 rounded-full bg-orange-500" />}</span>
-                        <span className="text-sm text-slate-700">{label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-3 py-3">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-800">Sound when an order is due to be cooked</p>
-                    <p className="text-xs text-slate-500 mt-0.5">Sounds when a ticket turns amber.</p>
-                  </div>
-                  <Toggle on={sc.order_due} onToggle={() => setSc({ order_due: !sc.order_due })} />
-                </div>
-              </div>
-            </div>
-          )
-        })()}
+        {/* SOUNDS PANEL REMOVED (V9.5). Sound config is PER-DEVICE (localStorage, lib/sound-prefs.ts) and
+            the dashboard's own Sounds panel is the live control. This panel only ever set the SEED for
+            devices that had never loaded, which made it misleading here.
+            🔴 trucks.sound_config, the /api/dashboard projection and the update_settings allowlist entry
+            are all DELIBERATELY RETAINED — the column is still the seed source. Removing the UI does not
+            remove the seed. The full retirement precondition lives in lib/sound-prefs.ts's header. */}
 
         {/* Truck-facing order-notification email toggle. Gates ONLY the email the truck receives on a new
             order (formatNewOrderEmail → truck.contact_email) — NOT the customer's confirmation/ready emails. */}
@@ -7795,26 +7785,58 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         <div className="pt-3 border-t border-slate-100">
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
             <div className="pb-3">
-              <p className="text-sm font-bold text-slate-800">Taking payment</p>
-              <p className="text-xs text-slate-500 mt-0.5">How your team records payment on the order screen.</p>
+              <p className={SUBCARD_HEADING}>Taking payment</p>
+              <p className="text-xs text-slate-500 mt-0.5">Your defaults. Either can be changed for a single event from the dashboard.</p>
             </div>
             <div className="flex items-center justify-between gap-3 py-3">
               <div>
                 <p className="text-sm font-semibold text-slate-800">Separate paid step</p>
-                <p className="text-xs text-slate-500 mt-0.5">Splits "Mark paid &amp; done" into "Mark paid" then "Done", so you can take money before the food is handed over.</p>
+                <p className="text-xs text-slate-500 mt-0.5">Splits "Paid &amp; collected" into "Mark paid" then "Collected", so you can take money before the food is handed over. You can change this for a single event from the dashboard.</p>
               </div>
               <Toggle
                 on={(form as any).show_paid_step === true}
                 onToggle={() => { const next = (form as any).show_paid_step !== true; setForm(p => ({...p, show_paid_step: next} as any)); saveSetting('show_paid_step', next) }}
               />
             </div>
-            <div className="flex items-center justify-between gap-3 py-3">
+            {/* ── 🔴 NESTED AS A CHILD OF THE PAID STEP (V9.6). READ THIS BEFORE RE-FLATTENING IT. ──────
+                ⚠️ THESE TWO WERE DELIBERATELY DE-NESTED ONCE, AND THAT WAS REVERSED ON A LAYOUT ARGUMENT.
+                The de-nesting rationale — "they answer different questions: WHEN do we take money vs HOW
+                does it arrive" — is still true and is still in the git history, which is exactly why this
+                note exists. It was the WRONG TEST. Two settings can answer different questions and still
+                have one DEPEND on the other, and structure should show the DEPENDENCY, not the semantics.
+                THE DEPENDENCY IS DRIVEN BY LAYOUT AS MUCH AS BY MEANING. With the paid step OFF, one tap
+                means "paid AND collected" — which is why the button reads `Paid & collected`. Splitting
+                that into Cash/Card would make each button ALSO collect, but "Cash" does not say so, and
+                the honest label `Cash & collected` needs ~110px against a 72px label box at the 240px KDS
+                column. **There is no honest way to render the split when the button also collects.** So a
+                truck wanting the split turns the paid step on — that step is what creates the moment where
+                "how did they pay" is a separate question from "have they got their food".
+                INDENT + TYPE SCALE copied from the notes-review sub-option above (pl-4, same
+                text-sm/text-xs pair), NOT invented — one nesting treatment per card.
+                ⚠️ Unlike that sub-option, this one is NOT conditionally rendered. It stays visible and
+                goes DISABLED with the reason inline: structure shows the relationship, the text explains
+                it. Both, not either. An operator who cannot find this setting is why it exists on two
+                surfaces at all. */}
+            <div className="flex items-center justify-between gap-3 py-3 pl-4">
               <div>
                 <p className="text-sm font-semibold text-slate-800">Do you take cash?</p>
-                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till.</p>
+                <p className="text-xs text-slate-500 mt-0.5">Splits the payment button into "Cash" and "Card" so your takings reconcile against the till. You can turn this on for a single event from the dashboard.</p>
+                {/* The gate itself: OrderCard.tsx:173 returns `Paid & collected` BEFORE the takesCash
+                    branch at :197, so with the paid step off the split is unreachable no matter what this
+                    column says. AddOrderPanel.tsx:1127 nests its cash/card choice inside the same
+                    `showPaidStep` branch at :1118 — one dependency, both surfaces.
+                    ⚠️ DOES NOT auto-enable the paid step. toggleOfflineProtection silently enabling
+                    keep-screen-on is already recorded in the manual as a defect; one is enough.
+                    ⚠️ DOES NOT write takes_cash=false when the paid step is turned off. The stored value
+                    is left exactly as the operator set it and simply renders inert — never mutate what
+                    the operator chose in order to tidy state. Turning the paid step back on restores it. */}
+                {(form as any).show_paid_step !== true && (
+                  <p className="text-xs text-amber-600 mt-1">Needs the separate paid step turned on.</p>
+                )}
               </div>
               <Toggle
                 on={(form as any).takes_cash === true}
+                disabled={(form as any).show_paid_step !== true}
                 onToggle={() => { const next = (form as any).takes_cash !== true; setForm(p => ({...p, takes_cash: next} as any)); saveSetting('takes_cash', next) }}
               />
             </div>
@@ -7827,7 +7849,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         <div className="pt-3 border-t border-slate-100">
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
             <div className="pb-3">
-              <p className="text-sm font-bold text-slate-800">Opening and closing</p>
+              <p className={SUBCARD_HEADING}>Opening and closing</p>
               <p className="text-xs text-slate-500 mt-0.5">When your events start and stop taking online orders.</p>
             </div>
             <div className="flex items-center justify-between gap-3 py-3">
@@ -8785,7 +8807,10 @@ interface ReportData {
   upsellRevenue?: number
   whatsappStats?: { total: number; handled: number; misses: number } | null
   orders?: Array<any>
-  eventsMap?: Record<string, { venue_name: string | null; town: string | null }>
+  /** Keyed by EVENT ID (V9.6, was event_date). Carries van_id so the van filter can select events. */
+  eventsMap?: Record<string, { venue_name: string | null; town: string | null; van_id: string | null }>
+  /** Date-keyed fallback, first-wins — labels orders whose event_id is NULL exactly as before. */
+  eventsByDate?: Record<string, { venue_name: string | null; town: string | null }>
   itemCategories?: Record<string, string>
   categoryOrder?: string[]
 }
@@ -8800,7 +8825,9 @@ type ExplodedItem = {
 }
 function explodeOrderItems(
   orders: any[],
-  eventsMap: Record<string, { venue_name: string | null; town: string | null }>
+  // V9.6: a RESOLVER, not the raw map — the caller now owns the id-then-date fallback so all three
+  // label sites (this CSV, the orders CSV, the on-screen history) resolve venues identically.
+  resolveEvent: (o: any) => { venue_name: string | null; town: string | null } | null
 ): ExplodedItem[] {
   const rows: ExplodedItem[] = []
   for (const o of orders) {
@@ -8811,7 +8838,7 @@ function explodeOrderItems(
     const timePlaced = createdAt
       ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
       : ''
-    const ev = eventsMap[o.event_date]
+    const ev = resolveEvent(o)
     const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
     const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
     const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
@@ -8866,8 +8893,13 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const [reportLoaded, setReportLoaded] = useState(false)
   const [recentEvents, setRecentEvents] = useState<RecentEvent[]>([])
   const [loading, setLoading] = useState(false)
+  // Same shape as ScheduleTab: vans for the filter, and TRANSIENT filter state — per-surface, reset on
+  // remount, never written to the DB, localStorage or the URL. A filter is a view, not a setting.
+  const [vans, setVans] = useState<{ id: string; name: string }[]>([])
+  const [vanFilter, setVanFilter] = useState<VanFilterValue>(VAN_FILTER_ALL)
 
   useEffect(() => {
+    api('get_vans').then(r => setVans((r.vans || []).map((v: any) => ({ id: v.id, name: v.name })))).catch(() => {})
     api('get_recent_events').then(r => setRecentEvents(r.events || [])).catch(() => {})
     if (hasAdvanced) loadReport()
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -8888,8 +8920,36 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   }
 
   // ── Client-side derived breakdowns ─────────────────────────────
-  const orders: any[] = reportData?.orders ?? []
-  const eventsMap: Record<string, { venue_name: string | null; town: string | null }> = reportData?.eventsMap ?? {}
+  const eventsMap: Record<string, { venue_name: string | null; town: string | null; van_id: string | null }> = reportData?.eventsMap ?? {}
+  const eventsByDate: Record<string, { venue_name: string | null; town: string | null }> = reportData?.eventsByDate ?? {}
+  // ONE venue resolver for all three label sites. Event ID first (correct on multi-event dates), falling
+  // back to the date map so an order with a NULL event_id labels exactly as it did before V9.6.
+  const resolveEvent = (o: any) => eventsMap[o?.event_id] ?? eventsByDate[o?.event_date] ?? null
+
+  // ── 🔴 THE VAN FILTER SELECTS EVENTS, NOT ORDERS (V9.6) ──────────────────────────────────────────
+  // An order is in scope IFF ITS EVENT IS. Every order of a selected event is included WHOLE — nothing is
+  // apportioned, nothing is split.
+  // 🔴 orders.van_id IS NOT USED HERE AND MUST NOT BE. It is a KDS ROUTING field with no accounting
+  // meaning: NULL on ~78% of live orders, because the walk-up path never stamps it while the customer
+  // path does. Filtering money by it would drop three quarters of the revenue out of every van's total.
+  // (That NULL rate is a real data-quality issue — for a different pass. It is not the report's business.)
+  //
+  // ⚠️ AN ORDER WITH NO event_id IS IN NO VAN'S REPORT — NOT EVEN "Unassigned". "Unassigned" means an
+  // EVENT that has no van; an order with no EVENT is a different thing, and folding the two together
+  // would invent a bucket that misrepresents both. Such orders appear under "All trucks" ONLY, which is
+  // the default, so they are never hidden from an unfiltered report — but they ARE unreachable while a
+  // van filter is active. That is stated, not silent.
+  const orderInScope = (o: any) => {
+    if (vanFilter === VAN_FILTER_ALL) return true
+    const ev = eventsMap[o?.event_id]
+    if (!ev) return false
+    return matchesVanFilter(ev.van_id, vanFilter)
+  }
+  const allOrders: any[] = reportData?.orders ?? []
+  // Filtered ONCE, here. Every breakdown below (revenue, top items, deals, item view, both CSVs, the
+  // order history table) derives from `orders`, so they all narrow together and none can disagree.
+  const orders: any[] = allOrders.filter(orderInScope)
+  const hasUnassignedEvents = Object.values(eventsMap).some(e => !e.van_id)
 
   const revenueBreakdown = useMemo(() => {
     // Only count revenue from orders that weren't cancelled/rejected
@@ -8972,12 +9032,20 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
     return [ev?.venue_name, dateStr].filter(Boolean).join(' · ')
   }, [orders, filterMode, reportEventId, recentEvents]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── VAN SCOPE IN THE FILENAME (V9.6) ─────────────────────────────────────────────────────────────
+  // The on-screen chip states the scope, but a CSV outlives the session and gets emailed on, so the scope
+  // has to travel WITH the file. FILENAME ONLY, deliberately — a scope row inside the CSV would break
+  // every parser that expects the header on line 1 (Excel, Sheets, and any script an operator's
+  // accountant has). The filename carries the same information and costs nothing to read.
+  // '' for "All trucks" AND for any single-van truck, so an unfiltered export keeps today's filename
+  // exactly and nothing changes for Gusto.
+  const vanSuffix = vanFilterFilenameSuffix(vans, vanFilter)
   const csvFilename = filterMode === 'date'
-    ? `orders-${dateFrom}-to-${dateTo}.csv`
-    : `orders-event-${reportEventId}.csv`
+    ? `orders-${dateFrom}-to-${dateTo}${vanSuffix}.csv`
+    : `orders-event-${reportEventId}${vanSuffix}.csv`
   const itemsCsvFilename = filterMode === 'date'
-    ? `items-${dateFrom}-to-${dateTo}.csv`
-    : `items-event-${reportEventId}.csv`
+    ? `items-${dateFrom}-to-${dateTo}${vanSuffix}.csv`
+    : `items-event-${reportEventId}${vanSuffix}.csv`
 
   const exportCSV = () => {
     if (!orders.length) return
@@ -8990,7 +9058,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
       const timePlaced = createdAt
         ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
         : ''
-      const ev = eventsMap[o.event_date]
+      const ev = resolveEvent(o)
       const eventStr = ev ? [ev.venue_name, ev.town].filter(Boolean).join(', ') : 'Unknown event'
       const collectionTime = o.slot ? formatTime(o.slot) : 'ASAP'
       const customerName = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : 'Unknown'
@@ -9013,7 +9081,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
   const exportItemsCSV = () => {
     if (!orders.length) return
     const headers = ['Order ID', 'Date', 'Event', 'Time placed', 'Collection time', 'Customer name', 'Order type', 'Item name', 'Qty', 'Unit price', 'Modifiers', 'Notes', 'Item total', 'Order total']
-    const rows = explodeOrderItems(orders, eventsMap).map(r =>
+    const rows = explodeOrderItems(orders, resolveEvent).map(r =>
       [r.orderId, r.dateStr, r.eventStr, r.timePlaced, r.collectionTime, r.customerName, r.orderType,
        r.itemLabel, String(r.qty), fmtGBP(r.basePrice), r.modStr, r.noteStr, fmtGBP(r.itemTotal), fmtGBP(r.orderTotal)]
         .map(v => `"${String(v).replace(/"/g, '""')}"`)
@@ -9148,6 +9216,12 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
               )}
             </div>
           </div>
+          {/* VAN FILTER — renders NOTHING for a single-van truck (gate is inside VanFilter), so this row
+              is unchanged for Gusto and every other one-van operator. Sits with the other view controls
+              because it IS one: it narrows which events the report covers, client-side. */}
+          <div className="flex-shrink-0 self-start flex items-center gap-2 h-10">
+            <VanFilter vans={vans} value={vanFilter} onChange={setVanFilter} showUnassigned={hasUnassignedEvents} />
+          </div>
           {/* MIDDLE: Show [Orders | Items] view toggle — TOP-aligned (self-start) so it sits inline on the
               top button line with the "Filter by" toggle (left) and "View report" (right). */}
           <div className={`flex-shrink-0 self-start flex items-center gap-2 h-10 ${orders.length === 0 ? 'invisible' : ''}`}>
@@ -9191,8 +9265,19 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
             {reportHeader && (
               <p className="text-xs text-slate-500 mb-0.5">{reportHeader}</p>
             )}
+            {/* 🔴 THE ACTIVE SCOPE TRAVELS WITH THE NUMBERS. A filtered report screenshotted or printed
+                must never read as a whole-truck total, so the van label sits ON the totals line, not only
+                in the dropdown above it. Rendered whenever the truck has >1 van — including "All trucks",
+                because "no chip" would then be ambiguous between "unfiltered" and "single-van truck".
+                ⚠️ reportHeader (the venue · date line above) exists in EVENT mode only, so the totals line
+                is the one place present in both modes. */}
             <p className="text-base font-bold text-slate-900">
               {orders.length} order{orders.length !== 1 ? 's' : ''} · {fmtGBP(revenueBreakdown.total)}
+              {vans.length > 1 && (
+                <span className="ml-2 align-middle inline-block text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg px-2 py-0.5">
+                  {vanFilterLabel(vans, vanFilter)}
+                </span>
+              )}
             </p>
           </div>
 
@@ -9345,7 +9430,7 @@ function ReportsTab({ truck, api }: { truck: Truck | null; api: (a: string, e?: 
                   const timePlaced = createdAt
                     ? formatTime(`${String(createdAt.getHours()).padStart(2, '0')}:${String(createdAt.getMinutes()).padStart(2, '0')}`)
                     : ''
-                  const ev = eventsMap[o.event_date]
+                  const ev = resolveEvent(o)
                   const venueName = ev?.venue_name ?? null
                   const orderType = o.customer_email ? 'Online' : 'Walk-up'
                   const customerLabel = (o.customer_name && o.customer_name !== 'Walk-up') ? o.customer_name : '—'

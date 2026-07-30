@@ -42,6 +42,19 @@ export const ORANGE_OUTLINE = 'bg-white hover:bg-orange-50 text-orange-700 borde
 /** Completion — Done, Mark paid & done. 14.63:1. */
 export const DARK_SOLID  = 'bg-slate-800 hover:bg-slate-900 text-white'
 
+// ── TYPOGRAPHY ───────────────────────────────────────────────────────────────────────────────────
+// Not a colour token, but the same argument: it had FOUR inline copies (two Settings screens) that had
+// to agree, with nothing making them agree — the makeCartKey triplication class. A shared constant
+// cannot drift.
+/** Sub-card group headings in Settings ("Accepting orders", "Taking payment", "Opening and closing").
+ *  STRUCTURE, not secondary text — hence slate-800, the same colour as the row titles beneath it, with
+ *  the hierarchy carried by SIZE + UPPERCASE + TRACKING rather than by being faded.
+ *  ⚠️ NOT for the orders-board column headings or the Allergens h2, which keep slate-500 DELIBERATELY:
+ *  a board label sits above live tickets an operator scans past and must not compete with them, whereas
+ *  a settings heading should be as prominent as its rows. That divergence is a decision — do not
+ *  "unify" those onto this token. */
+export const SUBCARD_HEADING = 'text-xs font-black text-slate-800 uppercase tracking-widest'
+
 /** The dashboard order-card Btn palette. */
 export const BTN_COLOURS: Record<string, string> = {
   green:  GREEN_SOLID,
