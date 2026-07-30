@@ -102,8 +102,29 @@ export default function LandingPage() {
       {/* ============ NAV ============ (slate bg = HEADER_BG from lib/brand.ts) */}
       <nav className={HEADER_BG}>
         <div className="nav-in">
+          {/* ── LARGER WORDMARK IN THE NAV — DESKTOP ONLY (V9.7) ─────────────────────────────────────
+              h-8 (32px) is the component's own default, so MOBILE IS BYTE-IDENTICAL to before.
+              From 640px up, sm:w-[168px] + sm:h-auto gives 168px wide ≈ 42px tall.
+              ⚠️ WIDTH is specified rather than height, deliberately: 168px matches the operator
+              dashboard header's own wordmark width exactly, so the two surfaces agree on one number
+              instead of two heights that happen to look similar.
+              🔴 THE MOBILE FLOOR IS DELIBERATE, NOT TIMIDITY. Below 640px this nav is already tuned to
+              its limit — see landing.css's @media(max-width:639px), whose own comment says the compact
+              Log in + CTA are sized "so both fit ~360px with no wrap", and `.nav-r .btn` carries
+              `white-space: nowrap` with the note "the CTA must never wrap the header". At 40px the logo
+              would be ~168px wide and would eat the margin that keeps the CTA on one line.
+              ⚠️ VERIFIED AT 640px, where nav-hide-sm brings Pricing + Log in back and the row is at its
+              widest: gutters (2×25.6px) leave ~589px; logo 168 + nav-in gap 16 + nav-r (Pricing ~76 +
+              Log in ~86 + CTA ~171 + 2×6.4 gap) ≈ 530px. ~59px spare, so the nowrap CTA is safe.
+              640px is not an arbitrary breakpoint: it is the SAME one the nav already switches at, so the
+              logo grows exactly when Pricing + Log in reappear and there is room for it.
+              ⚠️ The nav cannot change height either way — `.hg-landing nav` is a fixed `height: var(--nav-h)`
+              (4.5rem/72px) with align-items:center and NO vertical padding (.nav-in is `padding: 0 var(--gut)`),
+              so 42px sits inside it with 15px clearance top and bottom.
+              w-auto + the component's width/height attributes preserve the aspect ratio → no layout shift.
+              Scoped to THIS call site only: the footer, /signup, /setup and legal pages stay at 127×32. */}
           <a href="#" className="nav-logo" aria-label="HatchGrab home">
-            <HatchGrabWordmark variant="dark" />
+            <HatchGrabWordmark variant="dark" className="h-8 w-auto sm:w-[168px] sm:h-auto" />
           </a>
           <div className="nav-r">
             {/* Pricing + full Log in are hidden < 640px (CSS). A compact mobile-only Log in (nav-only-sm) sits to
@@ -415,7 +436,16 @@ export default function LandingPage() {
         <div className="wrap">
           <div className="foot-grid">
             <div>
-              <HatchGrabWordmark variant="dark" />
+              {/* `block` (live at every width — the reset does not touch `display`) puts the wordmark on
+                  its own line instead of an inline baseline.
+                  `foot-logo` is the CENTRING HOOK, and it is a CSS class rather than a Tailwind utility on
+                  purpose: `.hg-landing * { margin: 0 }` in landing.css ties Tailwind's `mx-auto` on
+                  specificity and wins on source order, so `mx-auto` here was silently doing NOTHING. The
+                  rule lives in landing.css's existing @media(max-width:720px) block — mobile only, same
+                  breakpoint that collapses .foot-grid, same margin-inline:auto mechanism as .foot-tag.
+                  ⚠️ Desktop is untouched: above 720px no rule matches, so the wordmark keeps margin:0 and
+                  stays left in its space-between column. */}
+              <HatchGrabWordmark variant="dark" className="block foot-logo" />
               <p className="foot-tag">The ordering system built for food trucks.</p>
             </div>
             <div className="foot-links">

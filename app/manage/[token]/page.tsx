@@ -42,6 +42,7 @@ import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
+import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
 // ── Types ─────────────────────────────────────────────────────
 interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean }
@@ -7024,7 +7025,12 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
           ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/truck-media/${truck.logo_storage_path}`
           : null,
         truckName: truck.name,
-        hatchgrabLogoUrl: `${window.location.origin}/logos/hatchgrab.png`,
+        // Imported constant, not a hardcoded path: this line read '/logos/hatchgrab.png' — an asset that
+        // NEVER EXISTED — so loadImageViaBlobUrl returned null and the poster silently fell back to the
+        // text "Powered by HatchGrab". The real asset is '/logos/hatchgrab-logo.png'. ⚠️ The text fallback
+        // in lib/generateQRCode.ts is DELIBERATELY KEPT: it is what makes a missing/failed image a
+        // degraded poster rather than a blank corner.
+        hatchgrabLogoUrl: `${window.location.origin}${HATCHGRAB_LOGO_PNG}`,
       })
       setQrDataUrl(dataUrl)
     } catch (err) {

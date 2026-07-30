@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { isNativeApp } from '@/lib/native/device'
 import { getNativeSupabase } from '@/lib/native/session'
+import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 
 function LoginForm() {
   const router = useRouter()
@@ -80,10 +81,19 @@ function LoginForm() {
 
         {/* Logo */}
         <div className="text-center">
+          {/* HatchGrab wordmark. ⚠️ NAVY variant, not white: the page is bg-[#111827] but this logo
+              sits INSIDE the bg-white card above — the immediate background is WHITE. The white
+              wordmark would be invisible here. Height stays h-12 (48px), byte-identical to the mark it
+              replaces, so nothing shifts vertically; width/height attributes are the 4.548:1 aspect
+              reservation (post-crop). ⚠️ h-12 w-auto means the RENDERED WIDTH grows ~191px → ~218px now the
+              artwork is tight-cropped — still well inside the card's 320px content box, and mx-auto keeps
+              it centred. */}
           <img
-            src="/logos/village-foodie-logo-v2.png"
-            alt="Village Foodie"
-            className="h-12 mx-auto mb-4"
+            src={HATCHGRAB_WORDMARK_SVG}
+            alt="HatchGrab"
+            width={191}
+            height={42}
+            className="h-12 w-auto mx-auto mb-4"
           />
           <h1 className="text-xl font-semibold text-slate-900">
             Sign in to your kitchen

@@ -2,6 +2,7 @@
 
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { HATCHGRAB_WORDMARK_SVG } from '@/lib/brand'
 
 function ResetPasswordForm() {
   const router = useRouter()
@@ -100,10 +101,14 @@ function ResetPasswordForm() {
       <div className="bg-white rounded-2xl border border-slate-100 shadow-xl
                       w-full max-w-sm p-8 flex flex-col gap-6">
         <div className="text-center">
+          {/* HatchGrab wordmark — identical case to /login and /signup: dark page, WHITE CARD, so the
+              NAVY variant is correct. h-12 (48px) preserved so nothing shifts. */}
           <img
-            src="/logos/village-foodie-logo-v2.png"
-            alt="Village Foodie"
-            className="h-12 mx-auto mb-4"
+            src={HATCHGRAB_WORDMARK_SVG}
+            alt="HatchGrab"
+            width={191}
+            height={42}
+            className="h-12 w-auto mx-auto mb-4"
           />
           <h1 className="text-xl font-semibold text-slate-900">
             {isFirstLogin ? 'Set your password' : 'Choose a new password'}

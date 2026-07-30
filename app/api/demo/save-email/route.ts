@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
           subject: 'Your HatchGrab demo — here’s your link back',
           htmlContent: `
             <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px">
-              <img src="${HATCHGRAB_LOGO_URL}" width="180" style="margin-bottom:24px;display:block"/>
+              <img src="${HATCHGRAB_LOGO_URL}" alt="HatchGrab" width="180" style="margin-bottom:24px;display:block"/>
               <h2 style="color:#0f172a">Your demo is saved</h2>
               <p>Here’s your link back to the demo with your menu in it. No login needed — just tap it.</p>
               <p style="margin:24px 0">

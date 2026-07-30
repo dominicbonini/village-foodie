@@ -69,14 +69,13 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 .hg-landing :focus-visible { outline: 2.5px solid var(--orange); outline-offset: 3px; border-radius: 2px; }
 .hg-landing .wrap { max-width: var(--max); margin: 0 auto; padding-inline: var(--gut); }
 
-/* ---------- logo (approximation; see HatchGrabWordmark.tsx) ---------- */
-.hg-landing .logo { display: inline-flex; align-items: center; font-family: var(--display); font-weight: 800; font-style: italic; font-size: 1.45rem; letter-spacing: -.02em; white-space: nowrap; text-decoration: none; line-height: 1; }
-.hg-landing .logo .a { color: var(--head); }
-.hg-landing .logo .b { color: var(--orange); }
-.hg-landing .logo.logo-dark .a { color: #fff; }   /* dark-background variant (nav + footer) */
-.hg-landing .logo .bolt { width: .42em; height: 1.05em; margin: 0 .02em 0 -.04em; flex: none; fill: var(--orange); }
-.hg-landing .logo .gwrap { position: relative; display: inline-block; }
-.hg-landing .logo .swoosh { position: absolute; left: -8%; top: -58%; width: 126%; height: auto; fill: var(--orange); pointer-events: none; }
+/* ---------- logo ----------
+   The seven `.hg-landing .logo …` rules that were here are GONE (V9.7). They styled the old
+   TYPE + SVG approximation — .logo, .logo .a, .logo .b, .logo.logo-dark .a, .logo .bolt,
+   .logo .gwrap, .logo .swoosh — and components/brand/HatchGrabWordmark.tsx now renders a single
+   <img> that carries its own size and colour, so nothing emits those class hooks any more.
+   ⚠️ `.hg-landing .nav-logo` below is NOT part of this and was KEPT — the landing nav still
+   wraps the wordmark in <a className="nav-logo">. Do not remove it. */
 
 /* ---------- buttons ---------- */
 .hg-landing .btn { display: inline-flex; align-items: center; gap: .5rem; font-family: var(--body); font-weight: 600; font-size: .95rem; padding: .7rem 1.15rem; border-radius: 7px; text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .12s ease, background .12s ease, border-color .12s ease; }
@@ -321,6 +320,17 @@ html:has(.hg-landing) { scroll-behavior: smooth; }
 @media(max-width:720px){
   .hg-landing .foot-grid { flex-direction: column; align-items: center; text-align: center; }
   .hg-landing .foot-tag { margin-inline: auto; }
+  /* Wordmark: SAME mechanism as .foot-tag directly above — margin-inline:auto — so the footer has one
+     centring approach, not two, and the logo lines up with the tagline beneath it.
+     🔴 THIS RULE EXISTS BECAUSE TAILWIND'S `mx-auto` CANNOT WIN HERE. `.hg-landing *` (line 67) sets
+     `margin: 0` at specificity (0,1,0) — identical to `.mx-auto` — and landing.css loads after Tailwind,
+     so the reset wins on source order and the utility is silently inert. Same trap documented in
+     components/landing/DemoUpload.tsx. `.hg-landing .foot-logo` is (0,2,0) and beats it, exactly as
+     `.foot-tag` does. Do not "simplify" this back to a utility class.
+     ⚠️ MOBILE ONLY — deliberately inside this max-width:720px block, the same breakpoint that collapses
+     .foot-grid to one column. Above 720px there is NO rule, so the wordmark keeps margin:0 from the reset
+     and stays left-aligned in its space-between column, exactly as it ships today. */
+  .hg-landing .foot-logo { margin-inline: auto; }
   .hg-landing .foot-links { justify-content: center; }
   .hg-landing .foot-base { flex-direction: column; align-items: center; text-align: center; }
 }

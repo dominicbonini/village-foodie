@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V9.7
+HatchGrab Engineering Reference Manual · V9.8
 
 **HatchGrab**
 
@@ -3751,6 +3751,21 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+## 🔴 V9.8 — added 30 July 2026 (branding)
+
+### Found, reported, not fixed
+- **🔴 `HATCHGRAB_SENDER.email` is `hello@villagefoodie.co.uk`** (`email-config.ts:12`). Every HatchGrab-branded operator email sends from a Village Foodie address. Blocked on **hatchgrab.com not yet being set up**, then `hello@hatchgrab.com` in Brevo with SPF/DKIM. This is the largest remaining brand inconsistency.
+- **QR poster truck name has no `maxWidth`.** `generateQRCode.ts:203` calls `fillText` without clamping, so a long name renders *underneath* the logo. Budget is 273px (down 16px after the re-crop); threshold ~20-25 characters. Live names already at it: "Noodle and Dumpling Bar", "Kezmet Turkish Kitchen". Passing `maxWidth` squashes rather than truncates — the correct fix is a measure-and-ellipsis loop.
+- **Native icons blocked on `minSdkVersion`.** Assets generated and held back. Needs: `ic_launcher_background.xml` `#FFFFFF` → `#0F172A`; 5 adaptive foreground PNGs; 10 legacy PNGs (only if minSdk < 26); iOS `AppIcon-512@2x.png` (1 file). Note **three** conflicting darks exist natively: `#FFFFFF`, `capacitor.config.ts` `#1C1C1E`, and the icon's `#0F172A`.
+- **Landing CTA contrast.** White text on `--orange` is **2.50:1**, below the 3:1 large-text floor. Fixable on that button alone without touching the token or the logo.
+- **`BRANDS.HATCHGRAB.logo` (`lib/brand.ts:11`) still points at the Village Foodie file** with a now-false "replace when HatchGrab logo exists" comment. Zero consumers, so documentation-only harm.
+- **`VF_LOGO_URL` (`email-config.ts:39`) is dead code** — declared, never imported.
+- **`public/logos/village-foodie-logo-v2.png` is 184,671 B** and renders on 6 customer surfaces; **`village-foodie logo-sharing.png` is 3,856,486 B**. Same class as the 7.95 MB apple-touch-icon already fixed. (Note: `public/logos/` also holds ~120 truck logos.)
+- **No branded og:image.** `generateMetadata` sets no image, so a hatchgrab.com share card shows the Village Foodie logo with alt text reading "HatchGrab Logo". Needs a 1200 × 630.
+- **`app/layout.tsx:20` duplicates the host check inline** instead of importing `isHatchGrabHost`.
+- **`globals.css:9 --accent: #E76F51`** — a third orange, zero consumers. Delete.
+- **`SplashScreen` is configured in `capacitor.config.ts` but `@capacitor/splash-screen` is not installed**; the iOS splash is 3 identical 2732 × 2732 scaffold PNGs.
+
 ## 🔴 V9.7 — added 30 July 2026
 
 ### Found, reported, not fixed
@@ -4777,6 +4792,20 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **A screen-level fact does not belong in row-level copy.** Dashboard Settings is per-event; Manage → Settings is truck-wide. That is true of every option on each tab, so stating it on individual rows makes the card read as a box of unrelated exceptions — and stating it on some rows but not others actively misleads. A row's description says what the setting **does**; the screen says what it **applies to**. The same reasoning governs containers: a group heading and a grey sub-panel earn their place only where several groups share one card, which is true in Manage and false on the dashboard where each setting is already its own card.
 
+**🔴 Tailwind margin and padding utilities are INERT inside `.hg-landing`.** `landing.css:67` is `.hg-landing * { box-sizing: border-box; margin: 0; padding: 0 }`. Its specificity is **(0,1,0)** — identical to Tailwind's `.mx-auto` / `.px-6` — and `landing.css` imports **after** Tailwind, so source order decides and **the reset wins**. Every `m-` and `p-` utility inside that subtree silently does nothing. It fails silently: no error, no warning, no type-check. It has bitten twice — the demo modal's padding (fixed by portalling to `document.body`, outside the reset) and an `mx-auto` on the footer wordmark that appeared to work and never did. **Rule: inside `.hg-landing`, use a scoped CSS rule at (0,2,0) — e.g. `.hg-landing .foot-logo { margin-inline: auto }` — never a Tailwind spacing utility.** `w-` and `h-` utilities are unaffected and safe. Current blast radius is **zero live victims** (the landing page is authored entirely in CSS classes); the risk is forward-looking.
+
+**Landing breakpoints are not Tailwind's.** `.foot-grid` collapses to a single column at **720px**, not 640 or 768. Below it, `align-items: center` makes children shrink-to-fit, so the wordmark's column is ~196px wide (set by the tagline's `max-width: 28ch`), not full width. `--nav-h` is 72px and `.nav-in` has **no vertical padding**.
+
+**Canvas is a raster context — feed it PNG, never SVG.** The QR poster already does this correctly via `loadImageViaBlobUrl`, which fetches to a same-origin `blob:` URL to avoid canvas taint, then returns `img.naturalWidth > 0 ? img : null`. A null return produces the "Powered by HatchGrab" text fallback.
+>
+> **Latent hazard, unresolved.** `URL.revokeObjectURL(blobUrl)` fires inside the loader, before the caller's `drawImage`. WebKit defers decode more aggressively than Blink. Whether this produces a blank corner or a null return is disputed and unproven.
+
+**Give email images a width and NO height.** Email clients do not render SVG, and Outlook desktop and others **block remote images by default** — so use PNG at an absolute URL, and prefer text where the image is not load-bearing. A lone width lets the client derive height from the intrinsic image, which is why the three operator templates self-corrected when the artwork was re-cropped from 3.971:1 to 4.548:1. A hardcoded pair would have squashed them.
+
+**Do not put a wordmark in an app icon.** iOS renders a 1024px icon at ~60pt; Apple's HIG discourages text because the app name already sits beneath it; Android adaptive icons crop to a circle with only the inner ~61% guaranteed. Use a symbol. iOS app icons must be **opaque, no alpha** — the App Store rejects transparency.
+
+**`cap sync` does NOT regenerate native icons.** There is no `@capacitor/assets` and no `resources/` directory; every native icon is a manual replacement at a fixed path. `AndroidManifest.xml`'s `@mipmap/ic_launcher` resolves to the adaptive XML on API 26+ **and to the legacy PNG on API ≤25**, so the 10 legacy PNGs are a live fallback, not dead weight — unless `minSdkVersion` is already 26.
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 > The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. **STATUS: no build has shipped and no store listing exists.**
@@ -4901,4 +4930,125 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 - **Two cancel paths currently key their refund copy off DIFFERENT fields** — `/api/orders/cancel` reads `payment_status`, `/api/events/action` reads `paid_at`. Both collapse onto the ledger.
 - **`undo_collected` does not clear `paid_at`**, so a reverted order keeps a payment timestamp and the operator-cancel email can promise a cash customer a refund. Fix with the ledger.
 
-HatchGrab Engineering Reference Manual · V9.7
+# 38. Brand system — assets, colours, construction (V9.8)
+
+Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
+
+## The artwork
+
+Source of truth is a Gemini-generated raster the founder produced, which is a **photograph of a logo** — ink on textured paper, drop shadow, soft glow, baked-in caption. 2814 × 1536, RGBA but fully opaque, 3231 distinct oranges and 926 distinct greys in the wordmark alone.
+
+**It is a reference, not an asset.** The shipped SVGs are a sub-pixel iso-contour trace of it, recoloured. Registration against the source photograph: **95.97% IoU**.
+
+**Do not rebuild the wordmark from `components/brand/HatchGrabWordmark.tsx`.** The pre-V9.8 version of that component described itself as an approximation in its own first line and was wrong in three ways that cost three failed rebuild attempts: its swoosh crossed the letters (the real arrow **arcs above** them); it had **no lightning cut** at all; and it drew the bolt as a positive filled path.
+
+## Measured construction (from the source artwork, HATCH cap height = 169px)
+
+| Property | Value |
+|---|---|
+| Italic stem angle | **104.4°** — found independently in the dark and orange masks, agreeing to 0.02° |
+| The bolt between HATCH and Grab | **negative space** — a lightning-shaped cut through the H's right side and the G's left |
+| The arrow | **continuous with the G**, not a separate swoosh. The tracer found G+arrow as ONE connected component |
+| HATCH vs Grab size | **identical**. `rab` are lowercase, which is what makes Grab look smaller |
+| Typeface | Archivo italic 800 (`next/font/google`) |
+
+## Shipped files
+
+All under `public/`. **Untracked as of end of session — see the deploy state below.**
+
+| File | Spec |
+|---|---|
+| `logos/hatchgrab-wordmark.svg` | navy HATCH, for LIGHT backgrounds |
+| `logos/hatchgrab-wordmark-white.svg` | white HATCH, for DARK backgrounds |
+| `logos/hatchgrab-logo.png` | 640 × 141, raster for email |
+| `logos/hatchgrab-logo-white.png` | 640 × 141 |
+| `logos/hatchgrab-logo@1x.png` / `-white@1x.png` | 320 × 70 |
+| `favicon.ico` | 16/32/48, 1719 B |
+| `apple-touch-icon.png` | 180 × 180, 2066 B — **replaced a 7,954,151 B 2528 × 1696 file** |
+| `icons/icon-192.png`, `icon-512.png` | PWA, `purpose any` |
+| `icons/icon-512-maskable.png` | PWA, `purpose maskable`, bolt at 52% |
+| `icons/hatchgrab-icon.svg` | master icon |
+
+**Aspect ratio 4.548:1**, `viewBox="21 39 1287 283"`. This is a TIGHT crop — ink fills 95.8% of the box. The first cut had 13.2% top / 6.8% bottom padding baked in at 3.971:1; that is why the logo looked low in its box and over-padded in headers. **Any hardcoded width/height pair must use 4.548:1.**
+
+## Colours
+
+| Token | Value | Where |
+|---|---|---|
+| Logo orange | **`#EF8B2C`** | `landing.css --orange`. The Gemini render measures `#ED8B28` — the same colour within photographic noise |
+| Logo navy | **`#16314F`** | `landing.css --head`, the light-background HATCH |
+| Dark background | **`#0F172A`** | slate-900, `HEADER_BG` in `lib/brand.ts` |
+| App action orange | **`#EA580C`** | Tailwind `orange-600`, 228 uses |
+| Dead token | `#E76F51` | `globals.css:9 --accent`, zero consumers |
+
+**DECIDED: the two oranges stay different.** `#EF8B2C` is the brand mark, `#EA580C` is the action colour. This was considered and rejected in both directions:
+- moving the app to `#EF8B2C` puts **white button text at 2.50:1**, below the 3:1 large-text floor, across 228 instances. `#EA580C` clears it at 3.56:1
+- remapping `--color-orange-600` in Tailwind v4's `@theme` **inverts the ramp**: `#EF8B2C` luminance 0.3700 sits between orange-400 (0.4139) and orange-500 (0.3246), under 138 orange-400 / 80 orange-500 / 92 orange-700 uses
+- recolouring the logo to `#EA580C` was rendered and rejected on taste
+
+A logo colour distinct from a UI action colour is normal. What has no precedent is the same logo in two different oranges by location — **do not do that.**
+
+## The icon
+
+The wordmark cannot be an icon: at 62% height in a square it is 3.6% ink and **6 orange pixels at 16 × 16**. The bolt is the icon.
+
+The wordmark's bolt is negative space, so there was nothing to lift; the icon bolt is a **separate, deliberately heavier path**. This is optical sizing, not drift — **do not "fix" them to match.**
+
+```
+viewBox="0 0 0.3828 1"
+d="M0.3014 0 L0 0.5625 H0.185 L0.0814 1 L0.3828 0.40625 H0.1978 Z"
+stroke 0.185 · lean 12.4° (identical to the wordmark bolt) · orange #EF8B2C on #0F172A
+```
+
+Scale by context: **0.70** full-bleed (favicon, apple-touch, iOS), **0.52** maskable, **0.46** Android adaptive foreground.
+
+Contrast governs the background: orange on slate-900 is 7.14:1, on navy `#16314F` 5.29:1, but on any true mid-blue it collapses — blue-600 gives **1.45:1**. Orange and blue are near complementary in hue but close in luminance. **The icon background must stay very dark.**
+
+## Where the brand renders
+
+### AppHeader — unconditional, no host detection
+
+**All three consumers (admin, dashboard, manage) are operator/HatchGrab surfaces. There is no Village Foodie use case.** So the logo swap is unconditional. Three approaches to host-aware branding (server wrapper / context provider / middleware) were designed and **discarded** — they restructure pages to compute a value with only one possible answer.
+
+Consequence: it renders identically on localhost and production, so it is verifiable before deploy. `AppHeader` is `'use client'` and no server parent renders it, so a host check would have needed `window.location` and produced a hydration mismatch and a logo flash.
+
+`getBrandFromHost` / `isHatchGrabHost` / `BRANDS` in `lib/brand.ts` have **zero consumers** today. `app/layout.tsx:20` duplicates the host check inline rather than importing it.
+
+### Constants — one path, not two
+
+`lib/brand.ts` exports `HATCHGRAB_WORDMARK_SVG`, `HATCHGRAB_WORDMARK_WHITE_SVG`, `HATCHGRAB_LOGO_PNG`, `HATCHGRAB_LOGO_WHITE_PNG`. **Never hardcode a logo path.**
+
+Before this, `manage:7027` wanted `/logos/hatchgrab.png` and `email-config.ts:33` wanted `/logos/hatchgrab-logo.png` — two paths for one asset, one of which never existed. Creating a duplicate file was rejected; both call sites now import.
+
+### Sizing (all live-verified except where noted)
+
+| Surface | Classes | Attributes |
+|---|---|---|
+| `AppHeader` logo | `w-[112px] md:w-[140px]` | `140 × 31` |
+| `AppHeader` centre reservation | `px-[112px] md:px-[140px] sm:px-0` | — |
+| Landing nav | `h-8 w-auto sm:w-[168px] sm:h-auto` | via component |
+| Landing footer | `block foot-logo` | via component |
+| `HatchGrabWordmark` component | — | `127 × 28` |
+| `/login`, `/reset-password` | `h-12 w-auto` | `191 × 42` |
+
+**🔴 The AppHeader logo width and the centre reservation must move in lockstep.** The reservation is sized against the logo; changing one alone pushes the centred truck name off-centre.
+
+**Bar height (computed):** `py-3` ×2 plus the tallest child. The truck avatar is 36px and must stay the tallest — at `md:w-[168px]` the logo hit 42px and the bar grew 60 → 66px. At `md:w-[140px]` post-crop it is ~31px, clearing by 5px. **Any width past ~143px puts the 6px back.**
+
+**Mobile landing nav is capped at `h-8`.** At 360px, `h-9` leaves ~0px slack against a `white-space: nowrap` CTA, and the font-metric estimate carries ±18–26px — the error band straddles zero. Not a caution, a measurement.
+
+### Variant selection — walk the container chain
+
+`variant="dark"` → white wordmark, `light`/default → navy. **Read the background immediately behind the logo, not the outermost element.** `/signup`, `/login` and `/reset-password` are all dark pages with the logo inside a `bg-white` card — reading the page background would render white-on-white and invisible.
+
+Before V9.8 the `variant` prop was **inert** on three of five call sites (styles were scoped to `.hg-landing`, which those pages never enter). Making the component image-based made it load-bearing. All five audited; none needed correcting.
+
+### Deploy state — end of session, NOT DEPLOYED
+
+**🔴 All six brand assets are `??` untracked.** `HEAD` still requests `/logos/hatchgrab.png`, a path that has never existed — so on any deployed build the QR poster 404s and falls back to text. That is the observed symptom and it needs no browser quirk to explain.
+
+Several days of payments work and the whole of this branding arc are uncommitted. **Commit before the next batch** — this diff is only getting harder to read, and a cumulative `git diff --stat` has already misled one verification check.
+
+**Never rendered — verify before trusting.** Most of this arc was carried by source reading, not observation. Confirmed live: the operator header (white variant correct on slate-900), `/login` (navy on white card), the landing nav and footer. **Not** confirmed: the QR poster with the new asset; `/setup`; `/reset-password`; the legal pages; the landing nav at exactly 640px, which is the tightest horizontal fit; any email. The 640px nav fit (~59px spare), the 60px bar height, the 273px name budget and the ~23-character overlap threshold are **all arithmetic**, with ±10-15% on any text-width estimate.
+
+HatchGrab Engineering Reference Manual · V9.8

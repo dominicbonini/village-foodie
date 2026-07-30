@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
 
   const welcomeHtml = `
     <div style="font-family:Arial,sans-serif;color:#334155;max-width:600px;">
-      <img src="${HATCHGRAB_LOGO_URL}"
+      <img src="${HATCHGRAB_LOGO_URL}" alt="HatchGrab"
            width="180" style="margin-bottom:24px;display:block;"/>
       <h2 style="color:#0f172a;">Welcome to HatchGrab 🚚</h2>
       <p>Hi there,</p>
