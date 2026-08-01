@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V9.8
+HatchGrab Engineering Reference Manual · V9.9
 
 **HatchGrab**
 
@@ -3751,13 +3751,21 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+## 🔴 V9.9 — added 31 July 2026 (landing illustration)
+
+### Found, reported, not fixed
+- **`public/illustrations/food-truck.svg` (the plain-hex spare) is currently unreferenced.** It exists for future `<img>` use. If it is still unused at the next sweep, delete it rather than let it become an orphan.
+- **Confirm on a phone that the hero illustration and copy stack correctly** — the aspect ratio changed with this swap, so the footprint is not what it was.
+
+*(The landing CTA contrast item is NOT repeated here — it is recorded once in the V9.8 block below and annotated as still open.)*
+
 ## 🔴 V9.8 — added 30 July 2026 (branding)
 
 ### Found, reported, not fixed
 - **🔴 `HATCHGRAB_SENDER.email` is `hello@villagefoodie.co.uk`** (`email-config.ts:12`). Every HatchGrab-branded operator email sends from a Village Foodie address. Blocked on **hatchgrab.com not yet being set up**, then `hello@hatchgrab.com` in Brevo with SPF/DKIM. This is the largest remaining brand inconsistency.
 - **QR poster truck name has no `maxWidth`.** `generateQRCode.ts:203` calls `fillText` without clamping, so a long name renders *underneath* the logo. Budget is 273px (down 16px after the re-crop); threshold ~20-25 characters. Live names already at it: "Noodle and Dumpling Bar", "Kezmet Turkish Kitchen". Passing `maxWidth` squashes rather than truncates — the correct fix is a measure-and-ellipsis loop.
 - **Native icons blocked on `minSdkVersion`.** Assets generated and held back. Needs: `ic_launcher_background.xml` `#FFFFFF` → `#0F172A`; 5 adaptive foreground PNGs; 10 legacy PNGs (only if minSdk < 26); iOS `AppIcon-512@2x.png` (1 file). Note **three** conflicting darks exist natively: `#FFFFFF`, `capacitor.config.ts` `#1C1C1E`, and the icon's `#0F172A`.
-- **Landing CTA contrast.** White text on `--orange` is **2.50:1**, below the 3:1 large-text floor. Fixable on that button alone without touching the token or the logo.
+- **Landing CTA contrast.** White text on `--orange` is **2.50:1**, below the 3:1 large-text floor. Fixable on that button alone without touching the token or the logo. **Still open at V9.9** — re-reported in that session and merged here rather than duplicated.
 - **`BRANDS.HATCHGRAB.logo` (`lib/brand.ts:11`) still points at the Village Foodie file** with a now-false "replace when HatchGrab logo exists" comment. Zero consumers, so documentation-only harm.
 - **`VF_LOGO_URL` (`email-config.ts:39`) is dead code** — declared, never imported.
 - **`public/logos/village-foodie-logo-v2.png` is 184,671 B** and renders on 6 customer surfaces; **`village-foodie logo-sharing.png` is 3,856,486 B**. Same class as the 7.95 MB apple-touch-icon already fixed. (Note: `public/logos/` also holds ~120 truck logos.)
@@ -4806,6 +4814,10 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **`cap sync` does NOT regenerate native icons.** There is no `@capacitor/assets` and no `resources/` directory; every native icon is a manual replacement at a fixed path. `AndroidManifest.xml`'s `@mipmap/ic_launcher` resolves to the adaptive XML on API 26+ **and to the legacy PNG on API ≤25**, so the 10 legacy PNGs are a live fallback, not dead weight — unless `minSdkVersion` is already 26.
 
+**🔴 A morphological closing can silently merge components that must stay separate.** Tracing the landing truck, the tracer's `MORPH_CLOSE` (5x5 ellipse at 2x upscale) **merged the original wheel outlines into the body's connected component**. Filling that silhouette therefore painted solid navy discs where the wheels were, so every "arch" cut a notch out of a disc instead of opening clear space — and the whole wheel could never be visible. **It reported clean every time**: 13 subpaths, a sensible bounding box, a plausible render. Only a band-thickness scan across the wheel exposed it — a 50-unit navy run where the ring stroke should have been 8. **Fix:** erase the original wheels from the mask, **repaint the floor line across the gaps that leaves**, then trace. Confirmed by the silhouette bottom reporting source y=787 (the body's own floor) instead of y≈831 (floor plus wheels). Same class as the `.hg-landing` specificity reset above: **a silent failure that reports clean.**
+>
+> **⚠️ A related self-inflicted bug, same session.** Erasing everything below y=700 to strip the wheels also deleted the floor line at y 762-787, truncating the body. Again the trace looked fine; the bounding box (x 180-684 instead of 85-746) was the only tell. **When erasing from a mask, enumerate what else occupies that region first.**
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 > The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. **STATUS: no build has shipped and no store listing exists.**
@@ -4930,7 +4942,7 @@ Everything the operator sees derives from it: `amount_paid = Σcharges − Σref
 - **Two cancel paths currently key their refund copy off DIFFERENT fields** — `/api/orders/cancel` reads `payment_status`, `/api/events/action` reads `paid_at`. Both collapse onto the ledger.
 - **`undo_collected` does not clear `paid_at`**, so a reverted order keeps a payment timestamp and the operator-cancel email can promise a cash customer a refund. Fix with the ledger.
 
-# 38. Brand system — assets, colours, construction (V9.8)
+# 38. Brand system — assets, colours, construction (V9.8, extended V9.9)
 
 Provenance is stated per claim: **live-verified** (seen rendered on screen), **read from code**, or **computed** (arithmetic, unobserved).
 
@@ -5043,6 +5055,74 @@ Before this, `manage:7027` wanted `/logos/hatchgrab.png` and `email-config.ts:33
 
 Before V9.8 the `variant` prop was **inert** on three of five call sites (styles were scoped to `.hg-landing`, which those pages never enter). Making the component image-based made it load-bearing. All five audited; none needed correcting.
 
+## The landing illustration (V9.9)
+
+### What it replaced, and why
+
+The previous hero illustration hardcoded `fill="#EA580C"` at `app/landing/page.tsx:389` and `:393` — the **app's** action orange, sitting inside a page whose every other orange came from `landing.css --orange` (`#EF8B2C`). The landing page therefore rendered **both oranges at once**. That is the drift this replacement closes, and it is the reason the new asset must never carry a literal hex. *(Those line numbers are historical — the block had shifted by the time it was replaced, and the code is now gone.)*
+
+### Shipped files
+
+| File | Use |
+|---|---|
+| `public/illustrations/food-truck-themed.svg` | **inline JSX** — `var(--head, #16314F)` / `var(--orange, #EF8B2C)` |
+| `public/illustrations/food-truck.svg` | plain hex — for `<img src>` only, where CSS vars cannot reach |
+
+Both ~1.1 KB, `viewBox="24.0 18.0 351.5 176.0"`, aspect **1.997:1**, tight-cropped (no baked whitespace — the mistake made on the wordmark's first cut).
+
+🔴 **The themed file is the one that goes inline.** CSS custom properties do not resolve inside an `<img>`-referenced SVG; they only work when the SVG is inline in the DOM. Getting this backwards reintroduces exactly the hardcoded-colour drift above. Hex fallbacks are present so the plain file still renders if the tokens are ever out of scope.
+
+### How it was made
+
+Traced from a line-art reference (founder-generated, so no licence question), **not drawn from estimated proportions**. Sixteen freehand attempts across four sets were all rejected before the trace; the proportions only became right when they stopped being invented.
+
+Three elements were removed from the source by erasing regions of the raster mask **before** tracing, then re-tracing: the roof rack and antenna (all ink above y=198), the vertical cab/body divider (x 634-667, y 310-760), and the T-shaped tap (x 878-962, y 492-548). Each cut was verified not to damage what it touched — roofline intact at rows 205/215, counter bar intact at row 560, floor line intact at row 770.
+
+**Measured constants**, all from the source rather than judgement:
+
+| Feature | Value |
+|---|---|
+| Front rake | **dx/dy = -0.299**, i.e. 16.7° from vertical, linear across 14 sample rows |
+| Nose break | source **y=500** — leading edge steps -2/-3 px per row above it, -13/-14 below |
+| Body floor line | source **y 762-787** |
+| Cab window | top level with the hatch; bottom on the nose break; **front edge raked, rear edge vertical** |
+| Hatch | 640 wide, right edge on the **rear wheel centre** |
+| Wheels | solid, r=96; hollow hub r=42 (44% of wheel); ~13 units clear white between wheel and body |
+| Corner radius | 4 canvas units, shared by hatch and cab window |
+
+⚠️ The trap that cost three attempts — the tracer's morphological closing merging the wheels into the body — is recorded with the other silent-failure invariants in §35, not here.
+
+### Colour — the truck is `--head`, not `HEADER_BG`
+
+| Token | Hex | rgb | Luminance | Used by |
+|---|---|---|---|---|
+| `--head` | `#16314F` | (22, 49, 79) | 0.0293 | **the truck**, landing headings, light-variant wordmark |
+| `HEADER_BG` | `#0F172A` | (15, 23, 42) | 0.0088 | nav and footer bars, operator `AppHeader` |
+
+`HEADER_BG` is **70% darker** and much less blue (B channel 42 vs 79). These are two deliberate tokens, not a discrepancy. The truck uses `--head` because it sits in a white band whose headings and wordmark are `--head`; matching its immediate neighbours beats matching a bar several hundred pixels away that never shares a glance with it.
+
+🔴 **Never "fix" a landing colour by editing `HEADER_BG`.** It is shared with `AppHeader` on the live operator dashboard and manage pages. Repainting a trading operator's header to adjust an illustration is the wrong trade. Landing-local overrides only.
+
+## Tagline and brand voice (V9.9)
+
+⚠️ **There is no copy/voice section elsewhere in this manual, so brand copy is recorded here** rather than in a new section of its own.
+
+**Canonical wording — two lines, full stops:**
+
+> Less time booking.
+> More time cooking.
+
+Shipped in both slots as `Less time booking.<br />More time cooking.`
+
+- **H1** stays the descriptor — *"The ordering system built for food trucks."* First thing seen; states the category. *(Verified in code: the H1 is exactly this, with "food trucks." in the orange accent span.)*
+- **Hero subhead** and **footer** both carry the tagline, **identically**.
+
+**Why "Spend" was dropped.** The line works by antithesis — *Less* against *More* in matched clauses of identical shape. A leading verb breaks the parallel before it starts, and nothing is lost because the reader supplies it. With "Spend" it is a sentence; without, it is a slogan.
+
+**Why both slots use the same wording.** Two near-identical versions differing by one word is the weakest option: anyone who notices wonders which is the error, and anyone who does not gains nothing. Exact repetition is how a tagline becomes memorable — a refrain, not redundancy. Same principle as the two oranges in the Colours subsection above: a clear difference reads as intent, a near-miss reads as a mistake.
+
+⚠️ The hero subhead sets "cooking" in orange italic. The footer copy is deliberately plain — it is a sign-off, not a headline.
+
 ### Deploy state — end of session, NOT DEPLOYED
 
 **🔴 All six brand assets are `??` untracked.** `HEAD` still requests `/logos/hatchgrab.png`, a path that has never existed — so on any deployed build the QR poster 404s and falls back to text. That is the observed symptom and it needs no browser quirk to explain.
@@ -5051,4 +5131,6 @@ Several days of payments work and the whole of this branding arc are uncommitted
 
 **Never rendered — verify before trusting.** Most of this arc was carried by source reading, not observation. Confirmed live: the operator header (white variant correct on slate-900), `/login` (navy on white card), the landing nav and footer. **Not** confirmed: the QR poster with the new asset; `/setup`; `/reset-password`; the legal pages; the landing nav at exactly 640px, which is the tightest horizontal fit; any email. The 640px nav fit (~59px spare), the 60px bar height, the 273px name budget and the ~23-character overlap threshold are **all arithmetic**, with ±10-15% on any text-width estimate.
 
-HatchGrab Engineering Reference Manual · V9.8
+**Update, 31 July 2026 (V9.9).** The illustration and copy changes are **live-verified on the landing page**. Colour values were confirmed by measurement, not inspection. ⚠️ Everything above from the previous session remains as recorded — check whether the six brand assets and the wordmark work have been committed since. If `HEAD` still predates them, the branding and illustration arcs are now stacked in one working tree and the diff is getting harder to read with each pass.
+
+HatchGrab Engineering Reference Manual · V9.9

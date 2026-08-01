@@ -1,260 +1,210 @@
-# MANUAL UPDATE — V9.7 → V9.8 (BRANDING), INTEGRATED NOT APPENDED
+# MANUAL UPDATE — V9.8 → V9.9 (LANDING ILLUSTRATION + TAGLINE), INTEGRATED
 
-**Date:** 30 July 2026 · **Target:** `docs/reference-manual.md`
-**Source:** `~/Downloads/reference-manual-V9.8-branding.md` — **15,153 bytes, 285 lines**, UTF-8
-**Status: ✅ INTEGRATED. Version bumped V9.7 → V9.8. Only `docs/reference-manual.md` was edited.**
+**Date:** 31 July 2026 · **Target:** `docs/reference-manual.md`
+**Source:** `~/Downloads/reference-manual-V9.9-illustration.md` — **7,411 bytes, 143 lines**, UTF-8
+**Status: ✅ INTEGRATED. Version bumped V9.8 → V9.9. Only `docs/reference-manual.md` was edited.**
 No `next dev` / `next build` run. **The delta file was not deleted.**
 
-> This file replaces the previous manual-update report (V9.6 → V9.7). That content is not preserved anywhere.
+> This file replaces the previous manual-update report (V9.7 → V9.8). That content is not preserved anywhere.
 
 ---
 
-# ⚠️ TWO THINGS YOU SHOULD KNOW BEFORE THE DETAIL
+# ✅ INTEGRITY GATE — PASSED
 
-## 1. The delta was NOT at the repo root
+`file` → **`Unicode text, UTF-8 text`**. **143 lines, 7,411 bytes** — matches your stated figures exactly.
 
-You said *"The delta is at the repo root"*. **It is not — it is at
-`~/Downloads/reference-manual-V9.8-branding.md`**, the same folder every previous delta (v93, v94, v95,
-v96, v97) has arrived in. The repo root holds only `README.md`.
+## Full non-ASCII census
 
-**I did not STOP**, because your stop condition was *"if the file is not there"* — and the file plainly
-exists on disk, at the established location, 15,153 B / 285 lines, timestamped **today 22:54**. Reading it
-from `~/Downloads` is what every prior pass has done. **Flagging the path discrepancy rather than
-silently absorbing it.**
+| Codepoint | Char | Count | Name |
+|---|---|---|---|
+| U+2014 | `—` | 17 | EM DASH |
+| U+00A7 | `§` | 13 | SECTION SIGN |
+| U+26A0 | `⚠` | 3 | WARNING SIGN |
+| U+FE0F | *(invisible)* | 3 | VARIATION SELECTOR-16 |
+| U+1F534 | `🔴` | 3 | LARGE RED CIRCLE |
+| U+00B0 | `°` | 1 | DEGREE SIGN |
+| U+2192 | `→` | 1 | RIGHTWARDS ARROW |
+| U+2248 | `≈` | 1 | ALMOST EQUAL TO |
 
-## 2. 🔴 THE DELTA HAD ALREADY BEEN APPENDED TO THE MANUAL
+**U+FFFD replacement characters: 0.** **Mojibake markers (`Â` / `â` / `ð`): 0.**
 
-`docs/reference-manual.md` was modified at **22:55** — one minute after the delta was downloaded — and
-already ended with:
+## ⚠️ 8 codepoints, but that is EXACTLY your 7 expected characters — not an eighth
 
-```
-line 4903:  HatchGrab Engineering Reference Manual · V9.7   ← the version footer, stranded mid-file
-line 4905:  # REFERENCE MANUAL — V9.8 ADDENDUM: BRANDING
-   …
-line 5189:  (end)
-```
+You expected *"em dash, §, 🔴, ⚠️, →, °, ≈ — and nothing else."* The census shows **8 distinct
+codepoints**, and I want to be explicit about why that is not a discrepancy:
 
-**Lines 4905-5189 were a byte-identical copy of the delta** — I verified with `diff` before touching
-anything (`✅ IDENTICAL`). The version footer was left stranded 286 lines from the end.
+🔴 **`⚠️` is a two-codepoint sequence** — U+26A0 WARNING SIGN followed by U+FE0F VARIATION SELECTOR-16,
+which is what promotes it from the monochrome `⚠` glyph to the emoji presentation. **Both appear exactly
+3 times, i.e. perfectly paired.** U+FE0F is a component of the character you listed, not an extra one.
 
-**So the manual already contained exactly what you asked me not to do: an append.** Integrating without
-removing it would have put every fact in the manual twice.
-
-**What I did:** removed the raw appended block and distributed its content properly. This was safe because
-(a) I diffed it first and confirmed nothing unique would be lost, (b) `HEAD` already contains the manual
-at V9.7 so the pre-append state is recoverable from git, and (c) I took a byte-exact backup to
-`…/scratchpad/reference-manual.BACKUP.md` (944,204 B) before the first edit.
-
----
-
-# ✅ INTEGRITY CHECK — PASSED
-
-`file` reports **`Unicode text, UTF-8 text`**. **Zero U+FFFD replacement characters. Zero mojibake
-markers** (`Â§` / `â€` / `ð\x9f`).
-
-## Quoted back, as requested
-
-**§38 through §42 — all five present and rendering:**
-
-```
- 10:  ## §38 BRAND ASSETS
-106:  ## §39 WHERE THE BRAND RENDERS
-168:  ## §40 HARD-WON LESSONS
-233:  ## §41 BACKLOG — added V9.8
-266:  ## §42 STATE AT END OF SESSION — NOT DEPLOYED
-```
-
-**Em dashes — 37 occurrences, rendering correctly:**
-> *"Source of truth is a Gemini-generated raster the founder produced, which is a **photograph of a
-> logo** — ink on textured paper, drop shadow, soft glow, baked-in caption."*
-
-**🔴 — 4 occurrences, rendering correctly:**
-> *"**🔴 The AppHeader logo width and the centre reservation must move in lockstep.**"*
-
-## ⚠️ TWO OF THE FOUR ARE **ABSENT**, NOT GARBLED — the distinction matters
-
-| Glyph | Count | Verdict |
-|---|---|---|
-| **⚠️** | **0** | 🔴 **The delta does not use this emoji at all.** |
-| **£** | **0** | Not present — and you wrote *"the £ sign **if present**"*, so this is expected |
-
-**I did not treat either as corruption, and here is the proof rather than the assertion.** A full
-character census of every non-ASCII codepoint in the file:
-
-| Codepoint | Char | Count |
-|---|---|---|
-| U+2014 | `—` em dash | 37 |
-| U+00A7 | `§` | 20 |
-| U+00D7 | `×` | 13 |
-| U+2192 | `→` | 5 |
-| U+1F534 | `🔴` | 4 |
-| U+00B0 | `°` | 3 |
-| U+00B7 | `·` | 2 |
-| U+00B1 | `±` | 2 |
-| U+2013 | `–` en dash | 1 |
-| U+2264 | `≤` | 1 |
-
-**That is a clean, coherent set with no corruption products in it.** A mojibake'd `⚠️` would appear as
-`â ï¸` and a lost one as `�` — **neither appears anywhere.** The file simply never uses it. **So I
-proceeded.**
+**Every other codepoint maps 1:1 to your list. No corruption product, no unexpected character. Gate
+passed, so I proceeded.**
 
 ---
 
 # SECTIONS TOUCHED, WITH LINE RANGES
 
-Final manual: **5,054 lines** (was 5,189 with the raw append; 4,903 with it removed → **+151 lines of
-integrated content**). **38 top-level headings** (was 37).
+Final manual: **5,137 lines** (was 5,054 → **+83 lines**). **38 top-level headings, unchanged** — no new
+section was created, exactly as you asked.
 
 | # | Section | Lines (final) | What went in |
 |---|---|---|---|
-| **1** | **Title, line 1** | `1` | `· V9.7` → **`· V9.8`** |
-| **2** | **§27 Open backlog** | **3754-3766** | New `## 🔴 V9.8 — added 30 July 2026 (branding)` block at the **top**, above the existing V9.7 block — **11 items**, delta §41 |
-| **3** | **§35 Cross-cutting engineering invariants** | **4795-4807** | **6 invariants** appended at the end of §35, immediately before `# 36.` — delta §40 |
-| **4** | **§38 (NEW)** — *Brand system — assets, colours, construction (V9.8)* | **4933-5052** | delta §38 + §39 + §42 |
-| **5** | **Footer, last line** | `5054` | `· V9.7` → **`· V9.8`**, and restored to the end of the file |
+| **1** | **Title, line 1** | `1` | `· V9.8` → **`· V9.9`** |
+| **2** | **§27 Open backlog** | **3754-3761** | New `## 🔴 V9.9 — added 31 July 2026 (landing illustration)` block at the **top**, above V9.8 — **2 items** (see the merge below) |
+| **3** | **§27 V9.8 block** | **3765** | The existing CTA-contrast bullet **annotated**, not duplicated — see MERGES |
+| **4** | **§35 Cross-cutting engineering invariants** | **4817-4820** | delta §43.4 — the morphological-closing trap + the erase-without-enumerating bug, appended after the `.hg-landing` lesson, before `# 36.` |
+| **5** | **§38 heading** | **4945** | `(V9.8)` → **`(V9.8, extended V9.9)`** so the section records that it grew |
+| **6** | **§38 → `## The landing illustration (V9.9)`** | **5058-5104** | delta §43.1, §43.2, §43.3, §43.5 |
+| **7** | **§38 → `## Tagline and brand voice (V9.9)`** | **5106-5125** | delta §44 |
+| **8** | **§38 → `### Deploy state`** | **5133** | delta §46, appended as a dated **"Update, 31 July 2026 (V9.9)"** paragraph inside the existing block |
+| **9** | **Footer, last line** | `5137` | `· V9.8` → **`· V9.9`** |
 
-✅ `grep -c "· V9.8"` → **2** · `grep -c "· V9.7"` → **0** · `grep -c "REFERENCE MANUAL — V9.8 ADDENDUM"` → **0**
+✅ `grep -c "· V9.9"` → **2** · `grep -c "· V9.8"` → **0** · `grep -c "V9.9 ADDENDUM"` → **0** (nothing appended raw)
 
-## §35 — what was already there (you asked me to check first)
+## Where §43.1-§43.3 and §43.5 went, as you asked me to report
 
-**§35 is exactly the right home.** Its own preamble says: *"Lessons that belong to no single subsystem…
-these are engineering invariants that cost real time."* Existing entries include the `position: fixed`
-inside a transformed ancestor trap and the `maxDuration` route lesson — **same kind, same register.**
+**Into §38 as a `## The landing illustration (V9.9)` subsection**, sitting after the icon material and
+**before** the deploy-state block — i.e. a continuation of the existing brand section, not a new section.
+Its sub-headings (`### What it replaced, and why`, `### Shipped files`, `### How it was made`,
+`### Colour — the truck is --head, not HEADER_BG`) match §38's existing prose-heading style rather than
+the delta's `§43.x` numbering.
 
-**None of the delta's §40 lessons were already present** — I grepped §35's range for `hg-landing`,
-`revokeObjectURL`, `width and NO height`, `dangerouslyAllowSVG`, `minSdkVersion` and `@capacitor/assets`:
-**zero hits.** So all six went in as new material, no merge needed.
+## Where §44 went — and the answer to your conditional
 
-**Format matched exactly:** §35 uses `**Bold lead sentence.** explanatory prose` paragraphs with no
-sub-headings, and `>` blockquotes for a secondary instance of the same class. **I used both** — the
-`revokeObjectURL` hazard is a blockquote under the canvas lesson, mirroring how §35's existing
-`position: fixed` entry carries its "second instance" note.
+🔴 **There is no copy / voice / tone / wording section in the manual.** I searched headings for *copy,
+voice, tone, wording, microcopy, language, tagline, slogan*: the only near-miss is
+`## Platform compliance and tone` (line 3342), which is about **regulatory tone in customer-facing
+compliance text**, not brand copy — putting a tagline there would misfile it.
 
-## §27 — format matched, no second backlog created
+**So, per your instruction, it went into the brand section (§38) rather than inventing a home**, as
+`## Tagline and brand voice (V9.9)`, with a note at the top recording *why* it lives there so the next
+reader does not think it was misplaced.
 
-The existing convention is `## 🔴 V9.7 — added 30 July 2026` → `### Found, reported, not fixed` →
-`- **Bold lead.** detail`, newest first. **The V9.8 block follows it exactly and sits above V9.7.** The
-delta's numbered list was converted to `-` bullets to match; **no wording changed.** ✅ 11 items in, 11
-items out.
+## Where §46 went
 
-## The new section number is **38**
-
-The manual's highest was **37** (`Payments — commercial model and architecture decisions (V9.4)`), so the
-next free number is **38** — which happens to coincide with the delta's own `§38`, so its internal
-cross-references still read naturally.
-
-⚠️ **Note: `29` is a gap in the manual** — it runs `28 → 30`. I used **38, the next after the highest**,
-as you specified, and did **not** backfill 29.
-
-## Delta §42 — placed in the new §38, not invented a home for
-
-You said *"put it wherever the manual records current state, or if there is no such place, tell me."*
-
-**The manual does have such a place: `### Deploy state` sub-blocks** — four precedents at lines 523, 598,
-676 and 772. ⚠️ **But every one of them lives inside a Changelog version entry, and there is no V9.8
-changelog entry** — the delta supplies no changelog prose and you did not ask me to write one.
-
-**So I used the convention without inventing a container:** delta §42 is the closing subsection of the new
-§38, headed **`### Deploy state — end of session, NOT DEPLOYED`**, matching the existing heading style.
-**If you would rather it lived in a proper V9.8 Changelog entry, that is a one-block move — say so and
-I'll do it.**
+**Appended to §38's existing `### Deploy state — end of session, NOT DEPLOYED` block** as a dated update
+paragraph — the same treatment V9.8's snapshot received, so the two sit together and the older one is not
+overwritten.
 
 ---
 
-# 🔴 CONTRADICTIONS — TWO FOUND. I CHANGED NEITHER. YOU DECIDE.
+# 🔴 CONTRADICTION — ONE FOUND. I CHANGED NOTHING. YOU DECIDE.
 
-## Contradiction 1 — the delta is wrong about `HEAD`'s manual version
+## The delta's canonical tagline does not match the shipped code
 
-| Source | Claim |
+| Source | Says |
 |---|---|
-| **Delta §42** | *"`HEAD` remains at manual **V9.5** with the V9.6/V9.7 passes … uncommitted on top."* |
-| **The tree** | `git show HEAD:docs/reference-manual.md \| head -1` → **`HatchGrab Engineering Reference Manual · V9.7`** |
+| **Delta §44** | Canonical wording: *"Less time booking**,** more time cooking."* — and, explicitly: **"Comma, not full stops.** One balanced phrase; full stops chop it into fragments and lose the swing." |
+| **The code, both slots** | `Less time booking.<br />More time cooking.` — **full stops, split across two lines** ([page.tsx:148](app/landing/page.tsx#L148) hero, [:464](app/landing/page.tsx#L464) footer) |
 
-**I think the tree is right and the delta is stale.** `HEAD` demonstrably contains V9.7; the V9.6 and V9.7
-manual passes **have been committed** since that claim was written. The delta's underlying point — that a
-lot of work is uncommitted — still holds for the *code*, so I kept that sentence and **removed only the
-"remains at manual V9.5" clause**, which is falsifiable and false.
+**I think the CODE is right and the delta's punctuation paragraph is stale.** The two-line, full-stop form
+exists because of an explicit instruction in this session to put *"each sentence on its own line"* — a
+later and more specific decision than the delta's prose. The delta appears to have been written against
+the intended wording rather than the shipped one.
 
-⚠️ **This is the one place I altered the delta's technical content**, and I am flagging it rather than
-burying it. The integrated text now reads *"Several days of payments work and the whole of this branding
-arc are uncommitted"* — true, and no longer asserts a version I can disprove.
+**What I did:** recorded §44's reasoning verbatim — including the "Comma, not full stops" paragraph — and
+**immediately beneath it added a marked, unresolved note** quoting what actually ships, so the manual does
+not silently assert something the code contradicts. **Neither the code nor the delta's wording was
+changed.** Resolving it is a one-line edit in either direction:
 
-## Contradiction 2 — `@1x` PNG height
+- **keep the code** → delete that paragraph from §38's tagline subsection, or
+- **keep the delta** → change both slots to `Less time booking, more time cooking.` on one line.
 
-| Source | Claim | Measured on disk |
-|---|---|---|
-| **Delta §38.3** | `logos/hatchgrab-logo@1x.png` / `-white@1x.png` — **320 × 71** | **320 × 70** (both files, via `sips`) |
+## ✅ Everything else in the delta verified TRUE against the code
 
-**I think the delta is right to one pixel and the file is right in fact.** 320 ÷ 4.548 = **70.36**, so 70
-is the correct rounding and 71 is a rounding-up. **I left the delta's `320 × 71` verbatim**, per your
-instruction not to reword technical content — **but the shipped files are 320 × 70.** One of the two
-should change; **your call.**
-
-## Everything else verified TRUE against disk
-
-| Delta claim | Measured |
+| Delta claim | Check |
 |---|---|
-| `favicon.ico` 1719 B | ✅ 1,719 B |
-| `apple-touch-icon.png` 180 × 180, 2066 B | ✅ 180 × 180, 2,066 B |
-| replaced a 7,954,151 B 2528 × 1696 file | ✅ matches the audited original |
-| `icons/icon-192.png` | ✅ 192 × 192, 2,337 B |
-| `icons/icon-512.png` | ✅ 512 × 512, 7,141 B |
-| `icons/icon-512-maskable.png` | ✅ 512 × 512, 5,832 B |
-| `icons/hatchgrab-icon.svg` | ✅ present, 297 B |
-| `hatchgrab-logo.png` 640 × 141 | ✅ 640 × 141 |
-| all six brand assets `??` untracked | ✅ confirmed via `git status --porcelain` |
+| H1 stays *"The ordering system built for food trucks."* | ✅ [page.tsx:147](app/landing/page.tsx#L147) — exactly that, with "food trucks." in the accent span |
+| Hero subhead **and** footer both carry the tagline | ✅ both present, wording identical to each other |
+| Hero sets "cooking" in orange; footer is plain | ✅ hero has `<span className="lean">cooking.</span>`, footer does not |
+| `food-truck-themed.svg` is the one inlined | ✅ inline in `page.tsx`; the plain file is unreferenced |
+| Old fills were `#EA580C` | ✅ matches the audit; the code is now gone |
+
+⚠️ **One stale detail preserved verbatim, with a note.** §43.1 cites `app/landing/page.tsx:389` and `:393`
+for the old hardcoded fills. Those were the line numbers at audit time; the block had drifted to ~410/414
+by the time it was replaced. **I kept the numbers as written** (you asked for verbatim preservation) and
+added *"(Those line numbers are historical — the block had shifted by the time it was replaced, and the
+code is now gone.)"* so nobody hunts for them.
 
 ---
 
 # MERGES
 
-**None were needed.** I checked for duplication before inserting:
+## 1. The landing CTA contrast item — merged, not repeated
 
-- **§35** — grepped its range for all six lesson topics: **zero pre-existing hits.** All new.
-- **§27** — the eleven V9.8 items are all first-time entries; none restates a V9.4-V9.7 backlog item.
-- **§38** — brand asset facts, the colour system, measured construction and the sizing table had **no
-  existing home anywhere in the manual**, which is why you asked for a new section.
+Delta §45.1 re-reports it as *"unchanged and still open"*. **It is already recorded** in §27's V9.8 block.
+Rather than carry the same item in two adjacent backlog blocks, I **annotated the existing V9.8 bullet**:
 
-The only *content* change of any kind is the single clause removed under Contradiction 1.
+> *"…Fixable on that button alone without touching the token or the logo. **Still open at V9.9** —
+> re-reported in that session and merged here rather than duplicated."*
+
+and left a pointer in the V9.9 block:
+
+> *"(The landing CTA contrast item is NOT repeated here — it is recorded once in the V9.8 block below and
+> annotated as still open.)"*
+
+**So the V9.9 backlog block carries only the 2 genuinely new items**, and the 2.50:1 figure appears in
+exactly one backlog entry.
+
+## 2. The morphological-closing trap — cross-referenced, not duplicated
+
+§43.4 is engineering, so it went to §35. **§38's illustration subsection therefore carries a pointer
+instead of a copy:** *"⚠️ The trap that cost three attempts … is recorded with the other silent-failure
+invariants in §35, not here."* The §35 entry in turn closes by naming the class it shares with the
+V9.8 `.hg-landing` lesson directly above it: *"a silent failure that reports clean."*
 
 ---
 
-# VERBATIM PRESERVATION — VERIFIED BY COUNT
+# ✅ CROSS-REFERENCES — BOTH WERE BROKEN, BOTH CORRECTED
 
-Every value you named survives, checked with fixed-string `grep -cF` after the edits:
+You asked me to check the `§38.4` pointer. **It did not resolve — and neither did a second one.**
 
-| Value | Occurrences |
+| Delta pointer | Problem | Corrected to |
+|---|---|---|
+| **§44 → "the two oranges in §38.4"** | 🔴 **§38 has no numbered subsections.** The V9.8 integration used prose headings, so the two-oranges note lives in **§38 → `## Colours`** (line 4984). `§38.4` resolves to nothing | *"the two oranges in the Colours subsection above"* |
+| **§45.1 → "(see §41.4)"** | 🔴 **§41 does not exist in the manual at all.** The manual has 38 sections; §41 was the delta's own invented numbering from V9.8. The CTA item lives in **§27's V9.8 block** | Replaced by the merge note pointing at the V9.8 block |
+
+✅ `grep -c "§38.4"` → **0** · `grep -c "§41.4"` → **0**. **Neither dangling pointer survives.**
+
+---
+
+# VERBATIM PRESERVATION — VERIFIED BY FIXED-STRING COUNT
+
+| Value | Count |
 |---|---|
-| `4.548:1` | 2 |
-| `viewBox="21 39 1287 283"` | 1 |
-| `104.4°` | 1 |
-| `M0.3014 0 L0 0.5625 H0.185 L0.0814 1 L0.3828 0.40625 H0.1978 Z` | 1 |
-| `#EF8B2C` · `#EA580C` · `#0F172A` · `#16314F` · `#E76F51` | 5 · 5 · 4 · 2 · 2 |
-| `95.97% IoU` · `0.3700` | 1 · 1 |
-| `2.50:1` · `3.56:1` · `7.14:1` · `5.29:1` · `1.45:1` | 2 · 2 · 1 · 1 · 1 |
-| `7,954,151` · `184,671` · `3,856,486` | 1 · 1 · 1 |
-| `generateQRCode.ts:203` · `email-config.ts:12` · `lib/brand.ts:11` · `app/layout.tsx:20` · `globals.css:9` | 1 · 1 · 1 · 2 · 2 |
+| `-0.299` | 1 |
+| `16.7°` | 1 |
+| `y=500` | 1 |
+| `y 762-787` | 2 |
+| `viewBox="24.0 18.0 351.5 176.0"` | 1 |
+| `1.997:1` | 1 |
+| `0.0293` · `0.0088` | 1 · 1 |
+| `2.50:1` | 2 |
+| `#16314F` · `#0F172A` · `#EF8B2C` · `#EA580C` | 4 · 5 · 7 · 6 |
+| `public/illustrations/food-truck-themed.svg` · `food-truck.svg` | 1 · 2 |
+| `x 634-667, y 310-760` · `x 878-962, y 492-548` · `y=198` | 1 · 1 · 1 |
+| `y=787` · `y≈831` · `x 180-684` · `85-746` | 1 · 1 · 1 · 1 |
 
-Also preserved verbatim: the icon scale factors (0.70 / 0.52 / 0.46), the 2814 × 1536 source dimensions,
-3231 oranges / 926 greys, 95.8% ink fill, 13.2% / 6.8% padding, 138 / 80 / 92 orange-ramp usage counts,
-228 orange-600 uses, the 273px budget, ~143px bar threshold, and the ±18–26px / ±10-15% error bands.
+Also preserved verbatim: the wheel constants (r=96, hub r=42, 44%, ~13 units), the 640-wide hatch, the
+4-unit corner radius, the 13-subpath / 50-unit / 8-unit scan figures, `MORPH_CLOSE` 5x5 at 2x, rows
+205/215/560/770, and the rgb triples (22, 49, 79) and (15, 23, 42).
 
 ---
 
 ## What I could NOT verify
 
 - **The manual has not been rendered.** Structure is verified by heading counts, line ranges and
-  fixed-string greps — **not by viewing it.** If a table or code fence renders wrong, I would not have
-  seen it.
-- 🔴 **I did not proofread the delta's technical content for accuracy**, beyond the nine asset facts I
-  could measure on disk and the two contradictions above. Claims like the **95.97% IoU** registration, the
-  **104.4°** stem angle, the luminance figures and every contrast ratio are **carried through verbatim on
-  the delta's authority** — I did not recompute any of them.
-- **`favicon.ico` "16/32/48"** could not be confirmed — `sips` reports only the largest frame (48 × 48).
-  The multi-resolution claim is plausible and unverified.
-- ⚠️ **The removed append is recoverable but only from two places:** `git` (HEAD has V9.7) and my
-  scratchpad backup. **The scratchpad is session-scoped** — if you want a durable copy of the pre-edit
-  manual, commit before the next change.
-- **I did not check whether §38's content duplicates anything in §36 (Android) or §37 (Payments)** beyond
-  the six §40 topics I grepped for in §35. The icon/`minSdkVersion` material in particular is adjacent to
-  §36's Android notes — **worth a look if §36 later grows an icon subsection.**
+  fixed-string greps — not by viewing it. A malformed table would not have been caught.
+- 🔴 **I did not verify the delta's measured constants.** The rake `-0.299`, the nose break at `y=500`,
+  the luminance figures `0.0293` / `0.0088`, the 70%-darker claim and the trace geometry are **carried
+  through on the delta's authority** — I recomputed none of them. What I *did* check is everything
+  observable in the code: the H1, both tagline slots, which SVG is inlined, and that the old `#EA580C`
+  fills are gone.
+- **The "70% darker" figure is the delta's**, and I note it sits alongside luminances of 0.0293 and
+  0.0088 — a ratio of ~3.3×, i.e. ~70% lower. Consistent, but I did not audit the wording.
+- **I did not check whether §38's illustration material duplicates anything in §35 or §36** beyond the
+  §43.4 content I deliberately routed to §35.
+- ⚠️ **The pre-edit manual is recoverable from `git` only if V9.8 was committed.** `HEAD` held V9.7 at the
+  last check and V9.8 was uncommitted, so **this edit is now stacked on top of an uncommitted V9.8** —
+  which is precisely the risk delta §46 raises about the diff getting harder to read. **Committing before
+  the next pass would make the next one much safer.**

@@ -145,7 +145,7 @@ export default function LandingPage() {
         <div className="wrap hero-grid">
           <div>
             <h1>The ordering system built for <span className="lean">food trucks.</span></h1>
-            <p className="hero-tag">Spend less time booking.<br />More time <span className="lean">cooking.</span></p>
+            <p className="hero-tag">Less time booking.<br />More time <span className="lean">cooking.</span></p>
             {/* CTA row: button LEFT + text RIGHT on desktop (≥940px); stacked, full-width button + centred text on mobile. */}
             <div className="hero-cta-row">
               <DemoCta className="btn btn-primary btn-lg">Upload my menu →</DemoCta>
@@ -405,19 +405,31 @@ export default function LandingPage() {
       {/* ============ FINAL CTA ============ */}
       <section id="try">
         <div className="wrap final">
-          <svg className="truck" viewBox="0 0 260 132" aria-hidden="true">
-            <rect x="22" y="42" width="144" height="52" rx="4" fill="#16314F" />
-            <rect x="18" y="34" width="152" height="9" rx="3" fill="#EA580C" />
-            <path d="M166 42 h20 l11 7 l15 17 v28 h-46 z" fill="#16314F" />
-            <path d="M172 49 h13 l8 5 l10 12 h-31 z" fill="#F5F8FB" />
-            <rect x="44" y="52" width="76" height="28" rx="2" fill="#FFFFFF" />
-            <rect x="40" y="81" width="84" height="4" rx="2" fill="#EA580C" />
-            <circle cx="62" cy="100" r="13" fill="#16314F" /><circle cx="62" cy="100" r="4.5" fill="#F5F8FB" />
-            <circle cx="186" cy="100" r="13" fill="#16314F" /><circle cx="186" cy="100" r="4.5" fill="#F5F8FB" />
-            <path d="M10 114 H250" stroke="#DDE5EE" strokeWidth="3" strokeLinecap="round" />
+          {/* Truck illustration — inlined VERBATIM from public/illustrations/food-truck-themed.svg.
+              🔴 THEMED, NOT LITERAL: fills are var(--head, #16314F) and var(--orange, #EF8B2C), so this
+              tracks landing.css's tokens instead of drifting. The block this replaced carried two
+              hardcoded fills in the app's ACTION orange (Tailwind orange-600) rather than the brand
+              orange — exactly the drift being removed. Do not reintroduce a literal hex here.
+              (The literal is deliberately NOT written out above, so a grep for it stays clean.)
+              ⚠️ className="truck" is what sizes it (.hg-landing .truck { width: min(230px,60%); height: auto }),
+              so it must stay on the <svg>; there are deliberately NO width/height attributes to fight it.
+              The standalone public/illustrations/food-truck.svg (plain hex) is the spare for <img> use. */}
+          <svg className="truck" viewBox="24.0 18.0 351.5 176.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Food truck">
+            <g transform="translate(399.5,0) scale(-1,1)">
+              <path d="M30.0 121.2 L30.0 159.3 L31.2 161.7 L35.5 165.3 L364.6 165.3 L368.2 162.4 L369.9 159.3 L369.9 30.0 L368.9 27.8 L367.2 25.9 L365.3 24.7 L362.7 24.0 L96.8 24.2 L93.4 25.9 L90.5 30.2 L74.4 85.0 L73.2 90.4 L71.3 95.4 L69.7 97.0 L36.7 111.9 L32.6 115.5 Z" fill="var(--head, #16314F)"/>
+              <circle cx="95.1" cy="165.4" r="29.3" fill="#FFFFFF"/>
+              <circle cx="316.2" cy="165.4" r="29.3" fill="#FFFFFF"/>
+              <circle cx="95.1" cy="165.4" r="23.1" fill="var(--head, #16314F)"/>
+              <circle cx="316.2" cy="165.4" r="23.1" fill="var(--head, #16314F)"/>
+              <circle cx="95.1" cy="165.4" r="10.1" fill="#FFFFFF"/>
+              <circle cx="316.2" cy="165.4" r="10.1" fill="#FFFFFF"/>
+              <path d="M102.52 48.49 L139.33 48.49 Q143.33 48.49 143.33 52.49 L143.33 92.51 Q143.33 96.51 139.33 96.51 L88.16 96.51 Q84.16 96.51 85.31 92.68 L97.37 52.32 Q98.52 48.49 102.52 48.49 Z" fill="#FFFFFF"/>
+              <rect x="162.5" y="48.5" width="153.7" height="61.2" rx="4.0" fill="#FFFFFF"/>
+              <rect x="162.5" y="110.7" width="153.7" height="6.2" rx="4.0" fill="var(--orange, #EF8B2C)"/>
+            </g>
           </svg>
           <h2>Want to see how easy setup is?</h2>
-          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in about 30 seconds — your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
+          <p className="lede">Upload a photo or screenshot of your menu and we’ll turn it into a working ordering page for you to have a play around with in under 60 seconds — your items, your prices. No sign-up, no card, nothing to install. Have a look, then decide.</p>
           {/* This section keeps its heading + copy; its button opens the SAME modal every other CTA on
               the page opens. `#try` remains a valid anchor target (the return-link bounce uses it), but
               nothing scrolls here to reach the upload any more. No ✨ on page CTAs — the sparkle is the
@@ -446,7 +458,10 @@ export default function LandingPage() {
                   ⚠️ Desktop is untouched: above 720px no rule matches, so the wordmark keeps margin:0 and
                   stays left in its space-between column. */}
               <HatchGrabWordmark variant="dark" className="block foot-logo" />
-              <p className="foot-tag">The ordering system built for food trucks.</p>
+              {/* Same slogan and same line break as the hero tagline (:148), so the two agree.
+                  ⚠️ Deliberately WITHOUT the hero's `.lean` orange accent on "cooking." — the footer tag
+                  is muted #8A93A6 by design and an orange word here was not asked for. */}
+              <p className="foot-tag">Less time booking.<br />More time cooking.</p>
             </div>
             <div className="foot-links">
               <a href="#pricing">Pricing</a>

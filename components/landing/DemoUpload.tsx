@@ -293,7 +293,7 @@ export function DemoModal() {
             // built and shown immediately, so promising a review step would be a promise we don't keep.
             <p className="text-slate-600 text-sm text-center">
               A photo of your menu board, a screenshot, a PDF, or paste it as text. Our AI reads it and
-              builds you a working ordering page — your items, your prices — in about 30 seconds. No
+              builds you a working ordering page — your items, your prices — in under 60 seconds. No
               sign-up, no card.
             </p>
           )}
@@ -317,7 +317,7 @@ export function DemoModal() {
                   <span key={s.at} className={`w-7 h-1 rounded-full transition-colors ${i <= stepIdx ? 'bg-[var(--orange)]' : 'bg-slate-200'}`} />
                 ))}
               </div>
-              <p className="text-slate-500 text-xs">This usually takes about 30 seconds.</p>
+              <p className="text-slate-500 text-xs">This usually takes under 60 seconds.</p>
 
               {/* 60s NON-BLOCKING reassurance. The in-flight /api/demo request is UNTOUCHED — "Keep waiting"
                   (the PRIMARY action) only dismisses this message; there is no cancel. At 90s (sampleOffer)
