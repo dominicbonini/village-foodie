@@ -20,6 +20,7 @@ import { loadPriceBook, repriceOrder, toMinor } from '@/lib/order-repricing'
 import { recordCollectionPayment, reverseCollectionPayment } from '@/lib/payments/ledger'
 import { resolveActorSafe, resolveActorSource } from '@/lib/audit/actor'
 import { resolvePaidStep } from '@/lib/payments/paid-step'
+import { assignBuzzer } from '@/lib/buzzer'
 import { logAction, logActionOrThrow } from '@/lib/audit/actionAudit'
 import type { DiscountCode } from '@/lib/order-calculations'
 import { validateModifierSelection, hasUnsatisfiableRequiredGroup } from '@/lib/modifier-rules'
@@ -1050,6 +1051,23 @@ export async function POST(req: NextRequest) {
           capacity_ack_at: manualOrder?.capacityAcknowledged === true ? new Date().toISOString() : null,
           notes: notes || null, status: 'confirmed',
           payment_status: 'unpaid',
+          // ── placed_at — THE MOMENT OF SALE, CLIENT-MINTED ────────────────────────────────────────
+          // ⚠️ This one IS taken from the client, unlike capacity_ack_at directly above, and the
+          // difference is deliberate. capacity_ack_at records a decision the SERVER witnessed, so a
+          // client-supplied time there could be backdated to disguise an override. placed_at records
+          // when the operator physically took the order, which for an offline walk-up the server never
+          // saw and CANNOT reconstruct — created_at will be the sync time, possibly hours later.
+          // The client is the only witness, so it is the only possible source.
+          // Null-safe: an old client that does not send it leaves the column null, which every reader
+          // treats as unknown and falls back to created_at.
+          placed_at: typeof manualOrder?.placedAt === 'string' && manualOrder.placedAt ? manualOrder.placedAt : null,
+          // Buzzer chosen DURING order entry (the Add Order grid button). Written straight onto the
+          // insert so the number is on the row from the first read. When it collides with another
+          // order the operator has already confirmed the take in the grid; the clear happens in the
+          // assignBuzzer call below, which cannot run until this row exists.
+          buzzer_number: Number.isInteger(manualOrder?.buzzerNumber) && manualOrder.buzzerNumber >= 1
+            ? manualOrder.buzzerNumber
+            : null,
         }
         if (clientOrderKey) insertPayload.order_key = clientOrderKey
         let manualOrderRow: { order_key: string } | null = null
@@ -1087,6 +1105,28 @@ export async function POST(req: NextRequest) {
               const { data: tr } = await supabase.from('trucks').select('order_counter').eq('id', truck.id).maybeSingle()
               if (tr && provNum > ((tr as { order_counter?: number }).order_counter ?? 0)) await supabase.from('trucks').update({ order_counter: provNum }).eq('id', truck.id)
             }
+          }
+        }
+
+        // (c3) BUZZER TAKEN FROM ANOTHER ORDER. The number is already ON the new row (it went in with
+        //      the insert), so this call exists only to CLEAR it from whichever other order in this
+        //      event was still holding it — the operator confirmed that take in the grid before
+        //      submitting. assignBuzzer re-writes the same number onto this row too, which is a no-op.
+        //      ⚠️ Best-effort: the ORDER IS ALREADY CREATED and must stay created. Fail-open here
+        //      matches the ledger write at the foot of this handler (:1189-1191) — the worst case is
+        //      one number appearing on two cards until an operator re-assigns, which is visible and
+        //      fixable, whereas refusing the order strands someone at the hatch.
+        //      ⚠️ PHASE 2 replaces the two-statement assignBuzzer with an RPC (see lib/buzzer.ts).
+        if (insertPayload.buzzer_number != null && manualOrderKey) {
+          try {
+            await assignBuzzer(supabase, {
+              truckId: truck.id,
+              eventId: orderEventId,
+              orderKey: manualOrderKey,
+              buzzerNumber: insertPayload.buzzer_number as number,
+            })
+          } catch (err) {
+            console.error(`[manual] buzzer assign failed for order_key=${manualOrderKey} — the ORDER WAS STILL CREATED and carries the number; another order may still show it until re-assigned:`, err)
           }
         }
 
@@ -1514,6 +1554,72 @@ export async function POST(req: NextRequest) {
       // `error` unset means the write committed; a missing row is not a failed write and must never be
       // reported as one. The client falls back to its refetch.
       return NextResponse.json({ success: true, event: rows?.[0] ?? null })
+    }
+
+    // ── set_buzzer_prompt_override ── EVENT-scoped (truck_events), mirrors the two payment overrides.
+    // 🔴 Writes truck_events ONLY. The VAN default (truck_vans.buzzer_count) is owned by Manage →
+    // Settings and the dashboard must never write it — this toggle governs the after-order PROMPT for
+    // one event, not whether the van carries buzzers at all.
+    // Writes a concrete true/false; NULL (inherit) is only ever the absence of a write. Nothing seeds
+    // this column onto new events, so an override expires by itself — the paid-step model, and the
+    // reasoning is recorded at lib/payments/paid-step.ts:18-34.
+    if (action === 'set_buzzer_prompt_override') {
+      const { value, eventId } = body
+      if (!eventId) return NextResponse.json({ error: 'Missing eventId' }, { status: 400 })
+      // Server-confirmed update — same contract as set_show_paid_step_override above; the reasoning for
+      // select('*'), the absent .single() and the row-absent-is-still-success rule is recorded there.
+      const { data: rows, error } = await supabase.from('truck_events')
+        .update({ buzzer_prompt: !!value }).eq('id', eventId).eq('truck_id', truck.id)
+        .select('*')
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true, event: rows?.[0] ?? null })
+    }
+
+    // ── set_buzzer ── ASSIGN / CLEAR A PHYSICAL BUZZER NUMBER ────────────────────────────────────
+    // 🔴 THIS IS DELIBERATELY NOT THE `edit` ACTION, AND MUST NEVER BE ROUTED THROUGH IT.
+    // `edit` forces status:'modified' (:675), re-books production slot capacity (:686-708) and emails
+    // the customer that their order changed (:710-748). Handing someone a pager is none of those
+    // things: the order has not changed, the kitchen load has not changed, and a customer receiving
+    // "your order has been updated" because a buzzer was assigned would be a support ticket.
+    // This handler writes `buzzer_number` and NOTHING else. No status, no timestamps, no email, no
+    // capacity rebuild. (orders_set_updated_at still bumps updated_at — required, so the client merge
+    // at lib/orders/mergeOrders.ts accepts the read that carries the new number.)
+    //
+    // ⚠️ TWO-ROW WRITE, NOT YET ATOMIC — PHASE 2 REPLACES THIS WITH AN RPC. Taking a buzzer from
+    // another order is two sequential statements inside assignBuzzer (lib/buzzer.ts). The clear runs
+    // first on purpose; the ordering argument and the phase-2 plan are written up there.
+    //
+    // Uniqueness per (event, buzzer) is an APPLICATION invariant enforced here and pre-warned in the
+    // grid — there is deliberately no unique index, because the confirmed take-it path would then 500
+    // at the hatch. See supabase/migrations/20260803_orders_buzzer_number_placed_at.sql.
+    if (action === 'set_buzzer') {
+      if (!orderKey) return NextResponse.json({ error: 'Missing order_key' }, { status: 400 })
+      const raw = body.buzzerNumber
+      // null / '' / undefined ⇒ CLEAR. Anything else must be a positive integer.
+      const buzzerNumber: number | null =
+        raw === null || raw === undefined || raw === '' ? null : Number(raw)
+      if (buzzerNumber !== null && (!Number.isInteger(buzzerNumber) || buzzerNumber < 1)) {
+        return NextResponse.json({ error: 'Invalid buzzer number' }, { status: 400 })
+      }
+      // The order's OWN event scopes the clear — never a client-supplied event id, so a stale or
+      // hostile client cannot free a buzzer on some other event.
+      // Only event_id is read. Status is deliberately NOT checked: an operator correcting the record on
+      // an already-collected order is legitimate, and refusing it would be friction with no safety gain.
+      const { data: target } = await supabase.from('orders')
+        .select('event_id').eq('order_key', orderKey).eq('truck_id', truck.id).maybeSingle()
+      if (!target) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      try {
+        const { clearedFrom } = await assignBuzzer(supabase, {
+          truckId: truck.id,
+          eventId: (target as any).event_id ?? null,
+          orderKey,
+          buzzerNumber,
+        })
+        return NextResponse.json({ success: true, buzzerNumber, clearedFrom })
+      } catch (err) {
+        console.error(`[set_buzzer] failed for order_key=${orderKey} truck_id=${truck.id}:`, err)
+        return NextResponse.json({ error: 'Could not save the buzzer number' }, { status: 500 })
+      }
     }
 
     // ── set_takes_cash_override ── EVENT-scoped (truck_events), mirrors set_show_paid_step_override.

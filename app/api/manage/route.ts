@@ -957,7 +957,10 @@ export async function POST(req: NextRequest) {
   if (action === 'get_vans') {
     const { data, error } = await supabase
       .from('truck_vans')
-      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, order_ready_enabled, display_layout, split_screen, kitchen_capacity, capacity_window_mins')
+      // ⚠️ NAMED SELECT — `buzzer_count` is added by 20260803_buzzer_settings.sql. A named select over
+      // a column PostgREST cannot see returns 42703 and fails the whole statement, which here means
+      // Manage → Settings renders no vans at all. Apply the migration BEFORE deploying.
+      .select('id, truck_id, name, kds_token, active, auto_pause_on_offline, show_cooking_step, order_ready_enabled, display_layout, split_screen, kitchen_capacity, capacity_window_mins, buzzer_count')
       .eq('truck_id', truck.id)
       .eq('active', true)
       .order('created_at', { ascending: true })
@@ -965,14 +968,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ vans: data || [] })
   }
 
+  // ── 🔴 THIS DESTRUCTURE IS AN ALLOWLIST, AND IT DROPS SILENTLY. ────────────────────────────────
+  // A key that is not named on the line below never reaches `updates`, the UPDATE still succeeds with
+  // whatever remains, and the handler returns { ok: true }. The toggle animates, the toast says saved,
+  // and nothing was written — with no error anywhere. This is the same failure class as update_truck's
+  // array allowlist (:854), which carries the same warning. ADD NEW SETTINGS IN BOTH PLACES:
+  // here AND in get_vans' named select above, or the value writes but never reads back.
   if (action === 'update_van_settings') {
-    const { vanId, autoPauseOnOffline, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins } = body
+    const { vanId, autoPauseOnOffline, show_cooking_step, order_ready_enabled, kitchen_capacity, capacity_window_mins, buzzer_count } = body
     const updates: Record<string, unknown> = {}
     if (autoPauseOnOffline !== undefined) updates.auto_pause_on_offline = autoPauseOnOffline
     if (show_cooking_step !== undefined)  updates.show_cooking_step = show_cooking_step
     if (order_ready_enabled !== undefined) updates.order_ready_enabled = order_ready_enabled
     if (kitchen_capacity !== undefined)   updates.kitchen_capacity = kitchen_capacity
     if (capacity_window_mins !== undefined) updates.capacity_window_mins = capacity_window_mins
+    // Buzzers: null = this van has no buzzers (the toggle off), 1..BUZZER_MAX_COUNT = rack size. The
+    // range is a UI affordance only — there is deliberately no clamp here and no DB CHECK, so the sole
+    // definition lives at lib/buzzer.ts. `!== undefined` and
+    // not a truthiness test, so an explicit null CLEARS rather than being skipped.
+    if (buzzer_count !== undefined)       updates.buzzer_count = buzzer_count
     await supabase
       .from('truck_vans')
       .update(updates)

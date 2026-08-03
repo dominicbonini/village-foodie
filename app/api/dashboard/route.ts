@@ -13,6 +13,7 @@ import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-brea
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
+import { resolveBuzzerPrompt } from '@/lib/buzzer'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -125,7 +126,11 @@ export async function GET(req: NextRequest) {
       .order('collection_time', { ascending: true }),
     supabase
       .from('truck_events')
-      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override, takes_cash_override')
+      // ⚠️ NAMED SELECT — every column here must exist or PostgREST returns 42703 and the WHOLE
+      // statement fails, which lands on the silent-empty-board path documented directly below.
+      // `buzzer_prompt` is added by supabase/migrations/20260803_buzzer_settings.sql: apply it BEFORE
+      // deploying this build.
+      .select('id, start_time, end_time, venue_name, event_date, van_id, paused_until, online_paused_until, last_offline_pause_at, extra_wait_mins, extra_wait_started_at, order_ready_override, show_paid_step_override, takes_cash_override, buzzer_prompt')
       .eq('truck_id', truck.id)
       .eq('event_date', date)
       .neq('status', 'cancelled')
@@ -361,6 +366,12 @@ export async function GET(req: NextRequest) {
   // setting and the cook step shows regardless of the toggle. Defaults off (matches the
   // Settings toggle's default) when the van has no value.
   let vanShowCookingStep: boolean = false
+  // Buzzers: the VAN's rack size (null = this van has no buzzers → the whole feature is hidden) and
+  // the RESOLVED after-order prompt for the selected event (event override ?? van-has-buzzers).
+  // Resolved SERVER-SIDE by lib/buzzer.ts so the dashboard, the KDS and Add Order cannot disagree —
+  // the same rule the paid step follows.
+  let vanBuzzerCount: number | null = null
+  let effectiveBuzzerPrompt: boolean = false
   // Order-ready (master-switch model): effectiveOrderReady = the SELECTED event's order_ready_override ??
   // the van's global default ?? false (resolved SERVER-SIDE — gates the orders-screen Ready button). Events
   // carry a concrete override (seeded at creation + bulk-set by the Settings master switch); the ?? chain
@@ -384,7 +395,10 @@ export async function GET(req: NextRequest) {
     if (capacityEvent?.van_id) {
       const { data: van, error: vanErr } = await supabase
         .from('truck_vans')
-        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, show_cooking_step, order_ready_enabled')
+        // ⚠️ NAMED SELECT — `buzzer_count` is added by 20260803_buzzer_settings.sql. Unlike the events
+        // query above, a 42703 here is caught by `vanErr` and every consumer has a `?? <default>`, so
+        // the failure degrades to "this van has no buzzers" rather than blanking the board.
+        .select('kitchen_capacity, capacity_window_mins, name, auto_pause_on_offline, show_cooking_step, order_ready_enabled, buzzer_count')
         .eq('id', capacityEvent.van_id)
         .single()
       // Another NAMED select, and every consumer below has a `?? <default>` — so a failure here reads as
@@ -404,6 +418,11 @@ export async function GET(req: NextRequest) {
       // event override ?? van global default ?? false (mirrors the offline ?? chain).
       vanOrderReadyDefault = van?.order_ready_enabled ?? false
       effectiveOrderReady = (capacityEvent as any)?.order_ready_override ?? vanOrderReadyDefault
+      // event override ?? (this van has buzzers). Never inline — resolveBuzzerPrompt is the only place
+      // this chain lives, for the same reason resolvePaidStep is.
+      const rb = resolveBuzzerPrompt(van as any, capacityEvent as any)
+      vanBuzzerCount = rb.buzzerCount
+      effectiveBuzzerPrompt = rb.buzzerPrompt
     }
     const productionSlotUnits = selectedEventId
       ? await getProductionSlotUnits(supabase, truck.id, selectedEventId)
@@ -581,6 +600,8 @@ export async function GET(req: NextRequest) {
     vanShowCookingStep,
     effectiveOrderReady,                          // event override ?? van default ?? false (gates the Ready button)
     vanOrderReadyDefault,                          // raw van default (seed for new events; the Settings master switch)
+    vanBuzzerCount,                                // truck_vans.buzzer_count — null ⇒ no buzzers, feature hidden
+    effectiveBuzzerPrompt,                         // event override ?? van-has-buzzers (opens the grid after a new order)
     vanPausedUntil: eventPausedUntil,            // event-scoped (key kept for the client)
     vanOnlinePausedUntil: eventOnlinePausedUntil, // event-scoped (key kept for the client)
     lastOfflinePauseAt: eventLastOfflinePauseAt, // durable offline-pause marker (popup trigger)

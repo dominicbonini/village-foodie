@@ -13,6 +13,7 @@ import { normaliseOrderLines } from '@/lib/slot-bookings'
 import { buildSlotIndicators, type SlotIndicator } from '@/lib/slot-display'
 import { InlinePriceEditor } from '@/components/dashboard/OrderCard'
 import { DealsModal } from '@/components/dashboard/DealsModal'
+import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
 import { calculateOrderTotal } from '@/lib/order-calculations'
 import { isModifierAvailable } from '@/lib/modifier-utils'
 import { toggleWithGroupRules, validateModifierSelection, minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/lib/modifier-rules'
@@ -123,6 +124,12 @@ interface AddOrderPanelProps {
    *  explainer instead of mutating. Order submit + stock stay fully live (the demo's central loop). */
   isDemo?: boolean
   onLockedEventAction?: () => void
+  /** The VAN's buzzer rack size, resolved server-side (lib/buzzer.ts). Null ⇒ this van has no buzzers
+   *  and every buzzer affordance in this panel is absent — the confirm bar is byte-identical to before. */
+  buzzerCount?: number | null
+  /** RESOLVED per-event prompt (event override ?? van-has-buzzers). Gates ONLY the after-order prompt;
+   *  the during-entry button is gated on buzzerCount alone, because assigning by hand is always valid. */
+  buzzerPromptEnabled?: boolean
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -138,6 +145,7 @@ export function AddOrderPanel({
   isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
   isDemo = false, onLockedEventAction,
+  buzzerCount = null, buzzerPromptEnabled = false,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -255,6 +263,16 @@ export function AddOrderPanel({
   // Set only when the kitchen genuinely CAN'T produce the order by the chosen slot (per the
   // SAME engine the traffic-light/booking use). `reason` = a human sentence ("too soon to make
   // N Pizza by 18:05"). A slot the order fits selects silently — no nag.
+
+  // ── BUZZERS (phase 1, online only) ──────────────────────────────────────────
+  // manualBuzzer = the number chosen DURING entry (null = none). It rides into the insert payload, so
+  // the number is on the row from the very first read rather than needing a second write.
+  const [manualBuzzer, setManualBuzzer] = useState<number | null>(null)
+  const [showBuzzerPicker, setShowBuzzerPicker] = useState(false)
+  // The AFTER-ORDER PROMPT. Holds the just-placed order's identity while the blocking grid is up.
+  // `resolve` is the promise handle submitManual awaits on — see the prompt block in submitManual.
+  const [buzzerPrompt, setBuzzerPrompt] = useState<{ orderKey: string; orderId: string; resolve: () => void } | null>(null)
+  const [savingPromptBuzzer, setSavingPromptBuzzer] = useState(false)
 
   // ── phone bottom sheet ──────────────────────────────────────────────────────
   const [showOrderSheet, setShowOrderSheet] = useState(false)
@@ -687,6 +705,9 @@ setItemModal({ item, modGroups, editCartKey })
     setManualName(''); setManualEmail(''); setManualPhone(''); setManualNotes('')
     setManualSlot(''); setManualItems([]); setAppliedDeals([])
     setActiveDealBundle(null)
+    // The buzzer choice is per-order, exactly like the payment choice below it. Nothing carries over —
+    // the next order starts with no buzzer and either gets one during entry or via the prompt.
+    setManualBuzzer(null)
     // Clear the per-order payment choice. Nothing is remembered between orders by design — the next
     // order presents both actions again with neither pre-selected.
     takePaymentRef.current = false
@@ -881,8 +902,19 @@ setItemModal({ item, modGroups, editCartKey })
       // stable device-prefixed provisional number until the server assigns the real one.
       const orderKey = newUuid()
       const provisional = isOnline() ? '' : await nextProvisionalId()
+      // ── placed_at — CLIENT-MINTED AT THE MOMENT OF COMMIT ────────────────────────────────────────
+      // Minted HERE, beside order_key, for the same reason order_key is: this is the instant the
+      // operator committed, and it is the only instant the server can never reconstruct. created_at is
+      // when the ROW was inserted — for an order taken offline and replayed later that is the sync
+      // time, hours after the sale. Null-safe end to end: the column is nullable with no default and
+      // no backfill, and every reader falls back to created_at when it is absent.
+      const placedAt = new Date().toISOString()
       const manualOrder = {
         order_key: orderKey,
+        placedAt,
+        // Buzzer chosen DURING entry via the grid button below. Null ⇒ none chosen, which is what makes
+        // the after-order prompt fire (when the event override is on).
+        buzzerNumber: manualBuzzer,
         // Offline → send the device-prefixed provisional (e.g. 'M3') so the server KEEPS it as the permanent
         // display id (skips its counter) → no renumber on sync. Online → '' → null → server assigns normally.
         provisional_id: provisional || null,
@@ -1005,6 +1037,33 @@ setItemModal({ item, modGroups, editCartKey })
           body: JSON.stringify({ token, pin, action: 'decrement_stock', items: manualItems, categoryMap }),
         }).catch(() => null)
       }
+      // ── AFTER-ORDER BUZZER PROMPT ────────────────────────────────────────────────────────────────
+      // 🔴 FIRED HERE, AFTER THE SUCCESS TOAST AND BEFORE resetManual(), AND THE POSITION IS THE POINT.
+      // The operator still has the order in front of them — the basket, the name, the total are all
+      // still on screen — so "which buzzer did you just hand them" is a question about something they
+      // can still see. Move it below resetManual() and they are staring at an empty panel; move it
+      // above the toast and they have no confirmation the order even saved.
+      //
+      // 🔴 BLOCKING, WITH NO BACKDROP DISMISS. A mis-tap outside the modal during a rush is the exact
+      // failure this exists to prevent: a pager handed over with no record of which one. The only two
+      // exits are picking a number and pressing "No buzzer", and BOTH are active choices.
+      // ⚠️ The escape reads "No buzzer", NEVER "Skip" — no skip affordance exists anywhere in this app,
+      // and "skip" frames a made decision as something left undone.
+      //
+      // CREATION ONLY. The edit path never re-prompts: an operator amending an order has not just
+      // handed over a new pager, and a modal on every edit would be noise.
+      //
+      // Conditions: the van has buzzers AND this event prompts AND no buzzer was chosen during entry.
+      // A failure inside the prompt must never strand the panel — the whole block is best-effort and
+      // the flow continues to resetManual() regardless.
+      if (buzzerCount != null && buzzerPromptEnabled && manualBuzzer == null && data?.orderId) {
+        try {
+          await new Promise<void>(resolve => {
+            setBuzzerPrompt({ orderKey, orderId: String(data.orderId), resolve })
+          })
+        } catch { /* never block the reset on the prompt's own failure */ }
+      }
+
       resetManual()
       setShowOrderSheet(false)
       if (manualEvent) {
@@ -1021,13 +1080,44 @@ setItemModal({ item, modGroups, editCartKey })
 
   // ── shared JSX pieces ───────────────────────────────────────────────────────
 
+  // ── THE SLOT <select> LOOK — SHARED BY BOTH BRANCHES ────────────────────────────────────────────
+  // 🔴 appearance-none IS WHY THIS EXISTS. The class list already said rounded-xl, the same as the
+  // customer-name input and the buzzer button beside it — but a native <select> on macOS/desktop keeps
+  // the OS control chrome, and that chrome's own corner radius WINS over border-radius. So the box
+  // rendered squarer than everything around it on desktop while looking correct on iOS, which does not
+  // apply that chrome. appearance-none drops it and lets rounded-xl actually take effect.
+  // ⚠️ Dropping the native chrome also drops the native dropdown arrow, so one is supplied here as a
+  // background SVG rather than a wrapper element: the select is a flex child (flex-1 min-w-0) in the
+  // time+buzzer row, and wrapping it would move that sizing onto a div and re-open the width work.
+  // pl-3 pr-9 (was px-3) reserves the arrow's column so a long option label can never run under it.
+  // Defined once and used by BOTH branches below — they were already byte-identical and must stay so.
+  const SLOT_SELECT_CLASS = 'flex-1 min-w-0 appearance-none border border-slate-200 rounded-xl pl-3 pr-9 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400'
+  const SLOT_SELECT_STYLE: React.CSSProperties = {
+    backgroundImage:
+      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%2364748b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8l4 4 4-4'/%3E%3C/svg%3E\")",
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 0.75rem center',
+    backgroundSize: '1.1rem',
+  }
+
   const slotSelector = (
     <div>
+      {/* ── TIME + BUZZER SHARE ONE ROW ───────────────────────────────────────────────────────────
+          items-stretch, so both controls are exactly the height of the taller one — the buzzer button
+          can never end up a shorter target than the select it sits beside.
+          🔴 TOUCH TARGET: both are px-3 py-3 text-sm ⇒ 20px line + 24px padding + 2px border = 46px,
+          and the button additionally carries an explicit min-h-[44px] floor so no future text or font
+          change can take it under the 44px minimum. This is tapped mid-service on an iPad.
+          WIDTHS: the select is flex-1 min-w-0 (takes everything left over and is allowed to shrink);
+          the button is shrink-0 (keeps its natural ~110px and never compresses). The select therefore
+          gives up width, never the touch target. */}
+      <div className="flex items-stretch gap-2">
       {manualSlots.length > 0 ? (
         <select
           value={manualSlot}
           onChange={e => handleSlotChange(e.target.value)}
-          className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+          className={SLOT_SELECT_CLASS}
+          style={SLOT_SELECT_STYLE}
         >
           {/* Show the concrete earliest-fitting time ONLY once the basket has items — empty-basket
               "earliest" (event open) is misleading and jumps as soon as an item is added. Display-only. */}
@@ -1051,7 +1141,8 @@ setItemModal({ item, modGroups, editCartKey })
         <select
           value={manualSlot}
           onChange={e => setManualSlot(e.target.value)}
-          className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm font-medium text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
+          className={SLOT_SELECT_CLASS}
+          style={SLOT_SELECT_STYLE}
         >
           <option value="">⚡ ASAP</option>
           {(() => {
@@ -1069,6 +1160,27 @@ setItemModal({ item, modGroups, editCartKey })
           })()}
         </select>
       )}
+      {/* ── BUZZER, DURING ENTRY ─────────────────────────────────────────────────────────────────
+          Gated on buzzerCount alone (NOT buzzerPromptEnabled): assigning by hand is always valid, and
+          an event that has turned the automatic prompt off has not stopped handing out buzzers.
+          Neutral until set, then it states the number and switches to the same white-on-slate chip
+          treatment the order card uses — one visual language for "this order has buzzer N", not two.
+          shrink-0 + whitespace-nowrap + min-h-[44px]: it keeps its natural width and its full height at
+          every viewport, so a narrow screen costs the SELECT width, never this touch target. */}
+      {buzzerCount != null && (
+        <button
+          type="button"
+          onClick={() => setShowBuzzerPicker(true)}
+          className={`shrink-0 min-h-[44px] whitespace-nowrap rounded-xl px-3 py-3 text-sm font-semibold border transition-colors ${
+            manualBuzzer != null
+              ? 'bg-white text-slate-900 border-slate-300'
+              : 'bg-white text-slate-400 border-slate-200 hover:text-slate-600 hover:border-slate-300'
+          }`}
+        >
+          {manualBuzzer != null ? `🔔 Buzzer ${manualBuzzer}` : '🔔 + Buzzer'}
+        </button>
+      )}
+      </div>
       {/* ASAP-only: the ready estimate is meaningless once a specific slot is picked
           (manualSlot set). manualSlot === '' is the ASAP/default state (the "ASAP — {time}"
           option's value=""), the same truth the dropdown uses — no new source. */}
@@ -1687,6 +1799,74 @@ setItemModal({ item, modGroups, editCartKey })
             {submitPanel}
           </div>
         </div>
+      )}
+
+      {/* ── BUZZER GRID (a) — DURING ENTRY ────────────────────────────────────────────────────────
+          Non-blocking: the operator opened it deliberately, so a backdrop tap closes it. The order row
+          does not exist yet, so targetOrderKey is '' — every number held by a REAL order belongs to
+          someone else, which is correct. The PENDING selection travels in `currentNumber`: the grid
+          renders it in the taken state ("This order") so reopening the picker cannot show a number as
+          free after the operator has chosen it. The chosen number rides into the insert payload. */}
+      {showBuzzerPicker && buzzerCount != null && (
+        <BuzzerGrid
+          open
+          buzzerCount={buzzerCount}
+          orders={orders}
+          eventId={manualEvent?.id ?? null}
+          targetOrderKey=""
+          targetOrderId=""
+          currentNumber={manualBuzzer}
+          // keepOpen is the grid's own "this order already had a buzzer when I opened" flag. A FIRST
+          // pick assigns and closes as before; once one is set, switching and deselecting both leave
+          // the picker up so the operator can see the change, and Done closes it.
+          onAssign={(n, keepOpen) => { setManualBuzzer(n); if (!keepOpen) setShowBuzzerPicker(false) }}
+          onClose={() => setShowBuzzerPicker(false)}
+        />
+      )}
+
+      {/* ── BUZZER GRID (b) — THE AFTER-ORDER PROMPT ──────────────────────────────────────────────
+          🔴 blocking: no backdrop dismiss, no ✕, "No buzzer" is the only non-assigning exit and it is
+          an ACTIVE CHOICE. See the fire site in submitManual for why it sits where it does.
+          Both exits resolve the awaited promise so submitManual continues to resetManual(); a failed
+          write still resolves — the order is placed and the operator can assign from the card. */}
+      {buzzerPrompt && buzzerCount != null && (
+        <BuzzerGrid
+          open
+          blocking
+          buzzerCount={buzzerCount}
+          orders={orders}
+          eventId={manualEvent?.id ?? null}
+          targetOrderKey={buzzerPrompt.orderKey}
+          targetOrderId={buzzerPrompt.orderId}
+          currentNumber={null}
+          saving={savingPromptBuzzer}
+          onAssign={async (n) => {
+            const p = buzzerPrompt
+            if (n == null) { setBuzzerPrompt(null); p.resolve(); return }
+            setSavingPromptBuzzer(true)
+            try {
+              // set_buzzer — writes buzzer_number and NOTHING else. Deliberately not `edit`, which
+              // would force status:'modified', re-book capacity and email the customer.
+              const r = await fetch('/api/dashboard/action', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, pin, action: 'set_buzzer', order_key: p.orderKey, buzzerNumber: n }),
+              })
+              const d = await r.json().catch(() => ({}))
+              if (!r.ok) throw new Error(d.error || 'write failed')
+              const from = d.clearedFrom?.id ? ` (taken from #${d.clearedFrom.id})` : ''
+              showToast(`Buzzer ${n} on order #${p.orderId}${from}`, 'success')
+            } catch {
+              // The ORDER IS ALREADY PLACED. Say what failed and let the flow finish — trapping the
+              // operator in a modal over a buzzer write would be worse than the missing number.
+              showToast('Could not save the buzzer number — add it from the order card', 'error')
+            } finally {
+              setSavingPromptBuzzer(false)
+              setBuzzerPrompt(null)
+              p.resolve()
+            }
+          }}
+          onClose={() => { const p = buzzerPrompt; setBuzzerPrompt(null); p.resolve() }}
+        />
       )}
 
       {/* ── Over-capacity confirmation ──────────────────────────────────────────────────────────

@@ -50,6 +50,12 @@ export interface Order {
   updated_at?: string
   /** Set by 'collected' to the prior status; cleared by undo_collected. Surfaced for the merge/undo. */
   status_before_collected?: string | null
+  /** Physical buzzer handed to the customer, 1..van.buzzer_count. Null = none. Unique per EVENT by
+   *  application rule (lib/buzzer.ts), never by a DB constraint. Arrives free on select('*'). */
+  buzzer_number?: number | null
+  /** Moment the order was COMMITTED, as distinct from created_at = row inserted. Null = unknown on
+   *  every pre-migration row — readers MUST fall back to created_at, never assume it is set. */
+  placed_at?: string | null
 }
 
 export interface Slot {

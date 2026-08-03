@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
+import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
+import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { isDemoIdentifier } from '@/lib/demo'
@@ -75,6 +77,17 @@ export default function KdsPage() {
   // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
   const [showCookingStep, setShowCookingStep] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
+  // Buzzers (phase 1, online only). buzzerCount null ⇒ this van has no buzzers → no chip, no grid.
+  const [buzzerCount, setBuzzerCount] = useState<number | null>(null)
+  const [buzzerTarget, setBuzzerTarget] = useState<Order | null>(null)
+  const [savingBuzzer, setSavingBuzzer] = useState(false)
+  // ── OPTIMISTIC BUZZER GUARD ─────────────────────────────────────────────────────────────────────
+  // The dashboard keeps these in its shared pendingWritesRef under `buzzer:${order_key}`; the KDS has
+  // no such shared ref, so it owns a dedicated one. The MECHANISM is identical and both feed the same
+  // two helpers in lib/buzzer.ts, which is what keeps the two surfaces behaving the same.
+  // Absent ⇒ no guard; present-with-null ⇒ a pending DESELECT. Do not collapse those two.
+  const pendingBuzzersRef = useRef<Record<string, number | null>>({})
+  const peekPendingBuzzer = useCallback((orderKey: string) => pendingBuzzersRef.current[orderKey], [])
   const [pausedUntil, setPausedUntil] = useState<string | null>(null)
   const [extraWaitMins, setExtraWaitMins] = useState(0)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -169,9 +182,17 @@ export default function KdsPage() {
 
       setTruck(data.truck)
       setShowCookingStep(data.vanShowCookingStep ?? false)
+      // Buzzers: the VAN's rack size, resolved server-side (lib/buzzer.ts). Null ⇒ this van has no
+      // buzzers and the chip is never rendered. The KDS does NOT read effectiveBuzzerPrompt — the
+      // after-order prompt belongs to Add Order, which the KDS does not have.
+      setBuzzerCount(data.vanBuzzerCount ?? null)
       // keep_screen_on is a PER-DEVICE localStorage pref now (see the keepScreenOn useState) — not read from
       // the truck row (which never carried it in the /api/dashboard map anyway).
-      setOrders(prev => mergeOrders(prev, data.orders ?? []))
+      // Buzzer guard: release against the RAW SERVER ROWS first, then apply what is still pending over
+      // the merge so a poll that started before a write cannot revert an open grid. See lib/buzzer.ts.
+      const incomingOrders = data.orders ?? []
+      for (const k of echoedBuzzerKeys(incomingOrders, peekPendingBuzzer)) delete pendingBuzzersRef.current[k]
+      setOrders(prev => applyPendingBuzzers(mergeOrders(prev, incomingOrders), peekPendingBuzzer))
       setPausedUntil(data.truck?.paused_until ?? null)
       setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
       setCategoryOrder(data.categoryOrder ?? [])
@@ -440,6 +461,50 @@ export default function KdsPage() {
   const { toasts, showToast, dismissToast } = useToasts()
   const { scheduleReadyEmail, undoReady } = useReadyEmailUndo({ token, pin, showToast, refetch: () => fetchAllRef.current() })
 
+  // ── THE BUZZER WRITE (KDS) ───────────────────────────────────────────────────────────────────────
+  // Mirrors the dashboard's saveBuzzer exactly. 🔴 NOT the `edit` action (which forces
+  // status:'modified', re-books capacity and emails the customer) and 🔴 NOT gatedAction — phase 1 is
+  // ONLINE ONLY; there is no outbox kind for a buzzer and adding one is phase 2 with the two-row RPC.
+  // keepOpen ⇒ the order already had a buzzer when the picker opened, so a change leaves it up and Done
+  // closes it. `prior` is read from the LIVE orders list because buzzerTarget is the snapshot taken
+  // when the chip was tapped. Both mirror the dashboard copy of this handler.
+  const saveBuzzer = useCallback(async (orderKey: string, buzzerNumber: number | null, keepOpen = false) => {
+    const prior = orders.find(o => o.order_key === orderKey)?.buzzer_number ?? null
+    // OPTIMISTIC — guard FIRST, then patch, so a refetch already in flight is overridden rather than
+    // winning. Mirrors the dashboard exactly; the reasoning is in lib/buzzer.ts.
+    // Full local effect (this order gains it, any other in-event holder loses it) — mirrors the two
+    // rows assignBuzzer touches server-side. Identical to the dashboard; the plan is shared.
+    const { next, prior: priorByKey } = planOptimisticBuzzer(orders, orderKey, buzzerNumber)
+    for (const [k, v] of Object.entries(next)) pendingBuzzersRef.current[k] = v
+    setOrders(prev => prev.map(o => o.order_key in next ? { ...o, buzzer_number: next[o.order_key] } : o))
+    setSavingBuzzer(true)
+    try {
+      const res = await fetch('/api/dashboard/action', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, pin, action: 'set_buzzer', order_key: orderKey, buzzerNumber }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'write failed')
+      const from = data.clearedFrom?.id ? ` (taken from #${data.clearedFrom.id})` : ''
+      // Names the number that went back to the rack — see the dashboard copy of this handler.
+      showToast(buzzerNumber == null
+        ? (prior != null ? `Buzzer ${prior} removed` : 'Buzzer removed')
+        : `Buzzer ${buzzerNumber} assigned${from}`)
+      if (!keepOpen) setBuzzerTarget(null)
+      // Guard released by fetchAll, and only once the SERVER row carries the value — see the dashboard.
+      fetchAllRef.current()
+    } catch {
+      // FAILED — drop the guard, revert, and SAY SO. Same contract as the dashboard: the operator may
+      // already be holding the pager, so the toast names the number and the order's real state.
+      for (const k of Object.keys(next)) delete pendingBuzzersRef.current[k]
+      setOrders(prev => prev.map(o => o.order_key in priorByKey ? { ...o, buzzer_number: priorByKey[o.order_key] } : o))
+      const who = buzzerTarget?.id ? `order #${buzzerTarget.id}` : 'this order'
+      showToast(buzzerNumber == null
+        ? `Could not remove buzzer ${prior} — it is still on ${who}`
+        : `Could not give buzzer ${buzzerNumber} to ${who} — ${prior != null ? `it still has buzzer ${prior}` : 'it still has no buzzer'}`, 'error')
+    } finally { setSavingBuzzer(false) }
+  }, [token, pin, showToast, orders, buzzerTarget])
+
   const handleAction = useCallback(async (action: string, orderKey: string) => {
     setActionLoading(`${action}-${orderKey}`)
     try {
@@ -542,7 +607,7 @@ export default function KdsPage() {
     setPin(pinInput)
     setTruck(data.truck)
     setShowCookingStep(data.vanShowCookingStep ?? false)
-    setOrders(prev => mergeOrders(prev, data.orders ?? []))
+    setOrders(prev => applyPendingBuzzers(mergeOrders(prev, data.orders ?? []), peekPendingBuzzer))
     setPausedUntil(data.truck?.paused_until ?? null)
     setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
     setRequiresPin(false)
@@ -1065,6 +1130,7 @@ export default function KdsPage() {
                 itemCategoryMap={itemCategoryMap}
                 catConfigs={catConfigs}
                 pendingSync={pendingSync.has(order.order_key)}
+                onBuzzer={buzzerCount != null ? setBuzzerTarget : undefined}
               />
             ))
           )}
@@ -1092,6 +1158,23 @@ export default function KdsPage() {
         </div>
       </div>
       </div>
+
+      {/* Buzzer grid — card path only. The KDS has no Add Order, so there is no blocking prompt here. */}
+      {buzzerTarget && buzzerCount != null && (
+        <BuzzerGrid
+          open
+          buzzerCount={buzzerCount}
+          orders={orders}
+          eventId={buzzerTarget.event_id ?? activeEvent?.id ?? null}
+          targetOrderKey={buzzerTarget.order_key}
+          targetOrderId={String(buzzerTarget.id)}
+          /* 🔴 resolveCurrentBuzzer, NOT a `??` chain — see the dashboard copy and lib/buzzer.ts. */
+          currentNumber={resolveCurrentBuzzer(orders, buzzerTarget)}
+          saving={savingBuzzer}
+          onAssign={(n, keepOpen) => saveBuzzer(buzzerTarget.order_key, n, keepOpen)}
+          onClose={() => setBuzzerTarget(null)}
+        />
+      )}
 
       {/* Screen-off warning modal */}
       {showScreenOffWarning && (

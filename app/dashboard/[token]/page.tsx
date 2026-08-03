@@ -64,6 +64,8 @@ import { DemoLoopComplete } from '@/components/dashboard/DemoLoopComplete'
 import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
+import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
+import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
@@ -216,6 +218,10 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   },[])
   // Register an optimistic write BEFORE its setState, so a background refetch mid-write can't clobber it.
   const markPending=useCallback((key:string,value:any)=>{ pendingWritesRef.current[key]={v:value} },[])
+  // Buzzer guards live in the SAME shared ref under `buzzer:${order_key}` — the composite-key form
+  // catavail already uses. This adapter is what lib/buzzer.ts's two helpers read: absent ⇒ undefined
+  // (no guard), present-with-null ⇒ a pending DESELECT. Those two must stay distinguishable.
+  const peekPendingBuzzer=useCallback((orderKey:string)=>pendingWritesRef.current[`buzzer:${orderKey}`]?.v as number|null|undefined,[])
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
   const[lastRefresh,setLastRefresh]=useState(new Date())
@@ -268,6 +274,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // resolves override ?? default ?? false server-side and gates the Ready button; the dashboard toggle reads it.
   const[vanOrderReadyDefault,setVanOrderReadyDefault]=useState<boolean>(false)
   const[eventOrderReadyOverride,setEventOrderReadyOverride]=useState<boolean|null>(null)
+  // Buzzers. vanBuzzerCount is the VAN's rack (null ⇒ this van has no buzzers and every buzzer
+  // affordance stays hidden — no chip, no Add Order button, no Settings row). Both are RESOLVED
+  // server-side by lib/buzzer.ts and delivered by /api/dashboard, so the dashboard, the KDS and Add
+  // Order can never disagree about them — the same arrangement the paid step uses.
+  const[vanBuzzerCount,setVanBuzzerCount]=useState<number|null>(null)
+  const[effectiveBuzzerPrompt,setEffectiveBuzzerPrompt]=useState<boolean>(false)
+  const[savingBuzzerPrompt,setSavingBuzzerPrompt]=useState(false)
+  // The order whose buzzer grid is open (card path). Null ⇒ closed.
+  const[buzzerTarget,setBuzzerTarget]=useState<Order|null>(null)
+  const[savingBuzzer,setSavingBuzzer]=useState(false)
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
   const[capacityWindowMins,setCapacityWindowMins]=useState<number>(5)
   // Frozen server occupancy + server catConfigs (with countsToCapacity) — inputs the OFFLINE capacity re-run
@@ -628,13 +644,25 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         if(data.vanAutoPause !== undefined) setVanAutoPause(data.vanAutoPause)
         if(data.vanOrderReadyDefault !== undefined) setVanOrderReadyDefault(data.vanOrderReadyDefault)
         setEffectiveOrderReady(applyPending('effectiveOrderReady',data.effectiveOrderReady??false))
+        // Buzzers — CONFIG, so they sit inside the seed gate with the rest of the van/event settings.
+        // applyPending guards the prompt for the same reason effectiveOrderReady is guarded: a reseed
+        // fired by the operator's own write must not clobber the value that write is still committing.
+        if(data.vanBuzzerCount !== undefined) setVanBuzzerCount(data.vanBuzzerCount??null)
+        setEffectiveBuzzerPrompt(applyPending('effectiveBuzzerPrompt',data.effectiveBuzzerPrompt??false))
         configSeededRef.current=true
       }
       // ── LIVE — merged on EVERY fetch (poll/realtime/nav). Changes WITHOUT the operator (new orders,
       //    server offline-auto-pause, other devices) → must keep polling. ⚠️ THIS is the explicit LIVE
       //    ALLOWLIST; adding a field puts it back in the clobber path. Dual-source live+optimistic fields
       //    (manual pause, extra-wait) go through applyPending so a mid-write poll can't clobber them. ──
-      setOrders(prev=>mergeOrders(prev,data.orders||[]))
+      // ── BUZZER GUARD — applied AFTER mergeOrders, so it has the last word. ──────────────────────
+      // Release first, against the RAW SERVER ROWS (not the merged result — that may still be carrying
+      // the optimistic value, which would release every guard immediately). Then apply whatever is
+      // still pending over the merge, so a poll that started before the write cannot revert a cell the
+      // operator is looking at. See lib/buzzer.ts.
+      const incomingOrders=data.orders||[]
+      for(const k of echoedBuzzerKeys(incomingOrders,peekPendingBuzzer)) delete pendingWritesRef.current[`buzzer:${k}`]
+      setOrders(prev=>applyPendingBuzzers(mergeOrders(prev,incomingOrders),peekPendingBuzzer))
       setSlots(data.slots)
       setPausedUntil(applyPending('pausedUntil',data.truck?.paused_until||null))              // manual truck pause (dual-source)
       setVanPausedUntil(applyPending('vanPausedUntil',data.vanPausedUntil??null))              // manual van pause (dual-source)
@@ -675,7 +703,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         }
       }catch{}
     } catch{if(!authenticatedRef.current)setError('Connection error')} finally{setLoading(false)}
-  },[token,pin,fetchMenu,fetchStock,applyPending])
+  },[token,pin,fetchMenu,fetchStock,applyPending,peekPendingBuzzer])
 
   // Ready-email-undo machinery (shared hook). onUndoRestore = the dashboard-specific revert: un-strike the
   // prep pills the Ready click struck (KDS, the later consumer, passes none). Placed after fetchAll so it
@@ -1119,7 +1147,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     const sel=selectedEventRef.current; if(sel){p.set('event_id',sel.id);p.set('date',sel.date)}
     const res=await fetch(`/api/dashboard?${p}`,{headers:await nativeAuthHeader()}); const data=await res.json()
     if(!res.ok){setPinError('Incorrect PIN');return}
-    setPin(pinInput); setTruck(data.truck); setOrders(prev=>mergeOrders(prev,data.orders||[])); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
+    setPin(pinInput); setTruck(data.truck); setOrders(prev=>applyPendingBuzzers(mergeOrders(prev,data.orders||[]),peekPendingBuzzer)); setSlots(data.slots); setShowCookingStep(data.vanShowCookingStep??false); setEffectiveOrderReady(data.effectiveOrderReady??false)
     {const loadedId=selectedEventRef.current?.id; if(loadedId)setLoadedEventIds(p=>p.has(loadedId)?p:new Set(p).add(loadedId))} // EVENT-SWITCH GATE: mark loaded
     setAuthenticated(true); authenticatedRef.current=true; setRequiresPin(false)
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput,selectedEventRef.current?.id??null)}
@@ -1223,6 +1251,95 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     finally{setSavingTakesCashOverride(false)}
   }
 
+
+  // PER-EVENT ONLY. Writes truck_events.buzzer_prompt for the CURRENT event and must NEVER write
+  // truck_vans.buzzer_count — the van default (whether this vehicle carries buzzers at all) is owned by
+  // Manage → Settings. This toggle governs one thing: does the grid open by itself after a new order.
+  // Same server-confirmed shape as savePaidStepOverride above (applyEventPatch, refetch as the
+  // no-row fallback); the propagation ruling recorded there applies here unchanged.
+  const saveBuzzerPromptOverride=async(val:boolean)=>{
+    if(!activeEvent)return
+    setSavingBuzzerPrompt(true)
+    markPending('effectiveBuzzerPrompt',val)   // guard: a reseed mid-write can't clobber the optimistic value
+    setEffectiveBuzzerPrompt(val)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_buzzer_prompt_override',value:val,eventId:activeEvent.id})
+      })
+      if(!res.ok)throw new Error('write failed')
+      await applyEventPatch(res)
+      showToast(val?'Buzzer prompt on for this event':'Buzzer prompt off for this event')
+    }catch{
+      delete pendingWritesRef.current['effectiveBuzzerPrompt']
+      setEffectiveBuzzerPrompt(!val)   // revert optimistic on failure
+      showToast('Failed to save','error')
+    }
+    finally{setSavingBuzzerPrompt(false)}
+  }
+
+  // ── THE BUZZER WRITE (card path) ────────────────────────────────────────────────────────────────
+  // 🔴 Deliberately NOT the `edit` action: edit forces status:'modified', re-books production slot
+  // capacity and EMAILS THE CUSTOMER. Handing over a pager does none of those. set_buzzer writes
+  // buzzer_number and nothing else — see the handler in app/api/dashboard/action/route.ts.
+  // ⚠️ NOT routed through gatedAction. Phase 1 is ONLINE ONLY; there is no outbox kind for this and
+  // adding one is phase 2, together with the two-row RPC. Offline, this fails and says so.
+  // keepOpen (from the grid) ⇒ the order already had a buzzer when the picker opened, so a change must
+  // NOT close it: the operator is switching and looking, and Done is what ends that. A first assignment
+  // still closes, exactly as before.
+  const saveBuzzer=async(orderKey:string,buzzerNumber:number|null,keepOpen=false)=>{
+    // Read from the LIVE orders list, not from buzzerTarget: with the grid staying open, buzzerTarget
+    // is the snapshot taken when the chip was tapped and goes stale after the first switch.
+    const prior=orders.find(o=>o.order_key===orderKey)?.buzzer_number??null
+    // ── OPTIMISTIC (see lib/buzzer.ts for the full why) ──────────────────────────────────────────
+    // GUARD FIRST, THEN PATCH — the order matters. A refetch already in flight can land between these
+    // two statements; registering the guard first means it gets overridden rather than winning.
+    // Follows updateCategoryAvailable's shape exactly (shared pendingWritesRef, composite key), so the
+    // grid turns the old cell green and the new one red the instant the operator taps, and a stale poll
+    // cannot revert it.
+    // The write's FULL local effect: this order gains the number, and any other in-event order holding
+    // it loses it — the same two rows assignBuzzer touches server-side. Guarding both means the board
+    // behind the modal is correct immediately, not after the refetch.
+    const {next,prior:priorByKey}=planOptimisticBuzzer(orders,orderKey,buzzerNumber)
+    for(const [k,v] of Object.entries(next)) pendingWritesRef.current[`buzzer:${k}`]={v}
+    setOrders(prev=>prev.map(o=>o.order_key in next?{...o,buzzer_number:next[o.order_key]}:o))
+    setSavingBuzzer(true)
+    try{
+      const res=await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_buzzer',order_key:orderKey,buzzerNumber})
+      })
+      const data=await res.json().catch(()=>({}))
+      if(!res.ok)throw new Error(data.error||'write failed')
+      // Name the order the buzzer came FROM when one was taken — the operator has just been told in the
+      // confirm that it would happen, and the toast is the receipt that it did.
+      const from=data.clearedFrom?.id?` (taken from #${data.clearedFrom.id})`:''
+      // A removal NAMES the number that just went back to the rack — "Buzzer cleared" told the operator
+      // an action had happened but not which pager they are now holding, which is the fact that matters.
+      showToast(buzzerNumber==null
+        ?(prior!=null?`Buzzer ${prior} removed`:'Buzzer removed')
+        :`Buzzer ${buzzerNumber} assigned${from}`)
+      if(!keepOpen)setBuzzerTarget(null)
+      // The guard is NOT dropped here. It is released by fetchAll, and only once the SERVER row
+      // actually carries the new value (echoedBuzzerKeys) — dropping it on the 2xx would re-open the
+      // window for an already-in-flight stale read to revert the cell.
+      await fetchAll()
+    }catch{
+      // ── THE WRITE FAILED — REVERT, AND SAY SO. ──────────────────────────────────────────────────
+      // The one case where reverting is correct: the board must show what is actually recorded, not a
+      // hopeful value a later refetch would silently undo. Drop the guard FIRST so the revert (and any
+      // subsequent poll) is not immediately overridden by it.
+      // 🔴 SURFACED, NEVER SILENT. The operator may already be holding the pager, so the toast names
+      // the number that failed AND the state the order is really in.
+      for(const k of Object.keys(next)) delete pendingWritesRef.current[`buzzer:${k}`]
+      setOrders(prev=>prev.map(o=>o.order_key in priorByKey?{...o,buzzer_number:priorByKey[o.order_key]}:o))
+      const who=buzzerTarget?.id?`order #${buzzerTarget.id}`:'this order'
+      showToast(buzzerNumber==null
+        ?`Could not remove buzzer ${prior} — it is still on ${who}`
+        :`Could not give buzzer ${buzzerNumber} to ${who} — ${prior!=null?`it still has buzzer ${prior}`:'it still has no buzzer'}`,'error')
+    }
+    finally{setSavingBuzzer(false)}
+  }
 
   const saveNotesRequireReview=async(val:boolean)=>{
     setSavingNotesReview(true)
@@ -2717,13 +2834,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -2816,6 +2933,8 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             onEventPickerOpened={()=>setPendingOpenEventPicker(false)}
             controlledEvent={activeEvent}
             isOffline={isOffline}
+            buzzerCount={vanBuzzerCount}
+            buzzerPromptEnabled={effectiveBuzzerPrompt}
             offlineCapacity={offlineCapacity}
             isEventLoaded={(id)=>loadedEventIds.has(id)}
             onEventChange={(id)=>{
@@ -2968,6 +3087,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 </div>
               </div>
             </div>
+            {/* ── BUZZER PROMPT — PER-EVENT ONLY ──────────────────────────────────────────────────
+                Writes truck_events.buzzer_prompt for the ACTIVE EVENT and NEVER truck_vans.buzzer_count
+                — the van default (does this vehicle carry buzzers) belongs to Manage → Settings, and
+                this dashboard must not write it. Resolution is resolveBuzzerPrompt (lib/buzzer.ts),
+                the same override-then-default idiom resolvePaidStep uses, and the ONLY place that
+                chain lives.
+                ⚠️ RENDERED ONLY WHEN THE VAN HAS BUZZERS (vanBuzzerCount != null). A van with no
+                buzzers has nothing to prompt for, and a disabled toggle would advertise a feature the
+                operator cannot reach from this screen.
+                ⚠️ NO PER-EVENT SCOPE WORDING in the copy — scope is a property of THIS SCREEN, not of
+                each row. See the 🔴 note above the paid-step card. */}
+            {activeEvent&&vanBuzzerCount!=null&&(
+              <div className="flex items-start justify-between gap-4 p-4 bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-slate-800">Ask for a buzzer number after each new order?</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Opens the buzzer grid as soon as you place an order, so the number goes on the board while the customer is still in front of you. You can always add one later by tapping the order.</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  {savingBuzzerPrompt&&<span className="text-xs text-slate-400 animate-pulse">Saving…</span>}
+                  <Toggle on={effectiveBuzzerPrompt} onToggle={()=>saveBuzzerPromptOverride(!effectiveBuzzerPrompt)} disabled={isOffline||!activeEvent}/>
+                </div>
+              </div>
+            )}
+
             {/* Order-ready notifications — PER-EVENT on/off (MASTER-SWITCH model: every event has a concrete
                 order_ready_override, seeded from the Settings default at creation + bulk-set when the Settings
                 master switch flips). Writes order_ready_override=true|false (never null). Gates the orders-screen
@@ -3492,6 +3635,30 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             </div>
           </div>
         </div>
+      )}
+
+      {/* Buzzer grid — CARD path (tapping the chip on an order). Non-blocking: the operator opened it
+          deliberately, so a backdrop tap closes it. The after-order PROMPT is a separate, blocking
+          instance that lives inside AddOrderPanel. `orders` (not the split columns) so a buzzer held by
+          a collected/cancelled order is correctly seen as free — the filtering is buildBuzzerMap's job,
+          driven by BUZZER_IN_USE_STATUSES, never by which column a card happens to be rendered in. */}
+      {buzzerTarget&&vanBuzzerCount!=null&&(
+        <BuzzerGrid
+          open
+          buzzerCount={vanBuzzerCount}
+          orders={orders}
+          eventId={buzzerTarget.event_id??activeEvent?.id??null}
+          targetOrderKey={buzzerTarget.order_key}
+          targetOrderId={String(buzzerTarget.id)}
+          /* LIVE, re-read from `orders` each render. 🔴 resolveCurrentBuzzer, NOT a `??` chain — the
+             inline `live ?? snapshot ?? null` that used to be here fell through on null, so a DESELECT
+             (whose whole point is null) reverted to the stale snapshot and the cell stayed red. See
+             lib/buzzer.ts. */
+          currentNumber={resolveCurrentBuzzer(orders,buzzerTarget)}
+          saving={savingBuzzer}
+          onAssign={(n,keepOpen)=>saveBuzzer(buzzerTarget.order_key,n,keepOpen)}
+          onClose={()=>setBuzzerTarget(null)}
+        />
       )}
 
       {/* Cancel order modal */}

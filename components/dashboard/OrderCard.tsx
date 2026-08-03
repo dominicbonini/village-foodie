@@ -96,6 +96,7 @@ export function OrderCard({
   anchorId,
   highlight = false,
   ledgerRows,
+  onBuzzer,
 }: {
   order: Order
   truck: TruckData | null
@@ -131,6 +132,9 @@ export function OrderCard({
   /** This order's order_payments rows, supplied by /api/dashboard. Fed straight to getOrderBalance —
    *  the card NEVER derives payment state itself. Undefined/empty ⇒ nothing paid. */
   ledgerRows?: LedgerRow[]
+  /** Open the buzzer grid for this order. UNDEFINED ⇒ this van has no buzzers (or the surface has not
+   *  wired it) and the chip is not rendered at all — the card is byte-identical to before. */
+  onBuzzer?: (order: Order) => void
 }) {
   // Cards always show their content — the collapse/triangle was removed (it only made the box look empty).
   const expanded = true
@@ -279,6 +283,42 @@ export function OrderCard({
         </div>
       </div>
     </div>
+  )
+
+  // ── THE BUZZER CHIP ─────────────────────────────────────────────────────────────────────────────
+  // 🔴 IT LIVES IN HEADER ROW 1, IN ALL THREE VIEW MODES, AND THAT PLACEMENT IS LOAD-BEARING.
+  // Row 1 is the IDENTITY cluster (#order, and in solo the collection time). A buzzer number IS
+  // identity — "who is this food for" — so it belongs beside the order number, not in row 2 with the
+  // metadata. Row 2 is also where the crowding fixes live: in solo the customer NAME is the only
+  // flex-1 element and absorbs all pressure (the "Dom"→"D…" fix, see the note at the solo header),
+  // and in window mode row 2 already carries name + Contact + time + late pill at a 240px column.
+  // Adding a sixth shrink-0 chip there is what would force a THIRD ROW. Row 1 has slack in every mode:
+  // solo has an ml-auto gap before the offset pill, window is justify-between with a short left side,
+  // cook is #order + time only. NEITHER HEADER GREW A ROW.
+  //
+  // Sized on the paidChip's own metrics (text-[10px]/px-1.5/py-0.5/rounded-full) so the two chips read
+  // as one family rather than two competing badges.
+  //
+  // ⚠️ COLOUR: white-on-slate, deliberately NOT the grid's green/red. In the grid those two mean
+  // AVAILABLE and TAKEN; a green chip here would say "this number is free", the exact inverse of what
+  // it means on a card. Neutral is also the only thing legible on all six getHeaderStyle backgrounds
+  // (green-50 / amber-50 / red-50 / slate-50 / white). Family taken from getHeaderStyle's 'ok' state
+  // (components/dashboard/helpers.ts:154 — bg-white, text-slate-900, slate border).
+  //
+  // Rendered ONLY when onBuzzer is supplied — a van with no buzzers gets the pre-existing card exactly.
+  const buzzerChip = !onBuzzer ? null : (
+    <button
+      onClick={(e) => { e.stopPropagation(); onBuzzer(order) }}
+      title={order.buzzer_number != null ? `Buzzer ${order.buzzer_number} — tap to change` : 'Tap to give a buzzer'}
+      className={`flex-shrink-0 text-[10px] font-black px-1.5 py-0.5 rounded-full border whitespace-nowrap transition-colors ${
+        order.buzzer_number != null
+          ? 'bg-white text-slate-900 border-slate-300 hover:border-slate-400'
+          : 'bg-transparent text-slate-400 border-slate-200 hover:text-slate-600 hover:border-slate-300'
+      }`}>
+      {/* The number is ALWAYS spelled out beside the icon — the icon alone would be a second
+          colour-only channel, and this chip is read at a glance next to a red/amber header. */}
+      {order.buzzer_number != null ? `🔔 ${order.buzzer_number}` : '🔔'}
+    </button>
   )
 
   /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
@@ -529,7 +569,9 @@ export function OrderCard({
         <div className={`w-full px-3 py-2 ${headerCls}`}>
           <div className="flex items-baseline justify-between gap-1">
             <span className="text-lg font-bold text-slate-900 truncate">#{order.id}</span>
-            <span className="text-xs text-slate-600 flex-shrink-0 inline-flex items-center gap-1">
+            {/* Buzzer chip — row 1, beside the order number. See the buzzerChip note. */}
+            {buzzerChip}
+            <span className="text-xs text-slate-600 flex-shrink-0 inline-flex items-center gap-1 ml-auto">
               {timeLabel}
               {offsetLabel && (isLate
                 ? <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-600 text-white">{offsetLabel}</span>
@@ -564,6 +606,9 @@ export function OrderCard({
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold flex-shrink-0">#{order.id}</span>
                 {timeLabel && <span className="text-lg font-bold flex-shrink-0">· {timeLabel}</span>}
+                {/* Buzzer chip — the identity cluster, before the ml-auto offset group. See the
+                    buzzerChip note for why this row and not row 2. */}
+                {buzzerChip}
                 {/* The status badge moved DOWN to row 2 (between channel/name and price) so this top
                     row has room for the lateness readout without clipping. Late = a RED PILL; otherwise
                     the plain "in Xm"/age readout. */}
@@ -606,7 +651,13 @@ export function OrderCard({
             <>
               {/* Row 1 — order # (left) + total (right) */}
               <div className="flex items-baseline justify-between gap-2">
-                <span className="text-3xl font-bold">#{order.id}</span>
+                <div className="flex items-baseline gap-1.5 min-w-0">
+                  <span className="text-3xl font-bold">#{order.id}</span>
+                  {/* Buzzer chip — left cluster with the order number. At the 240px KDS column this is
+                      the only row with slack; row 2 already carries name + Contact + time + late pill.
+                      See the buzzerChip note. */}
+                  {buzzerChip}
+                </div>
                 <div className="flex items-baseline gap-1.5 flex-shrink-0">
                   <span className="font-bold text-base">£{Number(order.total).toFixed(2)}</span>
                   {paidChip}

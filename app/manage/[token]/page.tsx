@@ -41,6 +41,7 @@ import ExtrasEditor from '@/components/manage/ExtrasEditor'
 import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
+import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
@@ -52,7 +53,7 @@ interface Subcategory { id: string; category_id: string; name: string; sort_orde
 interface ModifierGroup { id: string; name: string; is_required: boolean; min_choices: number; max_choices: number }
 interface ModifierOption { id: string; group_id: string; name: string; price_adjustment: number; type: string; sort_order: number; allergens?: string[]; dietary_info?: string[]; available?: boolean; stock_count?: number | null }
 interface Bundle { id: string; name: string; description: string | null; bundle_price: number; original_price: number | null; is_available: boolean; apply_to_new_events: boolean; start_time: string | null; end_time: string | null; slot_1_category: string | null; slot_2_category: string | null; slot_3_category: string | null; slot_4_category: string | null; slot_5_category: string | null; slot_6_category: string | null; stock_warning?: string | null }
-interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null }
+interface Van { id: string; truck_id: string; name: string; kds_token: string; active: boolean; auto_pause_on_offline: boolean; show_cooking_step: boolean; order_ready_enabled: boolean; kitchen_capacity: number | null; capacity_window_mins?: number | null; buzzer_count?: number | null }
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
@@ -7204,7 +7205,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
 
   const updateVanSetting = async (
     vanId: string,
-    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins',
+    field: 'show_cooking_step' | 'auto_pause_on_offline' | 'order_ready_enabled' | 'kitchen_capacity' | 'capacity_window_mins' | 'buzzer_count',
     value: boolean | number | null
   ) => {
     setVans(prev => prev.map(v => v.id === vanId ? { ...v, [field]: value } : v))
@@ -8173,6 +8174,58 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   }`} />
                 </button>
               </div>
+
+              {/* ── BUZZERS — VAN-LEVEL, because they are physical stock in one vehicle ──────────────
+                  ⚠️ Writes truck_vans.buzzer_count via update_van_settings, NOT a trucks column. A
+                  two-van truck can have buzzers in one and not the other, and kitchen_capacity /
+                  order_ready_enabled already put per-vehicle service settings here.
+                  ⚠️ update_van_settings' destructure is an ALLOWLIST that drops unlisted keys silently
+                  (app/api/manage/route.ts) — `buzzer_count` was added there AND to get_vans' named
+                  select in the same change, or this would appear to save and write nothing.
+                  Render/save shape copied from the "Order-ready step" row directly above and from the
+                  show_paid_step / takes_cash pair in Order settings: label + explanation on the left,
+                  toggle on the right, optimistic setVans then the write. The count select is nested
+                  beneath as a CHILD because it is meaningless without the toggle — the same nesting
+                  treatment as "Do you take cash?" under the paid step. */}
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Do you hand out buzzers for collection?</p>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Record which buzzer you gave each customer, so you know who to look for when their food is ready.
+                  </p>
+                </div>
+                <button
+                  onClick={() => updateVanSetting(van.id, 'buzzer_count', van.buzzer_count == null ? BUZZER_DEFAULT_COUNT : null)}
+                  className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${
+                    van.buzzer_count != null ? 'bg-green-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                    van.buzzer_count != null ? 'translate-x-6' : 'translate-x-1'
+                  }`} />
+                </button>
+              </div>
+              {/* CONDITIONALLY RENDERED, unlike the cash row's disabled-with-a-reason treatment: there
+                  is no useful thing to say about a count when the van has no buzzers, and a disabled
+                  1-20 select showing "10" would read as a stored value that is not stored. */}
+              {van.buzzer_count != null && (
+                <div className="flex items-center justify-between gap-3 pl-4">
+                  <p className="text-sm text-slate-700">How many buzzers do you have?</p>
+                  <select
+                    value={van.buzzer_count}
+                    aria-label="Number of buzzers"
+                    onChange={e => updateVanSetting(van.id, 'buzzer_count', parseInt(e.target.value))}
+                    className="border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  >
+                    {/* 1..BUZZER_MAX_COUNT, plus the stored value if it is somehow outside that range —
+                        the same append idiom the dashboard's capacity-window select uses, so an
+                        out-of-range stored value is shown rather than silently coerced. */}
+                    {Array.from({ length: BUZZER_MAX_COUNT }, (_, i) => i + 1)
+                      .concat(van.buzzer_count > BUZZER_MAX_COUNT ? [van.buzzer_count] : [])
+                      .map(n => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+              )}
 
               {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
                   CATEGORY · ITEMS · PREP · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
