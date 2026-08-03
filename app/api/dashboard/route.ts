@@ -13,7 +13,7 @@ import { detectCapacityBreaches, type CapacityBreach } from '@/lib/capacity-brea
 import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
-import { resolveBuzzerPrompt } from '@/lib/buzzer'
+import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -611,6 +611,14 @@ export async function GET(req: NextRequest) {
     slots:   slotsWithCapacity,
     productionSlotUnits: dashProductionSlotUnits,   // raw occupancy → offline client re-runs the engine (Piece 1)
     capacityBreaches,                               // Piece 2 — slots genuinely over a ceiling (reconnect flag)
+    // ── BUZZER LOSSES (phase 2) — SERVER-COMPUTED, exactly like capacityBreaches. ────────────────
+    // Orders left without a buzzer by AUTOMATIC conflict resolution on offline replay, and still open.
+    // Derived from the `orders` we already fetched — no extra query. The in-use filter is the same
+    // BUZZER_IN_USE_STATUS_SET the grid uses; a collected/cancelled/rejected order had already
+    // released its buzzer, so there is nothing for the operator to act on and no banner.
+    buzzerLosses: (orders || [])
+      .filter((o: any) => o.buzzer_lost_at && o.buzzer_number == null && BUZZER_IN_USE_STATUS_SET.has(o.status ?? ''))
+      .map((o: any) => ({ order_key: o.order_key, id: String(o.id), customer_name: o.customer_name ?? '', lost_at: o.buzzer_lost_at })),
     date,
     categoryOrder,
     itemCategoryMap,

@@ -127,12 +127,17 @@ export async function gatedAction(opts: {
   provisional_id?: string
   online?: boolean
   expectedFrom?: string[]   // merged into the QUEUED body only (the online attempt stays byte-identical)
+  /** Extra keys merged into the QUEUED body only, same contract as expectedFrom. Used by 'buzzer' ops
+   *  to mark themselves `replay: true` and to carry the order's placed_at, so the server can arbitrate
+   *  a two-device conflict — neither of which must ever ride on an online request, where the operator
+   *  was present and their decision is not something to arbitrate. */
+  queuedExtra?: Record<string, unknown>
 }): Promise<GateResult> {
-  const { url, body, kind, order_key, provisional_id, online, expectedFrom } = opts
+  const { url, body, kind, order_key, provisional_id, online, expectedFrom, queuedExtra } = opts
 
   const queue = async (): Promise<GateResult> => {
     // expected_from rides ONLY on the replayed op → online requests are unchanged; the server guards replays.
-    const queuedBody = expectedFrom ? { ...body, expected_from: expectedFrom } : body
+    const queuedBody = { ...body, ...(expectedFrom ? { expected_from: expectedFrom } : {}), ...(queuedExtra ?? {}) }
     await enqueue({ kind, order_key, url, body: queuedBody, provisional_id })
     return { ok: false, queued: true, provisional_id, order_key }
   }

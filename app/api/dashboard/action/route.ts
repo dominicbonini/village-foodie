@@ -1116,7 +1116,9 @@ export async function POST(req: NextRequest) {
         //      matches the ledger write at the foot of this handler (:1189-1191) — the worst case is
         //      one number appearing on two cards until an operator re-assigns, which is visible and
         //      fixable, whereas refusing the order strands someone at the hatch.
-        //      ⚠️ PHASE 2 replaces the two-statement assignBuzzer with an RPC (see lib/buzzer.ts).
+        //      ✅ PHASE 2: assignBuzzer is now ONE RPC in ONE TRANSACTION, so the "one number on two
+        //      cards" window this comment used to warn about is closed. The call is unchanged and
+        //      still non-replay: a walk-up placed from the grid is an operator-confirmed take.
         if (insertPayload.buzzer_number != null && manualOrderKey) {
           try {
             await assignBuzzer(supabase, {
@@ -1603,19 +1605,42 @@ export async function POST(req: NextRequest) {
       }
       // The order's OWN event scopes the clear — never a client-supplied event id, so a stale or
       // hostile client cannot free a buzzer on some other event.
-      // Only event_id is read. Status is deliberately NOT checked: an operator correcting the record on
-      // an already-collected order is legitimate, and refusing it would be friction with no safety gain.
+      // Status is deliberately NOT checked: an operator correcting the record on an already-collected
+      // order is legitimate, and refusing it would be friction with no safety gain.
       const { data: target } = await supabase.from('orders')
-        .select('event_id').eq('order_key', orderKey).eq('truck_id', truck.id).maybeSingle()
+        .select('event_id, placed_at').eq('order_key', orderKey).eq('truck_id', truck.id).maybeSingle()
       if (!target) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+      // ── REPLAY MARKER — QUEUED OPS ONLY ────────────────────────────────────────────────────────
+      // `replay` rides on the outbox body alone (gatedAction's queuedExtra), never on an online
+      // request. It is what switches assign_buzzer_atomic from "the operator confirmed this take, just
+      // do it" to "nobody was asked — arbitrate on placed_at and flag the loser".
+      const isReplay = body.replay === true
+      // ── THE OP'S CARRIED placed_at ─────────────────────────────────────────────────────────────
+      // A replayed buzzer op carries the ORDER'S placed_at. It is REPAIR-ONLY: the RPC arbitrates on
+      // the ROW's value, and an operator-created order already has one (client-minted at the tap), so
+      // this fires only for a pre-migration row that has none. Writing it makes the carried value
+      // load-bearing rather than decorative, and gives conflict resolution something better than
+      // created_at to compare. Never overwrites an existing placed_at.
+      if (isReplay && !(target as any).placed_at && typeof body.placedAt === 'string' && body.placedAt) {
+        await supabase.from('orders')
+          .update({ placed_at: body.placedAt })
+          .eq('order_key', orderKey).eq('truck_id', truck.id).is('placed_at', null)
+      }
       try {
-        const { clearedFrom } = await assignBuzzer(supabase, {
+        const { assigned, clearedFrom, lost } = await assignBuzzer(supabase, {
           truckId: truck.id,
           eventId: (target as any).event_id ?? null,
           orderKey,
           buzzerNumber,
+          replay: isReplay,
         })
-        return NextResponse.json({ success: true, buzzerNumber, clearedFrom })
+        // 🔴 A LOST REPLAY IS STILL A 2xx, AND THAT IS DELIBERATE. `assigned: false` means conflict
+        // resolution ran and this order lost the buzzer on placed_at — the server did exactly what it
+        // was asked to. Returning 409 would flag the op 'conflict' in the outbox and leave it sitting
+        // there for a human to re-run, re-running a decision that has already been made correctly.
+        // The operator is told through the banner instead (orders.buzzer_lost_at), which names the
+        // order and offers Assign — an actionable prompt rather than a dead queue entry.
+        return NextResponse.json({ success: true, assigned, buzzerNumber: assigned ? buzzerNumber : null, clearedFrom, lost })
       } catch (err) {
         console.error(`[set_buzzer] failed for order_key=${orderKey} truck_id=${truck.id}:`, err)
         return NextResponse.json({ error: 'Could not save the buzzer number' }, { status: 500 })

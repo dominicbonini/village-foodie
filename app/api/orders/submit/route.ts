@@ -928,35 +928,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to save order' }, { status: 500 })
     }
 
-    // ── placed_at ON THE CUSTOMER PATH ──────────────────────────────────────────────────────────────
-    // A SECOND STATEMENT, NOT PART OF THE INSERT, AND THAT IS A PHASE-1 SCOPE DECISION.
-    // The customer order is inserted by the place_order_atomic RPC, whose INSERT column list is fixed
-    // SQL (supabase/migrations/20260728_orders_total_minor_deal_savings.sql:87-112). Adding placed_at
-    // there means a `create or replace function` body change — writing an RPC, which phase 1 explicitly
-    // excludes. So it is set immediately after, from the route.
-    //
-    // ⚠️ SERVER-MINTED HERE, unlike the operator path where the CLIENT mints it. That asymmetry is
-    // correct, not an inconsistency: placed_at exists because an OFFLINE operator order is inserted
-    // long after it was sold, and only the device that took it knows when. A customer order is placed
-    // online, synchronously, in this request — request time IS commit time, and trusting a customer's
-    // phone clock would be strictly worse than reading our own.
-    //
-    // BEST-EFFORT. The order is committed and must stay committed; a failure here leaves placed_at
-    // null, which every reader already treats as unknown and falls back to created_at — and on this
-    // path created_at is the right answer anyway. Never fail an order over it.
-    //
-    // ⚠️ PHASE 2: fold this into place_order_atomic's INSERT and delete this block. It costs one extra
-    // UPDATE per customer order and (via orders_set_updated_at) one extra updated_at bump on a row no
-    // client has read yet — harmless, but not where this belongs long-term.
-    try {
-      const { error: placedErr } = await supabase
-        .from('orders')
-        .update({ placed_at: new Date().toISOString() })
-        .eq('order_key', order.order_key)
-      if (placedErr) console.error('[submit] placed_at write failed (order IS saved; readers fall back to created_at):', placedErr.message)
-    } catch (err) {
-      console.error('[submit] placed_at write threw (order IS saved; readers fall back to created_at):', err)
-    }
+    // ── placed_at — SET INSIDE place_order_atomic'S INSERT (phase 2) ────────────────────────────────
+    // Phase 1 wrote it here, as a best-effort UPDATE right after the RPC returned, because the RPC's
+    // INSERT column list is fixed SQL and phase 1 excluded touching it. That block is gone:
+    // 20260804_place_order_atomic_placed_at.sql folds `placed_at => now()` into the insert, so the
+    // customer path is one statement again and there is no window in which the row exists without it.
+    // 🔴 STILL SERVER-MINTED, unchanged and on purpose. placed_at exists because an OFFLINE OPERATOR
+    // order is inserted long after it was sold and only the taking device knows when. A customer order
+    // is placed online, synchronously, inside that transaction — request time IS commit time — so
+    // reading our own clock beats trusting a customer's phone. Do not start sending it from the client
+    // on this path.
 
     // ── Record upsell events ──────────────────────────────────────────────────
     if (upsellEvents?.length) {

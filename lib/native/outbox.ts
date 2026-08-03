@@ -50,7 +50,17 @@ function isOpShape(v: unknown): v is OutboxOp {
 // SAME target+action COALESCES (see enqueue) → absolute last-write-wins locally, fewer replays. Idempotent on
 // replay (set_stock is an absolute UPSERT). Excluded from the status-op paths (listPendingStatusOps filters
 // kind==='status'), so it never touches the order overlay.
-export type OutboxKind = 'create' | 'status' | 'edit' | 'stock'
+// 'buzzer' — an offline buzzer assignment/deselect (set_buzzer). Carries a REAL order_key, so it
+// satisfies the drain's malformed-guard on its own. Its queued body also carries the ORDER'S placed_at,
+// which is what server-side conflict resolution arbitrates on when two devices hand out the same
+// number (later placed_at keeps it — see 20260804_assign_buzzer_atomic.sql).
+// 🔴 NEVER COALESCED, unlike 'stock'. A buzzer number is a PHYSICAL FACT about a pager in a
+// customer's hand; it cannot be re-derived from anything. Dropping an older op for a newer one on the
+// same order would be safe only if the last write were the whole truth, and it is not — the
+// intermediate assignment may be the one that raced another device. Every op replays.
+// ⚠️ NOT the declared-but-unused 'edit' kind. That kind has no call site anywhere, has never been
+// exercised on replay, and reusing it would mean a first outing for two things at once.
+export type OutboxKind = 'create' | 'status' | 'edit' | 'stock' | 'buzzer'
 
 export interface OutboxOp {
   op_id: string          // uuid — dedupe / logging

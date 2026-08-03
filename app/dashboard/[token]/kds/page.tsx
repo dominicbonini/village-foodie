@@ -463,8 +463,9 @@ export default function KdsPage() {
 
   // ── THE BUZZER WRITE (KDS) ───────────────────────────────────────────────────────────────────────
   // Mirrors the dashboard's saveBuzzer exactly. 🔴 NOT the `edit` action (which forces
-  // status:'modified', re-books capacity and emails the customer) and 🔴 NOT gatedAction — phase 1 is
-  // ONLINE ONLY; there is no outbox kind for a buzzer and adding one is phase 2 with the two-row RPC.
+  // status:'modified', re-books capacity and emails the customer).
+  // ✅ PHASE 2 — through gatedAction, kind:'buzzer', with the same queued-only replay marker and
+  // placed_at. The reasoning is recorded on the dashboard copy and in lib/native/outbox.ts.
   // keepOpen ⇒ the order already had a buzzer when the picker opened, so a change leaves it up and Done
   // closes it. `prior` is read from the LIVE orders list because buzzerTarget is the snapshot taken
   // when the chip was tapped. Both mirror the dashboard copy of this handler.
@@ -479,12 +480,25 @@ export default function KdsPage() {
     setOrders(prev => prev.map(o => o.order_key in next ? { ...o, buzzer_number: next[o.order_key] } : o))
     setSavingBuzzer(true)
     try {
-      const res = await fetch('/api/dashboard/action', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, pin, action: 'set_buzzer', order_key: orderKey, buzzerNumber }),
+      const placedAt = orders.find(o => o.order_key === orderKey)?.placed_at ?? null
+      const result = await gatedAction({
+        url: '/api/dashboard/action',
+        body: { token, pin, action: 'set_buzzer', order_key: orderKey, buzzerNumber },
+        kind: 'buzzer', order_key: orderKey, online: isOnline(),
+        queuedExtra: { replay: true, placedAt },
       })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || 'write failed')
+      if (result.queued) {
+        // Queued durably. The optimistic guard HOLDS until replay — dropping it would let the next poll
+        // revert a pager that is already in a customer's hand.
+        showToast(buzzerNumber == null
+          ? `Buzzer ${prior ?? ''} removed — saved on this device, will sync when back online`
+          : `Buzzer ${buzzerNumber} saved on this device — will sync when back online`)
+        if (!keepOpen) setBuzzerTarget(null)
+        setSavingBuzzer(false)
+        return
+      }
+      const data = result.data ?? {}
+      if (!result.ok) throw new Error(data.error || 'write failed')
       const from = data.clearedFrom?.id ? ` (taken from #${data.clearedFrom.id})` : ''
       // Names the number that went back to the rack — see the dashboard copy of this handler.
       showToast(buzzerNumber == null

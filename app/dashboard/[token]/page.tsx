@@ -65,6 +65,7 @@ import { DemoModeBanner } from '@/components/DemoModeBanner'
 import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
+import { BuzzerLostBanner, type BuzzerLoss } from '@/components/dashboard/BuzzerLostBanner'
 import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
@@ -284,6 +285,11 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // The order whose buzzer grid is open (card path). Null ⇒ closed.
   const[buzzerTarget,setBuzzerTarget]=useState<Order|null>(null)
   const[savingBuzzer,setSavingBuzzer]=useState(false)
+  // Conflict-resolution losses (phase 2). Server-computed like capacityBreaches.
+  // 🔴 dismissal is a SET of order_keys, not a single signature: dismissing #12 must never suppress
+  // #15 later in the same service. See the note in BuzzerLostBanner.
+  const[buzzerLosses,setBuzzerLosses]=useState<BuzzerLoss[]>([])
+  const[dismissedBuzzerLosses,setDismissedBuzzerLosses]=useState<Set<string>>(new Set())
   const[kitchenCapacity,setKitchenCapacity]=useState<number|null>(null)
   const[capacityWindowMins,setCapacityWindowMins]=useState<number>(5)
   // Frozen server occupancy + server catConfigs (with countsToCapacity) — inputs the OFFLINE capacity re-run
@@ -673,6 +679,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       setExtraWaitStartedAt(applyPending('extraWaitStartedAt',data.truck?.extra_wait_started_at||null))
       if(data.productionSlotUnits !== undefined) setProductionSlotUnits(data.productionSlotUnits || {})   // frozen occupancy for the offline re-run
       if(data.capacityBreaches !== undefined) setCapacityBreaches(data.capacityBreaches || [])            // Piece 2 — over-capacity slots (reconnect flag)
+      if(data.buzzerLosses !== undefined) setBuzzerLosses(data.buzzerLosses || [])                        // phase 2 — orders that lost a buzzer to conflict resolution
       if(data.payments !== undefined) setPayments(data.payments || {})
       if(data.currentUserName !== undefined) setCurrentUserName(data.currentUserName)
       if(data.userRole !== undefined) setUserRole(data.userRole)
@@ -1282,8 +1289,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   // 🔴 Deliberately NOT the `edit` action: edit forces status:'modified', re-books production slot
   // capacity and EMAILS THE CUSTOMER. Handing over a pager does none of those. set_buzzer writes
   // buzzer_number and nothing else — see the handler in app/api/dashboard/action/route.ts.
-  // ⚠️ NOT routed through gatedAction. Phase 1 is ONLINE ONLY; there is no outbox kind for this and
-  // adding one is phase 2, together with the two-row RPC. Offline, this fails and says so.
+  // ✅ PHASE 2 — ROUTED THROUGH gatedAction, kind:'buzzer'. Offline on native this is queued durably
+  // rather than lost. 🔴 That matters more here than for a status op: a buzzer number is a PHYSICAL
+  // FACT about a pager already in a customer's hand and cannot be re-derived from anything, so losing
+  // the write means nobody has a record of it. The queued body carries the order's placed_at and a
+  // `replay: true` marker (queuedExtra — online requests stay byte-identical), which is what lets the
+  // server arbitrate a two-device conflict instead of last-writer-wins.
   // keepOpen (from the grid) ⇒ the order already had a buzzer when the picker opened, so a change must
   // NOT close it: the operator is switching and looking, and Done is what ends that. A first assignment
   // still closes, exactly as before.
@@ -1305,12 +1316,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     setOrders(prev=>prev.map(o=>o.order_key in next?{...o,buzzer_number:next[o.order_key]}:o))
     setSavingBuzzer(true)
     try{
-      const res=await fetch('/api/dashboard/action',{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({token,pin,action:'set_buzzer',order_key:orderKey,buzzerNumber})
+      const placedAt=orders.find(o=>o.order_key===orderKey)?.placed_at??null
+      const result=await gatedAction({
+        url:'/api/dashboard/action',
+        body:{token,pin,action:'set_buzzer',order_key:orderKey,buzzerNumber},
+        kind:'buzzer',order_key:orderKey,online:isOnline(),
+        // QUEUED-ONLY. `replay` flips the server to conflict-resolution mode; placedAt is the value it
+        // arbitrates on (repair-only — the row normally already has it).
+        queuedExtra:{replay:true,placedAt},
       })
-      const data=await res.json().catch(()=>({}))
-      if(!res.ok)throw new Error(data.error||'write failed')
+      if(result.queued){
+        // Durably queued. The optimistic patch already applied above and its guard HOLDS — do not drop
+        // it here, or the next poll would revert the cell while the op is still waiting to replay.
+        showToast(buzzerNumber==null
+          ?`Buzzer ${prior??''} removed — saved on this device, will sync when back online`
+          :`Buzzer ${buzzerNumber} saved on this device — will sync when back online`)
+        if(!keepOpen)setBuzzerTarget(null)
+        setSavingBuzzer(false)
+        return
+      }
+      const data=result.data??{}
+      if(!result.ok)throw new Error(data.error||'write failed')
       // Name the order the buzzer came FROM when one was taken — the operator has just been told in the
       // confirm that it would happen, and the toast is the receipt that it did.
       const from=data.clearedFrom?.id?` (taken from #${data.clearedFrom.id})`:''
@@ -2233,6 +2259,16 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Piece 2 — reconnect capacity-exceeded flag (detection only, non-blocking, dismissible). Fed by
           the server's detectCapacityBreaches; a fresh fetchAll after a drain refreshes it. */}
       <CapacityBreachBanner breaches={capacityBreaches} dismissedSig={breachDismissedSig} onDismiss={setBreachDismissedSig} />
+      {/* Assign opens the STANDARD grid for that order — same component, same rules. The order is
+          looked up live in `orders` so the grid gets the real row (and its current buzzer, which is
+          null by definition here); if it has since left the fetched window the banner row simply does
+          nothing rather than opening a grid against a phantom. */}
+      <BuzzerLostBanner
+        losses={buzzerLosses}
+        dismissedKeys={dismissedBuzzerLosses}
+        onDismiss={(k)=>setDismissedBuzzerLosses(prev=>{const n=new Set(prev);n.add(k);return n})}
+        onAssign={(l)=>{const ord=orders.find(o=>o.order_key===l.order_key);if(ord)setBuzzerTarget(ord)}}
+      />
       {/* Persistent OFFLINE chip — shown on EVERY tab whenever offline (single isOffline source), so the
           operator always knows. Complements OfflineBanner (order-focused, native-only): this signals the
           global offline state + what's locked, on Settings/Stock too. Slim shrink-0 bar in the app-shell. */}

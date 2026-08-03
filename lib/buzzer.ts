@@ -249,8 +249,13 @@ export function echoedBuzzerKeys(serverOrders: BuzzerPatchable[], peek: PendingB
 // ── THE SERVER WRITE ─────────────────────────────────────────────────────────────────────────────
 
 export interface AssignBuzzerResult {
+  /** Did the TARGET end up with the buzzer? False only on a replay it lost on placed_at. */
+  assigned: boolean
   /** The order the number was taken FROM, if any — so the caller can report it. */
   clearedFrom: { order_key: string; id: string } | null
+  /** The order left WITHOUT a buzzer by automatic conflict resolution (never by a confirmed take).
+   *  May be the target itself when the replay lost. Drives the operator banner. */
+  lost: { order_key: string; id: string } | null
 }
 
 /**
@@ -277,43 +282,33 @@ export async function assignBuzzer(
     eventId: string | null
     orderKey: string
     buzzerNumber: number | null
+    /** TRUE only for an offline op being replayed. Switches the RPC from "the operator confirmed this
+     *  take, just do it" to "nobody was asked — arbitrate on placed_at and flag the loser". */
+    replay?: boolean
   },
 ): Promise<AssignBuzzerResult> {
-  const { truckId, eventId, orderKey, buzzerNumber } = args
-  let clearedFrom: { order_key: string; id: string } | null = null
+  const { truckId, eventId, orderKey, buzzerNumber, replay = false } = args
 
-  // (1) CLEAR FIRST — see the ordering note above. Same event, same number, still in use, not this
-  //     order. Scoped by truck_id like every other write in the action route.
-  if (buzzerNumber != null && eventId) {
-    const { data: holders } = await supabase
-      .from('orders')
-      .select('order_key, id')
-      .eq('truck_id', truckId)
-      .eq('event_id', eventId)
-      .eq('buzzer_number', buzzerNumber)
-      .neq('order_key', orderKey)
-      .in('status', BUZZER_IN_USE_STATUSES as unknown as string[])
-    const victim = (holders ?? [])[0] ?? null
-    if (victim) {
-      const { error: clearErr } = await supabase
-        .from('orders')
-        .update({ buzzer_number: null })
-        .eq('order_key', victim.order_key)
-        .eq('truck_id', truckId)
-      if (clearErr) throw new Error(clearErr.message)
-      clearedFrom = { order_key: victim.order_key, id: String(victim.id) }
-    }
+  // ── ONE RPC, ONE TRANSACTION (phase 2) ─────────────────────────────────────────────────────────
+  // This used to be two sequential UPDATEs from the route, with the clear deliberately first and a
+  // documented window in which a buzzer could read as free while a customer held it. That window is
+  // closed: assign_buzzer_atomic does both rows in one transaction, so the number is never on two
+  // orders and never on neither.
+  // It also owns REPLAY CONFLICT RESOLUTION (later placed_at keeps the buzzer) — see the migration
+  // 20260804_assign_buzzer_atomic.sql, including why wall-clock is acceptable HERE and nowhere else
+  // in offline replay.
+  const { data, error } = await supabase.rpc('assign_buzzer_atomic', {
+    p_truck_id: truckId,
+    p_event_id: eventId,
+    p_order_key: orderKey,
+    p_buzzer: buzzerNumber,
+    p_replay: replay,
+  })
+  if (error) throw new Error(error.message)
+  const r = (data ?? {}) as { assigned?: boolean; cleared_from?: { order_key: string; id: string } | null; lost?: { order_key: string; id: string } | null }
+  return {
+    assigned: r.assigned !== false,
+    clearedFrom: r.cleared_from ? { order_key: r.cleared_from.order_key, id: String(r.cleared_from.id) } : null,
+    lost: r.lost ? { order_key: r.lost.order_key, id: String(r.lost.id) } : null,
   }
-
-  // (2) SET on the target. Only buzzer_number — nothing else is in this payload, and nothing else
-  //     should ever be added to it. (orders_set_updated_at still bumps updated_at, which is correct:
-  //     the client merge in lib/orders/mergeOrders.ts needs a newer row version to accept this read.)
-  const { error: setErr } = await supabase
-    .from('orders')
-    .update({ buzzer_number: buzzerNumber })
-    .eq('order_key', orderKey)
-    .eq('truck_id', truckId)
-  if (setErr) throw new Error(setErr.message)
-
-  return { clearedFrom }
 }
