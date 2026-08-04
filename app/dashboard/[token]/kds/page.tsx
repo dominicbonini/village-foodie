@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
-import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
+import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer, buzzerPill } from '@/lib/buzzer'
 import { KeepAwakePrompt } from '@/components/dashboard/KeepAwakePrompt'
 import { AppLink } from '@/components/native/AppLink'   // internal-route anchor: soft-nav in native, plain <a> on web
 import { isDemoIdentifier } from '@/lib/demo'
@@ -559,9 +559,17 @@ export default function KdsPage() {
       // Committed 'ready' → defer the email 4s + show a stacked undo toast (undo cancels the email +
       // reverts the status; the order then re-appears in the cook list on refetch).
       if (action === 'ready' && result.ok) {
-        const num = orders.find(o => o.order_key === orderKey)?.id ?? ''
+        const readyOrder = orders.find(o => o.order_key === orderKey)
+        const num = readyOrder?.id ?? ''
         scheduleReadyEmail(orderKey)
-        showToast(`Order #${num} ready`, 'success', { duration: 4000, action: { label: '↩ Undo', run: () => undoReady(orderKey, num) } })
+        // Buzzer in the ready toast — see the dashboard copy of this call for the full reasoning.
+        // 🔴 The pill markup below is BYTE-IDENTICAL to the dashboard's so the two surfaces cannot
+        // render differently; no buzzer ⇒ the original string, unchanged.
+        showToast(
+          readyOrder?.buzzer_number != null
+            ? <>Order #{num} ready · {buzzerPill(readyOrder.buzzer_number)}</>
+            : `Order #${num} ready`,
+          'success', { duration: 4000, action: { label: '↩ Undo', run: () => undoReady(orderKey, num) } })
       }
     } catch {}
     setActionLoading(null)

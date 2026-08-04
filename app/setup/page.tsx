@@ -20,7 +20,7 @@
 // pretend, the frame shows the real step list with the unbuilt ones visibly pending, and finishing
 // identity lands them on their actual dashboard. Honest, and it is where they can do something.
 
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 
@@ -38,6 +38,42 @@ function SetupWizard() {
   const [name, setName] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // ── DO NOT ASK FOR A NAME WE ALREADY HAVE (A3) ──────────────────────────────────────────────────
+  // 🔴 This page used to render the truck-name form UNCONDITIONALLY, with no lookup of any kind. An
+  // operator who finished the in-modal wizard (account + truck in ~3 seconds) and then clicked their
+  // confirmation email a minute later was landed here and asked to name a truck that already existed —
+  // and create_truck's idempotence guard then returned the existing row and DISCARDED what they typed.
+  // Asking a question whose answer is thrown away is worse than not asking.
+  //
+  // So: ask the server first, and render nothing until it answers.
+  //   • truck exists → straight to the destination the resumed path produces TODAY. ⚠️ That destination
+  //     is preserved EXACTLY, ?import=demo and all — removing the question is this change; what
+  //     ?import=demo then does is a separate concern and is not touched here.
+  //   • no truck    → render the form, exactly as before.
+  // router.replace, not push: this page is not a step they should be able to go BACK to.
+  //
+  // ⚠️ `checking` starts TRUE so the form cannot flash before the answer arrives. A failed check falls
+  // through to the form — the old behaviour — because a network blip must not strand someone who
+  // genuinely has no truck yet.
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const res = await fetch('/api/setup?check=truck')
+        const data = await res.json().catch(() => ({}))
+        if (cancelled) return
+        if (data?.ok && data.truck?.dashboard_token) {
+          router.replace(`/manage/${encodeURIComponent(data.truck.dashboard_token)}?import=demo`)
+          return   // stay in `checking` — the redirect is in flight, never show the form
+        }
+      } catch { /* fall through to the form */ }
+      if (!cancelled) setChecking(false)
+    })()
+    return () => { cancelled = true }
+  }, [router])
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,6 +102,24 @@ function SetupWizard() {
     }
   }
 
+  // Still asking whether they already have a truck (A3). The chrome renders so the page does not flash
+  // white, but the QUESTION does not — that is the whole point of the check.
+  if (checking) {
+    return (
+      <div className="h-dvh flex flex-col bg-slate-50">
+        <header className="bg-slate-900 px-4 py-3 shrink-0">
+          <div className="max-w-lg mx-auto flex items-center justify-between">
+            <HatchGrabWordmark variant="dark" />
+            <span className="text-xs text-slate-400">Setting up</span>
+          </div>
+        </header>
+        <div className="flex-1 min-h-0 flex items-center justify-center">
+          <span className="w-6 h-6 border-2 border-slate-200 border-t-orange-500 rounded-full animate-spin" aria-label="Loading" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="h-dvh flex flex-col bg-slate-50">
       {/* HEADER — shrink-0 */}
@@ -84,9 +138,20 @@ function SetupWizard() {
               Email confirmed — thank you.
             </div>
           )}
+          {/* ⚠️ NO RESEND IS PROMISED, because there is no resend path for SIGNUP verification.
+              /api/auth/resend-verification reads `operator_email_changes` — the email-CHANGE table, a
+              different one. Saying "we'll send you a fresh one" named a mechanism that does not exist. */}
           {verify === 'expired' && (
             <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
-              That confirmation link has expired. We&apos;ll send you a fresh one before you go live.
+              That confirmation link has expired. Get in touch and we&apos;ll sort it before you go live.
+            </div>
+          )}
+          {/* 'invalid' previously rendered NOTHING, so a dead or malformed link looked exactly like a
+              normal page load and the operator was told nothing at all. Same amber treatment as
+              'expired' — both mean "that link did not work", neither blocks anything. (A2) */}
+          {verify === 'invalid' && (
+            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
+              That confirmation link didn&apos;t work. Get in touch and we&apos;ll sort it before you go live.
             </div>
           )}
 

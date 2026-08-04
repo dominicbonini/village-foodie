@@ -66,7 +66,7 @@ import { DemoGetStarted } from '@/components/DemoGetStarted'
 import { CapacityBreachBanner } from '@/components/dashboard/CapacityBreachBanner'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
 import { BuzzerLostBanner, type BuzzerLoss } from '@/components/dashboard/BuzzerLostBanner'
-import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer } from '@/lib/buzzer'
+import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimisticBuzzer, buzzerPill } from '@/lib/buzzer'
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
@@ -1619,7 +1619,20 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         showToast(`Order #${num} collected`,'success',{duration:7000,action:{label:'↩ Undo',run:()=>doAction('undo_collected',orderKey)}})
       }else if(action==='ready'){
         scheduleReadyEmail(orderKey)
-        showToast(`Order #${num} ready`,'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
+        // READY IS THE MOMENT THE BUZZER IS PRESSED, so the number belongs here and not only on the card.
+        // 🔴 NO BUZZER ⇒ THE ORIGINAL STRING, BYTE-IDENTICAL. A conditional suffix, never a placeholder:
+        // "Buzzer —" or an empty pill would be noise on the majority of orders.
+        // The pill is SOLID WHITE, not the undo button's bg-white/20: it echoes that button's shape
+        // vocabulary (rounded, padded, font-black) but has to carry text at 17.85:1, because the toast
+        // ground is bg-green-600 + white = 3.30:1 — below the 4.5:1 floor for its 14px bold text.
+        // ⚠️ That 3.30:1 is a REAL pre-existing defect on EVERY success toast in the app. It is
+        // deliberately NOT fixed here (darkening to green-700 would reach 5.02:1 but touches every
+        // toast) — it is its own change.
+        showToast(
+          done?.buzzer_number!=null
+            ? <>Order #{num} ready · {buzzerPill(done.buzzer_number)}</>
+            : `Order #${num} ready`,
+          'success',{duration:4000,action:{label:'↩ Undo',run:()=>undoReady(orderKey,num)}})
       }else{
         showToast(`Order #${num} ${labels[action]||action}`)
       }

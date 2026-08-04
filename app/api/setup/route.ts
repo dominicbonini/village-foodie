@@ -69,8 +69,11 @@ export async function POST(req: NextRequest) {
         visibility: 'hidden',
         // Capacity is left BLANK deliberately: it must be an active decision, not an inherited guess.
         // A silently-inherited number means promising collection times the kitchen cannot hit, which is
-        // the exact failure the capacity engine exists to prevent. lib/go-live-checks.ts blocks go-live
-        // until it is set.
+        // the exact failure the capacity engine exists to prevent.
+        // 🔴 CORRECTED — this used to say "lib/go-live-checks.ts blocks go-live until it is set". IT
+        // DOES NOT. `checkGoLive` has ZERO call sites and that module is imported by no file, so nothing
+        // currently blocks go-live on capacity or on anything else. Leaving capacity blank is still
+        // right; it is simply not enforced yet.
         van: { kitchen_capacity: null },
       })
 
@@ -112,7 +115,7 @@ export async function POST(req: NextRequest) {
 //
 // AUTH: session (this is a real operator now). Scoped to a demo THEY claimed at signup
 // (demo_sessions.claimed_by_operator_id) — so one operator can't pull another's extraction.
-export async function GET() {
+export async function GET(req: NextRequest) {
   const supabaseAuth = await createSupabaseServerClient()
   const { data: { user } } = await supabaseAuth.auth.getUser()
   if (!user) return NextResponse.json({ ok: false, error: 'Not signed in' }, { status: 401 })
@@ -120,6 +123,24 @@ export async function GET() {
   const { data: operator } = await supabase
     .from('operators').select('id').eq('auth_user_id', user.id).maybeSingle()
   if (!operator) return NextResponse.json({ ok: false, error: 'No operator record' }, { status: 401 })
+
+  // ── ?check=truck — "does this operator already have a truck?" (A3) ───────────────────────────────
+  // /setup used to render "What's your truck called?" with no lookup at all, so an operator who had
+  // already finished the in-modal wizard was asked to name a truck that existed — and create_truck's
+  // idempotence guard then discarded the answer. The page needs to know BEFORE it renders.
+  //
+  // A separate branch rather than a new field on the extraction response, and it RETURNS EARLY: the
+  // no-param response below is byte-identical to what it was, so the Manage ?import=demo bootstrap —
+  // the only other consumer — is untouched and does not pay for a query it does not use.
+  // Same truck-selection rule as verify-signup: prefer one still in setup, else the oldest.
+  if (req.nextUrl.searchParams.get('check') === 'truck') {
+    const { data: trucks } = await supabase
+      .from('trucks').select('dashboard_token, setup_step')
+      .eq('operator_id', operator.id)
+      .order('created_at', { ascending: true })
+    const truck = (trucks ?? []).find(t => t.setup_step && t.setup_step !== 'done') ?? (trucks ?? [])[0] ?? null
+    return NextResponse.json({ ok: true, truck: truck ? { dashboard_token: truck.dashboard_token } : null })
+  }
 
   // Query the claimed session WITHOUT the extraction filter, so we can tell three cases apart. The old
   // query folded `.not('extraction','is',null)` into the same statement, which made "no claimed demo" and
@@ -141,14 +162,22 @@ export async function GET() {
     return NextResponse.json({ ok: true, extraction: null, reason: 'no_claim' })
   }
   // 🔴 A SAMPLE MENU MUST NEVER LAND ON A REAL TRUCK. If the demo they converted from was a Pizza/Burger/
-  // Curry template (extraction_source = 'template'), treat it EXACTLY like no extraction — return
-  // reason:'no_extraction' so the Manage bootstrap routes them to upload their OWN menu. The stored
-  // template payload is never returned here under any circumstance. (The return path still uses it — that
-  // is a different surface; see /api/demo/return.)
-  if (!session.extraction || session.extraction_source === 'template') {
-    // Either the demo's menu is no longer retrievable (swept / pre-migration / persist failed), OR it was a
-    // sample they must not inherit. Same honest outcome: "upload your menu" rather than a silent blank.
+  // Curry template (extraction_source = 'template'), the stored payload is NEVER returned here under any
+  // circumstance. That is unchanged and must stay. (The return path still uses it — that is a different
+  // surface; see /api/demo/return.)
+  //
+  // ── B1: 'template_withheld' IS ITS OWN REASON, SPLIT OUT OF 'no_extraction' ──────────────────────
+  // Both cases return extraction:null, but they are NOT the same event and folding them together made
+  // the client say something false. 'no_extraction' means the payload is GONE — swept, pre-migration, or
+  // the best-effort persist failed — and telling the operator "your demo menu is no longer available" is
+  // honest. 'template_withheld' means the payload is intact and we are DELIBERATELY not giving it to
+  // them, because it was a sample and was never theirs. Reporting a deliberate withholding as a loss
+  // apologised for something that had not happened, on every single sample signup.
+  if (!session.extraction) {
     return NextResponse.json({ ok: true, extraction: null, reason: 'no_extraction' })
+  }
+  if (session.extraction_source === 'template') {
+    return NextResponse.json({ ok: true, extraction: null, reason: 'template_withheld' })
   }
 
   return NextResponse.json({ ok: true, extraction: session.extraction })

@@ -272,6 +272,36 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     if (tabParam && allTabIds.includes(tabParam)) setActiveTab(tabParam)
   }, [])
 
+  // ── ?verify= — the signup confirmation outcome, surfaced here (A2) ────────────────────────────────
+  // /api/auth/verify-signup now lands an operator who ALREADY has a truck on this page instead of on
+  // /setup, so the outcome it used to report there has to be reported here. Same three statuses, same
+  // meanings; /setup keeps its own copy of the banner for the no-truck case.
+  // ⚠️ 'invalid' now gets a message on BOTH surfaces. It previously rendered NOTHING on /setup, so a
+  // dead or malformed link looked like a normal page load and the operator was told nothing at all.
+  //
+  // 🔴 INERT WITHOUT THE PARAM. The whole effect early-returns when ?verify= is absent, which is every
+  // page load for an existing operator — so Gusto and RTF never reach the toast or the URL rewrite.
+  // Runs once on mount (empty deps): a remount cannot repeat it because the param is stripped below.
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const verify = params.get('verify')
+    if (!verify) return
+    // ⚠️ NO RESEND IS PROMISED. There is no resend path for SIGNUP verification —
+    // /api/auth/resend-verification reads `operator_email_changes`, the email-CHANGE table, which is a
+    // different one. The earlier "we'll send you a fresh one" named a mechanism that does not exist.
+    if (verify === 'ok') showToast('Email confirmed — thank you.', 'success')
+    else if (verify === 'expired') showToast('That confirmation link has expired. Get in touch and we’ll sort it before you go live.', 'error')
+    else showToast('That confirmation link didn’t work. Get in touch and we’ll sort it before you go live.', 'error')
+    // Strip it once consumed so a reload or a remount cannot repeat the toast. replaceState, not a
+    // router navigation: this is an address-bar rewrite with no re-render and no refetch.
+    // ⚠️ Deliberately touches ONLY `verify` — ?import=demo and ?tab= are left exactly as they are.
+    params.delete('verify')
+    const qs = params.toString()
+    window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Trial accounts default to billing tab on every page load
   useEffect(() => {
     if (truck?.plan === 'trial') setActiveTab('billing')
@@ -605,7 +635,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // ══════════════════════════════════════════════════════════════
 // MENU TAB
 // ══════════════════════════════════════════════════════════════
-type ImportStep = 'idle' | 'upload' | 'processing' | 'review' | 'allergens' | 'prep' | 'saving' | 'schedule' | 'done'
+// 'offer' (slice C) — the demo→real handover asks BEFORE loading: "use the menu from your demo, or
+// upload a different one?". It sits in front of 'review' on that route ONLY; every other entry to the
+// wizard is unchanged and never passes through it.
+// ⚠️ SAFE TO EXTEND: every consumer compares with `===` against a literal (:4008 :4032 :4043 :4245
+// :4358 :4455 :4462 :4481 :4624). There is no `switch` on this type anywhere, so a new member cannot
+// fall through a default — an unhandled value simply renders nothing.
+type ImportStep = 'idle' | 'upload' | 'processing' | 'offer' | 'review' | 'allergens' | 'prep' | 'saving' | 'schedule' | 'done'
 
 // ── Variant-axis vocabulary for the deterministic regroup pass ───────────────────────────────
 // The single varying token that makes two same-base dishes a VARIANT of one item (vs two different
@@ -1631,6 +1667,11 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // (deep-linked with ?import=demo from the setup wizard). It makes the ONE commit clear-before-retry, so
   // a retry after a partial commit repairs instead of duplicating. Never set for a normal operator import.
   const [demoImportMode, setDemoImportMode] = useState(false)
+  // C3 — the confirmation beat, carried across the navigation that used to lose it. TRUE only from the
+  // moment the ?import=demo bootstrap arrives until the operator leaves the first step, so it shows once
+  // per arrival and never on a later reopen from "✨ Import menu". Set by the bootstrap (both routes),
+  // cleared by every control that advances or exits.
+  const [showSetupIntro, setShowSetupIntro] = useState(false)
   const demoImportTried = useRef(false)   // one-shot guard so the bootstrap can't re-fire on re-render
   // §65: the review is a 3-step wizard (1 Menu · 2 Extras · 3 Allergens). All edits live in
   // importResult, so stepping back/forward never loses progress — each step is just a different view.
@@ -1739,6 +1780,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   )
 
   const handleProcessMenu = async () => {
+    // C3: they have acted on the first screen, so the arrival beat has done its job. Clearing it here
+    // covers the TEMPLATE route (C2), whose first screen is 'upload' rather than the offer — without
+    // this, a Back from review would show the beat a second time.
+    setShowSetupIntro(false)
     setImportStep('processing')
     try {
       const fd = new FormData()
@@ -1769,12 +1814,32 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     }
   }
 
+  // ── C4: ?import=demo MEANS "UNFINISHED", NOT "ABANDONED" ────────────────────────────────────────
+  // 🔴 STRIPPED ON DELIBERATE EXIT ONLY — never on unmount, tab switch or any accidental dismissal.
+  // That asymmetry is the whole design. MenuTab unmounts on a tab switch and takes every piece of wizard
+  // state with it, and the bootstrap re-firing off this param is the ONLY route back to the demo
+  // extraction (there is no other: `setDemoImportMode(true)` appears once in this file, and every other
+  // entry point is a plain upload). So an ACCIDENT must leave the param in place to recover from, while
+  // a DECISION — Cancel, or a completed commit — removes it so the operator gets a normal empty Menu tab
+  // instead of the wizard reopening at them forever.
+  // ⚠️ Removes ONLY the `import` key; ?tab= and anything else survive untouched. replaceState, not a
+  // router navigation: an address-bar rewrite with no re-render and no refetch.
+  const stripImportParam = () => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    if (!params.has('import')) return
+    params.delete('import')
+    const qs = params.toString()
+    window.history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+  }
+
   // Reset ALL import state (post-commit OR on discard) so reopening starts fresh. No van write here —
   // the total-capacity write is deferred to commit, so a discard never touched the van (clean).
   const resetImportState = () => {
     setImportStep('idle')
     setImportResult(null)
     setDemoImportMode(false)
+    setShowSetupIntro(false)   // C3 — the arrival beat never survives a reset
     setImportFile(null)
     setImportText('')
     setImportDoneSkipped(0)
@@ -1806,6 +1871,20 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     setSchedFile(null); setSchedText(''); setSchedPhotoProcessing(false); setSchedExtracted(null); setSchedSaving(false)
     // (Route C has no state to reset — it is explanatory copy + Continue.)
   }
+
+  // ── C3: THE CONFIRMATION BEAT, DEFINED ONCE ─────────────────────────────────────────────────────
+  // 🔴 ONE PIECE OF MARKUP, REFERENCED TWICE — not two copies. The offer step (C1) and the upload step
+  // (C2) are the two possible first screens of the handover, and the line must be identical on both;
+  // writing it in each block is precisely how the DEMO_COPY divergences happened.
+  // WHY IT EXISTS HERE AT ALL: DemoGetStarted's "Your account's ready" beat is on-screen only and dies
+  // with the navigation to Manage, which is why it was never seen (S5). This carries it across.
+  // Renders only while showSetupIntro is true — set by the bootstrap on arrival, cleared by every
+  // control that advances or exits — so a later reopen from "✨ Import menu" never shows it.
+  const setupIntroLine = showSetupIntro ? (
+    <p className="text-sm font-bold text-green-800 bg-green-50 border border-green-200 rounded-xl px-3 py-2 mb-4">
+      Your account&apos;s ready — now let&apos;s add your menu.
+    </p>
+  ) : null
 
   // ── AI-import review: proposal mutation helpers (Stage 2, client-side only) ──────────────────
   // Every edit mirrors the existing _skip/price pattern: an immutable setImportResult patch by index.
@@ -2190,12 +2269,30 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         const res = await fetch('/api/setup')            // GET → the operator's claimed demo extraction
         const data = await res.json()
         if (!data?.ok || !data.extraction) {
-          // Distinguish the two null cases the GET now reports:
-          //  • 'no_extraction' — they came from a demo but its menu is genuinely gone (swept, pre-migration,
-          //    or the persist failed). Say so, rather than a silent blank upload that reads as "we lost it".
+          // Distinguish the null cases the GET reports:
+          //  • 'no_extraction' — they came from a demo but its menu is genuinely GONE (swept,
+          //    pre-migration, or the persist failed). Say so, rather than a silent blank upload that
+          //    reads as "we lost it". Copy unchanged.
+          //  • 'template_withheld' (B2) — the payload is intact and deliberately not handed over,
+          //    because it was a SAMPLE and was never theirs. 🔴 NO ERROR TOAST: nothing failed and
+          //    nothing was lost, and apologising for a loss that did not happen fired on every sample
+          //    signup, once per return to this tab. The true message — "you'll upload your own menu
+          //    next" — belongs in the flow, not in an error, and is slice C's to place. Silent here.
           //  • 'no_claim' / anything else — no demo behind this signup; a normal upload is unremarkable.
           if (data?.reason === 'no_extraction') {
             showToast('Your demo menu is no longer available — please upload it again to carry on.', 'error')
+          }
+          // ── C2: THE TEMPLATE ROUTE — straight to the EXISTING upload step ───────────────────────
+          // A sample demo has nothing to offer: the payload is intact but deliberately withheld (it was
+          // never their menu), so there is no "use this one" to put in front of them. Open the wizard
+          // where the work actually starts. No second upload UI — this is the same 'upload' step every
+          // other import uses.
+          // demoImportMode stays FALSE: whatever they upload has nothing to do with the demo, so the
+          // commit must not clear-first.
+          if (data?.reason === 'template_withheld') {
+            setDemoImportMode(false)
+            setShowSetupIntro(true)
+            setImportStep('upload')
           }
           return
         }
@@ -2212,7 +2309,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         } catch { /* non-fatal */ }
         setImportKitchenDirty(false)
         setDemoImportMode(true)
-        setImportStep('review')
+        setShowSetupIntro(true)
+        // ── C1: ASK BEFORE LOADING ────────────────────────────────────────────────────────────────
+        // Everything above is UNCHANGED — the extraction is parsed, the vans are read and
+        // demoImportMode is set exactly as before. The ONLY difference is which step opens: 'offer'
+        // instead of 'review'. Choosing "Use this menu" then does `setImportStep('review')` and nothing
+        // else, so that branch lands in a state byte-identical to today's.
+        setImportStep('offer')
       } catch (e) {
         console.error('[manage] demo import bootstrap failed:', e)
       }
@@ -2652,6 +2755,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         // COMMIT-FIRST: the menu is now durable. In SETUP mode a NEW, skippable step (Schedule) follows before
         // 'done'; abandoning it loses nothing. Existing operators (not inSetup) keep today's behaviour EXACTLY:
         // straight to 'done' + the 2.5s reset+reload auto-dismiss.
+        // C4: the menu is committed — the handover is FINISHED, not interrupted, so the param goes.
+        // Placed here (both branches below it) rather than in the auto-dismiss timeout, because the
+        // setup route never reaches that timeout.
+        stripImportParam()
         if (inSetup) {
           setImportStep('schedule')
         } else {
@@ -3968,10 +4075,47 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       )}
 
 
+      {/* ── C1: THE OFFER STEP — demo→real handover, extraction route only ─────────────────────────
+          Reached ONLY from the ?import=demo bootstrap when /api/setup GET returned an extraction. Same
+          overlay treatment as every other step (fixed inset-0 bg-black/60 z-50) and the same max-w-md
+          card as 'upload', so it reads as the wizard opening rather than a new surface.
+          The count is computed with the SAME expression the review step's header uses, so the number
+          promised here cannot disagree with the number they then see (nothing is skipped yet, so both
+          resolve to the named-item count). */}
+      {importStep === 'offer' && importResult && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            {setupIntroLine}
+            <h3 className="font-black text-slate-900 mb-1">Use the menu from your demo?</h3>
+            <p className="text-slate-400 text-sm mb-5">
+              We saved the menu you uploaded — {importResult.items.filter(i => !i._skip && String(i.name || '').trim()).length} items.
+              Use it as your starting point, or upload a different one.
+            </p>
+            <div className="flex flex-col gap-2">
+              {/* PRIMARY — exactly today's behaviour. The extraction, the vans and demoImportMode were
+                  all set by the bootstrap already; this only opens the step they used to open directly,
+                  so the resulting state is byte-identical to before slice C. */}
+              <button type="button" onClick={() => { setShowSetupIntro(false); setImportStep('review') }}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl text-sm">
+                Use this menu
+              </button>
+              {/* SECONDARY — a different menu. 🔴 demoImportMode goes FALSE so the eventual commit does
+                  NOT clear-first: clearFirst exists to make the demo re-commit repairable, and firing it
+                  for a menu that has nothing to do with the demo would wipe rows on an unrelated import. */}
+              <button type="button" onClick={() => { setShowSetupIntro(false); setDemoImportMode(false); setImportStep('upload') }}
+                className="w-full border border-slate-200 text-slate-600 font-semibold py-3 rounded-xl text-sm hover:bg-slate-50">
+                Upload a different menu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* AI Import — Upload modal */}
       {importStep === 'upload' && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            {setupIntroLine}
             <h3 className="font-black text-slate-900 mb-1">Import your menu</h3>
             <p className="text-slate-400 text-sm mb-5">Upload a photo of your menu board, a screenshot, a PDF, or paste your menu as text. Our AI reads it and builds your digital menu — you review everything before it saves.</p>
             {/* SHARED with the public demo modal — components/menu/MenuUploadFields.tsx. Extracted so
@@ -3981,7 +4125,28 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               text={importText} onText={setImportText}
             />
             <div className="flex gap-2 mt-5">
-              <Btn label="Cancel" colour="slate" onClick={() => { setImportStep('idle'); setImportFile(null); setImportText('') }} />
+              {/* ── C5: CONFIRM, THEN CLEAR EVERYTHING ────────────────────────────────────────────
+                  This used to set 'idle' and clear only importFile + importText, leaving importResult,
+                  groupingChoice, categoryPrep, importKitchenCapacity and every per-item _skip / _free /
+                  _allergensChecked flag in place — so Cancel followed by a fresh import could carry
+                  decisions across from the abandoned one.
+                  🔴 _allergensChecked IS THE REASON THIS EXISTS. The commit maps it to
+                  `allergens_verified`, which gates whether a dish is visible to customers in per-dish
+                  mode. A stale confirmation surviving into a DIFFERENT menu would mark a dish verified
+                  that nobody verified — a food-safety claim made by leftover state.
+                  resetImportState() is the existing full clear (setImportResult(null) takes the
+                  per-item flags with it); calling it is what makes this correct rather than listing a
+                  longer subset that would drift the next time a field is added.
+                  The confirm fires only when there is review work to lose — a Cancel from a freshly
+                  opened upload step is unchanged, with no dialog.
+                  ⚠️ SHARED CODE: Gusto and RTF reach this too, and both changes apply to them. That is
+                  intended — it is the same bug for them.
+                  C4: this is a DELIBERATE exit, so the param goes. */}
+              <Btn label="Cancel" colour="slate" onClick={() => {
+                if (importResult && !window.confirm('Cancel this import? Your review of this menu will be discarded.')) return
+                resetImportState()
+                stripImportParam()
+              }} />
               <Btn
                 label="Process menu"
                 disabled={!importFile && !importText.trim()}

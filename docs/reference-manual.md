@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V9.9
+HatchGrab Engineering Reference Manual · V10
 
 **HatchGrab**
 
@@ -6,15 +6,61 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 9.3**
+**Version 10**
 
-July 2026
+August 2026
 
 *This document defines the rules, conventions, and architecture decisions for the HatchGrab platform. It is the source of truth for any coding session and must be consulted before making structural changes.*
 
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V10 — 3 August 2026
+
+Delta over V9.9 — **buzzers**, built in two phases and both deployed and live-verified. Operators hand customers a physical numbered pager and record it against the order. **A three-layer model — capability, behaviour, fact — kept deliberately apart.** An atomic two-row RPC and **offline replay with conflict resolution on placement time**. Three silent-failure findings, one of which cost two wrong diagnoses and three rounds of failed fixes. **Three columns added to `orders`, one to `truck_vans`, one to `truck_events`. Two migrations, both run by hand.**
+
+- **🔴 THE THREE LAYERS MUST NOT COLLAPSE INTO ONE FLAG.** `truck_vans.buzzer_count` is **capability** (does this van physically have buzzers), `truck_events.buzzer_prompt` is **behaviour** (prompt after every new order at this event), `orders.buzzer_number` is the **fact** (which pager this customer holds). Capability is van-level because buzzers are physical kit that lives in a van; behaviour is per-event because a pub with walk-ups wants prompting and a village hall with pre-orders does not. **This shape is what makes the planned event-types feature cheap** — an event type seeds `buzzer_prompt` at creation and nothing else changes. A single `buzzers_enabled` flag doing both jobs would have made event types a migration. See §39.
+
+- **🔴 THE IN-USE STATUS LIST IS NOT THE OCCUPYING-STATUS LIST.** `BUZZER_IN_USE_STATUSES` is `pending, confirmed, modified, cooking, ready`; the capacity-occupying set is `pending, confirmed, modified, cooking`. **Capacity frees at `ready` — the oven slot is done (§71). The buzzer is in the customer's hand AT ready; that is the entire point of it.** The occupying list is written out verbatim in **five** places with no shared constant, and grafting the buzzer lifecycle onto any of them hands out duplicate buzzers mid-service.
+
+- **🔴 `??` SWALLOWS A MEANINGFUL `null`, EXACTLY AS `||` SWALLOWS A MEANINGFUL `false`.** A deselect writes `null`; `??` treated it as absent and fell through to a stale snapshot, so the optimistic value was computed, stored, applied and then discarded one line later. **Only deselect broke** — a switch leaves a non-null value, so `??` never fired. ⚠️ `lib/payments/paid-step.ts` already carried the mirror-image warning, and the same codebase made the inverse mistake three files away. The fix is a **presence test, not a coalesce**. §35.
+
+- **🔴 `mergeOrders` PROTECTS THE STATUS LIFECYCLE ONLY.** Its version guard rejects a read only when `updated_at` is **strictly older**; an equal timestamp falls through to `reconcileEqual`, which compares **status rank alone**. A write that does not change status therefore loses to a racing read. `buzzer_number` is the first such field and nothing about it is buzzer-specific — **any future non-status field on `orders` needs its own guard, applied AFTER `mergeOrders`, not inside it.**
+
+- **🔴 PRODUCTION CONTAINS OBJECTS WITH NO MIGRATION FILE — AND THIS HOLDS FOR TRIGGERS.** `orders` carried **two** redundant `BEFORE UPDATE` triggers doing identical work; a grep of all 80 migration files found **one**. `orders_updated_at` (no migration file) was dropped by hand, and **no migration was written for the drop** — a migration dropping a trigger no migration created would misrepresent the history. PostgREST exposes no trigger metadata, so `pg_trigger` is the only audit route. §16, §35.
+
+- **THE WRITE IS ITS OWN ACTION, DELIBERATELY.** `set_buzzer` writes `buzzer_number` and nothing else. 🔴 **Never route it through `edit`**, which forces `status: 'modified'`, re-books production slot capacity and emails the customer. **Every other post-creation order write in this codebase forces a status change — `set_buzzer` is the first that does not**, which is why it needed its own action.
+
+- **OFFLINE REPLAY RESOLVES CONFLICTS ON `placed_at`, AND THE CLOCK DEPENDENCE IS DELIBERATE.** Two devices offline both hand out buzzer 7; on reconnect the order **taken later** keeps it, so every device agrees regardless of reconnection order. A new `'buzzer'` outbox kind — **not** the declared-but-unused `'edit'` kind — and **never coalesced**, because a pager in a customer's hand cannot be re-derived. ⚠️ **Replay ordering everywhere else uses `seq`, a clock-independent per-device counter, and must stay that way**: a wrong buzzer resolution is a visible operational annoyance, a wrong status replay corrupts the order pipeline.
+
+- **A LOST REPLAY RETURNS 2xx, NOT 409.** `assigned: false` means resolution ran and did what it was asked; a 409 would flag the op `'conflict'` and leave a dead queue entry naming a *count*. The operator gets a banner naming an *order* with a one-tap fix, dismissible **per order** — a blanket flag would silently swallow the second conflict of a service.
+
+- **FIVE COLUMNS ADDED:** `orders.buzzer_number`, `orders.placed_at`, `orders.buzzer_lost_at`, `truck_vans.buzzer_count`, `truck_events.buzzer_prompt`. All nullable, all additive, **no backfill** — `placed_at` records when an order was *taken*, and backfilling it from `created_at` would invent a value that is wrong for exactly the offline rows the column exists for.
+
+## V9.9 — 31 July 2026
+
+Delta over V9.8 — the landing hero illustration and the tagline, **live-verified on the landing page**. Small in surface and large in one lesson: **a tracer that reported clean every time while producing wrong geometry.** Colour values confirmed by measurement, not inspection. **No columns, no migrations.**
+
+- **THE HERO ILLUSTRATION WAS REPLACED TO CLOSE A TWO-ORANGE DRIFT.** The previous artwork hardcoded `fill="#EA580C"` — the **app's** action orange — inside a page whose every other orange came from `landing.css --orange` (`#EF8B2C`), so the landing page rendered **both oranges at once**. Two files ship: `food-truck-themed.svg` for **inline JSX** (`var(--head)` / `var(--orange)`) and `food-truck.svg` with plain hex for `<img src>` only. 🔴 **CSS custom properties do not resolve inside an `<img>`-referenced SVG** — getting the two the wrong way round reintroduces the drift.
+
+- **🔴 A MORPHOLOGICAL CLOSING CAN SILENTLY MERGE COMPONENTS THAT MUST STAY SEPARATE.** The tracer's `MORPH_CLOSE` merged the wheel outlines into the body's connected component, so filling the silhouette painted solid navy discs where the wheels were and every "arch" cut a notch instead of opening clear space. **It reported clean every time** — 13 subpaths, a sensible bounding box, a plausible render. Only a band-thickness scan exposed it. Same class as the `.hg-landing` specificity reset: **a silent failure that reports clean.** §35.
+
+- **THE TAGLINE SETTLED AS TWO LINES, IDENTICAL IN BOTH SLOTS.** *"Less time booking. / More time cooking."* — hero subhead and footer carry it **identically**, because two near-identical versions differing by one word is the weakest option: anyone who notices wonders which is the error. **"Spend" was dropped** — the line works by antithesis in matched clauses, and a leading verb breaks the parallel before it starts. The H1 stays the descriptor. Recorded in §38 because the manual has no copy/voice section.
+
+## V9.8 — 30 July 2026
+
+Delta over V9.7 — **the brand system**: the HatchGrab wordmark, the icon set, and every operator surface rebranded. The shipped SVGs are a sub-pixel iso-contour trace of the founder's source artwork at **95.97% IoU** registration. **A 7.95 MB apple-touch-icon replaced by a 2 KB one.** One silent-failure class found in the landing CSS. **No columns, no migrations. Untracked at end of session — see §38's deploy state.**
+
+- **🔴 THE SOURCE ARTWORK IS A REFERENCE, NOT AN ASSET.** It is a *photograph of a logo* — ink on textured paper, drop shadow, soft glow, baked-in caption, 3231 distinct oranges in the wordmark alone. **Do not rebuild the wordmark from the old `HatchGrabWordmark.tsx`**, which described itself as an approximation in its own first line and was wrong three ways that cost three failed rebuild attempts: the swoosh crossed the letters instead of arcing above them, there was **no lightning cut at all**, and the bolt was drawn as a positive filled path.
+
+- **THE WORDMARK CANNOT BE THE ICON — THE BOLT IS.** At 62% height in a square the wordmark is 3.6% ink and **6 orange pixels at 16 × 16**. The icon bolt is a **separate, deliberately heavier path** than the wordmark's negative-space bolt: optical sizing, not drift — **do not "fix" them to match.** ⚠️ Contrast governs the background: orange on slate-900 is 7.14:1, on navy 5.29:1, but on a true mid-blue it collapses to **1.45:1** — orange and blue are near complementary in hue and close in luminance, so **the icon background must stay very dark.**
+
+- **ASPECT RATIO IS 4.548:1, AND THE FIRST CUT WAS NOT.** The original crop baked in 13.2% top and 6.8% bottom padding at 3.971:1, which is why the logo looked low in its box and over-padded in headers. The shipped crop is tight — ink fills 95.8% of the box. **Any hardcoded width/height pair must use 4.548:1.** ⚠️ Give email images a **width and no height** so the client derives the rest; the three operator templates self-corrected on the re-crop for exactly this reason.
+
+- **🔴 TAILWIND MARGIN AND PADDING UTILITIES ARE INERT INSIDE `.hg-landing`.** `landing.css` resets `.hg-landing * { margin: 0; padding: 0 }` at specificity **(0,1,0)** — identical to `.mx-auto` / `.px-6` — and imports **after** Tailwind, so the reset wins and every `m-` / `p-` utility in that subtree silently does nothing. No error, no warning, no type-check. It had already bitten twice. **Inside `.hg-landing`, use a scoped rule at (0,2,0), never a Tailwind spacing utility.** §35.
+
+- **`apple-touch-icon.png` WAS 7,954,151 BYTES.** Replaced with a 180 × 180, 2,066 B file. The full shipped set — two wordmark SVGs, four raster logos, favicon, apple-touch, three PWA icons and the master icon SVG — is tabulated in §38.
 
 ## V9.7 — 30 July 2026
 
@@ -1655,6 +1701,10 @@ Read this before every coding session. Update it after every meaningful change. 
 
 - When a feature seems to contradict this manual, the manual wins. Either update the code or update the manual — never let them disagree silently.
 
+- **A delta file written for integration into this manual must NOT cite section numbers** — delta numbering does not survive integration, and both the V9.8 and V9.9 integrations left dangling pointers (`§38.4`, `§41.4`) that resolve to nothing. Describe content by **what it is**, and let the integrator place it.
+
+- **Every version bump gets a Changelog entry, written in the same pass as the bump.** The Changelog is the only place the manual records *when* something changed, so a version that ships without one is invisible to anyone reading forward from a known-good point. ⚠️ **V9.8, V9.9 and V10 were all missed and backfilled on 3 August 2026** — reconstructed from the content sections they had already written, which worked only because those sections were thorough. A bump whose content is thinner would not survive the same omission.
+
 > **CRITICAL** — If a coding session produces code that violates rules in this manual, that is a regression. Either the rule changes (with explicit agreement) or the code changes. The two must never diverge.
 
 # 2. Architecture overview
@@ -2961,13 +3011,17 @@ Distinct order queues per event; per-event order numbering (display ids restart 
 - **bundles_db** — bundle_price, original_price, slot_1..6_category, apply_to_new_events, is_available, start/end_time.
 - **event_deals** — event_id, bundle_id, active, overridden.
 - **truck_events** — event_date, start/end_time, venue_name, town, postcode, address, notes, status, source, van_id, confirmed_at, offline_protection_override (V6), latitude/longitude, scraped_signature (dedup), order_counter (V6.3), auto_open / auto_close (per-event, seeded from trucks.default_auto_* at confirm), **venue_id** (V6.6, uuid, FK venues(id) ON DELETE SET NULL), **venue_id_source** (V6.6, text: scraper|operator|manual|backfill — only operator|manual count as validated for history-prior), **venue_match_confidence** (V6.6, text: high|low|none→NULL), **paused_until** (V6.6, timestamptz — event-scoped manual pause), **online_paused_until** (V6.6, timestamptz — event-scoped offline auto-pause), **extra_wait_mins** (V6.6, integer), **extra_wait_started_at** (V6.6, timestamptz). (V6.5: `town`/`postcode` are what the venue matcher resolves. V6.6 added `venue_id` as the keystone for anchors/history-prior, and the four pause/extra-wait columns to make those event-scoped — Sections 5, 25.) Index `idx_truck_events_venue_id`.
-- **orders** — **thirty-five columns as of V9.4. The list below is COMPLETE and live-verified (29 July). Earlier manual versions listed ten and read as exhaustive, which is how `payment_status` stayed invisible for two months — if you extend this table, extend this list.**
+- **orders** — **forty columns as of V10. The list below is COMPLETE and live-verified (29 July). Earlier manual versions listed ten and read as exhaustive, which is how `payment_status` stayed invisible for two months — if you extend this table, extend this list.**
 
-  `order_key` (uuid, **PRIMARY KEY** — the only identifier in any WHERE/URL/FK/dedupe/React key), `id` (text — per-event DISPLAY number, restarts at 1, **NEVER a lookup key**), `truck_id` (text FK), `customer_name`, `customer_phone`, `customer_email`, `slot`, `order_type` (CHECK `collection|table`), `table_ref`, `event_date` (date NOT NULL), `items` (JSONB — frozen item NAMES, no item id), `extras` (JSONB), `bundle`, `discount_code`, `subtotal` **numeric(8,2)**, `discount_amt` **numeric(8,2)**, `total` **numeric(8,2)**, **`total_minor` (integer, V9.4 — the authoritative charge amount in pence)**, **`deal_savings` (numeric(8,2), V9.4)**, `notes`, `status`, `modify_type`, `modify_data`, **`payment_status`**, **`amount_paid`** (numeric(8,2)), `created_at`, `updated_at`, `deals` (JSONB), **`source`**, `paid_at`, `collected_at`, `event_id` (uuid FK), `cancellation_reason`, `van_id` (uuid FK), `rejection_reason`, `status_before_collected`, **`capacity_ack_at` (timestamptz, V9.4)**.
+  `order_key` (uuid, **PRIMARY KEY** — the only identifier in any WHERE/URL/FK/dedupe/React key), `id` (text — per-event DISPLAY number, restarts at 1, **NEVER a lookup key**), `truck_id` (text FK), `customer_name`, `customer_phone`, `customer_email`, `slot`, `order_type` (CHECK `collection|table`), `table_ref`, `event_date` (date NOT NULL), `items` (JSONB — frozen item NAMES, no item id), `extras` (JSONB), `bundle`, `discount_code`, `subtotal` **numeric(8,2)**, `discount_amt` **numeric(8,2)**, `total` **numeric(8,2)**, **`total_minor` (integer, V9.4 — the authoritative charge amount in pence)**, **`deal_savings` (numeric(8,2), V9.4)**, `notes`, `status`, `modify_type`, `modify_data`, **`payment_status`**, **`amount_paid`** (numeric(8,2)), `created_at`, `updated_at`, `deals` (JSONB), **`source`**, `paid_at`, `collected_at`, `event_id` (uuid FK), `cancellation_reason`, `van_id` (uuid FK), `rejection_reason`, `status_before_collected`, **`capacity_ack_at` (timestamptz, V9.4)**, **`buzzer_number` (smallint, null, V10)**, **`placed_at` (timestamptz, null, V10)**, **`buzzer_lost_at` (timestamptz, null, V10)**.
 
   Two partial unique indexes: `UNIQUE (event_id, id) WHERE event_id IS NOT NULL` and `UNIQUE (truck_id, id) WHERE event_id IS NULL`. See Section 18a.
 
-> **CHECK constraints on `orders` (live-verified):** `status` ∈ `pending|confirmed|rejected|modified|cancelled|cooking|ready|collected` — **no payment value**, payment is orthogonal to fulfilment by construction. `payment_status` ∈ `unpaid|paid|refunded|failed`. `source` ∈ `web|manual|whatsapp`. `order_type` ∈ `collection|table`. `modify_type` ∈ `slot|item_sub|item_remove`.
+> **🔴 There is deliberately NO unique index on `(event_id, buzzer_number)` (V10).** Buzzer assignment is warn-then-confirm; a DB constraint would make the confirm path 500 instead of prompting. Uniqueness is an APPLICATION invariant, enforced in `lib/buzzer.ts` and in the assign RPC. See Section 39.
+
+> **CHECK constraints on `orders` (live-verified):** `status` ∈ `pending|confirmed|rejected|modified|cancelled|cooking|ready|collected` — **no payment value**, payment is orthogonal to fulfilment by construction. `payment_status` ∈ `unpaid|paid|part_paid|refunded|refund_due|failed` — **widened from four values by `20260729_orders_payment_status_widen_check.sql` (V9.4); corrected here at V10, having been recorded as the pre-migration four.** `source` ∈ `web|manual|whatsapp`. `order_type` ∈ `collection|table`. `modify_type` ∈ `slot|item_sub|item_remove`.
+>
+> ⚠️ **The `payment_status` values are MIGRATION-SOURCED, not directly read from the live constraint.** PostgREST exposes no CHECK metadata and this project has no SQL-exec RPC, so `orders_payment_status_check` cannot be read from the app. The evidence that the migration **ran** is strong but indirect: that file's other statement sets the `payment_status` column comment, and the live comment matches the file **byte-for-byte (342 characters, exact)** — so the file was applied. A live population check (3 Aug 2026) found `unpaid` 313, `paid` 45 and **zero rows** for the four other values, which neither confirms nor refutes the constraint. To settle it directly: `select pg_get_constraintdef(oid) from pg_constraint where conname = 'orders_payment_status_check';`
 
 > **🔴 RULE (V9.4) — `orders.source` EXISTS AND IS NEVER WRITTEN.** Text, default `'web'`, correctly constrained — and all **356** rows hold the default, walk-ups included. Order channel is currently inferred from `customer_email IS NULL` (`app/api/manage/route.ts:1248-1249`), which **misclassifies a walk-up whose operator captured an email as online**, always in that direction. Reliable discriminators until `source` is populated: **`van_id IS NULL` + `items[0].cartKey` present ⇒ walk-up** (the customer path sets `van_id` from the event row and never writes `cartKey`; the operator path does the opposite). **This is a present-but-never-written column, the most dangerous shape in this schema** — it returns a plausible value on every row and reads as data. Populate it on write (three insert sites), then retire the inference; do not leave both.
 
@@ -3122,6 +3176,18 @@ RLS is enabled on every table in the public schema. All API routes use SUPABASE_
 - **A demo's `id`, `slug` and `dashboard_token` are three INDEPENDENT 130-bit values** (`lib/provision-truck.ts`). All three are publicly resolvable, so leaking one must not hand over the others. Consequence: the customer order page holds the slug and **cannot construct the dashboard URL** — and making it possible would mean returning `dashboard_token` from a customer-facing response, which is the entire security boundary for `/dashboard/demo-*`.
 - `orders.event_id` is **`ON DELETE SET NULL`** — order rows outlive their event, and the capacity engine counts them by date rather than by event. Delete orders before events.
 - **Kitchen printing is not implemented on any platform.** `lib/printing/` contains only `createStubTransport` ("Phase A, no hardware"). No BLE plugin, no Star/Epson SDK, no `printer_class` column. The transport seam names two planned backends: `mfi` (Star/Epson via Apple's External Accessory framework — **iOS-only by construction; MFi has no Android equivalent**) and `ble` (cross-platform, documented in the code as the budget fallback with "LIMITED/NO status + fiddlier reconnect"). See the onboarding spec's O18 — the compare table currently advertises this as `Max: ✓`.
+
+### Live-schema facts — triggers on `orders` (V10 / 3 August 2026)
+
+> The cross-cutting lesson this came from lives in **§35** — "production contains objects with no migration file, and this holds for TRIGGERS too", recorded there as an extension of the existing swallowed-write entry. Recorded here as the schema fact; not duplicated.
+
+- **`orders` carried TWO redundant `BEFORE UPDATE` triggers, and a grep of all 80 migration files found one.** `set_orders_updated_at` (migration `20260703`) and `orders_updated_at` (**no migration file**, function `update_updated_at`, production only). Both assigned `new.updated_at := now()` — functionally identical. Verified via `pg_trigger` on 3 August 2026; `update_updated_at` was attached to nothing else, and `orders_updated_at` was **dropped by hand**. **No migration was written for the drop** — the trigger had no migration that created it, so a migration dropping it would misrepresent the history.
+- **The audit method**, since PostgREST exposes no trigger metadata:
+
+  ```sql
+  select tgname, tgtype from pg_trigger
+  where tgrelid = 'public.orders'::regclass and not tgisinternal;
+  ```
 
 # 17. Menu API behaviour
 
@@ -3751,6 +3817,16 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+## 🔴 V10 — added 3 August 2026 (buzzers)
+
+### Found, reported, not fixed
+- **`placed_at` on the customer path is single-writer with no fallback.** Phase 2 folded it into `place_order_atomic`'s INSERT and removed the compensating UPDATE, so the RPC is now the only writer. Verified working post-deploy, but there is no longer a safety net if the RPC changes.
+- **The all-taken banner wording is stale.** It reads *"All 30 buzzers are out. Tap one to take it from another order."* — now wrong for the current order's own cell, which **deselects** rather than being taken from anyone. Suggested: *"…Tap one to take it, or tap your own to free it."* Copy-only.
+- **The losing-order banner is dashboard-only.** `/api/dashboard` already returns `buzzerLosses` to the KDS, so mounting it there is one line. Decide whether the kitchen screen should show it.
+- **The occupying-status list is duplicated in five places** with no shared constant (§39, §71). Not caused by this work, but the buzzer feature is the first thing to trip over it.
+- **Android native icons still parked** pending `minSdkVersion` (`android/app/build.gradle` or `variables.gradle`). If 26+, ten of the fifteen PNGs are unnecessary. ✅ **iOS is now DONE** — the real `AppIcon-512@2x.png` (1024×1024, RGB, **no alpha**) replaced the Capacitor scaffold on 3 August. *(Updates the V9.8 "Native icons blocked on `minSdkVersion`" item below, which still lists the iOS file as outstanding — that entry is left as written rather than edited in place.)*
+- **The iOS splash is still scaffold artwork** — three identical 2732×2732 PNGs, and `capacitor.config.ts` configures a `SplashScreen` plugin that **is not installed**, so that block is inert. *(Re-confirmed 3 August; recorded once in the V9.8 block below and not duplicated here.)*
+
 ## 🔴 V9.9 — added 31 July 2026 (landing illustration)
 
 ### Found, reported, not fixed
@@ -4818,6 +4894,16 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 >
 > **⚠️ A related self-inflicted bug, same session.** Erasing everything below y=700 to strip the wheels also deleted the floor line at y 762-787, truncating the body. Again the trace looked fine; the bounding box (x 180-684 instead of 85-746) was the only tell. **When erasing from a mask, enumerate what else occupies that region first.**
 
+**🔴 `??` swallows a meaningful `null`, exactly as `||` swallows a meaningful `false`.** Cost two wrong diagnoses and three rounds of failed fixes. The broken expression was `currentNumber={(orders.find(o=>o.order_key===k)?.buzzer_number ?? target.buzzer_number) ?? null}` — the optimistic value was computed, stored, applied, then discarded one line later. When a deselect writes `null`, `??` treats it as absent and falls through to a stale snapshot. **Only deselect broke**; a switch leaves a non-null value, so `??` never fires — which is exactly why it read as a narrow bug rather than a wrong operator. The fix is a **presence test, not a coalesce**: if the row is in the list its value wins, *including* `null`; the snapshot is used only when the row is absent entirely, which is a genuinely different situation from "holds no buzzer". ⚠️ `lib/payments/paid-step.ts` already carried the mirror-image warning — use `??` not `||` there, because `false` is meaningful — and the same codebase then made the inverse mistake three files away. **Both operators discard a meaningful value; which one is wrong depends on which value carries meaning.** Same class as the `.hg-landing` reset and the morphological closing above: **a silent failure that reports clean.**
+
+**🔴 `mergeOrders` protects the STATUS lifecycle only — every other field on `orders` is unguarded.** The version guard rejects a read only when its `updated_at` is **strictly older**. A poll that starts before a write commits carries the *same* timestamp, so the guard does not engage and control falls to `reconcileEqual`, which compares **status rank only**. A write that does not change status therefore loses to a racing read. `buzzer_number` is the first such field, but nothing about this is buzzer-specific: **any future non-status field on `orders` needs its own guard, applied AFTER `mergeOrders`, not inside it** — `mergeOrders`' contract is the status lifecycle and widening it would be the more invasive fix. The correct pattern is the **shared optimistic-write guard** (`pendingWritesRef`, the `catavail` keyed-collection convention): register the guard **before** the optimistic `setState`, apply it over every incoming read, release only when the server row **echoes** the value, and on failure drop the guard, revert, and surface a *named* error. ⚠️ **Not** the `patchOption` pattern — a bare optimistic `setState` with no guard and no revert, fine where a clobber is cosmetic and self-heals, useless here. ⚠️ In the guard, `undefined` (no guard) and `null` (pending deselect) must stay strictly distinct; collapse them and a pending removal reads as "no guard", and the stale server value wins straight back.
+
+**🔴 Production contains objects with no migration file — and this holds for TRIGGERS too.** The existing entry above ("a swallowed write makes a missing column indistinguishable from a working one") records this for *columns*; triggers are the same class and are harder to see, because PostgREST exposes no trigger metadata at all. `orders` carried **two** redundant `BEFORE UPDATE` triggers doing identical work; a grep of all 80 migration files found **one**, the live database had **two**. The full finding and the `pg_trigger` audit query are recorded with the schema facts in **§16**. **A grep of the migrations directory is not an inventory of the database** — for triggers there is no substitute for querying `pg_trigger`.
+
+**Trace the interaction; do not enumerate plausible causes.** The `??` bug above survived a full round of investigation in which five specific hypotheses — the optimistic guard, component caching, the map source, the sub-label derivation, the parent re-render — were each checked and each found **sound**. Every hypothesis was correct and the bug was still there, because the fault was in an expression nobody had thought to name. **An end-to-end trace from the tap to the render found it in eleven steps.** When a fix does not work, trace the actual path rather than proposing a better hypothesis; a list of things that are fine is not a diagnosis.
+
+**`update_truck` silently drops unlisted keys.** A new setting **appears to save and writes nothing**, with no error anywhere: the allowlist filters the payload, the UPDATE succeeds on what remains, and the handler returns `{ ok: true }`. Any new column must have its key added to the allowlist **in the same change**. The van-level equivalent (`update_van_settings`) is a destructure and drops just as silently. Same silent-success class as an unapplied migration returning HTTP 200 with an empty array.
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
 
 > The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. **STATUS: no build has shipped and no store listing exists.**
@@ -5133,4 +5219,117 @@ Several days of payments work and the whole of this branding arc are uncommitted
 
 **Update, 31 July 2026 (V9.9).** The illustration and copy changes are **live-verified on the landing page**. Colour values were confirmed by measurement, not inspection. ⚠️ Everything above from the previous session remains as recorded — check whether the six brand assets and the wordmark work have been committed since. If `HEAD` still predates them, the branding and illustration arcs are now stacked in one working tree and the diff is getting harder to read with each pass.
 
-HatchGrab Engineering Reference Manual · V9.9
+# 39. Buzzers — physical pagers against orders (V10)
+
+> Operators hand customers a physical numbered buzzer/pager and record which one against the order. Built in two phases, both deployed and live-verified (3 August 2026). Provenance per claim below: **live-verified** (seen working on screen), **read from code**, or **computed** (unobserved).
+
+## The three-layer model
+
+This split is load-bearing and must not be collapsed into one flag:
+
+| Layer | Column | Question it answers |
+|---|---|---|
+| **Capability** | `truck_vans.buzzer_count` | Does this van physically have buzzers, and how many? |
+| **Behaviour** | `truck_events.buzzer_prompt` | Should we prompt after every new order at this event? |
+| **Fact** | `orders.buzzer_number` | Which buzzer is this customer holding? |
+
+Capability is **van-level** because buzzers are physical kit that lives in a van. Behaviour is **per-event** because a pub with walk-ups wants prompting and a village hall with pre-orders does not.
+
+🔴 **This shape is what makes the planned event-types feature cheap.** An event type seeds `truck_events.buzzer_prompt` at creation and nothing else changes. A single `buzzers_enabled` flag doing both jobs would have made event types a migration.
+
+## Schema — all additive, no backfill
+
+```
+orders.buzzer_number        smallint     null
+orders.placed_at            timestamptz  null
+orders.buzzer_lost_at       timestamptz  null
+truck_vans.buzzer_count     smallint     null   -- null = van has no buzzers
+truck_events.buzzer_prompt  boolean      null   -- null = inherit, no override
+```
+
+Column list and the no-unique-index rule are also recorded with the schema in **§16**.
+
+🔴 **`placed_at` is nullable with no backfill, and that is not laziness.** It records when the order was *taken*, which for an offline order is not when it was inserted. Backfilling `placed_at = created_at` would invent a value that is right for online orders and wrong for every offline one — and the offline case is the entire reason the column exists. Old rows stay honest about not knowing; every reader falls back to `created_at`.
+
+## 🔴 The in-use status list is NOT the occupying-status list
+
+```
+BUZZER_IN_USE_STATUSES = pending, confirmed, modified, cooking, ready     -- lib/buzzer.ts
+occupying (capacity)   = pending, confirmed, modified, cooking
+```
+
+**Capacity frees at `ready` — the oven slot is done (§71). The buzzer is in the customer's hand AT ready; that is the entire point of it. It frees at `collected`.** Cancelled and rejected also free it.
+
+The occupying list is written out verbatim in **five** places with no shared constant (`lib/slot-bookings.ts` ×2, `lib/capacity-breach.ts`, `lib/slot-capacity.ts`, `components/dashboard/AddOrderPanel.tsx`). Grafting the buzzer lifecycle onto any of them hands out duplicate buzzers mid-service. `BUZZER_IN_USE_STATUSES` is its own constant for this reason. (The duplication itself is carried in §27.)
+
+## The grid
+
+Numbered 1..`buzzer_count`, max 30 (`BUZZER_MAX_COUNT` in `lib/buzzer.ts`, single source — the Manage select generates its options from it).
+
+- available: `bg-green-50` / `border-green-500`, number only
+- taken: `bg-red-50` / `border-red-500`, number **and** the holder, or "This order"
+
+Colours come from `getHeaderStyle`'s families in `components/dashboard/helpers.ts`. ⚠️ **Do not take colours from `lib/slot-indicator.ts`** — it calls itself "SINGLE SOURCE OF TRUTH" and has no live caller.
+
+🔴 **The number-plus-holder label is required, not decorative.** Roughly 8% of men have red-green colour deficiency. Colour reinforces the state; it must never be the only channel carrying it.
+
+🔴 **The grid renders identically regardless of which order opened it.** A buzzer held by any order, including the current one, renders taken. This was fixed **three times in three places** — cell colour, the sub-label, and the all-taken count — because each had its own `order_key !== targetOrderKey` filter. The grid answers "which buzzers are out?", which is a fact about the **event**, not about the order being edited.
+
+**Exactly one confirm survives**, and it is the only one that takes something from a third party:
+
+> Buzzer 7 is with order #15 (Sarah). Take it for order #12?
+
+The "Order #12 has buzzer 4. Give them buzzer 8 instead?" confirm was **removed** — moving your own order between buzzers takes nothing from anyone and was pure friction. It was also the only site rendering the `Order #{id || '—'}` em-dash fallback, which showed as "Order #—" on the add-order screen where no order exists yet.
+
+**Interaction rules:**
+- tapping the buzzer this order already holds **deselects** it — immediate, no confirm
+- a grid opened on an order that already has a buzzer **stays open** through switches and deselects; a **Done** button closes it. A first selection still assigns and closes.
+- `openedWithBuzzer` is captured **at mount**, not re-read live. Live would make Done vanish the instant the operator deselects — exactly when they need a way out — and would flip the close rule mid-session.
+
+## Where it appears
+
+- **order card**, dashboard and KDS: a chip, tap to open the grid
+- **add-order screen**: `🔔 + Buzzer` on the same row as the time select, 46px tall, `shrink-0` so the select gives up space and the button never drops under the 44px touch minimum
+- **after a new order**, if the event override is on and no buzzer was set during entry: a **blocking** modal with an explicit "No buzzer" button. Not dismissible by tapping outside — a mis-tap during a rush is the failure this prevents. Fires after the success toast, before `resetManual()`.
+
+⚠️ **The word "Skip" is not used anywhere.** No skip affordance exists in this app, and "skip" implies something unfinished. "No buzzer" states a fact.
+
+## The write
+
+`set_buzzer` is a **lightweight action that writes `buzzer_number` and nothing else**.
+
+🔴 **Never route it through the `edit` action.** `edit` forces `status: 'modified'`, re-books production slot capacity, and emails the customer. Handing over a pager must do none of those. Every other post-creation order write in this codebase forces a status change — `set_buzzer` is the first that does not, which is why it needed its own action rather than an existing one.
+
+Phase 2 replaced phase 1's two sequential server-side updates with an atomic two-row RPC (`20260804_assign_buzzer_atomic.sql`), so a buzzer is never on two orders or neither.
+
+## Offline and conflict resolution
+
+- new `'buzzer'` outbox kind — **not** the declared-but-unused `'edit'` kind, which has no call site and has never been exercised on replay
+- **never coalesced.** The stock-op coalescing pattern deletes a superseded op at enqueue time; a buzzer write must not be collapsed that way, because a pager in a customer's hand cannot be re-derived.
+- the queued op carries the order's `placed_at`
+- **later `placed_at` wins.** Placement time is a fact about the order, not about the sync, so every device agrees regardless of reconnection order. `coalesce(placed_at, created_at)` for pre-migration rows; ties go to the incumbent.
+- a lost replay returns **2xx, not 409**. `assigned: false` means resolution ran and did what it was asked. A 409 would flag the op `'conflict'` and leave a dead queue entry naming a *count*; the operator gets a banner naming an *order* with a one-tap fix.
+
+⚠️ **Clock dependence is introduced here and NOWHERE ELSE, deliberately.** Replay ordering elsewhere uses `seq`, an explicitly clock-independent per-device counter, because device clocks lie. A wrong buzzer resolution is a visible operational annoyance; a wrong status replay corrupts the order pipeline. **Do not "fix" this inconsistency by making status replay clock-based.**
+
+## The losing order's banner
+
+When resolution strips a buzzer from an order that is **still open**, `orders.buzzer_lost_at` is set and a banner appears: *"Order #12 doesn't have a buzzer"* with **Dismiss** and **Assign**.
+
+- server-computed via a column rather than surfaced from `drainOutbox`, because a drain-sourced message is visible only on the device that drained and does not survive a reload
+- 🔴 **dismissal is keyed per order** (a `Set` of `order_key`s, one row per order), following `CapacityBreachBanner`'s signature-keyed pattern. A blanket dismissed-flag would silently swallow the second conflict of a service.
+- no banner if the losing order is already collected, cancelled or rejected — its buzzer was already out of the in-use set
+
+### Deploy state — V10, DEPLOYED and live-verified
+
+Both phases **deployed and live-verified**. Migrations run by hand and confirmed. Both surfaces (dashboard and KDS) carry the feature; the add-order picker uses local state and never had the optimistic-read problem.
+
+**Verified on screen:** deselect turning the cell green immediately, switching, the Manage setting, the dashboard override, the grid, and `placed_at` on both paths (operator rows show a *negative* `placed_at − created_at` delta — client-minted; customer rows *positive* — server-minted, request time is commit time).
+
+⚠️ **Not yet verified:** the offline failure path with the network cut, the guard releasing cleanly past the 60s poll, KDS parity for the optimistic flip, and taking a buzzer from another order clearing that order's chip immediately. **The two-device offline conflict — the whole point of phase 2 — has not been exercised.**
+
+⚠️ **The simulator cannot settle the offline path.** Three simulator-masked bugs are already on record (biometric app-lock loop, offline slot picker gap, wake-lock failure). A physical device on a 7-day profile is now working; that is where offline gets verified.
+
+⚠️ **`capacitor.config.ts` bakes the server URL at `cap sync` time.** `localhost:3000` reaches the Mac's dev server from the *simulator* but resolves to the *iPad's own* loopback on hardware — a blank screen with no error (the same asymmetry §8 records for `wakeLock` over LAN). Use the Mac's LAN IP for a physical device, or unset `CAP_SERVER_URL` for production. `IS_LOCAL_HTTP` tests `startsWith('http://')`, so cleartext is correctly enabled for a LAN IP. **Revert to production with a plain `npx cap sync ios` before any real build.**
+
+HatchGrab Engineering Reference Manual · V10

@@ -1,210 +1,221 @@
-# MANUAL UPDATE — V9.8 → V9.9 (LANDING ILLUSTRATION + TAGLINE), INTEGRATED
+# MANUAL UPDATE — V9.9 → V10 (BUZZERS), INTEGRATED
 
-**Date:** 31 July 2026 · **Target:** `docs/reference-manual.md`
-**Source:** `~/Downloads/reference-manual-V9.9-illustration.md` — **7,411 bytes, 143 lines**, UTF-8
-**Status: ✅ INTEGRATED. Version bumped V9.8 → V9.9. Only `docs/reference-manual.md` was edited.**
-No `next dev` / `next build` run. **The delta file was not deleted.**
+**Date:** 3 August 2026 · **Target:** `docs/reference-manual.md`
+**Source:** `~/Downloads/reference-manual-V10-buzzers.md` — **16,351 bytes, 283 lines**, UTF-8
+**Status: ✅ INTEGRATED. Version bumped V9.9 → V10. Only `docs/reference-manual.md` was edited** (5136 → 5284 lines, +148).
+No `next dev` / `next build` run. **The delta file was not deleted** — verified still present at 16,351 bytes after the run.
 
-> This file replaces the previous manual-update report (V9.7 → V9.8). That content is not preserved anywhere.
+> This file replaces the previous manual-update report (V9.8 → V9.9). That content is not preserved anywhere.
+
+---
+
+## 0. Prompt integrity
+
+Nothing arrived garbled. One overlap worth naming rather than treating as an error: the rules say
+"change no file except `docs/reference-manual.md`", and the FINALLY instruction mandates writing
+`docs/manual-update-report.md`. I read the first as scoping the *integration* and the second as the
+deliverable, and wrote both. No third file was touched.
 
 ---
 
 # ✅ INTEGRITY GATE — PASSED
 
-`file` → **`Unicode text, UTF-8 text`**. **143 lines, 7,411 bytes** — matches your stated figures exactly.
+Strict UTF-8 decode succeeded with no errors and no substitutions. **9 distinct non-ASCII codepoints, 76 total.**
 
-## Full non-ASCII census
+| Codepoint | Count | Char | Name | Expected | ✓ |
+|---|---|---|---|---|---|
+| U+2014 | 37 | — | EM DASH | 37 | ✅ |
+| U+1F534 | 11 | 🔴 | LARGE RED CIRCLE | 11 | ✅ |
+| U+26A0 | 10 | ⚠ | WARNING SIGN | 10 | ✅ |
+| U+FE0F | 10 | (VS16) | VARIATION SELECTOR-16 | 10 | ✅ |
+| U+00D7 | 3 | × | MULTIPLICATION SIGN | 3 | ✅ |
+| U+00A7 | 2 | § | SECTION SIGN | 2 | ✅ |
+| U+2026 | 1 | … | HORIZONTAL ELLIPSIS | 1 | ✅ |
+| U+2192 | 1 | → | RIGHTWARDS ARROW | 1 | ✅ |
+| U+1F514 | 1 | 🔔 | BELL | 1 | ✅ |
 
-| Codepoint | Char | Count | Name |
-|---|---|---|---|
-| U+2014 | `—` | 17 | EM DASH |
-| U+00A7 | `§` | 13 | SECTION SIGN |
-| U+26A0 | `⚠` | 3 | WARNING SIGN |
-| U+FE0F | *(invisible)* | 3 | VARIATION SELECTOR-16 |
-| U+1F534 | `🔴` | 3 | LARGE RED CIRCLE |
-| U+00B0 | `°` | 1 | DEGREE SIGN |
-| U+2192 | `→` | 1 | RIGHTWARDS ARROW |
-| U+2248 | `≈` | 1 | ALMOST EQUAL TO |
+- **U+FFFD REPLACEMENT CHARACTER: 0** ✅
+- **Mojibake tell-tales (`Ã`, `â`, C1 controls): NONE** ✅
+- **VS16 pairing: 10 of 10** U+FE0F immediately preceded by U+26A0 — exactly ten well-formed ⚠️ emoji, zero orphans ✅
+- **No unexpected codepoints** — the census set is exactly the nine expected, no tenth
+- Post-integration re-check: **0 U+FFFD in the manual** ✅
 
-**U+FFFD replacement characters: 0.** **Mojibake markers (`Â` / `â` / `ð`): 0.**
+**sha256** `6b7a6d4d0fe794f48807dff3d467b5804d859f4b9e7157173e93f5dce619849d`
 
-## ⚠️ 8 codepoints, but that is EXACTLY your 7 expected characters — not an eighth
+## The two § characters — handled as instructed
 
-You expected *"em dash, §, 🔴, ⚠️, →, °, ≈ — and nothing else."* The census shows **8 distinct
-codepoints**, and I want to be explicit about why that is not a discrepancy:
-
-🔴 **`⚠️` is a two-codepoint sequence** — U+26A0 WARNING SIGN followed by U+FE0F VARIATION SELECTOR-16,
-which is what promotes it from the monochrome `⚠` glyph to the emoji presentation. **Both appear exactly
-3 times, i.e. perfectly paired.** U+FE0F is a component of the character you listed, not an extra one.
-
-**Every other codepoint maps 1:1 to your list. No corruption product, no unexpected character. Gate
-passed, so I proceeded.**
-
----
-
-# SECTIONS TOUCHED, WITH LINE RANGES
-
-Final manual: **5,137 lines** (was 5,054 → **+83 lines**). **38 top-level headings, unchanged** — no new
-section was created, exactly as you asked.
-
-| # | Section | Lines (final) | What went in |
-|---|---|---|---|
-| **1** | **Title, line 1** | `1` | `· V9.8` → **`· V9.9`** |
-| **2** | **§27 Open backlog** | **3754-3761** | New `## 🔴 V9.9 — added 31 July 2026 (landing illustration)` block at the **top**, above V9.8 — **2 items** (see the merge below) |
-| **3** | **§27 V9.8 block** | **3765** | The existing CTA-contrast bullet **annotated**, not duplicated — see MERGES |
-| **4** | **§35 Cross-cutting engineering invariants** | **4817-4820** | delta §43.4 — the morphological-closing trap + the erase-without-enumerating bug, appended after the `.hg-landing` lesson, before `# 36.` |
-| **5** | **§38 heading** | **4945** | `(V9.8)` → **`(V9.8, extended V9.9)`** so the section records that it grew |
-| **6** | **§38 → `## The landing illustration (V9.9)`** | **5058-5104** | delta §43.1, §43.2, §43.3, §43.5 |
-| **7** | **§38 → `## Tagline and brand voice (V9.9)`** | **5106-5125** | delta §44 |
-| **8** | **§38 → `### Deploy state`** | **5133** | delta §46, appended as a dated **"Update, 31 July 2026 (V9.9)"** paragraph inside the existing block |
-| **9** | **Footer, last line** | `5137` | `· V9.8` → **`· V9.9`** |
-
-✅ `grep -c "· V9.9"` → **2** · `grep -c "· V9.8"` → **0** · `grep -c "V9.9 ADDENDUM"` → **0** (nothing appended raw)
-
-## Where §43.1-§43.3 and §43.5 went, as you asked me to report
-
-**Into §38 as a `## The landing illustration (V9.9)` subsection**, sitting after the icon material and
-**before** the deploy-state block — i.e. a continuation of the existing brand section, not a new section.
-Its sub-headings (`### What it replaced, and why`, `### Shipped files`, `### How it was made`,
-`### Colour — the truck is --head, not HEADER_BG`) match §38's existing prose-heading style rather than
-the delta's `§43.x` numbering.
-
-## Where §44 went — and the answer to your conditional
-
-🔴 **There is no copy / voice / tone / wording section in the manual.** I searched headings for *copy,
-voice, tone, wording, microcopy, language, tagline, slogan*: the only near-miss is
-`## Platform compliance and tone` (line 3342), which is about **regulatory tone in customer-facing
-compliance text**, not brand copy — putting a tagline there would misfile it.
-
-**So, per your instruction, it went into the brand section (§38) rather than inventing a home**, as
-`## Tagline and brand voice (V9.9)`, with a note at the top recording *why* it lives there so the next
-reader does not think it was misplaced.
-
-## Where §46 went
-
-**Appended to §38's existing `### Deploy state — end of session, NOT DEPLOYED` block** as a dated update
-paragraph — the same treatment V9.8's snapshot received, so the two sit together and the older one is not
-overwritten.
+Both live in the delta's own header warning (its lines 7-9), naming `§38.4` and `§41.4` as the dangling
+pointers the V9.8 and V9.9 integrations produced. **They were NOT resolved and NOT imported as
+pointers.** The warning's *substance* — that delta numbering does not survive integration, which is why
+this delta cites no section numbers — is honoured by the placement method used throughout. The literal
+text was not carried into the manual, because it is an instruction to the integrator rather than manual
+content. Say the word if you want it recorded as a maintenance note.
 
 ---
 
-# 🔴 CONTRADICTION — ONE FOUND. I CHANGED NOTHING. YOU DECIDE.
+# Version bump
 
-## The delta's canonical tagline does not match the shipped code
-
-| Source | Says |
-|---|---|
-| **Delta §44** | Canonical wording: *"Less time booking**,** more time cooking."* — and, explicitly: **"Comma, not full stops.** One balanced phrase; full stops chop it into fragments and lose the swing." |
-| **The code, both slots** | `Less time booking.<br />More time cooking.` — **full stops, split across two lines** ([page.tsx:148](app/landing/page.tsx#L148) hero, [:464](app/landing/page.tsx#L464) footer) |
-
-**I think the CODE is right and the delta's punctuation paragraph is stale.** The two-line, full-stop form
-exists because of an explicit instruction in this session to put *"each sentence on its own line"* — a
-later and more specific decision than the delta's prose. The delta appears to have been written against
-the intended wording rather than the shipped one.
-
-**What I did:** recorded §44's reasoning verbatim — including the "Comma, not full stops" paragraph — and
-**immediately beneath it added a marked, unresolved note** quoting what actually ships, so the manual does
-not silently assert something the code contradicts. **Neither the code nor the delta's wording was
-changed.** Resolving it is a one-line edit in either direction:
-
-- **keep the code** → delete that paragraph from §38's tagline subsection, or
-- **keep the delta** → change both slots to `Less time booking, more time cooking.` on one line.
-
-## ✅ Everything else in the delta verified TRUE against the code
-
-| Delta claim | Check |
-|---|---|
-| H1 stays *"The ordering system built for food trucks."* | ✅ [page.tsx:147](app/landing/page.tsx#L147) — exactly that, with "food trucks." in the accent span |
-| Hero subhead **and** footer both carry the tagline | ✅ both present, wording identical to each other |
-| Hero sets "cooking" in orange; footer is plain | ✅ hero has `<span className="lean">cooking.</span>`, footer does not |
-| `food-truck-themed.svg` is the one inlined | ✅ inline in `page.tsx`; the plain file is unreferenced |
-| Old fills were `#EA580C` | ✅ matches the audit; the code is now gone |
-
-⚠️ **One stale detail preserved verbatim, with a note.** §43.1 cites `app/landing/page.tsx:389` and `:393`
-for the old hardcoded fills. Those were the line numbers at audit time; the block had drifted to ~410/414
-by the time it was replaced. **I kept the numbers as written** (you asked for verbatim preservation) and
-added *"(Those line numbers are historical — the block had shifted by the time it was replaced, and the
-code is now gone.)"* so nobody hunts for them.
-
----
-
-# MERGES
-
-## 1. The landing CTA contrast item — merged, not repeated
-
-Delta §45.1 re-reports it as *"unchanged and still open"*. **It is already recorded** in §27's V9.8 block.
-Rather than carry the same item in two adjacent backlog blocks, I **annotated the existing V9.8 bullet**:
-
-> *"…Fixable on that button alone without touching the token or the logo. **Still open at V9.9** —
-> re-reported in that session and merged here rather than duplicated."*
-
-and left a pointer in the V9.9 block:
-
-> *"(The landing CTA contrast item is NOT repeated here — it is recorded once in the V9.8 block below and
-> annotated as still open.)"*
-
-**So the V9.9 backlog block carries only the 2 genuinely new items**, and the 2.50:1 figure appears in
-exactly one backlog entry.
-
-## 2. The morphological-closing trap — cross-referenced, not duplicated
-
-§43.4 is engineering, so it went to §35. **§38's illustration subsection therefore carries a pointer
-instead of a copy:** *"⚠️ The trap that cost three attempts … is recorded with the other silent-failure
-invariants in §35, not here."* The §35 entry in turn closes by naming the class it shares with the
-V9.8 `.hg-landing` lesson directly above it: *"a silent failure that reports clean."*
-
----
-
-# ✅ CROSS-REFERENCES — BOTH WERE BROKEN, BOTH CORRECTED
-
-You asked me to check the `§38.4` pointer. **It did not resolve — and neither did a second one.**
-
-| Delta pointer | Problem | Corrected to |
+| Line | Before | After |
 |---|---|---|
-| **§44 → "the two oranges in §38.4"** | 🔴 **§38 has no numbered subsections.** The V9.8 integration used prose headings, so the two-oranges note lives in **§38 → `## Colours`** (line 4984). `§38.4` resolves to nothing | *"the two oranges in the Colours subsection above"* |
-| **§45.1 → "(see §41.4)"** | 🔴 **§41 does not exist in the manual at all.** The manual has 38 sections; §41 was the delta's own invented numbering from V9.8. The CTA item lives in **§27's V9.8 block** | Replaced by the merge note pointing at the V9.8 block |
+| 1 | `HatchGrab Engineering Reference Manual · V9.9` | `HatchGrab Engineering Reference Manual · V10` |
+| 5283 (footer) | `HatchGrab Engineering Reference Manual · V9.9` | `HatchGrab Engineering Reference Manual · V10` |
 
-✅ `grep -c "§38.4"` → **0** · `grep -c "§41.4"` → **0**. **Neither dangling pointer survives.**
+Six `V9.9` strings remain, all **historical section labels** (§27's V9.9 backlog block, the §38 heading
+`extended V9.9`, `## The landing illustration (V9.9)`, `## Tagline and brand voice (V9.9)`, the
+`Update, 31 July 2026 (V9.9)` paragraph, and the still-open CTA-contrast annotation). None is a
+current-version marker. Left alone deliberately.
+
+⚠️ **Line 9 still reads `**Version 9.3**`** — a stale block in the title matter that predates this work
+and that the V9.4–V9.9 bumps also skipped. Not touched, since it is outside this delta. Flagging it
+because it reads as authoritative to anyone opening the file cold.
+
+⚠️ **No changelog block was added.** `# Changelog` stops at V9.7, and **neither V9.8 nor V9.9 got an
+entry** — both recorded their state inside their own content section instead. The brief says to give
+STATE "the same treatment the V9.8 and V9.9 snapshots received", so V10's state went into §39's own
+deploy-state block. Inventing a V10 changelog entry would have broken that precedent, not restored it.
 
 ---
 
-# VERBATIM PRESERVATION — VERIFIED BY FIXED-STRING COUNT
+# Sections touched
 
-| Value | Count |
+## NEW — `# 39. Buzzers — physical pagers against orders (V10)` · lines 5170-5281
+
+**Section number 39.** The manual's highest was **38** (Brand system); 39 is the next free number.
+⚠️ There is **no §29** — the sequence jumps 28 → 30. I did **not** reuse that gap: "next free number
+after the current highest" means 39. Verified no duplicate top-level numbers exist after the edit.
+
+Placed after §38 and before the footer, matching how §35-38 were appended.
+
+| Subsection | Lines |
 |---|---|
-| `-0.299` | 1 |
-| `16.7°` | 1 |
-| `y=500` | 1 |
-| `y 762-787` | 2 |
-| `viewBox="24.0 18.0 351.5 176.0"` | 1 |
-| `1.997:1` | 1 |
-| `0.0293` · `0.0088` | 1 · 1 |
-| `2.50:1` | 2 |
-| `#16314F` · `#0F172A` · `#EF8B2C` · `#EA580C` | 4 · 5 · 7 · 6 |
-| `public/illustrations/food-truck-themed.svg` · `food-truck.svg` | 1 · 2 |
-| `x 634-667, y 310-760` · `x 878-962, y 492-548` · `y=198` | 1 · 1 · 1 |
-| `y=787` · `y≈831` · `x 180-684` · `85-746` | 1 · 1 · 1 · 1 |
+| The three-layer model (table + event-types rationale) | 5174-5184 |
+| Schema — all additive, no backfill | 5186-5198 |
+| 🔴 The in-use status list is NOT the occupying-status list | 5200-5209 |
+| The grid | 5211-5231 |
+| Where it appears | 5233-5239 |
+| The write | 5241-5247 |
+| Offline and conflict resolution | 5249-5257 |
+| The losing order's banner | 5259-5265 |
+| `### Deploy state — V10, DEPLOYED and live-verified` | 5271-5281 |
 
-Also preserved verbatim: the wheel constants (r=96, hub r=42, 44%, ~13 units), the 640-wide hatch, the
-4-unit corner radius, the 13-subpath / 50-unit / 8-unit scan figures, `MORPH_CLOSE` 5x5 at 2x, rows
-205/215/560/770, and the rgb triples (22, 49, 79) and (15, 23, 42).
+## `# 16. Database schema essentials`
+
+**(a) `orders` column list extended — line 2966.** Appended in the list's existing bold-with-version
+style: **`buzzer_number` (smallint, null, V10)**, **`placed_at` (timestamptz, null, V10)**,
+**`buzzer_lost_at` (timestamptz, null, V10)**. The manual's own rule at that entry — *"if you extend
+this table, extend this list"* — required this.
+
+**(b) No-unique-index rule — new blockquote at line 2970**, directly under the two partial unique
+indexes, where a reader looking for order indexes will be. Cross-refs §39.
+
+**(c) NEW subsection `### Live-schema facts — triggers on 'orders' (V10 / 3 August 2026)` — lines
+3128-3140.** Sits with the two existing `Live-schema facts` subsections (V9 signup+schedule, V9.2
+demo+deletion) and opens with the same "the cross-cutting lesson lives in §35" pointer those use.
+Holds the full trigger finding and the `pg_trigger` query verbatim.
+
+## `# 35. Cross-cutting engineering invariants` — five entries, lines 4845-4853
+
+Appended after the morphological-closing entry (V9.9) and before §36, so all five silent-failure
+lessons now sit in one run: `.hg-landing` specificity (V9.8) → morphological closing (V9.9) → the three
+new ones. Converted from the delta's `###` headings to the manual's bold-lead paragraph form, which is
+what every other §35 entry uses.
+
+| Entry | Line |
+|---|---|
+| 🔴 `??` swallows a meaningful `null`, exactly as `\|\|` swallows a meaningful `false` | 4845 |
+| 🔴 `mergeOrders` protects the STATUS lifecycle only — every other field is unguarded | 4847 |
+| 🔴 Production contains objects with no migration file — this holds for TRIGGERS too | 4849 |
+| Trace the interaction; do not enumerate plausible causes | 4851 |
+| `update_truck` silently drops unlisted keys | 4853 |
+
+The `??` entry closes with *"Same class as the `.hg-landing` reset and the morphological closing above:
+a silent failure that reports clean"* — the phrasing the morphological-closing entry already used to
+link itself to the specificity entry, so the run is self-describing.
+
+## `# 27. Open backlog` — new V10 block, lines 3768-3776
+
+`## 🔴 V10 — added 3 August 2026 (buzzers)` inserted **above** the V9.9 block (newest first), with the
+existing `### Found, reported, not fixed` sub-heading and bullet style. Six items.
+**No second backlog section was created.**
 
 ---
 
-## What I could NOT verify
+# Merges — folded, not repeated
 
-- **The manual has not been rendered.** Structure is verified by heading counts, line ranges and
-  fixed-string greps — not by viewing it. A malformed table would not have been caught.
-- 🔴 **I did not verify the delta's measured constants.** The rake `-0.299`, the nose break at `y=500`,
-  the luminance figures `0.0293` / `0.0088`, the 70%-darker claim and the trace geometry are **carried
-  through on the delta's authority** — I recomputed none of them. What I *did* check is everything
-  observable in the code: the H1, both tagline slots, which SVG is inlined, and that the old `#EA580C`
-  fills are gone.
-- **The "70% darker" figure is the delta's**, and I note it sits alongside luminances of 0.0293 and
-  0.0088 — a ratio of ~3.3×, i.e. ~70% lower. Consistent, but I did not audit the wording.
-- **I did not check whether §38's illustration material duplicates anything in §35 or §36** beyond the
-  §43.4 content I deliberately routed to §35.
-- ⚠️ **The pre-edit manual is recoverable from `git` only if V9.8 was committed.** `HEAD` held V9.7 at the
-  last check and V9.8 was uncommitted, so **this edit is now stacked on top of an uncommitted V9.8** —
-  which is precisely the risk delta §46 raises about the diff getting harder to read. **Committing before
-  the next pass would make the next one much safer.**
+| # | Delta content | Existing manual content | What I did |
+|---|---|---|---|
+| 1 | Trigger-duplication lesson | §35 *"A swallowed write makes a missing column indistinguishable from a working one"* (line 4708) — same class, for **columns** | **Cross-referenced, not duplicated.** The §35 entry opens *"The existing entry above … records this for columns; triggers are the same class"* and defers the finding + query to §16. §16 defers the lesson to §35. Neither repeats the other. This is the "check, and if so cross-reference" instruction. |
+| 2 | Occupying list = 4 values, capacity frees at ready | §71 (line 786) already states the occupying set and *"released AT ready"* | Kept the four values **verbatim** (required), but cited **§71** for the capacity model rather than re-deriving it. The delta's contribution — the *contrast* with the buzzer lifecycle — is what §39 adds. |
+| 3 | Backlog: occupying list duplicated in five places | §71 records the set but not the duplication | Kept as a V10 backlog item, cross-referencing §39 and §71. |
+| 4 | Backlog item 5: iOS splash / `SplashScreen` not installed | V9.8 backlog final bullet — **near-verbatim duplicate** | **Merged.** The V10 item is one line marked *"Re-confirmed 3 August; recorded once in the V9.8 block below and not duplicated here."* |
+| 5 | Backlog item 4: iOS app icon **done** 3 August | V9.8 backlog *"Native icons blocked on `minSdkVersion` … iOS `AppIcon-512@2x.png` (1 file)"* lists it as outstanding | **Merged forward, V9.8 left intact.** The V10 item carries the Android state plus ✅ iOS done, and says explicitly that it updates the V9.8 entry *"which still lists the iOS file as outstanding — that entry is left as written rather than edited in place."* |
+| 6 | STATE: `capacitor.config.ts` LAN-IP trap | Line 276 already records *"An iPad CANNOT reach the dev server via `localhost`"*; line 402 records the `CAP_SERVER_URL` sync command | **Merged.** §39's deploy state keeps the delta's new detail (`IS_LOCAL_HTTP`, the blank-screen-no-error symptom, the revert instruction) and adds *"the same asymmetry §8 records for `wakeLock` over LAN"* rather than restating the known part. |
+| 7 | `update_truck` drops unlisted keys | Not previously in §35 | New entry, extended with the **van-level equivalent** (`update_van_settings` is a destructure and drops just as silently) — a fact from the phase-1 build, not in the delta. |
+
+**On the phase-1/phase-2 reports seeding overlap:** checked. `grep -ci buzzer docs/reference-manual.md`
+returned **0** before this run — no buzzer material had reached the manual from those reports. Nothing
+to de-duplicate on that axis.
+
+---
+
+# 🔴 CONTRADICTIONS — nothing changed, your call
+
+## 1. `orders` column count vs the list itself, and vs live
+
+**Manual (§16, unchanged):**
+> **orders** — **thirty-five columns as of V9.4. The list below is COMPLETE and live-verified (29 July).**
+
+**The manual's own list**, counted item by item, contained **37** columns before this edit — not 35.
+**The live database** returned **37** columns on `orders` in the PostgREST schema dump taken during the
+phase-1 diagnosis, agreeing with the list and not with the number. With the three V10 additions the
+true count is now **40**.
+
+**I think the LIST is right and the NUMBER is wrong**, because the list agrees with live on both
+membership and total, while the prose figure agrees with neither. The likely history is that
+"thirty-five" was written when the list was 35 long and two later additions extended the list without
+updating the sentence — which is precisely the failure that entry's own warning exists to prevent.
+
+**Changed nothing.** I extended the list (mandated by the entry's own rule) and left `thirty-five`
+exactly as written. Extending the list does make the stale figure *more* wrong, which is why it is
+first here. **Your call:** change to "forty columns as of V10", or leave and let the list be
+authoritative.
+
+## 2. `payment_status` CHECK constraint
+
+**Manual (§16, unchanged):** `payment_status` ∈ `unpaid|paid|refunded|failed`.
+**Migration `20260729_orders_payment_status_widen_check.sql`** widened it to
+`unpaid|paid|part_paid|refunded|refund_due|failed`.
+
+Not delta content and not in scope, so **changed nothing**. Noting it because it sits four lines from
+an edit I did make, and anyone checking buzzer constraints will read it.
+
+**No contradiction was found between the delta and the manual.** Both conflicts above are the manual
+against itself or against live.
+
+---
+
+# Verbatim preservation — automated check, all PASS
+
+| Item | Result |
+|---|---|
+| `BUZZER_IN_USE_STATUSES = pending, confirmed, modified, cooking, ready` | ✅ verbatim |
+| `occupying (capacity)   = pending, confirmed, modified, cooking` | ✅ verbatim, incl. spacing |
+| `BUZZER_MAX_COUNT` / max 30 | ✅ |
+| `20260804_assign_buzzer_atomic.sql` | ✅ |
+| migration `20260703` | ✅ |
+| `pg_trigger` query, both lines | ✅ verbatim |
+| 8% red-green colour-deficiency figure | ✅ |
+| All five schema lines (name + type + null + comment, aligned) | ✅ verbatim in the code block |
+| Paths: `lib/buzzer.ts`, `lib/slot-bookings.ts`, `lib/capacity-breach.ts`, `lib/slot-capacity.ts`, `components/dashboard/AddOrderPanel.tsx`, `components/dashboard/helpers.ts`, `lib/slot-indicator.ts`, `lib/payments/paid-step.ts`, `capacitor.config.ts`, `android/app/build.gradle`, `variables.gradle`, `AppIcon-512@2x.png` | ✅ all present |
+
+---
+
+# Style conversions applied
+
+The delta's own formatting was **not** imported:
+
+- delta `###` subheads → manual `##` inside §39, and → **bold-lead paragraphs** inside §35 (its universal form)
+- delta title matter (`# REFERENCE MANUAL — V10 ADDENDUM`, the integration instruction, the provenance note, the `§38.4`/`§41.4` warning) → **not carried**; the provenance sentence was folded into §39's opening blockquote, which is how §36 and §38 open
+- delta `---` rules between major blocks → dropped; the manual uses heading level alone
+- delta numbered backlog list → `-` bullets under `### Found, reported, not fixed`, matching V9.8/V9.9
+- 🔴 / ⚠️ retained — both are established manual conventions, used identically

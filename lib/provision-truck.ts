@@ -81,6 +81,16 @@ interface ProvisionProfile {
   /** FIX 9 — demo defaults auto-accept ON so a visitor's first test order confirms itself and lands on the
    *  board immediately. A prospect who places an order and sees it sit unactioned reads that as broken. */
   autoAccept: boolean
+  /** Master pre-orders switch. REQUIRED on the type, not optional, so adding a profile forces the
+   *  decision — this column was previously written by nobody and a new truck simply inherited the DB
+   *  default, which is how a brand-new operator found pre-orders and a pre-order deadline already ON
+   *  before they had a menu.
+   *
+   *  🔴 THE DB DEFAULT IS NOT CHANGING. `trucks.preorders_enabled` stays `not null default true`
+   *  (20260622_truck_preorders_enabled.sql): that default carries BACKFILL meaning for trucks that
+   *  predate the column, and every read gates on `!== false`, so flipping it would silently switch
+   *  pre-orders off for existing trucks. This writes an explicit value at PROVISION time only. */
+  preordersEnabled: boolean
 }
 
 const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
@@ -94,6 +104,10 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     truckOrderEmailEnabled: true,
     allergenDisplayMode: null,    // operator chooses in the wizard
     autoAccept: false,            // an operator decides this deliberately
+    // OFF at creation. Pre-orders are a decision about how they trade, and a truck with no menu and no
+    // event cannot take one — showing the deadline section already switched on before there is anything
+    // to pre-order presents a configured feature as a fait accompli. Settings is where it goes on.
+    preordersEnabled: false,
   },
   demo: {
     identity: 'random',
@@ -104,6 +118,9 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     // customer-menu gate HIDES unverified items → the demo would render an EMPTY MENU.
     allergenDisplayMode: 'card',
     autoAccept: true,
+    // OFF for a demo too: the demo's whole story is a walk-up order placed and served in one loop, and a
+    // pre-order deadline has nothing to act on in it.
+    preordersEnabled: false,
   },
 }
 
@@ -287,6 +304,9 @@ export async function provisionTruck(
         truck_order_email_enabled: profile.truckOrderEmailEnabled,
         auto_accept: profile.autoAccept,
         allergen_display_mode: profile.allergenDisplayMode,
+        // Written EXPLICITLY. The column's `default true` is a backfill default for pre-existing trucks,
+        // not the right answer for a truck being created now — see the note on ProvisionProfile.
+        preorders_enabled: profile.preordersEnabled,
         // Read by upsert_event when creating events (`truck.default_auto_open ?? true`).
         default_auto_open: true,
         default_auto_close: true,

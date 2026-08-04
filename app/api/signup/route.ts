@@ -18,7 +18,7 @@ import { createClient } from '@supabase/supabase-js'
 import { randomBytes } from 'crypto'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { signupRatelimit, signupEmailRatelimit } from '@/lib/ratelimit'
-import { sendConfirmationEmail } from '@/lib/email'
+import { sendSignupVerificationEmail, firstNameFrom } from '@/lib/email-signup'
 import { isDemoIdentifier } from '@/lib/demo'
 
 const supabase = createClient(
@@ -29,7 +29,9 @@ const supabase = createClient(
 /** Which document they agreed to. `holding-` marks the interim pages — these accounts need re-consent
  *  when real terms ship, and this value is what makes that queryable rather than guesswork. */
 const TERMS_VERSION = 'holding-2026-07-23'
-const VERIFY_TTL_DAYS = 7
+/** 30, not 7. The verification copy deliberately says this is not urgent, an operator may take weeks
+ *  over their menu, and there is NO resend path yet — so a short window strands them silently. */
+const VERIFY_TTL_DAYS = 30
 const MIN_PASSWORD = 8
 
 export async function POST(req: NextRequest) {
@@ -110,12 +112,15 @@ export async function POST(req: NextRequest) {
   // here and ONLY here: the user is seconds old and owns nothing, so this turns a broken state into
   // "nothing happened", which is a state they can simply retry from.
   // If the delete ITSELF fails, /api/auth/post-login repairs on next login.
+  // Single source for the display name: the verification email derives {first_name} from it, and the
+  // two must not drift.
+  const operatorName = email.split('@')[0]
   const { data: operator, error: opError } = await supabase
     .from('operators')
     .insert({
       auth_user_id: authUserId,
       email,
-      name: email.split('@')[0],
+      name: operatorName,
       terms_accepted_at: new Date().toISOString(),
       terms_version: TERMS_VERSION,
       marketing_opt_in: marketingOptIn,
@@ -132,11 +137,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Could not finish creating your account — please try again.' }, { status: 500 })
   }
 
-  // ── VERIFICATION EMAIL — sent now, enforced at go-live ──────────────────────────────────────────
+  // ── CLAIM THE DEMO ──────────────────────────────────────────────────────────────────────────────
+  // Marks which demo this account came from. Two jobs: it stops the cleanup job deleting a demo mid-
+  // migration, and it is what the identity step reads to find the stored extraction to re-commit from.
+  // Best-effort — a signup must never fail because a demo could not be linked.
+  //
+  // ⚠️ RUNS BEFORE THE EMAIL, and that ordering is now load-bearing: the verification copy names the
+  // truck, and this is the ONLY place a name exists at signup. No truck is created here (see the
+  // header) — so unless the account came from a demo there is nothing to name, and the copy falls back.
+  let demoTruckName: string | null = null
+  if (demoToken && isDemoIdentifier(demoToken)) {
+    const { data: demoTruck } = await supabase
+      .from('trucks').select('id, name').eq('dashboard_token', demoToken).maybeSingle()
+    if (demoTruck) {
+      demoTruckName = (demoTruck.name ?? '').trim() || null
+      await supabase.from('demo_sessions')
+        .update({ claimed_by_operator_id: operator.id }).eq('truck_id', demoTruck.id)
+    }
+  }
+
+  // ── VERIFICATION EMAIL — sent now, ENFORCED NOWHERE YET ─────────────────────────────────────────
   // Non-blocking by design: an inbox round-trip at the moment of highest intent costs conversions to solve
   // a problem that is not yet urgent (nothing is public during setup). Sent NOW because this is when the
-  // address is freshest and a typo is most likely to be spotted. lib/go-live-checks.ts is what makes it
-  // matter, at the moment real customers start placing real orders.
+  // address is freshest and a typo is most likely to be spotted.
+  //
+  // 🔴 CORRECTED — THIS COMMENT USED TO CLAIM lib/go-live-checks.ts MADE IT MATTER. IT DOES NOT.
+  // As of 3 August 2026, `operator_email_verifications.verified_at` is WRITTEN (by
+  // /api/auth/verify-signup) and READ BY NOTHING that gates anything. `checkGoLive` — the function that
+  // defines the `email_unverified` issue — has ZERO call sites and lib/go-live-checks.ts is imported by
+  // no file. So verification currently gates NO access, NO ordering, NO go-live and NO UI state; two
+  // signups on 24 July with `verified_at` NULL and expired rows both produced fully working trucks.
+  // The intent stands and the module is kept for it, but do not read this as a live control.
   const token = randomBytes(32).toString('hex')
   const expiresAt = new Date(Date.now() + VERIFY_TTL_DAYS * 86_400_000).toISOString()
   const { error: verifyErr } = await supabase.from('operator_email_verifications')
@@ -148,34 +179,14 @@ export async function POST(req: NextRequest) {
   } else {
     const origin = req.nextUrl.origin
     const link = `${origin}/api/auth/verify-signup?token=${token}`
-    // sendConfirmationEmail never throws — email failure must not fail signup.
-    await sendConfirmationEmail({
+    // Never throws — email failure must not fail signup. The welcome email is NOT sent here; it goes
+    // out when this link is clicked (/api/auth/verify-signup).
+    await sendSignupVerificationEmail({
       to: email,
-      senderName: 'HatchGrab',
-      subject: 'Confirm your email address',
-      html: `<p>Welcome to HatchGrab.</p>
-             <p>Please confirm this is your email address — we use it for order notifications and to get you
-             back into your account if anything goes wrong.</p>
-             <p><a href="${link}">Confirm my email address</a></p>
-             <p style="color:#64748b;font-size:13px">This link works for ${VERIFY_TTL_DAYS} days. You can carry on
-             setting up in the meantime — you'll only need this done before you go live.</p>`,
-      text: `Welcome to HatchGrab.\n\nConfirm your email address: ${link}\n\n` +
-            `This link works for ${VERIFY_TTL_DAYS} days. You can carry on setting up in the meantime — ` +
-            `you'll only need this done before you go live.`,
+      firstName: firstNameFrom(operatorName),
+      truckName: demoTruckName,
+      verifyUrl: link,
     })
-  }
-
-  // ── CLAIM THE DEMO ──────────────────────────────────────────────────────────────────────────────
-  // Marks which demo this account came from. Two jobs: it stops the cleanup job deleting a demo mid-
-  // migration, and it is what the identity step reads to find the stored extraction to re-commit from.
-  // Best-effort — a signup must never fail because a demo could not be linked.
-  if (demoToken && isDemoIdentifier(demoToken)) {
-    const { data: demoTruck } = await supabase
-      .from('trucks').select('id').eq('dashboard_token', demoToken).maybeSingle()
-    if (demoTruck) {
-      await supabase.from('demo_sessions')
-        .update({ claimed_by_operator_id: operator.id }).eq('truck_id', demoTruck.id)
-    }
   }
 
   return NextResponse.json({ ok: true, operatorId: operator.id })

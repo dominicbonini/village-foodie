@@ -1,4 +1,10 @@
 // lib/go-live-checks.ts
+// 🔴 STATUS, 3 AUGUST 2026: UNWIRED. `checkGoLive` has ZERO call sites and this module is imported by no
+// file, so NOTHING in the running product is gated by it — not email verification, not capacity, not
+// allergens. Two comments elsewhere used to assert otherwise and have been corrected. Keep this module:
+// it is intended for nomination (Phase 5). Until it is called, treat every rule below as a specification,
+// not as a control that is in force.
+//
 // The conditions a truck must satisfy before it can be nominated for its first event (spec Stage 8).
 //
 // ── WHY THIS EXISTS NOW, WITH NO CONSUMERS ─────────────────────────────────────────────────────────

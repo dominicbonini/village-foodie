@@ -2,15 +2,19 @@
 // Physical buzzers/pagers handed to a customer at the hatch. The van carries a fixed rack numbered
 // 1..buzzer_count; a number is handed out with an order and comes back when the customer collects.
 //
-// This module holds the three things that MUST NOT be re-derived at a call site:
+// This module holds the four things that MUST NOT be re-derived at a call site:
 //   1. BUZZER_IN_USE_STATUSES — which orders are still holding a buzzer.
 //   2. resolveBuzzerPrompt    — van default + per-event override, one nullish chain.
 //   3. assignBuzzer           — the server-side write, including clearing the number from another order.
+//   4. buzzerPill             — the ready-toast pill, so the two surfaces cannot render it differently.
 //
-// No 'use client' and no server-only imports: the constant + resolver are imported by client
+// No 'use client' and no server-only imports: the constants + resolver are imported by client
 // components, and assignBuzzer takes the Supabase client as a parameter (a TYPE-ONLY import, erased at
 // build, so the client bundle never pulls the SDK in). Same shape as lib/slot-bookings.ts.
+// `react` is isomorphic and is imported for `createElement` alone — see buzzerPill.
 
+import { createElement } from 'react'
+import type { ReactNode } from 'react'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 // ── 🔴 THE IN-USE STATUS LIST. READ THIS BEFORE REUSING ANY OTHER STATUS ARRAY. ───────────────────
@@ -92,6 +96,37 @@ export const BUZZER_MAX_COUNT = 30
  *  1..20 and sits immediately below the toggle, so this is a starting point they can see and change,
  *  not a value anything depends on. */
 export const BUZZER_DEFAULT_COUNT = 10
+
+// ── THE READY-TOAST PILL ─────────────────────────────────────────────────────────────────────────
+// 🔴 ONE DEFINITION, BECAUSE TWO AGREEING LITERALS ARE TWO LITERALS THAT WILL DISAGREE. The dashboard
+// and the KDS write their ready toast separately, and this markup was duplicated verbatim across both —
+// identical by inspection, not by construction. The DEMO_COPY header (components/DemoGetStarted.tsx)
+// records one string in this codebase diverging FOUR times, each fixed in one place and not the others,
+// because nothing made the other copy visible while you edited one. This removes the possibility.
+//
+// ⚠️ RETURNED AS A NODE, NOT A CLASS STRING, AND THAT IS THE WHOLE POINT. Exporting only the classes
+// would leave the `<span>` and the `🔔 ` prefix duplicated at both call sites — the bell, the spacing
+// and the element are as driftable as the classes, and a literal would survive at each caller.
+//
+// ⚠️ createElement RATHER THAN JSX because this file is `.ts`, not `.tsx`. Renaming it would drag a
+// server route (app/api/dashboard/action/route.ts imports assignBuzzer) onto a `.tsx` module for one
+// span; a new component file would split the buzzer vocabulary across two homes. createElement is the
+// smaller price.
+//
+// 🔴 SOLID WHITE, deliberately, and NOT the toast's own bg-white/20 undo treatment: the toast ground is
+// `bg-green-600` with white text at 3.30:1 — below the 4.5:1 floor for its 14px bold text. This pill is
+// slate-900 on solid white at 17.85:1, so the one number that cannot be re-derived is the most legible
+// thing in the toast even though the text around it is not. That 3.30:1 is a real pre-existing defect on
+// EVERY success toast and is deliberately not fixed here.
+//
+// ⚠️ TWO CHILDREN ('🔔 ' then the number), matching the JSX it replaces (`🔔 {n}`) exactly, so the
+// rendered output is unchanged down to the text-node split.
+export const BUZZER_PILL_CLASS = 'bg-white text-slate-900 rounded px-1.5 font-black'
+
+/** The ready-toast buzzer pill. Callers pass the number only — never the markup. */
+export function buzzerPill(buzzerNumber: number): ReactNode {
+  return createElement('span', { className: BUZZER_PILL_CLASS }, '🔔 ', buzzerNumber)
+}
 
 // ── GRID STATE ───────────────────────────────────────────────────────────────────────────────────
 
