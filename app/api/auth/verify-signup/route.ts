@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendOperatorWelcomeEmail, firstNameFrom } from '@/lib/email-signup'
+import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -55,13 +56,10 @@ export async function GET(req: NextRequest) {
   // Verification is ACCOUNT-level, so any truck this operator owns is a valid destination. Prefer one
   // still in setup — that is where /setup would have sent them — and fall back to their oldest otherwise
   // (an operator who has finished setup should land on their console, not a naming form).
-  const { data: trucks } = await supabase
-    .from('trucks')
-    .select('dashboard_token, setup_step, name')
-    .eq('operator_id', row.operator_id)
-    .order('created_at', { ascending: true })
-
-  const truck = (trucks ?? []).find(t => t.setup_step && t.setup_step !== 'done') ?? (trucks ?? [])[0] ?? null
+  // E2: the rule and its deterministic ordering now live in ONE place — this was one of the two
+  // hand-written copies. Behaviour is unchanged; the query and the prefer-in-setup-else-oldest rule
+  // moved verbatim into the helper.
+  const truck = await resolveOperatorTruck(supabase, row.operator_id)
 
   const back = (status: string) =>
     truck?.dashboard_token
@@ -103,10 +101,16 @@ export async function GET(req: NextRequest) {
         to: op?.email || row.email,
         firstName: firstNameFrom(op?.name),
         truckName: (truck?.name ?? '').trim() || null,
-        // No truck yet ⇒ point at the step that creates one, which is where `back()` sends them too.
-        manageUrl: truck?.dashboard_token
-          ? `${base}/manage/${encodeURIComponent(truck.dashboard_token)}`
-          : `${base}/setup`,
+        // ── E2: TOKENLESS, ALWAYS ────────────────────────────────────────────────────────────────
+        // 🔴 THIS USED TO BE `${base}/manage/${truck.dashboard_token}` — a long-lived bearer
+        // credential for /api/manage, written in plain text into an inbox. It is now the bare
+        // `/manage` index, which resolves the operator's truck from their SESSION (app/manage/page.tsx)
+        // and forwards. Nothing about the token or /api/manage's auth changed; the email simply stopped
+        // carrying it.
+        // No branch on `truck` any more, and that is a simplification not a loss: /manage sends an
+        // operator with no truck to /setup itself, so the destination is decided at click time against
+        // live state rather than baked into an email that may be days old.
+        manageUrl: `${base}/manage`,
       })
     } catch (e) {
       console.error('[verify-signup] welcome email failed (verification still succeeded):', e)

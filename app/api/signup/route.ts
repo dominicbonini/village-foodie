@@ -42,6 +42,12 @@ export async function POST(req: NextRequest) {
   const password = String(body.password ?? '')
   const marketingOptIn = body.marketing_opt_in === true
   const demoToken = typeof body.demo === 'string' ? body.demo : null
+  // ── J2: THE SIGNUP PROMO CODE ────────────────────────────────────────────────────────────────────
+  // Trimmed and length-capped, otherwise stored EXACTLY as typed — case and all. There is no list to
+  // check it against and no validation of any kind by design: a code is a marketing artifact, and
+  // nothing about it may stand between an operator and an account. An unrecognised code is a recorded
+  // fact, not an error. 40 chars is a bound on abuse (the column is text), not a format rule.
+  const signupPromoCode = String(body.signup_code ?? '').trim().slice(0, 40) || null
 
   if (!email.includes('@') || email.length > 254) {
     return NextResponse.json({ ok: false, error: 'Enter a valid email address.' }, { status: 400 })
@@ -135,6 +141,25 @@ export async function POST(req: NextRequest) {
         `and the compensating delete also failed (${undoError.message}). post-login will repair it.`)
     }
     return NextResponse.json({ ok: false, error: 'Could not finish creating your account — please try again.' }, { status: 500 })
+  }
+
+  // ── J2: RECORD THE PROMO CODE — A SEPARATE, BEST-EFFORT WRITE ───────────────────────────────────
+  // 🔴 DELIBERATELY NOT A FIELD ON THE INSERT ABOVE, AND THIS IS THE WHOLE J1 TOLERANCE STORY.
+  // `operators.signup_promo_code` does not exist until the migration is run by hand, and this code
+  // deploys to preview BEFORE that happens. PostgREST rejects an insert naming an unknown column with
+  // PGRST204 and fails the WHOLE statement — so putting it in the insert would make every signup fail
+  // its operators row, fire the compensating delete, and return "Could not finish creating your
+  // account". A marketing field would have taken signup down.
+  // As a separate UPDATE it cannot do that: the account already exists and is committed, the error is
+  // logged, and the operator's signup completes exactly as if no code had been typed. When the
+  // migration lands the same code starts working with no redeploy.
+  if (signupPromoCode) {
+    const { error: codeErr } = await supabase
+      .from('operators').update({ signup_promo_code: signupPromoCode }).eq('id', operator.id)
+    if (codeErr) {
+      console.error(`[signup] promo code "${signupPromoCode}" NOT recorded for operator ${operator.id} ` +
+        `— has 20260804_operators_signup_promo_code.sql been run? (${codeErr.message})`)
+    }
   }
 
   // ── CLAIM THE DEMO ──────────────────────────────────────────────────────────────────────────────

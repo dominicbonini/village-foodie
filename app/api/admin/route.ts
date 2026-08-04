@@ -53,7 +53,20 @@ export async function GET(req: NextRequest) {
     .from('trucks')
     .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded')
     .order('name')
-  return NextResponse.json({ trucks: trucks || [] })
+
+  // ── J3: THE SIGNUP PROMO CODE, KEYED BY OPERATOR ────────────────────────────────────────────────
+  // 🔴 ITS OWN STATEMENT, AND THAT IS THE J1 TOLERANCE. `operators.signup_promo_code` does not exist
+  // until the migration is run by hand, and a named select over a missing column fails the WHOLE
+  // statement with 42703. Folding it into the trucks query above would therefore have blanked the
+  // ENTIRE admin console on preview until the migration landed. Separate query, error swallowed: the
+  // codes column is simply empty until the column exists, and everything else renders as it does today.
+  let operators: { id: string; signup_promo_code: string | null }[] = []
+  {
+    const { data, error } = await supabase.from('operators').select('id, signup_promo_code')
+    if (error) console.warn('[admin] signup_promo_code unavailable (migration not run?):', error.message)
+    else operators = data ?? []
+  }
+  return NextResponse.json({ trucks: trucks || [], operators })
 }
 
 export async function POST(req: NextRequest) {

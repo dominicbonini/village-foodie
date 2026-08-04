@@ -8,6 +8,10 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { provisionTruck } from '@/lib/provision-truck'
 import { createSlug } from '@/lib/utils'
 import { DEMO_PREFIX } from '@/lib/demo'
+// I4: the SAME validator Manage Settings and the signup modal use — one rule, so a number the client
+// accepts can never be rejected here.
+import { isValidUKPhone } from '@/lib/contact-validation'
+import { resolveOperatorTruck } from '@/lib/resolve-operator-truck'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,6 +54,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Give your truck a name.' }, { status: 400 })
     }
 
+    // ── I4: CONTACT PHONE IS REQUIRED AT SIGNUP ─────────────────────────────────────────────────
+    // 🔴 ENFORCED HERE AND NOWHERE ELSE, AND THAT IS THE WHOLE POINT. The obvious place looks like
+    // `update_settings` (app/api/manage/route.ts) — the action that actually writes contact_phone —
+    // but that is the SAME action Manage Settings saves through, for every truck that already exists.
+    // A required check there would reject a save from an operator whose phone is blank today, i.e. it
+    // would retro-apply this rule to live trucks and could lock one out of their own Settings. This
+    // route is reached ONLY by an operator who has no truck yet: Pizzeria Gusto and Real Thai Food
+    // have never called it and cannot.
+    //
+    // DELIBERATELY PERMISSIVE — isValidUKPhone strips everything but digits and '+' before testing
+    // /^(\+?44|0)\d{9,11}$/, so 07123456789, +447123456789, 447123456789 and any spaced or punctuated
+    // form of those all pass. A signup blocked by a fussy regex costs far more than a loosely
+    // formatted number in a column, so this checks shape, not correctness.
+    const contactPhone = String(body.contact_phone ?? '').trim()
+    if (!contactPhone) {
+      return NextResponse.json({ ok: false, error: 'A contact phone number is required.' }, { status: 400 })
+    }
+    if (!isValidUKPhone(contactPhone)) {
+      return NextResponse.json({ ok: false, error: 'Enter a valid UK phone number (e.g. 07700 900123).' }, { status: 400 })
+    }
+
     // Idempotence: a double-submit (or a retry after a flaky response) must not mint a second truck.
     const { data: existing } = await supabase
       .from('trucks').select('id, dashboard_token, setup_step')
@@ -64,6 +89,11 @@ export async function POST(req: NextRequest) {
         name,
         slug: safeSlug(name),
         contactEmail,
+        // P2/P3 — the phone and its WhatsApp tick now travel INTO provisioning rather than being
+        // patched on afterwards, so the truck row is correct on its first insert: contact_phone,
+        // whatsapp and preferred_contact_method are all set together from one input.
+        contactPhone,
+        phoneIsWhatsapp: body.phone_is_whatsapp === true,
         // HIDDEN — the default, restated because it is the security property that matters most here.
         // A truck goes public at NOMINATION (Stage 8), never at creation.
         visibility: 'hidden',
@@ -77,6 +107,11 @@ export async function POST(req: NextRequest) {
         van: { kitchen_capacity: null },
       })
 
+      // ⚠️ contact_phone WAS written here (slice I). It has MOVED into provisionTruck as an OPTION —
+      // which is the same reasoning that kept it out of ProvisionProfile then: nothing in provisioning
+      // *decides* a phone number, so it is per-call data, not a profile field. P2/P3 need it during
+      // the insert (whatsapp and preferred_contact_method are derived from it), so one writer is now
+      // better than two. Still stored verbatim — isValidUKPhone does not normalise.
       await supabase.from('trucks')
         .update({ operator_id: operator.id, setup_step: 'menu' })
         .eq('id', result.truck.id)
@@ -134,11 +169,9 @@ export async function GET(req: NextRequest) {
   // the only other consumer — is untouched and does not pay for a query it does not use.
   // Same truck-selection rule as verify-signup: prefer one still in setup, else the oldest.
   if (req.nextUrl.searchParams.get('check') === 'truck') {
-    const { data: trucks } = await supabase
-      .from('trucks').select('dashboard_token, setup_step')
-      .eq('operator_id', operator.id)
-      .order('created_at', { ascending: true })
-    const truck = (trucks ?? []).find(t => t.setup_step && t.setup_step !== 'done') ?? (trucks ?? [])[0] ?? null
+    // E2: this was the SECOND hand-written copy of the rule its own comment above says it shares with
+    // verify-signup. Both now call the one helper, so they cannot drift. Response shape unchanged.
+    const truck = await resolveOperatorTruck(supabase, operator.id)
     return NextResponse.json({ ok: true, truck: truck ? { dashboard_token: truck.dashboard_token } : null })
   }
 

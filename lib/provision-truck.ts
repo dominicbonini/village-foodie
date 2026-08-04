@@ -91,6 +91,34 @@ interface ProvisionProfile {
    *  predate the column, and every read gates on `!== false`, so flipping it would silently switch
    *  pre-orders off for existing trucks. This writes an explicit value at PROVISION time only. */
   preordersEnabled: boolean
+  /** G3 — `truck_vans.buzzer_count`: the buzzer POOL, per van. null = this van hands out no buzzers and
+   *  the whole feature is hidden; 1..30 = numbered 1..n. REQUIRED on the type, not optional, for the same
+   *  reason preordersEnabled is: a new profile must state its answer rather than inherit a silence.
+   *
+   *  ⚠️ THIS IS THE POOL, NOT THE PROMPT. The prompt is `truck_events.buzzer_prompt` and it is NOT here
+   *  and CANNOT be — provisionTruck writes `trucks` and `truck_vans` and creates no event, so there is no
+   *  row to carry it at this point in the sequence. It is set where the demo's event is actually inserted
+   *  (lib/provision-demo-event.ts). See the note there; the two must be read together, because
+   *  resolveBuzzerPrompt (lib/buzzer.ts) treats a NULL prompt as ON whenever a pool exists — so setting a
+   *  count here without setting the prompt there would TURN THE PROMPT ON for demos, the exact opposite
+   *  of what is wanted. */
+  buzzerCount: number | null
+  /** P4b — `trucks.notes_require_review`: hold an auto-accepting order that carries a customer note
+   *  (an allergy, usually) for a human instead of confirming it. Its DB default is already `true`
+   *  (NOT NULL DEFAULT true, live-verified), so declaring it here changes no VALUE — it converts an
+   *  inherited default into a decision this file owns. That matters because the default is invisible:
+   *  nothing in the product records that anyone chose it, and a DB-level change would silently move
+   *  every future truck. Written explicitly for the same reason preordersEnabled is. */
+  notesRequireReview: boolean
+  /** P5a — `trucks.show_paid_step`: splits "Paid & collected" into "Mark paid" then "Collected" on the
+   *  OPERATOR's order card, so money can be taken before the food is handed over. Truck default with a
+   *  per-event override (lib/payments/paid-step.ts). NOT customer-facing. */
+  showPaidStep: boolean
+  /** P5b — `trucks.takes_cash`: splits the operator's payment button into "Cash" and "Card" so takings
+   *  reconcile against the till. ⚠️ INERT UNLESS showPaidStep IS ON — OrderCard returns
+   *  `Paid & collected` before the takesCash branch is reached. Also NOT customer-facing; see the
+   *  report's P0(a). */
+  takesCash: boolean
 }
 
 const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
@@ -103,11 +131,33 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     nameRequired: true,
     truckOrderEmailEnabled: true,
     allergenDisplayMode: null,    // operator chooses in the wizard
-    autoAccept: false,            // an operator decides this deliberately
+    // P4a — ON. 🔴 THIS REVERSES THE PREVIOUS DECISION ("an operator decides this deliberately"), and
+    // the reversal is the point: off meant a brand-new operator's very first order sat unconfirmed
+    // until they found the dashboard, which reads as the product being broken rather than as a setting
+    // awaiting their attention. The two guards that make it safe are already in place and unchanged —
+    // a full slot is never auto-confirmed, and notesRequireReview below holds anything carrying a
+    // customer note. It is also the first row on the end-of-wizard review screen, so it is a decision
+    // they are shown and can reverse in one tap, not one made silently on their behalf.
+    autoAccept: true,
     // OFF at creation. Pre-orders are a decision about how they trade, and a truck with no menu and no
     // event cannot take one — showing the deadline section already switched on before there is anything
     // to pre-order presents a configured feature as a fait accompli. Settings is where it goes on.
     preordersEnabled: false,
+    // 🔴 UNCHANGED BY G3 — null, exactly as before. A real operator decides whether their van carries
+    // buzzers at all, in Manage → van settings. Provisioning must not answer that for them.
+    buzzerCount: null,
+    // P4b — ON. Same value as the DB default; now an explicit decision. This is what makes P4a's
+    // auto-accept safe: an order with an allergy note still stops for a human.
+    notesRequireReview: true,
+    // P5a — ON. A real change (DB default is false). Taking money is a separate moment from handing
+    // food over for most trucks, and an operator who does not need the split turns it off in Settings;
+    // an operator who DOES need it would otherwise have no way to record payment before collection.
+    showPaidStep: true,
+    // P5b — OFF, matching the DB default, now explicit. See the report's P0(a): this is an OPERATOR
+    // button-layout setting, not a customer payment method, so off is a neutral default and not a dead
+    // end. Turning it on for a truck that has not asked would put a Cash/Card choice in front of every
+    // order they take.
+    takesCash: false,
   },
   demo: {
     identity: 'random',
@@ -121,6 +171,20 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
     // OFF for a demo too: the demo's whole story is a walk-up order placed and served in one loop, and a
     // pre-order deadline has nothing to act on in it.
     preordersEnabled: false,
+    // G3 — a demo ships with a rack of 10, so the buzzer feature is CONFIGURED and explorable rather
+    // than hidden behind a setting a prospect has to find first. 10 is BUZZER_DEFAULT_COUNT
+    // (lib/buzzer.ts) — the same number Manage offers an operator when they first switch buzzers on, so
+    // the demo shows what a normal truck looks like, not a special case.
+    buzzerCount: 10,
+    // 🔴 ALL THREE MATCH TODAY'S DB DEFAULTS, SO THE DEMO IS BEHAVIOURALLY UNCHANGED. They are declared
+    // only because the type now requires them — which is the whole point of the required-field pattern:
+    // the compiler made this an explicit "no change" rather than letting the demo drift silently the
+    // next time a default moves. A demo's story is one walk-up order placed and served in a single
+    // loop, so a split payment step and a Cash/Card choice would both be scenery a prospect has to get
+    // past rather than product they came to see.
+    notesRequireReview: true,
+    showPaidStep: false,
+    takesCash: false,
   },
 }
 
@@ -140,6 +204,18 @@ export interface ProvisionTruckOptions {
   plan?: Plan
   visibility?: 'hidden' | 'public'
   contactEmail?: string | null
+  // ── P2/P3: CONTACT DETAILS ARE PER-SIGNUP INPUTS, NOT PROFILE CONSTANTS ─────────────────────────
+  // 🔴 DELIBERATELY OPTIONS AND NOT ProvisionProfile FIELDS, unlike everything else in this change.
+  // The required-profile-field pattern exists so a fixed POLICY cannot be forgotten by a new profile.
+  // A phone number is not a policy — it is data typed by one person at one moment, so there is no
+  // value either profile could sensibly declare, and putting it on the type would force the demo
+  // profile to invent a phone number for a truck that has no operator to own one. Contact details
+  // therefore ride with `contactEmail`, which is already an option for exactly this reason.
+  // The demo passes neither, so a demo truck's contact fields stay empty exactly as they are today.
+  /** P2 — written to BOTH `contact_phone` and `whatsapp`. One number, two columns, by design. */
+  contactPhone?: string | null
+  /** P3 — the wizard's "This number is on WhatsApp" tick. Decides preferred_contact_method. */
+  phoneIsWhatsapp?: boolean
   cuisineType?: string | null
   van?: ProvisionVanOptions | false
 }
@@ -247,6 +323,11 @@ export async function provisionTruck(
 
   // Fail-safe: hidden unless a human explicitly asks for public. A real truck goes public at NOMINATION
   // (§4.3), not at creation, so 'hidden' is correct for both kinds and 'public' is opt-in.
+  // P2/P3 — normalised once, here, so the insert reads plainly and an empty string can never be
+  // mistaken for a number. Empty/whitespace ⇒ null ⇒ no phone, no whatsapp, no preferred method.
+  const contactPhone = (opts.contactPhone ?? '').trim() || null
+  const phoneIsWhatsapp = opts.phoneIsWhatsapp === true
+
   const visibility = opts.visibility ?? 'hidden'
   const visibilityCols = visibility === 'public' ? PUBLIC_VISIBILITY : HIDDEN_VISIBILITY
   if (visibility === 'public') {
@@ -300,6 +381,25 @@ export async function provisionTruck(
         trial_expires_at: null,   // nomination sets this (§8)
         operator_id: null,        // set afterwards by /api/admin/create-operator — a separate concern
         contact_email: opts.contactEmail ?? null,
+        // ── P2/P3: THE CONTACT BLOCK ────────────────────────────────────────────────────────────
+        // P2 — the SAME number into both columns. `contact_phone` is the customer-facing contact
+        // number; `trucks.whatsapp` is the customer-facing WhatsApp number. (Neither is
+        // `whatsapp_sender`, which is the WhatsApp Business API sender under Auto-replies and is not
+        // a contact detail — see the report's P0(b).)
+        //
+        // ⚠️ `whatsapp` FALLS BACK TO '' AND NEVER TO null. The reference manual records a live 400
+        // caused by exactly this: `trucks.whatsapp` was NOT NULL and an untick sent null. The
+        // DROP NOT NULL has since been applied (manual §3164), so null would work today — but ''
+        // satisfies both shapes and is what `waFromPhone` returns for the cleared case, so this
+        // matches the app's own convention rather than depending on a constraint having been dropped.
+        contact_phone: contactPhone,
+        whatsapp: contactPhone ?? '',
+        phone_is_whatsapp: phoneIsWhatsapp,
+        // P3 — 'whatsapp' when they ticked it, 'phone' otherwise, and null when there is no number to
+        // point at (the demo). Both values are in the set lib/email.ts's contact map renders; see the
+        // report's P0(c). A null renders no contact section at all, which is correct for a truck with
+        // no contact details rather than a broken one.
+        preferred_contact_method: contactPhone ? (phoneIsWhatsapp ? 'whatsapp' : 'phone') : null,
         cuisine_type: opts.cuisineType ?? null,
         truck_order_email_enabled: profile.truckOrderEmailEnabled,
         auto_accept: profile.autoAccept,
@@ -307,6 +407,12 @@ export async function provisionTruck(
         // Written EXPLICITLY. The column's `default true` is a backfill default for pre-existing trucks,
         // not the right answer for a truck being created now — see the note on ProvisionProfile.
         preorders_enabled: profile.preordersEnabled,
+        // P4/P5 — all four written explicitly from the profile, never inherited. notes_require_review
+        // and takes_cash happen to match their DB defaults today; that is a fact about the database
+        // right now, not a contract, and this is what stops a default change moving new trucks.
+        notes_require_review: profile.notesRequireReview,
+        show_paid_step: profile.showPaidStep,
+        takes_cash: profile.takesCash,
         // Read by upsert_event when creating events (`truck.default_auto_open ?? true`).
         default_auto_open: true,
         default_auto_close: true,
@@ -356,6 +462,10 @@ export async function provisionTruck(
           ? { capacity_window_mins: vanOpts.capacity_window_mins }
           : {}),
         // kds_token omitted deliberately — DB default encode(gen_random_bytes(24),'hex').
+        // G3 — the buzzer POOL, from the profile (demo 10, operator null). Written unconditionally: the
+        // column is nullable with no default, so an explicit null is identical to the omission it
+        // replaces and the operator path is byte-for-byte what it was.
+        buzzer_count: profile.buzzerCount,
       })
       .select('id, name, kds_token')
       .single()

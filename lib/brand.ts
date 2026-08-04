@@ -32,6 +32,26 @@ export const HATCHGRAB_WORDMARK_WHITE_SVG = '/logos/hatchgrab-wordmark-white.svg
 export const HATCHGRAB_LOGO_PNG           = '/logos/hatchgrab-logo.png'
 export const HATCHGRAB_LOGO_WHITE_PNG     = '/logos/hatchgrab-logo-white.png'
 
+// ── HATCHGRAB BRAND ORANGE ──────────────────────────────────────────────────────────────────────────
+// 🔴 THE AUTHORITATIVE SOURCE IS THE ARTWORK, NOT A SCREENSHOT. #EF8B2C is the literal `fill` on the
+// wordmark's "GRAB" letterforms in public/logos/hatchgrab-wordmark.svg, and the same value appears in
+// the white variant — so it is read off the asset this file already owns the paths to, not eyeballed.
+// (The companion navy is #16314F, defined here for reference only; nothing uses it yet.)
+//
+// ⚠️ THIS IS A HEX, AND EVERYTHING ELSE IN THIS FILE'S COLOUR SECTION IS A TAILWIND CLASS STRING. That
+// is deliberate, not an oversight: the class strings exist as documentation for surfaces Tailwind
+// purges dynamic values from, whereas this is consumed where Tailwind cannot reach — inline styles in
+// EMAIL templates. The `_HEX` suffix marks the difference so nobody drops it into a className.
+//
+// ⚠️ CURRENT SCOPE: EMAIL ONLY (lib/email-signup.ts). White text on it measures 2.50:1, below the 4.5:1
+// AA floor for normal text — accepted as a deliberate BRAND decision for email, where the button is
+// large, short and unmissable. 🔴 THE APP-WIDE BUTTON COLOUR IS A SEPARATE DECISION AND MUST NOT
+// INHERIT FROM HERE. The app's orange-600 (#ea580c, 3.56:1) is already a recorded accessibility
+// backlog item; adopting a *lower*-contrast value across the product because an email uses it would
+// make that backlog worse, not better.
+export const HATCHGRAB_ORANGE_HEX = '#EF8B2C'
+export const HATCHGRAB_NAVY_HEX   = '#16314F'
+
 export function getBrandFromHost(host: string) {
   if (host.includes('hatchgrab')) return BRANDS.HATCHGRAB
   return BRANDS.VILLAGE_FOODIE // default

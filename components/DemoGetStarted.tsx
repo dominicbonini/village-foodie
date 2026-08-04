@@ -45,6 +45,10 @@ import { useState, useEffect, useRef, Fragment } from 'react'
 import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { CUISINES, CUISINE_OTHER, emojiForCuisine } from '@/lib/cuisines'
+// I4: the SAME validator Manage Settings uses (app/manage/[token]/page.tsx) and the same one
+// /api/setup now runs server-side — one rule, three surfaces, so a number accepted here cannot be
+// rejected there.
+import { isValidUKPhone } from '@/lib/contact-validation'
 
 /** THE signup offer, stated once. Every demo surface that makes the offer imports this rather than
  *  retyping it — the DEMO MODE banner already drifted into three copies of itself once, and an offer
@@ -217,6 +221,8 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // ── STEP 2 "Finish setting up" (contact details) state ─────────────────────────────────────────────────
   const [contactPhone, setContactPhone] = useState('')
   const [phoneIsWhatsapp, setPhoneIsWhatsapp] = useState(false)
+  // J2: optional promo code. Never validated, never blocks, never acknowledged — see the field markup.
+  const [promoCode, setPromoCode] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
   // On the details step we DON'T render a second email input — the address is already captured. "change" reveals it.
   const [showEmailEdit, setShowEmailEdit] = useState(false)
@@ -224,7 +230,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // they typed — the eye toggle inside the field flips it. Default hidden.
   const [showPassword, setShowPassword] = useState(false)
   // Per-field validation, all checked AT ONCE per step (never one-at-a-time). Cleared as each field is edited.
-  const [fieldErrors, setFieldErrors] = useState<{ truck?: string; cuisine?: string; name?: string; password?: string; email?: string; terms?: string }>({})
+  const [fieldErrors, setFieldErrors] = useState<{ truck?: string; cuisine?: string; name?: string; phone?: string; password?: string; email?: string; terms?: string }>({})
   // Refs so validation can FOCUS the first invalid field (the primary button stays enabled and validates on click).
   const truckRef = useRef<HTMLInputElement>(null)
   const cuisineRef = useRef<HTMLSelectElement>(null)
@@ -405,11 +411,19 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
     else if (errs.cuisine) cuisineRef.current?.focus()
     return Object.keys(errs).length === 0
   }
-  // STEP 2 "Finish setting up" (contact details): email · password · terms. Password rule MIRRORS the server
-  // (app/api/signup/route.ts: `const MIN_PASSWORD = 8` → `if (password.length < MIN_PASSWORD)`), byte-for-byte.
-  // Terms must be ACTIVELY ticked (blocks submit).
+  // STEP 2 "Finish setting up" (contact details): phone · email · password · terms. Password rule MIRRORS the
+  // server (app/api/signup/route.ts: `const MIN_PASSWORD = 8` → `if (password.length < MIN_PASSWORD)`),
+  // byte-for-byte. Terms must be ACTIVELY ticked (blocks submit).
+  //
+  // I4 — PHONE IS NOW REQUIRED. It reaches customers in every transactional email and on the public
+  // discovery feed, so a truck without one degrades those silently. Two rules, deliberately separate:
+  // EMPTY is its own message (the field just moved from optional, so "invalid" would be misleading), and
+  // MALFORMED reuses isValidUKPhone — the permissive check Settings already applies. Both run in the same
+  // pass as the other three, so the operator sees everything wrong at once rather than one at a time.
   const validateDetailsStep = (): boolean => {
     const errs: typeof fieldErrors = {}
+    if (!contactPhone.trim()) errs.phone = 'Add a phone number — customers and we both use it to reach you.'
+    else if (!isValidUKPhone(contactPhone)) errs.phone = 'Enter a valid UK phone number (e.g. 07700 900123).'
     if (!email.includes('@')) errs.email = 'Enter a valid email address.'
     if (password.length < 8) errs.password = 'Password must be at least 8 characters.'
     if (!termsAccepted) errs.terms = 'Please accept the terms to continue.'
@@ -443,7 +457,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
         const res = await fetch('/api/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email.trim(), password, demo: token }),
+          // J2: signup_code rides along. It is NOT part of validateDetailsStep and never can be — an
+          // unrecognised or absent code must not stand between an operator and an account.
+          body: JSON.stringify({ email: email.trim(), password, demo: token, signup_code: promoCode.trim() }),
         })
         const data = await res.json().catch(() => ({}))
         if (!data.ok) {
@@ -497,7 +513,17 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
       const res = await fetch('/api/setup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create_truck', name: truckName.trim() }),
+        // I4: contact_phone travels with create_truck so the SERVER can require it. Step (d) below still
+        // sends it via update_settings (together with whatsapp/phone_is_whatsapp, untouched) — that write
+        // is best-effort and always was, which is exactly why the mandatory one cannot live there.
+        // P3: the WhatsApp tick rides with the phone so provisioning can set preferred_contact_method
+        // in the same insert. NO new input — this is the tick that already sits under the phone field.
+        body: JSON.stringify({
+          action: 'create_truck',
+          name: truckName.trim(),
+          contact_phone: contactPhone.trim(),
+          phone_is_whatsapp: phoneIsWhatsapp,
+        }),
       })
       const data = await res.json().catch(() => ({}))
       if (!data.ok) {
@@ -893,14 +919,16 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                   </div>
                 ) : (
                 <div className="space-y-4">
-                  {/* Phone (optional) + the WhatsApp tick. `whatsapp` is derived from these at submit via
-                      waFromPhone (Settings' exact rule) → written to trucks.whatsapp + phone_is_whatsapp. */}
+                  {/* I4: Phone is REQUIRED (was "(optional)"). The WhatsApp tick beside it is unchanged —
+                      `whatsapp` and `phone_is_whatsapp` are still derived exactly as before via
+                      waFromPhone (Settings' exact rule); this item touches contact_phone alone. */}
                   <div>
-                    <label htmlFor="demo-phone" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Phone <span className="normal-case font-normal text-slate-400">(optional)</span></label>
+                    <label htmlFor="demo-phone" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Phone</label>
                     <input
                       id="demo-phone" type="tel" autoComplete="tel" value={contactPhone}
-                      onChange={e => setContactPhone(e.target.value)} placeholder="07700 900123"
-                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                      onChange={e => { setContactPhone(e.target.value); clearFieldErr('phone') }} placeholder="07700 900123"
+                      className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.phone ? 'border-red-400' : 'border-slate-200'}`} />
+                    {fieldErrors.phone && <p className="text-xs text-red-600 mt-1">{fieldErrors.phone}</p>}
                     <label className="flex items-center gap-2 mt-2 text-sm text-slate-600 cursor-pointer">
                       <input type="checkbox" checked={phoneIsWhatsapp} onChange={e => setPhoneIsWhatsapp(e.target.checked)}
                         className="w-4 h-4 accent-orange-600 cursor-pointer" />
@@ -977,6 +1005,28 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       </button>
                     </div>
                     {fieldErrors.password && <p className="text-xs text-red-600 mt-1">{fieldErrors.password}</p>}
+                  </div>
+
+                  {/* ── J2: PROMO CODE — OPTIONAL, UNVALIDATED, UNACKNOWLEDGED ───────────────────────
+                      Identical rules to /signup, and identically enforced by ABSENCE: there is no entry
+                      in fieldErrors for it, it is not in validateDetailsStep, and nothing reads it back.
+                        · never blocks — an empty or unrecognised code submits exactly like a good one;
+                        · never validated — there is no list to check against, deliberately;
+                        · never confirms a benefit. Nothing in the product applies this code; it is
+                          recorded for tracking and honoured by hand, so "3 months free applied" here
+                          would be a claim the software cannot keep.
+                      Enter submits the form, matching the password field beside it — a code field that
+                      swallowed Enter would be a trap on the last step of a signup. */}
+                  <div>
+                    <label htmlFor="demo-promo" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
+                      Have a code? <span className="normal-case font-normal text-slate-400">(optional)</span>
+                    </label>
+                    <input
+                      id="demo-promo" type="text" autoComplete="off" maxLength={40} value={promoCode}
+                      onChange={e => setPromoCode(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') runSetup() }}
+                      placeholder="Enter it here"
+                      className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
                   </div>
 
                   {/* Terms — must be ACTIVELY ticked (unticked by default); blocks submit via validateDetailsStep.

@@ -16,7 +16,7 @@ import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
-import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
+import { KITCHEN_CAPACITY_DESC, KITCHEN_CAPACITY_EXAMPLE, KITCHEN_CAPACITY_NO_LIMIT, KITCHEN_CAPACITY_WARNING, KITCHEN_CAPACITY_GRID, kitchenCapacityNeedsPrepWarning, formatPrepSecs } from '@/lib/kitchen-capacity'
 import { PrepTimeSelect } from '@/components/PrepTimeSelect'
 import { describePreorderDeadline } from '@/lib/preorder'
 import { groupBySubcategory } from '@/lib/basket-utils'
@@ -42,6 +42,8 @@ import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
+import { Walkthrough } from '@/components/manage/Walkthrough'
+import { WALKTHROUGH_STOPS, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
@@ -174,6 +176,45 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // Banner is dismissible per-session but REAPPEARS when the count rises above the dismissed level
   // (i.e. new events arrived) — not dismissed-forever.
   const [bannerDismissedAtCount, setBannerDismissedAtCount] = useState<number | null>(null)
+
+  // ── K3/K4: THE WALKTHROUGH ────────────────────────────────────────────────────────────────────────
+  // 🔴 THERE IS NO AUTO-OPEN PATH, AND THAT IS THE GUARANTEE. `walkthroughOpen` starts false and is only
+  // ever set true by a click — the wizard's done screen (K2), the reminder strip below, or Settings →
+  // Show me around (K4). No effect reads the stored state and opens anything. So an operator with no
+  // localStorage key — every existing operator, Gusto and RTF included — sees nothing at all.
+  const [walkthroughOpen, setWalkthroughOpen] = useState(false)
+  // Read AFTER mount, never in a lazy initialiser: this page is server-rendered and localStorage does not
+  // exist during that pass, so seeding from it would hydrate-mismatch. Starting null also means the strip
+  // cannot flash before the real value arrives.
+  const [walkthroughState, setWalkthroughStateLocal] = useState<WalkthroughState>(null)
+  // localStorage does not exist during the server pass, so reading it in a lazy initialiser would
+  // hydrate-mismatch. Post-mount is the only correct place, and one extra render of a strip that starts
+  // hidden is the intended cost.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setWalkthroughStateLocal(readWalkthroughState(token)) }, [token])
+  // Closing by ANY route — Done, Skip, Escape, click-outside — counts as completing it (K3).
+  const closeWalkthrough = () => {
+    setWalkthroughOpen(false)
+    writeWalkthroughState(token, 'seen')
+    setWalkthroughStateLocal('seen')
+  }
+  const openWalkthrough = () => setWalkthroughOpen(true)
+  // K2: the done screen's three choices, resolved HERE so the page stays the single owner of the stored
+  // state — MenuTab never writes localStorage itself and so cannot drift from the strip's condition.
+  // 'now' stores nothing yet: closing the tour is what stores 'seen', so an operator who opens it and
+  // immediately Escapes is still recorded as done rather than being offered it forever.
+  const handleWalkthroughChoice = (choice: 'now' | 'later' | 'never') => {
+    if (choice === 'now') { setWalkthroughOpen(true); return }
+    const next: Exclude<WalkthroughState, null> = choice === 'later' ? 'remind' : 'seen'
+    writeWalkthroughState(token, next)
+    setWalkthroughStateLocal(next)
+  }
+  // 🔴 `=== 'remind'`, NOT `!== 'seen'`. The inverted test would render this strip for everyone who has
+  // never interacted — i.e. every live operator — which is exactly what K4 forbids.
+  // Also gated on setup being finished: mid-wizard the overlay is on top anyway and the offer belongs
+  // on the done screen, not behind it.
+  const showWalkthroughStrip = walkthroughState === 'remind'
+    && !(truck?.setup_step != null && truck.setup_step !== 'done')
   const showApprovalBanner = pendingApprovalCount > 0 &&
     (bannerDismissedAtCount === null || pendingApprovalCount > bannerDismissedAtCount)
 
@@ -435,7 +476,10 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       <div className="bg-slate-900 border-b border-slate-700 shrink-0 z-40">
         <div className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto px-4 flex gap-1 overflow-x-auto"}>
           {tabs.map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id)}
+            // K3: `data-tab-id` is the walkthrough's ANCHOR. It is a stable identifier, not a position —
+            // the tour resolves `[data-tab-id="settings"]` at open time, so this bar can be reordered,
+            // role-filtered or extended without touching lib/walkthrough.ts. Do not remove it.
+            <button key={t.id} data-tab-id={t.id} onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-3 py-2.5 text-sm font-bold whitespace-nowrap border-b-2 transition-colors ${activeTab === t.id ? 'border-orange-500 text-white' : 'border-transparent text-slate-400 hover:text-white'}`}>
               <span>{t.icon}</span>
               {t.id === 'schedule' && pendingApprovalCount > 0 ? (
@@ -460,6 +504,24 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           instead, so `sticky top-0` pins FLUSH under the tabs — no magic offset, desktop + iPad WKWebView. */}
       <main className={"w-full min-[1400px]:max-w-5xl min-[1400px]:mx-auto flex-1 min-h-0 overflow-y-auto px-4 pb-6"}>
         <div className="pt-6">
+        {/* ── K2: THE "REMIND ME LATER" STRIP ────────────────────────────────────────────────────────
+            Left behind by the done screen's "Remind me later", and persistent until it is taken or
+            dismissed — no timer, no timestamp, ONE boolean in the same per-truck localStorage key the
+            walkthrough itself uses. Dismissing it stores 'seen', which is also what taking the tour
+            stores: both mean "stop offering". */}
+        {showWalkthroughStrip && (
+          <div className="mb-4 bg-slate-900 text-white rounded-xl px-4 py-2.5 flex items-center gap-3">
+            <span aria-hidden>🧭</span>
+            <p className="text-sm font-semibold flex-1 min-w-0">Want a quick tour of your dashboard?</p>
+            <button type="button" onClick={openWalkthrough}
+              className="text-xs font-black bg-orange-600 hover:bg-orange-700 px-3 py-1.5 rounded-lg whitespace-nowrap">
+              Show me around
+            </button>
+            <button type="button" aria-label="Dismiss"
+              onClick={() => { writeWalkthroughState(token, 'seen'); setWalkthroughStateLocal('seen') }}
+              className="text-slate-400 hover:text-white text-xl leading-none">×</button>
+          </div>
+        )}
         {/* Events-to-approve banner — cross-tab signal. NOT shown on the Schedule tab itself: there the
             "Needs your approval" section (ScheduleTab) is the surface, so a banner there would double it. */}
         {showApprovalBanner && activeTab !== 'schedule' && (
@@ -507,7 +569,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} />}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
@@ -530,10 +592,15 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} />}
+        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
       </main>
+
+      {/* K3: mounted at PAGE level, outside <main>, because it anchors to the TAB BAR — which is a
+          sibling of <main> in the app-shell, not inside it. Rendered only while walkthroughOpen, which
+          nothing but a click can set. */}
+      {walkthroughOpen && <Walkthrough stops={WALKTHROUGH_STOPS} onClose={closeWalkthrough} />}
 
       <ToastStack toasts={toasts} dismissToast={dismissToast} />
 
@@ -641,7 +708,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 // ⚠️ SAFE TO EXTEND: every consumer compares with `===` against a literal (:4008 :4032 :4043 :4245
 // :4358 :4455 :4462 :4481 :4624). There is no `switch` on this type anywhere, so a new member cannot
 // fall through a default — an unhandled value simply renders nothing.
-type ImportStep = 'idle' | 'upload' | 'processing' | 'offer' | 'review' | 'allergens' | 'prep' | 'saving' | 'schedule' | 'done'
+// K1 adds 'settings' — the review screen, AFTER schedule and BEFORE done. It deliberately runs while
+// setup_step is still set: finishSetup() (which writes 'done' and so flips inSetup false) is now called
+// from THIS step's continue button rather than from the schedule step's, so the review is not gated out
+// from under itself.
+type ImportStep = 'idle' | 'upload' | 'processing' | 'offer' | 'review' | 'allergens' | 'prep' | 'saving' | 'schedule' | 'settings' | 'done'
 
 // ── Variant-axis vocabulary for the deterministic regroup pass ───────────────────────────────
 // The single varying token that makes two same-base dishes a VARIANT of one item (vs two different
@@ -887,7 +958,7 @@ function CardUploadPage({ perDish, anyDetected, parsed, processing, showUpload, 
   )
 }
 
-function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard }: {
+function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow, onUndoRow, onEditUnverify, showToast, cardText, cardUrl, cardProcessing, onAddCard, onSetDisplayMode, initialMode = 0, initialReviewView = 'list', onProcessCard, onCardMerge, onBack, importStepper, onSaveCard, onTranscribeCard }: {
   items: Item[]; categories: Category[]
   canEdit: boolean                                                       // owner/admin — VIEW for all, EDIT/confirm only here (server also enforces)
   onClose: () => void
@@ -899,6 +970,12 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   onAddCard: () => void                                                  // opens the existing (folded-in) card upload/text modal
   onSetDisplayMode: (mode: 'per_dish' | 'card' | 'both') => Promise<void>
   initialMode?: 0 | 1 | 2                                                // 0 chooser (default); 1 review directly (import per-item → skips re-choosing); 2 card
+  // I2: which layout the mode-1 review OPENS in. Defaults to 'list', so every caller that does not ask
+  // for anything keeps today's behaviour exactly — including the standalone wizard the Menu tab opens.
+  // The import wizard passes 'table': it reviews a whole freshly-extracted menu at once, where the matrix
+  // is the faster surface. Layout only; the operator flips it with the existing toggle and the data,
+  // logic and confirm actions are identical in both.
+  initialReviewView?: 'list' | 'table'
   // STANDALONE card→dish enrichment (#6). When provided, the per-dish branch shows a card-upload page that
   // matches the card against THESE (committed) items + merges via onCardMerge. Absent (import) → no card page.
   onProcessCard?: (file: File | null, text: string) => Promise<CardParse | null>   // → process-allergens (parent has token/api)
@@ -951,7 +1028,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
     setStdResolved(prev => new Set(prev).add(cardEntryKey(entry)))
   }
   const dismissStandaloneEntry = (entry: CardEntry) => setStdResolved(prev => new Set(prev).add(cardEntryKey(entry)))
-  const [reviewView, setReviewView] = useState<'list' | 'table'>('list') // mode-1 review layout (same data/logic)
+  const [reviewView, setReviewView] = useState<'list' | 'table'>(initialReviewView) // mode-1 review layout (same data/logic)
   const [finishing, setFinishing] = useState(false)
   // Per-row editable draft (vocab-only allergens + dietary). Lazily seeded from the item.
   const [drafts, setDrafts] = useState<Record<string, { allergens: string[]; dietary: string[] }>>({})
@@ -1565,13 +1642,15 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   )
 }
 
-function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens }: {
+function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice }: {
   truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
   modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]; itemModGroups: {menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]
   setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>>
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
   allergenWizardOpen: boolean; onCloseAllergenWizard: () => void; onOpenAllergenWizard: () => void
   canEditAllergens: boolean   // owner/admin — gates the allergen edit affordances (server also enforces)
+  /** K2: the done screen's three-way offer. The PAGE owns the stored state — this only reports the click. */
+  onWalkthroughChoice: (choice: 'now' | 'later' | 'never') => void
 }) {
   // §54: an item's attached option groups, split required vs optional via the source-of-truth
   // minRequiredForGroup (is_required OR min_choices>=1). The manage-local ModifierGroup has no
@@ -1676,6 +1755,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // §65: the review is a 3-step wizard (1 Menu · 2 Extras · 3 Allergens). All edits live in
   // importResult, so stepping back/forward never loses progress — each step is just a different view.
   const [reviewStep, setReviewStep] = useState(1)
+  // ── I1: CATEGORY EDITING IN THE REVIEW STEP ──────────────────────────────────────────────────────
+  // ONE piece of state for both rename and add: `from` is the category being renamed, or '' when adding.
+  // A category name can never be '' (validateCatName rejects it), so the two cases can share the slot
+  // without a second flag and without the ambiguity a nullable "mode" field would carry.
+  const [catEdit, setCatEdit] = useState<{ from: string; value: string } | null>(null)
+  const [catEditError, setCatEditError] = useState<string | null>(null)
   // ── Import ALLERGENS step (card→dish matching). The card-matched allergens are STAGED into importResult
   // items (menu-detected ∪ card, _allergensChecked stays false) → commit writes verified=false → the
   // existing allergen wizard opens POST-commit for row-by-row confirm (no forked review surface, no new
@@ -1694,6 +1779,23 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // The chosen DISPLAY mode, applied at commit (update_settings). null = operator skipped (no mode change;
   // detected data stays verified=false / retained-but-hidden, reviewable later from the Menu allergen card).
   const [pendingDisplayMode, setPendingDisplayMode] = useState<'per_dish' | 'card' | null>(null)
+  // ── H2: EVERY WIZARD STEP OPENS AT THE TOP ────────────────────────────────────────────────────────
+  // 🔴 THE SCROLL CONTAINER IS THE MODAL'S OWN BODY, NOT `<main>` AND NOT THE WINDOW. Every wizard step
+  // is a `fixed inset-0` overlay, so it sits OUTSIDE the app-shell's scrolling `<main>` entirely — the
+  // reference manual's `<main>`-has-no-top-padding contract is untouched by this and must stay that way.
+  // Each step's body is its own `overflow-y-auto flex-1 min-h-0` div, and one ref serves all of them
+  // because the steps are mutually exclusive on importStep — only ever one is mounted.
+  //
+  // Menu → Extras is the case that made this visible, and it is the hardest one: those two share ONE
+  // mounted div (they differ only by reviewStep), so React never remounts it and the scroll offset from
+  // the menu list survives into a much shorter Extras page — landing the operator mid-view with the
+  // heading above the fold. Keying the effect on reviewStep and allergenSubStep as well as importStep is
+  // what covers the same-element transitions; a remount-only fix would miss exactly the reported bug.
+  const wizardScrollRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    // Nothing is mounted on the stepless screens (offer/upload/done) — optional-chained, not guarded.
+    wizardScrollRef.current?.scrollTo({ top: 0 })
+  }, [importStep, reviewStep, allergenSubStep])
   // Shared card upload inputs (file OR pasted text) — same affordances as the menu-import upload (DRY).
   const [cardImportFile, setCardImportFile] = useState<File | null>(null)
   const [cardImportText, setCardImportText] = useState('')
@@ -1735,6 +1837,45 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // the commit write so we don't clobber an unchanged value.
   const [importKitchenCapacity, setImportKitchenCapacity] = useState<{ kitchen_capacity: number | null; capacity_window_mins: number | null }>({ kitchen_capacity: null, capacity_window_mins: 5 })
   const [importVans, setImportVans] = useState<{ id: string; kitchen_capacity: number | null; capacity_window_mins: number | null }[]>([])
+  // ── K1: THE SETTINGS REVIEW SCREEN ────────────────────────────────────────────────────────────────
+  // 🔴 LIVE VALUES ONLY. These are seeded from a fresh `get_vans` read and from the truck row, never
+  // from an assumed default — several of these columns' defaults are not recorded in the repo, and
+  // rendering a guess as if it were the stored value is the one thing this screen must not do. Null
+  // means "not loaded yet" and the row renders disabled rather than pretending.
+  const [reviewVan, setReviewVan] = useState<{ id: string; kitchen_capacity: number | null; order_ready_enabled: boolean } | null>(null)
+  const [reviewLoading, setReviewLoading] = useState(false)
+  // Truck-level mirrors, seeded from the live row. Optimistic: the write is fired and the mirror moves
+  // with it, exactly as Settings' own rows do. MenuTab has no onTruckUpdate, so the parent `truck` is
+  // refreshed by the normal reload on exit — these mirrors only need to survive this screen.
+  const [reviewAllowCancel, setReviewAllowCancel] = useState<boolean>(truck.allow_customer_cancellation ?? true)
+  const [reviewCancelMins, setReviewCancelMins] = useState<number>(truck.cancellation_cutoff_mins ?? 30)
+  const [reviewAutoAccept, setReviewAutoAccept] = useState<boolean>(!!truck.auto_accept)
+  // Load the van's LIVE values when the review screen opens. Uses the EXISTING `get_vans` action — no
+  // new endpoint — and re-seeds the truck mirrors from the row we already hold, so re-entering the step
+  // never shows a stale figure. Declared HERE, immediately after the state it writes: placed any higher
+  // it reads setters before their declaration, which is a real TDZ hazard, not a lint quibble.
+  useEffect(() => {
+    if (importStep !== 'settings') return
+    let alive = true
+    // Seeding state on entry is the whole job of this effect — there is nowhere else the "step just
+    // opened" moment exists.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setReviewLoading(true)
+    setReviewAllowCancel(truck.allow_customer_cancellation ?? true)
+    setReviewCancelMins(truck.cancellation_cutoff_mins ?? 30)
+    setReviewAutoAccept(!!truck.auto_accept)
+    ;(async () => {
+      try {
+        const r = await api('get_vans')
+        const v = (r.vans || [])[0]
+        if (alive && v) setReviewVan({ id: v.id, kitchen_capacity: v.kitchen_capacity ?? null, order_ready_enabled: !!v.order_ready_enabled })
+      } catch { /* non-fatal — the rows render disabled rather than guessing a value */ }
+      finally { if (alive) setReviewLoading(false) }
+    })()
+    return () => { alive = false }
+    // Fires on ENTERING the step only; the setters and api are stable for this purpose.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [importStep, truck.id])
   const [importKitchenDirty, setImportKitchenDirty] = useState(false)
   // X-close → discard-confirmation gate (covers all wizard steps).
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
@@ -1872,24 +2013,70 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     // (Route C has no state to reset — it is explanatory copy + Continue.)
   }
 
-  // ── C3: THE CONFIRMATION BEAT, DEFINED ONCE ─────────────────────────────────────────────────────
-  // 🔴 ONE PIECE OF MARKUP, REFERENCED TWICE — not two copies. The offer step (C1) and the upload step
-  // (C2) are the two possible first screens of the handover, and the line must be identical on both;
-  // writing it in each block is precisely how the DEMO_COPY divergences happened.
-  // WHY IT EXISTS HERE AT ALL: DemoGetStarted's "Your account's ready" beat is on-screen only and dies
-  // with the navigation to Manage, which is why it was never seen (S5). This carries it across.
-  // Renders only while showSetupIntro is true — set by the bootstrap on arrival, cleared by every
-  // control that advances or exits — so a later reopen from "✨ Import menu" never shows it.
-  const setupIntroLine = showSetupIntro ? (
-    <p className="text-sm font-bold text-green-800 bg-green-50 border border-green-200 rounded-xl px-3 py-2 mb-4">
-      Your account&apos;s ready — now let&apos;s add your menu.
-    </p>
-  ) : null
+  // ── H1: THE C3 GREEN LINE IS GONE — REPLACED BY THE WELCOME SCREEN ──────────────────────────────
+  // Slice C put a one-line green beat ("Your account's ready — now let's add your menu.") at the top of
+  // BOTH first screens. H1 replaces it with a proper welcome step, so the line is deleted rather than
+  // kept alongside: two arrival greetings on one screen is worse than either alone.
+  // 🔴 `showSetupIntro` ITSELF SURVIVES AND IS STILL THE ONLY FLAG. It now gates the welcome overlay
+  // instead of the line — same setter, same clears, same once-per-arrival meaning, no second flag.
+  // ⚠️ DemoGetStarted's "✅ Your account's ready" beat (components/DemoGetStarted.tsx:861) is a
+  // DIFFERENT element on a different page and is deliberately LEFT ALONE — see the report.
 
   // ── AI-import review: proposal mutation helpers (Stage 2, client-side only) ──────────────────
   // Every edit mirrors the existing _skip/price pattern: an immutable setImportResult patch by index.
   const patchImportItem = (idx: number, patch: (it: any) => any) =>
     setImportResult(prev => prev ? { ...prev, items: prev.items.map((it, i) => i === idx ? patch(it) : it) } : prev)
+
+  // ── I1: CATEGORY RENAME / ADD / REASSIGN — IN-MEMORY ONLY ────────────────────────────────────────
+  // Nothing here touches the database. importResult is the whole model until the ONE existing commit,
+  // exactly like every other edit on this screen (_skip, price, grouping) — no RPC, no new write path.
+  //
+  // 🔴 THE INVARIANT: every item's `category` string must be a member of `categories`. commit-menu
+  // resolves an item's category by exact name (`categoryIdMap[item.category]`), and an item whose
+  // category does not resolve is dropped by a bare `continue` — it does NOT appear in `failed[]` and is
+  // only visible as `unaccounted` (lib/menu-commit.ts:9-11). So a rename that misses an item does not
+  // show up as an error; the dish silently never arrives. That is why rename is written as ONE
+  // setImportResult call that rewrites BOTH arrays from the same `prev` — there is no window in which
+  // the two disagree, and no ordering between two setters to get wrong.
+  const normaliseCatName = (s: string) => s.trim().replace(/\s+/g, ' ')
+  /** Case- AND whitespace-insensitive identity: "Mains", "mains " and "MAINS" are one category. */
+  const catKey = (s: string) => normaliseCatName(s).toLowerCase()
+  /** null = acceptable; a string = the reason to show the operator. */
+  const validateCatName = (name: string, exclude?: string): string | null => {
+    const clean = normaliseCatName(name)
+    if (!clean) return 'Give the category a name.'
+    if (clean.length > 60) return 'That name is too long.'
+    // Compared on catKey, so "mains " cannot be added beside "Mains" — which matters beyond tidiness:
+    // commit-menu derives menu_categories.slug as name.toLowerCase().replace(/[^a-z0-9]+/g,'-'), so both
+    // would resolve to the SAME slug and collide on menu_categories_truck_id_slug_key.
+    const clash = (importResult?.categories || [])
+      .some(c => catKey(c) === catKey(clean) && (exclude == null || catKey(c) !== catKey(exclude)))
+    if (clash) return `There's already a category called "${clean}".`
+    return null
+  }
+  const renameImportCategory = (from: string, to: string) =>
+    setImportResult(prev => prev ? {
+      ...prev,
+      categories: prev.categories.map(c => c === from ? to : c),
+      // Same update, same `prev` — the items move with the name or neither changes.
+      items: prev.items.map(it => it.category === from ? { ...it, category: to } : it),
+      // existing_categories is DELIBERATELY not rewritten: it records which names were already committed
+      // on this truck, and a renamed category is no longer one of them. Leaving it alone is what makes
+      // the teal "existing" chip disappear by itself.
+    } : prev)
+  const addImportCategory = (name: string) =>
+    setImportResult(prev => prev ? { ...prev, categories: [...prev.categories, name] } : prev)
+  /** Apply the open rename/add. Kept together so Enter, blur and the tick button cannot diverge. */
+  const commitCatEdit = () => {
+    if (!catEdit) return
+    const { from, value } = catEdit
+    const clean = normaliseCatName(value)
+    if (from !== '' && clean === from) { setCatEdit(null); setCatEditError(null); return }   // untouched
+    const err = validateCatName(value, from || undefined)
+    if (err) { setCatEditError(err); return }                                                 // stay open
+    if (from === '') addImportCategory(clean); else renameImportCategory(from, clean)
+    setCatEdit(null); setCatEditError(null)
+  }
   // NOTE: the per-item / per-option allergen SETTERS (setItemAllergens / confirmItemAllergens /
   // setOptionAllergens / confirmOptionAllergens + their patchGroup/patchOption helpers) were REMOVED
   // when the wizard dropped its allergen step. Allergens still IMPORT (AI detections) and still COMMIT
@@ -2341,6 +2528,24 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     !it._skip && !!String(it.name || '').trim() && !(Number(it.price) > 0) && it._free !== true
   const unresolvedPrices = importResult ? importResult.items.filter(priceUnresolved) : []
 
+  // ── H5: THE COMMITTABLE-ITEM SET, DEFINED ONCE ────────────────────────────────────────────────────
+  // 🔴 ONE EXPRESSION, THREE READERS, SO THE NUMBERS CANNOT DISAGREE. `!_skip && name.trim()` was written
+  // out verbatim in three places — the review header's "N items ready to add", the offer step's "we saved
+  // N items", and the done screen's per-dish allergen check. The done screen now also reports the count
+  // back to the operator ("Menu's in — N items"), and a fourth copy of a filter is a fourth chance for one
+  // of them to drift and promise a number the next screen contradicts.
+  // ⚠️ PURE EXTRACTION. The predicate is byte-for-byte what each site already used, so every existing
+  // rendered number is unchanged — this is not a behaviour change for anyone.
+  const committedImportItems = importResult
+    ? importResult.items.filter(i => !i._skip && String(i.name || '').trim())
+    : []
+  // Categories derived from THAT SAME set, not from importResult.categories: a category whose every item
+  // was unticked is not "a category the menu gained", and counting it would contradict the item figure
+  // beside it.
+  const committedImportCategoryCount = new Set(
+    committedImportItems.map(i => String(i.category ?? '').trim()).filter(Boolean)
+  ).size
+
   // ── WIZARD FLOW — the stepper + nav adapt to whether extras exist ────────────────────────────────
   // Extras step only appears when there ARE groupable dishes. Kitchen setup (the 'prep' importStep) is
   // now a visible step too. So: extras → "1 Menu · 2 Extras · 3 Kitchen setup"; none → "1 Menu · 2
@@ -2358,14 +2563,16 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // Order: Menu → Extras → Allergens → Kitchen setup. The allergen review runs on STAGED data (importResult),
   // so it no longer needs committed items — Allergens sits before Kitchen, and the ONE atomic commit is at
   // Kitchen "Save". Nothing persists until then (abandon = nothing written).
-  type WizKey = 'menu' | 'extras' | 'allergens' | 'kitchen' | 'schedule'
+  type WizKey = 'menu' | 'extras' | 'allergens' | 'kitchen' | 'schedule' | 'settings'
   const baseWizardSteps: { key: WizKey; label: string }[] = hasExtras
     ? [{ key: 'menu', label: 'Menu' }, { key: 'extras', label: 'Extras' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
     : [{ key: 'menu', label: 'Menu' }, { key: 'allergens', label: 'Allergens' }, { key: 'kitchen', label: 'Kitchen setup' }]
   // Setup mode APPENDS "Schedule" after "Kitchen setup" (item 5). Existing operators (not inSetup) never see it,
   // so their stepper is byte-for-byte today's.
+  // K1 appends "Settings" after "Schedule" — both are inSetup-only, so a non-setup operator's stepper is
+  // still byte-for-byte today's.
   const wizardSteps: { key: WizKey; label: string }[] = inSetup
-    ? [...baseWizardSteps, { key: 'schedule', label: 'Schedule' }]
+    ? [...baseWizardSteps, { key: 'schedule', label: 'Schedule' }, { key: 'settings', label: 'Settings' }]
     : baseWizardSteps
   // Advance to the Kitchen-setup ('prep') step. Seeds prep state for new categories WITHOUT clobbering
   // values already entered (so stepping back/forward is non-destructive).
@@ -2406,7 +2613,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const goToStep = (key: WizKey) => {
     // 'schedule' is post-commit and reached only from the Kitchen "Save" success path — never jump to it from
     // the stepper (the menu isn't committed yet at earlier steps). Its pill is display-only.
-    if (key === 'schedule') return
+    // Both post-commit steps are display-only pills for the same reason: they are reached only by
+    // finishing the step before them, and jumping back to an earlier step from here would strand the
+    // wizard with a committed menu and no route forward.
+    if (key === 'schedule' || key === 'settings') return
     if (key === 'kitchen') { goToKitchen(); return }
     if (key === 'allergens') { goToAllergens(); return }
     setImportStep('review')
@@ -2445,6 +2655,139 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     )
   }
 
+  // ── K1: THE SETTINGS REVIEW SCREEN — ONE ARRAY, RENDERED GENERICALLY ─────────────────────────────
+  // 🔴 ADDING AN ITEM MUST BE A DATA CHANGE, NOT A MARKUP CHANGE. The renderer below knows only about
+  // `control` and the optional `secondary`; it has no idea what any particular row means. A fifth
+  // setting is one more object in this array.
+  //
+  // 🔴 EVERY `currentValue` IS READ LIVE — from the `get_vans` response (reviewVan) or the truck row.
+  // Nothing here hardcodes a default. That matters more than it looks: `kitchen_capacity` is left blank
+  // at provision ON PURPOSE ("must be an active decision, not an inherited guess"), so a rendered "5"
+  // would invent a ceiling nobody chose and quietly start promising collection times against it.
+  //
+  // ⚠️ ALL FOUR LIVE ON THE MANAGE → SETTINGS TAB — checked against the inventory, not assumed:
+  //   capacity + order-ready → Settings → Your trucks;  cancellation → Settings → Contact Details;
+  //   auto-accept → Settings → Order settings. `settingsAnchor` carries that location as text because
+  //   Settings has no id anchors to link to; adding them would be UI work outside this slice.
+  //
+  // WRITES REUSE THE EXISTING ACTIONS, one per column's owner — no new endpoint:
+  //   update_van_settings (van columns) · update_truck (allow_cancel/cutoff) · update_settings (auto_accept)
+  type SetupReviewItem = {
+    id: string
+    label: string
+    helpText: string
+    currentValue: number | boolean | null
+    control: 'capacity' | 'toggle'
+    settingsAnchor: string
+    disabled?: boolean
+    onChange: (next: never) => void
+    secondary?: {
+      label: string
+      value: number
+      options: { value: number; label: string }[]
+      visible: boolean
+      onChange: (n: number) => void
+    }
+  }
+  // One failure message for all three write paths. Never blocks: every row on this screen is optional,
+  // so a failed save says so and leaves the operator on the step rather than trapping them.
+  const reviewSaveFailed = (e: unknown) =>
+    showToast(e instanceof Error && e.message ? e.message : "Couldn't save that — you can change it in Settings.", 'error')
+  const saveVanReview = async (patch: Record<string, unknown>) => {
+    if (!reviewVan) return
+    try { await api('update_van_settings', { vanId: reviewVan.id, ...patch }) } catch (e) { reviewSaveFailed(e) }
+  }
+  const saveTruckReview = async (patch: Record<string, unknown>) => {
+    try { await api('update_truck', { data: patch }) } catch (e) { reviewSaveFailed(e) }
+  }
+  const setupReviewItems: SetupReviewItem[] = [
+    {
+      id: 'kitchen_capacity',
+      label: 'Total capacity',
+      helpText: 'The most items your kitchen can turn out at once. Leave at ∞ if you would rather not cap it — you can set it later once you know your rhythm.',
+      currentValue: reviewVan?.kitchen_capacity ?? null,
+      control: 'capacity',
+      settingsAnchor: 'Settings → Your trucks → Kitchen capacity',
+      disabled: !reviewVan,
+      onChange: ((n: number | null) => {
+        setReviewVan(v => v ? { ...v, kitchen_capacity: n } : v)
+        void saveVanReview({ kitchen_capacity: n })
+      }) as SetupReviewItem['onChange'],
+    },
+    {
+      id: 'allow_customer_cancellation',
+      label: 'Let customers cancel their own orders',
+      helpText: 'On by default. When it is on, a customer can cancel up to the window below without ringing you.',
+      currentValue: reviewAllowCancel,
+      control: 'toggle',
+      settingsAnchor: 'Settings → Contact Details',
+      onChange: ((next: boolean) => {
+        setReviewAllowCancel(next)
+        void saveTruckReview({ allow_customer_cancellation: next })
+      }) as SetupReviewItem['onChange'],
+      secondary: {
+        label: 'Up to',
+        value: reviewCancelMins,
+        options: [
+          { value: 15, label: '15 minutes' }, { value: 30, label: '30 minutes' },
+          { value: 60, label: '60 minutes' }, { value: 120, label: '2 hours' },
+        ],
+        visible: reviewAllowCancel,
+        onChange: (n: number) => { setReviewCancelMins(n); void saveTruckReview({ cancellation_cutoff_mins: n }) },
+      },
+    },
+    {
+      id: 'auto_accept',
+      label: 'Accept online orders automatically',
+      // ⚠️ THIS COPY TRACKS THE PROVISIONED DEFAULT AND MUST BE CHANGED WITH IT. It used to open "Off
+      // by default, so every order waits for you", which became FALSE the moment provisioning started
+      // writing auto_accept:true (lib/provision-truck.ts, operator profile). The row itself is
+      // unchanged — it still reads its LIVE value and hardcodes nothing — but a help text that
+      // contradicts the toggle beside it is worse than none.
+      helpText: 'On, so orders confirm themselves and customers get an answer straight away. A full slot is never auto-confirmed, and an order with a customer note still waits for you. Turn it off if you would rather check every order yourself.',
+      currentValue: reviewAutoAccept,
+      control: 'toggle',
+      settingsAnchor: 'Settings → Order settings',
+      onChange: ((next: boolean) => {
+        setReviewAutoAccept(next)
+        // update_settings takes TOP-LEVEL fields (not a `data` object) — the shape saveFormField uses.
+        void (async () => {
+          try { await api('update_settings', { auto_accept: next }) } catch (e) { reviewSaveFailed(e) }
+        })()
+      }) as SetupReviewItem['onChange'],
+    },
+    {
+      id: 'order_ready_enabled',
+      label: 'Let customers know when their order is ready',
+      // 🔴 FRAMED AS AN OPT-IN, NOT AS A CHECK. truck_vans.order_ready_enabled is NOT NULL DEFAULT
+      // false (live-verified), so this is not a default anybody chose and got wrong — it is a feature
+      // that has never been switched on. Asking "is this right?" about it would be misleading.
+      helpText: 'Off unless you turn it on. Adds a "Mark ready" button to your orders screen and tells the customer their food is waiting — worth it for pubs and festivals.',
+      currentValue: reviewVan?.order_ready_enabled ?? null,
+      control: 'toggle',
+      settingsAnchor: 'Settings → Your trucks → Display settings',
+      disabled: !reviewVan,
+      onChange: ((next: boolean) => {
+        setReviewVan(v => v ? { ...v, order_ready_enabled: next } : v)
+        void saveVanReview({ order_ready_enabled: next })
+      }) as SetupReviewItem['onChange'],
+    },
+  ]
+
+  // ── H0b/H5: THE "ALLERGENS AREN'T SET" NOTICE, DEFINED ONCE ──────────────────────────────────────
+  // 🔴 EXTRACTED, NOT REWRITTEN. This markup and copy are byte-for-byte what the done screen rendered
+  // inline before H5; it is lifted here so H5's new heading reuses it BY REFERENCE and there is exactly
+  // one copy of the string in the repo. Do not reword it and do not write a near-copy beside it — this
+  // is a food-safety notice, and two versions of it drifting apart is how one of them ends up wrong.
+  // ⚠️ The `inSetup` branch inside it is ALSO original: a setup operator has no Settings to be sent to
+  // yet. Its firing CONDITION lives at the call site and is unchanged (see the done screen).
+  const allergensNotSetNotice = (
+    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
+      <p className="text-xs font-bold text-amber-800">⚠ Allergens &amp; dietary aren&apos;t set yet</p>
+      <p className="text-xs text-amber-700 mt-0.5">Review them {inSetup ? 'before going live' : 'in Settings before going live'}. Items are flagged &ldquo;allergens not set&rdquo; until you do.</p>
+    </div>
+  )
+
   // ── SCHEDULE STEP handlers (SETUP MODE) — wire the EXISTING flows; ScheduleTab is untouched ────────────
   // Facebook/Instagram rejection reused VERBATIM from Settings (:6577-6584).
   const SCHED_BLOCKED_DOMAINS = ['facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'instagr.am']
@@ -2477,7 +2820,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // other step's ×, writing nothing. Do not re-point a dismiss control here. The separate footer "I'll do this later"
   // link was REMOVED: Route C is now the deliberate "later" path and produced an identical outcome, so two
   // differently-worded controls did the same thing. Keep this ONE function as every route's terminal move.
-  const skipSchedule = () => { void finishSetup() }
+  // K1: the schedule step's terminal moves now land on the REVIEW SCREEN, not on 'done'. They must not
+  // call finishSetup() — that writes setup_step:'done', which flips inSetup false and would unmount the
+  // very step it was meant to open. finishSetup keeps its exact job and is called once, from the review
+  // screen's "Looks good". No DB write happens here.
+  const goToSettingsReview = () => { setImportStep('settings') }
+  const skipSchedule = () => { goToSettingsReview() }
 
   // 🔴 MUTUAL EXCLUSIVITY — one route's in-progress state at a time. Wipes EVERY route's transient state (the
   // half-typed URL and the staged extracted events) so a switch can never leave a second route half-armed.
@@ -2577,7 +2925,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           latitude: lat, longitude: lng, truck_id: truck.id,
         })
       }
-      await finishSetup()
+      goToSettingsReview()   // K1 — was finishSetup(); the review screen now owns that call
     } catch (e: any) {
       showToast(e?.message || 'Failed to save events', 'error')
       setSchedSaving(false)   // stay so they can retry or skip
@@ -3077,6 +3425,50 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           </div>
         </div>
       </div>
+
+      {/* ── I5: "NOT VISIBLE TO CUSTOMERS" ────────────────────────────────────────────────────────────
+          🔴 THE GATE THIS REPORTS IS CORRECT AND IS NOT BEING CHANGED. app/api/menu/[truckId]/route.ts
+          hides any item with allergens_verified === false from the CUSTOMER menu whenever the display
+          mode is not 'card' — and `null` is not 'card', so a truck that never picked a mode is in
+          per-dish mode by default. Every imported item commits verified=false. Partial allergen data is
+          more dangerous than none, so hiding is right; the defect is purely that the operator cannot
+          tell, because their own dashboard passes `isDashboard` and shows everything.
+          THE CONDITION IS THE SERVER'S, RESTATED: mode !== 'card' AND at least one item explicitly
+          false. Strict === false, exactly as the route has it — legacy/null items are visible and must
+          not be counted. It is derived from live props, so it clears itself the moment the last dish is
+          confirmed or the operator switches to card mode; there is nothing to dismiss and nothing
+          stored.
+          ⚠️ DELIBERATELY UNGATED — a live truck in this state has an invisible menu and needs to know.
+          Reuses onOpenAllergenWizard, the same entry point the section below already uses; no new path.
+          On the WORDING: slice H's `allergensNotSetNotice` is not reused because it says a different
+          thing ("allergens aren't set yet ... items are flagged"). It describes the flag; this
+          describes the consequence. Reusing it would replace the one fact the operator is missing with
+          the one they can already see — see the report. */}
+      {(() => {
+        const hiddenCount = (truck.allergen_display_mode ?? null) !== 'card'
+          ? items.filter(i => i.allergens_verified === false).length
+          : 0
+        if (hiddenCount === 0) return null
+        return (
+          <div className="mb-4 rounded-xl border-2 border-red-300 bg-red-50 px-4 py-3 flex items-start gap-3">
+            <span className="text-red-500 text-lg shrink-0" aria-hidden>🚫</span>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-red-900">
+                {hiddenCount} {hiddenCount === 1 ? 'item is' : 'items are'} not visible to customers
+              </p>
+              <p className="text-xs text-red-800 mt-0.5">
+                {hiddenCount === 1 ? 'It won’t appear' : 'They won’t appear'} on your ordering page until
+                {hiddenCount === 1 ? ' its' : ' their'} allergens are confirmed — showing a dish with unchecked
+                allergen info would read as &ldquo;allergen-free&rdquo;. You can still see
+                {hiddenCount === 1 ? ' it' : ' them'} here.{' '}
+                <button type="button" onClick={onOpenAllergenWizard} className="underline font-bold">
+                  Confirm allergens →
+                </button>
+              </p>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Empty state / Category list */}
       {categories.length === 0 ? (
@@ -4075,6 +4467,41 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       )}
 
 
+      {/* ── H1: THE WELCOME SCREEN — first open on Manage after signup ────────────────────────────
+          ONE PIECE OF MARKUP FOR BOTH ROUTES. It renders as an overlay ABOVE whichever first screen the
+          slice-C bootstrap already chose (offer for the extraction route, upload for the template
+          route) rather than as a step of its own, and that is deliberate on three counts:
+            • "Let's go" does NOT decide where to go — it only stops covering the screen slice C
+              already picked. That decision stays exactly where C1/C2 put it, untouched.
+            • It needs NO new ImportStep and NO second flag: `showSetupIntro` is the same flag that
+              gated the green line it replaces, set once by the bootstrap and cleared by every control
+              that advances or exits.
+            • Because only the bootstrap sets that flag, a RE-ENTRY from the Menu tab's "✨ Import
+              menu" never shows this — which is the whole point (H3).
+          z-[55] sits above the wizard modals (z-50) and below the discard confirm (z-[60]), so the
+          stacking order of everything that already existed is unchanged.
+          🔴 NO STEPPER HERE — this screen precedes the flow it would be indicating (H4).
+          `inSetup` is belt-and-braces: showSetupIntro is unreachable outside a setup arrival, but the
+          gate makes that structural rather than incidental. */}
+      {showSetupIntro && inSetup && (importStep === 'offer' || importStep === 'upload') && (
+        <div className="fixed inset-0 bg-black/60 z-[55] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+            <h3 className="font-black text-slate-900 text-lg mb-2">Welcome to HatchGrab</h3>
+            {/* Fallback: an operator truck's name is required at creation (/api/setup enforces >= 2
+                chars), so this cannot normally be empty — "Your truck" keeps the sentence grammatical
+                rather than rendering " is set up." if it ever is. */}
+            <p className="text-sm text-slate-600 mb-1">
+              {truck.name?.trim() || 'Your truck'} is set up. Next we&apos;ll add your menu, then your first event.
+            </p>
+            <p className="text-sm text-slate-500 mb-5">You can stop and come back whenever.</p>
+            <button type="button" onClick={() => setShowSetupIntro(false)}
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-black py-3 rounded-xl text-sm">
+              Let&apos;s go
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── C1: THE OFFER STEP — demo→real handover, extraction route only ─────────────────────────
           Reached ONLY from the ?import=demo bootstrap when /api/setup GET returned an extraction. Same
           overlay treatment as every other step (fixed inset-0 bg-black/60 z-50) and the same max-w-md
@@ -4085,10 +4512,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {importStep === 'offer' && importResult && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-            {setupIntroLine}
+            {/* H4: the stepper, gated on inSetup — see the upload step for why. The offer step has no
+                position of its own in wizardSteps (it decides what FEEDS step 1), so it shows 'menu'. */}
+            {inSetup && <div className="mb-3">{renderWizardStepper('menu')}</div>}
             <h3 className="font-black text-slate-900 mb-1">Use the menu from your demo?</h3>
             <p className="text-slate-400 text-sm mb-5">
-              We saved the menu you uploaded — {importResult.items.filter(i => !i._skip && String(i.name || '').trim()).length} items.
+              We saved the menu you uploaded — {committedImportItems.length} items.
               Use it as your starting point, or upload a different one.
             </p>
             <div className="flex flex-col gap-2">
@@ -4115,7 +4544,13 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       {importStep === 'upload' && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-            {setupIntroLine}
+            {/* ── H4: THE STEPPER, GATED ON inSetup ──────────────────────────────────────────────────
+                🔴 THIS SCREEN IS SHARED WITH EVERY EXISTING OPERATOR. Gusto and RTF open it from the
+                Menu tab's "✨ Import menu" every time they re-import, and they have never had a step
+                indicator here. Ungated, this would put new chrome on a live operator's screen for no
+                reason — the gate is what makes H4 a setup-only change. Same array, same component, no
+                second step list. */}
+            {inSetup && <div className="mb-3">{renderWizardStepper('menu')}</div>}
             <h3 className="font-black text-slate-900 mb-1">Import your menu</h3>
             <p className="text-slate-400 text-sm mb-5">Upload a photo of your menu board, a screenshot, a PDF, or paste your menu as text. Our AI reads it and builds your digital menu — you review everything before it saves.</p>
             {/* SHARED with the public demo modal — components/menu/MenuUploadFields.tsx. Extracted so
@@ -4142,7 +4577,16 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   ⚠️ SHARED CODE: Gusto and RTF reach this too, and both changes apply to them. That is
                   intended — it is the same bug for them.
                   C4: this is a DELIBERATE exit, so the param goes. */}
-              <Btn label="Cancel" colour="slate" onClick={() => {
+              {/* ── H3: "I'LL DO THIS LATER" — LABEL ONLY, AND ONLY IN SETUP ──────────────────────
+                  On the sample-menu route this button is the operator's honest exit: they have nothing
+                  to import yet and "Cancel" reads as abandoning the account they just made. The
+                  BEHAVIOUR is deliberately untouched — same handler, same confirmed-cancel path, same
+                  full resetImportState() + stripImportParam(). It closes the wizard back to Manage; it
+                  does NOT skip forward to another wizard step, and it writes nothing.
+                  The confirm is already conditional on `importResult`, which is null on this route
+                  (nothing has been processed), so no dialog appears — exactly as specified.
+                  ⚠️ Gusto and RTF are not inSetup, so they keep the string "Cancel" verbatim. */}
+              <Btn label={inSetup ? "I'll do this later" : 'Cancel'} colour="slate" onClick={() => {
                 if (importResult && !window.confirm('Cancel this import? Your review of this menu will be discarded.')) return
                 resetImportState()
                 stripImportParam()
@@ -4187,7 +4631,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 inner wrapper (py-6) so it SCROLLS AWAY instead of forming a fixed strip above the scrollport
                 — a sticky `top-0` header then pins FLUSH to the scroll area's visual top (no 24px gap, no
                 item bleeding above the header). Mirrors the step-2 matrix scroller (zero top padding). */}
-            <div className="overflow-y-auto flex-1 px-6 min-h-0">
+            <div ref={wizardScrollRef} className="overflow-y-auto flex-1 px-6 min-h-0">
 
               {/* ─ STEP 1 — MENU ITEMS (clean): name + price inline-editable, category headers,
                    DETECTED allergens as read-only tags only (no grids, no "NOT CHECKED"). ─ */}
@@ -4198,7 +4642,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                    header pins flush to the scrollport top. */
                 <div className="flex flex-col py-6">
                   <div className="mb-6">
-                    <p className="text-slate-600 text-sm">{importResult.items.filter(i => !i._skip && String(i.name || '').trim()).length} items ready to add. Uncheck any you don&apos;t want.</p>
+                    {/* H5: reads the shared committable set — same predicate as before, now the same
+                        expression the done screen's count uses, so the two cannot disagree. */}
+                    <p className="text-slate-600 text-sm">{committedImportItems.length} items ready to add. Uncheck any you don&apos;t want.</p>
                     <p className="text-xs text-slate-500 mt-0.5">Names, prices, extras, allergens and dietary info can all be edited anytime {inSetup ? 'later' : 'in Settings'}.</p>
                   </div>
                   {/* PRICE BANNER — lives INSIDE the scroll content (not sticky) but sits at the top of it,
@@ -4217,15 +4663,45 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   )}
                   {importResult.categories.map(cat => {
                     const catItems = importResult.items.filter(i => i.category === cat)
-                    if (catItems.length === 0) return null
+                    // I1: an EMPTY category now renders its header instead of vanishing. It has to — a
+                    // category the operator has just added has no items yet, and a section you cannot see
+                    // is one you cannot move items into. It is also more honest for the pre-existing case:
+                    // an item-less extraction category was always COMMITTED (commit-menu iterates the
+                    // `categories` array, not the items), it was simply never shown here.
+                    const isExisting = importResult.existing_categories.includes(cat)
+                    const editingThis = catEdit?.from === cat
                     return (
                       <div key={cat} className="mb-6 last:mb-0">
                         {/* §67 point 5: category header sticks to the top of the scroll area while its section is in view. */}
                         <div className="sticky top-0 z-20 bg-white flex items-center gap-2 mb-2 py-2 border-b border-slate-100">
-                          <h4 className="text-base font-bold text-slate-900 tracking-tight">{cat}</h4>
+                          {editingThis ? (
+                            <input autoFocus value={catEdit.value} aria-label={`Rename category ${cat}`}
+                              onChange={e => { setCatEdit({ from: cat, value: e.target.value }); setCatEditError(null) }}
+                              onBlur={commitCatEdit}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') { e.preventDefault(); commitCatEdit() }
+                                if (e.key === 'Escape') { setCatEdit(null); setCatEditError(null) }
+                              }}
+                              className="text-base font-bold text-slate-900 tracking-tight bg-transparent border-b border-orange-400 focus:outline-none py-0.5 min-w-0 flex-1" />
+                          ) : (
+                            <h4 className="text-base font-bold text-slate-900 tracking-tight">{cat}</h4>
+                          )}
+                          {/* RENAME is blocked for a category that is ALREADY COMMITTED on this truck.
+                              commit-menu has no rename path — it matches by slug/name and REUSES — so
+                              renaming "Sides" here would create a second category and leave the original,
+                              with its already-live items, behind. Renaming those belongs in the menu
+                              editor, which can actually update the row. New categories rename freely. */}
+                          {!editingThis && (
+                            isExisting ? null : (
+                              <button type="button" aria-label={`Rename ${cat}`} title="Rename category"
+                                onClick={() => { setCatEdit({ from: cat, value: cat }); setCatEditError(null) }}
+                                className="text-slate-300 hover:text-orange-600 text-xs flex-shrink-0">✎</button>
+                            )
+                          )}
                           <span className="text-xs text-slate-400">{catItems.filter(i => !i._skip).length} of {catItems.length}</span>
-                          {importResult.existing_categories.includes(cat) && <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">existing</span>}
+                          {isExisting && <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">existing</span>}
                         </div>
+                        {editingThis && catEditError && <p className="text-[11px] text-red-600 -mt-1 mb-2">{catEditError}</p>}
                         <div className="flex flex-col divide-y divide-slate-100">
                           {catItems.map(item => {
                             const globalIdx = importResult.items.indexOf(item)
@@ -4246,6 +4722,19 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                   </div>
                                   {incomplete && <p className="text-[11px] text-amber-600 mt-0.5">Enter a name to add this item — empty rows aren&apos;t imported.</p>}
                                   {item.description && <p className="text-xs text-slate-400 mt-0.5 truncate">{item.description}</p>}
+                                  {/* I1: REASSIGN. Writes `category` only — the string the commit resolves
+                                      against categoryIdMap, and every option here comes from that same
+                                      `categories` array, so a reassignment can never point at a name that
+                                      does not exist. Hidden when there is only one category, so a
+                                      single-category extraction renders exactly as it did before. */}
+                                  {importResult.categories.length > 1 && (
+                                    <select value={item.category ?? ''}
+                                      aria-label={`Category for ${String(item.name || '').trim() || 'this item'}`}
+                                      onChange={e => patchImportItem(globalIdx, it => ({ ...it, category: e.target.value }))}
+                                      className="mt-1 text-[11px] text-slate-500 bg-white border border-slate-200 rounded px-1.5 py-0.5 max-w-full focus:outline-none focus:ring-1 focus:ring-orange-400">
+                                      {importResult.categories.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                  )}
                                   {/* Page 1 is a uniform FLAT list of individual dishes — no options/grouping
                                       indicator (AI variant groups are un-grouped into separate lines here;
                                       grouping is purely a page-2 decision). */}
@@ -4295,6 +4784,28 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       </div>
                     )
                   })}
+                  {/* ── I1: ADD A CATEGORY ────────────────────────────────────────────────────────
+                      Sits after the last category, mirroring "+ Add item"'s placement at the end of
+                      each one. Add-then-assign: the new (empty) section renders immediately above,
+                      and items move into it from any row's category select. */}
+                  <div className="mt-4">
+                    {catEdit?.from === '' ? (
+                      <>
+                        <input autoFocus value={catEdit.value} placeholder="Category name" aria-label="New category name"
+                          onChange={e => { setCatEdit({ from: '', value: e.target.value }); setCatEditError(null) }}
+                          onBlur={commitCatEdit}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') { e.preventDefault(); commitCatEdit() }
+                            if (e.key === 'Escape') { setCatEdit(null); setCatEditError(null) }
+                          }}
+                          className="w-full max-w-xs text-sm font-semibold text-slate-900 bg-white border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+                        {catEditError && <p className="text-[11px] text-red-600 mt-1">{catEditError}</p>}
+                      </>
+                    ) : (
+                      <button type="button" onClick={() => { setCatEdit({ from: '', value: '' }); setCatEditError(null) }}
+                        className="text-xs font-bold text-orange-600 hover:text-orange-700">+ Add category</button>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -4383,12 +4894,17 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         const anyDetected = importResult.items.some((it: any) => (it.allergens || []).length > 0)
         // REVIEW sub-state → reuse the standalone AllergenWizardModal on STAGED data (in-flow, pre-commit).
         // Confirms mutate importResult only; the atomic commit at Kitchen maps _allergensChecked → verified.
+        // I2: it opens as the TABLE (initialReviewView). Reached ONLY when the operator has already chosen
+        // "show allergens against each dish" on the chooser — the card-only branch returns before here, so
+        // card mode is untouched. Not gated on inSetup: `reviewView` is component-local useState with no
+        // persistence anywhere, so there is no stored preference to override — see the report.
         if (allergenSubStep === 'review') {
           return (
             <AllergenWizardModal
               items={stagedItems}
               categories={stagedCategories}
               initialMode={1}
+              initialReviewView="table"
               canEdit={canEditAllergens}
               onConfirmRow={stagedConfirm}
               onUndoRow={stagedUndo}
@@ -4417,7 +4933,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 {renderWizardStepper('allergens')}
               </div>
               {/* #1: min-height so the allergens page matches the other wizard pages (not noticeably smaller). */}
-              <div className="p-5 overflow-y-auto flex-1 flex flex-col gap-4 min-h-0">
+              <div ref={wizardScrollRef} className="p-5 overflow-y-auto flex-1 flex flex-col gap-4 min-h-0">
               {allergenSubStep === 'chooser' ? (
               /* STRUCTURE choice FIRST — the shared chooser (identical to the standalone wizard's mode 0). */
               <div className="flex flex-col gap-3">
@@ -4508,10 +5024,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
               <div className="mx-5 mt-4 mb-0 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex-shrink-0">
                 <p className="text-xs font-semibold text-blue-700 mb-2">How kitchen capacity works</p>
                 <p className="text-xs text-blue-600 mb-1.5">{KITCHEN_CAPACITY_DESC}</p>
-                <p className="text-xs text-blue-500">{KITCHEN_CAPACITY_EXAMPLE}</p>
+                <p className="text-xs text-blue-500 mb-1.5">{KITCHEN_CAPACITY_EXAMPLE}</p>
+                {/* I3: the third briefed line. Rendered HERE ONLY — the Settings and dashboard capacity
+                    cards keep their existing two paragraphs, because adding a line to those surfaces
+                    would be a UI change outside this item's scope. The constant is shared so that when
+                    they do want it, there is nothing to re-type. */}
+                <p className="text-xs text-blue-500">{KITCHEN_CAPACITY_NO_LIMIT}</p>
               </div>
 
-              <div className="overflow-y-auto flex-1 p-5 min-h-0">
+              <div ref={wizardScrollRef} className="overflow-y-auto flex-1 p-5 min-h-0">
                 {newCats.length === 0 ? (
                   <p className="text-sm text-slate-500 text-center py-4">All categories already exist — no times to set.</p>
                 ) : (
@@ -4625,7 +5146,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 these cards and the allergen step's chooser can't drift. NO EMOJI here (showEmoji defaults off).
                 Each route's own forward action lives inside its section — there is no separate skip control:
                 Route C IS the "later" path, so a second differently-worded control would duplicate it. */}
-            <div className="overflow-y-auto flex-1 p-5 min-h-0">
+            <div ref={wizardScrollRef} className="overflow-y-auto flex-1 p-5 min-h-0">
               <OptionCardChooser<'website' | 'photo' | 'manual'>
                 chevron
                 value={scheduleRoute === 'chooser' ? null : scheduleRoute}
@@ -4749,6 +5270,87 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         </div>
       )}
 
+      {/* ── K1: THE SETTINGS REVIEW SCREEN ─────────────────────────────────────────────────────────
+          Between Schedule and Done. Same modal shell, same scroller (wizardScrollRef → H2 scroll-to-top),
+          same stepper as every other step.
+          🔴 inSetup-GATED like the rest of the wizard, and reachable only from the schedule step —
+          `importStep` never takes this value on any other path, so no existing operator can land here.
+          NOTHING IS MANDATORY: every row is optional and "Looks good" is always enabled. */}
+      {importStep === 'settings' && inSetup && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col h-[70vh] max-h-[90vh]">
+            <div className="p-5 border-b border-slate-100 shrink-0">
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-black text-slate-900">A few settings to check</h3>
+                <button type="button" onClick={() => setShowDiscardConfirm(true)} aria-label="Close import"
+                  className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0">×</button>
+              </div>
+              <p className="text-slate-500 text-sm mt-0.5">
+                We&apos;ve set you up with some common settings. Worth a quick look — you can change any of
+                these later in Settings.
+              </p>
+              {renderWizardStepper('settings')}
+            </div>
+
+            <div ref={wizardScrollRef} className="overflow-y-auto flex-1 p-5 min-h-0 space-y-3">
+              {/* GENERIC RENDERER — it reads `control` and `secondary` and knows nothing else about any
+                  row. Adding a fifth setting means one more object in setupReviewItems. */}
+              {setupReviewItems.map(item => (
+                <div key={item.id} className="border border-slate-200 rounded-xl p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-900">{item.label}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{item.helpText}</p>
+                    </div>
+                    <div className="shrink-0">
+                      {item.control === 'toggle' ? (
+                        <Toggle
+                          on={item.currentValue === true}
+                          disabled={item.disabled}
+                          onToggle={() => (item.onChange as (v: boolean) => void)(item.currentValue !== true)}
+                        />
+                      ) : (
+                        // The SAME no-limit affordance the kitchen-setup step uses — ∞ for null, never a
+                        // pre-filled number. BatchSizeSelect maps '' ⇄ null, so blank stays blank.
+                        <BatchSizeSelect
+                          ariaLabel={item.label}
+                          valueSize={typeof item.currentValue === 'number' ? item.currentValue : null}
+                          disabled={item.disabled}
+                          onChange={n => (item.onChange as (v: number | null) => void)(n)}
+                          className="border border-slate-200 rounded-lg px-2 py-1.5 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50"
+                        />
+                      )}
+                    </div>
+                  </div>
+                  {item.secondary && item.secondary.visible && (
+                    <div className="flex items-center gap-2 mt-3 pl-4">
+                      <span className="text-xs text-slate-600">{item.secondary.label}</span>
+                      <select
+                        value={item.secondary.value}
+                        aria-label={`${item.label} — ${item.secondary.label}`}
+                        onChange={e => item.secondary!.onChange(parseInt(e.target.value))}
+                        className="border border-slate-200 rounded-lg px-2 py-1 text-sm text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                      >
+                        {item.secondary.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                      </select>
+                      <span className="text-xs text-slate-600">before their pickup time</span>
+                    </div>
+                  )}
+                  <p className="text-[11px] text-slate-400 mt-2">{item.settingsAnchor}</p>
+                </div>
+              ))}
+              {reviewLoading && <p className="text-xs text-slate-400">Loading your current settings…</p>}
+            </div>
+
+            <div className="p-5 border-t border-slate-100 flex gap-2 shrink-0">
+              <div className="flex-1" />
+              {/* The ONLY caller of finishSetup() now — this is where setup_step becomes 'done'. */}
+              <Btn label="Looks good →" loading={finishingSetup} onClick={() => { void finishSetup() }} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* AI Import — Done */}
       {importStep === 'done' && (() => {
         // 🔴 The allergen notice is GATED ON ACTUAL STATE — it must NOT tell a compliant operator "allergens
@@ -4764,37 +5366,76 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         //                           null). FAIL LOUD → allergensComplete = false → SHOW the notice.
         // Not gated on inSetup — a correctness fix for every import (Gusto included).
         const mode = pendingDisplayMode   // the committed allergen_display_mode ('per_dish' | 'card' | null)
-        const committed = Array.isArray(importResult?.items)
-          ? importResult.items.filter((it: any) => !it._skip && String(it.name || '').trim())
-          : null
-        const perDishAllConfirmed = Array.isArray(committed) && committed.length > 0 && committed.every((it: any) => it._allergensChecked === true)
+        // H5: the shared committable set (defined once, above) replaces an inline copy of the identical
+        // filter. It is `[]` rather than `null` when importResult is null, and the `length > 0` guard
+        // below already made those two cases behave the same — so this judges exactly what it did before.
+        const committed = committedImportItems
+        const perDishAllConfirmed = committed.length > 0 && committed.every((it: any) => it._allergensChecked === true)
         const allergensComplete = mode === 'card' ? true : mode === 'per_dish' ? perDishAllConfirmed : false
+        const n = committed.length
+        const m = committedImportCategoryCount
         return (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
-              <p className="text-5xl mb-4">✅</p>
-              <p className="font-black text-slate-900 mb-1">Menu imported!</p>
-              <p className="text-slate-400 text-sm">Your items have been added to the menu.</p>
+              {/* H4: the stepper on the done screen, gated on inSetup — Gusto and RTF have never had one
+                  here. 'schedule' is the step they have just come from (finishSetup is only reachable
+                  from it), so the last pill reads as current rather than as somewhere still to go. */}
+              {inSetup && <div className="mb-4 flex justify-center">{renderWizardStepper('schedule')}</div>}
+              {/* ── H5: WHAT THEY ACTUALLY GOT ────────────────────────────────────────────────────
+                  The old "✅ / Menu imported! / Your items have been added to the menu." said nothing a
+                  number could not say better. `n` is the SHARED committable count — the same expression
+                  the review header's "N items ready to add" uses — so the figure promised on the way in
+                  cannot contradict the figure reported on the way out.
+                  🔴 SETUP ONLY. This screen is shared with every existing operator's import, so the old
+                  copy is kept verbatim for them; only a setup arrival sees the new line. */}
+              {inSetup ? (
+                <p className="font-black text-slate-900 mb-1">
+                  Menu&apos;s in — {n} item{n === 1 ? '' : 's'} across {m} categor{m === 1 ? 'y' : 'ies'}.
+                </p>
+              ) : (
+                <>
+                  <p className="text-5xl mb-4">✅</p>
+                  <p className="font-black text-slate-900 mb-1">Menu imported!</p>
+                  <p className="text-slate-400 text-sm">Your items have been added to the menu.</p>
+                </>
+              )}
               {importDoneSkipped > 0 && (
                 <p className="text-sm text-slate-400 mt-1">
                   {importDoneSkipped} duplicate{importDoneSkipped !== 1 ? 's' : ''} skipped
                 </p>
               )}
               {/* Shown ONLY when the allergen setup isn't complete: card mode = complete; per_dish = complete
-                  only if every dish confirmed; unknown/skipped = fail-loud (show). */}
-              {!allergensComplete && (
-                <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-left">
-                  <p className="text-xs font-bold text-amber-800">⚠ Allergens &amp; dietary aren&apos;t set yet</p>
-                  <p className="text-xs text-amber-700 mt-0.5">Review them {inSetup ? 'before going live' : 'in Settings before going live'}. Items are flagged &ldquo;allergens not set&rdquo; until you do.</p>
-                </div>
-              )}
+                  only if every dish confirmed; unknown/skipped = fail-loud (show).
+                  🔴 H5: the notice itself is the ONE shared constant (see its definition) — reused by
+                  reference, not re-typed. This CONDITION is untouched. */}
+              {!allergensComplete && allergensNotSetNotice}
               {/* SETUP MODE: 'done' is reached after the schedule step and must NOT auto-dismiss (item 2) —
                   the 2.5s reset+reload only runs on the NON-setup commit path. Explicit exit only. */}
+              {/* ── K2: THE WALKTHROUGH OFFER ────────────────────────────────────────────────────
+                  Replaces the single "Go to my dashboard →" exit. All three choices exit the wizard the
+                  same way (resetImportState + reload); they differ only in what is recorded.
+                  The choice is reported UP — the page owns the stored state, so this component cannot
+                  write a value the reminder strip's condition disagrees with.
+                  ⚠️ Order matters on "Show me around": the choice fires FIRST so walkthroughOpen is
+                  already true when this overlay unmounts, leaving the tour over a live Manage page. */}
               {inSetup && (
-                <button type="button" onClick={() => { resetImportState(); reload() }}
-                  className="mt-5 w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
-                  Go to my dashboard →
-                </button>
+                <div className="mt-5 flex flex-col gap-2">
+                  <button type="button"
+                    onClick={() => { onWalkthroughChoice('now'); resetImportState(); reload() }}
+                    className="w-full bg-orange-600 text-white font-black py-3 rounded-xl text-sm hover:bg-orange-700">
+                    Show me around
+                  </button>
+                  <button type="button"
+                    onClick={() => { onWalkthroughChoice('later'); resetImportState(); reload() }}
+                    className="w-full border border-slate-200 text-slate-600 font-semibold py-2.5 rounded-xl text-sm hover:bg-slate-50">
+                    Remind me later
+                  </button>
+                  <button type="button"
+                    onClick={() => { onWalkthroughChoice('never'); resetImportState(); reload() }}
+                    className="w-full text-slate-400 font-semibold py-1.5 text-xs hover:text-slate-600">
+                    I&apos;ll explore myself
+                  </button>
+                </div>
               )}
             </div>
           </div>
@@ -7017,7 +7658,7 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
 // ══════════════════════════════════════════════════════════════
 // SETTINGS TAB
 // ══════════════════════════════════════════════════════════════
-function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch }: {
+function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, onSwitchTab, categories, items, subcategories, onTruckUpdate, onItemsPatch, onCategoriesPatch, onOpenWalkthrough }: {
   truck: Truck; token: string
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
   onVerifySuccess: (events: any[]) => void
@@ -7032,6 +7673,8 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   // Push a freshly-saved value up to the parent `truck` so a remount (tab-switch / reload spinner)
   // re-seeds `form` and the local mirrors from the NEW value instead of the stale original.
   onTruckUpdate: (partial: Partial<Truck>) => void
+  /** K4: the re-open entry point. Opens the page-level walkthrough; stores nothing itself. */
+  onOpenWalkthrough: () => void
 }) {
   const [form, setForm] = useState({ ...truck })
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -8526,6 +9169,28 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             </button>
           </div>
         )}
+      </Card>
+
+      {/* ── K4: THE WALKTHROUGH RE-OPEN ENTRY POINT ────────────────────────────────────────────────
+          Its own small section at the BOTTOM of Settings — the last card, after "Your trucks".
+          🔴 THIS IS A HOLDING PLACE, NOT A HOME. The inventory's W5 found there is nowhere natural on
+          Manage: no footer, no help surface, and UserMenu is shared with the dashboard and the KDS so
+          anything added there appears on all three. A walkthrough is not a setting, and this card sits
+          at the bottom of the longest page in the product. It MOVES to the help centre the day one
+          exists — that is the intended fate, not a nice-to-have.
+          It stores nothing: opening from here does not change the seen-state until the tour is closed,
+          which is the same rule as every other entry point. */}
+      <Card className="p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-base font-bold text-slate-800">New to HatchGrab?</p>
+            <p className="text-xs text-slate-500 mt-0.5">A quick tour of what lives on each tab. Takes about a minute.</p>
+          </div>
+          <button type="button" onClick={onOpenWalkthrough}
+            className="shrink-0 text-xs font-bold px-3 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50">
+            Show me around
+          </button>
+        </div>
       </Card>
 
       {/* Remove van confirmation modal */}

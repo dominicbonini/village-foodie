@@ -150,6 +150,20 @@ export async function provisionDemoEvent(
       // they stay omitted — a demo has nothing truthful to put in them.
       van_id: vanId,
       order_ready_override: orderReady,
+      // ── G3: THE BUZZER PROMPT, OFF FOR DEMOS ──────────────────────────────────────────────────
+      // 🔴 IT HAD TO BE HERE, AND THAT IS THE ORDERING FINDING. The obvious home was
+      // ProvisionProfile, beside the pool — but provisionTruck writes `trucks` and `truck_vans` and
+      // creates NO event, so at provision time there is no truck_events row for this to live on. It
+      // belongs on the insert that brings the row into existence, which is this one: demo-only, and
+      // no restructuring of the sequence to fit it.
+      //
+      // 🔴 AND IT IS NOT OPTIONAL ONCE THE POOL IS SET. resolveBuzzerPrompt (lib/buzzer.ts:83-90)
+      // resolves the prompt as `event.buzzer_prompt ?? true` whenever a pool exists — NULL means ON.
+      // So the demo profile's buzzer_count:10 would, on its own, make every test order in the demo
+      // stop and demand a buzzer number. `false` here is what makes the pool explorable without the
+      // prompt interrupting the one thing a prospect is there to do.
+      // Explicit false, never omitted: the column is nullable and omission would resolve to ON.
+      buzzer_prompt: false,
       source: 'manual',
       // LIVE from the first paint. upsert_event hard-codes 'confirmed' and relies on the auto-event-
       // scheduler (a cron edge function) to flip it — a demo can't wait for the next tick.

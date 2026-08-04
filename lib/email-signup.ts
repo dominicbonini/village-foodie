@@ -18,6 +18,7 @@
 // other. The admin one is left exactly as it is.
 
 import { HATCHGRAB_LOGO_URL } from '@/lib/email-config'
+import { HATCHGRAB_ORANGE_HEX } from '@/lib/brand'
 
 // ⚠️ NOT LIVE YET. This mailbox must exist, and hatchgrab.com must be SPF/DKIM-verified in Brevo,
 // before the first real send. Defined ONCE — both emails read it, neither inlines it.
@@ -62,11 +63,24 @@ function shell(inner: string): string {
   `
 }
 
+// ── E1: THE BUTTON IS NOW THE BRAND WORDMARK ORANGE ─────────────────────────────────────────────────
+// Was #ea580c (Tailwind orange-600, inherited from the admin welcome email). Now HATCHGRAB_ORANGE_HEX
+// — imported, never re-typed, so this email follows the brand file rather than carrying a second
+// anonymous literal. Its provenance (the wordmark SVG's own fill) is documented at the definition.
+//
+// 🔴 CONTRAST, RECORDED ON PURPOSE: white on #EF8B2C is 2.50:1, against 3.56:1 for the orange-600 it
+// replaces — so this is a step DOWN, taken knowingly as a brand decision scoped to email. Do not
+// "fix" it here, and do NOT propagate it to the app: the app-wide button token is a separate decision
+// that must not inherit from an email. For reference if that decision is ever taken on contrast
+// grounds: orange-700 #c2410c is 5.18:1, orange-800 #9a3412 is 7.31:1.
+//
+// ⚠️ SHARED BY BOTH SIGNUP EMAILS — the verification email's "Confirm my email address" button changes
+// colour too. That is intended: the two operator emails must not arrive in different oranges.
 function button(href: string, label: string): string {
   return `
       <p style="margin:28px 0;">
         <a href="${href}"
-           style="background:#ea580c;color:white;padding:14px 28px;
+           style="background:${HATCHGRAB_ORANGE_HEX};color:white;padding:14px 28px;
                   text-decoration:none;border-radius:8px;font-weight:bold;
                   display:inline-block;">
           ${label}
@@ -171,13 +185,28 @@ export async function sendOperatorWelcomeEmail(params: {
   // Name in the subject only when we have one — "Welcome to HatchGrab, there" reads worse than none.
   const subject = params.firstName ? `Welcome to HatchGrab, ${params.firstName}` : 'Welcome to HatchGrab'
 
+  // ── D1/D3/D4: THE DASHBOARD BLOCK ────────────────────────────────────────────────────────────────
+  // D1 — the URL line and "Worth bookmarking…" carried `color:#64748b;font-size:13px`, which rendered
+  //      them as fine print. They are BODY COPY: the URL is the thing the operator is being asked to
+  //      keep, and the sentence explaining why is an instruction, not a disclaimer. The style attribute
+  //      is now gone entirely, so both inherit the shell's #334155 at the client's default body size —
+  //      inheriting rather than restating is what stops them drifting from the paragraphs around them.
+  //      ⚠️ Email 1's "If the button doesn't work, paste this in:" KEEPS its small grey treatment. That
+  //      one really is fine print — a fallback for a failure that usually does not happen.
+  // D3 — the "Your dashboard: " label is removed. The button and the URL point at the same place three
+  //      lines apart, and labelling the second one made it read as a second offer rather than as the
+  //      copyable form of the first. BOTH survive: the button to tap, the URL because a button cannot
+  //      be copied into a bookmark.
+  // D4 — padding-bottom on the fifteen-minutes line, NOT margin: adjacent margins COLLAPSE (the button's
+  //      own 28px would have swallowed anything smaller) and Outlook's handling of collapsing is its own
+  //      adventure. Padding never collapses, so the gap is 14px + the button's 28px = a real break, and
+  //      the sentence closes its paragraph instead of introducing the button.
   const html = shell(`
       <p>Hi ${esc(who)},</p>
       <p>I'm really pleased to welcome ${esc(truck)} to HatchGrab.</p>
-      <p>If you haven't already, setting up is straightforward and takes about fifteen minutes.</p>
+      <p style="padding-bottom:14px;">If you haven't already, setting up is straightforward and takes about fifteen minutes.</p>
       ${button(url, 'Open your dashboard')}
-      <p style="color:#64748b;font-size:13px;">Your dashboard: ${url}<br/>
-         Worth bookmarking. It works on any device.</p>
+      <p>${url}<br/>Worth bookmarking. It works on any device.</p>
       <p>Just reply to this if you get stuck — I answer these myself.</p>
       <p>Looking forward to seeing ${esc(truck)} trading.</p>
       ${SIGNOFF_HTML}`)
@@ -186,7 +215,9 @@ export async function sendOperatorWelcomeEmail(params: {
     `Hi ${who},\n\n` +
     `I'm really pleased to welcome ${truck} to HatchGrab.\n\n` +
     `If you haven't already, setting up is straightforward and takes about fifteen minutes.\n\n` +
-    `Your dashboard: ${url}\n` +
+    // D3: the label goes from the plain-text alternative too, so the two versions cannot say
+    // different things. There is no button here, so the URL simply stands on its own.
+    `${url}\n` +
     `Worth bookmarking. It works on any device.\n\n` +
     `Just reply to this if you get stuck — I answer these myself.\n\n` +
     `Looking forward to seeing ${truck} trading.\n\n` +

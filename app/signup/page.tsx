@@ -27,6 +27,8 @@ function SignupForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [marketing, setMarketing] = useState(false)   // UNTICKED — see the header
+  // J2: optional, unvalidated, never blocks. See the field below.
+  const [promoCode, setPromoCode] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [existing, setExisting] = useState(false)
@@ -38,7 +40,7 @@ function SignupForm() {
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password, marketing_opt_in: marketing, demo }),
+        body: JSON.stringify({ email: email.trim(), password, marketing_opt_in: marketing, demo, signup_code: promoCode.trim() }),
       })
       const data = await res.json()
       if (!data.ok) {
@@ -81,6 +83,26 @@ function SignupForm() {
             <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Password</label>
             <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
               autoComplete="new-password" minLength={8} placeholder="At least 8 characters"
+              className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
+          </div>
+
+          {/* ── J2: PROMO CODE — OPTIONAL, UNVALIDATED, UNACKNOWLEDGED ──────────────────────────
+              Three things it deliberately does NOT do, each of which would be a bug here:
+                · it never blocks submit — no `required`, no validation, no error state;
+                · it is never checked against anything — there is no list, and an unrecognised code is
+                  recorded exactly like a recognised one, because a code is a marketing artifact and
+                  nothing about it may stand between an operator and an account;
+                · it never confirms a benefit. No "3 months free applied", no discount summary, no tick.
+                  NOTHING in the product applies it — it is recorded for tracking and honoured by hand,
+                  so any acknowledgement on this screen would be a claim we cannot keep.
+              Placed last, below the password, so it reads as an afterthought — which is what it is for
+              the great majority of people, who will not have one. */}
+          <div>
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">
+              Have a code? <span className="normal-case font-normal text-slate-400">(optional)</span>
+            </label>
+            <input type="text" value={promoCode} onChange={e => setPromoCode(e.target.value)}
+              maxLength={40} autoComplete="off" placeholder="Enter it here"
               className="w-full border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
 

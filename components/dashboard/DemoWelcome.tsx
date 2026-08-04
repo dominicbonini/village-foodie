@@ -30,8 +30,13 @@
 //   Logo argument is null + the 'Your logo here' placeholder plate, matching what the nav QR renders in
 //   demo (a provisioned demo truck has no logo — provision-demo.ts never sets one). ⚠️ If demo trucks ever
 //   gain a logo, this and handleShowQR in app/dashboard/[token]/page.tsx will diverge — change both.
-// The copy-link box survives ONLY as a fallback for when there is no QR to show (no slug, or generation
-// failed). Without it the copy would instruct "scan the QR code" beside an empty space.
+// ⚠️ SUPERSEDED BY G1 — the paragraph above records why the copy-link box was once REMOVED in favour of
+// the QR ("copying a URL and retyping it into a phone mid-demo is friction nobody actually goes
+// through"). That reasoning was right about COPYING and wrong about the link itself, because it assumed
+// a visitor on a laptop. A visitor already on their phone cannot scan a code on the screen they are
+// holding — for them the QR is not friction, it is a dead end. So the link is now a PEER of the QR
+// (tappable, and copyable for a third device), rendered whenever an orderUrl exists rather than only
+// when the QR is missing. The QR is untouched. The remaining no-link case is genuinely no URL at all.
 
 import { useEffect, useState } from 'react'
 
@@ -116,47 +121,70 @@ export function DemoWelcome({ token, orderUrl, isSample = false }: { token: stri
               <li className="flex gap-2 text-sm text-slate-600">
                 <span className="text-slate-400 shrink-0" aria-hidden>·</span>
                 <span>
-                  Scan the <strong className="text-slate-900">QR code</strong> with your phone and order as a
-                  customer — watch it land
+                  {/* G1: the bullet has to name BOTH routes now. Left as "scan the QR code" it would
+                      instruct half the visitors to do the one thing their device cannot do, with the
+                      thing it can do sitting unmentioned beside it. */}
+                  Scan the <strong className="text-slate-900">QR code</strong> — or tap the link — and order as
+                  a customer, then watch it land
                 </span>
               </li>
             </ul>
           </div>
 
-          {/* The QR itself, sized so a phone camera picks it up off a laptop screen without leaning in. */}
-          {showQr && (
-            <div className="flex justify-center">
-              {qrDataUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element -- canvas data: URL, not an optimisable asset
-                <img
-                  src={qrDataUrl}
-                  alt="QR code to your customer ordering page"
-                  className="w-40 h-40 rounded-xl border border-slate-200"
-                />
-              ) : (
-                <div className="w-40 h-40 rounded-xl border border-slate-200 bg-slate-50 animate-pulse" aria-hidden />
+          {/* ── G1: TWO ROUTES TO THE ORDER PAGE, SIDE BY SIDE ─────────────────────────────────────
+              The QR alone assumed a visitor on a laptop with a phone to hand. Someone already ON their
+              phone — which is common — cannot scan a code displayed on the screen they are holding, and
+              for them the QR is not a smaller affordance, it is no affordance at all. So the link is a
+              PEER of the QR here, not the fallback it used to be: same block, same visual weight,
+              always rendered whenever there is a URL at all.
+              🔴 THE QR IS UNCHANGED — same w-40 h-40, same generation, same placeholder. Nothing was
+              removed or shrunk to make room; the card simply got a second column.
+              LAYOUT: `flex-col-reverse sm:flex-row`. On a narrow screen that puts the LINK ABOVE the QR,
+              which is deliberate — the narrow screen IS the phone case, so the route that works there
+              must be the one that lands above the fold. From sm: up they sit as two columns, QR left,
+              link right, both vertically centred. DOM order stays QR-then-link so the reverse is purely
+              visual and the tab order still reads left-to-right on desktop. */}
+          {orderUrl && (
+            <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-4">
+              {showQr && (
+                <div className="flex justify-center shrink-0">
+                  {qrDataUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- canvas data: URL, not an optimisable asset
+                    <img
+                      src={qrDataUrl}
+                      alt="QR code to your customer ordering page"
+                      className="w-40 h-40 rounded-xl border border-slate-200"
+                    />
+                  ) : (
+                    <div className="w-40 h-40 rounded-xl border border-slate-200 bg-slate-50 animate-pulse" aria-hidden />
+                  )}
+                </div>
               )}
+              <div className="min-w-0 flex-1 bg-orange-50 border border-orange-200 rounded-xl px-3 py-3">
+                <p className="text-xs font-bold text-orange-900 mb-2">Or open it on this device</p>
+                {/* TAPPABLE. New tab so the demo dashboard they are being oriented on is still behind
+                    them when they come back — a same-tab navigation would lose the board mid-tour.
+                    `break-all` not `truncate`: the URL is the thing being offered, and a clipped one
+                    cannot be read off the screen onto another device. */}
+                <a href={orderUrl} target="_blank" rel="noopener noreferrer"
+                  className="block bg-white border border-orange-200 rounded-lg px-2.5 py-2 text-[11px] font-mono text-orange-700 underline break-all hover:bg-orange-100">
+                  {orderUrl}
+                </a>
+                {/* COPY stays, for the visitor who wants it on a DIFFERENT device — the one case neither
+                    tapping nor scanning covers. */}
+                <button onClick={copy}
+                  className="mt-2 w-full bg-orange-600 text-white text-xs font-bold py-2 rounded-lg hover:bg-orange-700">
+                  {copied ? 'Copied' : 'Copy link'}
+                </button>
+              </div>
             </div>
           )}
 
-          {/* FALLBACK ONLY — no slug, or the QR failed to generate. The copy above says "scan the QR code",
-              so something has to close that loop rather than leave a gap. */}
-          {!showQr && (
+          {/* No slug at all ⇒ there is no URL to render either way. Unchanged. */}
+          {!orderUrl && (
             <div className="bg-orange-50 border border-orange-200 rounded-xl px-3 py-3">
               <p className="text-xs font-bold text-orange-900 mb-2">Your customer order link</p>
-              {orderUrl ? (
-                <div className="flex gap-2">
-                  <code className="flex-1 min-w-0 bg-white border border-orange-200 rounded-lg px-2.5 py-2 text-[11px] font-mono text-slate-700 truncate">
-                    {orderUrl}
-                  </code>
-                  <button onClick={copy}
-                    className="shrink-0 bg-orange-600 text-white text-xs font-bold px-3 rounded-lg hover:bg-orange-700">
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
-                </div>
-              ) : (
-                <p className="text-xs text-orange-900/70">Your ordering page link is in the menu, top right.</p>
-              )}
+              <p className="text-xs text-orange-900/70">Your ordering page link is in the menu, top right.</p>
             </div>
           )}
 

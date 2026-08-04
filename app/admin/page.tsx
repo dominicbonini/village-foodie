@@ -183,6 +183,11 @@ export default function AdminPage() {
   const [denied, setDenied] = useState(false)
   const [operatorName, setOperatorName] = useState<string | null>(null)
   const [trucks, setTrucks] = useState<AdminTruck[]>([])
+  // J3: operator_id → the code they typed at signup. Its own map rather than a field on AdminTruck,
+  // because the value lives on OPERATORS: one operator may run several trucks on one deal, and every
+  // truck of theirs should show the same code without it being duplicated per row.
+  // Empty until the migration is run — /api/admin returns [] rather than failing (see the note there).
+  const [promoCodes, setPromoCodes] = useState<Record<string, string>>({})
   const [discoveryTrucks, setDiscoveryTrucks] = useState<DiscoveryTruck[]>([])
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
@@ -258,6 +263,13 @@ export default function AdminPage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setTrucks(data.trucks)
+      // J3: `operators` is absent on an older API build and [] before the migration — both fall through
+      // to an empty map, so the column simply shows nothing rather than throwing.
+      setPromoCodes(Object.fromEntries(
+        ((data.operators ?? []) as { id: string; signup_promo_code: string | null }[])
+          .filter(o => o.signup_promo_code)
+          .map(o => [o.id, o.signup_promo_code as string])
+      ))
       // Best-effort: never let a missing cleanup log break the admin page.
       fetch('/api/admin?section=demo_cleanup', { headers: h })
         .then(r => r.json()).then(d => setCleanupRun(d.lastRun ?? null)).catch(() => setCleanupRun(null))
@@ -876,6 +888,17 @@ export default function AdminPage() {
                           )}
                           {isOp && r.op.lifetime_discount_pct != null && (
                             <span className="ml-2 text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded-full">💚 {r.op.lifetime_discount_pct}%</span>
+                          )}
+                          {/* J3: the code typed at signup. READ-ONLY — nothing here edits or applies it,
+                              and it is a DIFFERENT thing from the 💚 lifetime discount beside it (that
+                              one is a subscription percentage you set; this one is a marketing string
+                              the operator typed, honoured by hand). Deliberately a distinct colour so
+                              the two are not read as one badge. */}
+                          {isOp && r.op.operator_id && promoCodes[r.op.operator_id] && (
+                            <span title="Code entered at signup — recorded only, not applied"
+                              className="ml-2 text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-full">
+                              🎟 {promoCodes[r.op.operator_id]}
+                            </span>
                           )}
                         </td>
                         {/* Active — ON-AIR kill-switch (operator only). Confirm before taking a truck OFFLINE

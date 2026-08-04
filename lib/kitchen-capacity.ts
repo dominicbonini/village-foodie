@@ -5,13 +5,22 @@
 
 /** Canonical kitchen-capacity description — identical on both surfaces. */
 export const KITCHEN_CAPACITY_DESC =
-  "The most items your kitchen can cook at once across the ticked categories — " +
-  "each cooked category's batch size still caps how many of that item fit in it."
+  "The most items your kitchen can turn out at once, across all the categories you've ticked. " +
+  "Each category's own batch size still applies on top."
 
 /** Canonical worked example — rendered as a second paragraph on both surfaces. */
 export const KITCHEN_CAPACITY_EXAMPLE =
   "Example: with a ceiling of 5 and pizzas in batches of 4, one window could be 4 pizzas " +
-  "+ 1 side, or 3 pizzas + 2 sides — the batch (4) caps pizzas, the ceiling (5) caps the total."
+  "+ 1 side, or 3 pizzas + 2 sides — the batch caps pizzas, the ceiling caps the total."
+
+/**
+ * Canonical "how do I switch it off" line. Its wording is tied to the CONTROL: BatchSizeSelect
+ * (components/manage/KitchenCapacityEdit.tsx:48) renders `<option value="">∞</option>` for null, so the
+ * infinity symbol is literally what the operator sees. If that option's label ever changes, change this
+ * line in the same commit — a help text naming a glyph the control no longer shows is worse than none.
+ */
+export const KITCHEN_CAPACITY_NO_LIMIT =
+  "Leave at the infinity symbol for no limit."
 
 /** Canonical warning copy shown when capacity is set but categories are under-configured. */
 export const KITCHEN_CAPACITY_WARNING =
