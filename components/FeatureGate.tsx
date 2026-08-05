@@ -1,5 +1,6 @@
+'use client'
 import { canAccess, requiredPlan, PLAN_META, type Plan, type Feature } from '@/lib/features'
-import { maskPrice } from '@/lib/pricing'
+import { usePriceMask } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 
 interface FeatureGateProps {
@@ -21,6 +22,11 @@ export function FeatureGate({
   showUpgrade = true,
   upgradeMessage,
 }: FeatureGateProps) {
+  // 🔴 BEFORE the early returns — hooks cannot sit after a conditional return. This is also why the
+  // truck arrives by CONTEXT rather than a prop: FeatureGate is shared, has no truck, and both of its
+  // render sites would otherwise have to remember to pass one.
+  const px = usePriceMask()
+
   if (canAccess(plan ?? 'starter', feature, overrides ?? {}, trialExpiresAt ?? null)) {
     return <>{children}</>
   }
@@ -37,7 +43,7 @@ export function FeatureGate({
           {upgradeMessage ?? `This feature requires the ${meta.name} plan`}
         </div>
         <div className="text-xs text-slate-400 mt-0.5">
-          {meta.name} · {maskPrice(meta.price)} · {meta.description}
+          {meta.name} · {px(meta.price)} · {meta.description}
         </div>
       </div>
       {/* 🔴 iOS (App Store 3.1.1/3.1.3): the CTA goes, the EXPLANATION stays. The panel above still names

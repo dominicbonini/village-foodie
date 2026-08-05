@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
   const { data: trucks } = await supabase
     .from('trucks')
-    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded')
+    .select('id,name,slug,dashboard_token,plan,trial_expires_at,feature_overrides,active,auto_accept,contact_email,onboarded_at,operator_id,lifetime_discount_pct,lifetime_discount_note,hide_pricing,show_on_vf,show_on_hg,order_link_vf,order_link_hg,is_customer,excluded')
     .order('name')
 
   // ── J3: THE SIGNUP PROMO CODE, KEYED BY OPERATOR ────────────────────────────────────────────────

@@ -30,6 +30,7 @@ interface AdminTruck {
   operator_id: string | null
   lifetime_discount_pct: number | null
   lifetime_discount_note: string | null
+  hide_pricing: boolean
   show_on_vf: boolean
   show_on_hg: boolean
   order_link_vf: boolean
@@ -1043,6 +1044,18 @@ export default function AdminPage() {
                   className="w-4 h-4 accent-orange-500"
                 />
                 <span className="text-sm font-medium text-slate-700">Active</span>
+              </label>
+              {/* Per-truck pricing suppression (trucks.hide_pricing). ANDed with the global
+                  NEXT_PUBLIC_PRICING_PUBLISHED flag, so ticking this keeps "TBC" in front of this operator
+                  even after pricing goes public. Exists so it can be CLEARED without SQL. */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={modalEdits.hide_pricing ?? editingTruck.hide_pricing ?? false}
+                  onChange={e => setModalEdits(prev => ({ ...prev, hide_pricing: e.target.checked }))}
+                  className="w-4 h-4 accent-orange-500"
+                />
+                <span className="text-sm font-medium text-slate-700">Hide pricing (show TBC)</span>
               </label>
             </div>
 

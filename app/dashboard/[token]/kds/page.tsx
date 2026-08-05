@@ -282,19 +282,34 @@ export default function KdsPage() {
 
   useEffect(() => {
     configureStatusBar()
-    prepareKeepAwake() // native acquires now; web waits for the KeepAwakePrompt button's click (Safari needs a user activation)
-    // 🚫 NO `return () => { allowSleep() }` — removed deliberately (2026-07-28). FLAG_KEEP_SCREEN_ON is a
-    // WINDOW flag scoped to window visibility, not a wake lock we own: backgrounded ⇒ no effect, Activity
-    // destroyed ⇒ Window destroyed with it, Activity recreated ⇒ fresh Window with default flags (not even
-    // restored). So no OS path strands the screen on, and the release was pure churn against the
-    // [keepScreenOn] effect below, which already owns the on/off state.
-    // ✅ The persistence across client-side routes (single-Activity Capacitor) is INTENDED: keep-awake is a
-    // DEVICE pref (hg_keepawake_${token}) meaning "this screen stays on", not "stays on while on the KDS".
-    // See the fuller note at app/dashboard/[token]/page.tsx (the keepScreenOn effect).
+    // 🔴 NO `prepareKeepAwake()` HERE — it used to run UNCONDITIONALLY on mount, before anything had read
+    // the operator's setting. The [keepScreenOn] effect below runs on mount too and is the single owner of
+    // acquire/release; this effect owns the status bar only.
+    //
+    // 🚫 NO `return () => { allowSleep() }` HERE. An unmount release was added on 5 August 2026 and
+    // WITHDRAWN the same day, because it answered the wrong question.
+    //
+    // ✅ PERSISTENCE ACROSS CLIENT-SIDE ROUTES IS CORRECT, and this restores the 2026-07-28 decision.
+    // keep-awake is a DEVICE preference (hg_keepawake_${token}) meaning "this screen stays on" — NOT
+    // "stays on while the KDS is mounted". An operator who steps into Manage mid-service to fix a price
+    // must not come back to a slept screen. Unmount is the operator moving BETWEEN screens; it is not
+    // them finishing with the app, and releasing there treats a navigation as an exit.
+    // ⚠️ It was measurably worse than the bug it was meant to fix: on WEB the re-acquire is a no-op
+    // (Safari needs a user activation, so prepareKeepAwake only sets intent), so every dashboard↔KDS hop
+    // dropped the lock and demanded a tap to get it back. See docs/keepawake-report.md.
+    //
+    // 🔴 THE RELEASE PATH STILL HAS TO EXIST — that part of the original finding stands. iOS's
+    // UIApplication.shared.isIdleTimerDisabled is PROCESS-WIDE: it survives backgrounding, teardown and
+    // route changes, and nothing in the OS clears it. So the lock is released on the events that mean the
+    // operator no longer wants the screen held — the SETTING going off, and the app being BACKGROUNDED
+    // (a module-level visibilitychange listener in lib/native/keepAwake.ts, which is why it keeps working
+    // no matter which route is mounted). Ownership belongs to the setting, never to a component.
   }, [])
 
+  // Single owner of acquire/release. `prepareKeepAwake` now takes the SETTING, so an unconditional call is
+  // a compile error rather than something review has to notice.
   useEffect(() => {
-    if (keepScreenOn) { prepareKeepAwake() } else { allowSleep() }
+    prepareKeepAwake(keepScreenOn)
   }, [keepScreenOn])
 
   useEffect(() => {
@@ -439,8 +454,12 @@ export default function KdsPage() {
     try { localStorage.setItem(`hg_keepawake_${token}`, value ? 'on' : 'off') } catch {}
     return st
   }
+  // 🔴 BRANCHES ON THE SETTING, NOT ON `wakeState`. It used to test `screenHeld`, so once belief diverged
+  // from reality — a failed release publishing 'off' while the OS flag stayed set — every tap took the
+  // ENABLE branch and the operator could not turn the screen off at all. `wakeState` may DISPLAY; it must
+  // never DECIDE. (`screenHeld` still drives the green/grey chip and the KeepAwakePrompt.)
   const toggleKeepScreenOn = async () => {
-    if (screenHeld) {   // held → turning OFF
+    if (keepScreenOn) {   // setting is ON → turning OFF
       if (truck?.id) {
         try {
           const { data: vans } = await supabaseBrowser.from('truck_vans').select('name,auto_pause_on_offline').eq('truck_id', truck.id).eq('active', true)

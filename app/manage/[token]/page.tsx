@@ -12,7 +12,7 @@ import { minRequiredForGroup, sortGroupsRequiredFirst, groupRuleLabel } from '@/
 import { useToasts, type ShowToast } from '@/lib/useToasts'
 import { ToastStack } from '@/components/ToastStack'
 import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
-import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
+import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
@@ -51,7 +51,7 @@ import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, V
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
 // ── Types ─────────────────────────────────────────────────────
-interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean }
+interface Truck { id: string; name: string; slug: string | null; description: string | null; cuisine_type: string | null; logo_storage_path: string | null; logo: string | null; contact_email: string | null; contact_phone: string | null; social_instagram: string | null; social_facebook: string | null; website: string | null; whatsapp: string | null; phone_is_whatsapp: boolean; auto_accept: boolean; truck_order_email_enabled: boolean; dashboard_token: string; crew_mode: 'solo' | 'full'; kds_mode: boolean; keep_screen_on: boolean; plan: Plan; feature_overrides: Record<string, boolean> | null; trial_expires_at: string | null; hide_pricing?: boolean; whatsapp_sender: string | null; allergen_info_url: string | null; allergen_info_text: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; preferred_contact_method: string | null; allow_customer_cancellation: boolean; cancellation_cutoff_mins: number; default_auto_open: boolean; default_auto_close: boolean; qr_code_style?: 'standard' | 'branded'; truck_emoji?: string; scraper_preference?: 'auto' | 'manual' | 'both'; schedule_url?: string | null; preorders_enabled?: boolean; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null; preorder_open_rule?: string | null; setup_step?: string | null; show_paid_step?: boolean; takes_cash?: boolean }
 interface Category { id: string; name: string; slug: string; prep_secs: number; batch_size: number; allow_notes: boolean; default_stock: number | null; sort_order: number; is_active: boolean; counts_toward_capacity?: boolean }
 interface Item { id: string; name: string; description: string | null; price: number; category_id: string | null; subcategory_id?: string | null; subcategory?: string | null; is_available: boolean; stock_count: number | null; default_stock: number | null; sort_order: number; image_path: string | null; allergens: string[]; allergens_verified?: boolean; dietary_info: string[]; spiciness: number | null; auto_accept: boolean; preorder_enabled?: boolean | null; preorder_deadline_type?: 'hours_before' | 'daily_cutoff' | null; preorder_deadline_value?: number | null; preorder_past_action?: 'sold_out' | 'force_pending' | null }
 interface Subcategory { id: string; category_id: string; name: string; sort_order: number }
@@ -499,7 +499,15 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     return t.roles.includes(userRole)
   })
 
+  // 🔴 ONE PROVIDER FOR THE WHOLE OPERATOR SURFACE. Wrapped here, at the highest point `truck` is
+  // available, so BillingTab (17 price renders) and FeatureGate (a shared component with no truck
+  // prop) both read the same policy without either being handed a boolean. A price added anywhere
+  // below is masked correctly by default — see components/PricingPolicy.tsx for why that is the
+  // whole point rather than a convenience.
+  // ⚠️ `?? false` — an ABSENT column (pre-migration) means "follow the global flag", i.e. today's
+  // behaviour. Not `?? true`; that default belongs to the context, for a different question.
   return (
+    <PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
     <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
       {/* Header */}
       <AppHeader
@@ -744,6 +752,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
       )}
 
     </div>
+    </PricingPolicyProvider>
   )
 }
 
@@ -8167,6 +8176,10 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   // £/month for each additional van beyond included count
   // TODO: Wire to Stripe billing API when payments are integrated.
   const VAN_ADDON_PRICE: Record<string, number> = { starter: 0, pro: 29, max: 49, trial: 0 }
+  // Per-truck masking, same policy the Billing tab uses. Was a direct `maskPrice` import, which had no
+  // truck context and would have shown a suppressed operator a real add-on price the moment the global
+  // flag flipped.
+  const vanPx = usePriceMask()
   const INCLUDED_VANS: Record<string, number> = { starter: 1, pro: 2, max: 999, trial: 999 }
 
   const handleAddVanClick = () => {
@@ -9586,7 +9599,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 Your {truck.plan === 'pro' ? 'Pro' : 'Max'} plan includes{' '}
                 {truck.plan === 'pro' ? '2 trucks' : 'unlimited trucks'}.
                 Adding an additional truck costs{' '}
-                <strong>{maskPrice(`£${VAN_ADDON_PRICE[truck.plan]}/month`)}</strong>{' '}
+                <strong>{vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/month`)}</strong>{' '}
                 and will be added to your next billing cycle.
               </p>
               <div className="mt-3 bg-slate-50 rounded-xl px-4 py-3">
@@ -9607,7 +9620,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 onClick={() => { setShowVanBillingModal(false); setAddingVan(true) }}
                 className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm hover:bg-orange-700"
               >
-                Add truck — {maskPrice(`£${VAN_ADDON_PRICE[truck.plan]}/mo`)}
+                Add truck — {vanPx(`£${VAN_ADDON_PRICE[truck.plan]}/mo`)}
               </button>
             </div>
           </div>
@@ -9704,6 +9717,15 @@ const formatTrialEndDate = (dateStr: string) =>
 const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hello@villagefoodie.co.uk'
 
 function BillingTab({ truck }: { truck: Truck | null }) {
+  // 🔴 ABOVE the `if (!truck) return null` guard below — hooks must run in the same order on every
+  // render, and these need no truck (the policy arrives by context). ⚠️ The three `useState` calls further
+  // down are BELOW that guard and are a PRE-EXISTING rules-of-hooks violation; they are left exactly as
+  // they are rather than moved, because relocating live billing state is not this task. Do not "tidy" these
+  // two down to join them.
+  const px = usePriceMask()
+  // Footnote 2 does not MASK a value, it substitutes a whole different sentence, so it needs the raw
+  // question rather than the masking function.
+  const pricesVisible = usePricesVisible()
   if (!truck) return null
   const currentPlan = truck.plan
   // ── Z1: WHICH COLUMNS THE MATRIX SHOWS ──────────────────────────────────────────────────────────
@@ -9740,10 +9762,12 @@ function BillingTab({ truck }: { truck: Truck | null }) {
   const openUpgrade = (target: 'pro' | 'max') => { setUpgradeTarget(target); setShowUpgradeModal(true) }
   const plan = truck.plan
 
-  // Pre-launch pricing gate (shared with FeatureGate + the van add-on) — concrete prices show as
-  // "TBC" until NEXT_PUBLIC_PRICING_PUBLISHED === 'true'. Free / 0% / Pay at Hatch / Lifetime stay
-  // visible. Plan structure and feature rows are unaffected. See lib/pricing.ts.
-  const px = maskPrice
+  // Pricing gate (shared with FeatureGate + the van add-on) — concrete prices show as "TBC" unless the
+  // GLOBAL flag NEXT_PUBLIC_PRICING_PUBLISHED is 'true' AND this truck is not individually suppressed
+  // (trucks.hide_pricing). Free / 0% / Pay at Hatch / Lifetime stay visible either way. Plan structure and
+  // feature rows are unaffected. See lib/pricing.ts and components/PricingPolicy.tsx.
+  // 🔴 The truck reaches this via context, not a prop — every price below is masked correctly without any
+  // of the 17 call sites knowing which truck is on screen.
 
   const matrixContent = (
     <>
@@ -9850,7 +9874,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
     <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-1.5">
       {FOOTNOTES.map(f => (
         <p key={f.number} className="text-xs text-slate-700">
-          <sup>{f.number}</sup> {PRICING_PUBLISHED || f.number !== '2'
+          <sup>{f.number}</sup> {pricesVisible || f.number !== '2'
             ? f.text
             : 'Online payments are powered by Stripe Connect. Platform and card processing fees are TBC and will be confirmed at launch.'}
         </p>
