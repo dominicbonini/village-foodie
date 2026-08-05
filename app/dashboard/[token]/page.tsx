@@ -133,9 +133,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   //
   // DETECTION = the token prefix, the SAME signal proxy.ts keys on to waive the session gate, upheld by
   // assertReservedPrefix() in lib/provision-truck.ts (no operator truck can ever carry a `demo-` token).
-  // Deliberately NOT truck.plan==='demo': per the onboarding spec (Stage 7) a SIGNED-UP pre-trial truck
-  // also sits on plan 'demo', and that one is a real operator who must keep the full console — the plan
-  // cannot tell the two apart. A trucks.is_test-style column is forbidden (reference-manual §824).
+  // Deliberately NOT keyed on truck.plan, and that holds under EITHER plan model. It used to read
+  // "NOT truck.plan==='demo', because a SIGNED-UP pre-trial truck also sits on plan 'demo'" — as of
+  // 4 August signup provisions 'trial' instead, so the collision that argument named is gone. The
+  // conclusion is unchanged and stronger for it: the PLAN is a billing tier and says nothing about
+  // whether a truck is a throwaway sandbox, so it could never be the detector. The token prefix is.
+  // A trucks.is_test-style column is forbidden (reference-manual §824).
   // Client-side from the route param → no fetch, no API change, correct on first paint.
   const isDemo=token.startsWith('demo-')
   // ── CUSTOMER-URL BASE ────────────────────────────────────────────────────────────────────────────

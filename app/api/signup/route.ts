@@ -48,6 +48,12 @@ export async function POST(req: NextRequest) {
   // nothing about it may stand between an operator and an account. An unrecognised code is a recorded
   // fact, not an error. 40 chars is a bound on abuse (the column is text), not a format rule.
   const signupPromoCode = String(body.signup_code ?? '').trim().slice(0, 40) || null
+  // ── V1: FIRST AND LAST NAME, AS TYPED ────────────────────────────────────────────────────────────
+  // 🔴 NEVER DERIVED FROM EACH OTHER OR FROM `name`. The wizard asks for two fields precisely so that
+  // no split has to be guessed; reconstructing one from the other here would reintroduce the guess.
+  // Optional on the wire: /signup (the plain page) does not collect them and must keep working.
+  const firstName = String(body.first_name ?? '').trim().slice(0, 80) || null
+  const lastName = String(body.last_name ?? '').trim().slice(0, 80) || null
 
   if (!email.includes('@') || email.length > 254) {
     return NextResponse.json({ ok: false, error: 'Enter a valid email address.' }, { status: 400 })
@@ -118,15 +124,21 @@ export async function POST(req: NextRequest) {
   // here and ONLY here: the user is seconds old and owns nothing, so this turns a broken state into
   // "nothing happened", which is a state they can simply retry from.
   // If the delete ITSELF fails, /api/auth/post-login repairs on next login.
-  // Single source for the display name: the verification email derives {first_name} from it, and the
-  // two must not drift.
-  const operatorName = email.split('@')[0]
+  // ── V1: `name` IS DERIVED FROM THE TWO FIELDS, NOT THE OTHER WAY ROUND ──────────────────────────
+  // operators.name still exists and is still written: /api/auth/me, the admin console, the Team tab and
+  // truck_users all read it. It is now the two typed fields joined, and falls back to the email's local
+  // part ONLY when they are absent — which is the /signup page, whose form has no name fields at all.
+  const operatorName = [firstName, lastName].filter(Boolean).join(' ') || email.split('@')[0]
   const { data: operator, error: opError } = await supabase
     .from('operators')
     .insert({
       auth_user_id: authUserId,
       email,
       name: operatorName,
+      // V1: written on the FIRST insert, so nothing has to backfill them and the verification email
+      // (sent below, inside this same request) can use the real first name.
+      first_name: firstName,
+      last_name: lastName,
       terms_accepted_at: new Date().toISOString(),
       terms_version: TERMS_VERSION,
       marketing_opt_in: marketingOptIn,
@@ -208,7 +220,9 @@ export async function POST(req: NextRequest) {
     // out when this link is clicked (/api/auth/verify-signup).
     await sendSignupVerificationEmail({
       to: email,
-      firstName: firstNameFrom(operatorName),
+      // V1(e) THE FALLBACK CHAIN: the typed first_name → the first word of operators.name → "there".
+      // firstNameFrom already supplies the last link.
+      firstName: firstName ?? firstNameFrom(operatorName),
       truckName: demoTruckName,
       verifyUrl: link,
     })

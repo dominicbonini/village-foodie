@@ -42,8 +42,10 @@ import { BatchSizeSelect } from '@/components/manage/KitchenCapacityEdit'
 import { KitchenCapacityCategoryRow } from '@/components/manage/KitchenCapacityCategoryRow'
 import { SUBCARD_HEADING } from '@/lib/ui-tokens'
 import { BUZZER_MAX_COUNT, BUZZER_DEFAULT_COUNT } from '@/lib/buzzer'
+import { normaliseUrl, isScraperBlockedDomain } from '@/lib/url-normalise'
+import { SETTING_COPY, TRIAL_NOT_STARTED_BY_EVENTS, TRIAL_NOT_STARTED_HEADING, TRIAL_NOT_STARTED_BILLING } from '@/lib/settings-copy'
 import { Walkthrough } from '@/components/manage/Walkthrough'
-import { WALKTHROUGH_STOPS, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
+import { WALKTHROUGH_STOPS, WALKTHROUGH_INTRO, readWalkthroughState, writeWalkthroughState, type WalkthroughState } from '@/lib/walkthrough'
 import { VanFilter, matchesVanFilter, vanFilterLabel, vanFilterFilenameSuffix, VAN_FILTER_ALL, type VanFilterValue } from '@/components/manage/VanFilter'
 import { HATCHGRAB_LOGO_PNG } from '@/lib/brand'
 
@@ -64,6 +66,27 @@ type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+
+// ── N2: SCHEDULE-VERIFY MESSAGES, DEFINED ONCE ───────────────────────────────────────────────────────
+// 🔴 THIS MAP WAS WRITTEN OUT TWICE, VERBATIM — once in the setup wizard's Route A and once in
+// Settings' handleVerifyUrl. Two copies of five strings is five chances for the two surfaces to tell an
+// operator different things about the same failure. One definition, both readers.
+//
+// The cases are deliberately separated by WHAT ACTUALLY HAPPENED, which is the fix N2 asks for:
+//   malformed   — nothing was fetched. The address never parsed, so blaming the network is a lie.
+//   unreachable — a real fetch failed: DNS, connection, certificate.
+//   blocked     — the site answered and refused us.
+//   no_content  — we loaded it and got nothing readable.
+//   no_events   — we read it fine; the thing we were looking for was not on it.
+const URL_MALFORMED_MSG = "That doesn't look like a web address. Try something like yourtruck.co.uk/events"
+const VERIFY_MESSAGES: Record<string, string> = {
+  malformed:     URL_MALFORMED_MSG,
+  launch_failed: "Verification is temporarily unavailable. Please try again in a moment.",
+  blocked:       "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
+  unreachable:   "We couldn't reach this website. It may be down, or the address may be wrong.",
+  no_content:    "We reached this page but couldn't read anything on it. Check it's publicly accessible.",
+  no_events:     "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
+}
 function imgUrl(path: string | null) {
   if (!path) return null
   return `${SUPABASE_URL}/storage/v1/object/public/truck-media/${path}`
@@ -138,6 +161,22 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   const [activeTab, setActiveTab] = useState<Tab>('menu')
   const [allergenWizardOpen, setAllergenWizardOpen] = useState(false)   // Slice-3 allergen wizard overlay (lives in MenuTab)
   const [pendingVerifyEvents, setPendingVerifyEvents] = useState<any[] | null>(null)
+  // ── T1: ONE TRIGGER, TWO CALLERS, AND A COMPLETION CALLBACK ONLY THE WIZARD SUPPLIES ─────────────
+  // The editable "Events found on your website" modal lives in ScheduleTab and opens on
+  // pendingVerifyEvents. Settings has always fed it; the setup wizard now feeds the SAME modal instead
+  // of its own read-only list. No UI was copied — only the trigger is shared.
+  //
+  // 🔴 WHY BOTH CALLERS GO THROUGH ONE HANDLER RATHER THAN SETTINGS KEEPING setPendingVerifyEvents:
+  // the callback has to be CLEARED, not just set. If Settings wrote pendingVerifyEvents directly, a
+  // callback left over from a wizard run would still be sitting here — and a LATER Settings import,
+  // months after setup, would call goToSettingsReview() and reopen the wizard's review step over a live
+  // truck. Setting it on every trigger makes that unreachable rather than unlikely.
+  const [afterEventsSaved, setAfterEventsSaved] = useState<(() => void) | null>(null)
+  const handleVerifiedEvents = (events: unknown[], onSaved?: () => void) => {
+    // The updater form is required: a bare setState(fn) would treat the function as an updater.
+    setAfterEventsSaved(() => onSaved ?? null)
+    setPendingVerifyEvents(events)
+  }
   const [showTrialReminder, setShowTrialReminder] = useState(false)
   const [userRole, setUserRole] = useState<UserRole>('owner')
   const [truck, setTruck] = useState<Truck | null>(null)
@@ -569,11 +608,11 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             </div>
           )
         })()}
-        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} />}
+        {activeTab === 'menu'      && <MenuTab      truck={truck} categories={categories} items={items} subcategories={subcategories} token={token} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} allergenWizardOpen={allergenWizardOpen} onCloseAllergenWizard={() => { setAllergenWizardOpen(false); load() }} onOpenAllergenWizard={() => setAllergenWizardOpen(true)} canEditAllergens={userRole === 'owner' || isAdmin} onWalkthroughChoice={handleWalkthroughChoice} onVerifySuccess={handleVerifiedEvents} />}
         {activeTab === 'modifiers' && <ModifiersTab categories={categories} items={items} modifierGroups={modifierGroups} modifierOptions={modifierOptions} itemModGroups={itemModGroups} upsellRules={upsellRules} setModifierGroups={setModifierGroups} setModifierOptions={setModifierOptions} setItemModGroups={setItemModGroups} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'deals'     && <DealsTab     categories={categories} bundles={bundles} setBundles={setBundles} api={api} reload={load} showToast={showToast} />}
         {activeTab === 'reports'   && <ReportsTab   truck={truck} api={api} />}
-        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} />
+        <ScheduleTab isActive={activeTab === 'schedule'} truck={truck} token={token} bundles={bundles} categories={categories} api={api} reload={load} showToast={showToast} onSwitchTab={setActiveTab} pendingVerifyEvents={pendingVerifyEvents} onClearPendingVerify={() => setPendingVerifyEvents(null)} onPendingCount={setPendingApprovalCount} onEventsSaved={afterEventsSaved} />
         {activeTab === 'team'      && <TeamTab      truck={truck} token={token} api={api} reload={load} showToast={showToast}
           currentUserEmail={currentUserEmail}
           currentUserFirstName={currentUserFirstName}
@@ -592,7 +631,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
             setCurrentUserPhone(phone)
           }}
         />}
-        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={setPendingVerifyEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
+        {activeTab === 'settings'  && <SettingsTab  truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
       </main>
@@ -1642,7 +1681,7 @@ function AllergenWizardModal({ items, categories, canEdit, onClose, onConfirmRow
   )
 }
 
-function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice }: {
+function MenuTab({ truck, categories, items, subcategories, token, modifierGroups, modifierOptions, itemModGroups, setItemModGroups, api, reload, showToast, allergenWizardOpen, onCloseAllergenWizard, onOpenAllergenWizard, canEditAllergens, onWalkthroughChoice, onVerifySuccess }: {
   truck: Truck; categories: Category[]; items: Item[]; subcategories: Subcategory[]; token: string
   modifierGroups: ModifierGroup[]; modifierOptions: ModifierOption[]; itemModGroups: {menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]
   setItemModGroups: React.Dispatch<React.SetStateAction<{menu_item_id:string;group_id:string;excluded_option_ids?:string[]}[]>>
@@ -1651,6 +1690,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   canEditAllergens: boolean   // owner/admin — gates the allergen edit affordances (server also enforces)
   /** K2: the done screen's three-way offer. The PAGE owns the stored state — this only reports the click. */
   onWalkthroughChoice: (choice: 'now' | 'later' | 'never') => void
+  /** T1: hands verified events to the SAME editable modal Settings uses (ScheduleTab's), plus a
+   *  completion callback so the wizard can advance itself once they are saved. */
+  onVerifySuccess: (events: unknown[], onSaved?: () => void) => void
 }) {
   // §54: an item's attached option groups, split required vs optional via the source-of-truth
   // minRequiredForGroup (is_required OR min_choices>=1). The manage-local ModifierGroup has no
@@ -1761,6 +1803,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // without a second flag and without the ambiguity a nullable "mode" field would carry.
   const [catEdit, setCatEdit] = useState<{ from: string; value: string } | null>(null)
   const [catEditError, setCatEditError] = useState<string | null>(null)
+  // M4: the category pending deletion, and where its items should go. `moveTo` is '' until the operator
+  // picks — an empty category needs no target and deletes straight away, so this state only ever holds
+  // a name for the with-items case.
+  const [catDeleting, setCatDeleting] = useState<{ name: string; moveTo: string } | null>(null)
   // ── Import ALLERGENS step (card→dish matching). The card-matched allergens are STAGED into importResult
   // items (menu-detected ∪ card, _allergensChecked stays false) → commit writes verified=false → the
   // existing allergen wizard opens POST-commit for row-by-row confirm (no forked review surface, no new
@@ -1842,7 +1888,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // from an assumed default — several of these columns' defaults are not recorded in the repo, and
   // rendering a guess as if it were the stored value is the one thing this screen must not do. Null
   // means "not loaded yet" and the row renders disabled rather than pretending.
-  const [reviewVan, setReviewVan] = useState<{ id: string; kitchen_capacity: number | null; order_ready_enabled: boolean } | null>(null)
+  const [reviewVan, setReviewVan] = useState<{ id: string; kitchen_capacity: number | null; order_ready_enabled: boolean; buzzer_count: number | null } | null>(null)
   const [reviewLoading, setReviewLoading] = useState(false)
   // Truck-level mirrors, seeded from the live row. Optimistic: the write is fired and the mirror moves
   // with it, exactly as Settings' own rows do. MenuTab has no onTruckUpdate, so the parent `truck` is
@@ -1868,7 +1914,7 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       try {
         const r = await api('get_vans')
         const v = (r.vans || [])[0]
-        if (alive && v) setReviewVan({ id: v.id, kitchen_capacity: v.kitchen_capacity ?? null, order_ready_enabled: !!v.order_ready_enabled })
+        if (alive && v) setReviewVan({ id: v.id, kitchen_capacity: v.kitchen_capacity ?? null, order_ready_enabled: !!v.order_ready_enabled, buzzer_count: v.buzzer_count ?? null })
       } catch { /* non-fatal — the rows render disabled rather than guessing a value */ }
       finally { if (alive) setReviewLoading(false) }
     })()
@@ -2066,6 +2112,34 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     } : prev)
   const addImportCategory = (name: string) =>
     setImportResult(prev => prev ? { ...prev, categories: [...prev.categories, name] } : prev)
+
+  // ── M2/M4: REASSIGNMENT, KEPT AS A NAMED CAPABILITY ──────────────────────────────────────────────
+  // M2 removed the always-visible per-row dropdown, NOT the ability. This is that ability, named, with
+  // exactly one caller: the delete-a-category flow below, which is the one moment an operator genuinely
+  // has to say where dishes go.
+  //
+  // 🔴 IT WRITES `category` AND NOTHING ELSE. `{ ...it }` carries every other field through untouched —
+  // including `_allergensChecked`. A dish the operator confirmed in the allergen step stays confirmed
+  // when it changes category, which is what stops M4 quietly undoing M1's work.
+  const reassignImportItem = (fromCategory: string, toCategory: string) =>
+    setImportResult(prev => prev ? {
+      ...prev,
+      items: prev.items.map(it => it.category === fromCategory ? { ...it, category: toCategory } : it),
+    } : prev)
+
+  // ── M4: DELETE A CATEGORY (in-memory, like everything else on this screen) ───────────────────────
+  // Removes the name from `categories` and, when asked, moves its items in the SAME setImportResult
+  // call — the same one-update discipline the rename uses, for the same reason: an item left pointing
+  // at a category that is no longer in the list is dropped by commitMenu's bare `continue`, with no
+  // error and no entry in `failed[]`. One update means there is no window in which that can be true.
+  const deleteImportCategory = (name: string, moveTo: string | null) =>
+    setImportResult(prev => prev ? {
+      ...prev,
+      categories: prev.categories.filter(c => c !== name),
+      items: moveTo
+        ? prev.items.map(it => it.category === name ? { ...it, category: moveTo } : it)
+        : prev.items,
+    } : prev)
   /** Apply the open rename/add. Kept together so Enter, blur and the tick button cannot diverge. */
   const commitCatEdit = () => {
     if (!catEdit) return
@@ -2345,7 +2419,30 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       category,
       allergens: [...new Set(memberItems.flatMap((it: any) => it.allergens || []))],
       dietary:   [...new Set(memberItems.flatMap((it: any) => it.dietary || []))],
-      spiciness: base.spiciness ?? null, _allergensChecked: false,
+      spiciness: base.spiciness ?? null,
+      // ── 🔴 M1: THE PARENT'S CONFIRMATION IS DERIVED FROM ITS MEMBERS ─────────────────────────
+      // This was the literal `false`, and it silently discarded real human work. The allergen step
+      // reviews the UN-GROUPED rows; grouping happens later, in buildGroupedItems, which DELETES the
+      // confirmed members and inserts this object in their place. With `false` hardcoded, every
+      // grouped dish committed unverified however carefully its members had been checked — confirmed
+      // in production on truck "village spice": 29 items committed, the 24 standalone ones verified,
+      // and exactly the 5 grouped parents unverified and corrected by hand 23 minutes later.
+      //
+      // 🔴 THE SAFETY PROPERTY, WHICH THIS PRESERVES: nothing is ever marked verified that a human did
+      // not verify. `every(… === true)` is an AND over the members, and each member's flag was set by
+      // the operator confirming that row in the allergen step. So a true here means every dish folded
+      // into this parent was individually confirmed by a person. A single unconfirmed member — or one
+      // whose flag is undefined — makes the whole thing false. It cannot invent a confirmation.
+      // Strict `=== true`, not truthiness, for exactly that reason.
+      //
+      // ⚠️ `memberItems.length > 0 &&` IS LOAD-BEARING, NOT DEFENSIVE PADDING. `[].every(...)` is
+      // TRUE by definition, so without this guard a group that somehow arrived with no members would
+      // commit as verified — a confirmation asserted about nothing at all. The one case where the
+      // vacuous-truth default is exactly backwards from the safe one.
+      //
+      // Derived like every other field on this object — the allergens union two lines above is built
+      // from the same memberItems, for the same reason: the parent must represent ALL of them.
+      _allergensChecked: memberItems.length > 0 && memberItems.every(it => it._allergensChecked === true),
       modifierGroups: [{
         name: groupName,
         options: options.map(o => ({ name: o.name, price: o.surcharge, allergens: o.allergens, dietary: o.dietary })),
@@ -2683,6 +2780,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     onChange: (next: never) => void
     secondary?: {
       label: string
+      /** Q4: the tail of a sentence the control sits inside, e.g. "…up to [30 minutes] before pickup". */
+      suffix?: string
       value: number
       options: { value: number; label: string }[]
       visible: boolean
@@ -2700,24 +2799,19 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   const saveTruckReview = async (patch: Record<string, unknown>) => {
     try { await api('update_truck', { data: patch }) } catch (e) { reviewSaveFailed(e) }
   }
+  // ⚠️ Q2: THE "TOTAL CAPACITY" ROW WAS REMOVED FROM HERE. It is already asked, in full and in context,
+  // on the Kitchen-setup step two screens earlier — with the per-category grid that gives the number
+  // its meaning. Asking again at the end read as a second, contradictory request. The Kitchen-setup
+  // step and truck_vans.kitchen_capacity itself are untouched.
+  //
+  // 🔴 Q4: EVERY label AND helpText BELOW COMES FROM SETTING_COPY (lib/settings-copy.ts), which Manage →
+  // Settings reads too. Do not type a string into this array — that is exactly how the "off by default"
+  // line got here and then became false.
   const setupReviewItems: SetupReviewItem[] = [
     {
-      id: 'kitchen_capacity',
-      label: 'Total capacity',
-      helpText: 'The most items your kitchen can turn out at once. Leave at ∞ if you would rather not cap it — you can set it later once you know your rhythm.',
-      currentValue: reviewVan?.kitchen_capacity ?? null,
-      control: 'capacity',
-      settingsAnchor: 'Settings → Your trucks → Kitchen capacity',
-      disabled: !reviewVan,
-      onChange: ((n: number | null) => {
-        setReviewVan(v => v ? { ...v, kitchen_capacity: n } : v)
-        void saveVanReview({ kitchen_capacity: n })
-      }) as SetupReviewItem['onChange'],
-    },
-    {
       id: 'allow_customer_cancellation',
-      label: 'Let customers cancel their own orders',
-      helpText: 'On by default. When it is on, a customer can cancel up to the window below without ringing you.',
+      label: SETTING_COPY.allowCancellation.label,
+      helpText: SETTING_COPY.allowCancellation.help,
       currentValue: reviewAllowCancel,
       control: 'toggle',
       settingsAnchor: 'Settings → Contact Details',
@@ -2726,7 +2820,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         void saveTruckReview({ allow_customer_cancellation: next })
       }) as SetupReviewItem['onChange'],
       secondary: {
-        label: 'Up to',
+        label: SETTING_COPY.allowCancellation.cancelPrefix,
+        suffix: SETTING_COPY.allowCancellation.cancelSuffix,
         value: reviewCancelMins,
         options: [
           { value: 15, label: '15 minutes' }, { value: 30, label: '30 minutes' },
@@ -2738,13 +2833,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     },
     {
       id: 'auto_accept',
-      label: 'Accept online orders automatically',
-      // ⚠️ THIS COPY TRACKS THE PROVISIONED DEFAULT AND MUST BE CHANGED WITH IT. It used to open "Off
-      // by default, so every order waits for you", which became FALSE the moment provisioning started
-      // writing auto_accept:true (lib/provision-truck.ts, operator profile). The row itself is
-      // unchanged — it still reads its LIVE value and hardcodes nothing — but a help text that
-      // contradicts the toggle beside it is worse than none.
-      helpText: 'On, so orders confirm themselves and customers get an answer straight away. A full slot is never auto-confirmed, and an order with a customer note still waits for you. Turn it off if you would rather check every order yourself.',
+      // ⚠️ THE ROW THAT PROVED WHY SETTING_COPY EXISTS. Its help text was hand-written here, said "Off
+      // by default, so every order waits for you", and became false the day provisioning started
+      // writing auto_accept:true. Rewriting it by hand a second time would only reset the clock; it now
+      // reads the same constant Settings does and describes the setting rather than its default.
+      label: SETTING_COPY.autoAccept.label,
+      helpText: SETTING_COPY.autoAccept.help,
       currentValue: reviewAutoAccept,
       control: 'toggle',
       settingsAnchor: 'Settings → Order settings',
@@ -2758,11 +2852,8 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
     },
     {
       id: 'order_ready_enabled',
-      label: 'Let customers know when their order is ready',
-      // 🔴 FRAMED AS AN OPT-IN, NOT AS A CHECK. truck_vans.order_ready_enabled is NOT NULL DEFAULT
-      // false (live-verified), so this is not a default anybody chose and got wrong — it is a feature
-      // that has never been switched on. Asking "is this right?" about it would be misleading.
-      helpText: 'Off unless you turn it on. Adds a "Mark ready" button to your orders screen and tells the customer their food is waiting — worth it for pubs and festivals.',
+      label: SETTING_COPY.orderReady.label,
+      helpText: SETTING_COPY.orderReady.help,
       currentValue: reviewVan?.order_ready_enabled ?? null,
       control: 'toggle',
       settingsAnchor: 'Settings → Your trucks → Display settings',
@@ -2771,6 +2862,42 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
         setReviewVan(v => v ? { ...v, order_ready_enabled: next } : v)
         void saveVanReview({ order_ready_enabled: next })
       }) as SetupReviewItem['onChange'],
+    },
+    {
+      // ── Q5: BUZZERS — THE POOL ONLY ───────────────────────────────────────────────────────────
+      // 🔴 truck_vans.buzzer_count and NOTHING ELSE. The per-event PROMPT is truck_events.buzzer_prompt
+      // and has no truck-level column at all — it is written only by the dashboard's
+      // set_buzzer_prompt_override, per event, and expires by itself when the next event starts. There
+      // is nothing on this screen it could honestly set, so it is absent rather than approximated.
+      // Wording comes from Settings like every other row (SETTING_COPY.buzzers) — the pool DOES have a
+      // Settings equivalent, so nothing had to be invented.
+      // ⚠️ ALLOWLIST CHECKED: `buzzer_count` is in update_van_settings' destructured allowlist
+      // (app/api/manage/route.ts) — an unlisted key there is silently dropped and the toggle would
+      // appear to save while writing nothing. It is listed; this writes.
+      id: 'buzzer_count',
+      label: SETTING_COPY.buzzers.label,
+      helpText: SETTING_COPY.buzzers.help,
+      // The POOL is a number, but the question is a yes/no — non-null means "yes, and this many".
+      currentValue: reviewVan ? reviewVan.buzzer_count != null : null,
+      control: 'toggle',
+      settingsAnchor: 'Settings → Your trucks → Display settings',
+      disabled: !reviewVan,
+      onChange: ((next: boolean) => {
+        // Off ⇒ null (the feature is hidden entirely); on ⇒ the same default Settings offers.
+        const n = next ? BUZZER_DEFAULT_COUNT : null
+        setReviewVan(v => v ? { ...v, buzzer_count: n } : v)
+        void saveVanReview({ buzzer_count: n })
+      }) as SetupReviewItem['onChange'],
+      secondary: {
+        label: SETTING_COPY.buzzers.countLabel,
+        value: reviewVan?.buzzer_count ?? BUZZER_DEFAULT_COUNT,
+        options: Array.from({ length: BUZZER_MAX_COUNT }, (_, i) => ({ value: i + 1, label: String(i + 1) })),
+        visible: !!reviewVan && reviewVan.buzzer_count != null,
+        onChange: (n: number) => {
+          setReviewVan(v => v ? { ...v, buzzer_count: n } : v)
+          void saveVanReview({ buzzer_count: n })
+        },
+      },
     },
   ]
 
@@ -2790,13 +2917,9 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
 
   // ── SCHEDULE STEP handlers (SETUP MODE) — wire the EXISTING flows; ScheduleTab is untouched ────────────
   // Facebook/Instagram rejection reused VERBATIM from Settings (:6577-6584).
-  const SCHED_BLOCKED_DOMAINS = ['facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'instagr.am']
-  const schedIsBlockedDomain = (url: string): boolean => {
-    try {
-      const hostname = new URL(url).hostname.toLowerCase()
-      return SCHED_BLOCKED_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`))
-    } catch { return false }
-  }
+  // V2: was a local copy whose `catch { return false }` failed OPEN. Both copies now call the one
+  // shared guard, which fails CLOSED — see lib/url-normalise.ts.
+  const schedIsBlockedDomain = isScraperBlockedDomain
   const SCHED_BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can't be scraped automatically."
 
   // Finish setup: setup_step='done' so inSetup goes false and the setup chrome stops haunting Manage. Single
@@ -2852,9 +2975,18 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
   // together). Same endpoint + same reason→message mapping as Settings' handleVerifyUrl. No blur-save: a page
   // the scraper can't read must never be enrolled silently.
   const schedVerify = async () => {
-    const url = schedUrl.trim()
-    if (!url) return
+    // N1: normalise BEFORE anything else. `www.yourtruck.co.uk/events` used to reach the server
+    // scheme-less, be rejected by `!url.startsWith('http')` with a bare 400, and be reported as
+    // "couldn't reach this website" — about a site nothing had tried to reach.
+    // 🔴 This also repairs the blocked-domain guard: schedIsBlockedDomain reads `new URL(url).hostname`
+    // inside a try/catch that returns FALSE on throw, so a scheme-less `www.facebook.com/…` was not
+    // blocked — it was unparseable, and the guard failed open. It is now given a parseable URL.
+    const url = normaliseUrl(schedUrl)
+    if (!url) { setSchedVerifyError(URL_MALFORMED_MSG); return }
     if (schedIsBlockedDomain(url)) { setSchedVerifyError(SCHED_BLOCKED_DOMAIN_MSG); return }
+    // Reflect the corrected address back into the field, so what was verified and what is on screen
+    // are the same string — and the operator sees what we actually used.
+    setSchedUrl(url)
     setSchedVerifying(true); setSchedVerifyError(null); setSchedVerifiedEvents(null)
     try {
       const res = await fetch('/api/manage/verify-schedule-url', {
@@ -2865,24 +2997,34 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       if (data.found) {
         // 🔴 Enrol ONLY now — verification is the evidence the scraper can read this page.
         try {
+          // (d) BOTH PROMISES ARE KEPT. The enrolment writes are unchanged: this page is watched from
+          // here on. What changed is that the dates found TODAY are no longer thrown away.
           await api('update_truck', { data: { schedule_url: url, scraper_preference: 'auto' } })
-          setSchedVerifiedEvents(data.events || [])   // display only — NOT persisted; the scraper picks them up
+          setSchedVerifiedEvents(data.events || [])
+          // ── T1: THE SAME MODAL SETTINGS OPENS ───────────────────────────────────────────────
+          // 🔴 This line replaces a read-only bullet list, and it is a TRIGGER, NOT A COPY. The
+          // editable "Events found on your website" modal lives in ScheduleTab and opens on
+          // pendingVerifyEvents; nothing about it was lifted, duplicated or re-implemented here.
+          // LIVE EVIDENCE FOR WHY: truck `village-spice` finished this route on 4 Aug with
+          // schedule_url set, scraper_preference 'auto', scraper_rule 'scroll_next' — and ZERO
+          // truck_events rows. It enrolled and imported nothing.
+          // The second argument is the wizard's completion callback: ScheduleTab's save has no idea
+          // `importStep` exists, so without it the modal would close and the wizard would sit on the
+          // schedule step with no forward move. Settings passes no second argument at all.
+          onVerifySuccess(data.events || [], () => goToSettingsReview())
         } catch (e: any) {
           setSchedVerifyError(e?.message || "We read your schedule, but couldn't save it just now — try again.")
         }
         return
       }
-      const reason: string = data.reason || (res.status >= 500 ? 'launch_failed' : 'unreachable')
-      const VERIFY_MESSAGES: Record<string, string> = {
-        launch_failed: "Verification is temporarily unavailable. Please try again in a moment.",
-        blocked: "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
-        unreachable: "Couldn't reach this website. Check the URL and try again.",
-        no_content: "We couldn't load this page. Check the URL is correct and publicly accessible.",
-        no_events: "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
-      }
+      // N2: a 400 means the SERVER rejected the address without fetching anything, so "couldn't reach"
+      // would be false. It maps to the malformed message like any other unparseable input.
+      const reason: string = data.reason
+        || (res.status >= 500 ? 'launch_failed' : res.status === 400 ? 'malformed' : 'unreachable')
       setSchedVerifyError(VERIFY_MESSAGES[reason] || VERIFY_MESSAGES.unreachable)
     } catch {
-      setSchedVerifyError("Couldn't reach this website. Check the URL and try again.")
+      // The verify request itself failed — our API or the operator's connection, not their address.
+      setSchedVerifyError(VERIFY_MESSAGES.unreachable)
     } finally {
       setSchedVerifying(false)
     }
@@ -3959,7 +4101,15 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                 </div>
               </div>
               {canEditAllergens
-                ? <Btn label="Set up / review allergens" colour="orange" size="sm" icon="🛡️" disabled={noMenu} onClick={() => { setWizardInitialMode(0); onOpenAllergenWizard() }} />
+                ? <Btn label="Set up / review allergens" colour="orange" size="sm" icon="🛡️" disabled={noMenu} onClick={() => {
+                    // T3: land on the per-dish TABLE when a display mode is already chosen — mode 1 is
+                    // the confirmation table, mode 0 the card-vs-per-dish chooser. Re-asking a question
+                    // the operator has answered is what made this feel like starting over. 'card' and
+                    // null still land on the chooser, correctly: a card-mode truck has no per-dish table
+                    // to review, and a null-mode truck genuinely has not chosen yet.
+                    setWizardInitialMode(mode === 'per_dish' || mode === 'both' ? 1 : 0)
+                    onOpenAllergenWizard()
+                  }} />
                 : <span className="text-[11px] text-slate-400 self-center">View only — only the owner can edit allergens</span>}
             </div>
             {/* Saved card preview (view always; replace is owner/admin via the wizard). */}
@@ -4509,7 +4659,16 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
           The count is computed with the SAME expression the review step's header uses, so the number
           promised here cannot disagree with the number they then see (nothing is skipped yet, so both
           resolve to the named-item count). */}
-      {importStep === 'offer' && importResult && (
+      {/* 🔴 T4: `!showSetupIntro` — THE WELCOME AND THIS STEP MUST NOT BOTH MOUNT.
+          Slice H rendered the welcome as an overlay ABOVE this step (z-[55] over z-50), deliberately,
+          so that "Let's go" only had to stop covering a screen slice C had already chosen. That was a
+          stacking answer to a sequencing question, and the result was two overlays alive at once: the
+          welcome in front, the wizard visibly behind it. Not fixed by raising a z-index — BOTH BEING
+          MOUNTED IS THE BUG. Gating the step on the flag makes them strictly sequential: the welcome
+          alone, then "Let's go" clears showSetupIntro, and only then does this render.
+          The step STATE is still set by the bootstrap, so slice C's offer-vs-upload decision is
+          untouched — it is simply not painted until the welcome is done with. */}
+      {importStep === 'offer' && importResult && !showSetupIntro && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             {/* H4: the stepper, gated on inSetup — see the upload step for why. The offer step has no
@@ -4541,7 +4700,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
       )}
 
       {/* AI Import — Upload modal */}
-      {importStep === 'upload' && (
+      {/* T4: same gate as the offer step above — see its note. `showSetupIntro` is only ever true
+          during a setup arrival, so for every existing operator this reads `!false` and the upload
+          step renders exactly as it always has. */}
+      {importStep === 'upload' && !showSetupIntro && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
             {/* ── H4: THE STEPPER, GATED ON inSetup ──────────────────────────────────────────────────
@@ -4691,17 +4853,99 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                               renaming "Sides" here would create a second category and leave the original,
                               with its already-live items, behind. Renaming those belongs in the menu
                               editor, which can actually update the row. New categories rename freely. */}
+                          {/* M3: was `text-slate-300 … text-xs` — a grey pencil at 12px that read as
+                              decoration. Now brand-orange at 16px with a hover background, so it reads
+                              as a control. Same handler, same behaviour; visibility only. */}
                           {!editingThis && (
                             isExisting ? null : (
                               <button type="button" aria-label={`Rename ${cat}`} title="Rename category"
                                 onClick={() => { setCatEdit({ from: cat, value: cat }); setCatEditError(null) }}
-                                className="text-slate-300 hover:text-orange-600 text-xs flex-shrink-0">✎</button>
+                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded px-1.5 py-0.5 text-base leading-none flex-shrink-0">✎</button>
+                            )
+                          )}
+                          {/* ── M4: DELETE ──────────────────────────────────────────────────────────
+                              🔴 HIDDEN ON THE LAST REMAINING CATEGORY, rather than allowed-and-handled.
+                              commitMenu drops any item whose category will not resolve — by a bare
+                              `continue` that never reaches `failed[]` — so deleting the only category
+                              would discard the entire menu with no error anywhere. There is no target
+                              to move the items to, so there is no safe version of the action; not
+                              offering it is the honest answer. Title says why.
+                              ⚠️ ALSO HIDDEN for an already-committed category: this list is the import
+                              PAYLOAD, so removing an "existing" name only stops this import touching
+                              it — the committed category and its live items would remain. A control
+                              labelled Delete that does not delete is worse than no control. Same
+                              reasoning as the rename block above. */}
+                          {!editingThis && !isExisting && (
+                            importResult.categories.length > 1 ? (
+                              <button type="button" aria-label={`Delete ${cat}`} title="Delete category"
+                                onClick={() => setCatDeleting({ name: cat, moveTo: '' })}
+                                className="text-slate-400 hover:text-red-600 hover:bg-red-50 rounded px-1.5 py-0.5 text-base leading-none flex-shrink-0">✕</button>
+                            ) : (
+                              <span title="Your menu needs at least one category" aria-hidden
+                                className="text-slate-200 px-1.5 py-0.5 text-base leading-none flex-shrink-0 cursor-not-allowed">✕</span>
                             )
                           )}
                           <span className="text-xs text-slate-400">{catItems.filter(i => !i._skip).length} of {catItems.length}</span>
                           {isExisting && <span className="text-xs text-teal-600 bg-teal-50 px-2 py-0.5 rounded-full">existing</span>}
                         </div>
                         {editingThis && catEditError && <p className="text-[11px] text-red-600 -mt-1 mb-2">{catEditError}</p>}
+                        {/* M4: the reassignment panel — the ONLY place a category dropdown appears now.
+                            An EMPTY category never gets here: its delete button below runs immediately. */}
+                        {catDeleting?.name === cat && (
+                          <div className="mb-3 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-3">
+                            {catItems.length === 0 ? (
+                              <>
+                                <p className="text-sm font-bold text-red-900">Delete &ldquo;{cat}&rdquo;?</p>
+                                <p className="text-xs text-red-800 mt-0.5">It has no items, so nothing is lost.</p>
+                                <div className="flex gap-2 mt-3">
+                                  <button type="button" onClick={() => { deleteImportCategory(cat, null); setCatDeleting(null) }}
+                                    className="text-xs font-black bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg">Delete</button>
+                                  <button type="button" onClick={() => setCatDeleting(null)}
+                                    className="text-xs font-bold text-slate-600 px-3 py-1.5 rounded-lg hover:bg-white">Cancel</button>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <p className="text-sm font-bold text-red-900">
+                                  Where should {catItems.length} item{catItems.length === 1 ? '' : 's'} go?
+                                </p>
+                                <p className="text-xs text-red-800 mt-0.5">
+                                  Deleting &ldquo;{cat}&rdquo; needs somewhere to move its dishes — items with no category
+                                  are not imported.
+                                </p>
+                                <div className="flex flex-wrap items-center gap-2 mt-3">
+                                  <select value={catDeleting.moveTo}
+                                    aria-label={`Move items from ${cat} to`}
+                                    onChange={e => setCatDeleting({ name: cat, moveTo: e.target.value })}
+                                    className="text-sm bg-white border border-red-200 rounded-lg px-2 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-orange-400">
+                                    <option value="">Choose a category…</option>
+                                    {importResult.categories.filter(c => c !== cat).map(c => (
+                                      <option key={c} value={c}>{c}</option>
+                                    ))}
+                                  </select>
+                                  {/* Disabled until a target is chosen — the guard that makes the
+                                      "items with no category are dropped" failure unreachable. */}
+                                  <button type="button" disabled={!catDeleting.moveTo}
+                                    onClick={() => {
+                                      // Two functional updaters in ONE handler: React applies them in
+                                      // order, so the items are moved before the name is removed and
+                                      // no render ever sees an item pointing at a missing category.
+                                      // Each function does exactly one thing — the move is the M2
+                                      // capability being genuinely reused, not re-implemented here.
+                                      reassignImportItem(cat, catDeleting.moveTo)
+                                      deleteImportCategory(cat, null)
+                                      setCatDeleting(null)
+                                    }}
+                                    className="text-xs font-black bg-red-600 hover:bg-red-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg">
+                                    Move &amp; delete
+                                  </button>
+                                  <button type="button" onClick={() => setCatDeleting(null)}
+                                    className="text-xs font-bold text-slate-600 px-3 py-1.5 rounded-lg hover:bg-white">Cancel</button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
                         <div className="flex flex-col divide-y divide-slate-100">
                           {catItems.map(item => {
                             const globalIdx = importResult.items.indexOf(item)
@@ -4718,23 +4962,20 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                                   <div className="flex items-center gap-1">
                                     <input value={item.name} placeholder="Item name" onChange={e => patchImportItem(globalIdx, it => ({ ...it, name: e.target.value }))}
                                       className={`w-full text-sm font-semibold text-slate-900 bg-transparent border-b focus:border-orange-400 focus:outline-none py-0.5 ${incomplete ? 'border-amber-400' : 'border-slate-200 hover:border-slate-400'}`} />
-                                    <span aria-hidden className="text-slate-300 text-xs flex-shrink-0">✎</span>
+                                    {/* M3: was `text-slate-300 text-xs`. Same element, same job — it is
+                                        a hint attached to the always-editable name input beside it, not
+                                        a button — but at orange-600/16px it is actually noticeable, and
+                                        it now matches the category pencil so the two read as one idea. */}
+                                    <span aria-hidden className="text-orange-600 text-base leading-none flex-shrink-0">✎</span>
                                   </div>
                                   {incomplete && <p className="text-[11px] text-amber-600 mt-0.5">Enter a name to add this item — empty rows aren&apos;t imported.</p>}
                                   {item.description && <p className="text-xs text-slate-400 mt-0.5 truncate">{item.description}</p>}
-                                  {/* I1: REASSIGN. Writes `category` only — the string the commit resolves
-                                      against categoryIdMap, and every option here comes from that same
-                                      `categories` array, so a reassignment can never point at a name that
-                                      does not exist. Hidden when there is only one category, so a
-                                      single-category extraction renders exactly as it did before. */}
-                                  {importResult.categories.length > 1 && (
-                                    <select value={item.category ?? ''}
-                                      aria-label={`Category for ${String(item.name || '').trim() || 'this item'}`}
-                                      onChange={e => patchImportItem(globalIdx, it => ({ ...it, category: e.target.value }))}
-                                      className="mt-1 text-[11px] text-slate-500 bg-white border border-slate-200 rounded px-1.5 py-0.5 max-w-full focus:outline-none focus:ring-1 focus:ring-orange-400">
-                                      {importResult.categories.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
-                                  )}
+                                  {/* ⚠️ M2: THE PER-ROW CATEGORY DROPDOWN WAS REMOVED FROM HERE.
+                                      Slice I put a `<select>` on every row; on a 37-item menu that is 37
+                                      dropdowns competing with the names and prices the operator is
+                                      actually reviewing. The CAPABILITY is intact — see
+                                      reassignImportItem — and is now surfaced only at the one moment it
+                                      is needed: deleting a category that still holds items (M4). */}
                                   {/* Page 1 is a uniform FLAT list of individual dishes — no options/grouping
                                       indicator (AI variant groups are un-grouped into separate lines here;
                                       grouping is purely a page-2 decision). */}
@@ -5138,6 +5379,12 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   className="text-slate-400 hover:text-slate-600 text-2xl leading-none -mt-1 flex-shrink-0 disabled:opacity-40">×</button>
               </div>
               <p className="text-slate-500 text-sm mt-0.5">If your schedule lives on your website we can keep it up to date automatically — or add your dates yourself.</p>
+              {/* T2: the reassurance sits on the step where the worry arises — an operator adding dates
+                  reasonably assumes that is what starts a clock. ⚠️ It describes a mechanism that is
+                  NOT built; the constant's own comment explains why it ships anyway. */}
+              <p className="text-xs text-slate-500 mt-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                {TRIAL_NOT_STARTED_BY_EVENTS}
+              </p>
               {renderWizardStepper('schedule')}
             </div>
 
@@ -5186,20 +5433,20 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                             </div>
                           )}
                           {!schedVerifying && schedVerifyError && <p className="text-xs text-red-500">{schedVerifyError}</p>}
+                          {/* ── T1(f): REDUCED TO THE ENROLMENT CONFIRMATION ────────────────────────
+                              This panel used to carry the whole result: a count, a five-date preview,
+                              and "we'll send new dates for your approval". All three were written for a
+                              route that imported NOTHING. Now the modal opens over this with the dates
+                              themselves, editable — so the preview duplicates it, and "we'll send them
+                              for your approval later" actively contradicts the import happening in
+                              front of them. What is left is the one thing the modal does NOT say: the
+                              page is now watched from here on. */}
                           {schedVerifiedEvents && (
                             <div className="rounded-xl border border-green-200 bg-green-50 p-3">
                               <p className="text-sm font-bold text-green-800">✓ We can read your schedule</p>
                               <p className="text-xs text-green-700 mt-0.5">
-                                Found {schedVerifiedEvents.length} upcoming date{schedVerifiedEvents.length !== 1 ? 's' : ''}. We&apos;ll check your page regularly and send new dates for your approval — nothing goes live until you confirm it.
+                                We&apos;ll keep checking this page and send any new dates for your approval.
                               </p>
-                              {schedVerifiedEvents.length > 0 && (
-                                <ul className="mt-2 flex flex-col gap-1">
-                                  {schedVerifiedEvents.slice(0, 5).map((ev: any, i: number) => (
-                                    <li key={i} className="text-xs text-green-800">• {ev.event_date || 'Date TBC'}{ev.venue_name ? ` — ${ev.venue_name}` : ''}</li>
-                                  ))}
-                                  {schedVerifiedEvents.length > 5 && <li className="text-xs text-green-700">…and {schedVerifiedEvents.length - 5} more</li>}
-                                </ul>
-                              )}
                               <div className="mt-3"><Btn label="Continue →" onClick={skipSchedule} loading={finishingSetup} /></div>
                             </div>
                           )}
@@ -5333,7 +5580,10 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                       >
                         {item.secondary.options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
-                      <span className="text-xs text-slate-600">before their pickup time</span>
+                      {/* Q4: the tail comes from the row's own data — it was hardcoded "before their
+                          pickup time", which is only true of the cancellation row and would have been
+                          nonsense beneath the buzzer count. */}
+                      {item.secondary.suffix && <span className="text-xs text-slate-600">{item.secondary.suffix}</span>}
                     </div>
                   )}
                   <p className="text-[11px] text-slate-400 mt-2">{item.settingsAnchor}</p>
@@ -5388,10 +5638,23 @@ function MenuTab({ truck, categories, items, subcategories, token, modifierGroup
                   cannot contradict the figure reported on the way out.
                   🔴 SETUP ONLY. This screen is shared with every existing operator's import, so the old
                   copy is kept verbatim for them; only a setup arrival sees the new line. */}
+              {/* Q8: the heading is now the CELEBRATION — this is the end of the whole wizard, not a
+                  file-import receipt. The item/category count survives underneath as the evidence
+                  (H5's shared `n`, the same expression the review header uses), so nothing is lost.
+                  Q9: the Manage-vs-Dashboard line, the same constant the walkthrough opens with —
+                  they are about to be offered a tour of one of those two places and should know
+                  which. The three walkthrough buttons below are UNTOUCHED. */}
               {inSetup ? (
-                <p className="font-black text-slate-900 mb-1">
-                  Menu&apos;s in — {n} item{n === 1 ? '' : 's'} across {m} categor{m === 1 ? 'y' : 'ies'}.
-                </p>
+                <>
+                  <p className="text-5xl mb-3">🎉</p>
+                  <p className="font-black text-slate-900 text-lg mb-1">You&apos;re all set!</p>
+                  <p className="text-slate-500 text-sm">
+                    {n} item{n === 1 ? '' : 's'} across {m} categor{m === 1 ? 'y' : 'ies'}.
+                  </p>
+                  <p className="text-xs text-slate-500 mt-3 text-left bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                    {WALKTHROUGH_INTRO}
+                  </p>
+                </>
               ) : (
                 <>
                   <p className="text-5xl mb-4">✅</p>
@@ -6011,11 +6274,17 @@ function applyStartTimeChange(newStart: string, currentEnd: string): { start_tim
   return { start_time: newStart, end_time: currentEnd }
 }
 
-function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount }: {
+function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload, showToast, onSwitchTab, pendingVerifyEvents, onClearPendingVerify, onPendingCount, onEventsSaved }: {
   isActive: boolean; truck: Truck; token: string; bundles: Bundle[]; categories: Category[]
   api: (a: string, e?: any) => Promise<any>; reload: () => void; showToast: ShowToast
   onSwitchTab: (tab: Tab) => void
   pendingVerifyEvents?: any[] | null
+  /** T1: fired after a SUCCESSFUL extracted-events save, and only when a caller supplied one.
+   *  🔴 OPTIONAL, AND SETTINGS DOES NOT PASS IT. Settings' handleVerifyUrl calls onVerifySuccess with a
+   *  single argument, so the page stores null and this arrives null — `onEventsSaved?.()` is then a
+   *  no-op and Settings' save path runs exactly as it always has. Only the setup wizard supplies one,
+   *  to advance itself to the settings-review step. */
+  onEventsSaved?: (() => void) | null
   onClearPendingVerify?: () => void
   onPendingCount?: (n: number) => void
 }) {
@@ -6307,6 +6576,10 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
       closeAddModal()
       setShowImportModal(false)
       showToast(`${count} event${count !== 1 ? 's' : ''} saved`)
+      // T1: the ONLY line added to this function. Undefined/null for Settings (see the prop's note), so
+      // for Gusto and RTF this is `undefined?.()` — evaluated, no-op, nothing else about the save
+      // touched. Placed AFTER the toast so the wizard advances only once the events are genuinely in.
+      onEventsSaved?.()
     } catch (e: any) { showToast(e.message || 'Failed to save events', 'error') }
     finally { setSavingExtracted(false) }
   }
@@ -7698,7 +7971,32 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [generatingQR, setGeneratingQR] = useState(false)
   const [copiedOrderLink, setCopiedOrderLink] = useState(false)
-  const [qrCodeStyle, setQrCodeStyle] = useState<'standard' | 'branded'>(truck.qr_code_style ?? 'standard')
+  // ── T5: BRANDED BY DEFAULT WHEN THERE IS A LOGO — DURING SETUP ONLY ──────────────────────────────
+  // 🔴 THIS IS A RENDER-TIME DEFAULT, NOT A STORED ONE, AND IT CANNOT BE ANYTHING ELSE.
+  // `trucks.qr_code_style` is NOT NULL DEFAULT 'standard' (20260…_qr_code_style.sql), so it is never
+  // null — there is no "unset" value to distinguish an operator who deliberately chose Standard from
+  // one who has never touched the control. Both read 'standard'.
+  //
+  // ⚠️ WHICH IS WHY IT IS SCOPED TO SETUP. Applied to every truck, this would silently re-select
+  // Branded for an operator who had deliberately picked Standard, every time they opened Settings —
+  // overriding a real choice because the schema cannot record that it was one. `setup_step` present and
+  // not 'done' means the truck is still being built and has made no such choice yet. Gusto and RTF have
+  // setup_step NULL, so this branch is unreachable for them and their stored value always wins.
+  //
+  // Also gated on the FEATURE: branded is Pro/Max (`branded_qr_code`), and defaulting a Starter truck
+  // to an option its own UI renders disabled would be a broken-looking screen. A setup operator is on
+  // plan 'trial' with a null expiry (was 'demo' before 4 August), which canAccess reads as not-started
+  // and grants the trial feature set — which includes branded_qr_code. The intended case still passes.
+  //
+  // No logo ⇒ standard, unchanged. The value is not written until the operator clicks — this only
+  // changes which radio is pre-selected.
+  const [qrCodeStyle, setQrCodeStyle] = useState<'standard' | 'branded'>(() => {
+    const stored = truck.qr_code_style ?? 'standard'
+    const stillInSetup = truck.setup_step != null && truck.setup_step !== 'done'
+    const canBrand = canAccess(truck.plan, 'branded_qr_code', truck.feature_overrides ?? {}, truck.trial_expires_at ?? null)
+    if (stored === 'standard' && stillInSetup && canBrand && truck.logo_storage_path) return 'branded'
+    return stored
+  })
   const [settingsExclusionList, setSettingsExclusionList] = useState<{ id: string; term: string }[]>([])
   const [verifying, setVerifying] = useState(false)
   const [verifyError, setVerifyError] = useState<string | null>(null)
@@ -7759,22 +8057,22 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
     api('get_exclusion_terms').then(r => setSettingsExclusionList(r.terms || [])).catch(() => {})
   }, [])
 
-  const BLOCKED_DOMAINS = ['facebook.com', 'fb.com', 'fb.me', 'instagram.com', 'instagr.am']
-  const isBlockedDomain = (url: string): boolean => {
-    try {
-      const hostname = new URL(url).hostname.toLowerCase()
-      return BLOCKED_DOMAINS.some(d => hostname === d || hostname.endsWith(`.${d}`))
-    } catch { return false }
-  }
+  // V2: the second of the two identical copies — now the one shared guard, failing closed.
+  const isBlockedDomain = isScraperBlockedDomain
   const BLOCKED_DOMAIN_MSG = "Please use your website URL — Facebook and Instagram pages can't be scraped automatically."
 
   const handleVerifyUrl = async () => {
-    const url = (form.schedule_url ?? '').trim()
-    if (!url) return
+    // N1: identical treatment to the setup wizard's Route A — one helper, so the two surfaces cannot
+    // disagree about what counts as a usable address. See the note on schedVerify for why this also
+    // repairs the blocked-domain guard, which failed OPEN on an unparseable string.
+    const url = normaliseUrl(form.schedule_url)
+    if (!url) { setVerifyError(URL_MALFORMED_MSG); return }
     if (isBlockedDomain(url)) {
       setVerifyError(BLOCKED_DOMAIN_MSG)
       return
     }
+    // Show the operator the address that was actually verified, and persist that one on success.
+    setForm(p => ({ ...p, schedule_url: url }))
     setVerifying(true)
     setVerifyError(null)
     try {
@@ -7792,18 +8090,14 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
       // Accurate, distinct messaging per outcome (was: blocks + launch-fail + unreachable all said
       // "couldn't reach", wrongly blaming a valid URL). Unknown / unexpected server error (>=500)
       // → treat as OUR problem, not the URL.
-      const reason: string = data.reason || (res.status >= 500 ? 'launch_failed' : 'unreachable')
-      const VERIFY_MESSAGES: Record<string, string> = {
-        launch_failed: "Verification is temporarily unavailable. Please try again in a moment.",
-        blocked: "We couldn't access this site — it may be blocking automated checks. Try the page that lists your schedule, or add events manually.",
-        unreachable: "Couldn't reach this website. Check the URL and try again.",
-        no_content: "We couldn't load this page. Check the URL is correct and publicly accessible.",
-        no_events: "We couldn't find any upcoming events on this page. Make sure the URL points directly to where your schedule is listed.",
-      }
+      // N2: a 400 is the server refusing to fetch at all, so it is a malformed address, not a network
+      // failure. The message map is now the one shared definition at module scope.
+      const reason: string = data.reason
+        || (res.status >= 500 ? 'launch_failed' : res.status === 400 ? 'malformed' : 'unreachable')
       setVerifyError(VERIFY_MESSAGES[reason] || VERIFY_MESSAGES.unreachable)
     } catch {
       // The verify request itself failed (network/our API) — genuinely couldn't complete the check.
-      setVerifyError("Couldn't reach this website. Check the URL and try again.")
+      setVerifyError(VERIFY_MESSAGES.unreachable)
     } finally {
       setVerifying(false)
     }
@@ -8161,9 +8455,9 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
         {/* Cancellation policy */}
         <div className="flex items-center justify-between pt-3 border-t border-slate-100">
           <div>
-            <p className="text-sm text-slate-700">Allow customers to cancel orders</p>
+            <p className="text-sm text-slate-700">{SETTING_COPY.allowCancellation.label}</p>
             <p className="text-sm text-slate-700 mt-0.5">
-              Customers can cancel up to{' '}
+              {SETTING_COPY.allowCancellation.cancelPrefix}{' '}
               <select
                 value={cancellationCutoff}
                 onChange={async e => {
@@ -8178,7 +8472,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 <option value="60">60 minutes</option>
                 <option value="120">2 hours</option>
               </select>
-              {' '}before their pickup time
+              {' '}{SETTING_COPY.allowCancellation.cancelSuffix}
             </p>
           </div>
           <Toggle
@@ -8199,7 +8493,22 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             type="text"
             value={form.website || ''}
             onChange={e => setForm(p => ({...p, website: e.target.value}))}
-            onBlur={() => saveFormField()}
+            onBlur={() => {
+              // N1: normalised on save for the same reason as the schedule URL, and because this value
+              // is RENDERED AS AN href on two customer-facing pages. Both of those already carry their
+              // own `startsWith('http') ? … : 'https://' + …` patch — the same fix, written twice, at
+              // the display end. Storing a real URL is what makes a third copy unnecessary.
+              // ⚠️ An unrecognisable string is LEFT AS TYPED and still saved: this field is free text
+              // an operator may fill however they like, nothing fetches it, and refusing to save it
+              // would be a new obstacle where there was none. Only a plausible address is corrected.
+              const val = normaliseUrl(form.website)
+              if (val && val !== form.website) {
+                setForm(p => ({ ...p, website: val }))
+                saveFormField({ website: val })
+              } else {
+                saveFormField()
+              }
+            }}
             placeholder="https://yourtruck.co.uk"
             className="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           />
@@ -8341,12 +8650,19 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 value={form.schedule_url ?? ''}
                 onChange={e => { setForm(p => ({ ...p, schedule_url: e.target.value })); setVerifyError(null) }}
                 onBlur={e => {
-                  const val = e.target.value
-                  if (val && isBlockedDomain(val)) {
+                  // N1: the blur-save normalises too, not just the Verify button. Otherwise an operator
+                  // who typed `www.…` and tabbed away would have the scheme-less string SAVED and later
+                  // handed to the scraper, which is the same failure one step further downstream.
+                  const raw = e.target.value.trim()
+                  if (!raw) { setVerifyError(null); saveSetting('schedule_url', null); return }
+                  const val = normaliseUrl(raw)
+                  if (!val) { setVerifyError(URL_MALFORMED_MSG); return }
+                  setForm(p => ({ ...p, schedule_url: val }))
+                  if (isBlockedDomain(val)) {
                     setVerifyError(BLOCKED_DOMAIN_MSG)
                   } else {
                     setVerifyError(null)
-                    saveSetting('schedule_url', val || null)
+                    saveSetting('schedule_url', val)
                   }
                 }}
                 placeholder="https://yourtruck.co.uk/events"
@@ -8541,8 +8857,8 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
           </div>
           <div className="flex items-center justify-between gap-3 pb-3">
             <div>
-              <p className="text-sm font-semibold text-slate-800">Auto-accept orders</p>
-              <p className="text-xs text-slate-500 mt-0.5">Incoming web orders are confirmed immediately</p>
+              <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.autoAccept.label}</p>
+              <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.autoAccept.help}</p>
             </div>
             <Toggle on={!!form.auto_accept} onToggle={() => { const next = !form.auto_accept; setForm(p => ({...p, auto_accept: next})); saveFormField({ auto_accept: next }) }} />
           </div>
@@ -8573,17 +8889,29 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             are all DELIBERATELY RETAINED — the column is still the seed source. Removing the UI does not
             remove the seed. The full retirement precondition lives in lib/sound-prefs.ts's header. */}
 
-        {/* Truck-facing order-notification email toggle. Gates ONLY the email the truck receives on a new
+        {/* ── NOTIFICATIONS — same sub-panel treatment as its three siblings in this card. It was the one
+            LOOSE row left in Order settings, which made it read as an afterthought hanging off the
+            auto-accept group rather than as its own setting. Presentation only: same key, same
+            saveSetting call, same `!== false` default.
+            Truck-facing order-notification email toggle. Gates ONLY the email the truck receives on a new
             order (formatNewOrderEmail → truck.contact_email) — NOT the customer's confirmation/ready emails. */}
-        <div className="flex items-center justify-between py-3 border-t border-slate-100">
-          <div>
-            <p className="text-sm font-semibold text-slate-800">Email order notifications</p>
-            <p className="text-xs text-slate-500 mt-0.5">When on, an email is sent to {truck.contact_email || "the truck's contact email"} for every new order. Customer order emails are sent either way.</p>
+        <div className="pt-3 border-t border-slate-100">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 divide-y divide-slate-200/70">
+            <div className="pb-3">
+              <p className={SUBCARD_HEADING}>Notifications</p>
+              <p className="text-xs text-slate-500 mt-0.5">How you hear about new orders.</p>
+            </div>
+            <div className="flex items-center justify-between gap-3 py-3">
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Email order notifications</p>
+                <p className="text-xs text-slate-500 mt-0.5">When on, an email is sent to {truck.contact_email || "the truck's contact email"} for every new order. Customer order emails are sent either way.</p>
+              </div>
+              <Toggle
+                on={(form as any).truck_order_email_enabled !== false}
+                onToggle={() => { const next = (form as any).truck_order_email_enabled !== false ? false : true; setForm(p => ({...p, truck_order_email_enabled: next} as any)); saveSetting('truck_order_email_enabled', next) }}
+              />
+            </div>
           </div>
-          <Toggle
-            on={(form as any).truck_order_email_enabled !== false}
-            onToggle={() => { const next = (form as any).truck_order_email_enabled !== false ? false : true; setForm(p => ({...p, truck_order_email_enabled: next} as any)); saveSetting('truck_order_email_enabled', next) }}
-          />
         </div>
 
         {/* ── TAKING PAYMENT (V9.5) — one neutral sub-panel, same treatment as Sounds and the
@@ -8950,9 +9278,14 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                 </div>
               )}
             </div>
-            {/* Van-specific display settings */}
-            <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-3">
-              <p className="text-sm font-semibold text-slate-800 mt-3 mb-2">Display settings</p>
+            {/* ── VAN-SPECIFIC DISPLAY SETTINGS — its own sub-panel, a SIBLING of Offline order
+                protection and Kitchen capacity rather than a rule-separated run of rows. Display
+                settings and Kitchen capacity were previously ONE div under a single heading, so the
+                capacity grid read as part of "Display settings"; they are separate concerns (what the
+                order screen shows vs. how fast the kitchen can cook) and now box separately.
+                Presentation only — same rows, same updateVanSetting calls, same defaults. */}
+            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col gap-3">
+              <p className={SUBCARD_HEADING}>Display settings</p>
 
               {/* Stage 1 (order-ready redesign): the "Show cooking step" toggle was REMOVED here — the
                   cooking step is now ALWAYS on (the KDS cook-view gate + OrderCard cook-mode were
@@ -8964,12 +9297,8 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   the dashboard's Menu & Stock tab. Stage 4 of the order-ready redesign. */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Order-ready step</p>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    Show a &ldquo;Mark ready&rdquo; button on the orders screen and notify customers when their order
-                    is ready. Useful for collection at pubs and festivals. Applies to all events — you can still
-                    turn it on or off for a single event on its dashboard.
-                  </p>
+                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.orderReady.label}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{SETTING_COPY.orderReady.help}</p>
                 </div>
                 <button
                   onClick={() => updateVanSetting(van.id, 'order_ready_enabled', !van.order_ready_enabled)}
@@ -8997,9 +9326,9 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   treatment as "Do you take cash?" under the paid step. */}
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-slate-800">Do you hand out buzzers for collection?</p>
+                  <p className="text-sm font-semibold text-slate-800">{SETTING_COPY.buzzers.label}</p>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Record which buzzer you gave each customer, so you know who to look for when their food is ready.
+                    {SETTING_COPY.buzzers.help}
                   </p>
                 </div>
                 <button
@@ -9018,7 +9347,7 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   1-20 select showing "10" would read as a stored value that is not stored. */}
               {van.buzzer_count != null && (
                 <div className="flex items-center justify-between gap-3 pl-4">
-                  <p className="text-sm text-slate-700">How many buzzers do you have?</p>
+                  <p className="text-sm text-slate-700">{SETTING_COPY.buzzers.countLabel}</p>
                   <select
                     value={van.buzzer_count}
                     aria-label="Number of buzzers"
@@ -9034,87 +9363,86 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
                   </select>
                 </div>
               )}
+            </div>
 
-              {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
-                  CATEGORY · ITEMS · PREP · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
-                  aligned under it via the SAME column template. Writes unchanged: updateCatField
-                  (prep_secs/batch_size via upsert_category), toggleCatCapacity (counts_toward_capacity),
-                  updateVanSetting (kitchen_capacity / capacity_window_mins). Cooking cats (prep>0)
-                  lock-checked; instant cats toggle once a capacity is set. Window stays plain minutes
-                  (engine reads capacity_window_mins as minutes). PrepTimeSelect off-grid-preserving. */}
-              <div className="mt-3">
-                <p className="text-sm font-semibold text-slate-800 mb-3">Kitchen capacity</p>
-                {categories.length > 0 && (
-                  <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
-                    <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
-                    <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
-                    {categories.map(cat => {
-                      const hasCap = van.kitchen_capacity != null
-                      const locked = cat.prep_secs > 0
-                      const capDisabled = locked || !hasCap
-                      // Shared <KitchenCapacityCategoryRow> (Fragment-of-cells) — the grid CONTAINER +
-                      // header + total-capacity row stay inline (unchanged), so template-driven alignment
-                      // is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).
-                      return (
-                        <KitchenCapacityCategoryRow
-                          key={cat.id}
-                          categoryName={cat.name}
-                          batchSize={cat.batch_size}
-                          prepSecs={cat.prep_secs}
-                          onBatchChange={val => updateCatField(cat, { batch_size: val ?? 0 })}
-                          onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}
-                          showCountsColumn
-                          countsToward={cat.counts_toward_capacity}
-                          locked={locked}
-                          capDisabled={capDisabled}
-                          countsTitle={locked
-                            ? 'Cooked — always counts (its prep & batch set the pace)'
-                            : !hasCap ? 'Set a capacity to choose which categories count'
-                            : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
-                          onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
-                        />
-                      )
-                    })}
-                  </div>
-                )}
-                {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
-                    column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
-                <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
-                  <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
-                  <select
-                    value={van.kitchen_capacity ?? ''}
-                    aria-label="Total capacity (items)"
-                    onChange={e => updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
-                    className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
-                    <option value="">∞</option>
-                    {Array.from({length:20},(_,i)=>i+1).map(n=>(
-                      <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={van.capacity_window_mins ?? 5}
-                    aria-label="Capacity window (minutes)"
-                    disabled={van.kitchen_capacity == null}
-                    onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
-                    className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
-                    {Array.from({length:20},(_,i)=>i+1).concat(((van.capacity_window_mins??5)>20)?[van.capacity_window_mins as number]:[]).map(n=>(
-                      <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
-                    ))}
-                  </select>
-                  <span/>
+            {/* Kitchen capacity — ONE aligned grid (V7.8 §42), matching the dashboard layout:
+                CATEGORY · ITEMS · PREP · COUNTS TO TOTAL CAPACITY, with the Total-capacity ceiling row
+                aligned under it via the SAME column template. Writes unchanged: updateCatField
+                (prep_secs/batch_size via upsert_category), toggleCatCapacity (counts_toward_capacity),
+                updateVanSetting (kitchen_capacity / capacity_window_mins). Cooking cats (prep>0)
+                lock-checked; instant cats toggle once a capacity is set. Window stays plain minutes
+                (engine reads capacity_window_mins as minutes). PrepTimeSelect off-grid-preserving. */}
+            <div className="mt-3 bg-slate-50 border border-slate-200 rounded-xl p-3">
+              <p className={`${SUBCARD_HEADING} mb-3`}>Kitchen capacity</p>
+              {categories.length > 0 && (
+                <div className={`${KITCHEN_CAPACITY_GRID} gap-y-2 items-center`}>
+                  <span className="min-w-0 truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">Category</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Items</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Prep</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wide text-slate-400 text-center leading-tight" title="Which categories count toward the total capacity. Cooked categories always count; tick instant ones (sides, dips, drinks) to include them.">Counts to total capacity</span>
+                  {categories.map(cat => {
+                    const hasCap = van.kitchen_capacity != null
+                    const locked = cat.prep_secs > 0
+                    const capDisabled = locked || !hasCap
+                    // Shared <KitchenCapacityCategoryRow> (Fragment-of-cells) — the grid CONTAINER +
+                    // header + total-capacity row stay inline (unchanged), so template-driven alignment
+                    // is preserved. RPC writes stay HERE (updateCatField / toggleCatCapacity).
+                    return (
+                      <KitchenCapacityCategoryRow
+                        key={cat.id}
+                        categoryName={cat.name}
+                        batchSize={cat.batch_size}
+                        prepSecs={cat.prep_secs}
+                        onBatchChange={val => updateCatField(cat, { batch_size: val ?? 0 })}
+                        onPrepChange={secs => updateCatField(cat, { prep_secs: secs })}
+                        showCountsColumn
+                        countsToward={cat.counts_toward_capacity}
+                        locked={locked}
+                        capDisabled={capDisabled}
+                        countsTitle={locked
+                          ? 'Cooked — always counts (its prep & batch set the pace)'
+                          : !hasCap ? 'Set a capacity to choose which categories count'
+                          : 'Tick to include this instant category (sides, dips, drinks) in the shared per-window limit'}
+                        onCountsChange={() => { if (!locked && hasCap) toggleCatCapacity(cat, !cat.counts_toward_capacity) }}
+                      />
+                    )
+                  })}
                 </div>
-                {van.kitchen_capacity == null && categories.length > 0 && (
-                  <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
-                )}
-                {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
-                  <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
-                )}
-                <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
-                <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
+              )}
+              {/* Total-capacity ceiling — SAME column template ⇒ aligns under the categories. ITEMS
+                  column = kitchen_capacity ceiling, PREP column = window (plain minutes). */}
+              <div className={`${KITCHEN_CAPACITY_GRID} items-center ${categories.length>0?'mt-2 pt-2.5 border-t border-slate-100':''}`}>
+                <span className="text-sm font-semibold text-slate-800 min-w-0">Total capacity</span>
+                <select
+                  value={van.kitchen_capacity ?? ''}
+                  aria-label="Total capacity (items)"
+                  onChange={e => updateVanSetting(van.id, 'kitchen_capacity', e.target.value === '' ? null : parseInt(e.target.value))}
+                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
+                  <option value="">∞</option>
+                  {Array.from({length:20},(_,i)=>i+1).map(n=>(
+                    <option key={n} value={n}>{n} item{n!==1?'s':''}</option>
+                  ))}
+                </select>
+                <select
+                  value={van.capacity_window_mins ?? 5}
+                  aria-label="Capacity window (minutes)"
+                  disabled={van.kitchen_capacity == null}
+                  onChange={e => updateVanSetting(van.id, 'capacity_window_mins', parseInt(e.target.value))}
+                  className="w-full border border-slate-200 rounded-lg px-2 py-1 text-slate-700 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-50">
+                  {Array.from({length:20},(_,i)=>i+1).concat(((van.capacity_window_mins??5)>20)?[van.capacity_window_mins as number]:[]).map(n=>(
+                    <option key={n} value={n}>every {formatPrepSecs(n*60)}</option>
+                  ))}
+                </select>
+                <span/>
               </div>
-
+              {van.kitchen_capacity == null && categories.length > 0 && (
+                <p className="text-xs text-slate-400 mt-1.5">Set a capacity to choose which categories count.</p>
+              )}
+              {kitchenCapacityNeedsPrepWarning(van.kitchen_capacity, categories)&&(
+                <div className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">{KITCHEN_CAPACITY_WARNING}</div>
+              )}
+              <p className="text-xs text-slate-400 mt-2">{KITCHEN_CAPACITY_DESC}</p>
+              <p className="text-xs text-slate-400 mt-1">{KITCHEN_CAPACITY_EXAMPLE}</p>
             </div>
 
             {renamingVanId === van.id && (
@@ -9355,10 +9683,28 @@ const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? 'hello@villagefoo
 function BillingTab({ truck }: { truck: Truck | null }) {
   if (!truck) return null
   const currentPlan = truck.plan
-  const trialActive = truck.plan === 'trial' &&
-    truck.trial_expires_at !== null &&
-    new Date(truck.trial_expires_at) > new Date()
-  const billingPlans: readonly ('trial' | 'starter' | 'pro' | 'max')[] = trialActive
+  // ── Z1: WHICH COLUMNS THE MATRIX SHOWS ──────────────────────────────────────────────────────────
+  // 🔴 `showTrialColumn` REPLACES `trialActive` HERE, and the difference is the NULL case.
+  // `trialActive` meant "a trial that is running NOW" — non-null AND future. Self-serve signup
+  // provisions plan 'trial' with a NULL expiry (the trial has not STARTED), so under the old
+  // condition the Trial column was hidden from the one operator with the most reason to look at it:
+  // the person deciding whether what they have is worth paying for.
+  //
+  // The rule is "has the trial not ENDED", which is a different question from "is it running":
+  //   NULL   → not started → SHOW   (the fix)
+  //   future → running     → SHOW   (unchanged)
+  //   past   → ended       → HIDE   (unchanged)
+  //
+  // ⚠️ `trialActive` WAS REMOVED, NOT LEFT BESIDE THIS. Its only three readers were this literal and
+  // the two spacer rows below, all of which are the same layout decision — so a second condition
+  // would have been dead code, and worse, the spacers MUST agree with the column count or every
+  // section-header row misaligns by one cell. One condition, three readers, no way for them to
+  // disagree.
+  // ⚠️ NO TYPE WIDENING NEEDED: this changes WHEN 'trial' is included, never WHICH values can appear.
+  // The union stays exactly as it was, and still cannot express 'demo' or 'tester' — deliberately.
+  const showTrialColumn = truck.plan === 'trial' &&
+    (truck.trial_expires_at === null || new Date(truck.trial_expires_at) > new Date())
+  const billingPlans: readonly ('trial' | 'starter' | 'pro' | 'max')[] = showTrialColumn
     ? (['trial', 'starter', 'pro', 'max'] as const)
     : (['starter', 'pro', 'max'] as const)
   const isCurrent = (p: 'trial' | 'starter' | 'pro' | 'max') =>
@@ -9414,7 +9760,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
       <div className="mb-2">
         <div className="flex items-center py-2 border-t-2 border-slate-100 mt-3">
           <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">Transaction fees</span>
-          {trialActive && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
+          {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
         </div>
         {TRANSACTION_ROWS.map(row => (
           <div key={row.name} className="flex items-start py-2.5 border-t border-slate-100">
@@ -9441,7 +9787,7 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <span className="flex-1 text-xs font-bold text-slate-900 uppercase tracking-wider">
               {section.title}
             </span>
-            {trialActive && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
+            {showTrialColumn && <div className="w-14 sm:w-28" />}<div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" /><div className="w-14 sm:w-28" />
           </div>
           {section.rows.map(row => (
             <div key={row.name} className="flex items-center py-2 border-t border-slate-100">
@@ -9533,11 +9879,23 @@ function BillingTab({ truck }: { truck: Truck | null }) {
             <div className="rounded-xl p-4 bg-orange-50 border border-orange-200">
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                 <div>
+                  {/* ── Y3: NOT-STARTED vs RUNNING ────────────────────────────────────────────
+                      🔴 The null fallback used to read "Your trial ends soon" — false and alarming for
+                      a self-serve operator whose trial has NOT STARTED, and the state every one of
+                      them is now provisioned into (plan 'trial', trial_expires_at null).
+                      The second line was ALSO wrong in that state, though only half: "You're on Max
+                      features" is TRUE (canAccess grants the trial set on a null expiry), but "choose
+                      a plan before your trial ends" points at an ending that has not begun.
+                      ⚠️ THE DATED BRANCH IS BYTE-IDENTICAL to what Gusto and RTF read today. */}
                   <p className="text-sm font-bold text-slate-900">
-                    Your trial ends {truck.trial_expires_at ? formatDate(truck.trial_expires_at) : 'soon'}
+                    {truck.trial_expires_at
+                      ? `Your trial ends ${formatDate(truck.trial_expires_at)}`
+                      : TRIAL_NOT_STARTED_HEADING}
                   </p>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    You&apos;re on Max features. Choose a plan before your trial ends to keep access.
+                    {truck.trial_expires_at
+                      ? "You're on Max features. Choose a plan before your trial ends to keep access."
+                      : TRIAL_NOT_STARTED_BILLING}
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 sm:flex-shrink-0">

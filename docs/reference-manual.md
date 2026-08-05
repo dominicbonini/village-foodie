@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V10
+HatchGrab Engineering Reference Manual · V11.1
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 10**
+**Version 11.1**
 
 August 2026
 
@@ -15,6 +15,42 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.1 — 5 August 2026
+
+Delta over V11 — **the plan model**, plus one operational subsystem the manual had never recorded. **No migrations, no SQL.** A point release because nothing here is a new feature: it is one gating change, four corrections to entries V11 itself wrote, and the first record of how the database is maintained.
+
+- **🔴 SELF-SERVE SIGNUP NOW PROVISIONS `trial`, AND A NULL `trial_expires_at` MEANS NOT STARTED.** `canAccess` previously returned `false` for **every** feature on a NULL expiry; it now grants the trial set and reads NULL as *the trial has not begun*. The **expired** branch is untouched and still denies everything. The DEMO provisioning profile still writes `demo` — a prospect sandbox is not a signup. §4, §13.
+- **🔴 THE EXPIRY CLIFF IS THE REMAINING HAZARD, AND IT HAS DATES.** Nothing writes the `plan` value at expiry, so an expired trial keeps the row value `trial` while `canAccess` denies every feature — **less access than Starter**, silently, on a date already in the calendar: Test Kitchen **23 August**, Real Thai Food **30 September**, Pizzeria Gusto **17 October**. Two decisions are outstanding and they are separate: what feature set an expired trial should have, and what the `plan` value should become. §4, §27.
+- **🔴 THERE ARE TWO GATING ENTRY POINTS AND ONLY ONE CHECKS EXPIRY.** `canAccess(plan, feature, overrides, trialExpiresAt)` applies the expiry rule; **`hasFeature(plan, feature)` does not** — it grants the trial set unconditionally. It has two live consumers, and one of them is the customer order page's pre-ordering gate, so **an expired trial's customers keep pre-ordering**. §4.
+- **🔴 FIX-IN-REPO IS NOT DEPLOYED — a full diagnostic session was spent on it.** Features read as Pro-locked on preview because `lib/features.ts` and `lib/provision-truck.ts` were **uncommitted**. The symptom was **broader than reported**: only the two gates that render a visible lock were noticed, while pre-ordering, reporting, printing and the KDS cook screen failed **invisibly**. §35.
+- **A condition with several readers must be ONE condition.** The Billing matrix's Trial column is decided once and read three times — the column array and two spacer rows. Splitting them would have misaligned every section header by a cell while both halves looked correct. §4, §35.
+- **BillingTab gates on the raw plan string and has NO fallback.** Four branches — `trial`, `starter`, `pro`, `max` — and nothing else; `demo` therefore rendered a completely empty tab. **It does not call `canAccess`**, which is why the plan-value change was visible there and nowhere else. §4.
+- **🔴 THE DATABASE HIT 533MB ON A 500MB TIER, AND `public` WAS 10MB OF IT.** `net._http_response` was 304MB and `cron.job_run_details` 180MB. **A size scare starts by checking SCHEMA sizes, not table data.** `net._http_response` **bloats rather than accumulates** — pg_net prunes the rows and the file never shrinks, so only `VACUUM FULL` reclaims it. New: §16, *Database maintenance and storage*.
+- **Corrections to V11's own entries.** *"Expired trials silently drop to Starter"* (§4, surviving from V6) is wrong and is now removed at the source. *"A trial row with `trial_expires_at` NULL is in the same state — every feature off"* was true when written and is now false. §13's *"provisioning writes plan `demo`"* is superseded. **A wrong entry actively misleads where a missing one merely omits.**
+- **Already recorded, verified unchanged.** The three-layer deal model (§8) and *trace the WRITE layer* (§35) were both written correctly at V11 and needed **no** edit this pass; they are re-verified against the code, not rewritten.
+
+## V11 — 4 August 2026
+
+Delta over V10 — **self-serve signup and the setup wizard**, end to end: account creation, the two operator emails, the menu/schedule/settings wizard, an end-of-wizard review screen and a dashboard walkthrough. **Zero migrations were written by this session; one column (`operators.signup_promo_code`) was handed over as SQL to run by hand.** The session's most valuable output is not the build — it is **one silent food-safety defect, three wrong findings corrected in the manual, and a confirmation that the product is not yet safe to open to the public.**
+
+- **🔴 A SINGLE HARDCODED LITERAL SILENTLY UNVERIFIED EVERY GROUPED DISH'S ALLERGENS.** `makeGroupingRow` built the merged parent dish with every field derived from its members — name, price, allergen union, dietary union — and `_allergensChecked: false`. That flag becomes `menu_items_db.allergens_verified`, so a grouped dish committed **unverified however carefully the operator confirmed its members**, and was then hidden from customers. Live evidence: 29 items committed, the 24 standalone ones verified, **exactly the 5 grouped parents not**. Now derived — `members.length > 0 && members.every(m => m._allergensChecked === true)` — where the length guard is load-bearing because `[].every()` is `true`. §35.
+
+- **🔴 SELF-SERVE SIGNUP GIVES THE PRODUCT AWAY, AND THAT IS THE LAUNCH BLOCKER.** Provisioning writes plan `demo`, which carries the full TRIAL feature set; `canAccess()` applies its expiry check only when `plan === 'trial'`, so **demo access never expires**. There is no trial nomination — no UI, no route, nothing writes `trial_expires_at`. Four more features (`auto_accept`, `meal_deals`, `upsells`, `offline_protection`) are declared in `lib/features.ts` and enforced nowhere. §13, §27.
+
+- **🔴 THREE MANUAL ENTRIES WERE WRONG AND ARE CORRECTED, NOT SUPPLEMENTED.** `PLAN_ORDER` was recorded as living in `lib/features.ts` with five values; it is in `app/admin/page.tsx:159` with six. "Five plans" has been six since `demo` shipped. And the Trial plan does **not** "expire automatically to Starter" — nothing changes the `plan` value ever, and an expired trial has `canAccess` return `false` for **every** feature, which is *less* access than Starter. **A wrong entry actively misleads where a missing one merely omits.**
+
+- **🔴 A GUARD WHOSE ERROR PATH GRANTS PERMISSION FAILS OPEN.** `isBlockedDomain` parsed the URL inside a `try` whose `catch` returned "not blocked", so a scheme-less `www.facebook.com/x` was waved through — not cleared, unreadable. Now one shared guard that fails closed. Its sibling finding: **`www.example.com` was rejected at signup with "Couldn't reach this website"** — a parse refusal with no representation, mapped to the network-failure message by a `data.reason || 'unreachable'` fallback. `lib/url-normalise.ts` now defaults to **https, never http**, and refuses rather than guesses.
+
+- **🔴 TRACE THE WRITE LAYER.** A finding that "an operator who sets a deal to Off is not hiding it from customers" was **WRONG**: the gate is `.eq('is_available', true)` on the `event_deals` seeding query in `upsert_event`, not in the customer read path. Deals have three non-overlapping layers — template, new-event default, per-event — and the operator's view and the customer's resolve through the same expression. §8.
+
+- **A snapshot is not a history.** `trucks` has no `updated_at`, so a current column value cannot tell you what provisioning wrote. This misled one diagnosis twice. §35.
+
+- **Copy that describes a default goes stale.** A review screen said `auto_accept` was "off by default" days before provisioning began writing `true`. `lib/settings-copy.ts` now holds one label and help string per setting, read by both Manage - Settings and the wizard, so neither can drift from the other or from the toggle beside it. §3, §35.
+
+- **Live-schema pass.** Twelve `trucks` columns, two `truck_vans` columns and four structural facts verified via `information_schema` — several of which have no migration file, so the repo never recorded their defaults and the code's `?? true` fallbacks had never been checked against the database. §16.
+
+- **Two operator emails** (verification at account creation, welcome on first verification), isolated in `lib/email-signup.ts` from the live order mail. **The welcome email no longer carries a dashboard token** — it links to a tokenless `/manage` index that resolves from the session; `/api/manage` authenticates on that token ALONE, so mailing it put a permanent bearer credential in an inbox. §27 records that tokens still never rotate.
 
 ## V10 — 3 August 2026
 
@@ -1520,7 +1556,7 @@ Pre-trial polish session. Confirms and hardens the multi-van pause isolation, co
 
 - **Coding tool clarified** — Claude within Cursor is the coding tool. All implementation instructions are written as Cursor prompts. Audits can be sent to Cursor directly for a summary response rather than grep + paste back.
 
-- **Tester plan** — a fifth plan value alongside starter/trial/pro/max. Full Max feature set, Pay-at-Hatch online orders, billing tab hidden, trial-conversion popup suppressed. Lifetime subscription discount tracked on trucks.lifetime_discount_pct (integer) and trucks.lifetime_discount_note (text). PLAN_ORDER is now ['starter', 'trial', 'tester', 'pro', 'max'].
+- **Tester plan** — a fifth plan value alongside starter/trial/pro/max. Full Max feature set, Pay-at-Hatch online orders, billing tab hidden, trial-conversion popup suppressed. Lifetime subscription discount tracked on trucks.lifetime_discount_pct (integer) and trucks.lifetime_discount_note (text). PLAN_ORDER is now ['starter', 'trial', 'tester', 'demo', 'pro', 'max'] and lives in `app/admin/page.tsx`, not `lib/features.ts` (CORRECTED V11).
 
 - **Trial column in billing tab** — when plan is trial and the trial is unexpired, a Trial column is shown first in the billing matrix (label TRIAL / Free trial / until {date}). It highlights as current and disappears automatically on expiry. Trial and Tester online orders show Pay at Hatch, not 0.99% + card fee.
 
@@ -1789,7 +1825,7 @@ All business calculations live in lib/. These are the only places these calculat
 
 - **lib/plan-features.ts** — SINGLE SOURCE OF TRUTH for plan pricing, the feature matrix (FEATURE_SECTIONS), footnotes (PLAN_FOOTNOTES), plan prices, and descriptions. Imported by both the Billing tab and the admin console.
 
-- **lib/features.ts / lib/useFeatures.ts** — plan tier feature map, PLAN_ORDER, PLAN_META, and canAccess()/useFeatures() for gating.
+- **lib/features.ts / lib/useFeatures.ts** — plan tier feature map, PLAN_META, and canAccess()/useFeatures() for gating. **PLAN_ORDER is NOT here** — it is admin-console display order and lives in `app/admin/page.tsx:159` (CORRECTED V11).
 
 - **lib/whatsapp-classifier.ts** — message classification (four buckets as of V6.3) and schedule-response prompt building.
 
@@ -1922,6 +1958,14 @@ The in-repo paths share lib/schedule-extract.ts:
 
 > **RULE** — Claude within Cursor is the coding tool. The planning chat writes Cursor-ready prompts; it does not edit files directly. Audits can be sent to Cursor for a summary response rather than always requiring grep output to be pasted back.
 
+### Shared modules added V11 (self-serve signup and setup)
+
+- **`lib/url-normalise.ts`** — `normaliseUrl` (operator INPUT: trims, defaults to **https** never http, refuses anything not plausibly a hostname rather than guessing), `isScraperBlockedDomain` (the Facebook/Instagram guard, **failing closed**), and `hrefFromStoredUrl` (display side). ⚠️ **The input and display helpers are deliberately different functions**: refusing is right when an operator can be told to fix it and wrong when rendering a value already in the database, where refusing replaces a link the customer used to see with nothing.
+- **`lib/settings-copy.ts`** — one label and help string per setting, read by BOTH Manage - Settings and the setup wizard's review screen. Exists because a hand-written second copy went false within days (§35).
+- **`lib/resolve-operator-truck.ts`** — the ONE "which of this operator's trucks do we send them to" rule (prefer one still in setup, else the oldest), with `.order('created_at')` held INSIDE it so no caller can forget it and make the answer non-deterministic for a multi-truck operator. Three callers.
+- **`lib/email-signup.ts`** — the two operator-facing signup emails. **Deliberately isolated from `lib/email.ts`**, which carries LIVE order and cancellation mail: these two need a reply-to and a from-address that must not fall back to the consumer domain, and adding either to the shared helper would put a live send path in the blast radius of a signup change.
+- **`lib/brand.ts` `HATCHGRAB_ORANGE_HEX`** — `#EF8B2C`, read off the wordmark SVG's own `fill`, not a screenshot. ⚠️ A HEX, where the rest of that file's colour section is Tailwind class strings; the `_HEX` suffix marks the difference so it is not dropped into a `className`. **Currently EMAIL-ONLY.** White on it is **2.50:1** — below the AA floor, accepted as a brand decision for email. 🔴 **The app-wide button colour is a separate decision and must not inherit from here.**
+
 ## DRY audit before every feature
 
 - Search the codebase for related logic that already exists.
@@ -1932,7 +1976,9 @@ The in-repo paths share lib/schedule-extract.ts:
 
 # 4. Plan tiers and feature gating
 
-## Five plans
+## Six plans (was "Five" — CORRECTED V11)
+
+> ⚠️ **CORRECTED 4 August 2026.** A sixth plan value, **`demo`**, has existed since demo provisioning shipped and was never recorded here. Self-serve signup provisions it (§13), so it is not a fringe case.
 
 - **Starter (Free)** — Walk-up orders, KDS, dashboard, menu, deals, sold-out toggle, stock countdown, and Pay-at-Hatch online ordering. 0% platform fee. No online card pre-orders.
 
@@ -1940,13 +1986,62 @@ The in-repo paths share lib/schedule-extract.ts:
 
 - **Max (£49/mo)** — Everything in Pro, plus unlimited WhatsApp auto-replies, kitchen ticket printing, multi-device kitchen sync, multi-user access, customer-facing display (coming soon), festival pricing (coming soon), digital loyalty stamp cards (coming soon).
 
-- **Trial** — All MAX features, PLUS Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details at signup. Default 3 months for hand-picked Pro/Max early signups. Expires automatically to Starter.
+- **Trial** — All MAX features, PLUS Pay-at-Hatch online ordering, so trial trucks can operate without entering billing details at signup. Default 3 months for hand-picked Pro/Max early signups, **set by hand in the admin console** (`app/admin/page.tsx` is the only writer of `trial_expires_at`).
+
+  > ⚠️ **CORRECTED V11 — it does NOT "expire automatically to Starter".** Nothing changes the `plan` value, ever: there is no cron, no job and no downgrade path (the only scheduled task is `demo-cleanup`). What expiry actually does is stricter than a downgrade — `canAccess()` returns **`false` for EVERY feature** once `trial_expires_at` has passed (`lib/features.ts`: `if (plan === 'trial') { if (!trialExpiresAt) return false; if (expired) return false; … }`). An expired trial therefore has **less** access than Starter, not Starter's set, and the row still says `trial`.
+  >
+  > ⚠️ **SUPERSEDED IN PART, V11.1 — the NULL case has been reversed.** This entry used to close *"a trial row with `trial_expires_at` NULL is in the same state — every feature off"*. **That is no longer true.** A NULL expiry now means **the trial has not started**, and `canAccess` grants the full trial set. The **expired** half above is unchanged and remains accurate. See *The three trial states* below.
+
+- **Demo (V11, CORRECTED V11.1)** — the prospect sandbox, **and no longer what self-serve signup provisions**. `PLAN_FEATURES.demo` is `new Set(TRIAL_FEATURES)`, so it carries the full trial feature set — and `canAccess()` applies its expiry check **only** when `plan === 'trial'`, so **demo access never expires**. That is correct for a sandbox and was wrong for a signup, which is what V11.1 changed. `lib/provision-truck.ts` holds two profiles: the **operator** profile now writes `trial`, the **demo** profile still writes `demo`. See §13.
+  > 🔴 **`demo` has no Billing branch.** BillingTab tests the plan string against `trial`, `starter`, `pro` and `max` with **no fallback**, so a `demo` truck rendered a completely empty Billing tab — a whole tab of nothing, with no error. The plan change fixed the symptom; **the missing fallback is still there** and will do the same for any seventh plan value.
 
 - **Tester (V6)** — All MAX features plus Pay-at-Hatch online ordering. The billing tab is hidden and the trial-conversion popup is suppressed. A lifetime subscription discount is tracked on trucks.lifetime_discount_pct (integer) and trucks.lifetime_discount_note (text). Intended for hand-picked pre-launch testers who keep a permanent discount; can later convert to a paid plan.
 
-## PLAN_ORDER (V6)
+## The three trial states (V11.1) — AUTHORITATIVE
 
-PLAN_ORDER in lib/features.ts is ['starter', 'trial', 'tester', 'pro', 'max']. PLAN_META holds each plan's display name; PLAN_PRICES and PLAN_DESCRIPTIONS live in lib/plan-features.ts.
+`plan = 'trial'` is not one state. `trucks.trial_expires_at` decides which of three it is, and the two ends of the range behave in **opposite** directions.
+
+| `trial_expires_at` | Meaning | `canAccess` returns |
+| --- | --- | --- |
+| **NULL** | **NOT STARTED** — the operator has not nominated an event yet | the full trial set (= `MAX_FEATURES`) |
+| **future date** | running | the full trial set |
+| **past date** | **EXPIRED** | **`false` for EVERY feature** |
+
+```ts
+if (plan === 'trial') {
+  if (!trialExpiresAt) return PLAN_FEATURES.trial.has(feature)   // not started
+  if (new Date(trialExpiresAt) <= new Date()) return false       // expired
+  return PLAN_FEATURES.trial.has(feature)                        // running
+}
+```
+
+> **Why NULL grants rather than denies.** A self-serve operator is provisioned with no expiry and has to build a menu, a schedule and their settings before they ever trade. Denying on NULL meant the product was locked during setup and the operator had nothing to evaluate. **The failure direction is one-way and deliberate:** the worst outcome of granting on NULL is that somebody is not charged when they might have been. Denying on NULL took the product away from people who had not started using it.
+
+> 🔴 **THE EXPIRY CLIFF IS UNRESOLVED, AND IT HAS DATES ATTACHED.** Nothing anywhere writes the `plan` value at expiry — there is no cron, no job, no downgrade path. So the day a trial lapses the row still reads `trial` while behaving as **nothing at all**: less access than Starter, no upgrade prompt tied to it, and a plan value that names a state the truck is no longer in. **Live dates (verified by Dominic, 4 August 2026): Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October.** Two separate decisions are outstanding — **what feature set an expired trial gets**, and **what the `plan` value becomes**. Answering one does not answer the other. §27.
+
+## Two gating entry points, and only one checks expiry (V11.1)
+
+`lib/features.ts` exports **two** feature tests, and they do not agree about trials.
+
+| Function | Signature | Expiry |
+| --- | --- | --- |
+| `canAccess` | `(plan, feature, featureOverrides, trialExpiresAt)` | ✅ applies the three-state rule above |
+| **`hasFeature`** | `(plan, feature)` | 🔴 **none** — a `trial` plan gets the trial set whatever the date says |
+
+`hasFeature` has **two live consumers**, and neither is incidental:
+
+- `app/dashboard/[token]/page.tsx` — the branded QR code.
+- `app/trucks/[slug]/order/page.tsx` — **`advance_preordering` on the CUSTOMER order page.**
+
+**So an expired trial's customers keep pre-ordering** while the operator's own Manage page has every feature off. That divergence is a property of which function each surface happens to call, not of any decision. ⚠️ `hasFeature`'s own comment tells callers with expiry information to *"use `hasFeatureWithContext` instead"* — **there is no such export**; the function it means is `canAccess`. A stale pointer in the one place a reader would look for the rule.
+
+> The general shape, and it recurs: **an overload that drops a parameter drops the rule that parameter carried.** The narrower signature is not a convenience wrapper — it is a different policy, and nothing in the name says so.
+
+## PLAN_ORDER (V6, CORRECTED V11)
+
+> ⚠️ **CORRECTED 4 August 2026.** This entry previously read *"PLAN_ORDER in lib/features.ts is ['starter', 'trial', 'tester', 'pro', 'max']"*. **Both halves were wrong** — the location and the contents — and the error survived from V6 to V10.
+
+**PLAN_ORDER lives in `app/admin/page.tsx:159`, not `lib/features.ts`,** and reads `['starter', 'trial', 'tester', 'demo', 'pro', 'max']`. It is the **admin console's column order** for the plan/feature matrix — a display concern, which is why it is not in the gating module. `lib/features.ts` owns the `Plan` union, `PLAN_FEATURES`, `PLAN_META` and `canAccess()`; `PLAN_PRICES` and `PLAN_DESCRIPTIONS` are DERIVED from `PLAN_META` in `lib/plan-features.ts`.
 
 ## Pricing matrix
 
@@ -1997,8 +2092,8 @@ Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders u
 - Static feature map lives in lib/features.ts; pricing/matrix in lib/plan-features.ts.
 - Resolution order in canAccess(): per-truck override → trial expiry check → plan tier.
 - Per-truck overrides stored in trucks.feature_overrides (JSONB), edited in admin.
-- Trial expiry checked against trucks.trial_expires_at; expired trials silently drop to Starter.
-- UI uses useFeatures(truck); non-React code uses canAccess() directly.
+- Trial expiry checked against trucks.trial_expires_at. ⚠️ **CORRECTED V11.1 — this line used to read "expired trials silently drop to Starter". They do not, and never did:** an expired trial gets `false` for every feature, which is *less* than Starter. The error survived from V6 to V11; see *The three trial states* above.
+- UI uses useFeatures(truck); non-React code uses canAccess() directly. ⚠️ **`lib/useFeatures.ts` has NO consumer today** — it is imported once (the KDS page) and only `can` is destructured from it. It carried its own copy of the expiry rule which treated NULL as expired, contradicting `canAccess` in the same render; corrected V11.1. **A second implementation of a rule is a second thing to keep right, and this one was wrong while nothing read it.**
 - Gating happens both UI-side and API-side.
 - WhatsApp auto-replies are MAX only (cost-incurring). Instagram/Messenger are Pro.
 
@@ -2015,13 +2110,25 @@ The FeatureValue type in lib/plan-features.ts is boolean | 'coming_soon'. Set th
 - Transaction fees show actual values (0%, 0.99% + card fee, Pay at Hatch), not checkmarks.
 - Upgrade buttons open an email-to-upgrade modal until Stripe Connect billing is built.
 
+### 🔴 BillingTab gates on the RAW PLAN STRING and has NO fallback (V11.1)
+
+Its entire body is **four sibling conditionals and nothing else** — `plan === 'trial'`, `plan === 'starter'`, `(plan === 'pro' || plan === 'max')`, and the upgrade modal. There is no `else`, no default branch and no unknown-plan case, so **any plan value outside those four renders an empty `<div>`**: no error, no console message, no empty state, no "contact us". A whole tab of nothing.
+
+`demo` was that value, which is how a self-serve truck reached a blank Billing tab. **The V11.1 plan change removed the only truck that hit it; it did not fix the tab.** `tester` never hits it either, but for a different and deliberate reason — the tab itself is hidden by `userRole === 'owner' && truck?.plan !== 'tester'`, which is a real guard rather than a coincidence.
+
+> ⚠️ **Billing does NOT call `canAccess`.** It compares the plan string directly, so it is the one operator surface unaffected by feature gating and the one most affected by the plan **value**. That is why changing what provisioning writes was visible here and invisible everywhere else — and why a plan-value change must always be checked against Billing specifically. **Distinguish "which features do you get" (`canAccess`) from "what are you being sold" (the raw string); they are different questions and Billing only ever asks the second.**
+
 ### Sticky pricing header (V6.5)
 
 > **RULE (UPDATED V8.7 — app-shell)** — the billing plan/price header row (TRIAL / STARTER / PRO / MAX + prices) is `position: sticky; top: 0; z-index: 30; background: white`. It pins to the top of the scrolling `<main>` — which already sits directly under the fixed header+tabs of the app-shell — so it stays flush under the tabs with NO hardcoded offset. The OLD `top: 95px` (V6.5, body-scroll era) is WRONG here: with `<main>` as the scroll container it pinned the header 95px into the content = mid-screen (and it desynced whenever the nav/tabs heights changed — the exact recurring bug). The flush pin depends on `<main>` having no top padding (see the sticky-layout contract, Section 3); z-30 keeps it above the feature rows; bg-white hides rows scrolling beneath.
 
-### Trial column in the billing matrix (V6)
+### Trial column in the billing matrix (V6, CORRECTED V11.1)
 
-When the truck is on an active trial, a Trial column is prepended (billingPlans = trialActive ? ['trial','starter','pro','max'] : ['starter','pro','max']). Header: TRIAL / Free trial / until {DD MMM YYYY}; isCurrent is p === truck.plan. Trial cells: walk-up 0%, online orders Pay at Hatch, all features same as Max.
+The Trial column is prepended when the trial has not **ENDED** — `trial_expires_at` NULL **or** in the future — and disappears once it is past. Header: TRIAL / Free trial; `isCurrent` is `p === truck.plan`. Trial cells: walk-up 0%, online orders Pay at Hatch, all features same as Max.
+
+> ⚠️ **CORRECTED V11.1.** This entry described `trialActive`, which no longer exists. It asked *"is the trial running now"* and therefore hid the column from an operator whose trial had not started — the audience the column exists for. The condition is now `showTrialColumn`, which asks *"has the trial ended"* — a different question with a different answer on exactly one input, NULL.
+
+> 🔴 **ONE CONDITION, THREE READERS — and they must agree or the matrix misaligns.** `showTrialColumn` decides the column array **and** two section-header spacer rows that reserve the trial column's width. Had the array been switched while the spacers still asked the old condition, `billingPlans` would have had four entries against three reserved cells and **every section header would have sat one cell out of alignment** with the rows beneath it. Both halves would have looked individually correct in review. **Where two pieces of layout must agree, they must read the same expression** — see §35.
 
 ### Billing tab layout by plan (V5)
 
@@ -2417,6 +2524,27 @@ DealsModal flat-maps expandedBasketOpts by quantity, giving each unit a unique k
 
 [appearance:textfield] to hide spinners; font-bold text-slate-900 text-lg weight; save on blur/Enter, revert on Escape.
 
+## Deal visibility - three layers, no overlap (V11, CORRECTED)
+
+A deal reaches a customer through three columns that are frequently mistaken for one another. Each owns a different scope and none is redundant.
+
+| Control (operator sees) | Column | Scope |
+| --- | --- | --- |
+| Active / Off, on the Deals tab | `bundles_db.is_available` | **the template** - does this deal go onto events at all |
+| Auto-apply / Manual, on the Deals tab | `bundles_db.apply_to_new_events` | **the default for NEW events** |
+| The per-deal toggle on each Schedule event | `event_deals.active` | **one event** |
+
+**The mechanism.** At event creation, `upsert_event` seeds `event_deals` from
+`bundles_db … .eq('is_available', true)`, writing `active: bundle.apply_to_new_events`. The customer menu route (always called with an explicit `event_id`) then keeps only rows with `active = true`; if an event has **no** `event_deals` rows at all it falls back to `filter(b => b.apply_to_new_events)`.
+
+**For a deal to reach a customer, ALL of these must hold:** the event is `confirmed` or `open`; AND either an `event_deals` row exists for (event, deal) with `active = true`, or the event has no such rows and the deal is `apply_to_new_events`; AND every slot category has an available, in-stock item; AND the deal was `is_available` **at the moment that event was created**.
+
+> 🔴 **`is_available` is FORWARD-LOOKING — it gates seeding, not display.** Turning a deal Off stops it reaching every event created from then on, and does **not** retract it from events that already carry an `active` row: nothing deletes or deactivates `event_deals` when the flag flips (`upsert_bundle` is a blind `update`). To pull a deal from a specific scheduled event, use that event's toggle. The operator's view and the customer's resolve through the SAME expression — `eventDeal ? eventDeal.active : bundle.apply_to_new_events` — so the two cannot disagree.
+
+> ⚠️ **The customer menu route does NOT filter on `bundles_db.is_available`, and does not need to.** A deal that fails the seeding gate never enters the set the route is filtering. Reading the absence of that filter as "Off does not hide a deal" is a WRONG conclusion this manual has now recorded twice - once as the finding and once as the retraction. See §35, "trace the WRITE layer".
+
+> **Upsell rules have no draft state, and that is the design.** `upsell_rules` is selected by `truck_id` with no visibility filter and emitted straight to the order page, so a rule is live on save. A rule is a suggestion, not a published object: it surfaces only items already on the menu and already available, and one pointing at an empty or deleted category degrades to nothing. **No `is_active` column is wanted here.**
+
 # 9. Kitchen Display System (KDS) rules
 
 ## Access
@@ -2783,6 +2911,39 @@ APIs that accept truck identifiers must handle both slug (customer-side) and UUI
 
 - Personal details (first/last name, phone, login email) live on operators, edited in Team tab. Private, never shown to customers.
 - Business contact (email, phone shown to customers) lives on the truck, edited in Settings under "Business contact".
+
+## Self-serve signup and setup (V11)
+
+**The chain, in execution order.** Driven by the two-step wizard inside the demo modal (`components/DemoGetStarted.tsx`); every step is a caller of an endpoint that already existed.
+
+`/api/signup` (auth user + `operators` row + the verification email) -> `signInWithPassword` -> `/api/auth/update-profile` -> `/api/setup` `create_truck` -> `/api/manage` `update_settings` -> logo upload -> redirect to `/manage/<token>?import=demo`.
+
+> ⚠️ **`update-profile` runs BEFORE `create_truck`.** The name belongs to the operator, not the truck, and the truck does not exist yet. Steps 1-2 are CRITICAL (a failure keeps them in the modal with the real error); 3, 5 and 6 are BEST-EFFORT and must never block — every field they write is editable in Settings, and a blocked signup is far worse than a missing logo.
+
+> 🔴 **`/api/signup` deliberately creates NO truck.** For an operator truck the `id` IS the name-slug, it is the public order URL, and it is referenced by ~26 tables — so creating one before a name exists means either a permanent random slug on a printed QR code or a 26-table rename per signup.
+
+**Provisioning writes plan `trial` (CORRECTED V11.1).** `lib/provision-truck.ts` carries **two profiles**, and only the operator one changed:
+
+| Profile | `plan` | Used by |
+| --- | --- | --- |
+| **operator** | **`trial`** (was `demo`) | self-serve signup |
+| **demo** | `demo` (unchanged) | the prospect sandbox |
+
+> ⚠️ **The distinction is the point: a prospect demo is not a signup.** A sandbox that never expires is correct — it is a sales surface with no operator behind it. A real operator on a never-expiring plan is the product being given away. They shared a plan value for exactly as long as it took for that to matter.
+
+`trial_expires_at` is still written **`null`** by `lib/provision-truck.ts` and by nothing else, and `null` now means **the trial has not started** (§4). So a self-serve operator gets the full feature set to set up with, on a plan value that can later be nominated, rather than a permanent free ride on a value nothing will ever expire. **Trial nomination itself still does not exist** — §27, still blocking launch. ⚠️ The `ProvisionProfile` interface makes `plan` a **required** field, so neither profile can silently inherit the other's value; a third profile would have to declare its own.
+
+> ⚠️ **A truck's current `plan` is not evidence of what provisioning wrote.** `trucks` has no `updated_at` (§16, §35), and the deployed provisioner is whatever was last **committed** — not what the working tree says. Reading a live row back to infer a code path has misled this project twice.
+
+**The launch flip is TWO variables, not one.**
+
+- **`SIGNUP_PUBLIC`** (server-side) is the real gate — `/api/signup` refuses a non-admin session unless it is `'true'`.
+- **`NEXT_PUBLIC_SIGNUP_PUBLIC`** only decides which client path renders (`canSetup` in `DemoGetStarted`), and is baked at BUILD time.
+- ⚠️ `canSetup` is `(NEXT_PUBLIC_SIGNUP_PUBLIC === 'true' || isAdmin)`, so **an admin session opens the path with both flags unset** — which is how the whole chain is exercised before it is public. Do not read "the flag is off" as "nobody can reach it".
+
+> 🔴 **`lib/go-live-checks.ts` has ZERO call sites and is imported by no file.** `checkGoLive` defines an `email_unverified` issue that nothing evaluates, so **email verification currently gates NOTHING** — not access, not ordering, not go-live, not any UI state. The module is kept for the intent; do not cite it as a live control. (Verified 3 August; two signups with `verified_at` NULL produced fully working trucks.)
+
+> 🔴 **Four features are DECLARED in `lib/features.ts` and enforced NOWHERE.** `auto_accept`, `meal_deals`, `upsells` and `offline_protection` appear in the `Feature` union and in the plan sets, and a `grep` for `canAccess(..., '<feature>', ...)` finds no call site for any of them. A Starter truck can use all four today. **Membership of `PLAN_FEATURES` is not a gate** — only a `canAccess` call is. §27.
 
 # 14. Vehicles (trucks under a brand)
 
@@ -3188,6 +3349,87 @@ RLS is enabled on every table in the public schema. All API routes use SUPABASE_
   select tgname, tgtype from pg_trigger
   where tgrelid = 'public.orders'::regclass and not tgisinternal;
   ```
+
+### Live-schema facts — settings columns and defaults (V11 / 3-4 August 2026)
+
+> **Provenance: live-verified by Dominic via `information_schema`, 3-4 August 2026.** These were needed because the setup wizard's end-of-wizard review screen renders each setting's CURRENT value, and a screen that guesses a default and renders it as fact is worse than one that says nothing. Several of these columns predate the `supabase/migrations/` convention, so **the repo does not record their defaults at all** — code fallbacks (`?? true`, `=== true`) are what the app ASSUMES, not what the database does, and the two had never been checked against each other.
+
+**`trucks`**
+
+| Column | Type | Null | Default |
+| --- | --- | --- | --- |
+| `preorders_enabled` | boolean | NOT NULL | `true` |
+| `preorder_open_rule` | text | NOT NULL | `'on_confirm'` |
+| `allow_customer_cancellation` | boolean | nullable | `true` |
+| `cancellation_cutoff_mins` | integer | nullable | `30` |
+| `notes_require_review` | boolean | NOT NULL | `true` |
+| `show_paid_step` | boolean | NOT NULL | `false` |
+| `takes_cash` | boolean | NOT NULL | `false` |
+| `truck_emoji` | text | nullable | the pizza emoji |
+| `default_auto_open` | boolean | nullable | `true` |
+| `default_auto_close` | boolean | nullable | `true` |
+| `phone_is_whatsapp` | boolean | nullable | `false` |
+| `preferred_contact_method` | text | nullable | `null` |
+
+**`truck_vans`**
+
+| Column | Type | Null | Default |
+| --- | --- | --- | --- |
+| `order_ready_enabled` | boolean | NOT NULL | `false` |
+| `buzzer_count` | smallint | nullable | `null` |
+
+> 🔴 **`truck_vans.order_ready_enabled` defaults to FALSE, so a new truck never tells customers their food is ready.** That is an opt-in nobody has taken, not a default somebody chose and got wrong — which is why the wizard frames it as a question rather than a confirmation. Provisioning does not write it (§13).
+
+> ⚠️ **`trucks.qr_code_style` is `NOT NULL DEFAULT 'standard'`, so it can never be null — there is no "unset" value.** A stored `'standard'` is indistinguishable from an operator who deliberately chose Standard, so any "smart default" keyed on it must be scoped to a window where no choice can have been made (the setup wizard scopes it on `setup_step`). Recorded because the same shape will recur for any NOT NULL DEFAULT setting.
+
+**Other structural facts (same verification pass)**
+
+- **`demo_sessions` has NO `id` column — the primary key is `truck_id`.** Every call site keys on `truck_id`; a query selecting or filtering `id` will error.
+- **`item_modifier_groups` links items to groups via `menu_item_id`.** It cascades from BOTH parents (see the cascade entry above).
+- **`modifier_groups` has NO item column** — it is `truck_id`-scoped only, and the item relationship exists solely through `item_modifier_groups`.
+- **`menu_items_db` HAS `updated_at`; `trucks` does NOT.** The consequence is a reasoning trap and is recorded as a lesson in §35 ("a snapshot is not a history").
+- **`operators.signup_promo_code` (text, nullable)** — the marketing code captured at self-serve signup. **RECORDED ONLY, NOT APPLIED: no value is validated, and no code path reads it except a read-only admin chip.** Both the write (`/api/signup`) and the read (`/api/admin`) are built to tolerate the column being ABSENT — the write is a separate best-effort UPDATE rather than a field on the operators INSERT, because PostgREST fails the whole statement with PGRST204 on an unknown insert column and a marketing field must never be able to take signup down.
+  > ✅ **VERIFIED LIVE 4 August 2026** — the migration has been run and the column confirmed via `information_schema`: **`text`, nullable, no default.** *(This entry was written the same day carrying an UNCORROBORATED flag, because the migration had been handed over to be run by hand and the session could not confirm it; the flag is now discharged.)* The absence-tolerance in both paths is retained deliberately — it costs nothing and it is what let the code ship before the column existed.
+
+## Database maintenance and storage (V11.1) — OPERATIONAL
+
+> **Provenance: measured on the live database by Dominic, 5 August 2026.** ⚠️ **None of this is derivable from the repo** — the schemas below are extension-owned, no migration file creates them, and PostgREST does not expose them. The figures are recorded as a reading taken on a date, not as a property of the system.
+
+### 🔴 A size scare starts by checking SCHEMA sizes, not table data
+
+The database reached **533MB against a 500MB free-tier ceiling**. `public` — every truck, order, menu item and event the product has ever created — was **10MB of it**, under 2%.
+
+| Schema / relation | Size | Behaviour |
+| --- | --- | --- |
+| `net._http_response` | **304MB** | **bloats** — see below |
+| `cron.job_run_details` | **180MB** | accumulates |
+| `public` (everything) | 10MB | negligible |
+
+**The instinct is to hunt for a runaway table in `public`, and it would have found nothing.** Both offenders belong to extensions — `pg_net` and `pg_cron` — which are invisible to every tool the application uses. Query schema sizes first; the application's own data is not usually where the space went.
+
+### `net._http_response` BLOATS; it does not accumulate
+
+pg_net prunes its own response rows, **so the row count stays low while the file never shrinks.** A plain `DELETE` or a routine autovacuum marks space reusable inside the file and returns nothing to the filesystem. **Only `VACUUM FULL` reclaims it** — and `VACUUM FULL` takes an **ACCESS EXCLUSIVE lock**, so it blocks everything touching that relation for its duration.
+
+> 🔴 **Run it at a quiet moment, never mid-service.** Every `net.http_post` from the two cron jobs writes here, so the lock window is one where the schedulers must be allowed to fail and retry.
+
+**Roughly quarterly.** Ten weeks produced ~300MB, which is the only rate this project has measured — treat it as one observation, not a curve.
+
+### `cron.job_run_details` accumulates, and is pruned on a schedule
+
+**~30,000 rows a week**, from two jobs: `auto-event-scheduler` (every minute) and `heartbeat-monitor` (every 30 seconds). Unlike the pg_net table this genuinely grows, so deleting rows is the whole fix.
+
+**pg_cron job 5, `prune-cron-history`, runs `17 4 * * 0`** — 04:17 every Sunday — deleting rows older than 7 days.
+
+> 🔴 **VERIFY BY READING THE STATE, NOT THE STATUS.** A `succeeded` row in `cron.job_run_details` means the job was **DISPATCHED**, not that it did its work — the manual already records this for `net.http_post` (V8.6), and it holds for a prune job just as well. The check is whether the oldest surviving row is inside the window:
+>
+> ```sql
+> select min(start_time), max(start_time), count(*) from cron.job_run_details;
+> ```
+>
+> `min(start_time)` older than 7 days means the prune is not working, **whatever its own status row says.** This is the same family as *"success from a SQL editor means the statement executed, not that it did what you wanted"* (§35).
+
+⚠️ **Neither table is a diagnostic dead end.** `net._http_response` is where an Edge Function's actual response body and status code live (V8.6) — it is the only way to see whether a dispatched cron job's function did anything. **Do not prune it so aggressively that a failure becomes un-investigable**; the retention window is a debugging budget, not just a storage one.
 
 # 17. Menu API behaviour
 
@@ -3817,6 +4059,46 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+## 🔴 V11.1 — added 5 August 2026 (the plan model)
+
+### 🔴 STILL BLOCKING SELF-SERVE LAUNCH — re-confirmed, not re-listed
+
+All three V11 blockers below are **still open**. Re-stated here only where V11.1 changed something about them:
+
+- **🔴 TRIAL NOMINATION.** Still no UI, no route, nothing writing `trial_expires_at`. Provisioning now writes plan `trial` rather than `demo`, which makes the eventual fix smaller; **it does not make this any less blocking**, because a NULL expiry grants the full trial set indefinitely. See the V11 entry below.
+- **🔴 THE FOUR UNENFORCED FEATURE GATES.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — declared in `lib/features.ts`, no `canAccess` call anywhere. **Unchanged.**
+- **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side gate and the build-time client flag must flip together. **Unchanged.**
+
+### 🔴 THE EXPIRY CLIFF — new, and it has dates
+
+- **🔴 AN EXPIRED TRIAL BECOMES NOTHING, ON A DATE ALREADY IN THE CALENDAR.** `canAccess` returns `false` for **every** feature once `trial_expires_at` passes — less access than Starter — and nothing writes the `plan` value, so the row still reads `trial`. **Test Kitchen 23 August, Real Thai Food 30 September, Pizzeria Gusto 17 October** (live-verified 4 August 2026). **Two decisions, and they are separate:** (1) what feature set an expired trial should fall back to — Starter is the obvious answer and is not what the code does; (2) what the `plan` value should become, and what writes it. Answering one does not answer the other, and shipping (1) without (2) leaves a row permanently mislabelled. §4.
+- ⚠️ **`hasFeature` bypasses the expiry check entirely**, and one of its two consumers is the customer order page's `advance_preordering` gate — so **an expired trial's customers keep pre-ordering** while the operator's own surfaces are dark. Decide whether that is a gap to close or a soft-landing to keep, but decide it *with* the cliff, not after. §4.
+
+### Found, reported, not fixed
+
+- **The locked-feature UI is too heavy.** `<FeatureGate>` renders a full-width bordered panel with a headline, a plan/price/description line and an Upgrade link, in place of the control. It is **one shared component with two call sites**, so a lighter treatment is genuinely one edit. ⚠️ **The rest is not.** Of the nine plan-gated surfaces, only two use `FeatureGate`; **five render nothing at all** (pre-orders card hidden ×2, Reports mode silently downgraded, `PrintingSettings` returns `null`, KDS cook screen absent). Making the treatment *consistent* therefore means **showing five features that are currently invisible** — a product decision about whether an operator should see what they cannot use, not a restyle. Scope them separately.
+- **`components/ui/Tooltip.tsx` exists and is dead.** Imported at `app/manage/[token]/page.tsx` and **never rendered** — it is one of that file's standing lint errors. It **does** handle touch (`onTouchStart` toggles), so it is a real candidate for the lighter treatment above, but it has **no outside-tap dismiss and no Escape handler**, and it has never been exercised on a device. Fix the dismiss before rolling it anywhere; two Settings rows are forgiving of a sticky tooltip and nine sites are not.
+- **"Pro · TBC" — the locked panel advertises a price it cannot show.** `maskPrice` (`lib/pricing.ts`) withholds every price until `NEXT_PUBLIC_PRICING_PUBLISHED === 'true'`. **This is deliberate pre-launch behaviour, not an unset value** — but the consequence is that a locked feature offers an upgrade to a plan whose price the `/pricing` page also masks. **The upgrade route ends in TBC too.** Decide whether a gate should advertise a plan before pricing is public.
+- **`SMS order alerts` reads two ways to two audiences.** The landing compare table shows **—** (not included) and Billing shows **"Coming soon"**, from the same `FEATURE_SECTIONS` row (`max: 'coming_soon'`) — the landing page adds a render-time exception Billing does not have. **A commercial promise, not a rendering detail**, and now more visible because the Trial column is in front of self-serve operators. One line either way; which way is a commercial call. §35.
+- **The unguarded trial countdown line.** *"Set up payment before your trial ends to keep access"* (the live string is prefixed with a stopwatch emoji, omitted here) renders for **every** trial truck, including one whose trial has not started — implying a clock that is not running. Its two neighbours in the same block are already guarded on `trial_expires_at`; this one is not. **Copy-only, but it changes what Gusto, RTF and Test Kitchen see**, so it needs the not-started wording decided rather than the guard bolted on.
+
+## 🔴 V11 — added 4 August 2026 (self-serve signup and setup wizard)
+
+### 🔴 BLOCKING SELF-SERVE LAUNCH
+
+- **🔴 TRIAL NOMINATION DOES NOT EXIST.** No UI, no route, and nothing in application code writes `trial_expires_at` except `lib/provision-truck.ts` setting it to `null` and an admin editing it by hand in the console. There is no nomination screen, no "start my trial" action and no downgrade automation (the only scheduled task is `demo-cleanup`). **Consequence: every self-serve operator is provisioned on plan `demo`, which carries the full TRIAL feature set and never expires — so they have the entire paid product, permanently, for nothing.** The failure mode is one-directional (nobody is over-charged), which is why the wizard already carries copy promising the operator chooses which event starts their trial. That copy is knowingly ahead of the build and is marked as such at its definition in `lib/settings-copy.ts`. **Until nomination ships, opening signup gives the product away.**
+  > ⚠️ **UPDATED V11.1 — STILL BLOCKING, for a narrower reason.** Provisioning now writes **`trial`**, not `demo` (§13), so the plan value is one a nomination step could act on and the truck is no longer parked on a plan nothing will ever expire. **Everything else in this item stands unchanged: there is still no nomination UI, no route, and nothing that writes `trial_expires_at`.** A NULL expiry grants the full trial set indefinitely (§4), so the practical consequence — an operator holding the whole paid product for nothing, forever — **has not changed at all.** What changed is that the fix is now a nomination screen rather than a nomination screen plus a plan migration.
+- **🔴 FOUR FEATURE GATES ARE DECLARED AND ENFORCED NOWHERE.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` — in the `Feature` union and the plan sets, with no `canAccess` call anywhere. A Starter truck can use all four today, and provisioning now turns `auto_accept` ON for every new truck. §13.
+- **🔴 BOTH `SIGNUP_PUBLIC` VARIABLES.** The server-side one is the real gate on `/api/signup`; `NEXT_PUBLIC_SIGNUP_PUBLIC` only chooses the client path and is baked at BUILD time. Flipping one without the other either opens the API with no UI or shows a UI the API refuses. ⚠️ An admin session already bypasses the client flag. §13.
+
+### Found, reported, not fixed
+
+- **Deal `start_time` / `end_time` appear to be UNENFORCED.** `getBundleAvailabilityMessage` computes an "Available from HH:MM" label and **a grep finds no caller anywhere in the codebase**; the window renders as a label on the Deals tab and is otherwise inert. **UNCONFIRMED — Dominic to check** whether this is intentional for now. If it is not, a deal with a lunchtime window is currently orderable all day.
+- **The Menu tab's allergen line vs the "not visible to customers" banner.** The Allergens box says *"customers can't see allergen info until confirmed"*; the banner at the top of the same tab says the items are not visible AT ALL, which is what the customer route actually does in per-dish mode. **The two fire on equivalent conditions**, so an operator always sees both, one of them understating the other. **Dominic checking whether this is as designed** before any copy changes — it is live operator copy on a food-safety surface.
+- **`trucks.website` carries a display-side URL patch in two customer pages.** Both now call the one shared `hrefFromStoredUrl`, but the underlying stored values are still un-normalised — a value saved with leading whitespace still produces a broken `https:// example.com`. **A data fix, not a render fix**; the renderer is deliberately byte-identical to what it replaced.
+- **Dashboard tokens never rotate.** `trucks.dashboard_token` is a long-lived bearer credential for `/api/manage`, which authenticates on it ALONE with no session. The welcome email no longer carries one (it links to the tokenless `/manage` index, which resolves from the session), but nothing expires or rotates an existing token, and it is in every operator's browser history.
+- **White-on-orange button contrast, app-wide.** `#ea580c` is 3.56:1 and the brand `#EF8B2C` is 2.50:1, both below the 4.5:1 AA floor for normal text. The email deliberately uses the brand value; **the app-wide decision is separate and must not inherit from it.** For reference: orange-700 `#c2410c` is 5.18:1, orange-800 `#9a3412` is 7.31:1.
+
 ## 🔴 V10 — added 3 August 2026 (buzzers)
 
 ### Found, reported, not fixed
@@ -4902,6 +5184,32 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **Trace the interaction; do not enumerate plausible causes.** The `??` bug above survived a full round of investigation in which five specific hypotheses — the optimistic guard, component caching, the map source, the sub-label derivation, the parent re-render — were each checked and each found **sound**. Every hypothesis was correct and the bug was still there, because the fault was in an expression nobody had thought to name. **An end-to-end trace from the tap to the render found it in eleven steps.** When a fix does not work, trace the actual path rather than proposing a better hypothesis; a list of things that are fine is not a diagnosis.
 
+**A snapshot is not a history.** `trucks` has **no `updated_at`** (§16), so a column's CURRENT value cannot tell you what was written at creation — only what it is now. This misled the same diagnosis twice in one session: a provisioned default and an operator's later edit are indistinguishable afterwards, and reasoning backwards from a live row to "so provisioning must set this" is not evidence. **Read the writer, not the row.** ⚠️ The reverse also holds: `orders` and `menu_items_db` DO carry `updated_at`, so the trap is per-table, not general.
+
+**A guard that catches a parse error and returns "not blocked" fails OPEN.** `isBlockedDomain` did `new URL(url).hostname` inside a `try` whose `catch` returned `false` — so `www.facebook.com/x` came back "not a blocked domain", not because it had been checked and cleared but because it could not be read at all. **A guard's error path must deny, not grant.** Same shape as any `catch { return true }` on a permission check. ⚠️ Fixing it is only safe once you have confirmed no caller depends on the permissive branch — here every call site had already been changed to normalise its input first, which made the fail-closed branch unreachable and therefore free.
+
+**🔴 Derive, do not hardcode — a value computed for a MERGED object must be derived from its members.** `makeGroupingRow` built a grouped parent dish whose name, price, allergens and dietary tags were all unions or minima over its members, and whose `_allergensChecked` was the literal `false`. The commit maps that flag to `menu_items_db.allergens_verified`, so **every grouped dish committed unverified however carefully the operator had confirmed its members** — the allergen step reviews the un-grouped rows, and grouping happens later, replacing them. Live evidence: a 29-item menu committed with the 24 standalone items verified and **exactly the 5 grouped parents not**. One literal among a dozen derived fields, and it silently discarded real human work on a food-safety flag.
+
+**🔴 `[].every()` is `true` — an emptiness guard is mandatory whenever a derived "all of them" flag governs safety.** Vacuous truth is the right default almost everywhere and exactly backwards here: a group that arrived with no members would assert a confirmation about nothing. The pattern is `xs.length > 0 && xs.every(...)`, and the length test is load-bearing, not padding.
+
+**🔴 Trace the WRITE layer, not just the READ layer.** A visibility gate can be enforced where rows are CREATED rather than where they are read. Grepping the customer menu route for `is_available`, finding only item-related hits, and concluding "so an Off deal is not hidden from customers" produced a **wrong finding** — the gate is `.eq('is_available', true)` on the `event_deals` SEEDING query in `upsert_event`, one hop upstream. The read path does not need to filter on it because a deal that fails it never enters the set being filtered. **Concluding from the absence of a filter requires first asking how the rows got there.**
+
+**A stale callback in page-level state can fire in a later, unrelated context.** A completion callback stored when the setup wizard triggers a shared modal would, if never cleared, still be sitting in state months later — so an unrelated Settings import would run the wizard's "advance to the next step" and reopen setup chrome over a live truck. **Set it on every trigger, including the triggers that do not need one** (storing `null`), rather than only on the one that does. A conditional write leaves the previous value; an unconditional write cannot.
+
+**A stacking answer to a sequencing question is a bug.** Two overlays visible at once were "fixed" once by giving the front one a higher `z-index` — which is a correct answer to "which is on top" and the wrong answer to "should both exist". **Both being mounted is the fault.** The remedy is a render gate on the one that should not be there yet, never a z-index; raising the z-index leaves the second overlay alive behind a translucent backdrop, which is what the operator actually saw.
+
+**🔴 Copy that describes a DEFAULT becomes false the moment the default changes.** A review screen said *"Off by default, so every order waits for you"* about `auto_accept` — true when written, and false within days, when provisioning began writing `true`. Nothing connected the sentence to the value, so nothing could have caught it. **Either source the copy from the one constant the control itself reads, or do not state the default at all** — the control already shows the live state, which is the only description that cannot go stale. `lib/settings-copy.ts` exists for exactly this: one label and help string per setting, read by BOTH Manage - Settings and the setup wizard, so the two cannot disagree and neither can drift from the toggle beside it.
+
+**"Check the allowlist" is really "check WHICH allowlist".** THREE actions write truck-and-van settings and each has its own list, all dropping unlisted keys in silence: **`update_settings`** (an `ALLOWED` array, top-level fields), **`update_truck`** (an `allowed` array, fields nested under `data`) and **`update_van_settings`** (a destructure, van columns). A setting's column does not tell you which one owns it — `auto_accept` goes through `update_settings`, `allow_customer_cancellation` through `update_truck`, `kitchen_capacity` and `buzzer_count` through `update_van_settings`. **Naming the action before naming the key is the whole check;** getting it right for the wrong list still writes nothing.
+
+**🔴 A FIX IN THE REPO IS NOT A FIX ON PREVIEW — AND THE SYMPTOM IS ALWAYS BROADER THAN THE REPORT.** A full diagnostic session went into "WhatsApp and branded QR show as Pro-locked on a trial truck". Every hypothesis a reader would reach for was checked and **all of them were sound**: the gates did call `canAccess`, all four arguments were correctly sourced, `/api/manage` returns `select('*')` so no column was missing, and both feature keys were in the trial set. The cause was that **`lib/features.ts` and `lib/provision-truck.ts` were uncommitted**, so the deployed build was still running `if (!trialExpiresAt) return false`. ⚠️ **`git status --porcelain <file>` is a one-second check and belongs at the START of any "but the code is right" diagnostic**, before tracing anything. This is the same class the manual already records for Edge Functions (V8.6, *"fix in repo ≠ deployed"* — a redeploy is required) and for localhost (*"on localhost, the working tree IS the deploy"*, above); the Vercel form is the third member and the most deceptive, because the file on your screen and the file being served differ with nothing on either surface saying so.
+>
+> 🔴 **The half that generalises beyond deploys: the reported symptom was a fraction of the real one.** The deployed function denied **every** gated feature for that truck. Only the two gates that render a **visible lock panel** were noticed; pre-ordering (the whole card is hidden), advanced reporting (silently falls back to event mode), ticket printing (`return null`) and the KDS cook screen all failed **invisibly and were never reported**. **A bug report is filtered by what the UI can show.** When a shared gate is at fault, enumerate every consumer of it before believing the reported blast radius — the surfaces that fail loudly are a biased sample of the ones that fail.
+
+**🔴 A condition with several readers must be ONE condition.** The Billing matrix decides whether a Trial column exists, and that decision is read in **three** places: the plan array, and two section-header spacer rows that reserve the column's width. Splitting them — switching the array while the spacers still asked the old condition — would have produced four columns against three reserved cells and **misaligned every section header by one cell**, with both halves reading as correct in isolation. ⚠️ **The tell is a variable whose name describes a QUESTION rather than a fact:** `trialActive` ("is it running now") and `showTrialColumn` ("has it ended") agree on every input but one, so two readers using different names look interchangeable right up to the case that separates them. Where several pieces of layout must agree, they must **evaluate the same expression**, not two expressions believed to be equivalent — and leaving the superseded one defined "in case something needs it" is how the second reader gets written against the wrong one.
+
+**One source with a divergent presentation layer is a lesser version of duplication, not immunity from it.** The landing page and the Billing tab both render `FEATURE_SECTIONS` from `lib/plan-features.ts` — genuinely one source, and the feared failure of two hand-maintained records of a commercial promise does **not** exist. But the landing page applies **render-time overrides** on top of it, each labelled `RENDER-ONLY` in its own comment, and one of them adds an exception Billing does not have: `SMS order alerts` renders as **not included** to a prospect and **"Coming soon"** to an operator, off the same row. **A shared source guarantees the DATA agrees; it guarantees nothing about what each surface then does with it.** When auditing for drift, the question is not "how many definitions are there" but "how many transformations sit between the definition and each render".
+
 **`update_truck` silently drops unlisted keys.** A new setting **appears to save and writes nothing**, with no error anywhere: the allowlist filters the payload, the UPDATE succeeds on what remains, and the handler returns `{ ok: true }`. Any new column must have its key added to the allowlist **in the same change**. The van-level equivalent (`update_van_settings`) is a destructure and drops just as silently. Same silent-success class as an unapplied migration returning HTTP 200 with an empty array.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
@@ -5332,4 +5640,4 @@ Both phases **deployed and live-verified**. Migrations run by hand and confirmed
 
 ⚠️ **`capacitor.config.ts` bakes the server URL at `cap sync` time.** `localhost:3000` reaches the Mac's dev server from the *simulator* but resolves to the *iPad's own* loopback on hardware — a blank screen with no error (the same asymmetry §8 records for `wakeLock` over LAN). Use the Mac's LAN IP for a physical device, or unset `CAP_SERVER_URL` for production. `IS_LOCAL_HTTP` tests `startsWith('http://')`, so cleartext is correctly enabled for a LAN IP. **Revert to production with a plain `npx cap sync ios` before any real build.**
 
-HatchGrab Engineering Reference Manual · V10
+HatchGrab Engineering Reference Manual · V11.1

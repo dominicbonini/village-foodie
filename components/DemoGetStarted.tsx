@@ -202,7 +202,17 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // so a bail-out from step 1 costs nothing. We never navigate until the whole chain succeeds.
   type Step = 'landing' | 'truck' | 'details'
   const [step, setStep] = useState<Step>('landing')
-  const [operatorName, setOperatorName] = useState('')
+  // ── V1: TWO FIELDS, NOT ONE STRING ────────────────────────────────────────────────────────────────
+  // 🔴 THE ALTERNATIVE — splitting one field on whitespace — IS NOT AVAILABLE AND SHOULD NOT BE ADDED.
+  // "van der Berg" yields first="van"; "Mary Jane Watson" yields last="Jane Watson" or "Watson"
+  // depending on which end you take; a single-word name yields an empty last name that renders as a
+  // trailing space in every greeting. A lossy split is worse than a null because it is indistinguishable
+  // from a correct one. Asking is the only way to know.
+  // `operatorName` (the full string) is now DERIVED from these two — operators.name still exists and is
+  // still written, because Team, admin and /api/auth/me all read it.
+  const [operatorFirstName, setOperatorFirstName] = useState('')
+  const [operatorLastName, setOperatorLastName] = useState('')
+  const operatorName = `${operatorFirstName.trim()} ${operatorLastName.trim()}`.trim()
   const [truckName, setTruckName] = useState('')
   const [password, setPassword] = useState('')
 
@@ -230,7 +240,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // they typed — the eye toggle inside the field flips it. Default hidden.
   const [showPassword, setShowPassword] = useState(false)
   // Per-field validation, all checked AT ONCE per step (never one-at-a-time). Cleared as each field is edited.
-  const [fieldErrors, setFieldErrors] = useState<{ truck?: string; cuisine?: string; name?: string; phone?: string; password?: string; email?: string; terms?: string }>({})
+  const [fieldErrors, setFieldErrors] = useState<{ truck?: string; cuisine?: string; firstName?: string; lastName?: string; phone?: string; password?: string; email?: string; terms?: string }>({})
   // Refs so validation can FOCUS the first invalid field (the primary button stays enabled and validates on click).
   const truckRef = useRef<HTMLInputElement>(null)
   const cuisineRef = useRef<HTMLSelectElement>(null)
@@ -402,11 +412,17 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
   // STEP 1 "About your truck": name · truck · cuisine.
   const validateTruckStep = (): boolean => {
     const errs: typeof fieldErrors = {}
-    if (operatorName.trim().length < 2) errs.name = 'Tell us your name.'
+    // (f) BOTH REQUIRED. Last name optional was considered and rejected: this is the name that goes on
+    // a real business relationship — invoices, support, the emails Dominic answers himself — and a
+    // first-name-only operator is someone we cannot address properly the first time it matters. It is
+    // also two words at signup versus a data-quality problem that can never be repaired afterwards,
+    // because a missing last name is indistinguishable from one nobody asked for.
+    if (operatorFirstName.trim().length < 2) errs.firstName = 'Tell us your first name.'
+    if (operatorLastName.trim().length < 2) errs.lastName = 'And your last name.'
     if (truckName.trim().length < 2) errs.truck = 'Give your truck a name.'
     if (resolvedCuisines.length === 0) errs.cuisine = 'Tell us what you cook.'
     setFieldErrors(errs)
-    if (errs.name) nameRef.current?.focus()
+    if (errs.firstName || errs.lastName) nameRef.current?.focus()
     else if (errs.truck) truckRef.current?.focus()
     else if (errs.cuisine) cuisineRef.current?.focus()
     return Object.keys(errs).length === 0
@@ -459,7 +475,13 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
           headers: { 'Content-Type': 'application/json' },
           // J2: signup_code rides along. It is NOT part of validateDetailsStep and never can be — an
           // unrecognised or absent code must not stand between an operator and an account.
-          body: JSON.stringify({ email: email.trim(), password, demo: token, signup_code: promoCode.trim() }),
+            // V1: the split names travel WITH signup so operators gets all three columns on its first
+          // insert — and so the verification email, which is sent inside /api/signup, can greet them by
+          // their real first name instead of the local part of their address.
+          body: JSON.stringify({
+            email: email.trim(), password, demo: token, signup_code: promoCode.trim(),
+            first_name: operatorFirstName.trim(), last_name: operatorLastName.trim(),
+          }),
         })
         const data = await res.json().catch(() => ({}))
         if (!data.ok) {
@@ -497,7 +519,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
       const res = await fetch('/api/auth/update-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: operatorName.trim() }),
+        // V1: all three columns. /api/auth/update-profile already accepted first_name/last_name — it
+        // was only ever sent `name`. Still best-effort, still non-blocking.
+        body: JSON.stringify({ name: operatorName, first_name: operatorFirstName.trim(), last_name: operatorLastName.trim() }),
       })
       if (!res.ok) console.error('[demo-signup] name update non-ok (non-blocking):', res.status)
     } catch (e) {
@@ -779,16 +803,30 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
               ) : step === 'truck' ? (
                 // STEP 1 "About your truck" — client state only; nothing is written until step 2 submits.
                 <div className="space-y-4">
-                  {/* Your name */}
-                  <div>
-                    <label htmlFor="demo-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Your name</label>
-                    <input
-                      id="demo-name" ref={nameRef} type="text" autoComplete="name" value={operatorName} autoFocus
-                      onChange={e => { setOperatorName(e.target.value); clearFieldErr('name') }}
-                      placeholder="Your name"
-                      className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.name ? 'border-red-400' : 'border-slate-200'}`}
-                    />
-                    {fieldErrors.name && <p className="text-xs text-red-600 mt-1">{fieldErrors.name}</p>}
+                  {/* V1: Your name — TWO fields. `autoComplete` given-name/family-name so a password
+                      manager fills both correctly; a single "name" field made that a guess too. */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label htmlFor="demo-first-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">First name</label>
+                      <input
+                        id="demo-first-name" ref={nameRef} type="text" autoComplete="given-name" value={operatorFirstName} autoFocus
+                        onChange={e => { setOperatorFirstName(e.target.value); clearFieldErr('firstName') }}
+                        placeholder="First name"
+                        className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.firstName ? 'border-red-400' : 'border-slate-200'}`}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="demo-last-name" className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1">Last name</label>
+                      <input
+                        id="demo-last-name" type="text" autoComplete="family-name" value={operatorLastName}
+                        onChange={e => { setOperatorLastName(e.target.value); clearFieldErr('lastName') }}
+                        placeholder="Last name"
+                        className={`w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 ${fieldErrors.lastName ? 'border-red-400' : 'border-slate-200'}`}
+                      />
+                    </div>
+                    {(fieldErrors.firstName || fieldErrors.lastName) && (
+                      <p className="col-span-2 text-xs text-red-600 -mt-1">{fieldErrors.firstName || fieldErrors.lastName}</p>
+                    )}
                   </div>
 
                   {/* Truck name */}

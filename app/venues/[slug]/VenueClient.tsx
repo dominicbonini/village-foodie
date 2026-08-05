@@ -8,6 +8,7 @@ import { useVillageData } from '@/hooks/useVillageData';
 import EventListCard from '@/components/EventListCard';
 import Footer from '@/components/Footer';
 import { formatFriendlyDate, getVenueSlug } from '@/lib/utils'; 
+import { hrefFromStoredUrl } from '@/lib/url-normalise';
 
 export default function VenueClient({ slug }: { slug: string }) {
   const posthog = usePostHog();
@@ -80,7 +81,8 @@ export default function VenueClient({ slug }: { slug: string }) {
   };
   
   const cleanPhone = venueInfo?.phone ? venueInfo.phone.replace(/[^\d+]/g, '') : '';
-  const cleanWebsite = venueInfo?.website ? (venueInfo.website.startsWith('http') ? venueInfo.website : `https://${venueInfo.website}`) : '';
+  // V3: one shared helper — byte-identical to the expression it replaces (empty/null → '').
+  const cleanWebsite = hrefFromStoredUrl(venueInfo?.website);
 
   // 👇 Routes the image safely through your API proxy
   let displayPhoto = venueInfo?.photo || '';

@@ -61,6 +61,20 @@ export interface WalkthroughStop {
   body: string
 }
 
+// ── Q9: MANAGE vs DASHBOARD, IN ONE LINE ─────────────────────────────────────────────────────────────
+// Shown above the FIRST stop of the walkthrough and on the wizard's closing screen — the two moments an
+// operator meets both words without yet knowing they are different places.
+//
+// 🔴 CHECKED AGAINST THE TABS BEFORE SHIPPING, and the brief's wording needed one adjustment.
+// "Manage is where you set everything up" is true of seven of its eight tabs — Menu, Schedule, Deals,
+// Extras & Upsells, Team, Settings, Billing — but NOT of REPORTS, which is sales history, not setup.
+// The Dashboard half is accurate as given: its tabs are Orders, + Add order and Menu & Stock (per-event
+// stock, pauses and capacity), which is exactly taking orders and running the event in front of you.
+// "and see how it's doing" is the smallest honest addition that covers Reports.
+export const WALKTHROUGH_INTRO =
+  "Manage is where you set your truck up and see how it's doing. The Dashboard is where you take orders "
+  + 'and run each event as it happens.'
+
 export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
   {
     id: 'menu',
@@ -73,18 +87,6 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
     tabIds: ['schedule'],
     title: 'Schedule',
     body: "Where and when you're trading. Add an event here and customers can order for it.",
-  },
-  {
-    id: 'settings',
-    tabIds: ['settings'],
-    title: 'Settings',
-    body: "Your truck's details, how customers pay, and your kitchen's capacity.",
-  },
-  {
-    id: 'billing',
-    tabIds: ['billing'],
-    title: 'Billing',
-    body: 'Where your plan, billing and feature information lives.',
   },
   {
     id: 'build',
@@ -102,5 +104,17 @@ export const WALKTHROUGH_STOPS: WalkthroughStop[] = [
     //     it saves.
     // Both tabs PUBLISH ON SAVE. Do not reintroduce any form of "this is only a draft" here.
     body: 'Deals, upsells and customisations live in these tabs — have a play around.',
+  },
+  {
+    id: 'settings',
+    tabIds: ['settings'],
+    title: 'Settings',
+    body: "Your truck's details, how customers pay, and your kitchen's capacity.",
+  },
+  {
+    id: 'billing',
+    tabIds: ['billing'],
+    title: 'Billing',
+    body: 'Where your plan, billing and feature information lives.',
   },
 ]

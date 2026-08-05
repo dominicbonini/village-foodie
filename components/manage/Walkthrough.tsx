@@ -21,7 +21,7 @@
 // right-hand side for the last tab.
 
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import type { WalkthroughStop } from '@/lib/walkthrough'
+import { WALKTHROUGH_INTRO, type WalkthroughStop } from '@/lib/walkthrough'
 
 interface Box { top: number; left: number; width: number; height: number }
 
@@ -106,6 +106,12 @@ export function Walkthrough({ stops, onClose }: { stops: WalkthroughStop[]; onCl
         // Clamped to the viewport (see the header note) and capped so it fits a ~320px phone.
         style={{ top: box.top + box.height + 14, left, width: `min(${CARD}px, calc(100vw - 16px))` }}
       >
+        {/* Q9: the orientation line, on the FIRST stop only. It answers the question an operator has
+            before any individual tab means anything — which of the two places they are in. Repeating
+            it on every stop would just be noise once they know. */}
+        {index === 0 && (
+          <p className="text-xs text-slate-600 mb-3 pb-3 border-b border-slate-100">{WALKTHROUGH_INTRO}</p>
+        )}
         <p className="text-[11px] font-bold uppercase tracking-widest text-orange-600">
           {index + 1} of {live.length}
         </p>

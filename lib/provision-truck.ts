@@ -126,8 +126,18 @@ const PROVISION_PROFILES: Record<ProvisionKind, ProvisionProfile> = {
   // builds `${truck.id}/…`), and it's what you read in the admin console and in logs.
   operator: {
     identity: 'readable',
-    plan: 'demo',                 // pre-trial "setup mode" — NOT 'trial'. canAccess() returns false for
-                                  // EVERY feature when plan==='trial' && trial_expires_at is null.
+    // ── Y1: 'trial', NOT 'demo' (4 August 2026) ──────────────────────────────────────────────────
+    // 🔴 THE COMMENT THIS REPLACES SAID: "pre-trial setup mode — NOT 'trial'. canAccess() returns
+    // false for EVERY feature when plan==='trial' && trial_expires_at is null." That was TRUE when
+    // written and is the reason 'demo' was chosen; canAccess has since been changed so a NULL expiry
+    // means NOT STARTED and grants the trial feature set (lib/features.ts). The workaround is no
+    // longer needed, and 'demo' cost more than it saved — it is a prospect-sandbox value, so a
+    // signed-up operator sat on a plan the Billing tab has no branch for and rendered EMPTY
+    // (docs/billing-tab-report.md).
+    // ⚠️ ACCESS IS UNCHANGED BY THIS SWITCH. PLAN_FEATURES.demo is `new Set(TRIAL_FEATURES)` — the
+    // same set 'trial' grants — so a self-serve operator can do exactly what they could before.
+    // ⚠️ THE DEMO PROFILE BELOW STAYS ON 'demo'. A prospect's throwaway truck is not a signup.
+    plan: 'trial',
     nameRequired: true,
     truckOrderEmailEnabled: true,
     allergenDisplayMode: null,    // operator chooses in the wizard
@@ -378,6 +388,9 @@ export async function provisionTruck(
         sheet_id: '',
         active: true,
         plan,
+        // 🔴 STAYS NULL, and now MEANS something: "trial not started". Nomination — the operator
+        // choosing which event starts it — is what sets a date, and does not exist yet. canAccess
+        // reads NULL as not-started and grants the trial set; a PAST date still denies.
         trial_expires_at: null,   // nomination sets this (§8)
         operator_id: null,        // set afterwards by /api/admin/create-operator — a separate concern
         contact_email: opts.contactEmail ?? null,

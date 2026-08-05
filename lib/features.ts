@@ -106,11 +106,24 @@ export function canAccess(
     return featureOverrides[feature] === true
   }
 
-  // Trial plan: check expiry before granting Pro features
+  // ── TRIAL: A NULL EXPIRY MEANS "NOT STARTED", NOT "EXPIRED" (Y2, 4 August 2026) ────────────────
+  // 🔴 THIS LINE USED TO READ `if (!trialExpiresAt) return false` AND THAT IS NOW WRONG BY DESIGN.
+  // Self-serve signup provisions plan 'trial' with `trial_expires_at` NULL, because nomination — the
+  // operator choosing which event starts their free trial — does not exist yet and is what sets the
+  // date. Under the old expression every self-serve operator would have been denied EVERY feature the
+  // moment they signed up: the product switched off for the only people it was being opened to.
+  //
+  // NULL therefore grants the trial feature set, which is exactly the access plan 'demo' granted these
+  // trucks before the switch — so this is a rename of the pre-trial state, not a widening of it.
+  //
+  // ⚠️ THE EXPIRED BRANCH IS DELIBERATELY UNTOUCHED. A PAST date still denies everything. Whether an
+  // expired trial should instead fall back to Starter's feature set is a real question and an open
+  // decision — it is NOT settled here, and changing it in the same edit would have hidden a product
+  // decision inside a provisioning change. See docs/plan-trial-report.md.
   if (plan === 'trial') {
-    if (!trialExpiresAt) return false
-    if (new Date(trialExpiresAt) <= new Date()) return false
-    return PLAN_FEATURES.trial.has(feature)
+    if (!trialExpiresAt) return PLAN_FEATURES.trial.has(feature)          // not started yet
+    if (new Date(trialExpiresAt) <= new Date()) return false              // expired — UNCHANGED
+    return PLAN_FEATURES.trial.has(feature)                               // running
   }
 
   return PLAN_FEATURES[plan]?.has(feature) ?? false

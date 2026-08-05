@@ -95,11 +95,14 @@ export async function GET(req: NextRequest) {
   if (!error && (updated?.length ?? 0) > 0) {
     try {
       const { data: op } = await supabase
-        .from('operators').select('name, email').eq('id', row.operator_id).maybeSingle()
+        .from('operators').select('name, email, first_name').eq('id', row.operator_id).maybeSingle()
       const base = process.env.NEXT_PUBLIC_HATCHGRAB_URL || origin
       await sendOperatorWelcomeEmail({
         to: op?.email || row.email,
-        firstName: firstNameFrom(op?.name),
+        // V1(e) SAME CHAIN AS THE VERIFICATION EMAIL: typed first_name → first word of name → "there".
+        // An operator who signed up before the split has first_name NULL and falls through to the
+        // derivation, exactly as before — no backfill needed for the greeting to work.
+        firstName: op?.first_name || firstNameFrom(op?.name),
         truckName: (truck?.name ?? '').trim() || null,
         // ── E2: TOKENLESS, ALWAYS ────────────────────────────────────────────────────────────────
         // 🔴 THIS USED TO BE `${base}/manage/${truck.dashboard_token}` — a long-lived bearer

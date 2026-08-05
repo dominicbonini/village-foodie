@@ -10,8 +10,10 @@ export const KITCHEN_CAPACITY_DESC =
 
 /** Canonical worked example — rendered as a second paragraph on both surfaces. */
 export const KITCHEN_CAPACITY_EXAMPLE =
-  "Example: with a ceiling of 5 and pizzas in batches of 4, one window could be 4 pizzas " +
-  "+ 1 side, or 3 pizzas + 2 sides — the batch caps pizzas, the ceiling caps the total."
+  "Example: if you can cook 4 mains in 5 minutes, then set it to 4 items every 5 minutes. The total " +
+  "capacity limits orders across all selected categories so if you want to only sell a maximum of 10 " +
+  "starters and mains every 5 minutes, then set Total Capacity to 10 items every 5 minutes and select " +
+  "Starters and Mains tickbox. This will still keep your mains restricted to 4 items every 5 minutes."
 
 /**
  * Canonical "how do I switch it off" line. Its wording is tied to the CONTROL: BatchSizeSelect

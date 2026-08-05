@@ -1,14 +1,18 @@
 # HatchGrab — Onboarding Flow Spec
 
-**Status:** Phases 1–4 BUILT (Phase 4 UNVERIFIED). Phase 5 DESIGN. Written July 2026. **v4** — revised after building Phase 4 step 4.
+**Status:** Phases 1–4 BUILT and LIVE-WALKED on preview (4 August). Phase 5 (nomination / go-live) DESIGN ONLY and **blocking launch** (§15). Written July 2026. **v7.1** — revised 5 August after the plan-model session.
 **Scope:** Anonymous demo → signup → guided setup → go-live. Cold-start (inbound) path only; the warm/branded outreach path is a later variant (§13).
-**Companion doc:** `docs/reference-manual.md` (architecture invariants — this spec must not contradict it).
+**Companion doc:** `docs/reference-manual.md`, now **V11.1** (architecture invariants — this spec must not contradict it). 🔴 **Where the two overlap, the manual is authoritative.** This spec describes the FLOW an operator experiences and the DECISIONS behind it; the manual owns the schema facts, the invariants and the backlog. Cross-reference rather than restate — a fact recorded twice is a fact that can disagree with itself.
 
 > **v2 changes:** corrected the capacity model (§5), the deletion cascade (§7) and the seeded-order email problem (§6.1). Added three blockers v1 missed: the `/dashboard` proxy gate (B8), the non-visibility-gated public surfaces (B9), and the pre-trial plan problem (B10). Added a security must-fix (§9.1). Dropped one build step that turned out unnecessary (importer changes — B2 dissolved).
 >
 > **v3 changes (post-build):** Stage 3 and Stage 4 rewritten AS BUILT — several written decisions turned out wrong in practice (hiding the selling points, hiding the QR/order link, a snoozeable save bar, blocking the KDS). Added §9.3 **build discoveries** (the expensive ones — read before touching provisioning) and §9.4 **structural gaps**. Phase 2 marked complete with as-built notes. Phase 4 expanded from four words into a spec.
 >
 > **v4 changes (23 July, post-Step-4 session):** Phase 4 step 4 (menu migration) BUILT — but the session's headline finding is that the previous build was **unreachable**: `demo_sessions.extraction` had no writer, so `/api/setup` GET always returned null and the `?import=demo` bootstrap silently fell through to a blank upload. Fixed, plus four related changes (§9.3 #7–#9, §9.4 G4–G6, §12 O14). ⚠️ **Everything in this batch is tsc-clean and UNVERIFIED** — no live run, nothing committed. Test order is at the end of §10 Phase 4.
+
+> **v7.1 changes (5 August):** 🔴 **THE PLAN DECISION IS RESOLVED — self-serve provisions `trial`, not `demo`, and a NULL `trial_expires_at` now means THE TRIAL HAS NOT STARTED.** `canAccess()` previously denied **every** feature on a NULL expiry, which is the entire reason §3 / B10 ruled `'trial'` out for a pre-trial truck; that reason no longer exists and B10 is **CLOSED**. The DEMO provisioning profile still writes `demo` — a prospect sandbox is not a signup. 🔴 **What this does NOT resolve: nomination still does not exist, so a self-serve trial cannot be STARTED; and what happens at EXPIRY is undecided.** Both are in §15. Also settled: the Billing Trial column now shows until the trial **ends** rather than only while it runs, and two investigations closed clean — the deals three-layer model and upsells-live-on-save were both found **sound as designed** (§15B). No new build in this session; the flow an operator walks is unchanged from v7. Manual **V11.1** §4, §13, §27, §35.
+
+> **v7 changes (3–4 August):** The signup chain and setup wizard were walked end to end on preview and largely rebuilt around what that exposed. **The wizard now has a beginning and an end** — a welcome screen before the menu step, a settings review after the schedule step, and a walkthrough offer on the done screen (§15A). **Route A of the schedule step now IMPORTS as well as enrolling** — it opens the same editable event modal Settings uses, rather than a read-only count that wrote nothing (its previous behaviour is recorded in `docs/schedule-verify-report.md`). **Two operator emails** were built (verification at signup, welcome on confirmation) and neither carries a dashboard token. 🔴 **One silent food-safety defect found and fixed:** a hardcoded literal in `makeGroupingRow` unverified every grouped dish's allergens — 24 standalone items committed verified, exactly the 5 grouped parents did not. 🔴 **Eleven open questions closed, four corrections made** (§12), and **three things now block launch** (§15). ⚠️ **O11 was recorded as open while the verification system was already built and shipping** — see its entry.
 
 > **v6 changes (27–28 July):** The demo event **roll is deleted**; an elapsed demo now ENDS and offers "Start a new service" (§10 Phase 2E). Seeded order count **scales with window length**, which also fixes the stride collapse (§9.3 #14). Signup copy centralised into one variant-keyed object with deliberate upload/sample divergence (§10 Phase 4D). `/api/dashboard` now serves a `demo` block, retiring the `?welcome=sample` param entirely; `canSetup` is admin-aware, so the signup path can be walked on production without opening signup publicly. Landing page promotes Android to available alongside iPad. 🔴 **Two live-schema findings:** `demo_sessions.extraction_source` existed in production with no migration (now written); and **kitchen ticket printing does not exist on any platform** while the compare table advertises it (§12 O18).
 
@@ -102,7 +106,7 @@ Locked controls carry a **"Not available in demo" chip beside the card TITLE** (
 Minimal: **email + password only.**
 
 1. Create real operator + auth user.
-2. Create real truck (hidden), `plan = 'demo'` (§3).
+2. Create real truck (hidden), **`plan = 'trial'`** with `trial_expires_at` NULL (§3 — CORRECTED v7.1; was `'demo'`).
 3. **Carry the demo menu across.** Offer re-upload; never require redoing it.
 4. **Clear all demo orders** — blank slate.
 5. Delete the demo truck and scaffolding — **copy-then-delete, never promote** (the `demo-` prefix is a proxy security boundary; see Phase 4).
@@ -114,12 +118,22 @@ Minimal: **email + password only.**
 
 Job: **get them from "signed up" to "safe to take a real order."** Nothing more. Every demo assumption surfaces here for confirmation.
 
-1. **Identity** — truck name, logo (skippable), their name, contact email.
-2. **Menu confirm** — pre-filled from the demo extraction.
-3. **Allergens** — the existing allergen wizard.
-4. **Kitchen capacity** — actively re-set (below).
-5. **Schedule** — "Does your website have your schedule?" → Yes: URL, scraper takes over. No: optional photo/email upload, **or skip for later**.
-6. **Done** — "You're set up. When you're ready, pick the event that starts your free month."
+> 🔴 **THIS SIX-STEP LIST IS THE ORIGINAL SPEC. What was BUILT is nine screens — see §15A**, which is the authoritative description of what an operator walks. The list below is kept because the *inclusion reasoning* underneath it (the table, the capacity rule) still governs; the sequence itself has been superseded. **Updated v7.1 to name where each spec step landed**, so the two do not read as two different products.
+
+| # | Spec step | As built (§15A) |
+|---|---|---|
+| 1 | **Identity** — truck name, logo (skippable), their name, contact email | **Moved EARLIER, out of the wizard** — collected in the signup modal, because the truck cannot exist before it has a name (O10). The wizard opens on a truck that is already named. |
+| 2 | **Menu confirm** — pre-filled from the demo extraction | **Screens 2–4** — the demo offer, the editable review, and the extras/grouping pass |
+| 3 | **Allergens** | **Screen 5**, structure first then a confirmation table |
+| 4 | **Kitchen capacity** — actively re-set | **Screen 6**, and it is the one atomic commit |
+| 5 | **Schedule** | **Screen 7 — and it now IMPORTS as well as enrolling** (see below) |
+| — | *(not in the original spec)* | 🔴 **Screen 8 — a settings review**, four rows read live before Done |
+| 6 | **Done** | **Screen 9**, plus the walkthrough offer |
+| — | *(not in the original spec)* | **Screen 1 — a welcome screen**, shown alone before the menu step |
+
+> ✅ **The schedule step changed shape (v7, recorded here at v7.1).** The original *"Yes: URL, scraper takes over"* understated it and, as built the first time, overstated it — the events it found were held in component state and **never written**. Route A now opens the **same editable event modal Settings uses**, so the dates are corrected and saved, **and** the URL is enrolled for the scraper. One modal, one save path. The other two routes are a photo/text import and *"I'll add dates later"* — a real answer, not a skip. §12 / O16.
+
+> ✅ **A settings review screen now sits before Done**, which the original spec did not have at all. Four rows, each reading its **live** value and writing through the same endpoint Settings uses, with every label and help string coming from one shared constant that Manage → Settings also reads. Nothing on it is mandatory. §15A step 8.
 
 > ⚠️ **Kitchen capacity must be actively RE-SET, not pre-filled.** Deliberate exception to the pre-fill rule. Capacity drives the slot engine; a silently-inherited guess means promising times they can't hit — the exact failure the product prevents.
 
@@ -142,7 +156,7 @@ Job: **get them from "signed up" to "safe to take a real order."** Nothing more.
 
 Signed up, set up, **not on the clock, not public.**
 
-- Hidden (§4). `plan = 'demo'` — **not `'trial'`** (§3 / B10).
+- Hidden (§4). **`plan = 'trial'` with `trial_expires_at` NULL** (§3 — CORRECTED v7.1; was `'demo'`, per the now-closed B10). NULL means *not started*, so the full feature set is on and no clock is running — the same operator experience as before, on a plan value nomination can act on.
 - Test orders freely on their real truck, including on a nominated event before it opens.
 - Indicator: **"Setup mode — your free month starts when you go live."** Reassuring, not ominous. Disappears on nomination.
 - No time limit. Nudges only (§8).
@@ -154,7 +168,7 @@ Signed up, set up, **not on the clock, not public.**
 Surfaced on the dashboard/schedule once events exist: *"Ready to go live? Pick the event that starts your free month."* Mechanism: a radio/selector against each event.
 
 **One action, four consequences:**
-1. Starts the clock (`plan` → `'trial'`, sets `trial_expires_at`)
+1. Starts the clock — **sets `trial_expires_at`. The `plan` value is ALREADY `'trial'`** (§3, corrected v7.1); nomination now writes one column, not two.
 2. Flips the truck **public**
 3. Enables **real** customer orders
 4. Marks the reporting boundary (§12 / O2)
@@ -185,9 +199,23 @@ alter table trucks add constraint trucks_plan_check
 
 > ✅ **`tester` was NOT in live use** — a live count returned only 3 trucks, all `plan='trial'`. The reference manual's claim that tester is in use is **stale**; the constraint had never been violated. No hidden hand-run statement to worry about.
 
-**`plan = 'demo'` covers two states:** the anonymous demo truck (Stages 2–4), and the signed-up pre-trial truck (Stage 7). Both want full features, no clock. `PLAN_FEATURES.demo = TRIAL_FEATURES` already exists in code.
+### 🔴 RESOLVED (v7.1, 5 August) — self-serve provisions `trial`
 
-> 🔴 **Why pre-trial cannot be `plan='trial'`** (B10): `canAccess()` returns **false for every feature** when `plan === 'trial'` and `trial_expires_at` is null. A pre-trial truck on `'trial'` would have time-slot selection, pre-ordering, auto-accept, offline protection and batch pacing all switched off — breaking Stage 7's promise that they can test freely.
+> **SUPERSEDES the two paragraphs below, which are retained because the reasoning still matters.** `lib/provision-truck.ts` carries two profiles and only the operator one changed: **operator → `trial`**, **demo → `demo`** (unchanged). The plan value a self-serve signup lands on is now the same one it will still be holding when nomination eventually stamps a date. Manual **V11.1 §4, §13** is authoritative on the mechanism; this section records the flow decision.
+
+**A NULL `trial_expires_at` now means THE TRIAL HAS NOT STARTED**, and grants the full trial feature set. There are three states, not two — not started (NULL), running (future date), expired (past date) — and only the last denies anything. **The expired branch is unchanged.**
+
+> **Why `demo` stopped being the right answer.** It was never wrong about *access*: `PLAN_FEATURES.demo` is the trial set either way, so the operator saw the same product before and after. It was wrong about *meaning* — a sandbox plan that nothing will ever expire, worn by a real operator, is the product being given away with no value that nomination could later act on. **The distinction is the point: a prospect demo is not a signup.** The sandbox keeps `demo` and keeps never expiring, which is correct for a sales surface with nobody behind it.
+
+> ⚠️ **What this does NOT fix.** A NULL expiry granting everything indefinitely is still exactly what a self-serve operator has, because **nomination does not exist** — see §15. The change makes the eventual fix a nomination screen rather than a nomination screen plus a plan migration. It does not shorten the list of what blocks launch.
+
+---
+
+*(Retained for the reasoning — both were true when written.)*
+
+**`plan = 'demo'` covered two states:** the anonymous demo truck (Stages 2–4), and the signed-up pre-trial truck (Stage 7). Both want full features, no clock. `PLAN_FEATURES.demo = TRIAL_FEATURES` already exists in code. ⚠️ **The second of those two states is now `trial`** — see above.
+
+> 🔴 **Why pre-trial could not be `plan='trial'`** (B10) — **CLOSED v7.1.** `canAccess()` returned **false for every feature** when `plan === 'trial'` and `trial_expires_at` was null. A pre-trial truck on `'trial'` would have had time-slot selection, pre-ordering, auto-accept, offline protection and batch pacing all switched off — breaking Stage 7's promise that they can test freely. **The observation was correct and the blocker was real.** It was closed by changing `canAccess`, not by working around it: NULL now grants rather than denies. ⚠️ **Do not re-derive B10 from an old reading of `lib/features.ts`** — the deployed function denied on NULL for longer than the repo did, which cost a full diagnostic session (manual V11.1 §35).
 
 ---
 
@@ -362,7 +390,7 @@ commit;
 | B7 | **Preview-vs-live designed but not built** | An accepted seam, not an enforced mode. |
 | **B8** | 🔴 **`/dashboard` is session-gated** | `proxy.ts` 307s any `/dashboard/*` request without a session to `/login`. **An anonymous demo visitor cannot reach the dashboard at all.** APIs are fine (token-auth); purely the page route. |
 | **B9** | 🔴 **Public surfaces aren't visibility-gated** | Menu, events and order-submit are reachable by slug regardless of `excluded`/`show_on_*` (§4.2). |
-| **B10** | 🔴 **Pre-trial can't be `plan='trial'`** | `canAccess()` returns false for everything when `trial_expires_at` is null (§3). |
+| **B10** | ~~Pre-trial can't be `plan='trial'`~~ | ✅ **CLOSED (v7.1, 5 August)** — `canAccess()` **returned** false for everything when `trial_expires_at` was null. It no longer does: NULL now reads as *the trial has not started* and grants the trial set. Closed by changing the gate, not by routing around it. Self-serve provisions `trial` (§3). |
 
 ### 9.1 ✅ RESOLVED — SECURITY (was: must fix before any demo token is issued)
 
@@ -623,11 +651,16 @@ The demo currently has **no forward path in the product**: "Get started" capture
 
 Minimal: **email + password only.** Everything else is the wizard's job (Stage 6). On submit:
 1. Create the auth user + `operators` row.
-2. Create the **real truck** via `provisionTruck({ kind: 'operator' })` — hidden on every visibility column, `plan = 'demo'` (§3, per B10 — *not* `'trial'`, whose `canAccess()` returns false while `trial_expires_at` is null).
+2. Create the **real truck** via `provisionTruck({ kind: 'operator' })` — hidden on every visibility column, **`plan = 'trial'` with `trial_expires_at` NULL** (§3 — CORRECTED v7.1; was `'demo'` per B10, which is now closed because `canAccess()` no longer denies on a NULL expiry). ⚠️ The `kind: 'demo'` profile is unchanged and still writes `'demo'`.
 3. **Carry the demo menu across** (below).
 4. Open the setup wizard.
 
 **15. Demo → real-truck migration.**
+
+> ⚠️ **CORRECTED v7 — "the menu carries across" is a SERVER HANDOFF, not an automatic copy.** `/api/setup` GET returns the stored extraction; the **re-commit is client-side, in `MenuTab`**, and happens only when the operator walks the import wizard to the Kitchen step and presses Save. Nothing is written to the real truck until then. Two consequences the table below does not convey: a signup that abandons the wizard has a truck with **no menu at all** (which is why re-entry from the Menu tab is a supported path), and the demo's menu is re-committed through the wizard's OWN pipeline, so the operator makes the grouping and allergen decisions rather than inheriting the demo's.
+
+> 🔴 **CORRECTED v7 — a SAMPLE demo's payload is deliberately WITHHELD.** `/api/setup` GET returns `reason: 'template_withheld'` for a demo whose `extraction_source` is `'template'`: the payload is intact and is not handed over, because it was never the operator's menu. The wizard opens at the upload step instead, with no error toast — nothing failed and nothing was lost. **The upload route and the sample route share one flow and one state machine**; only the entry point differs. Do not "fix" the withholding by carrying a sample menu onto a real truck.
+
 
 **What carries — decided:**
 
@@ -639,7 +672,9 @@ Minimal: **email + password only.** Everything else is the wizard's job (Stage 6
 | **Wizard assumptions** (§5 capacity, prep times, batch sizes) | ⚠️ **OPEN — see Q13** | |
 | **Truck identity** (name, logo, contact, WhatsApp) | ❌ NO — none exists | Demo trucks have a generated internal id, deliberately never shown. The wizard's identity step is where a name first exists (Stage 6). |
 
-**Demo-truck retirement.** Do **not** promote the demo truck into the real one: its id carries the reserved `demo-` prefix, which is a **security boundary** — `proxy.ts` exempts `/dashboard/demo-*` from the session gate. A promoted truck would be a real operator's console reachable without a session. So: **provision a fresh real truck, copy the menu, then delete the demo truck** via `deleteTruckCascade` (§7.1) and close its `demo_sessions` row.
+**Demo-truck retirement.** ⚠️ **STILL SPEC ONLY — re-confirmed 4 August. `retired_at` has no writer anywhere, and `deleteTruckCascade` is never called from any signup path.** A converted operator's demo truck is still standing; it is reclaimed only by the 30-day claimed-but-abandoned sweep (§7.2). The design below is what to build, not what exists.
+
+Do **not** promote the demo truck into the real one: its id carries the reserved `demo-` prefix, which is a **security boundary** — `proxy.ts` exempts `/dashboard/demo-*` from the session gate. A promoted truck would be a real operator's console reachable without a session. So: **provision a fresh real truck, copy the menu, then delete the demo truck** via `deleteTruckCascade` (§7.1) and close its `demo_sessions` row.
 
 > ⚠️ **Order the migration so a crash can't lose the menu.** Copy-then-delete, and only delete after the copy is verified — `commitMenu` is non-transactional (§9.2), so a partial copy is a real outcome, not a hypothetical. On partial copy: keep the demo truck, surface the failure, let them retry. **Never** delete on an unverified copy.
 
@@ -761,17 +796,23 @@ Sample demos are **per-visitor clones from a fixed template menu** via the same 
 |---|---|---|
 | O1 | Signup timing — trigger-based only, or a harder nudge after a threshold? | ✅ **Resolved — trigger-based only.** A permanent, undismissable CTA in the DEMO MODE banner, plus one behaviour-triggered prompt at loop completion (§8). No time-based nudge: time measures patience, not interest. |
 | O2 | Pre-trial test orders on the real truck | ✅ **Resolved** — `get_report`'s event mode already scopes strictly by `event_id`, so scoping reports to the nominated event onward is nearly free: no new column, no deletion, no conflict with the `is_test` prohibition. |
-| O3 | Does `show_on_vf` / `order_link_vf` flip true at nomination, or only the HG pair? | Open — separate product decision |
-| O4 | Sample-template maintenance — who keeps Pizza/Burgers/Curries current? | Open |
-| O5 | "We'll build your menu for you" — fulfilment process and volume ceiling? | Open |
+| O3 | Does `show_on_vf` / `order_link_vf` flip true at nomination, or only the HG pair? | **STILL OPEN** — separate product decision, untouched by this session (nomination itself does not exist, §15). |
+| O4 | Sample-template maintenance — who keeps Pizza/Burgers/Curries current? | **STILL OPEN.** Lower stakes than recorded: a sample menu is never carried onto a real truck (the payload is withheld, §10 Phase 4), so a stale template misleads a prospect in the demo but cannot reach an operator's menu. |
+| O5 | "We'll build your menu for you" — fulfilment process and volume ceiling? | **STILL OPEN** — not touched this session. |
 | O6 | Does the demo include an *online* ordering path, given seeding can't use `/api/orders/submit` (§6.1)? | ✅ **Resolved — YES, it's the demo's whole loop.** The seeder's constraint never applied to the *visitor's* orders: they go through `/api/orders/submit` normally (with a demo exemption on the `excluded` gate), and email suppression is handled server-side by `sendEmailUnlessDemo()` rather than by avoiding the path. The order page is demo-moded, and the link + QR are surfaced (Stage 3). |
-| **O7–O13** | **Phase 4 (signup) open questions** — see §10 Phase 4. Retirement-vs-promotion, existing accounts, whether §5 assumptions carry, truck identity/slug timing, email verification, signup rate limiting, demo localStorage cleanup. | Open |
+| **O7** | **What happens to the demo tab that's still open?** | **SUPERSEDED.** The premise was "after migration the demo truck is deleted" — it is not, and never has been (`retired_at` has no writer, §10 Phase 4). The demo tab keeps working until the 30-day sweep. Re-ask this **if and when** retirement is built; the question is real but its trigger does not exist. |
+| **O8** | **Can someone signing up already have an account?** | **PARTLY ANSWERED.** `/api/signup` returns a 409 with `existing: true` and the modal shows "There's already an account with that email — sign in instead" plus a Sign in link. **The overwrite hazard is unresolved**: attaching a demo menu to an existing truck is still not offered and still not refused, because the path never gets that far. STILL OPEN as a product question. |
+| **O9** | **Do the §5 wizard assumptions carry, or does the wizard re-ask?** | **ANSWERED — the wizard RE-ASKS, and that is now settled by build.** The Kitchen-setup step asks per-category prep and batch and the total capacity ceiling; `/api/setup` passes `van: { kitchen_capacity: null }` **deliberately**, so a real truck never inherits a demo's guessed ceiling ("capacity must be an active decision, not an inherited guess"). |
+| **O10** | **What's the identifier for the real truck?** | **ANSWERED — truck creation is DEFERRED until after the identity step.** `/api/signup` creates the auth user and `operators` row and **no truck**; `/api/setup` `create_truck` mints it from the typed name. The rename-is-a-migration problem is avoided rather than solved. |
+| **O11** | 🔴 **Does email verification gate anything?** | **ANSWERED — it gates NOTHING today.** `operator_email_verifications` is written, the link is clicked, `verified_at` is set — and **`lib/go-live-checks.ts` has ZERO call sites and is imported by no file**, so the `email_unverified` issue it defines is evaluated by nothing. Two signups with `verified_at` NULL produced fully working trucks. ⚠️ **This question was recorded as open while the verification system was already built and shipping** — the gap was never the build, it was that nothing consumed it. **DECIDED (Dominic, 4 August): verification is KEPT, and go-live WILL be gated on it. Not yet built** — see §15. |
+| **O12** | **Rate limiting and abuse on `/signup`.** | **ANSWERED.** Two dimensions, both live: per-IP (`signupRatelimit`) and per-EMAIL (`signupEmailRatelimit`), failing OPEN if the limiter is unreachable. The half-built-account question is also answered: a failed `operators` insert triggers a **compensating delete** of the auth user, and `/api/auth/post-login` repairs if that delete itself fails. |
+| **O13** | **Does the demo's localStorage namespace carry forward?** | **STILL OPEN.** No `hg_demo_*` clearing was built. ⚠️ Now slightly larger than recorded: the walkthrough adds its own per-truck key (`hg_walkthrough_<token>`) on the REAL truck, so the two namespaces are adjacent and a future sweep must not take both. |
 | **O14** | **Cross-midnight demo window — SCOPED AND PARKED (23 July).** A demo provisioned after ~23:15 gets a thin board (e.g. 23:40 → 23:59, clamped). The obvious fix is a window that CROSSES midnight, and a read-only diagnostic established that is **not demo-scoped**: there is **no demo seam** — `isDemoIdentifier` appears in none of `slot-availability.ts`, `slot-bookings.ts`, `slot-generation.ts`, `slots.ts`, `slot-display.ts`, or `/api/slots`. The demo runs Gusto's engine by design (§6, "genuine engine output"). Wrap-awareness would have to reach **nine files** including the core of `slot-availability.ts`, plus a dateless-slot schema assumption (`orders.slot`, `production_slot_usage.production_slot`, `slot_capacity.slot` are all HH:MM with no date; every read is `.eq('event_date', …)`). `generateSlots` with `end < start` returns `[]` — a dead board, gracefully. **The `23:59` clamp is the containment that keeps all nine files on their single-day assumption. Do not remove it.** Two cheap demo-scoped alternatives if this ever bites: (a) roll on elapse rather than staleness only — the mechanism already exists, the gap is that it is dashboard-only; (b) **after ~23:15, provision the event on the NEXT day's date** with a normal 3h window — single-day assumption intact, no wrap, confined to `provision-demo-event.ts`. (b) is probably the cleanest. Mitigating factor: the roll self-corrects a thin window within minutes (a 23:40 demo rolls at 23:59 to 00:00–03:00 on the new date) — but only via a dashboard poll, and only if the visitor is still there. | **PARKED** — deliberate, with the scope recorded so it is not re-derived |
-| **O15** | 🔴 **THE FREE MONTH IS NOT WIRED TO ANYTHING.** `trial_expires_at` is `null` at provision (`lib/provision-truck.ts`), null means all features on, and the **only** code that ever sets it is the admin panel — you, by hand. Nomination is the intended trigger and is deliberately Phase 5 (`lib/go-live-checks.ts`). So every promise the onboarding makes — the welcome popup's "your free month starts at your first live event", the signup modal's "setting up won't start your free month", §8's strongest conversion trigger — describes a mechanism that **does not exist**. A signed-up operator's trial is currently unbounded and starts only if you remember to stamp it. **DECIDED: accept manual stamping for now.** Two reasons: nomination is the intended home, and duplicating the trigger means two places that can stamp a trial expiry — customer money. The launch plan is 15 hand-picked trucks; fifteen manual stamps over months is not a burden when you're speaking to each of them. **What to build instead: an admin view listing operators with a confirmed event and no `trial_expires_at`** — turning "remember" into "check a screen". The copy stays honest either way: the policy is real, it is enforced by hand until Phase 5. | **ACCEPTED, with a mitigation to build** |
-| **O16** | **Route A of the schedule step gives no immediate payoff.** A verified URL means the scraper finds dates within the hour — but the operator sees nothing at that moment. Should Route A also offer "add my first date now"? | Open |
-| **O17** | **Should the setup-mode done screen point at the live order link?** After five steps, seeing their own ordering page is the natural payoff. | Open |
+| **O15** | 🔴 **THE FREE MONTH IS NOT WIRED TO ANYTHING.** `trial_expires_at` is `null` at provision (`lib/provision-truck.ts`), null means all features on, and the **only** code that ever sets it is the admin panel — you, by hand. Nomination is the intended trigger and is deliberately Phase 5 (`lib/go-live-checks.ts`). So every promise the onboarding makes — the welcome popup's "your free month starts at your first live event", the signup modal's "setting up won't start your free month", §8's strongest conversion trigger — describes a mechanism that **does not exist**. A signed-up operator's trial is currently unbounded and starts only if you remember to stamp it. **DECIDED: accept manual stamping for now.** Two reasons: nomination is the intended home, and duplicating the trigger means two places that can stamp a trial expiry — customer money. The launch plan is 15 hand-picked trucks; fifteen manual stamps over months is not a burden when you're speaking to each of them. **What to build instead: an admin view listing operators with a confirmed event and no `trial_expires_at`** — turning "remember" into "check a screen". The copy stays honest either way: the policy is real, it is enforced by hand until Phase 5. | **SUPERSEDED by §15 — and it is worse than recorded.** The finding stands and the manual-stamping decision stands, but two things this session established change the shape of the problem: (a) signup provisions plan **`demo`**, not `trial`, and `canAccess()` applies its expiry check ONLY when `plan === 'trial'` — so a self-serve operator has the full trial feature set **permanently**, not "unbounded until stamped"; and (b) an expired trial has **LESS** access than Starter, not Starter's set. Nomination's design must therefore answer what happens at EXPIRY, not just at start. §15. <br><br>⚠️ **UPDATED v7.1 — half of (a) is now out of date, and NOTHING ELSE HAS CHANGED.** Signup provisions **`trial`**, and a NULL expiry grants the trial set rather than denying it (§3). **The practical position is identical:** a self-serve operator still holds the full trial feature set indefinitely, because nothing starts the clock. What changed is *why* — it was "a plan the expiry check never looks at", it is now "a plan whose expiry check reads NULL as not-started". **(b) is unchanged and is now the sharper half:** an expired trial still has less access than Starter, and the three live trials have dates (manual V11.1 §4). The manual-stamping decision stands. |
+| **O16** | **Route A of the schedule step gives no immediate payoff.** | ✅ **ANSWERED AND BUILT — Route A now imports as well as enrolling.** It was worse than "no payoff": the events it found were held in component state, rendered as a count, and **never written** — a truck finished this route with `schedule_url` set, `scraper_preference` `'auto'` and **zero `truck_events` rows**. It now opens the SAME editable event modal Settings uses (one modal, one save path, one editable event list in the codebase), and still enrols the URL. Both promises are kept: these dates now, and the page watched from here on. |
+| **O17** | **Should the setup-mode done screen point at the live order link?** | **STILL OPEN — and now competing for the same space.** The done screen is no longer bare: it carries the celebration, the item/category count, the Manage-vs-Dashboard line and the three-way walkthrough offer (§15A). Adding the order link is still the natural payoff, but it is now a question of what it displaces, not what fills a gap. |
 | **O18** | 🔴 **Kitchen ticket printing is advertised but does not exist on any platform.** The compare table shows `Kitchen ticket printing — Max: ✓`, and the manual records printing as ready at launch. `lib/printing/` contains only `createStubTransport` ("Phase A, no hardware"); there is no BLE plugin, no Star/Epson SDK, and no `printer_class` column. Footnote 5 has been made platform-neutral ("the HatchGrab kitchen app") but the ✓ remains. **Also relevant to Android:** the recommended backend (`mfi`, Star/Epson via Apple's External Accessory framework) is **iOS-only by construction** — MFi has no Android equivalent, so Android printing means the `ble` path, which the code itself calls the budget fallback with "LIMITED/NO status + fiddlier reconnect". For a truck printing all service, "the printer silently stopped and nothing told you" is what an Android printing promise would underwrite. **Decision needed: ship it, mark the row `coming_soon`, or accept the claim.** | **OPEN — the sharpest claim on the pricing page** |
-| **O19** | **Should the seeded-order floor protect the hour after seeding, not just the moment of it?** `max(start+10, now+10)` guarantees no order is seeded into the past, but on a short window every order crosses the late threshold within minutes of the others and the board turns uniformly red. On a full 3h board the front goes red while the back is still grey — which reads as a working kitchen. The order-count scaling mitigates this; whether it fully solves it wants watching on a real late-night demo. | Open |
+| **O19** | **STILL OPEN — untouched this session.** **Should the seeded-order floor protect the hour after seeding, not just the moment of it?** `max(start+10, now+10)` guarantees no order is seeded into the past, but on a short window every order crosses the late threshold within minutes of the others and the board turns uniformly red. On a full 3h board the front goes red while the back is still grey — which reads as a working kitchen. The order-count scaling mitigates this; whether it fully solves it wants watching on a real late-night demo. | Open |
 
 ---
 
@@ -800,3 +841,73 @@ Signup becomes **"claim it"** rather than "save it" — lower friction still. Re
 2. **The next-morning restart** — leave a demo overnight, open it, "Start a new service". The truck-wide delete exists for exactly this and has never been exercised.
 3. **The two login-path tests**, owed since 23 July. A brand-new signup exercises the first directly.
 4. A late-night demo, to see whether the scaled order count reads as quiet rather than broken.
+
+---
+
+## 15. What still blocks self-serve launch
+
+> Recorded in full in **manual V11.1 §27** under `🔴 BLOCKING SELF-SERVE LAUNCH` and `🔴 THE EXPIRY CLIFF`. Not duplicated here — this is the onboarding-shaped summary and the manual is authoritative. **Four items, and v7.1 changed the wording of one and split another out.**
+
+**1. 🔴 Trial nomination does not exist.** No UI, no route, nothing writes `trial_expires_at` except an admin by hand. **UPDATED v7.1:** signup now provisions plan `trial` rather than `demo`, so the truck is no longer parked on a plan value nothing could ever expire — but with `trial_expires_at` NULL meaning *not started*, **a self-serve operator still holds the full trial feature set indefinitely.** The consequence is unchanged; only the shape of the remaining fix is. **A self-serve trial cannot be STARTED.**
+
+**2. 🔴 Four feature gates are declared and enforced nowhere.** `auto_accept`, `meal_deals`, `upsells`, `offline_protection` are in the `Feature` union and the plan sets, with no `canAccess` call anywhere. A Starter truck can use all four — and provisioning now turns `auto_accept` on for every new truck.
+
+**3. 🔴 Both `SIGNUP_PUBLIC` variables.** The server-side one is the real gate on `/api/signup`; `NEXT_PUBLIC_SIGNUP_PUBLIC` only chooses which client path renders and is baked at BUILD time. Flipping one without the other either opens the API with no UI or shows a UI the API refuses. ⚠️ An admin session already bypasses the client flag, which is how the chain is walked before it is public — so "the flag is off" does not mean "nobody can reach it".
+
+**4. 🔴 What happens at EXPIRY is undecided.** Split out of item 1 at v7.1, because it is a separate decision that nomination does not answer by shipping. Once `trial_expires_at` passes, `canAccess()` returns **`false` for EVERY feature** — an expired trial has **LESS** access than Starter, not Starter's feature set — and **nothing writes the `plan` value at expiry**, so the row still reads `trial` while behaving as nothing. Two questions, and answering one does not answer the other: **what feature set an expired trial falls back to**, and **what the `plan` value becomes and what writes it**. ⚠️ **This one has dates in the calendar rather than waiting on a build** — three live trials expire between August and October (manual V11.1 §4, §27). ⚠️ And it is not uniform: `hasFeature()` skips the expiry check entirely and gates `advance_preordering` on the customer order page, so an expired trial's **customers keep pre-ordering** while the operator's own screens go dark.
+
+> ✅ **What v7.1 DID settle**, so it is not re-litigated: the NULL case. It used to deny every feature, which is why §3 / B10 ruled `'trial'` out for a pre-trial truck at all. NULL now means *not started* and grants. **The expired branch was deliberately left untouched** — changing what expiry means was never in scope for a provisioning fix, and it is item 4.
+
+**Also owed before launch, and not in the manual's blocking list:** go-live gating on `verified_at` (O11 — decided, not built), and the demo-truck retirement §10 Phase 4 specifies but nothing implements.
+
+---
+
+---
+
+## 15A. The setup wizard as it stands (4 August)
+
+> This is what an operator EXPERIENCES, start to finish. It is deliberately not organised by what was built when — that is in the nineteen session reports in `docs/`. Schema facts and invariants live in the manual (V11.1 §13, §16, §35); this is the journey. ⚠️ **Unchanged at v7.1** — the plan-model session altered what a truck's `plan` column says, not a single screen of this.
+
+They arrive on Manage from the signup modal, already signed in, with `setup_step: 'menu'` on their truck. Everything below is gated on that: an operator who has finished setup sees none of it, and neither does a live truck importing a menu.
+
+**1. Welcome.** One screen, alone: *Welcome to HatchGrab — {truck name} is set up. Next we'll add your menu, then your first event. You can stop and come back whenever.* ⚠️ **It is shown ALONE.** It and the wizard were briefly mounted together, the welcome in front and the wizard visible behind it; the fix was a render gate, not a z-index (manual §35). "Let's go" reveals whichever first screen was already chosen.
+
+**2. Offer, or upload.** A demo whose own menu was extracted is asked *"Use the menu from your demo?"* with the item count — accept, or upload a different one. A **sample** demo skips straight to the upload step, because its payload is deliberately withheld (§10 Phase 4).
+
+**3. Menu review.** The extracted items as a flat, editable list grouped by category: rename an item, correct a price, untick anything they do not want. Categories can be **renamed, added and deleted** here, and deleting one that still holds dishes makes them say where those dishes go first — items with no category are silently dropped at commit, so the question is compulsory. 🔴 **A price the AI could not read blocks Next** until it is priced or marked free; committing at £0 is indistinguishable from a deliberately free item once it is live.
+
+**4. Extras.** Only when variants were detected: "one customisable item, or separate dishes?" per family. The default is grouped.
+
+**5. Allergens.** Structure first (per-dish or an allergen card), then — for per-dish — a confirmation table, opening in TABLE view because a whole freshly-extracted menu is faster to review as a matrix. 🔴 **Next stays disabled until every dish is confirmed**, with "Skip Allergen setup for now" as the always-available escape. Unconfirmed dishes commit `allergens_verified = false` and are **hidden from customers entirely** in per-dish mode — not shown without allergen info, absent.
+
+**6. Kitchen setup.** Per-category prep time and batch size, then the total capacity ceiling and its window. Left blank by provisioning **on purpose** — a ceiling nobody chose would quietly promise collection times the kitchen cannot hit. This step is the ONE atomic commit: nothing before it has been written, and abandoning the wizard here loses the review, not the account.
+
+**7. Schedule.** Three routes, one of which is the operator's own website: verify it, and the dates found open in the **same editable event modal Settings uses** — correct a venue, a date or a time, deselect what they do not want, save. The URL is enrolled for the scraper at the same time, so both promises hold. The other two routes are a photo/text import and "I'll add dates later", which is a real answer rather than a skip.
+
+**8. A few settings to check.** Four rows, each reading its **live** value and writing through the same endpoint Settings uses: let customers cancel (and the window), auto-accept, the order-ready step, and buzzers (with a count). Every label and help string comes from one shared constant that Manage → Settings reads too, so the wizard and the settings screen cannot describe the same toggle differently. Nothing here is mandatory.
+
+**9. Done.** A celebration, the count of what landed, one line explaining Manage versus Dashboard, and three choices: **Show me around**, **Remind me later**, or **I'll explore myself**. "Remind me later" leaves a dismissible strip at the top of Manage; the tour itself is five coach marks over the tab bar that never navigate, and can be re-opened from the bottom of Settings.
+
+> ⚠️ **Re-entry is a supported path, not a fallback.** `setup_step` is read live, so an operator who leaves at any point and later presses "Import menu" on the Menu tab resumes the setup-aware wizard — Schedule and Settings steps included. What they do NOT get again is the welcome screen or the demo offer; those are first-arrival only.
+
+---
+
+## 15B. Decisions this session made — do not silently reverse
+
+Each of these was a choice between defensible options. The reasoning matters more than the outcome, because the outcome is easy to "tidy" back.
+
+- **Two emails, sequenced — verification at account creation, welcome on confirmation.** NOT merged into one, and NOT both at once. The verification email asks for one thing; the welcome email is the payoff for doing it, and arrives only on the FIRST successful confirmation. A second click on the same link sends nothing.
+- **🔴 Neither email carries a dashboard token.** `/api/manage` authenticates on `dashboard_token` ALONE with no session, so mailing one puts a long-lived bearer credential in an inbox. The emails link to a **tokenless `/manage`**, which resolves the operator's truck from their session and forwards; a logged-out click lands on login and returns there afterwards.
+- **Provisioning defaults, chosen deliberately per profile:** pre-orders **off** (a truck with no menu and no event cannot take one, and showing the deadline section already configured presents a feature as a fait accompli); **auto-accept ON** (off meant a new operator's first order sat unconfirmed until they found the dashboard, which reads as the product being broken); **notes-review ON** (what makes auto-accept safe — an order carrying an allergy note still stops for a human); **separate paid step ON**; **cash OFF** (an operator-side button layout, not a customer payment method — turning it on for a truck that has not asked puts a Cash/Card choice in front of every order).
+- **The sample and upload routes share one flow and one state machine.** Only the entry point differs. ⚠️ **The two CTA copy variants stay divergent on purpose** — someone who uploaded their own menu has made something and watched it work; a sample demo has no such artifact and "save my menu" would be false (§10 Phase 4D). Do not collapse them because they nearly match.
+- **Deals: the three-layer model is unchanged and working as designed** — template (`is_available`), new-event default (`apply_to_new_events`), per event (`event_deals.active`). Manual V11.1 §8. ⚠️ A finding that "Off does not hide a deal from customers" was **WRONG** and has been retracted there; do not re-derive it from the customer read path. ✅ **Re-investigated v7.1 and found SOUND — no change needed and none made.** Recorded because a model that has been challenged once and held is worth marking settled, or the same read gets re-run.
+- **Upsells being live on save is the design, not a gap.** A rule is a suggestion, not a published object: it surfaces only items already on the menu and already available, and one pointing at an empty category degrades to nothing. **No `is_active` column is wanted.** ✅ **Re-confirmed v7.1 — investigated as a possible gap and found intended.**
+- **🔴 Discount codes are CAPTURED ONLY.** `operators.signup_promo_code` is recorded at signup, never validated against anything, never applied, and read by nothing except a read-only admin chip. There is no list to check against **by design** — a code is a marketing artifact and nothing about it may stand between an operator and an account. An unrecognised code is a recorded fact, not an error. Deals are honoured by hand.
+
+### Added v7.1 (5 August)
+
+- **🔴 Self-serve provisions `trial`; the demo profile stays `demo`.** Two profiles in one file, and they diverged the moment the difference mattered. **A prospect sandbox is not a signup:** a plan that never expires is correct for a sales surface with nobody behind it and wrong for a real operator. ⚠️ **Do not "tidy" them back onto one value** — they shared one for exactly as long as it took for that to become the launch blocker. Manual V11.1 §13.
+- **🔴 A NULL `trial_expires_at` means NOT STARTED, and grants.** It used to deny every feature. The reasoning is that the failure direction is one-way: the worst outcome of granting on NULL is that somebody is not charged when they might have been, whereas denying on NULL took the product away from operators who had not begun using it — during the setup wizard, which is exactly when they are deciding whether to stay. **The EXPIRED branch was deliberately left untouched in the same change**; what expiry should mean is a separate decision (§15 item 4). Manual V11.1 §4.
+- **The Billing Trial column shows until the trial ENDS, not only while it runs.** The condition asks *"has this trial ended"* (NULL or future → show), not *"is it running now"*. The old question hid the column from an operator whose trial had not started — **the exact audience it exists to inform**, since they are the ones deciding whether the plan is worth having. ⚠️ **One condition, three readers** (the column array and two header spacer rows): they must evaluate the same expression or every section header sits one cell out of alignment, with both halves looking correct in isolation. Manual V11.1 §4, §35.
+
+---

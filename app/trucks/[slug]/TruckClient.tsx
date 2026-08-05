@@ -12,6 +12,7 @@ import TruckListCard from '@/components/TruckListCard';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { isHatchGrab } from '@/lib/domain';
+import { hrefFromStoredUrl } from '@/lib/url-normalise';
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
@@ -196,7 +197,8 @@ export default function TruckClient({ slug }: { slug: string }) {
 
             {truckInfo.websiteUrl && (
                 <a 
-                    href={truckInfo.websiteUrl.startsWith('http') ? truckInfo.websiteUrl : `https://${truckInfo.websiteUrl}`} 
+                    /* V3: one shared helper, byte-identical to the expression it replaces — see lib/url-normalise.ts */
+                    href={hrefFromStoredUrl(truckInfo.websiteUrl)}
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 mt-3 text-sm font-semibold text-orange-600 hover:text-orange-700 hover:underline transition-colors"
