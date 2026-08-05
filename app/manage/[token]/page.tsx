@@ -13,6 +13,7 @@ import { useToasts, type ShowToast } from '@/lib/useToasts'
 import { ToastStack } from '@/components/ToastStack'
 import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { PRICING_PUBLISHED, maskPrice } from '@/lib/pricing'
+import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
@@ -383,8 +384,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   }, [])
 
   // Trial accounts default to billing tab on every page load
+  // 🔴 NOT ON iOS (App Store 3.1.1/3.1.3) — opening straight onto the plan-and-upgrade surface is the
+  // strongest purchase steer in the product. The tab stays REACHABLE on iOS (its matrix is permitted
+  // information); it simply is not opened for them. Web and Android are byte-identical to before.
+  // ⚠️ Dependency array deliberately unchanged — see the backlog; it is a separate known issue.
   useEffect(() => {
-    if (truck?.plan === 'trial') setActiveTab('billing')
+    if (truck?.plan === 'trial' && purchaseCtaAllowed()) setActiveTab('billing')
   }, [truck?.id])
 
   // Trial reminder popup — only within the final 2 months of the trial, then once per day.
@@ -392,7 +397,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // window gate) — e.g. ~2.4 months out. Now it stays hidden until now >= trial_end − 2 months
   // (Test Kitchen trial ends 23 Aug 2026 → shows from ~23 Jun 2026). The daily-dismiss
   // localStorage behaviour is kept on top (closing it won't re-show until the next day).
+  // 🔴 SUPPRESSED ENTIRELY ON iOS (App Store 3.1.1/3.1.3). Gated here at the TRIGGER, not only at the
+  // render, so the localStorage write never happens either — otherwise `hg_trial_reminder_shown` would be
+  // stamped for a popup the operator never saw, and the day they opened the web dashboard instead it would
+  // stay silent. A suppressed prompt must not consume its own once-per-day budget.
   useEffect(() => {
+    if (!purchaseCtaAllowed()) return
     if (truck?.plan !== 'trial') return
     if (!truck.trial_expires_at) return
     const windowStart = new Date(truck.trial_expires_at)
@@ -643,8 +653,13 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
 
       <ToastStack toasts={toasts} dismissToast={dismissToast} />
 
-      {/* Trial reminder popup — shown once per day */}
-      {showTrialReminder && truck && (
+      {/* Trial reminder popup — shown once per day.
+          🔴 `purchaseCtaAllowed()` is the SECOND of two iOS guards; the trigger effect above already
+          returns early, so `showTrialReminder` can never be true on iOS. Kept deliberately as a render-site
+          guard: this popup's entire body is purchase copy ("Choose your plan before then...", "Upgrade
+          here"), so if a future change ever sets the flag from somewhere else, the wrong default here is a
+          submission-blocking screenshot rather than a cosmetic bug. */}
+      {showTrialReminder && truck && purchaseCtaAllowed() && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl relative">
             <button
@@ -9607,6 +9622,12 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
             <p className="text-sm text-slate-500">
               The Starter plan includes 1 van. Upgrade to Pro or Max to add additional vans.
             </p>
+            {/* 🔴 iOS (App Store 3.1.1/3.1.3): the "View plans" CTA is suppressed, the EXPLANATION is not.
+                An operator who hits the van limit still has to be told why the button did nothing — a
+                silent no-op is a worse product than a limit with a reason. Cancel keeps `flex-1`, so as
+                the only child it fills the row and no empty half is left behind.
+                ⚠️ href repointed /pricing → ?tab=billing on ALL platforms: /pricing has never existed and
+                this link has been a 404 for every operator since it shipped. See the report. */}
             <div className="flex gap-3">
               <button
                 onClick={() => setShowVanUpgradeModal(false)}
@@ -9614,12 +9635,14 @@ function SettingsTab({ truck, token, api, reload, showToast, onVerifySuccess, on
               >
                 Cancel
               </button>
-              <a
-                href="/pricing"
-                className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-orange-700"
-              >
-                View plans
-              </a>
+              {purchaseCtaAllowed() && (
+                <a
+                  href="?tab=billing"
+                  className="flex-1 bg-orange-600 text-white font-semibold py-3 rounded-xl text-sm text-center hover:bg-orange-700"
+                >
+                  View plans
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -9892,29 +9915,61 @@ function BillingTab({ truck }: { truck: Truck | null }) {
                       ? `Your trial ends ${formatDate(truck.trial_expires_at)}`
                       : TRIAL_NOT_STARTED_HEADING}
                   </p>
+                  {/* 🔴 iOS (App Store 3.1.1/3.1.3) — the dated branch is SPLIT, not gated whole.
+                      "You're on Max features." is a FACT about the account and must survive; "Choose a plan
+                      before your trial ends to keep access." is an instruction to buy, on a screen where iOS
+                      has no way to buy, so it goes.
+                      ⚠️ THE WEB STRING IS ONE UNTOUCHED LITERAL, not two halves concatenated. Assembling it
+                      from pieces would put a space boundary between them that nothing tests, and this is the
+                      sentence the manual records as byte-identical to what Gusto and RTF read today. The
+                      shorter iOS-only string is the second literal; web and Android never evaluate it.
+                      ⚠️ NOT-STARTED branch untouched — TRIAL_NOT_STARTED_BILLING already contains no
+                      instruction to buy, so it needs no gate on either platform. */}
                   <p className="text-xs text-slate-600 mt-0.5">
                     {truck.trial_expires_at
-                      ? "You're on Max features. Choose a plan before your trial ends to keep access."
+                      ? (purchaseCtaAllowed()
+                          ? "You're on Max features. Choose a plan before your trial ends to keep access."
+                          : "You're on Max features.")
                       : TRIAL_NOT_STARTED_BILLING}
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 sm:flex-shrink-0">
-                  <button
-                    onClick={() => openUpgrade('max')}
-                    className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
-                  >
-                    Upgrade to Max — {px('£49/mo')}
-                  </button>
-                  <button
-                    onClick={() => openUpgrade('pro')}
-                    className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
-                  >
-                    Choose Pro — {px('£29/mo')}
-                  </button>
-                </div>
+                {/* 🔴 iOS (App Store 3.1.1/3.1.3): the two upgrade buttons are suppressed. The whole
+                    BUTTON COLUMN is gated rather than each button, so nothing is left holding an empty
+                    flex child — the text block beside it becomes the sole child of the row and fills it. */}
+                {purchaseCtaAllowed() && (
+                  <div className="flex flex-col gap-2 sm:flex-shrink-0">
+                    <button
+                      onClick={() => openUpgrade('max')}
+                      className="w-full sm:w-auto px-4 py-2 bg-orange-600 text-white text-sm font-semibold rounded-xl whitespace-nowrap hover:bg-orange-700 transition-colors"
+                    >
+                      Upgrade to Max — {px('£49/mo')}
+                    </button>
+                    <button
+                      onClick={() => openUpgrade('pro')}
+                      className="w-full sm:w-auto px-4 py-2 border border-orange-300 text-orange-600 text-sm font-medium rounded-xl whitespace-nowrap hover:bg-orange-50 transition-colors"
+                    >
+                      Choose Pro — {px('£29/mo')}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-            {truck.trial_expires_at && (
+            {/* 🔴 iOS (App Store 3.1.1/3.1.3): the WHOLE reassurance block goes, container and all.
+                On iOS there is no charging mechanism reachable at all, so a promise about WHEN charging
+                begins describes something the operator cannot see, act on or verify. Half of it would read
+                stranger than none.
+                ⚠️ THE CONTAINER IS GATED, NOT JUST THE CHARGING PARAGRAPH — and that deliberately takes the
+                "*Standard card processing fees" footnote with it. That line is an asterisk with no
+                antecedent once the sentence above it is gone: left behind it would be a lone centred grey
+                footnote marking nothing, which is exactly the orphan the no-empty-shells rule exists for.
+                Gating the fragment also takes its `mt-3` / `mt-1` spacing, so no dangling vertical gap is
+                left between the trial card and billingCard.
+                ✅ The trial END DATE survives — it renders twice above, in the "Trial ends {date}" line and
+                the "Your trial ends {date}" heading, neither of which is touched here. An iOS operator is
+                never left without knowing when access lapses.
+                🔴 NO REPLACEMENT COPY IS ADDED. Pointing at hatchgrab.com to manage a plan is the precise
+                thing 3.1.3 prohibits outside the US storefront — it would be worse than what is removed. */}
+            {truck.trial_expires_at && purchaseCtaAllowed() && (
               <>
                 <p className="text-xs text-center text-slate-500 mt-3">
                   🔒 You won&apos;t be charged anything until your trial ends on{' '}
@@ -9927,9 +9982,15 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               </>
             )}
           </div>
-          <p className="text-xs text-amber-600 font-medium -mt-3">
-            ⏱ Set up payment before your trial ends to keep access
-          </p>
+          {/* 🔴 iOS (App Store 3.1.1/3.1.3): "set up payment" is an instruction to buy, so it is suppressed.
+              ⚠️ The `-mt-3` that pulls this line up to the card above it goes WITH the line — leaving the
+              paragraph out but its negative margin behind would collapse the gap between the trial card and
+              billingCard on iOS only. */}
+          {purchaseCtaAllowed() && (
+            <p className="text-xs text-amber-600 font-medium -mt-3">
+              ⏱ Set up payment before your trial ends to keep access
+            </p>
+          )}
           {billingCard}
           <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
             {matrixContent}
@@ -9950,23 +10011,30 @@ function BillingTab({ truck }: { truck: Truck | null }) {
               <p className="text-sm text-slate-700 mt-0.5">{px(PLAN_PRICES[currentPlan])}</p>
               <p className="text-sm text-slate-700 mt-0.5">{PLAN_DESCRIPTIONS[currentPlan]}</p>
             </div>
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <p className="text-sm font-bold text-slate-900 mb-3">Upgrade your plan</p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => openUpgrade('pro')}
-                  className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
-                >
-                  Pro — {px('£29/mo')}
-                </button>
-                <button
-                  onClick={() => openUpgrade('max')}
-                  className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
-                >
-                  Max — {px('£49/mo')}
-                </button>
+            {/* 🔴 iOS (App Store 3.1.1/3.1.3): the ENTIRE panel is gated, heading included. Gating only the
+                two buttons would leave a bordered grey box containing the words "Upgrade your plan" and
+                nothing else — an empty shell that reads as a broken screen and still says "upgrade".
+                What a Starter operator keeps on iOS: their current plan above, and the full feature matrix
+                below, which shows exactly what each tier includes. */}
+            {purchaseCtaAllowed() && (
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                <p className="text-sm font-bold text-slate-900 mb-3">Upgrade your plan</p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => openUpgrade('pro')}
+                    className="flex-1 py-2.5 border border-orange-200 text-orange-600 text-sm font-semibold rounded-xl hover:bg-orange-50 transition-colors"
+                  >
+                    Pro — {px('£29/mo')}
+                  </button>
+                  <button
+                    onClick={() => openUpgrade('max')}
+                    className="flex-1 py-2.5 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-colors"
+                  >
+                    Max — {px('£49/mo')}
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
           {billingCard}
           <div className="bg-white border-0 shadow-none rounded-none px-0 sm:border sm:border-slate-200 sm:shadow-sm sm:rounded-2xl sm:px-6 py-6">
@@ -10004,8 +10072,15 @@ function BillingTab({ truck }: { truck: Truck | null }) {
         </>
       )}
 
-      {/* Upgrade interest modal */}
-      {showUpgradeModal && (
+      {/* Upgrade interest modal.
+          🔴 SUPPRESSED ENTIRELY ON iOS (App Store 3.1.1/3.1.3) — this modal IS the external purchase
+          mechanism the guideline names: its primary action is a `mailto:` that leaves the app with a
+          pre-filled upgrade request. Nothing in it is informational, so nothing survives the gate.
+          ⚠️ SECOND GUARD, deliberately. All four `openUpgrade()` callers are already suppressed above, so
+          `showUpgradeModal` cannot become true on iOS today. It is gated here as well because this is the
+          single highest-risk element in the app for review, and a future fifth caller must not be able to
+          surface it by omission. */}
+      {showUpgradeModal && purchaseCtaAllowed() && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 flex flex-col gap-4">
             <div>

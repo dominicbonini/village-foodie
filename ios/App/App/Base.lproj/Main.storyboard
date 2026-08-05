@@ -11,7 +11,11 @@
         <!--Bridge View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="CAPBridgeViewController" customModule="Capacitor" sceneMemberID="viewController"/>
+                <!-- HGBridgeViewController subclasses CAPBridgeViewController to add a native failed-load
+                     state (see HGBridgeViewController.swift). customModule is the APP target, not
+                     Capacitor, and customModuleProvider="target" is required or the class is looked up in
+                     the Capacitor module and the app launches to a bare UIViewController with no webview. -->
+                <viewController id="BYZ-38-t0r" customClass="HGBridgeViewController" customModule="App" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
         </scene>

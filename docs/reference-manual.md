@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.1
+HatchGrab Engineering Reference Manual · V11.2
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.1**
+**Version 11.2**
 
 August 2026
 
@@ -15,6 +15,12 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.2 — 5 August 2026
+
+Delta over V11.1 — **one working-practice rule, no architecture change.** Recorded because the practice was already in daily use and existed nowhere in writing.
+
+- **Every Cursor task ends with a written report to `docs/<workstream>-report.md`**, with a two-line summary in chat. §22 already said *"audit reports flow coding → planning"* and named no mechanism; the mechanism is now recorded beneath it. **Overwriting the previous report is expected** — reports are working documents, and anything durable is promoted into this manual, which is what the overwrite forces. 🔴 **The reason is transport, not tidiness: long reports pasted into chat arrive GARBLED**, and the same corruption runs the other way, which is why a file containing `§`, `£`, `—` or emoji must reach Cursor by download-to-disk rather than as an attachment. §22.
 
 ## V11.1 — 5 August 2026
 
@@ -3681,7 +3687,7 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 
 - **Planning chat (Claude)** — strategy, UX, architecture, Cursor-ready prompts. Does NOT write code.
 - **Coding chat (Claude within Cursor)** — implementation, file edits, smoke tests.
-- Instructions flow planning → coding; audit reports flow coding → planning.
+- Instructions flow planning → coding; audit reports flow coding → planning. 🔴 **A report flows back as a FILE, not as pasted chat text** — the mechanism is below.
 
 ### Working with the planning chat (Dominic's method, V6.6)
 
@@ -3692,6 +3698,17 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - Manual updates: the planning chat maintains a running tally and hands over a consolidated paste-ready block before a chat closes (Dominic pastes it into the master manual); it can't hold exact wording across chats, so the hand-over must happen with room to spare.
 
 > **RULE (V6.7) — Cursor instructions go in a FENCED CODE BLOCK.** Any Cursor action must be delivered inside a triple-backtick fenced code block, never as free-running prose. Free text forces a manual click-drag selection; a fenced block is one-click copy. This tightens the existing "ONE clean copy-paste block" rule with the explicit format requirement.
+
+### Every Cursor task ends with a written report (V11.2)
+
+> **RULE (V11.2)** — This is the return leg of the two-chat pattern above, and it is the mechanism behind *"audit reports flow coding → planning"*. The V6.7 rule governs how a prompt travels **out**; this governs how the answer travels **back**.
+
+- Every Cursor prompt closes with, verbatim: **"FINALLY: write your full report to `docs/<workstream>-report.md`, overwriting whatever is there. Then in chat, give me only a two-line summary and confirm the file is written."**
+- **The two-line summary is read first** in the planning chat; the `.md` file is attached back only when the detail matters. Most tasks never need the file opened — which is the point of asking for both.
+- **Overwriting the previous report is EXPECTED.** Reports are working documents, not an archive. Anything durable — an invariant, a live-schema fact, a lesson — **belongs in this manual instead**, which is what a report is mined for before it is overwritten. ⚠️ A report kept because "it might be needed later" is a second, unmaintained copy of something that should have been promoted here; the overwrite is what forces the promotion.
+- **`<workstream>` names the task, not the date.** `docs/feature-lock-report.md`, not `docs/2026-08-05-report.md` — a name that says what it is can be found again and can be legitimately overwritten by the next pass at the same problem, which a date cannot.
+
+> 🔴 **WHY IT EXISTS: long reports pasted directly into chat arrive GARBLED.** A file on disk is the only reliable way to move Cursor's full output into a planning chat intact. **Same cause, same remedy in the other direction: any file containing `§`, `£`, `—` or emoji must reach Cursor by DOWNLOAD-TO-DISK, never as a chat attachment.** The characters that break are exactly the ones this manual is full of, which is why every documentation task on it runs a non-ASCII character census before and after — a silent substitution (curly quotes for straight, a dropped variation selector, a mangled em dash) is indistinguishable from an edit until something counts the characters.
 
 ## Audit before build
 
@@ -5640,4 +5657,4 @@ Both phases **deployed and live-verified**. Migrations run by hand and confirmed
 
 ⚠️ **`capacitor.config.ts` bakes the server URL at `cap sync` time.** `localhost:3000` reaches the Mac's dev server from the *simulator* but resolves to the *iPad's own* loopback on hardware — a blank screen with no error (the same asymmetry §8 records for `wakeLock` over LAN). Use the Mac's LAN IP for a physical device, or unset `CAP_SERVER_URL` for production. `IS_LOCAL_HTTP` tests `startsWith('http://')`, so cleartext is correctly enabled for a LAN IP. **Revert to production with a plain `npx cap sync ios` before any real build.**
 
-HatchGrab Engineering Reference Manual · V11.1
+HatchGrab Engineering Reference Manual · V11.2
