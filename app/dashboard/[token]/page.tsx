@@ -2322,7 +2322,12 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       {/* Header */}
       {/* FIX 7 — DEMO hides the truck name. It's a GENERATED internal id ("Demo Kitchen (f1dz70)") that the
           spec says must never be shown; the visitor has no truck of their own yet. */}
+      {/* sticky={false}: this header is a shrink-0 flex child of an h-dvh overflow-hidden shell, so
+          position:sticky can never apply an offset here — the root never scrolls and <main> is a SIBLING,
+          not an ancestor. It becomes `relative`, keeping z-50 and the stacking context while dropping
+          WebKit's sticky compositing hint. See AppHeader and docs/native-shell-report.md. */}
       <AppHeader
+        sticky={false}
         truckName={isDemo ? null : (truck?.name ? (vanName ? `${truck.name} — ${vanName}` : truck.name) : null)}
         truckLogoUrl={truck?.logo || null}
         subtitle={truck?.venue_name || undefined}

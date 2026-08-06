@@ -510,7 +510,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     <PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
     <div className="bg-slate-50 h-dvh flex flex-col overflow-hidden">{/* App-shell (KDS flex pattern): fixed-viewport column, bars are shrink-0, only <main> scrolls — keeps the header+tabs locked in the iPad WKWebView where stacked position:sticky-against-body-scroll was unreliable. Matches the dashboard. */}
       {/* Header */}
+      {/* sticky={false}: this header is a shrink-0 flex child of an h-dvh overflow-hidden shell, so
+          position:sticky can never apply an offset here — the root never scrolls and <main> is a SIBLING,
+          not an ancestor. It becomes `relative`, keeping z-50 and the stacking context while dropping
+          WebKit's sticky compositing hint. See AppHeader and docs/native-shell-report.md. */}
       <AppHeader
+        sticky={false}
         truckName={truck.name}
         truckLogoUrl={truck.logo ?? null}
         subtitle="Management console"

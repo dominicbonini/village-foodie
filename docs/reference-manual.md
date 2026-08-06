@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.2
+HatchGrab Engineering Reference Manual · V11.3
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.2**
+**Version 11.3**
 
 August 2026
 
@@ -15,6 +15,21 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.3 — 5 August 2026
+
+> ⚠️ **NUMBERED V11.3, NOT V11.2 — the brief for this update said "V11.1 → V11.2" and that premise was out of date.** V11.2 was already taken, earlier the same day, by the Cursor-report working-practice rule below. Overwriting it would have destroyed that entry, so this content took the next number. Flagged rather than resolved silently.
+
+Delta over V11.2 — **the iOS App Store commerce posture** (new §40), per-truck pricing suppression, the keep-awake root cause, and the native shell's failed-load handling. **One migration applied and verified. Two iPad display defects remain OPEN and unreproducible — they are in the backlog, not resolved.**
+
+- **🔴 A NEW SECTION, §40 — iOS APP STORE COMMERCE.** Guideline 3.1.1 applies: plan tiers unlock features used inside the app. **The reasoning is recorded because it will otherwise be re-derived**, including the two escape routes that do NOT work. `lib/commerce-policy.ts` holds ONE predicate, `purchaseCtaAllowed()`, false only inside the native iOS shell; eleven gates consume it. **The operative line: facts about the product are permitted, instructions to buy are not.**
+- **🔴 3.1.3(f) IS NOT THE ROUTE — CORRECTING ANY PRIOR ASSUMPTION.** Apple's live text reads *"(i.e. VoIP, Cloud Storage, Email Services, Web Hosting)"* — **"i.e.", not "e.g."** — and a documented reviewer response confirms it is read as exhaustive. Food-truck ordering is not on that list. §40.
+- **`trucks.hide_pricing`** — boolean NOT NULL DEFAULT false, **migration APPLIED and VERIFIED against the live schema 5 August 2026**. ANDed with the global flag, never overridden. Wired by React context so a price added later is masked without its author knowing the truck exists. §4, §16.
+- **🔴 KEEP-AWAKE: A JUSTIFICATION COMMENT THAT WAS TRUE ON ANDROID AND FALSE ON iOS** licensed removing the release path, and the same false premise sat inside `allowSleep()`'s catch. `isIdleTimerDisabled` is **process-wide**. The toggle also branched on belief rather than on the setting, so once they diverged the operator could not turn the screen off. §11, §35.
+- **🔴 AN INSTRUCTION WAS ISSUED, SHIPPED AND WITHDRAWN IN ONE DAY.** *"Release on unmount, on navigating away, and on backgrounding"* reads as one rule and is two opposite ones. The interim build was tsc-clean and lint-clean and would have put a sleeping screen in front of a trading truck. **Recorded as a lesson about verification passes, not as a build note.** §35.
+- **A PERMANENT WHITE SCREEN WAS AN INERT HANDLER, NOT A MISSING ONE.** Capacitor implements both navigation-failure callbacks; they load `errorPathURL`, which was unconfigured, so both reduced to a log line. **That is why nothing appeared in any log.** §11, §35.
+- **🔴 TWO iPad DISPLAY DEFECTS REMAIN OPEN**, intermittent, cleared only by relaunch, not reproducing on demand. **The asymmetry — one recovers on scroll-to-top, one does not — is the key evidence that they are two mechanisms.** §27.
+- **DRY drift recorded, NOT fixed:** £29/£49 have 13 literal copies including one holding them as **raw numbers used for logic**; the £1,500/£2,000 allowances exist **only inside display strings**, so no payments code can apply one. §4.
 
 ## V11.2 — 5 August 2026
 
@@ -2089,6 +2104,45 @@ Footnotes (held in lib/plan-features.ts as PLAN_FOOTNOTES): (1) Walk-up orders u
 
 > **NOTE (V6.5)** — footnote 6 ("Branded QR code composites your truck logo into the centre of the QR code at high error-correction level. Requires a logo to be uploaded in Settings.") was REMOVED. Footnotes 1–5 are unchanged and still referenced.
 
+## Per-truck pricing suppression — `trucks.hide_pricing` (V11.3)
+
+**The rule: prices are visible when `PRICING_PUBLISHED` is true AND the truck is not individually suppressed.** 🔴 **ANDed, never overridden** — flipping the global env flag to `'true'` **cannot** reveal prices to a suppressed truck. That is the entire point; `hide_pricing` must never sit on the permissive side of an OR.
+
+Non-sensitive values (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) are exempt from both, as before.
+
+**Wired via React context** — `components/PricingPolicy.tsx`, wrapping the manage page once, with `usePriceMask()` and `usePricesVisible()`. **Seventeen call sites unchanged; three declarations changed.**
+
+> **Why context and not a `hidePricing` parameter.** Threading a boolean works today and fails on the **next price added**: a new call site that forgets the argument compiles fine and silently shows a real price to a suppressed operator. That is the projection-omission class this manual records three times. **A new price is masked correctly without its author knowing the truck exists.**
+
+### ⚠️ ASYMMETRIC DEFAULTS, DELIBERATE — the column and the context disagree on purpose
+
+| | Default | Because |
+|---|---|---|
+| **Column** `hide_pricing` | `false` (visible) | "never considered" must behave as today's product |
+| **Context** (no provider) | **`true` (hide)** | "no provider" is a **programming error**, not a data state |
+
+🔴 **Fail toward the mistake that announces itself.** Over-masking shows "TBC" to someone who could have seen a price — visible, harmless, reported within a day. Under-masking shows a real price to an operator we promised not to — invisible to us, and the exact thing the feature prevents.
+
+### 🔴 DEPLOY ORDER IS ONE-DIRECTIONAL — run the migration BEFORE deploying
+
+`/api/admin` uses a **hand-maintained explicit select** and needed the column added to it. **Left alone, the admin toggle would have read `undefined`, rendered unchecked for a suppressed truck, and written `false` on the next save — silently clearing the suppression.** And a named select against a **missing** column fails the whole statement with **42703**, which would blank the entire admin trucks table.
+
+⚠️ **`/api/manage` uses `select('*')` and was safe by luck**, not by design — it degrades to a missing field, which `?? false` resolves to visible.
+
+**An admin toggle was added to the edit modal so suppression is clearable without SQL.**
+
+## 🔴 PRICING FIGURES — KNOWN DRIFT RISK, AUDITED AND NOT FIXED (V11.3)
+
+Recorded so it is not rediscovered. **Nothing here is broken today; all of it is one careless edit from being wrong.**
+
+- **£29 / £49 are genuinely single-sourced in `PLAN_META`** — `PLAN_PRICES` and `PLAN_DESCRIPTIONS` derive from it with no literals. ✅ That part is right.
+- ⚠️ **But there are 13 literal copies elsewhere**, and the worst is **`VAN_ADDON_PRICE`**, which holds them as **RAW NUMBERS** (`pro: 29, max: 49`) — **invisible to a `£29` grep**, and **read for logic, not only display**.
+- 🔴 **The £1,500 / £2,000 allowances appear 6 times with no owner.** `PLAN_ALLOWANCES` and `TRANSACTION_ROWS` restate them **twenty lines apart in the same file**, with **different consumers** (landing vs Billing), so a divergence would surface on different screens.
+- 🔴 **The allowances exist ONLY inside display strings.** No numeric value exists anywhere in the codebase, so **payments code cannot apply an allowance** even though a ledger comment refers to it.
+- `0.99%` appears **9 times**; card processing **4 times in two different wordings** (`~1.5%` vs `currently 1.5%`) — a prospect and an operator are told slightly different things about the same fee.
+- ⚠️ **`findPlanParityViolations()` guards FEATURE ROWS ONLY. Nothing guards any figure.**
+- ⚠️ **Admin and the landing page render prices UNMASKED** — neither has ever called `maskPrice`. Both are access-gated, but it is not recorded anywhere as a decision, and after the global flip an admin sees real prices for every truck including a suppressed one.
+
 ## Pricing rationale
 
 - Starter free reduces signup friction. £29 Pro sits below the £30 psychological threshold. £20 gap between Pro and Max is deliberately small to encourage upgrades. All platform fees on online orders apply on top of card processing (~1.5% + 20p with Stripe). Walk-up orders have 0% platform fee on all tiers.
@@ -2804,10 +2858,74 @@ The toggle uses the unified control styling: w-11 h-6 track, bg-green-500 when o
 
 The "Screen on" toggle in the avatar dropdown requests the Wake Lock API. lib/native/keepAwake.ts must implement: a release listener (re-requests if visible and intent on), a visibilitychange listener (added once via a sentinel), intent tracking (module-level keepAwakeEnabled), and a double-lock guard. enableKeepAwake/disableKeepAwake are legacy aliases — do not remove.
 
+### 🔴 CORRECTED V11.3 — the iOS flag is PROCESS-WIDE, and a comment saying otherwise cost a live defect
+
+**Observed:** the setting was OFF and the screen stayed on anyway, and the toggle could not turn it off.
+
+**Root cause.** Both surfaces had **removed** their `allowSleep()` cleanup, justified by a comment stating that `FLAG_KEEP_SCREEN_ON` is a window flag which dies with its Window, so *"there is no OS path where a missing release strands the screen on."* 🔴 **That is TRUE on Android and FALSE on iOS.** The plugin sets **`UIApplication.shared.isIdleTimerDisabled`** — a **process-wide** property that survives backgrounding, view teardown and route changes, and clears only on an explicit `false` or process death.
+
+**The same false premise sat inside `allowSleep()`'s catch**, which swallowed a failed release, published `wakeState = 'off'`, and left the flag set for the life of the app while the UI reported off.
+
+⚠️ **Compounding, and the reason the operator could not recover:** the toggle branched on **`wakeState`** rather than on the setting. Once belief diverged from reality, every tap took the **enable** branch. **A control that reads a belief cannot correct that belief.**
+
+### The rule now
+
+- **Toggles branch on the SETTING.** `wakeState` may inform **display**; it must never **decide**.
+- **`isKeptAwake()` reconciles belief against reality** — on mount, on foreground, and around every acquire and release. It existed and had never been called. **Reality wins; never infer.**
+- **A failed release publishes `'unknown'` with `console.error`, never a false `'off'`.** `'unknown'` means *we do not know what the OS is doing* and must not be collapsed into `'off'`.
+- **`prepareKeepAwake` takes a REQUIRED boolean**, so an unconditional enable is a compile error rather than something review has to notice.
+
+### 🔴 OWNED BY THE SETTING, NEVER BY A COMPONENT — an instruction issued and withdrawn the same day
+
+*"Release on unmount, on navigating away, and on backgrounding"* was written as one instruction. **It is two opposite ones.** Backgrounding means the operator has left the app — **release is correct**. Unmount on a client-side route change means the operator is moving **between screens mid-service** — **release is wrong**.
+
+The interim build that took it literally shipped **three sleeping-screen sequences that were impossible before it**, including: **no acquire exists on `/manage` at all**, so stepping into Settings released with nothing to re-acquire; and **on web `prepareKeepAwake(true)` sets intent without acquiring** (Safari needs a live user activation), so **every dashboard↔KDS navigation dropped the lock and needed a manual tap**.
+
+> **THE RULE: release on INTENT — the setting going off, and the app being backgrounded — NEVER on lifecycle.** Persistence across client-side routes is **correct**, and is exactly why `/manage` needs no keep-awake code of its own. The backgrounding listener is **module-level** so it fires on every route, including ones with no keep-awake code.
+
+⚠️ **No terminate hook exists in `@capacitor/app`** (only `appStateChange`, `pause`, `resume`, `appUrlOpen`, `appRestoredResult`, `backButton`) **and none is needed**: `isIdleTimerDisabled` dies with the process, and iOS terminates from the background state — after the backgrounding release has already run.
+
+⚠️ **TRADE ACCEPTED:** the retry affordance moved from the header toggle to the `KeepAwakePrompt` button, which renders in exactly the denied state and runs the same acquire. **This follows necessarily from "wakeState may inform display; it must not decide"** — one control cannot both act on the setting and act on the lock state.
+
 ### Browser compatibility
 
 navigator.wakeLock: Chrome since v84, Firefox Android since 72, Samsung Internet since 14, Safari (iOS/macOS) from 16.4. Firefox desktop does not support it. When 'wakeLock' in navigator is false, show an inline amber warning under the toggle.
 
+
+## The native shell — remote URL, and what happens when it fails (V11.3)
+
+**`server.url` bakes to production `https://www.hatchgrab.com/app`.** The LAN dev-server loop is still available via `CAP_SERVER_URL=… npx cap sync ios`, but it is **no longer the default** — a plain sync restores production. ⚠️ `ios/App/App/capacitor.config.json` is **gitignored**, so a stale baked URL never shows in a diff. That is how a LAN address survived unnoticed for two days.
+
+### 🔴 A PERMANENT WHITE SCREEN WAS AN INERT HANDLER, NOT A MISSING ONE
+
+The app sat on a blank screen for over a day and only a kill-and-relaunch recovered it, with **nothing in any log**. The reason nothing was logged is the finding:
+
+**Capacitor DOES implement `didFail` and `didFailProvisionalNavigation`** (`WebViewDelegationHandler.swift`). Both do this:
+
+```swift
+if let errorURL = bridge?.config.errorPathURL { webView.load(URLRequest(url: errorURL)) }
+CAPLog.print("⚡️  WebView failed provisional navigation")
+```
+
+**`errorPath` is not configured, so `errorPathURL` is nil and the entire body reduces to a log line nobody reads on a device.** ⚠️ Do not "fix" this by setting `errorPath` — that loads a bundled HTML page, and the web layer is precisely what is unavailable when this fires. **The error state must be native.**
+
+✅ `webViewWebContentProcessDidTerminate` is the exception: Capacitor already calls `bridge?.reset(); webView.reload()`, which is correct. **Forward to it; do not add a second reload.**
+
+### What HGBridgeViewController does
+
+A **forwarding navigation-delegate proxy** that retains Capacitor's real handler and forwards every selector it does not implement, plus a native **#1C1C1E** error view — honest text, a Retry button, and the target URL rendered small so a wrong-URL build is visible rather than mysterious. Auto-retry on foreground and on an `NWPathMonitor` unsatisfied→satisfied transition, with backoff **2→4→8→16→32→60s**, bypassed and reset by manual Retry.
+
+⚠️ The proxy must override **both** `responds(to:)` and `forwardingTarget(for:)`. WKWebView asks `responds(to:)` before sending an optional protocol method; overriding one without the other makes Capacitor's handler go deaf and kills the bridge silently.
+
+### 🔴 STRUCTURAL FACTS THAT CHANGE WHAT SUBCLASS CODE MEANS
+
+- **`self.view` IS the WKWebView.** `CAPBridgeViewController.loadView()` does `view = webView` (`:45`). So `view.backgroundColor` sets the *web view's* background, and `view.addSubview(...)` inserts into **WKWebView's private subview hierarchy**. ⚠️ **Any comment claiming a view sits behind the WKWebView is wrong.**
+- **`loadView()` is `public final`** — it cannot be overridden.
+- **Nothing in Capacitor iOS implements `viewDidLayoutSubviews`, `viewSafeAreaInsetsDidChange` or any safe-area hook** (grep: zero hits across the package). The web view is sized purely by UIKit's root-view behaviour, plus the StatusBar plugin (§27).
+
+### ⚠️ THE XCODE PROJECT USES EXPLICIT FILE REFERENCES
+
+**A new `.swift` file on disk is NOT compiled unless it is added to `project.pbxproj`** — as a `PBXFileReference`, a `PBXBuildFile`, a group child, and a `Sources` build-phase entry. **And `Main.storyboard` names the root view-controller class.** Both had to change together: **either one alone would have failed to instantiate the root view controller at launch** — the storyboard naming a class not in the binary, or a subclass on disk the storyboard never names. ⚠️ `customModuleProvider="target"` is required on the storyboard entry, or the class is looked up in the Capacitor module and the app launches to a bare `UIViewController`.
 
 ## Kitchen ticket printing (design + Phase A built)
 
@@ -3397,6 +3515,14 @@ RLS is enabled on every table in the public schema. All API routes use SUPABASE_
 - **`operators.signup_promo_code` (text, nullable)** — the marketing code captured at self-serve signup. **RECORDED ONLY, NOT APPLIED: no value is validated, and no code path reads it except a read-only admin chip.** Both the write (`/api/signup`) and the read (`/api/admin`) are built to tolerate the column being ABSENT — the write is a separate best-effort UPDATE rather than a field on the operators INSERT, because PostgREST fails the whole statement with PGRST204 on an unknown insert column and a marketing field must never be able to take signup down.
   > ✅ **VERIFIED LIVE 4 August 2026** — the migration has been run and the column confirmed via `information_schema`: **`text`, nullable, no default.** *(This entry was written the same day carrying an UNCORROBORATED flag, because the migration had been handed over to be run by hand and the session could not confirm it; the flag is now discharged.)* The absence-tolerance in both paths is retained deliberately — it costs nothing and it is what let the code ship before the column existed.
 
+### Live-schema facts — per-truck pricing (V11.3 / 5 August 2026)
+
+> **Provenance: migration APPLIED and VERIFIED against the live schema by Dominic, 5 August 2026.**
+
+- **`trucks.hide_pricing`** — `boolean`, **NOT NULL**, **DEFAULT `false`**. Per-truck pricing suppression, ANDed with `NEXT_PUBLIC_PRICING_PUBLISHED` (§4). **Pizzeria Gusto set to `true`.**
+- ⚠️ **NOT NULL DEFAULT false means a stored `false` is indistinguishable from "never set".** Nothing needs to tell those apart today — but do not build a "has an admin reviewed this truck" feature on this column; it cannot answer that question. Same shape as `qr_code_style` above.
+- 🔴 **`/api/admin`'s trucks query is a hand-maintained explicit select and had to be extended.** `/api/manage` uses `select('*')`. **The deploy order is therefore one-directional — see §4.**
+
 ## Database maintenance and storage (V11.1) — OPERATIONAL
 
 > **Provenance: measured on the live database by Dominic, 5 August 2026.** ⚠️ **None of this is derivable from the repo** — the schemas below are extension-owned, no migration file creates them, and PostgREST does not expose them. The figures are recorded as a reading taken on a date, not as a property of the system.
@@ -3709,6 +3835,11 @@ Offline protection; smart queue-aware pacing; social/WhatsApp auto-responses; ti
 - **`<workstream>` names the task, not the date.** `docs/feature-lock-report.md`, not `docs/2026-08-05-report.md` — a name that says what it is can be found again and can be legitimately overwritten by the next pass at the same problem, which a date cannot.
 
 > 🔴 **WHY IT EXISTS: long reports pasted directly into chat arrive GARBLED.** A file on disk is the only reliable way to move Cursor's full output into a planning chat intact. **Same cause, same remedy in the other direction: any file containing `§`, `£`, `—` or emoji must reach Cursor by DOWNLOAD-TO-DISK, never as a chat attachment.** The characters that break are exactly the ones this manual is full of, which is why every documentation task on it runs a non-ASCII character census before and after — a silent substitution (curly quotes for straight, a dropped variation selector, a mangled em dash) is indistinguishable from an edit until something counts the characters.
+
+### Standing rules (V11.3)
+
+- 🔴 **PIZZERIA GUSTO IS THE ONLY REAL CUSTOMER.** Test Kitchen and Real Thai Food are **test infrastructure** and are **not** to be raised as risk, urgency or blast-radius considerations. ⚠️ Earlier entries in this manual treat all three as live trucks; where they do, only Gusto counts. **No change may impact Gusto without explicit confirmation first.**
+- **Every Cursor report must state its filename as the LAST SENTENCE of the chat reply.** Tightens the report rule above: the two-line summary is read first, and the filename has to be the thing left on screen when it is.
 
 ## Audit before build
 
@@ -4076,6 +4207,42 @@ process-schedule imports lib/schedule-extract.ts, but processFoodTruckScreenshot
 
 
 # 27. Open backlog (June 2026)
+## 🔴 V11.3 — added 5 August 2026 (iOS native + App Store)
+
+### 🔴 TWO UNRESOLVED iPad DISPLAY DEFECTS — open, intermittent, NOT reproducing on demand
+
+Both cleared only by relaunch. **Absent in iPad Safari on the same pages.** Full screen — not Stage Manager, not Split View.
+
+- **(a) A vertical strip at the RIGHT of the screen goes blank when scrolled down, and RECOVERS on scroll to top.** Clean vertical edge, cutting UI mid-element at a fixed x, same x on every card down the page.
+- **(b) The header disappears on scroll and does NOT recover at the top.** It stays missing until relaunch.
+- Present on **3 of 4 dashboard tabs — all except + Add order**, whose `<main>` is `overflow-hidden` rather than `overflow-y-auto`. **That is a four-for-four match with the tab split** and is the strongest structural clue.
+
+> 🔴 **THE ASYMMETRY IS THE KEY EVIDENCE: one recovers, one does not, so they are TWO MECHANISMS.** If a single scroller caused both, both would recover together. Do not look for one cause.
+
+**Leading hypothesis for the header — UNCONFIRMED, and it must not be recorded as more than that.** Two scrollers exist: `<main>`'s `overflow-y-auto`, and the WKWebView's **outer** `scrollView`, live because `ios.scrollEnabled` is `true`. If `h-dvh` resolves taller than the visible area the document overflows, the outer scroller gains range, and **nothing anywhere resets `contentOffset`** — so only a relaunch recovers it. ✅ Established from source: `bounces = false`, so any movement is a **real scroll, not a rubber-band**; and no code in the project or any plugin writes `contentOffset`. ⚠️ **Not established:** whether iOS chains momentum from an inner overflow scroller to the outer one. That is WebKit internals.
+
+> 🔴 **THE ONE READING THAT SETTLES IT.** With the header missing, in Safari Web Inspector: **`window.scrollY > 0` CONFIRMS the hypothesis; `0` REFUTES it.** Corroborate with `document.documentElement.scrollHeight > window.innerHeight`, which is the precondition the mechanism needs.
+
+### 🔴 `/admin` WAS NEVER CONVERTED TO THE APP-SHELL — and it blocks the native fix
+
+Still `min-h-screen` with **no inner scroller anywhere in ~2,000 lines** (`grep` for `<main` or `h-dvh`: **zero**). Still on the **stacked-sticky** pattern, with a hardcoded **`sticky top-[51px]`** — the exact pattern §22a records as unreliable in this WebView, and which the KDS app-shell replaced everywhere else.
+
+**Reachable natively from two entry points:** admin cold-launch routing in `/app`, and the UserMenu link.
+
+🔴 **This BLOCKS `scrollEnabled: false`**, which would otherwise be the durable native-config fix for defect (b) — it is native config with **zero web impact**, unlike CSS on the shared shell. With it off, **an admin cold-launching the app would land on an unscrollable console.** ⚠️ The config comment in `capacitor.config.ts` already prescribes the remedy — *"cap those 3 pages to h-dvh flex-col + inner overflow-y-auto, mirroring KDS"* — and **two of the three were done. Admin is the outstanding one.**
+
+### Found, reported, not fixed
+
+- **`@capacitor/status-bar` `setOverlaysWebView` is INERT on 8.0.2.** `isOverlayingWebview` defaults to `true` and the method early-returns when the value is unchanged, so our `setOverlaysWebView({ overlay: true })` does nothing — no background-view removal, no resize. ⚠️ **`lib/native/statusBar.ts` comments that it is "LOAD-BEARING ON iOS". Correct the comment.** (Second instance of the platform-comment class, §35.)
+- **`resizeWebView` sizes from `keyWindow.bounds` on a 100 ms delayed timer** fired from `viewWillTransition` — i.e. *before* the transition, so it lands mid-flight on an animated rotation — **and nothing re-validates it.** No second sample, no `viewDidLayoutSubviews` anywhere in Capacitor iOS. **Fragile by construction even where it currently yields a correct frame.** ⚠️ It also assigns `viewController.view.frame`, which **is** the WKWebView.
+- **The native error view is added as a subview of the WKWebView** (`self.view`), with constraints that **persist once created** — `hideErrorView` sets `isHidden` only. **Unsupported: WKWebView's subview tree is private.** Should be a sibling in a container view. Excluded as a cause of the defects above (a static overlay cannot be scroll-dependent), but wrong regardless.
+
+### 🔴 APP STORE SUBMISSION BLOCKERS (see §40 for the commerce posture)
+
+- 🔴 **ACCOUNT DELETION: NONE EXISTS ANYWHERE.** Nine content-level `delete_*` actions (category, subcategory, item, upsell rule, modifier group, modifier option, bundle, event, van) and **no `delete_account`**. **Guideline 5.1.1(v) requires in-app deletion if the app supports account creation.** The defence is that signup is web-only on both platforms — ⚠️ **but that is an argument made AFTER a rejection, not a substitute for the feature.** **Also required for UK GDPR erasure, independently of Apple.**
+- 🔴 **PRIVACY POLICY AND TERMS: STILL UNWRITTEN.** **5.1.1(i) requires the policy linked in App Store Connect AND reachable inside the app.** A draft exists with placeholders. ⚠️ **HatchGrab is a CONTROLLER for operator accounts and a PROCESSOR for end-customer order data — UK GDPR Article 28 requires processor clauses in the operator terms.** That is a drafting requirement, not a link.
+- **2.1(a) requires a demo account with a live backend.** A built-in demo mode needs Apple's **prior approval**, so **a review account is the simpler path**.
+
 ## 🔴 V11.1 — added 5 August 2026 (the plan model)
 
 ### 🔴 STILL BLOCKING SELF-SERVE LAUNCH — re-confirmed, not re-listed
@@ -5227,6 +5394,16 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **One source with a divergent presentation layer is a lesser version of duplication, not immunity from it.** The landing page and the Billing tab both render `FEATURE_SECTIONS` from `lib/plan-features.ts` — genuinely one source, and the feared failure of two hand-maintained records of a commercial promise does **not** exist. But the landing page applies **render-time overrides** on top of it, each labelled `RENDER-ONLY` in its own comment, and one of them adds an exception Billing does not have: `SMS order alerts` renders as **not included** to a prospect and **"Coming soon"** to an operator, off the same row. **A shared source guarantees the DATA agrees; it guarantees nothing about what each surface then does with it.** When auditing for drift, the question is not "how many definitions are there" but "how many transformations sit between the definition and each render".
 
+**🔴 A JUSTIFICATION COMMENT CAN BE TRUE ON ONE PLATFORM AND FALSE ON ANOTHER.** A note asserting that `FLAG_KEEP_SCREEN_ON` is a window flag which dies with its Window — *"there is no OS path where a missing release strands the screen on"* — was **correct for Android and wrong for iOS**, where `UIApplication.shared.isIdleTimerDisabled` is process-wide. It was read as authoritative and it **licensed removing the release path** on both surfaces, which is what left an operator's screen on with the setting off. **In shared JS driving a native plugin, any comment asserting OS behaviour MUST NAME THE PLATFORM.** ⚠️ **SWEEP: OPEN — two live instances of this exact class found in one session.** The keep-awake note (now corrected, §11) and `lib/native/statusBar.ts`'s claim that `setOverlaysWebView` is *"LOAD-BEARING ON iOS"* when it is **inert on the installed 8.0.2** (§27). No wider sweep has been done. Same family as *"a flag named for a behaviour is not proof of that behaviour"*, one layer down: here the flag is a **comment**.
+
+**🔴 RELEASE-ON-UNMOUNT AND RELEASE-ON-BACKGROUND LOOK LIKE ONE INSTRUCTION AND ARE OPPOSITES.** One is scoped to a **component**, the other to the **app**. *"Release on unmount, on navigating away, and on backgrounding"* reads as a single rule and contains a contradiction: backgrounding means the operator has left; unmount on a client-side route change means they are moving between screens mid-service. **A resource owned by a user SETTING must be released on INTENT, never on LIFECYCLE.** The corollary is what makes it testable: **if a release is not paired with a re-acquire on the same axis, it is scoped wrong.**
+
+**🔴 A VERIFICATION PASS THAT ASKS ABOUT CONSEQUENCES, NOT CORRECTNESS, IS CHEAP AND CATCHES EXPENSIVE THINGS.** The keep-awake interim build was `tsc`-clean, sat exactly on its lint baselines, and would have put a **sleeping kitchen screen in front of a trading truck**. Neither check could have caught it, because nothing was incorrect — it was correctly implementing the wrong scope. It was caught by asking **"is every release paired with a re-acquire?"** — a question about what the change **DOES**, not whether it compiles. ⚠️ **Ask it as a separate pass, after the build reports clean**, because a clean build is exactly when it feels unnecessary.
+
+**🔴 "IS IT CONSTANT, OR DOES IT CHANGE WITH SCROLL?"** Two consecutive investigations named a **native** cause for an iPad display defect before establishing whether the symptom was static. It was not: it varied with **scroll position** and with **which tab was open**, and **each of those independently rules out a static native frame** — a wrong frame is wrong identically in every tab at every offset. Both conclusions had to be retracted. **Establish whether a symptom VARIES — with scroll, with route, with state, over time — before naming a mechanism.** A one-line question would have redirected the first pass.
+
+**AN INERT HANDLER AND A MISSING HANDLER PRODUCE THE SAME SILENCE.** A permanent white screen was diagnosed as "no failure handling exists". Capacitor's navigation-failure handlers **did** exist; both load `bridge.config.errorPathURL`, `errorPath` was unconfigured, and so both collapsed to a log line. **Check whether a handler is REACHED, not whether it EXISTS** — the same distinction as a declared-but-never-called feature gate, and it produces the identical evidence: nothing in the logs, nothing on screen.
+
 **`update_truck` silently drops unlisted keys.** A new setting **appears to save and writes nothing**, with no error anywhere: the allowlist filters the payload, the UPDATE succeeds on what remains, and the handler returns `{ ok: true }`. Any new column must have its key added to the allowlist **in the same change**. The van-level equivalent (`update_van_settings`) is a destructure and drops just as silently. Same silent-success class as an unapplied migration returning HTTP 200 with an empty array.
 
 # 36. Android app platform notes (V9.2, verification status V9.3)
@@ -5657,4 +5834,85 @@ Both phases **deployed and live-verified**. Migrations run by hand and confirmed
 
 ⚠️ **`capacitor.config.ts` bakes the server URL at `cap sync` time.** `localhost:3000` reaches the Mac's dev server from the *simulator* but resolves to the *iPad's own* loopback on hardware — a blank screen with no error (the same asymmetry §8 records for `wakeLock` over LAN). Use the Mac's LAN IP for a physical device, or unset `CAP_SERVER_URL` for production. `IS_LOCAL_HTTP` tests `startsWith('http://')`, so cleartext is correctly enabled for a LAN IP. **Revert to production with a plain `npx cap sync ios` before any real build.**
 
-HatchGrab Engineering Reference Manual · V11.2
+
+# 40. iOS App Store — commerce posture (V11.3)
+
+> **Why this section is long.** The conclusion ("no purchase CTAs in the iOS app") is one line, but it rests on four guideline readings and two rejected escape routes. **Without the reasoning, the escape routes get re-derived and re-argued**, and two of them look correct until you read Apple's exact wording. Guidelines checked against Apple's live text, **last updated 8 June 2026**.
+
+## The position
+
+**Guideline 3.1.1 applies. It is the trigger, and there is no way around it.** Plan tiers unlock features that are used *inside* the native app, which is what 3.1.1 governs. Everything below is about whether any exemption rescues that. None does.
+
+### 🔴 The two escape routes that do NOT work
+
+**3.1.3(e) Goods and Services Outside of the App — NO.** That covers physical goods and services consumed outside the app. **A SaaS subscription unlocking in-app software is digital**, and consumed exactly where 3.1.1 says it must be paid for.
+
+**🔴 3.1.3(f) Free Standalone Apps / "Reader" — NO, AND THIS IS WEAKER THAN PREVIOUSLY ASSUMED.** Apple's current text reads:
+
+> *"(i.e. VoIP, Cloud Storage, Email Services, Web Hosting)"*
+
+**"i.e.", not "e.g."** — an enumeration, not an example set. **A documented reviewer response confirms it is read as exhaustive.** Food-truck ordering is not on that list. ⚠️ **Correct any earlier note naming 3.1.3(f) as the route; it is not one.**
+
+### The nearest fit, and its trap
+
+**3.1.3(c) Enterprise Services** is closest — but it carries an explicit carve-out:
+
+> *"consumer, single user, or family sales must use in-app purchase"*
+
+🔴 **A sole-trader food truck reads as a single user.** And a documented rejection exists of a B2B app making exactly this argument **that had already removed all in-app purchasing** — so removing the purchasing is not by itself sufficient to establish the exemption.
+
+### Storefront
+
+🔴 **The UK is not the US storefront, so the external-link carve-out does not apply.** ⚠️ The CMA is consulting on changing this; **the consultation closed 28 July 2026, Apple is contesting, and no decision has issued.** Do not build on the assumption that it will change. **This is why the predicate is one line in one file** — if the position reverses it becomes `return true`.
+
+## 🔴 THE OPERATIVE LINE
+
+> **Facts about the product are permitted. Instructions to buy are not.**
+>
+> A price in a matrix is a **fact**. *"Choose a plan"* is an **instruction**.
+
+That distinction decides every gate below, and it is the sentence to apply to anything added later.
+
+## What was built
+
+**`lib/commerce-policy.ts` — ONE exported predicate, `purchaseCtaAllowed()`.** False **only** inside the native iOS shell; true for SSR, browser and native Android **by construction** — it returns true whenever it cannot affirmatively establish *both* native *and* iOS, so no uncertain path has to be enumerated.
+
+- 🔴 **`getPlatform()` is deliberately NOT re-exported.** Call sites can ask the policy question and nothing else. A platform test spread across a dozen files is a policy nobody can change in one place.
+- 🔴 **Android is deliberately excluded — Google permits steering.** A predicate that merely asked `isNativePlatform()` would strip the upgrade path from a platform the guideline never covered: a product regression wearing a compliance justification.
+
+### ⚠️ FAIL-OPEN IS DELIBERATE HERE, AND IT IS THE OPPOSITE DIRECTION TO THE AUTHORISATION INVARIANT
+
+§35 records that *a guard whose error path grants permission fails open*. **That invariant governs AUTHORISATION, where the risk is unauthorised access.** This is a **presentation policy**, and its false negative lands on entirely different people: failing closed hides the upgrade path from **every web operator**, none of whom the guideline covers. The one runtime that must return false is the one where Capacitor is guaranteed present and `getPlatform()` is exact. **Do not "harmonise" the two.**
+
+### Eleven gates
+
+Across `app/manage/[token]/page.tsx` and `components/FeatureGate.tsx`. **Suppressed on iOS:**
+
+| Suppressed | Note |
+|---|---|
+| Trial reminder popup | **trigger AND render** — gated at the trigger so it does not consume its own once-per-day `localStorage` budget for a popup nobody saw |
+| Van modal "View plans" | **the CTA only** — the modal still explains the van limit |
+| Upgrade-interest modal | **entirely, including its `mailto:`** — this modal IS the external purchase mechanism |
+| The four `openUpgrade` buttons | trial branch ×2, starter branch ×2 |
+| FeatureGate "Upgrade →" | **the link only** — both render sites inherit it; neither was edited |
+| Trial + starter upgrade sections | whole panels, heading included, so no empty bordered box is left |
+| "Choose a plan before your trial ends" | an instruction to buy, inside otherwise-factual copy |
+| Automated-billing reassurance block | container gated, so its orphaned `*` footnote goes with it |
+| Trial auto-land on Billing | the tab stays reachable; it is simply not opened for them |
+
+**KEPT on iOS:** current plan · trial end date · **the full feature matrix** · footnotes · the `billingCard` notice. 🔴 **Panels that lose a CTA keep their explanatory text — no empty shells.** Showing what the plans include is a fact; asking for the sale is not.
+
+**Three `/pricing` links repointed to `?tab=billing` on ALL platforms.** `/pricing` never existed as a route — those were **live 404s** for every operator, not just iOS.
+
+## 🔴 HYDRATION — LOAD-BEARING, AND NOT OBVIOUS FROM THE GATES
+
+**None of the gated markup is ever server-rendered.** The manage page's `loading` state starts `true` and the component **early-returns a spinner** before any of it. The first client render is therefore already post-mount, so **direct inline evaluation of the predicate cannot flash a CTA for a frame** — and no `mounted` flag is needed. A `mounted` flag would have been *worse*: it renders nothing on the first client frame on **every** platform, i.e. a flash of *missing* upgrade buttons on the web.
+
+> ⚠️ **IF THE MANAGE PAGE EVER BECOMES SERVER-RENDERED WITH DATA — a server component, a data prefetch, or simply removing the loading early-return — EVERY GATE BECOMES AN SSR/CLIENT MISMATCH AND AN UPGRADE BUTTON FLASHES FOR A FRAME ON iOS.** That frame is exactly what an App Review screenshot catches. The gates look self-contained and are not; this property is what makes them safe.
+
+## Related, and NOT resolved
+
+Account deletion, the privacy policy and terms, and the 2.1(a) demo account are all **open** and are recorded in §27. **None of them is discharged by this section.**
+
+
+HatchGrab Engineering Reference Manual · V11.3

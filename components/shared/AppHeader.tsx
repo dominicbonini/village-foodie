@@ -13,12 +13,32 @@ interface AppHeaderProps {
   truckLogoUrl: string | null
   subtitle?: string
   children?: React.ReactNode
+  /** ── STICKY: NEEDED ON NATURAL-FLOW PAGES, INERT INSIDE AN APP-SHELL (V11.3) ───────────────────────
+   *  🔴 DEFAULTS TO TRUE so nothing changes by omission — /admin needs it and passes nothing, and any
+   *  future page gets the historical behaviour unless it opts out.
+   *
+   *  Pass `sticky={false}` from an h-dvh app-shell, where the header is a `shrink-0` flex child of an
+   *  `overflow-hidden` root. There, `position: sticky` can NEVER apply an offset: its scrollport is that
+   *  root, and the root never scrolls — only <main> does, and <main> is a SIBLING, not an ancestor. So
+   *  sticky is doing no positioning work on those pages.
+   *  ⚠️ IT IS NOT THEREFORE FREE. `position: sticky` is a compositing hint: WebKit promotes a sticky
+   *  element to its own layer so it can be repositioned on the scrolling thread, and it does so whether
+   *  or not the element ever actually moves. `position: relative` carries no such hint. Public WKWebView
+   *  reports implicate sticky/fixed in disappearing-header and blank-region defects that do not occur in
+   *  iOS Safari on the same page — which matches our symptom. Removing a hint we get no benefit from is
+   *  the cheapest thing to try. See docs/native-shell-report.md.
+   *
+   *  🔴 `relative`, NOT nothing. `z-index` is IGNORED on a static element, so dropping position entirely
+   *  would silently disable `z-50` and change the paint order against the tab bar and the shadow.
+   *  `relative` keeps the element positioned, keeps z-50 effective, and keeps the stacking context —
+   *  identical rendering, minus the compositing hint. */
+  sticky?: boolean
 }
 
-export default function AppHeader({ truckName, truckLogoUrl, subtitle, children }: AppHeaderProps) {
+export default function AppHeader({ truckName, truckLogoUrl, subtitle, children, sticky = true }: AppHeaderProps) {
   return (
     <header
-      className="bg-slate-900 sticky top-0 z-50 shadow-md"
+      className={`bg-slate-900 ${sticky ? 'sticky top-0' : 'relative'} z-50 shadow-md`}
       /* Native app: extend the dark header UP into the status-bar/safe-area inset so no page content shows
          above it. env(safe-area-inset-top) is 0 in a normal browser → web is byte-for-byte unchanged. Pairs
          with capacitor contentInset:'never' + viewport-fit=cover, which let CSS own the safe area. */
