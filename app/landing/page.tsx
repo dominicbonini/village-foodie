@@ -273,8 +273,14 @@ export default function LandingPage() {
             {/* 🔴 THE LEDE STATES THE HEADLINE AND STOPS. The walk-up detail — the in-person rate, the
                 UK/EEA limit, the tap surcharge, "coming soon" — lives ONCE, in footnote 1, which renders
                 further down this same page. Restating any of it here is what made this section read three
-                times over. Figures come from CARD_FEES; never write one as a literal. */}
-            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan.</p>
+                times over. Figures come from CARD_FEES; never write one as a literal.
+                🔴 THE TRAILING CLAUSE IS LOAD-BEARING AND IS NOT PADDING. Without it, "no platform fee"
+                reads as "free", which is untrue for anyone taking cards. And it is worded as "your card
+                terminal's own fees" DELIBERATELY: "card processing still applies" would read as a second,
+                NEW charge, when in fact most trucks already pay their own terminal provider and nothing
+                about that changes. It says whose fee it is and that nothing changes. Do not shorten it to
+                "fees still apply", and do not add a figure — there is deliberately no number here. */}
+            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan — your card terminal&apos;s own fees still apply.</p>
           </div>
 
           <div className="trial-banner">
