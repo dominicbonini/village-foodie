@@ -125,6 +125,56 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  // ── 🔴 Guard 3: ACCOUNTING RECORDS. THIS IS A LIVE-DEFECT FIX, NOT PART OF A FEATURE. ───────────
+  // deleteTruckCascade deletes `orders` FIRST (it is the guaranteed FK blocker), and order_payments has
+  // TWO foreign keys — order_key -> orders and truck_id -> trucks — BOTH `on delete cascade`. So a hard
+  // delete of a REAL truck silently destroys the payment ledger and returns success. The published
+  // privacy policy commits to retaining accounting records for six years; this route could break that
+  // commitment with a correctly-typed slug and no error anywhere.
+  //
+  // 🔴 KEYED ON THE DATA, NOT ON A LABEL. `isDemoIdentifier`, `plan === 'demo'` and `plan === 'tester'`
+  // all exist and all describe what a truck is CALLED. What must be protected is the accounting record
+  // itself, so the test is whether one is present. A mislabelled real truck — a 'tester' plan that took
+  // real money — is still protected, and that is the direction it must fail in.
+  //
+  // ⚠️ NO OVERRIDE FLAG, deliberately, unlike Guard 2. A refusal you can click past is not a guard, and
+  // the thing on the other side is a legal retention obligation rather than an inconvenience. The escape
+  // hatch is hand-run SQL, which is already how every destructive schema operation happens here.
+  //
+  // ⚠️ THE FK CONSTRAINTS ARE NOT TOUCHED. Cascading to prevent orphaned money events is correct for the
+  // case it was written for (a demo truck being torn down). The fix is refusing the delete, not weakening
+  // the schema for everyone.
+  //
+  // ✅ THE DEMO-CLEANUP CRON IS STRUCTURALLY UNAFFECTED: it imports deleteTruckCascade DIRECTLY rather
+  // than calling this route, and it is prefix-scoped twice over (`.like('id', 'demo-%')` at the query and
+  // `isDemoIdentifier()` re-asserted in sweep()). This guard cannot reach it.
+  const { count: paymentCount, error: paymentCountErr } = await supabase
+    .from('order_payments')
+    .select('*', { count: 'exact', head: true })
+    .eq('truck_id', truckId)
+
+  // ⚠️ A FAILED COUNT REFUSES. Everywhere else in this route a failed count degrades to "unknown" so it
+  // cannot block a delete — here the opposite is correct, because "I could not check whether this would
+  // destroy accounting records" must never resolve to "go ahead".
+  if (paymentCountErr) {
+    return NextResponse.json(
+      { error: `Could not verify whether this truck holds payment records: ${paymentCountErr.message}. Refusing to delete.`, code: 'payment_check_failed' },
+      { status: 500 },
+    )
+  }
+
+  if ((paymentCount ?? 0) > 0) {
+    return NextResponse.json(
+      {
+        error: `This truck holds ${paymentCount} payment record${paymentCount === 1 ? '' : 's'}. Hard-deleting it would destroy accounting records the privacy policy commits to retaining for six years. Use account deletion (anonymise + retain) instead.`,
+        code: 'accounting_records_present',
+        paymentCount,
+        truckId,
+      },
+      { status: 409 },
+    )
+  }
+
   // Counted BEFORE the delete — afterwards there is nothing left to count.
   const impact = await countImpact(truckId)
 

@@ -63,6 +63,59 @@ export async function listPendingStatusOps(): Promise<PendingStatusOp[]> {
     .sort((a, b) => a.seq - b.seq)
 }
 
+// ── PAYMENT OVERLAY — the payment equivalent of the status overlay above ────────────────────────────
+// 🔴 PAYMENT IS NOT A STATUS AND MUST NOT BE PUT IN OFFLINE_STATUS_MAP. That map patches `order.status`;
+// payment state is DERIVED from ledger rows by getOrderBalance(). Writing 'paid' into the status machine
+// would corrupt the card — the kitchen columns, the action buttons and mergeOrders all key on status.
+// So payment gets its own overlay, layered ON TOP of getOrderBalance()'s output. getOrderBalance stays
+// the resolver and the source of truth for CONFIRMED state; nothing here re-derives a balance.
+//
+// 🔴 IT PUBLISHES 'PENDING', NEVER 'PAID'. A queued op has not been accepted by the server. Claiming paid
+// would be the same lie as keep-awake publishing a false 'off' after a failed release (§35): a state we
+// cannot demonstrate, presented as fact. 'pending_paid' / 'pending_unpaid' say what is true — the
+// operator has recorded it on this device and the server has not confirmed it.
+
+/** The payment actions that route through the gate as kind:'status'. ⚠️ `collected` and `undo_collected`
+ *  are NOT here: they change status too, so the STATUS overlay already moves the card for them. Adding
+ *  them here would double-report the same op on two overlays. */
+const PAYMENT_ACTIONS = new Set(['mark_paid', 'mark_paid_cash', 'mark_paid_card', 'undo_mark_paid'])
+
+export type PendingPaymentState = 'pending_paid' | 'pending_unpaid'
+
+/** 🔴 HOW A MONEY OP IS TOLD FROM A WORKFLOW OP. `kind` CANNOT do it — payment actions are queued as
+ *  kind:'status' exactly like 'ready' and 'collected', because they replay to the same endpoint. The only
+ *  discriminator is body.action, and this is the one predicate that owns that decision: the overlay above
+ *  and the conflict classifier below both call it, so they can never disagree about what a payment is.
+ *  ⚠️ Adding a new payment action means adding it to PAYMENT_ACTIONS and nowhere else. */
+export function isPaymentAction(action: string): boolean {
+  return PAYMENT_ACTIONS.has(action)
+}
+
+/** The action string an op will replay with — '' if the body carries none (a malformed/legacy op). */
+export function opAction(op: { body?: unknown }): string {
+  return String((op.body as { action?: unknown } | undefined)?.action ?? '')
+}
+
+/** Pending payment ops, oldest-first. Same outbox, same 'status' kind — filtered by ACTION. */
+export async function listPendingPaymentOps(): Promise<PendingStatusOp[]> {
+  const ops = await listOps()
+  return ops
+    .filter(o => o.kind === 'status' && o.state !== 'conflict')
+    .map(o => ({ order_key: o.order_key, action: String((o.body as { action?: unknown } | undefined)?.action ?? ''), seq: o.seq }))
+    .filter(o => PAYMENT_ACTIONS.has(o.action))
+    .sort((a, b) => a.seq - b.seq)
+}
+
+/** Fold pending payment ops (seq order) → the optimistic payment state per order_key.
+ *  LAST OP WINS: mark → undo → mark folds to 'pending_paid', which is what the operator last did. Pure. */
+export function buildPaymentOverlay(ops: PendingStatusOp[]): Map<string, PendingPaymentState> {
+  const overlay = new Map<string, PendingPaymentState>()
+  for (const op of ops) {
+    overlay.set(op.order_key, op.action === 'undo_mark_paid' ? 'pending_unpaid' : 'pending_paid')
+  }
+  return overlay
+}
+
 /** Fold the pending status ops (seq order) over the CURRENT orders to produce an optimistic status per
  *  order_key. Applied at render OVER the merged orders (before the column split) on both surfaces, so an
  *  offline-advanced card moves columns and no read can wipe it. Pure — orders provide the fold base

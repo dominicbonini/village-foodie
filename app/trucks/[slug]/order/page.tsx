@@ -50,7 +50,7 @@ interface DiscountCode { code: string; type: 'pct' | 'fixed'; value: number; act
 interface ModifierOption { id: string; name: string; price_adjustment: number; available?: boolean; allergens?: string[]; dietary?: string[]; stock_count?: number | null }
 interface ModifierGroup { id: string; name: string; hide_name?: boolean; options: ModifierOption[]; is_required?: boolean; min_choices?: number; max_choices?: number }
 interface TruckMenu { categories?: Array<{ id: string; name: string; prep_secs?: number | null; batch_size?: number | null; allowNotes?: boolean; modifierGroups?: ModifierGroup[]; subcategories?: Array<{ id: string; name: string; sort_order?: number }> }>; items: MenuItem[]; upsell_rules: UpsellRule[]; bundles: Bundle[]; codes: DiscountCode[] }
-interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null }
+interface TruckData { id: string; name: string; logo: string | null; mode: 'village' | 'pub'; venue_name: string | null; time_selection_enabled?: boolean; paused?: boolean; pauseReason?: 'manual' | 'offline' | 'account_closing' | null; extra_wait_mins?: number; plan: 'starter' | 'pro' | 'max'; allergen_info_url?: string | null; allergen_info_text?: string | null; allergen_display_mode?: 'per_dish' | 'card' | 'both' | null; ordering_available?: boolean; allergensVerified?: boolean; preorder_open_rule?: string | null }
 interface EventData {
   id: string            // truck_events.id — the event the customer is ordering against
   date: string          // dd/mm/yyyy
@@ -1453,19 +1453,27 @@ export default function OrderPage({ params }: { params: Promise<{ slug: string }
         <div style={{ top: stickyTop }} className="sticky z-40 bg-amber-50 border-b border-amber-200 px-4 py-3">
           <div className="flex items-start gap-3 max-w-lg mx-auto">
             <span className="text-xl flex-shrink-0">
-              {truck?.pauseReason === 'offline' ? '📡' : '⏸️'}
+              {truck?.pauseReason === 'account_closing' ? '🚫' : truck?.pauseReason === 'offline' ? '📡' : '⏸️'}
             </span>
             <div className="flex-1">
+              {/* 🔴 'account_closing' IS NOT A PAUSE AND MUST NOT READ LIKE ONE. The other two say
+                  "temporarily" and "check back shortly" — for a business that is closing its account
+                  those are false promises to a customer who would keep returning to an order page that
+                  is never coming back. Distinct copy, and no "try again" invitation. */}
               <p className="text-sm font-semibold text-amber-800">
-                {truck?.pauseReason === 'offline'
-                  ? 'Online ordering temporarily unavailable'
-                  : 'Orders are temporarily paused'
+                {truck?.pauseReason === 'account_closing'
+                  ? 'This business is no longer taking online orders'
+                  : truck?.pauseReason === 'offline'
+                    ? 'Online ordering temporarily unavailable'
+                    : 'Orders are temporarily paused'
                 }
               </p>
               <p className="text-xs text-amber-700 mt-0.5">
-                {truck?.pauseReason === 'offline'
-                  ? "We're having a connection issue but you can still order at the window. Check back soon!"
-                  : 'Check back shortly or order at the window when you arrive.'
+                {truck?.pauseReason === 'account_closing'
+                  ? 'Online ordering has closed. Please contact them directly if you need to get in touch.'
+                  : truck?.pauseReason === 'offline'
+                    ? "We're having a connection issue but you can still order at the window. Check back soon!"
+                    : 'Check back shortly or order at the window when you arrive.'
                 }
               </p>
             </div>

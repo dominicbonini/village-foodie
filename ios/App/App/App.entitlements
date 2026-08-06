@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- DEBUG ONLY. Builds run from Xcode onto a device register with the APNs SANDBOX and receive a
+	     SANDBOX device token. The server must then send via api.sandbox.push.apple.com, i.e. APNS_ENV
+	     must NOT be 'production' (lib/apns.ts picks the host from that one variable).
+	     The Release configuration uses AppRelease.entitlements with 'production' — see that file. -->
+	<key>aps-environment</key>
+	<string>development</string>
+</dict>
+</plist>

@@ -130,6 +130,16 @@ interface AddOrderPanelProps {
   /** RESOLVED per-event prompt (event override ?? van-has-buzzers). Gates ONLY the after-order prompt;
    *  the during-entry button is gated on buzzerCount alone, because assigning by hand is always valid. */
   buzzerPromptEnabled?: boolean
+  /** 🔴 THE DASHBOARD'S OWN `saveBuzzer`, PASSED DOWN — not a second mechanism.
+   *  This path used a raw `fetch`, so offline the buzzer number was silently LOST: a pager already in a
+   *  customer's hand, with no record anywhere and nothing to re-derive it from. Reusing saveBuzzer gets
+   *  the whole treatment for free — gatedAction(kind:'buzzer'), the durable outbox, the optimistic
+   *  pendingWritesRef guard, planOptimisticBuzzer's full local effect (this order gains the number, any
+   *  other order holding it loses it), and the queued-only `replay`/`placedAt` that lets the server
+   *  arbitrate a two-device conflict on placed_at instead of last-writer-wins.
+   *  ⚠️ Optional so the demo dashboard and any future caller that has no buzzers render unchanged. When
+   *  absent this path is simply not offered — it is never silently downgraded back to a raw fetch. */
+  onSaveBuzzer?: (orderKey: string, buzzerNumber: number | null) => Promise<void>
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -145,7 +155,7 @@ export function AddOrderPanel({
   isOffline = false, offlineCapacity = null, isEventLoaded,
   isActive = true,
   isDemo = false, onLockedEventAction,
-  buzzerCount = null, buzzerPromptEnabled = false,
+  buzzerCount = null, buzzerPromptEnabled = false, onSaveBuzzer,
 }: AddOrderPanelProps) {
 
   // ── order state ─────────────────────────────────────────────────────────────
@@ -1845,16 +1855,13 @@ setItemModal({ item, modGroups, editCartKey })
             if (n == null) { setBuzzerPrompt(null); p.resolve(); return }
             setSavingPromptBuzzer(true)
             try {
-              // set_buzzer — writes buzzer_number and NOTHING else. Deliberately not `edit`, which
-              // would force status:'modified', re-book capacity and email the customer.
-              const r = await fetch('/api/dashboard/action', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, pin, action: 'set_buzzer', order_key: p.orderKey, buzzerNumber: n }),
-              })
-              const d = await r.json().catch(() => ({}))
-              if (!r.ok) throw new Error(d.error || 'write failed')
-              const from = d.clearedFrom?.id ? ` (taken from #${d.clearedFrom.id})` : ''
-              showToast(`Buzzer ${n} on order #${p.orderId}${from}`, 'success')
+              // 🔴 ROUTED THROUGH THE DASHBOARD'S saveBuzzer — was a raw fetch, which lost the number
+              // offline. set_buzzer writes buzzer_number and NOTHING else; deliberately not `edit`,
+              // which would force status:'modified', re-book capacity and email the customer.
+              // ⚠️ saveBuzzer owns the toast on both the online and the queued path, so this branch
+              // deliberately shows none of its own — two toasts for one tap was the alternative.
+              if (!onSaveBuzzer) throw new Error('buzzer save unavailable')
+              await onSaveBuzzer(p.orderKey, n)
             } catch {
               // The ORDER IS ALREADY PLACED. Say what failed and let the flow finish — trapping the
               // operator in a modal over a buzzer write would be worse than the missing number.

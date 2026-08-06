@@ -42,6 +42,7 @@
 // The endpoint accepts either; both are `demo-` prefixed and 130-bit random.
 
 import { useState, useEffect, useRef, Fragment } from 'react'
+import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { createPortal } from 'react-dom'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { CUISINES, CUISINE_OTHER, emojiForCuisine } from '@/lib/cuisines'
@@ -1077,9 +1078,9 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                         className="mt-0.5 w-4 h-4 accent-orange-600 cursor-pointer" />
                       <span className="text-xs text-slate-600">
                         I agree to the{' '}
-                        <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">Terms</a>{' '}
+                        <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">Terms</a>{' '}
                         and{' '}
-                        <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">Privacy Policy</a>.
+                        <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-800">Privacy Policy</a>.
                       </span>
                     </label>
                     {fieldErrors.terms && <p className="text-xs text-red-600 mt-1">{fieldErrors.terms}</p>}
@@ -1126,7 +1127,7 @@ export function DemoGetStarted({ token, slug, label, className, isAdmin = false,
                       that overstates what you'll be contacted about is the one line that must not. */}
                   <p className="text-xs text-slate-400">
                     We&apos;ll only use this to {copy.privacyUse} — see our{' '}
-                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
+                    <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">
                       privacy policy
                     </a>.
                   </p>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Toggle } from '@/components/dashboard/OrderCard'
@@ -226,6 +227,32 @@ export default function UserMenu({
                 🔐 Admin
               </Link>
             )}
+
+            {/* ── 🔴 LEGAL LINKS — AN APP STORE REQUIREMENT, NOT A COURTESY ────────────────────────────
+                Guideline 5.1.1(i) requires the privacy policy to be reachable INSIDE the app, not only in
+                App Store Connect metadata. UserMenu is the only chrome present on EVERY operator surface in
+                the native shell (dashboard, KDS, manage, admin), so one placement here satisfies "reachable
+                from an operator surface" on all of them at once — rather than four placements that can
+                drift apart.
+                ⚠️ UNCONDITIONAL — no `showSignOut`/`isAdmin`-style gate, and no native check. A demo
+                visitor and a logged-out viewer are exactly the people most likely to want the privacy
+                policy before committing, and on web these two links are additive to a menu that already
+                carries navigation. Routes come from lib/legal.ts; never type them here. */}
+            <hr className="border-slate-100" />
+            <Link
+              href={PRIVACY_PATH}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
+            >
+              Privacy policy
+            </Link>
+            <Link
+              href={TERMS_PATH}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
+            >
+              Terms
+            </Link>
 
             {/* Sign out — every caller EXCEPT the demo dashboard (no session exists to end). The <hr> is
                 tied to the button so a hidden sign-out doesn't leave a dangling divider. */}

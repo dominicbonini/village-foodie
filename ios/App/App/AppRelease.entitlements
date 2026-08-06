@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- RELEASE ONLY — TestFlight AND the App Store. Both are Release builds signed with a DISTRIBUTION
+	     profile, and both register with PRODUCTION APNs. The server must send via api.push.apple.com,
+	     i.e. APNS_ENV=production.
+	     🔴 THIS IS THE FILE THAT PREVENTS THE CLASSIC SILENT FAILURE: a TestFlight build carrying
+	     'development' obtains a SANDBOX token, which api.push.apple.com rejects with BadDeviceToken.
+	     Nothing crashes and nothing is logged on the device — the notification simply never arrives,
+	     and it looks like "push works in Xcode but not in TestFlight". -->
+	<key>aps-environment</key>
+	<string>production</string>
+</dict>
+</plist>

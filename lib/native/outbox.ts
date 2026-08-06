@@ -26,11 +26,15 @@ import { getDeviceId } from '@/lib/native/device'
 const KEY_PREFIX = 'hg_outbox_op_'
 const SEQ_KEY = 'hg_outbox_seq'          // monotonic per-device counter (ordering, clock-independent)
 const DEVICE_LETTER_KEY = 'hg_device_letter'
+// ── 🔴 ACKNOWLEDGEMENT IS NOT DELETION ──────────────────────────────────────────────────────────────
+// The op_ids whose conflict the operator has SEEN AND ACKNOWLEDGED. A separate key, deliberately: the op
+// itself is never mutated and never removed, so acknowledging is a pure addition. See the ack functions.
+const ACK_KEY = 'hg_outbox_conflict_ack'
 
 // The Preferences keys this module owns that are NOT ops (counters / device state). Enumeration
 // explicitly excludes these as defense-in-depth, so even a future counter sharing the op prefix by
 // mistake can never be listed/counted as an op.
-const NON_OP_KEYS = new Set<string>([SEQ_KEY, DEVICE_LETTER_KEY])
+const NON_OP_KEYS = new Set<string>([SEQ_KEY, DEVICE_LETTER_KEY, ACK_KEY])
 
 /** True only for an actual op key — the op prefix AND not a known counter/state key. */
 function isOpKey(k: string): boolean {
@@ -179,9 +183,52 @@ export async function listConflictOps(): Promise<OutboxOp[]> {
   return (await listOps()).filter(o => o.state === 'conflict')
 }
 
-/** Dismiss/acknowledge every conflict op (operator has reviewed) — removes them from the outbox. */
+// ── 🔴 DISMISSING THE BANNER IS NOT DISCARDING THE RECORD. READ BEFORE WIRING ANYTHING TO A BUTTON. ──
+// This used to be one function, and the conflict banner's "Dismiss" called it. One tap deleted every
+// conflict op — and since a queued payment now renders IDENTICALLY to a confirmed one, those ops are the
+// ONLY surviving evidence that money was displayed as taken and never recorded. A reflexive tap on a red
+// bar mid-service destroyed it, and nothing anywhere else could reconstruct it.
+//
+// Split into two operations that are not the same thing:
+//   • acknowledgeConflicts(ids) — HIDES the banner. Adds op_ids to an ack list. Destroys nothing; the ops
+//     stay in Preferences, listConflictOps still returns them, the dev inspector still shows them.
+//   • clearConflicts()          — actually DELETES. 🔴 ZERO CALL SITES, and it must stay that way. If you
+//     are about to wire this to a control, you are re-introducing the defect above. Kept only as a
+//     deliberate recovery lever for a poison op that can never drain.
+
+/** 🔴 DELETES the conflict ops. NOT the banner's Dismiss — see the note above. No UI calls this. */
 export async function clearConflicts(): Promise<void> {
   for (const op of await listConflictOps()) await removeOp(op.op_id)
+}
+
+/** op_ids the operator has acknowledged. Pruned to ops that still exist, so the list cannot grow forever
+ *  and a re-queued op can never inherit a stale acknowledgement. */
+export async function listAcknowledgedIds(): Promise<Set<string>> {
+  try {
+    const raw = (await Preferences.get({ key: ACK_KEY })).value
+    const parsed: unknown = raw ? JSON.parse(raw) : []
+    return new Set(Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === 'string') : [])
+  } catch { return new Set() }
+}
+
+/** Mark conflicts as SEEN. 🔴 Additive only — no op is mutated and no op is removed. Prunes ack entries
+ *  whose op has since drained, so the key stays bounded. Best-effort: a failed write means the banner
+ *  reappears on the next poll, which is the safe direction to fail in. */
+export async function acknowledgeConflicts(opIds: string[]): Promise<void> {
+  try {
+    const live = new Set((await listOps()).map(o => o.op_id))
+    const next = await listAcknowledgedIds()
+    for (const id of opIds) next.add(id)
+    const pruned = [...next].filter(id => live.has(id))
+    await Preferences.set({ key: ACK_KEY, value: JSON.stringify(pruned) })
+  } catch (e) { console.warn('[outbox] could not record the acknowledgement:', e) }
+}
+
+/** Conflict ops the operator has NOT yet acknowledged — what the banner and the per-order marker read.
+ *  ⚠️ A conflict that has been acknowledged is HIDDEN, never gone: listConflictOps() still returns it. */
+export async function listUnacknowledgedConflicts(): Promise<OutboxOp[]> {
+  const [conflicts, acked] = await Promise.all([listConflictOps(), listAcknowledgedIds()])
+  return conflicts.filter(o => !acked.has(o.op_id))
 }
 
 /** Remove an op — ONLY after a definitive server ACK (or a resolved conflict). */

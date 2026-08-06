@@ -215,7 +215,9 @@ export async function GET(
   // override ?? the van's auto_pause_on_offline default. No live-gate: the write side only ever
   // stamps the correct (live) event.
   let isPaused = false
-  let pauseReason: 'manual' | 'offline' | null = null
+  // 'account_closing' — the account is pending deletion. Distinct from a pause because it is not
+  // temporary and is not event-scoped; the customer copy differs and it must not read as "back soon".
+  let pauseReason: 'manual' | 'offline' | 'account_closing' | null = null
   // EVENT-scoped extra-wait (replaces truck.extra_wait_*). Captured here from the resolved event.
   let eventExtraWaitMins = 0
   let eventExtraWaitStartedAt: string | null = null
@@ -266,6 +268,15 @@ export async function GET(
       if (manualPaused) { isPaused = true; pauseReason = 'manual' }
     }
   }
+
+  // ── 🔴 ACCOUNT PENDING DELETION — OUTRANKS EVERY EVENT-SCOPED PAUSE ────────────────────────────────
+  // Read off the truck row this route already fetched, so it costs no extra query.
+  // ⚠️ IT SITS OUTSIDE THE EVENT BLOCK DELIBERATELY. Pause is EVENT-scoped, so a truck with no event
+  // today has nothing to pause and would still render an orderable menu. Account closure is not a
+  // property of an event, and it must hold whether or not one exists.
+  // ⚠️ LAST, so it cannot be overwritten by the pause branches above — this is the reason ordering
+  // stopped, and the customer-facing copy should say the business is closing, not that it is "paused".
+  if (truck.deletion_requested_at) { isPaused = true; pauseReason = 'account_closing' }
 
   // Live order counts — event-scoped (V6.4 invariant), using the resolved event.
   // No confirmed/open event → empty counts.

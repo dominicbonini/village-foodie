@@ -70,6 +70,9 @@ import { applyPendingBuzzers, echoedBuzzerKeys, resolveCurrentBuzzer, planOptimi
 import type { CapacityBreach } from '@/lib/capacity-breach'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
+import { useOfflinePaymentOverlay } from '@/lib/native/useOfflinePaymentOverlay'
+import { useOutboxConflicts } from '@/lib/native/useOutboxConflicts'
+import { getOrderBalance } from '@/lib/payments/ledger'
 import { DevOfflineToggle } from '@/components/native/DevOfflineToggle'
 import { DevOutboxInspector } from '@/components/native/DevOutboxInspector'
 import { PrintingSettings } from '@/components/printing/PrintingSettings'
@@ -269,6 +272,27 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
   const[savingPaidStepOverride,setSavingPaidStepOverride]=useState(false)
   const[savingTakesCashOverride,setSavingTakesCashOverride]=useState(false)
   const[payments,setPayments]=useState<Record<string,any[]>>({})
+  // ── OFFLINE PAYMENT OVERLAY ──────────────────────────────────────────────────────────────────────
+  // 🔴 `confirmedPaid` is computed HERE from getOrderBalance — the same resolver the card uses — so the
+  // overlay knows when the server has caught up WITHOUT re-deriving a balance anywhere. It is the ledger,
+  // not the status, that clears a pending payment chip.
+  const paymentOrders=useMemo(()=>orders.map(o=>({
+    order_key:o.order_key,
+    confirmedPaid:(()=>{const b=getOrderBalance(o as never,payments[o.order_key]??[]);return b.status==='paid'||b.status==='refunded'})(),
+  })),[orders,payments])
+  const{overlay:paymentOverlay,refresh:refreshPendingPayment}=useOfflinePaymentOverlay(paymentOrders)
+  // ── THE CONFLICT SIGNAL ──────────────────────────────────────────────────────────────────────────
+  // 🔴 ONE source for BOTH the banner and the per-order card marker, so they can never disagree about
+  // what is conflicted or what has been acknowledged. See lib/native/useOutboxConflicts.ts.
+  const{conflicts:outboxConflicts,byOrderKey:conflictByOrder,acknowledge:acknowledgeConflicts}=useOutboxConflicts()
+  // 🔴 THE BANNER CANNOT NAME AN ORDER ON ITS OWN — the op carries only order_key. THIS surface holds the
+  // orders, so it resolves the display id. Falls back to the provisional id an offline create was given
+  // (the number the operator was actually shown), then to null — which the banner degrades honestly on
+  // rather than inventing an order number somebody would go hunting for.
+  const resolveConflictLabel=useCallback((c:{order_key:string;provisional_id:string})=>{
+    const o=orders.find(x=>x.order_key===c.order_key)
+    return o?`#${o.id}`:(c.provisional_id?`#${c.provisional_id}`:null)
+  },[orders])
   const[notesRequireReview,setNotesRequireReview]=useState(true)   // safe-by-default
   const[savingNotesReview,setSavingNotesReview]=useState(false)
   const[vanAutoPause,setVanAutoPause]=useState<boolean>(false)
@@ -1157,6 +1181,21 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
     if(data.truck?.id){fetchMenu(data.truck.id,pinInput);fetchStock(pinInput,selectedEventRef.current?.id??null)}
   }
 
+  // ── PRINT TRIGGER MODE — the TRUCK column is the single source of truth ──────────────────────────
+  // 🔴 It was briefly mirrored into device Preferences by the Settings card. Two homes for one value with
+  // nothing to arbitrate between them; the copy is gone. This follows saveAutoAccept exactly: POST the
+  // set_* action, then patch local truck state so the card reflects the change before the next 60s poll.
+  const savePrintTriggerMode=async(m:'lead_time'|'on_confirmed')=>{
+    try{
+      await fetch('/api/dashboard/action',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({token,pin,action:'set_print_trigger_mode',value:m})
+      })
+      setTruck(t=>t?{...t,print_trigger_mode:m}:t)
+      showToast(m==='on_confirmed'?'Tickets will print when you accept an order':'Tickets will print shortly before collection')
+    }catch{showToast('Failed to save','error')}
+  }
+
   const saveAutoAccept=async(val:boolean)=>{
     setSavingAutoAccept(true)
     try{
@@ -1569,7 +1608,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
         // NOT a one-shot setOrders patch (a stale poll / SW-cache read would wipe that — the revert bug). We
         // just refresh the overlay so the card advances instantly; it outlives reads and auto-clears on drain.
         const q=orders.find(o=>o.order_key===orderKey)??deviceQueuedOrders.find(o=>o.order_key===orderKey)
-        refreshPendingStatus()
+        refreshPendingStatus(); refreshPendingPayment()
         // Mirror the online prep-board auto-clear on ready/collected.
         if((action==='ready'||action==='collected')&&q){
           setStruckPrep(prev=>{const n=new Set(prev);q.items.forEach((item:any)=>{for(let u=0;u<item.quantity;u++)n.add(`${orderKey}:${item.name}:${u}`)});return n})
@@ -2265,7 +2304,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
       <AppLockGate />
       {/* Package 3: first-launch per-device setup (default screen + van). App-only overlay — renders null
           on web and once this device is configured. */}
-      <OfflineBanner onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
+      <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={()=>{reseedRef.current();refreshPendingStatus()}} />
       {/* WEB-only counterpart: no queue on web, so just a clear "you're offline, orders won't send" bar
           (renders null on native, where OfflineBanner owns the offline state). */}
       <WebOfflineBanner />
@@ -2888,13 +2927,13 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             {pendingOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">New — action needed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{pendingOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={conflictByOrder.get(o.order_key)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {confirmedOrders.length>0&&(
               <div className="mb-4">
                 <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Confirmed</p>
-                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
+                <div className="grid grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 gap-3">{confirmedOrders.map(o=><OrderCard key={o.order_key} anchorId={isDemo?`demo-order-${o.order_key}`:undefined} highlight={isDemo&&o.order_key===highlightOrderKey} order={o} truck={truck} event={activeEvent} slots={slots} actionLoading={actionLoading} onAction={doAction} onEdit={startEdit} categoryOrder={categoryOrder} itemCategoryMap={itemCategoryMap} catConfigs={catConfigs} kdsMode={truck?.kds_mode??false} showCookingStep={showCookingStep} effectiveOrderReady={effectiveOrderReady} ledgerRows={payments[o.order_key]} pendingPayment={paymentOverlay.get(o.order_key)} conflict={conflictByOrder.get(o.order_key)} onBuzzer={vanBuzzerCount!=null?setBuzzerTarget:undefined}/>)}</div>
               </div>
             )}
             {otherOrders.length>0&&(
@@ -2988,6 +3027,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
             controlledEvent={activeEvent}
             isOffline={isOffline}
             buzzerCount={vanBuzzerCount}
+            onSaveBuzzer={async(orderKey,buzzerNumber)=>{await saveBuzzer(orderKey,buzzerNumber)}}
             buzzerPromptEnabled={effectiveBuzzerPrompt}
             offlineCapacity={offlineCapacity}
             isEventLoaded={(id)=>loadedEventIds.has(id)}
@@ -3339,7 +3379,7 @@ export default function DashboardPage({params}:{params:Promise<{token:string}>})
                 order-ready → kitchen capacity) sit in the same relative order on every surface. Kitchen ticket
                 printing: iPad-native + Max-gated inside the component. Notifications: iPad-native, device-local.
                 DEMO: both hidden — hardware/device configuration a prospect has nothing to point at. */}
-            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at}/>}
+            {!isDemo&&truck&&<PrintingSettings plan={truck.plan} featureOverrides={truck.feature_overrides} trialExpiresAt={truck.trial_expires_at} mode={truck.print_trigger_mode==='on_confirmed'?'on_confirmed':'lead_time'} onChangeMode={savePrintTriggerMode}/>}
             {!isDemo&&<NotificationSettings token={token}/>}
           </div>
         )}

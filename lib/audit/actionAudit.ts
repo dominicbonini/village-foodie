@@ -12,6 +12,24 @@
 // KEYS on the table (see the migration): the record must survive deletion of the truck or order it
 // describes, which is exactly where order_payments gets it wrong (it cascades on both).
 //
+// ── 🔴 before_state / after_state MUST STAY FREE OF CUSTOMER IDENTIFIERS ────────────────────────────
+// NOTHING SWEEPS THIS TABLE. It has no foreign keys, so account deletion cannot reach it by cascade, and
+// the anonymisation pass nulls named COLUMNS on `orders` — it cannot reach inside a JSONB blob. Anything
+// personal written into these snapshots is therefore retained indefinitely and would outlive the erasure
+// the privacy policy promises.
+//
+// ✅ VERIFIED LIVE against production on 6 August 2026: 63 rows, NONE containing an email-shaped string
+// or a customer_* key in before_state / after_state. No scrub was needed and none was built.
+//
+// ⚠️ THAT IS A PROPERTY OF WHAT CALLERS HAPPEN TO PASS TODAY, NOT AN ENFORCED CONSTRAINT. Never put
+// `customer_name`, `customer_email`, `customer_phone` or a free-text customer note into these fields.
+// Pass ids, amounts, statuses and timestamps. If a future action genuinely needs customer context, the
+// right move is a reference the anonymisation pass can follow (order_key), never a copy of the value.
+//
+// ⚠️ `actor_id` / `actor_label` are OPERATOR identifiers and are a deliberate exception — an audit log
+// that cannot say who acted is not an audit log. They are pseudonymous (auth user id / display label),
+// and account deletion retains them for the same reason it retains the financial record.
+
 // ── ADDING A NEW ACTION ─────────────────────────────────────────────────────────────────────────────
 // `cancel`, `reject`, `edit` and the stock overrides are all intended callers and need NO signature
 // change — pass the action name and whichever of order_key / amount_minor / before_state / after_state

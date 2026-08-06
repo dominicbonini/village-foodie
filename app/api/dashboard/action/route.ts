@@ -1735,6 +1735,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true })
     }
 
+    // ── set_print_trigger_mode ── WHEN a kitchen ticket prints. TRUCK-level, not device-level: it is a
+    //    workflow policy ("we print when we accept" vs "ten minutes before"), and two devices holding
+    //    DIFFERENT modes would print the same order twice at two different times, which reads as a
+    //    malfunction rather than a duplicate. See 20260806_trucks_print_trigger_mode.sql.
+    //    ⚠️ WHITELISTED, not passed through. The column has a CHECK constraint, so an unexpected value
+    //    would 400 from Postgres; coercing to the safe default here keeps the failure quiet and correct,
+    //    matching set_sound_config's sanitising idiom rather than trusting the client.
+    if (action === 'set_print_trigger_mode') {
+      const mode = body.value === 'on_confirmed' ? 'on_confirmed' : 'lead_time'
+      const { error } = await supabase.from('trucks').update({ print_trigger_mode: mode }).eq('id', truck.id)
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+      return NextResponse.json({ success: true, print_trigger_mode: mode })
+    }
+
     // ── set_notes_require_review ── hold NOTED orders pending for manual review (allergy safety) ──
     if (action === 'set_notes_require_review') {
       const { value } = body

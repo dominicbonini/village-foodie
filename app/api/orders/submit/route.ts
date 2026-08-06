@@ -348,6 +348,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Truck not found' }, { status: 404 })
     }
 
+    // ── 🔴 ACCOUNT PENDING DELETION — ORDERING STOPS IMMEDIATELY ──────────────────────────────────
+    // Read off the truck row already fetched above, so this costs NO extra query on the hottest path in
+    // the product. `trucks.deletion_requested_at` is a derived enforcement cache of the authoritative
+    // `operators.deletion_requested_at` — see 20260807_account_deletion_pending_state.sql.
+    //
+    // ⚠️ DELIBERATELY NOT `trucks.active`. Setting active=false would ALSO redirect the KDS to /login and
+    // drop the truck from /dashboard, which breaks the requirement that the dashboard stays READABLE for
+    // the whole 30 days. Ordering and readability are different questions and need different switches.
+    //
+    // 423 (Locked), matching the pause guard's own code — this is "temporarily not accepting orders", not
+    // "no such truck". A 404 would be a lie the operator could not explain to a customer on the phone.
+    if (truck.deletion_requested_at) {
+      return NextResponse.json(
+        { error: 'This business is no longer accepting online orders.', code: 'account_closing' },
+        { status: 423 },
+      )
+    }
+
     // Demo trucks are exempt from the hidden-truck gate below and never send email — see both comments.
     const isDemoTruck = isDemoIdentifier(truck.id)
 

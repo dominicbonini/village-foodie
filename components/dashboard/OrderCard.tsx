@@ -96,6 +96,8 @@ export function OrderCard({
   anchorId,
   highlight = false,
   ledgerRows,
+  pendingPayment,
+  conflict,
   onBuzzer,
 }: {
   order: Order
@@ -129,6 +131,39 @@ export function OrderCard({
    *  the demo dashboard once the scroll to this card has finished; false everywhere else, and false
    *  appends nothing to the class string. */
   highlight?: boolean
+  /** ── OFFLINE PAYMENT OVERLAY ─────────────────────────────────────────────────────────────────────
+   *  A queued-but-unsynced payment op for THIS order, from useOfflinePaymentOverlay. Undefined on web
+   *  and whenever nothing is queued.
+   *
+   *  🔴 IT RENDERS EXACTLY AS A CONFIRMED PAYMENT — same chip, same colour, same buttons, same tap
+   *  targets. THIS WAS BRIEFLY BUILT THE OTHER WAY (a dashed amber "⏳ PAID · SYNCING" chip and a
+   *  non-interactive label) AND THAT WAS WRONG. Do not reintroduce it.
+   *  WHY: OFFLINE_STATUS_MAP already makes offline STATUS changes indistinguishable from online ones —
+   *  tap Ready offline and the card just advances. Making PAYMENT the one action in the same workflow
+   *  that looks different is an inconsistency the operator has to learn, mid-service, on the one screen
+   *  where they are busiest. The global OfflineBanner already tells them the state of the world; the
+   *  card's job is to reflect their action. Their workflow must not change when the connection drops.
+   *
+   *  ⚠️ IT LAYERS ON TOP OF getOrderBalance — it never replaces or re-derives it. `balance` stays the
+   *  CONFIRMED state and is what every other consumer reads; this only overrides the RENDERED paid-ness. */
+  pendingPayment?: 'pending_paid' | 'pending_unpaid'
+  /** ── THE PER-ORDER FAILURE MARKER ───────────────────────────────────────────────────────────────
+   *  A FAILED (state 'conflict') outbox op for this order that the operator has not acknowledged, from
+   *  the surface's useOutboxConflicts. Undefined on web and whenever nothing has failed.
+   *
+   *  🔴 THIS IS NOT THE PENDING/SYNCING DISTINCTION AND MUST NOT BECOME IT. A QUEUED op stays invisible —
+   *  that decision stands and is argued at `pendingPayment` above. This marks a REJECTED one, which is a
+   *  genuinely different state and is allowed to look different, because it is.
+   *
+   *  🔴 WHY IT LIVES ON THE CARD AT ALL. The banner names the order; the card is where the operator is
+   *  already looking. Without this, a failed payment replay makes a green PAID chip silently revert on a
+   *  grid of thirty and nothing marks the spot.
+   *
+   *  ⚠️ ITS STATE DOES NOT COME FROM THE ORDER. The payment overlay drops its entry the moment an op is
+   *  flagged conflict, so by the time this renders there is nothing left in the overlay to read. It comes
+   *  from the OUTBOX in Capacitor Preferences, polled independently of /api/dashboard — so a poll that
+   *  replaces every order object cannot clear it. Only an acknowledgement clears it. */
+  conflict?: 'payment' | 'status'
   /** This order's order_payments rows, supplied by /api/dashboard. Fed straight to getOrderBalance —
    *  the card NEVER derives payment state itself. Undefined/empty ⇒ nothing paid. */
   ledgerRows?: LedgerRow[]
@@ -155,6 +190,19 @@ export function OrderCard({
   const balance = getOrderBalance(order as any, ledgerRows ?? [])
   const isPaid = balance.status === 'paid' || balance.status === 'refunded'
   const isPartPaid = balance.status === 'part_paid'
+
+  // 🔴 THE OVERLAY FOLDS INTO THE RESOLVER'S BOOLEANS, RIGHT HERE, so EVERY consumer below — the chip,
+  // the pay buttons, the primary action, the tap targets — reads ONE pair of values and CANNOT diverge
+  // between the queued and the confirmed case. That is stronger than styling two paths to match: there is
+  // no second path to keep in step, and a future button added below is consistent by default.
+  // ⚠️ Declared immediately after `isPaid`/`isPartPaid` DELIBERATELY. They were briefly defined 90 lines
+  // lower, below three consumers that therefore still read the raw values — the buttons disagreed with the
+  // chip. Anything derived from paid-ness must come before the first thing that uses it.
+  // ⚠️ `balance` is NOT touched: a part-paid chip still shows the resolver's real amounts.
+  const effectivePaid = pendingPayment === 'pending_paid' ? true
+    : pendingPayment === 'pending_unpaid' ? false
+    : isPaid
+  const effectivePartPaid = pendingPayment ? false : isPartPaid
   const money = (minor: number) => `£${(minor / 100).toFixed(2)}`
 
   // Dismiss the inline confirm whenever the payment state moves underneath it — the removal landed, or
@@ -177,7 +225,7 @@ export function OrderCard({
     if (!showPaidStep) {
       return <Btn label="Paid & collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
-    if (isPaid) {
+    if (effectivePaid) {
       return <Btn label="Collected" colour="dark" loading={isLoading('collected')} onClick={() => onAction('collected', order.order_key)} />
     }
     // ORANGE — a MONEY action, in the page's own brand colour. GREEN means a KITCHEN state advancing
@@ -198,6 +246,9 @@ export function OrderCard({
     // Labels are BARE on the card, no amounts: the amount already appears twice (the price, and the
     // part-paid chip's balance), and at the 240px KDS column an amount would not fit beside a second
     // button. Amounts belong in the Add Order confirm bar, which has the width for them.
+    // ✅ THE PAY BUTTONS ARE UNCHANGED BY THE OVERLAY. They are already gated on the paid-ness above —
+    // which now folds the queued state in — so a queued payment hides them for exactly the same reason a
+    // confirmed one does. No offline-specific branch exists here, and that is the point.
     if (takesCash) {
       return (
         <>
@@ -210,7 +261,7 @@ export function OrderCard({
     }
     return (
       <Btn
-        label={isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+        label={effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
         colour="money" loading={isLoading('mark_paid')}
         onClick={() => onAction('mark_paid', order.order_key)}
       />
@@ -238,10 +289,14 @@ export function OrderCard({
   // (abort the delete if the audit write fails), then delete the ledger row, then recalc. No second
   // reversal implementation exists.
   const paidChipStatic = !showPaidStep ? null
-    : isPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
-    : isPartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
+    : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
+    : effectivePartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
     : null
 
+  // ✅ TAPPABLE IN BOTH CASES. An operator who mis-taps offline must be able to undo it exactly as
+  // online. The queued undo is safe: the outbox coalesces only kind:'stock', so BOTH ops are sent, FIFO
+  // (listOps sorts by seq), and an `undo_mark_paid` that finds no charge row returns reversal:'none' with
+  // a 2xx — a no-op, not a failure. See docs/offline-coverage-report.md.
   const paidChip = paidChipStatic === null ? null : (
     <button onClick={() => setConfirmRemovePayment(true)} title="Tap to remove this payment" className="flex-shrink-0">
       {paidChipStatic}
@@ -324,7 +379,7 @@ export function OrderCard({
   /** The disabled placeholder shown while the cooking gate holds an order — same label logic, no action. */
   const completionBtnDisabled = () => (
     <button disabled className="flex-1 bg-slate-200 text-slate-400 font-bold py-3 rounded-xl text-sm cursor-not-allowed">
-      {!showPaidStep ? 'Paid & collected' : isPaid ? 'Collected' : isPartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
+      {!showPaidStep ? 'Paid & collected' : effectivePaid ? 'Collected' : effectivePartPaid ? `Mark ${money(balance.balanceMinor)} paid` : 'Mark paid'}
     </button>
   )
   const [struckUnits, setStruckUnits] = useState<Record<number, number>>({})
@@ -554,8 +609,25 @@ export function OrderCard({
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
+  // ── THE FAILURE MARKER ────────────────────────────────────────────────────────────────────────────
+  // Above the header, inside the card, so it is visible without opening, expanding or scrolling anything.
+  // 🔴 The money copy says what is UNTRUE ("not recorded") and what to DO, not "couldn't sync" — an
+  // operator reading a sync error does not conclude that they are owed money. Persists until the operator
+  // acknowledges it in the banner; see the `conflict` prop note for why a poll cannot clear it.
+  const conflictMarker = conflict === 'payment' ? (
+    <div className="w-full bg-red-700 text-white px-3 py-1.5 text-xs font-black tracking-wide text-center">
+      ⚠ PAYMENT NOT RECORDED — check before releasing
+    </div>
+  ) : conflict === 'status' ? (
+    <div className="w-full bg-amber-500 text-white px-3 py-1.5 text-xs font-bold text-center">
+      ⚠ Last update didn&apos;t sync
+    </div>
+  ) : null
+
   return (
-    <div id={anchorId} className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${pendingSync ? 'border-amber-300' : 'border-slate-200'}${highlight ? ' demo-order-highlight' : ''}`}>
+    <div id={anchorId} className={`w-full bg-white rounded-2xl overflow-hidden shadow-sm border transition-opacity flex flex-col ${allStruck ? 'opacity-50' : ''} ${conflict === 'payment' ? 'border-red-600 border-2' : conflict === 'status' ? 'border-amber-400' : pendingSync ? 'border-amber-300' : 'border-slate-200'}${highlight ? ' demo-order-highlight' : ''}`}>
+
+      {conflictMarker}
 
       {/* Rendered from inside the card but positioned `fixed inset-0`, so it escapes the card's
           `overflow-hidden` and its grid cell entirely — it centres on the VIEWPORT and is therefore

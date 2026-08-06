@@ -1,177 +1,169 @@
-# Per-truck pricing suppression — BUILD
+# Walk-up card payments — copy, and the fee figures single-sourced
 
-**Date:** 5 August 2026. Supersedes the DRY audit of the same name.
-**Migration: WRITTEN, NOT RUN.** No SQL executed. `next dev` / `next build` not run. `NEXT_PUBLIC_PRICING_PUBLISHED` not touched.
+**Date:** 6 August 2026. Supersedes the previous pricing report.
+**Two files changed:** `lib/plan-features.ts`, `app/landing/page.tsx`. No migration, no SQL. `next dev` / `next build` not run. `NEXT_PUBLIC_PRICING_PUBLISHED` not touched.
 No garbled spans in the brief.
 
-**Seven files:** one new migration, one new component, and five edits.
-
 ---
 
-## A. THE MIGRATION — written, not run
+## A. THE FEE FIGURES ARE NOW DEFINED ONCE — structured, not strings
 
-**`supabase/migrations/20260805_trucks_hide_pricing.sql`**
-
-```sql
-alter table trucks add column if not exists hide_pricing boolean not null default false;
-
-comment on column trucks.hide_pricing is '…';
-
-notify pgrst, 'reload schema';
-```
-
-Idempotent (`if not exists`), `NOT NULL DEFAULT false`, with a `comment on column` and a VERIFY block in the house style — including the reminder that `add column if not exists` succeeds whether or not it added anything, so the row count is the only proof.
-
-### The UPDATE — separate, by slug, NOT in the migration file
-
-```sql
--- Run ONCE, by hand, AFTER the migration above. Deliberately NOT in the migration file:
--- a migration describes the SHAPE of the schema; which operator is suppressed is DATA, and it will be
--- cleared from the admin console rather than by a second migration.
-update trucks set hide_pricing = true where slug = 'pizzeria-gusto';
-
--- VERIFY — expect exactly one row, and it must be the truck you meant:
-select id, slug, name, hide_pricing from trucks where hide_pricing = true;
-```
-
-⚠️ **By `slug`, as instructed.** `slug` is not declared unique in anything I read, so the verify query above is not optional — it is how you confirm the statement hit one row and the right one. `update … returning slug, name` would do the same job in one statement if you prefer.
-
-### 🔴 DEPLOY ORDER — one direction genuinely matters
-
-| Order | Safe? |
-|---|---|
-| Code before migration | ✅ **Yes for the operator surface.** `/api/manage` uses `select('*')`, which DEGRADES — the field is absent, the client reads `undefined`, `?? false` resolves to visible. Today's behaviour |
-| Migration before code | ✅ Yes. Nothing reads the column until the code ships; the default is false |
-| 🔴 **Code before migration, ADMIN** | 🔴 **NO.** `/api/admin` uses a hand-maintained explicit select, and a named select against a missing column fails the **whole query** with 42703 — blanking the entire admin trucks table |
-
-**Run the migration BEFORE deploying.** This is recorded in the migration header.
-
----
-
-## B. THE RULE
-
-[lib/pricing.ts](lib/pricing.ts):
+**[lib/plan-features.ts:37-70](lib/plan-features.ts#L37)**
 
 ```ts
-export function pricesVisibleFor(hidePricing: boolean): boolean {
-  return PRICING_PUBLISHED && !hidePricing
+export const CARD_FEES = {
+  /** Online payments, standard UK-issued cards. */
+  online: { pct: 1.5, pence: 20 },
+  /** In-person payments, UK/EEA-issued cards. ⚠️ Cards issued outside the UK/EEA cost MORE. */
+  inPerson: { pct: 1.4, pence: 10 },
+  /** ADDITIONAL per-authorisation charge for contactless on a phone or tablet with no reader. */
+  tapToPaySurchargePence: 10,
+} as const
+
+/** "1.4% + 10p" — the ONLY place a card fee becomes a string. */
+export function feeLabel(fee: { pct: number; pence: number }): string {
+  return `${fee.pct}% + ${fee.pence}p`
 }
 
-export function maskPriceFor(val: string, hidePricing: boolean): string {
-  if (NON_SECRET_PRICE.has(val)) return val
-  return pricesVisibleFor(hidePricing) ? val : 'TBC'
-}
+export const CARD_FEE_ONLINE_LABEL     = feeLabel(CARD_FEES.online)      // "1.5% + 20p"
+export const CARD_FEE_IN_PERSON_LABEL  = feeLabel(CARD_FEES.inPerson)    // "1.4% + 10p"
+export const TAP_TO_PAY_SURCHARGE_LABEL = `${CARD_FEES.tapToPaySurchargePence}p`  // "10p"
 ```
 
-✅ **ANDed, never overridden.** `hidePricing` is on the restrictive side, so flipping the global flag to `'true'` cannot reveal prices to a suppressed truck — which is the entire point. The non-sensitive allowlist (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) is exempt from both, exactly as before.
+🔴 **Structured, with percentage and pence separate, exactly as instructed — and the file says why at the definition:** the £1,500/£2,000 allowances exist only inside display strings, which is why `lib/payments` cannot read a number and cannot apply an allowance. **When Stripe Connect and Terminal are built, the payments code needs `pct` and `pence` as numbers, and they are there.**
 
-`maskPrice(val)` is **kept unchanged** as the global-only primitive, with a comment saying it has no truck context and must not be called from a component.
+### Every literal converted — verified by grep
 
----
+**Four occurrences, in two wordings, as the audit recorded. All four now derive.**
 
-## C. WIRING — a React context, and why
-
-### What I chose
-
-**A context provider wrapping the manage page once, plus two hooks.** New file [components/PricingPolicy.tsx](components/PricingPolicy.tsx):
-
-```tsx
-const HidePricingContext = createContext<boolean>(true)   // default: HIDE
-
-export function PricingPolicyProvider({ hidePricing, children }) { … }
-export function usePriceMask(): (val: string) => string      // drop-in for maskPrice
-export function usePricesVisible(): boolean                  // for copy gated on visibility
-```
-
-Wrapped once at [page.tsx:510](app/manage/[token]/page.tsx#L510), the highest point `truck` is available:
-
-```tsx
-<PricingPolicyProvider hidePricing={truck.hide_pricing ?? false}>
-```
-
-### Why, in the terms the brief set
-
-**Threading a boolean was rejected because it works today and fails on the next price added.** A new call site that forgets the argument compiles fine or takes a default, and silently renders a real price to a suppressed operator — the projection-omission class the manual records three times. A rule that depends on every future author remembering it is a warning, not a control.
-
-**The context inverts that.** `usePriceMask()` returns a function that already knows which truck it is for. The author of a new price does not need to know the truck exists, and the 17 existing call sites did not change at all — only the three *declarations* did.
-
-### 🔴 The context default is `true` (hide) — deliberately NOT the column's default
-
-The two defaults answer different questions and take opposite directions:
-
-| | Default | Because |
-|---|---|---|
-| **Column** `hide_pricing` | `false` (visible) | "we have never thought about this truck" = follow the global flag = every truck's behaviour today |
-| **Context** (no provider) | **`true` (hide)** | "this component is outside a provider" = we do not know whose truck this is |
-
-**The failure directions are not symmetric.** Over-masking shows "TBC" to someone who could have seen a price — visible, harmless, reported within a day. Under-masking shows a real price to an operator we promised not to — invisible to us, and the exact thing this feature prevents. **Fail toward the mistake that announces itself.**
-
-### Call sites converted — three declarations, seventeen renders
-
-| Site | Change |
-|---|---|
-| [page.tsx:9725](app/manage/[token]/page.tsx#L9725) BillingTab | `const px = maskPrice` → `const px = usePriceMask()`. **The 14 `px(…)` uses are untouched** |
-| [page.tsx:9728](app/manage/[token]/page.tsx#L9728) footnote 2 | `PRICING_PUBLISHED ||` → `pricesVisible ||` (`usePricesVisible()`) — it substitutes a sentence rather than masking a value |
-| [page.tsx:8182](app/manage/[token]/page.tsx#L8182) van add-on | two direct `maskPrice(…)` calls → `vanPx(…)` from the same hook |
-| [FeatureGate.tsx:28](components/FeatureGate.tsx#L28) | `maskPrice(meta.price)` → `px(meta.price)`. ✅ **Both render sites inherit it; neither was edited** |
-
-⚠️ **`FeatureGate` gained `'use client'` and its hook sits above the early returns** — hooks cannot follow a conditional return. Same for BillingTab: both hooks are hoisted above `if (!truck) return null`. ⚠️ **The three `useState` calls below that guard are a PRE-EXISTING `rules-of-hooks` violation** (3 errors in the baseline). I left them alone — relocating live billing state is not this task — and a comment says so, so the new hooks are not later "tidied" down to join them.
-
----
-
-## D. PROJECTION — CHECKED, NOT ASSUMED
-
-**Every path that feeds a masking call site:**
-
-| Path | Projection | `hide_pricing` arrives? |
-|---|---|---|
-| **`/api/manage` GET** → `truck` → BillingTab, SettingsTab, FeatureGate | [route.ts:26-28](app/api/manage/route.ts#L26) **`.select('*')`**, returned as `{ ...truck, logo }` at [:167](app/api/manage/route.ts#L167) | ✅ **automatically, no edit needed** |
-| 🔴 **`/api/admin` GET** → admin trucks table + edit modal | [route.ts:54](app/api/admin/route.ts#L54) **hand-maintained explicit select** | 🔴 **NO — would have been silently absent. FIXED: added to the list** |
-| `/api/dashboard` | reads no price and calls no masking function | n/a — deliberately not touched |
-| `/api/admin` POST | `const { truckId, discoveryTruckId, ...updates } = body` then `.update(updates)` — **no allowlist on the trucks path** | ✅ `hide_pricing` passes through unchanged |
-
-**This is exactly the failure D anticipated**, and it was real: the manage page was safe by luck of `select('*')`, the admin console was not. Left unfixed, the admin toggle would have read `undefined`, rendered unchecked for a suppressed truck, and written `false` on the next save — **silently clearing the suppression**.
-
-⚠️ Both admin queries already carry a comment about a named select failing the whole statement with 42703 (`route.ts:60`, about `signup_promo_code`). The same trap, the same file, two columns apart.
-
----
-
-## E. ADMIN
-
-| Change | Where |
-|---|---|
-| Column added to the explicit select | [api/admin/route.ts:54](app/api/admin/route.ts#L54) |
-| `hide_pricing: boolean` on `AdminTruck` | [admin/page.tsx:33](app/admin/page.tsx#L33) |
-| Checkbox **"Hide pricing (show TBC)"** beside **Active** in the edit modal | [admin/page.tsx:1048-1059](app/admin/page.tsx#L1048) |
-
-Uses the established `modalEdits.x ?? editingTruck.x` pattern copied from the Active toggle, and saves through the existing modal save. **No new endpoint, no allowlist change.** ✅ Clearable without SQL, which was the requirement.
-
----
-
-## VERIFY — what each surface shows
-
-`px('£29/mo')` on the Billing tab, matrix, FeatureGate and van add-on:
-
-| Truck | `NEXT_PUBLIC_PRICING_PUBLISHED` | `hide_pricing` | Renders |
+| # | Site | Was | Now |
 |---|---|---|---|
-| **Gusto** | **`'true'` (ON)** | `true` | 🔴 **`TBC`** — the whole point |
-| **Gusto** | OFF | `true` | `TBC` |
-| **Any other truck** | **`'true'` (ON)** | `false` | ✅ **`£29/mo`** — real price |
-| **Any other truck** | OFF | `false` | `TBC` |
+| 1 | [plan-features.ts:129](lib/plan-features.ts#L129) `FOOTNOTES` #2 | `~1.5% + 20p` | `~${CARD_FEE_ONLINE_LABEL}` |
+| 2 | [landing:66](app/landing/page.tsx#L66) `FOOTNOTE_TEXT_OVERRIDES['2']` | `currently 1.5% + 20p` | `currently ${CARD_FEE_ONLINE_LABEL}` |
+| 3 | [landing:272](app/landing/page.tsx#L272) the lede | `currently 1.5% + 20p` | `currently {CARD_FEE_ONLINE_LABEL}` |
+| 4 | [landing:336](app/landing/page.tsx#L336) pricing asterisk | `currently 1.5% + 20p` | `currently {CARD_FEE_ONLINE_LABEL}` |
 
-Non-sensitive values (`Free`, `Free trial`, `Lifetime`, `0%`, `Pay at Hatch`) render as themselves in **all four** cells, unchanged.
+```
+$ grep -rn "1\.5% + 20p\|1\.4% + 10p" app components lib
+lib/plan-features.ts:45:  // ...never by writing "1.4% + 10p" again.
+lib/plan-features.ts:63:  /** "1.4% + 10p" — the ONLY place a card fee becomes a string. */
+```
 
-Footnote 2 follows the same table: Gusto keeps *"Platform and card processing fees are TBC…"* after the flip; everyone else gets the real Stripe wording.
+✅ **The only two survivors are comments documenting the helper.** **One definition, no literal restating it.**
 
-### ✅ A truck with no `hide_pricing` value behaves as VISIBLE
+⚠️ **The landing page's separate copies were converted, not left** — `FOOTNOTE_TEXT_OVERRIDES`, the lede and the asterisk all now read the shared symbol. **The override mechanism still exists** (the landing keeps its own *wording*), but the **figures** can no longer diverge.
 
-Three independent guards, all resolving to "not hidden":
+✅ **0.99% and the £1,500/£2,000 allowances untouched, as instructed.** Proven rather than asserted — occurrence counts against `HEAD` are **identical**: `plan-features.ts` 7 → 7, `landing/page.tsx` 4 → 4. The two diff lines containing `0.99%` are footnote 2 being rewritten around it; the figure itself survives in place.
 
-1. **Column default** — `NOT NULL DEFAULT false`, so every existing row is `false` the moment the migration runs.
-2. **Absent field** (pre-migration, or a projection that drops it) — `truck.hide_pricing ?? false` at [page.tsx:510](app/manage/[token]/page.tsx#L510). `undefined ?? false` → `false` → visible.
-3. **Type** — `hide_pricing?: boolean` on the `Truck` interface, so the optional case is expressed rather than assumed.
+---
 
-⚠️ The **context** default is the opposite (`true`/hide) and that is intentional — it covers "no provider at all", a programming error, not a data state. Both are documented at their definitions.
+## B. THE WALK-UP ROW
+
+### 🔴 The 0% claim is UNCHANGED and still true
+
+```
+$ grep -A4 "name: 'Walk-up orders'" lib/plan-features.ts
+    name: 'Walk-up orders',
+    footnote: '1',
+    values: { starter: '0%', pro: '0%', max: '0%' },
+```
+
+**Not edited.** The landing's `LANDING_FEE_ROWS` walk-up row (`0%` on all four columns) is likewise untouched. **The commercial decision makes that claim more true, not less** — 0% now covers both routes.
+
+### What changed: footnote 1 covers BOTH ways to take a walk-up card payment
+
+**[lib/plan-features.ts:145-158](lib/plan-features.ts#L145)** now says, in one paragraph:
+
+1. **0% platform fee however you take the money, on every plan.**
+2. **Your own terminal** (Zettle, Square, etc.) — *"only your provider's own fees apply — that is between you and them."*
+3. **Through HatchGrab via Stripe** — *"coming soon; when it is available there will still be no HatchGrab platform fee, and only Stripe's card processing fee will apply"*, at **~1.4% + 10p on UK and EEA-issued cards, more for cards issued elsewhere**, plus **an additional 10p per authorisation** for tapping on a phone or tablet without a dedicated reader.
+4. **"Stripe's fees are Stripe's, not ours, and your actual rate is confirmed by Stripe when you set up with them."**
+5. **"Cash is always free."**
+
+🔴 **The 10p surcharge is stated as an ADDITIONAL charge in its own clause, never folded into the headline** — the code comment at the definition says why: folding it in would understate the cost for exactly the trucks most likely to tap on a phone.
+
+### Both figures on the landing page
+
+The landing renders the **shared** `FOOTNOTES` at [:399](app/landing/page.tsx#L399), so footnote 1 (in-person) appears there; footnote 2 (online) appears via the landing's own override. **Both are on the page.** The in-person figure is additionally stated in the **lede** [:272](app/landing/page.tsx#L272) and the **pricing asterisk** [:336](app/landing/page.tsx#L336).
+
+---
+
+## C. HEDGING — the existing convention, matched not invented
+
+**Found and reused, both forms:**
+
+| Convention | Where it already lived | Where it now applies |
+|---|---|---|
+| **`~`** | `plan-features.ts` footnote 2 | shared footnotes 1 and 2 (`~${…}`, "around") |
+| **`currently`** | landing's `FOOTNOTE_TEXT_OVERRIDES`, lede, asterisk | all three landing sites, unchanged wording |
+
+**Each site keeps the hedge it already used.** No new phrasing was introduced.
+
+**Every required claim is present:**
+
+- ✅ **UK/EEA restriction** — *"on UK and EEA-issued cards, more for cards issued elsewhere"*, at all three in-person sites.
+- ✅ **Stripe's fees are Stripe's** — *"Stripe's fees are Stripe's, not ours"* in footnotes 1 and 2, the landing footnote-2 override and the asterisk.
+- ✅ **Confirmed at Stripe onboarding** — *"your actual rate is confirmed by Stripe when you set up with them."*
+- ✅ **Nothing stated as guaranteed, fixed, or ours to set.** No rendered string says "is", "will be" without a hedge, or implies HatchGrab sets the rate. The provenance note at the definition records that the figures are from **secondary sources, not stripe.com**, and that **the hedging is load-bearing rather than decorative**.
+
+---
+
+## D. NOT ADVERTISED AS AVAILABLE
+
+🔴 **Stripe Connect and Terminal are both unbuilt, and the copy says so.** Every mention of the Stripe walk-up route uses **"coming soon"** and the future tense — *"is coming soon; when it is available there **will** still be no HatchGrab platform fee, and only Stripe's card processing fee **will** apply"*.
+
+**"Coming soon" is the existing convention** — `FeatureValue = boolean | 'coming_soon'`, rendered as a muted-italic "Coming soon" badge (e.g. `admin:745`). ⚠️ **That enum applies to `FEATURE_SECTIONS` rows, not to `TRANSACTION_ROWS`**, whose values are plain strings; and adding a row would be restructuring the compare table, which was forbidden. **So the convention is carried in the footnote's words instead** — same vocabulary, applied where the mechanism allows.
+
+⚠️ **FLAGGED, NOT FIXED — a pre-existing over-claim I did not touch:** `FEATURE_SECTIONS` carries **`Online payments (Stripe Connect)` as `pro: true, max: true`**, i.e. a plain ✓, when Stripe Connect is unbuilt. **That is the same class of error as the kitchen-printing claim the manual records.** It was not in scope and changing a feature-matrix value would have moved a commercial claim without being asked. **Worth its own decision.**
+
+---
+
+## E. VERIFICATION
+
+### `findPlanParityViolations()` — RUN, not assumed
+
+```
+$ npx tsx -e "import { findPlanParityViolations } from './lib/plan-features'; …"
+parity violations: 0 (PASS)
+```
+
+### Both surfaces render the same figures from the same source — how I proved it
+
+**Not by reading the strings. By executing the module and checking membership:**
+
+```
+--- the single source ---
+{"online":{"pct":1.5,"pence":20},"inPerson":{"pct":1.4,"pence":10},"tapToPaySurchargePence":10}
+online   label: 1.5% + 20p
+inPerson label: 1.4% + 10p
+tapToPay label: 10p
+
+--- footnote 1 contains in-person figure?            true
+--- footnote 1 contains tap-to-pay surcharge?        true
+--- footnote 2 contains online figure?               true
+```
+
+Then the import graph, which is what makes divergence impossible rather than merely absent:
+
+- **Billing** — `app/manage/[token]/page.tsx:18` imports `TRANSACTION_ROWS, FOOTNOTES` from `@/lib/plan-features`; renders them at `:9817` and `:9880`.
+- **Landing** — `app/landing/page.tsx:19` imports `CARD_FEE_ONLINE_LABEL, CARD_FEE_IN_PERSON_LABEL, TAP_TO_PAY_SURCHARGE_LABEL` from the same module; renders shared `FOOTNOTES` at `:399` plus the three derived sites.
+
+**Both read the same exported symbols from the same file, and `grep` confirms no literal remains anywhere.** A figure change in `CARD_FEES` now moves every surface at once.
+
+### 🔴 GUSTO
+
+**Billing renders `TRANSACTION_ROWS` and `FOOTNOTES`, and Gusto is on that path.**
+
+| | Today | The day pricing publishes |
+|---|---|---|
+| **Walk-up row** | `0%` — ⚠️ **`0%` is on `maskPrice`'s NON_SECRET list, so it shows as `0%` today, not TBC** | `0%` — **unchanged** |
+| **Online-orders row** | **`TBC`** — masked | `£1,500 free, then 0.99% + card fee` |
+| **Footnote 1** (walk-up) | ⚠️ **VISIBLE NOW — footnotes are not masked by `maskPrice`.** The Billing footnote block substitutes replacement text **only for footnote 2** ([manage:9882](app/manage/[token]/page.tsx#L9882)); footnote 1 renders in full | unchanged |
+| **Footnote 2** (online) | **replaced** with *"Platform and card processing fees are TBC…"* | the real text, with `~1.5% + 20p` |
+
+🔴 **So the new walk-up wording IS visible to Gusto today**, as soon as this deploys — footnote 1 has never been masked. ⚠️ **That is a deliberate consequence of the commercial decision, not an oversight:** the 0% claim it explains is already on their screen, and it is now explained more fully rather than differently. **But it is a live-operator-visible copy change, and you should know that before it ships rather than after.**
+
+**Also on Gusto's Billing tab today:** `hide_pricing = true`, so every masked price reads TBC regardless of the global flag. The walk-up `0%` and footnote 1 are unaffected by that — neither goes through `maskPrice`.
 
 ### Build
 
@@ -182,28 +174,18 @@ TSC EXIT: 0
 
 | File | Baseline | Now | |
 |---|---|---|---|
-| `app/manage/[token]/page.tsx` | 370 (293 err, 77 warn) | **370 (293, 77)** | ✅ exact |
-| `app/admin/page.tsx` | 10 (8, 2) | **10 (8, 2)** | ✅ exact (verified by stashing) |
-| `components/FeatureGate.tsx` | clean | **clean** | ✅ |
-| `components/PricingPolicy.tsx` | — | **clean** | ✅ new |
-| `lib/pricing.ts` | clean | **clean** | ✅ |
-| `app/api/admin/route.ts` | clean | **clean** | ✅ |
+| `lib/plan-features.ts` | clean (0) | **clean (0)** | ✅ |
+| `app/landing/page.tsx` | **clean (0)** | **clean (0)** | ✅ |
+| `app/manage/[token]/page.tsx` | 370 (293, 77) | **370 (293, 77)** | ✅ untouched |
+| `app/admin/page.tsx` | 10 (8, 2) | **10 (8, 2)** | ✅ untouched |
 
-⚠️ **The manage page briefly went to 372.** Both new errors were `react-hooks/rules-of-hooks` — my two hooks landing *below* BillingTab's `if (!truck) return null` and joining the pre-existing violation there. Fixed by hoisting them above the guard, which is also simply correct. **Caught by the baseline check, not by review.**
+⚠️ **The landing page briefly went to 5 errors** — `react/no-unescaped-entities` on the apostrophes in `provider's` and `Stripe's`, which sit in **JSX text nodes** rather than template literals. Escaped to `&apos;` and back to a clean baseline. **Caught by the baseline check, not by review** — and worth noting that the identical apostrophes inside `FOOTNOTE_TEXT_OVERRIDES` are fine, because that is a template literal, not JSX.
 
----
+### Scope — confirmed untouched
 
-## SCOPE
+Plan prices · the £1,500/£2,000 allowances · the 0.99% platform fee (occurrence counts identical to `HEAD`) · the compare table's structure and columns · `lib/commerce-policy.ts` and the purchase-CTA gates · `hide_pricing` and `PricingPolicy` · keep-awake · the native shell · `NEXT_PUBLIC_PRICING_PUBLISHED`.
 
-| Constraint | Status |
-|---|---|
-| Purchase-CTA gates / `lib/commerce-policy.ts` | ✅ **untouched.** Not read by, and does not read, anything here |
-| Prices, thresholds, fees, footnote text | ✅ **unchanged.** `PLAN_META`, `PLAN_ALLOWANCES`, `TRANSACTION_ROWS`, `FOOTNOTES` not edited — this changes *when* a value is shown, never *what* it is |
-| `NEXT_PUBLIC_PRICING_PUBLISHED` | ✅ **not flipped.** Yours, in Vercel |
-| SQL | ✅ **not run.** Migration written, UPDATE supplied separately |
+### Not determined
 
-🔴 **The two axes are deliberately not connected.** `commerce-policy` answers *"may this PLATFORM show a purchase CTA"* (iOS: no). `hide_pricing` answers *"may this TRUCK see real numbers"*. On iOS with a suppressed truck both apply independently — the CTA is absent and any surviving price reads TBC — but **neither module imports the other**, and combining them would mean one flag could mask a change in the other.
-
-### ⚠️ Not addressed, and still true from the audit
-
-The **admin console and the landing page render `PLAN_PRICES` unmasked** — they never called `maskPrice` and still do not, so `hide_pricing` does not reach them. Both are access-gated (staff-only; `/landing` is admin-gated in production), and extending masking there was not in scope. **After the global flip, an admin viewing the console sees real prices for every truck including Gusto** — correct for a staff surface, but worth knowing before someone screen-shares it.
+- **The fee figures themselves.** Verified from **secondary sources, not stripe.com** — recorded as such at the definition, and every rendered string is hedged accordingly. **If these are ever confirmed against Stripe's own published rates, update the provenance note as well as the numbers.**
+- **Nothing was rendered.** `tsc`, lint and an executed parity check prove it compiles and that the strings derive; they prove nothing about how the paragraphs read on a page. **The lede at [:272](app/landing/page.tsx#L272) is now a long sentence** and is worth reading on a phone before launch.

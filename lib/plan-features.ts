@@ -34,6 +34,41 @@ export const PLAN_ALLOWANCES: Record<'starter' | 'pro' | 'max', string> = {
   max: 'First £2,000 of online orders included, then 0.99%',
 }
 
+// ── CARD PROCESSING FEES — ONE DEFINITION, STRUCTURED (V11.4) ─────────────────────────────────────────
+// 🔴 THESE ARE STRIPE'S FEES, NOT OURS. HatchGrab does not set them, cannot guarantee them, and a truck's
+// actual rate is confirmed by Stripe during their own onboarding. Never render these as fixed or as ours.
+//
+// ⚠️ STRUCTURED VALUES, NOT DISPLAY STRINGS, AND THAT IS THE WHOLE POINT. The £1,500 / £2,000 allowances
+// were defined only INSIDE display strings, so lib/payments cannot read a number and therefore cannot apply
+// an allowance at all. Do not repeat that here: when Stripe Connect and Terminal are built, the payments
+// code needs `pct` and `pence` as numbers. Every display string below is DERIVED — add a new surface by
+// calling feeLabel(), never by writing "1.4% + 10p" again.
+//
+// PROVENANCE: verified 6 August 2026 from multiple SECONDARY sources, NOT from stripe.com directly — which
+// is why every rendered string carries a hedge ("currently" / "~"). If these are ever confirmed against
+// Stripe's own published rates, say so here; until then the hedging is load-bearing, not decoration.
+export const CARD_FEES = {
+  /** Online payments, standard UK-issued cards. */
+  online: { pct: 1.5, pence: 20 },
+  /** In-person payments, UK/EEA-issued cards. ⚠️ Cards issued outside the UK/EEA cost MORE — say so
+   *  wherever this is rendered; quoting the domestic rate alone would be a claim that is untrue for some
+   *  customers. */
+  inPerson: { pct: 1.4, pence: 10 },
+  /** ADDITIONAL per-authorisation charge for contactless taken on a phone or tablet with no dedicated
+   *  reader (Tap to Pay). ⚠️ MUST be stated separately — folding it into the headline in-person rate would
+   *  understate the cost for exactly the trucks most likely to use it. */
+  tapToPaySurchargePence: 10,
+} as const
+
+/** "1.4% + 10p" — the ONLY place a card fee becomes a string. */
+export function feeLabel(fee: { pct: number; pence: number }): string {
+  return `${fee.pct}% + ${fee.pence}p`
+}
+
+export const CARD_FEE_ONLINE_LABEL = feeLabel(CARD_FEES.online)
+export const CARD_FEE_IN_PERSON_LABEL = feeLabel(CARD_FEES.inPerson)
+export const TAP_TO_PAY_SURCHARGE_LABEL = `${CARD_FEES.tapToPaySurchargePence}p`
+
 export const TRANSACTION_ROWS: {
   name: string
   footnote?: string
@@ -122,11 +157,25 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
 export const FOOTNOTES: { number: string; text: string }[] = [
   {
     number: '1',
-    text: "Walk-up orders use your own card terminal (Zettle, Square, etc.). HatchGrab charges 0% — your terminal provider's standard fees apply.",
+    // 🔴 THE 0% PLATFORM-FEE CLAIM IS UNCHANGED AND STAYS TRUE ON EVERY TIER — that is the commercial
+    // decision, not a wording change. What this footnote now makes clear is that there are TWO ways to take
+    // a walk-up card payment and NEITHER carries a HatchGrab platform fee.
+    // ⚠️ "will be" / "when it is available", NOT "is" — Stripe Connect and Terminal are BOTH UNBUILT. The
+    // manual records advertising an unbuilt capability as an error already made once (kitchen printing).
+    text: `Walk-up orders: HatchGrab charges a 0% platform fee however you take the money, on every plan. `
+      + `Use your own card terminal (Zettle, Square, etc.) and only your provider's own fees apply — that is `
+      + `between you and them. Taking walk-up card payments through HatchGrab via Stripe is coming soon; when `
+      + `it is available there will still be no HatchGrab platform fee, and only Stripe's card processing fee `
+      + `will apply — currently around ${CARD_FEE_IN_PERSON_LABEL} on UK and EEA-issued cards, more for cards `
+      + `issued elsewhere, plus an additional ${TAP_TO_PAY_SURCHARGE_LABEL} per authorisation if you tap on a `
+      + `phone or tablet without a dedicated card reader. Stripe's fees are Stripe's, not ours, and your `
+      + `actual rate is confirmed by Stripe when you set up with them. Cash is always free.`,
   },
   {
     number: '2',
-    text: 'Online payments powered by Stripe Connect. Subject to 0.99% HatchGrab platform fee plus Stripe card processing fees (~1.5% + 20p per transaction in the UK).',
+    text: `Online payments powered by Stripe Connect. Subject to 0.99% HatchGrab platform fee plus Stripe `
+      + `card processing fees (~${CARD_FEE_ONLINE_LABEL} per transaction on standard UK cards). Stripe's fees `
+      + `are Stripe's, not ours, and your actual rate is confirmed by Stripe when you set up with them.`,
   },
   {
     number: '3',

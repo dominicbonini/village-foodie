@@ -56,6 +56,21 @@ export interface Order {
   /** Moment the order was COMMITTED, as distinct from created_at = row inserted. Null = unknown on
    *  every pre-migration row — readers MUST fall back to created_at, never assume it is set. */
   placed_at?: string | null
+  /** ── PAYMENT COLUMNS THAT ARRIVE AT RUNTIME (via /api/dashboard's `select('*')`) ────────────────
+   *  Declared so callers can pass an `Order` straight to lib/payments/ledger.ts without a cast. They
+   *  were previously absent from this interface even though every order carries them, which is why
+   *  OrderCard and the dashboard both call `getOrderBalance(order as any, …)`.
+   *
+   *  🔴 `payment_status` AND `amount_paid` ARE DERIVED CACHES. `order_payments` is canonical, and the
+   *  migration that created it says these "must never be hand-written". DO NOT READ THEM to decide
+   *  paid-ness — call getOrderBalance(order, ledgerRows), which recomputes from the ledger and is the
+   *  only resolver. They are declared here for shape-honesty, not for use.
+   *  ⚠️ `total_minor` IS read, by ledger.ts's orderTotalMinor, and is PREFERRED over `total` — so an
+   *  object typed without it resolves a different (rounded-from-pounds) total than the real runtime
+   *  object does. That divergence is the reason it belongs on the type. */
+  total_minor?: number | null
+  payment_status?: string | null
+  amount_paid?: number | null
 }
 
 export interface Slot {
@@ -111,6 +126,11 @@ export interface TruckData {
   /** V9.4 cash/card split. FALSE (the DB default) = one payment button, exactly as now. Only
    *  meaningful when show_paid_step is also on. */
   takes_cash?: boolean
+  /** 🔴 WHEN a kitchen ticket prints — 'lead_time' (default) or 'on_confirmed'. TRUCK-level because it is
+   *  a workflow policy, not a device capability; the printer itself stays device-local in Preferences.
+   *  Arrives free via /api/dashboard's spread-and-redact truck projection. THE COLUMN IS THE ONLY HOME —
+   *  it was briefly mirrored into device Preferences and that copy was removed. Do not reintroduce it. */
+  print_trigger_mode?: 'lead_time' | 'on_confirmed' | null
   kds_mode: boolean
   crew_mode: CrewMode
   display_mode: 'list' | 'grid'

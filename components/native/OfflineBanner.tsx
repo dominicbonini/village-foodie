@@ -8,19 +8,42 @@
 // review, so it is shown in its own red banner with a Dismiss action, NEVER left as an invisible perpetual
 // "syncing…". A backoff RETRY re-drains while online when pending ops remain, so a transient non-409 failure
 // recovers instead of sticking until the next offline→online transition.
+//
+// ── 🔴 THE CONFLICT BANNER NAMES ORDERS, SEPARATES MONEY FROM STATUS, AND NEVER DELETES ─────────────
+// It used to say "2 orders couldn't sync" — a COUNT, on a board of thirty, with no way to find which —
+// and its Dismiss called clearConflicts(), which REMOVED the ops. Since a queued payment now renders
+// identically to a confirmed one, those ops are the only record that money was shown as taken and never
+// recorded, so one reflexive tap destroyed the evidence. Three things changed and must stay changed:
+//   1. Dismiss ACKNOWLEDGES (hides); the ops survive. Nothing here can delete an op, at any tap count.
+//   2. The orders are NAMED. The parent resolves the display id, because only the parent holds orders.
+//   3. Money and status get separate bars, and the money one requires an explicit acknowledgement that
+//      names the order and says what to check.
+// ⚠️ The conflict list is OWNED BY THE PARENT (useOutboxConflicts) and passed in, so this banner and the
+// per-order card marker can never disagree about what is conflicted or what has been acknowledged.
 import { useEffect, useRef, useState, useCallback, type ReactNode } from 'react'
 import { isNativeApp } from '@/lib/native/device'
 import { startReachability, onReachabilityChange } from '@/lib/native/reachability'
-import { countPendingOps, listConflictOps, clearConflicts } from '@/lib/native/outbox'
+import { countPendingOps } from '@/lib/native/outbox'
 import { drainOutbox } from '@/lib/native/orderGate'
+import { nameConflictOrders, type ConflictEntry } from '@/lib/native/useOutboxConflicts'
 
 type Phase = 'online' | 'offline' | 'syncing' | 'synced'
 
-export function OfflineBanner({ onSynced }: { onSynced?: () => void }) {
+export function OfflineBanner({ conflicts, resolveLabel, onAcknowledge, onSynced }: {
+  /** UNACKNOWLEDGED conflicts, from the surface's useOutboxConflicts. 🔴 Required, not optional: a mount
+   *  that forgot to pass them would silently fall back to a count-only banner, which is the whole defect. */
+  conflicts: ConflictEntry[]
+  /** order_key → the operator-facing order number ('#12'), or null if this surface cannot resolve it.
+   *  🔴 NULL MUST DEGRADE HONESTLY — never invent an id the operator would go looking for. */
+  resolveLabel: (entry: ConflictEntry) => string | null
+  /** Records the conflicts as SEEN. 🔴 Hides them. Does not delete them. */
+  onAcknowledge: (opIds: string[]) => void | Promise<void>
+  onSynced?: () => void
+}) {
   const [phase, setPhase] = useState<Phase>('online')
   const [queued, setQueued] = useState(0)        // ACTIONABLE pending ops (excludes conflicts)
-  const [conflicts, setConflicts] = useState(0)  // flagged-for-review ops, surfaced separately
   const [lastSynced, setLastSynced] = useState(0)
+  const [confirming, setConfirming] = useState(false)   // payment dismissal — the second, explicit step
 
   // onSynced held in a ref so the reachability effect doesn't tear down + re-subscribe on every parent render
   // (the prop is an inline arrow) — which would also cancel in-flight retries.
@@ -31,7 +54,6 @@ export function OfflineBanner({ onSynced }: { onSynced?: () => void }) {
 
   const refreshCounts = useCallback(async () => {
     setQueued(await countPendingOps())
-    setConflicts((await listConflictOps()).length)
   }, [])
 
   const cancelRetry = useCallback(() => {
@@ -85,14 +107,71 @@ export function OfflineBanner({ onSynced }: { onSynced?: () => void }) {
 
   if (!isNativeApp()) return null
 
-  // Conflicts — their OWN banner, always actionable (never a silent stuck "syncing").
-  const conflictBanner: ReactNode = conflicts > 0 ? (
-    <div className="w-full bg-red-600 text-white text-sm font-semibold px-4 py-2 flex items-center justify-center gap-3">
-      <span>⚠ {conflicts} {conflicts === 1 ? 'order' : 'orders'} couldn&apos;t sync — needs review</span>
-      <button type="button" onClick={() => { void (async () => { await clearConflicts(); await refreshCounts() })() }}
-        className="underline font-bold">Dismiss</button>
+  // ── Conflicts — their OWN banners, always actionable (never a silent stuck "syncing") ────────────
+  const paymentConflicts = conflicts.filter(c => c.kind === 'payment')
+  const statusConflicts = conflicts.filter(c => c.kind === 'status')
+  // ⚠️ DERIVED, not trusted. If the last payment conflict is acknowledged on the OTHER surface, the open
+  // confirm panel must not survive in state and greet the NEXT payment failure already half-confirmed —
+  // which would put a one-tap dismissal back. Deriving it costs nothing and removes the possibility.
+  const confirmingNow = confirming && paymentConflicts.length > 0
+
+  // Naming lives in the conflict module as a PURE function so it can be executed in a harness rather
+  // than eyeballed in a screenshot — see nameConflictOrders.
+  const nameOrders = (list: ConflictEntry[]): string => nameConflictOrders(list, resolveLabel)
+
+  // 🔴 MONEY — the louder bar, and the one that cannot be dismissed in a single tap. Its copy states the
+  // consequence (nothing was recorded) and the required check, because "couldn't sync" does not tell an
+  // operator that they are owed money.
+  const paymentBanner: ReactNode = paymentConflicts.length > 0 ? (
+    <div className="w-full bg-red-700 text-white px-4 py-3 border-b-2 border-red-900">
+      <div className="flex items-start justify-center gap-3 flex-wrap">
+        <div className="text-center">
+          <div className="text-base font-black tracking-wide">⚠ PAYMENT NOT RECORDED</div>
+          <div className="text-sm font-semibold mt-0.5">
+            {nameOrders(paymentConflicts)} — marked as paid on this device, but the server rejected it.
+          </div>
+          <div className="text-xs font-medium mt-0.5 opacity-90">Check the order and take payment again if it is still owed.</div>
+        </div>
+        {!confirmingNow && (
+          <button type="button" onClick={() => setConfirming(true)}
+            className="underline font-bold text-sm flex-shrink-0 mt-1">Dismiss</button>
+        )}
+      </div>
+      {confirmingNow && (
+        // The explicit second step. It names the orders and states what is kept, so dismissing is a
+        // decision rather than a reflex. 🔴 Neither button deletes anything.
+        <div className="mt-2 rounded-lg bg-red-900/60 px-3 py-2 text-center">
+          <div className="text-sm font-bold">
+            Confirm you have checked {nameOrders(paymentConflicts)}
+          </div>
+          <div className="text-xs mt-0.5 opacity-90">
+            This hides the warning. The record is kept on this device either way.
+          </div>
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <button type="button" onClick={() => setConfirming(false)}
+              className="px-3 py-1.5 rounded-md bg-white/20 text-sm font-bold">Not yet</button>
+            <button type="button"
+              onClick={() => { setConfirming(false); void onAcknowledge(paymentConflicts.map(c => c.op_id)) }}
+              className="px-3 py-1.5 rounded-md bg-white text-red-800 text-sm font-black">
+              I&apos;ve checked {nameOrders(paymentConflicts)}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   ) : null
+
+  // STATUS — the lighter one. A failed 'ready' costs an operator a re-tap, not money, so a single-tap
+  // dismissal is proportionate. It still names the orders.
+  const statusBanner: ReactNode = statusConflicts.length > 0 ? (
+    <div className="w-full bg-red-600 text-white text-sm font-semibold px-4 py-2 flex items-center justify-center gap-3">
+      <span>⚠ {nameOrders(statusConflicts)} — update didn&apos;t sync, needs review</span>
+      <button type="button" onClick={() => { void onAcknowledge(statusConflicts.map(c => c.op_id)) }}
+        className="underline font-bold flex-shrink-0">Dismiss</button>
+    </div>
+  ) : null
+
+  const conflictBanner: ReactNode = (paymentBanner || statusBanner) ? <>{paymentBanner}{statusBanner}</> : null
 
   // Sync/pending banner — driven by the ACTIONABLE pending count, so conflicts can't keep it up.
   let syncBanner: ReactNode = null

@@ -34,6 +34,7 @@ import { isOnline } from '@/lib/native/reachability'
 import { mergeOrders } from '@/lib/orders/mergeOrders'
 import { useOfflineStatusOverlay } from '@/lib/native/useOfflineStatusOverlay'
 import { OfflineBanner } from '@/components/native/OfflineBanner'
+import { useOutboxConflicts } from '@/lib/native/useOutboxConflicts'
 import { WebOfflineBanner } from '@/components/WebOfflineBanner'
 import { nativeAuthHeader } from '@/lib/native/session'
 import { ThisDeviceSettings } from '@/components/native/OperatorDeviceConfig'
@@ -144,6 +145,16 @@ export default function KdsPage() {
   // the outbox, applied at render over the merged orders, HELD until the server reflects the status (no
   // reconnect flash). Web/non-native → empty → no-op. dropEntry = the offline UNDO.
   const { overlay: kdsOverlay, refresh: refreshPendingStatus, dropEntry: dropOverlayEntry } = useOfflineStatusOverlay(orders)
+  // ── THE CONFLICT SIGNAL ──────────────────────────────────────────────────────────────────────────
+  // 🔴 ONE source for BOTH the banner and the per-order card marker, so they cannot disagree. The KDS
+  // fetches the SAME /api/dashboard order set as the dashboard, so it CAN resolve display ids — see
+  // resolveConflictLabel. ⚠️ It renders only `visibleOrders`, so a conflicted order that is filtered out
+  // of the columns is NAMED by the banner but carries no card marker on this surface.
+  const { conflicts: outboxConflicts, byOrderKey: conflictByOrder, acknowledge: acknowledgeConflicts } = useOutboxConflicts()
+  const resolveConflictLabel = useCallback((c: { order_key: string; provisional_id: string }) => {
+    const o = orders.find(x => x.order_key === c.order_key)
+    return o ? `#${o.id}` : (c.provisional_id ? `#${c.provisional_id}` : null)
+  }, [orders])
   const [todayEvents, setTodayEvents] = useState<TruckEvent[]>([])
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
   const [showEventMenu, setShowEventMenu] = useState(false)
@@ -850,7 +861,7 @@ export default function KdsPage() {
     <div className="w-full h-full flex flex-col bg-slate-50 overflow-hidden">
 
       {/* Offline warning + sync state (native only); also drives reachability + the outbox drain on reconnect. */}
-      <OfflineBanner onSynced={() => { fetchAllRef.current(); refreshPendingStatus() }} />
+      <OfflineBanner conflicts={outboxConflicts} resolveLabel={resolveConflictLabel} onAcknowledge={acknowledgeConflicts} onSynced={() => { fetchAllRef.current(); refreshPendingStatus() }} />
       {/* WEB-only counterpart (renders null on native): a clear "you're offline, orders won't send" bar. */}
       <WebOfflineBanner />
 
@@ -1171,6 +1182,7 @@ export default function KdsPage() {
                 itemCategoryMap={itemCategoryMap}
                 catConfigs={catConfigs}
                 pendingSync={pendingSync.has(order.order_key)}
+                conflict={conflictByOrder.get(order.order_key)}
                 onBuzzer={buzzerCount != null ? setBuzzerTarget : undefined}
               />
             ))

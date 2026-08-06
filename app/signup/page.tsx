@@ -17,6 +17,7 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
+import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 
 function SignupForm() {
   const router = useRouter()
@@ -130,9 +131,9 @@ function SignupForm() {
           {/* Consent by conduct — directly under the action it refers to, which is what makes it consent. */}
           <p className="text-[11px] text-slate-400 text-center leading-relaxed">
             By creating an account you agree to our{' '}
-            <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Terms</a>{' '}
+            <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Terms</a>{' '}
             and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Privacy Policy</a>.
+            <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer" className="underline hover:text-slate-600">Privacy Policy</a>.
             No card needed. Nothing goes public until you say so.
           </p>
         </form>
