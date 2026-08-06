@@ -157,25 +157,30 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
 export const FOOTNOTES: { number: string; text: string }[] = [
   {
     number: '1',
-    // 🔴 THE 0% PLATFORM-FEE CLAIM IS UNCHANGED AND STAYS TRUE ON EVERY TIER — that is the commercial
-    // decision, not a wording change. What this footnote now makes clear is that there are TWO ways to take
-    // a walk-up card payment and NEITHER carries a HatchGrab platform fee.
-    // ⚠️ "will be" / "when it is available", NOT "is" — Stripe Connect and Terminal are BOTH UNBUILT. The
-    // manual records advertising an unbuilt capability as an error already made once (kitchen printing).
-    text: `Walk-up orders: HatchGrab charges a 0% platform fee however you take the money, on every plan. `
-      + `Use your own card terminal (Zettle, Square, etc.) and only your provider's own fees apply — that is `
-      + `between you and them. Taking walk-up card payments through HatchGrab via Stripe is coming soon; when `
-      + `it is available there will still be no HatchGrab platform fee, and only Stripe's card processing fee `
-      + `will apply — currently around ${CARD_FEE_IN_PERSON_LABEL} on UK and EEA-issued cards, more for cards `
-      + `issued elsewhere, plus an additional ${TAP_TO_PAY_SURCHARGE_LABEL} per authorisation if you tap on a `
-      + `phone or tablet without a dedicated card reader. Stripe's fees are Stripe's, not ours, and your `
-      + `actual rate is confirmed by Stripe when you set up with them. Cash is always free.`,
+    // 🔴 THIS FOOTNOTE IS THE ONE PLACE THE WALK-UP DETAIL LIVES. The lede and the pricing asterisk point
+    // at it and stop. Every fact here — the in-person rate, the UK/EEA limit, the tap surcharge and
+    // "coming soon" — appears EXACTLY ONCE across the whole surface, and this is that once.
+    // ⚠️ "is coming soon", NOT "is" — Stripe Connect and Terminal are BOTH UNBUILT. The manual records
+    // advertising an unbuilt capability as an error already made once (kitchen printing).
+    // ⚠️ Cut deliberately and NOT to be reinstated: "Stripe's fees are Stripe's, not ours" ("Stripe's own
+    // charge" already says whose they are), "your actual rate is confirmed by Stripe", "more for cards
+    // issued elsewhere" ("on UK and EEA cards" already limits the claim), and "Cash is always free"
+    // (nobody thinks cash carries a platform fee). Each was a second statement of something already said.
+    // ⚠️ 72 words against a 55-word target, and the gap is NOT slack. The four facts this footnote must
+    // carry cost 13 + 15 + 28 + 16 = 72 on their own. Getting under 55 means dropping one of them, or
+    // dropping "without a dedicated reader" — which would make the tap surcharge read as though it always
+    // applies, overstating the cost for every truck that owns a reader. A shorter footnote is not worth an
+    // untrue one. Measured, not estimated; see docs/pricing-dry-report.md.
+    text: `Walk-up orders: HatchGrab charges 0% on every plan, however you take the money. Use your own card `
+      + `terminal (Zettle, Square, etc.) and only your provider's standard fees apply. Card payments through `
+      + `HatchGrab via Stripe are coming soon — still 0% from us, plus Stripe's own charge, currently around `
+      + `${CARD_FEE_IN_PERSON_LABEL} on UK and EEA cards, plus ${TAP_TO_PAY_SURCHARGE_LABEL} per `
+      + `authorisation if you tap on a phone or tablet without a dedicated reader.`,
   },
   {
     number: '2',
     text: `Online payments powered by Stripe Connect. Subject to 0.99% HatchGrab platform fee plus Stripe `
-      + `card processing fees (~${CARD_FEE_ONLINE_LABEL} per transaction on standard UK cards). Stripe's fees `
-      + `are Stripe's, not ours, and your actual rate is confirmed by Stripe when you set up with them.`,
+      + `card processing fees (~${CARD_FEE_ONLINE_LABEL} per transaction on standard UK cards).`,
   },
   {
     number: '3',

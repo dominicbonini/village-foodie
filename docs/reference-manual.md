@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.3
+HatchGrab Engineering Reference Manual · V11.4
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.3**
+**Version 11.4**
 
 August 2026
 
@@ -15,6 +15,36 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.4 — 6 August 2026
+
+Account deletion, iOS push entitlement, offline-payment conflict signalling and Phase-A printing. **Four columns and one column-set live-verified as applied.** ⚠️ **The brief for this update asserted four manual errors; only ONE survived checking — see the correction block below, which is the single most important entry in this version.**
+
+### 🔴 THE PROVENANCE CORRECTION — THREE OF FOUR ASSERTED MANUAL ERRORS DO NOT EXIST
+
+The brief stated that **§16 records "No FK cascade on `order_payments` — deliberate, surviving deletion of subject rows"** and that this was false and load-bearing. **Checked line by line against the file before editing:**
+
+- 🔴 **§16 does not mention `order_payments` at all.** Zero occurrences in the whole section. The attributed claim is not there and never was.
+- ✅ **§27 already recorded the TRUTH, and has since 30 July 2026** — *"`order_payments` cascades on order AND truck delete … A payment record that vanishes when someone deletes the order is not a record."* The manual was **right**, in the backlog, all along.
+- ⚠️ **What IS defective is one ambiguous CHANGELOG phrase** in the V9.5 entry: *"no FK cascade concerns pending — see §27"*, which parses either as *"no FK-cascade concerns; pending"* or *"no FK cascade; concerns pending"*. **Corrected in place below.**
+- ❌ **The idempotency-key claim is not a manual error either** — V9.5 already records that `collectIdempotencyKey` returned a constant `collect:{order_key}`, that it swallowed every charge after the first, and that the replacement is server-derived with a detector. That is exactly right.
+- ❌ **The 20260701 migrations are not an outstanding error** — V8.7 already carries the correction *"recorded-as-pending, actually applied (verified 27 July)"*.
+- ✅ **ONE genuine manual error, now corrected in place:** §27's *"The offline outbox collapses paired ops"* is **REFUTED**.
+
+🔴 **THE REAL LESSON, WHICH IS NOT "THE MANUAL WAS WRONG".** The manual held the correct fact in one section and an ambiguous restatement in another, and **the ambiguous one was believed without reading the authoritative one**. A document is not wrong because one of its restatements is loose; a reader is wrong for stopping at the restatement. See the §35 invariant added this version.
+
+### Schema — live-verified 6 August 2026
+- **`order_payments` has TWO foreign keys, BOTH `ON DELETE CASCADE`** — to `orders(order_key)` and to `trucks(id)`. Deleting the orders destroys the ledger; deleting the truck destroys it again independently. **The cascade was deliberate, but written to prevent orphaned money events — not with retention in mind.** `action_audit_log` has **zero** foreign keys, which remains correct.
+- **Applied:** `trucks.hide_pricing`, `trucks.print_trigger_mode`, `trucks.deletion_requested_at`; on **`operators`**: `deletion_requested_at`, `deletion_due_at`, `deletion_requested_by`, `deletion_last_notified_at`.
+- ⚠️ **`deletion_requested_by` and `deletion_last_notified_at` are on `operators`, NOT `trucks`.** A check against `trucks` alone finds neither and wrongly concludes they are missing. This happened.
+- ⚠️ **`trucks.paused_until` is DEAD** — nothing has written it since the truck-level guard was removed from order submission. A column that looks live and is not.
+
+### Delta
+- **Account deletion built** (new §41) — anonymisation plus identity removal, never row deletion.
+- **iOS push entitlement built** (§36) — two entitlements files, Debug/Release split.
+- **Offline payments render identically to online**, and the conflict signal was rebuilt as the consequence (§11).
+- **Printing Phase A complete and calling nothing** (§42). The preview that every earlier ticket review depended on was itself unvalidated and wrong in four ways.
+- **Legal published**, mailboxes live, infrastructure moved to UK regions (§43).
 
 ## V11.3 — 5 August 2026
 
@@ -187,7 +217,7 @@ Delta over V9.4 — the **29–30 July payments phase 1a/1b workstream**. Paymen
 
 - **TWO HYPOTHESES EXCLUDED, RECORDED SO THEY ARE NOT RE-CHASED.** (1) **A whole-object save CANNOT re-default a column** — PostgREST `UPDATE` writes only keys present in the object, so "send only changed fields" is already true everywhere. (2) **The realtime handler refetches rather than merging a payload**, so it cannot clobber local state. Both were asserted by the planning chat and both were wrong.
 
-- **PAYMENT LEDGER, ROLLUP AND AUDIT LOG — BUILT, DEPLOYED, VERIFIED LIVE.** `order_payments` (integer minor units only, idempotency key, RLS-no-policy, no FK cascade concerns pending — see §27) with `recalcOrderPayment` as the ONLY writer of `payment_status` and `amount_paid`. `action_audit_log` — append-only, **no foreign keys by design** so rows outlive their subject, following `allergen_audit_log`. Actor attribution verified resolving to `owner` + a real name on web. Live-verified end to end: collect → undo → re-collect leaves three audit rows, the undo's `before_state` carrying the full deleted ledger row including its idempotency key.
+- **PAYMENT LEDGER, ROLLUP AND AUDIT LOG — BUILT, DEPLOYED, VERIFIED LIVE.** `order_payments` (integer minor units only, idempotency key, RLS-no-policy) **[CORRECTED V11.4 — this previously read "no FK cascade concerns pending", which was ambiguous and was read as "there is no FK cascade". THERE ARE TWO, BOTH `ON DELETE CASCADE`: `order_key → orders` and `truck_id → trucks`. See §16 and §27.]** with `recalcOrderPayment` as the ONLY writer of `payment_status` and `amount_paid`. `action_audit_log` — append-only, **no foreign keys by design** so rows outlive their subject, following `allergen_audit_log`. Actor attribution verified resolving to `owner` + a real name on web. Live-verified end to end: collect → undo → re-collect leaves three audit rows, the undo's `before_state` carrying the full deleted ledger row including its idempotency key.
 
 - **THE WRITE PATH DISCARDED AN IDENTITY IT ALREADY HAD.** `/api/dashboard/action`'s entire auth was `verifyToken(token, pin)` — no cookie, no `getUser`, no `truck_users` read — while the sibling GET route resolved name, role and membership in full and the browser displayed it. **The read path knew who you were; the write path never asked.** Fixed with one shared resolver, split into `resolveActor` (may throw, GET, preserved byte-for-byte) and `resolveActorSafe` (action route). ⚠️ **A blanket try/catch around the GET resolver would have converted a genuine auth failure into a silent success**, letting a foreign operator through during an auth outage — caught before shipping.
 
@@ -3510,6 +3540,32 @@ RLS is enabled on every table in the public schema. All API routes use SUPABASE_
 
 - **`demo_sessions` has NO `id` column — the primary key is `truck_id`.** Every call site keys on `truck_id`; a query selecting or filtering `id` will error.
 - **`item_modifier_groups` links items to groups via `menu_item_id`.** It cascades from BOTH parents (see the cascade entry above).
+
+### 🔴 order_payments — TWO CASCADES, AND THEY DEFEAT A LEGAL COMMITMENT (live-verified 6 August 2026)
+
+```sql
+order_key  uuid  not null references orders(order_key) on delete cascade,
+truck_id   text  not null references trucks(id)        on delete cascade,
+```
+
+**Both foreign keys are `ON DELETE CASCADE`.** Deleting the orders destroys the payment ledger; deleting the truck destroys it again, independently. The migration's own comment says why it was written that way — *"a deleted order cannot leave orphaned money events behind"* — so **the cascade was deliberate, but it was written to prevent orphans, not with retention in mind.**
+
+🔴 **WHY THIS MATTERED, AND WHY IT IS RECORDED IN THE SCHEMA SECTION RATHER THAN THE BACKLOG.** The published privacy policy commits to retaining accounting records for **six years**. `lib/delete-truck.ts` is in production, wired to the admin delete-truck route and the demo-cleanup cron, and it deletes `orders` **first** — it is described in its own header as *"the guaranteed blocker"*. So **a hard delete of a real truck silently destroyed the accounting record and reported success.** Nothing errored, nothing logged, and the loss would have surfaced years later at an audit.
+
+✅ **`action_audit_log` has ZERO foreign keys** — verified, `grep -c references` returns 0 — so its rows outlive their subject, which is the house audit pattern and is correct.
+
+⚠️ **THE FIX IS NOT TO WEAKEN THE CONSTRAINTS.** Cascading is right for the case it was written for (tearing down a demo truck). The guard is a **refusal at the delete route**, not a schema change — see §41.
+
+### Columns applied and live-verified, 6 August 2026
+- **`trucks.hide_pricing`** (boolean, default false) — §43.
+- **`trucks.print_trigger_mode`** (text, default `lead_time`, CHECK `on_confirmed|lead_time`) — §42. **Truck-level; the other four printing settings are device-local in Preferences.**
+- **`trucks.deletion_requested_at`** (timestamptz, nullable, no default) — §41. A **derived enforcement cache**; the account record is on `operators`.
+- **`operators.deletion_requested_at`, `deletion_due_at`, `deletion_requested_by`, `deletion_last_notified_at`** — §41.
+
+⚠️ **`deletion_requested_by` AND `deletion_last_notified_at` ARE ON `operators`, NOT ON `trucks`.** A schema check against `trucks` alone finds neither and concludes they were never created. **This exact mistake was made and reported as a missing-column defect.** When a feature spans an account and its trucks, name the table before concluding a column is absent.
+
+### ⚠️ DEAD COLUMN — `trucks.paused_until`
+**Nothing writes it.** The truck-level pause guard was removed from `/api/orders/submit`, whose comment records that *"nothing writes `trucks.paused_until` anymore"* and that a stale pre-migration value would have falsely 423'd every event truck-wide. Pause is **event-scoped** (`truck_events.paused_until` / `online_paused_until`). **A column that looks live and is not** — do not read it, and do not resurrect it as an account-level switch (§41 explains why it needed its own column).
 - **`modifier_groups` has NO item column** — it is `truck_id`-scoped only, and the item relationship exists solely through `item_modifier_groups`.
 - **`menu_items_db` HAS `updated_at`; `trucks` does NOT.** The consequence is a reasoning trap and is recorded as a lesson in §35 ("a snapshot is not a history").
 - **`operators.signup_promo_code` (text, nullable)** — the marketing code captured at self-serve signup. **RECORDED ONLY, NOT APPLIED: no value is validated, and no code path reads it except a read-only admin chip.** Both the write (`/api/signup`) and the read (`/api/admin`) are built to tolerate the column being ABSENT — the write is a separate best-effort UPDATE rather than a field on the operators INSERT, because PostgREST fails the whole statement with PGRST204 on an unknown insert column and a marketing field must never be able to take signup down.
@@ -4368,6 +4424,19 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 ### Diagnosed, NOT fixed
 - **The keep-screen-on banner appears when the operator turned the screen function OFF.** `toggleKeepScreenOn` branches on `screenHeld` (the actual lock) rather than `keepScreenOn` (the operator's intent). After any web navigation `prepareKeepAwake()` deliberately sets `wakeState = 'off'` — the web wake lock needs a user gesture and the banner IS that gesture — so the toggle reads grey "Screen off", and tapping it takes the `else` branch and tries to turn it **ON**. **There is no state in which the operator can set the preference to OFF while the lock is not held.** Proposed one-line fix: branch on **intent**, keep the **display** on reality. Web-specific — on native `wakeState` stays `'native'` and the toggle behaves. ⚠️ Two secondary paths also set the preference on: `toggleOfflineProtection` silently enables it, and the localStorage write is wrapped in a swallowed `try{}catch{}` so a failed write means "off" never persists.
 - **`order_payments` cascades on order AND truck delete**, whereas the house audit pattern (`allergen_audit_log`) deliberately carries no FK so its rows outlive their subject. The two tables take opposite positions on whether the record survives. A payment record that vanishes when someone deletes the order is not a record.
+### Added V11.4 — open items
+- **No dashboard banner during pending deletion** — Manage → Settings is the only in-app indication that an account is closing.
+- 🔴 **The published TERMS promise an export that does not exist** — *"Export anything you need before you close your account"*. **NO EXPORT FEATURE EXISTS ANYWHERE IN THE PRODUCT** (operator-confirmed). Either the terms change or the feature gets built; the deletion dialog currently tells operators to email for a copy.
+- 🔴 **The KDS renders `OrderCard` WITHOUT `ledgerRows`**, so **every order reads unpaid there**, online or offline. Pre-existing, on a live surface. **Drive payment testing from the Orders tab.**
+- **Amount pinning via `op_id`** — a queued payment op carries no amount, so a replay charges the balance **as of reconnect**, not as of the tap. The outbox already mints an `op_id` for exactly this and never transmits it. Needs a second actor editing while the first is offline, so it cannot fire on a single device today.
+- **Two intermittent iPad display defects** — the right strip recovers on scroll-to-top, the header does not. Unreproducible; Web Inspector now set up. Decided by `window.scrollY > 0` with the header missing.
+- **`/admin` never converted to the app shell** — blocks `scrollEnabled: false`.
+- **`setOverlaysWebView` inert on 8.0.2** while `statusBar.ts` calls it load-bearing.
+- **`resizeWebView` sizes from `keyWindow.bounds` on a 100ms timer**, never re-validated.
+- **The native error view is a subview of the WKWebView (`self.view`)** — should be a sibling.
+- **`SUPPORT_EMAIL` still falls back to `hello@villagefoodie.co.uk`** — now fixable, the `hatchgrab.com` mailboxes are live and tested.
+- **A pre-launch claims audit** — walk every check in `FEATURE_SECTIONS` against what is actually built, before the landing page opens.
+
 - **`components/manage/[token]/page.tsx` carries five inline toggle copies still at `green-500`** while the dashboard toggles were reverted to the same value — they match today by coincidence, not by sharing a token.
 
 ### Not built, decided
@@ -4377,7 +4446,7 @@ All three V11 blockers below are **still open**. Re-stated here only where V11.1
 - **The ledger backfill** — one row per existing collected order carrying a `paid_at`. Deferred because it flips ~128 orders into a state that switches on a dormant customer-refund email branch. Land it AFTER the refund copy is fixed.
 - **Three refund-copy sites, not two** — `/api/orders/cancel` (reads `payment_status`), `/api/events/action` (reads `paid_at`), and `app/api/dashboard/action/route.ts:254` (operator cancel, builds its refund line inline, bypassing `lib/email.ts`). All three collapse onto the ledger.
 - **Client-minted per-tap idempotency, using the outbox's `op_id`.** It is stable, persisted before the network call, and removed only on a definitive ACK — but it lives on the op **envelope**, outside `body`, so the server has never seen it. This is the only complete fix for the residual key-collision case, and it is the same change the offline audit gap needs. **Land them together as one pass on the native outbox.**
-- **🔴 The offline outbox collapses paired ops.** `lib/native/outbox.ts:185` deletes a pending `collected` when an `undo_collected` arrives, treating the pair as if neither happened. **So an offline mark-paid-then-undo never reaches the server at all, and no server-side audit log can capture it.** Anything that happens in the app must be recorded IN the app first and queued, and that record must not be subject to pairing.
+- **~~🔴 The offline outbox collapses paired ops.~~ REFUTED — CORRECTED V11.4.** This claimed `lib/native/outbox.ts` deletes a pending `collected` when an `undo_collected` arrives. **It does not.** `enqueue` coalesces `if (input.kind === 'stock' …)` and nothing else; the file states outright that *"order/status/edit ops are never coalesced (each is a distinct mutation)"*. A `mark_paid` followed by an `undo_mark_paid` therefore **both queue and both replay**, and FIFO (`listOps()` sorts by `seq`) makes that correct. **This is the one asserted manual error of four that was real.** **So an offline mark-paid-then-undo never reaches the server at all, and no server-side audit log can capture it.** Anything that happens in the app must be recorded IN the app first and queued, and that record must not be subject to pairing.
 - **Nothing records that an operator overrode the walk-up capacity prompt.** `capacity_ack_at` is written but not yet read; narrowing `CapacityBreachBanner` to unacknowledged breaches is the follow-up, and it requires the edit path's missing capacity check first.
 
 ### Unexercised — built but never run or seen
@@ -5406,7 +5475,68 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 
 **`update_truck` silently drops unlisted keys.** A new setting **appears to save and writes nothing**, with no error anywhere: the allowlist filters the payload, the UPDATE succeeds on what remains, and the handler returns `{ ok: true }`. Any new column must have its key added to the allowlist **in the same change**. The van-level equivalent (`update_van_settings`) is a destructure and drops just as silently. Same silent-success class as an unapplied migration returning HTTP 200 with an empty array.
 
+## Added V11.4
+
+**🔴 AN UNVALIDATED INSTRUMENT PRODUCES UNVALIDATED CONCLUSIONS.** The ticket preview sat between us and the output for a whole session, and its errors were invisible **because it was the thing we were looking through**. It rendered double-width at 1.727× instead of exactly 2×, made every large line bold regardless of `l.bold`, drew `invert` as a full-width bar rather than the ragged-right cells `GS B` actually produces, and never applied the printer's character rule — so `José` previewed perfectly and prints `Jos?`. **Every ticket review before that, including all of that session's, was of something the printer would not produce.** When a tool is the only way to observe something, **validate the tool before trusting anything it shows**. The question that found it was *"how far does the fidelity gap go"* — not *"is the preview right"*.
+
+**🔴 A DEAD INPUT IS HOW A REMOVED THING COMES BACK.** Remove the field, not just its use. `minutesUntilDue` was deleted from `TicketOrder` rather than merely left unread, because a field that still arrives and still means something is an invitation to a future reader to "fix" the omission.
+
+**🔴 MODEL STATES AS CLOSED UNIONS so that adding one forces every consumer to be revisited.** Three times in one session a closed type caught what review would not: `Pick<Order, …>` caught field drift in the print harness; the exhaustive mapper type turned a forgotten `TicketOrder` field into a build error; and `pauseReason` being a closed union **forced a customer-copy decision that would otherwise have shipped a false promise** — a closing business would have been described to customers as *"temporarily paused, check back shortly"*.
+
+**🔴 GUARD ON THE DATA, NOT THE LABEL.** A label says what a thing is *called*; the data is what must be protected. The hard-delete guard keys on the **presence of `order_payments` rows**, not on `isDemoIdentifier` or `plan`, so a **mislabelled real truck is still covered** — a `tester`-plan truck that took real money is protected by the same test.
+
+**🔴 A REFUSAL YOU CAN CLICK PAST IS NOT A GUARD.** No override flag on the accounting-records refusal, deliberately, unlike the operator-attached guard beside it. And **a failed check refuses**: *"I could not determine whether this destroys accounting records"* must never resolve to *"proceed"*.
+
+**🔴 AN INERT HANDLER AND A MISSING HANDLER PRODUCE THE SAME SILENCE.** Check whether a handler is **reached**, not whether it exists. Three instances: Capacitor's navigation-failure handlers with `errorPath` unconfigured; `setOverlaysWebView` early-returning while a comment called it load-bearing; and the iOS push path whose **entire failure surface is one `console.warn` inside a WebView**.
+
+**🔴 ASK WHETHER A SYMPTOM VARIES BEFORE NAMING A MECHANISM.** Scroll-dependence and tab-dependence each independently rule out a static native frame. Two investigations named a cause before establishing that, and both were retracted.
+
+**A VERIFICATION PASS THAT ASKS ABOUT CONSEQUENCES, NOT CORRECTNESS, IS CHEAP AND CATCHES EXPENSIVE THINGS.** *"Is every release paired with a re-acquire?"* caught a `tsc`-clean, lint-clean build that would have shipped a sleeping kitchen screen to a trading truck.
+
+**A JUSTIFICATION COMMENT CAN BE TRUE ON ONE PLATFORM AND FALSE ON ANOTHER.** In shared JS driving a native plugin, any comment asserting OS behaviour **must name the platform**. iOS no-ops on an unconfigured push sender; FCM hard-fails and kills the process.
+
+**WHEN FOLDING A VALUE INTO AN EXISTING DERIVED ONE, the check is not "does it compile" but "have I found every consumer of the thing I am shadowing".** `tsc` did not catch `effectivePaid` being declared **below three of its consumers** — the card would have shown a green PAID chip beside a live "Mark paid" button. A grep of every paid-ness consumer did.
+
+**🔴 A LOOSE RESTATEMENT WILL BE BELIEVED OVER THE AUTHORITATIVE ENTRY. Read the section, not the summary.** The V11.4 brief asserted four manual errors and **only one was real**. The `order_payments` cascade was recorded **correctly in §27 on 30 July** and restated ambiguously in a changelog line as *"no FK cascade concerns pending"* — and it was the ambiguous line that got believed and built on. **State provenance as read-from-the-manual, name the section you read, and verify anything load-bearing against the live schema.** The corollary for writing: a changelog restatement of a schema fact is a **liability**, because it will be read instead of the schema section.
+
 # 36. Android app platform notes (V9.2, verification status V9.3)
+
+## 🔴 iOS PUSH ENTITLEMENT — the §36 audit CONFIRMED, then fixed (V11.4)
+
+**All three recorded facts verified before changing anything:** no `.entitlements` file anywhere under `ios/` (`find` returns nothing); **no `CODE_SIGN_ENTITLEMENTS` in either build configuration**; and **no Push Notifications capability** — an enabled capability leaves a `SystemCapabilities` block and an entitlements key, and neither existed. §36's statement that the APNs path *"has been written, deployed and reasoned about, and has never been able to obtain a token"* was accurate, and the reason was this and only this.
+
+✅ **The JS path was always correct** and was not changed: listeners are attached **and awaited** before `requestPermissions()` and `register()`, and the token write is **identical on both platforms** (`registration` → `saveDeviceConfig` → `/api/native/bind-device` → `van_devices.push_token`). The platform asymmetry is downstream at send time, where the sender allowlists `platform.eq.ios,platform.is.null` — **Android registers a token that nothing currently sends to.**
+
+### TWO entitlements files, not one — Debug/Release split
+
+| Configuration | File | `aps-environment` |
+|---|---|---|
+| Debug | `App/App.entitlements` | `development` (sandbox APNs) |
+| **Release** | `App/AppRelease.entitlements` | **`production`** — TestFlight **and** the App Store |
+
+Xcode's default when you tick the capability is **one** file containing `development`, referenced by both configurations. That is the classic cause of *"push works in Xcode, never arrives in TestFlight"*, because **TestFlight is a Release build signed with a distribution profile** and registers against production APNs.
+
+🔴 **WHY THIS MATTERS MORE THAN NON-DELIVERY.** `/api/orders/submit` NULLs `push_token` on `BadDeviceToken`. So a mismatched TestFlight build does not merely fail to notify — **the first order WIPES the stored token**, and the device then looks as though it never registered. **The failure erases its own evidence.**
+
+### 🔴 THE OPPOSITE OF THE .swift RULE — RECORD BOTH SO THEY ARE NOT CONFUSED
+
+| | `.swift` | `.entitlements` |
+|---|---|---|
+| `PBXFileReference` | ✅ required | ⚪ optional (navigator visibility only) |
+| **`PBXBuildFile` + build phase** | ✅ **required — it is not compiled without one** | 🔴 **MUST NOT BE ADDED** |
+| Build setting | — | ✅ **`CODE_SIGN_ENTITLEMENTS` — this is the functional part** |
+
+An entitlements file is **read by `codesign`**, not compiled or copied. A Resources build-phase entry would **embed it in the shipped bundle**. The explicit-file-reference rule that makes a new `.swift` compile is **inverted** here.
+
+### Environment
+`APNS_KEY_ID` · `APNS_TEAM_ID` · `APNS_BUNDLE_ID` · `APNS_KEY` · `APNS_ENV`. `APNS_ENV=production` selects `api.push.apple.com`; anything else selects the sandbox host. With none set, `lib/apns.ts` is a **safe no-op**.
+
+⚠️ **Expected and correct, not a bug:** with `APNS_ENV=production`, a **Debug** build's sandbox token is legitimately rejected. There is one `APNS_ENV` per deployment.
+
+⚠️ **Xcode's "+ Capability → Push Notifications" may create a THIRD entitlements file or rewrite `CODE_SIGN_ENTITLEMENTS`**, silently reverting the Debug/Release split. Check the setting after using it.
+
+⚠️ **Push failure remains silent on the device** — one `console.warn` in a WebView. Nothing reaches the operator or the server; a device that never registered is indistinguishable from one with no orders.
+
 
 > The manual documents the iPad app extensively (V8.5–V8.7) and Android only as "coming soon". This is the distillation; `docs/android.md` holds the full workstream detail. **STATUS: no build has shipped and no store listing exists.**
 
@@ -5915,4 +6045,143 @@ Across `app/manage/[token]/page.tsx` and `components/FeatureGate.tsx`. **Suppres
 Account deletion, the privacy policy and terms, and the 2.1(a) demo account are all **open** and are recorded in §27. **None of them is discharged by this section.**
 
 
-HatchGrab Engineering Reference Manual · V11.3
+# 41. Account deletion — anonymisation, not row deletion (V11.4)
+
+🔴 **THE CENTRAL INSIGHT, AND EVERYTHING ELSE FOLLOWS FROM IT: ACCOUNT DELETION IS ANONYMISATION PLUS IDENTITY REMOVAL, NOT ROW DELETION.** The published privacy policy promises deletion of personal data **while retaining accounting records for six years**. Those are only contradictory if deletion means removing rows.
+
+**They are compatible by construction, because `order_payments` carries NO customer identifiers at all** — no name, no email, no phone. It needs no scrubbing. It needs **not to be deleted**. And `orders` carries exactly **three** personal columns; null them and the row is anonymous but financially complete.
+
+## 🔴 TWO OPERATIONS THAT MUST NEVER BE CONFUSED
+
+| | **(a) HARD DELETE** | **(b) ACCOUNT DELETION** |
+|---|---|---|
+| Where | `lib/delete-truck.ts` `deleteTruckCascade` | `lib/account-deletion.ts` |
+| For | **Demo and test trucks with no legal record** | A real operator closing their account |
+| Does | Removes the truck and everything under it | **Anonymises; removes identity** |
+| `orders` | **DELETED** (first — the FK blocker) | **RETAINED, anonymised** |
+| `order_payments` | 🔴 **DESTROYED by cascade** | 🔴 **UNTOUCHED** |
+
+**Account deletion must never call `deleteTruckCascade` and must never delete trucks, orders or `order_payments`.** They are kept in separate modules for exactly this reason.
+
+## The guard on the hard delete
+The admin route refuses with **409 `accounting_records_present`**, keyed on **the presence of `order_payments` rows** — not on a plan or a demo label. **A label says what a truck is called; the data is what must be protected**, so a mislabelled real truck is still covered. **No override flag** — a refusal you can click past is not a guard. **A failed count refuses** rather than degrading to "unknown", which is the opposite of how every other count in that route behaves and is deliberate.
+
+⚠️ **RESIDUAL: the guard protects the ROUTE, not the helper.** The demo-cleanup cron imports `deleteTruckCascade` directly and is prefix-scoped twice over, so it is structurally unaffected — but **a future direct caller inherits the original danger.**
+
+## What deletion does, per table
+| Table | Disposition |
+|---|---|
+| **`order_payments`** | 🔴 **RETAINED, untouched** |
+| **`orders`** | **RETAINED, anonymised** — `customer_name → '[deleted]'`, `customer_email`/`customer_phone` → null. Totals, payment status, line items, timestamps intact |
+| **`trucks`** | **RETAINED, anonymised**, `active: false`. Not deleted — `order_payments.truck_id` cascades from it |
+| `truck_users` | **DELETED** |
+| `auth.users` (staff) | **DELETED only when no membership survives anywhere** — a staff member may work for another account |
+| `auth.users` (owner) | **DELETED last** — the one irreversible step |
+| `operators` | **RETAINED, anonymised** — a tombstone, so a re-signup cannot inherit old history |
+| `action_audit_log` | **RETAINED** — no FKs. ✅ Live-verified 6 Aug 2026: **63 rows, none containing an email-shaped string or a `customer_*` key** in `before_state`/`after_state`, so **no JSONB scrub was needed and none was built**. ⚠️ That is a property of what callers pass today, **not an enforced constraint** — nothing sweeps this table |
+
+**The execute route returns `paymentsIntact` with a before/after count**, so a regression that starts deleting payments **shows up as a changed number** rather than being found years later by an accountant.
+
+## Multi-truck
+**Every truck the operator owns is in scope. A second truck is NOT spared** — same account, same legal entity, same person's data. Sparing one would leave a live business attached to a deleted identity with nobody able to log in. ⚠️ `trucks.operator_id` is **nullable**; an unclaimed truck has no account and is unreachable from this path.
+
+## The pending state
+30 days. **Ordering stops immediately; the dashboard stays READABLE.**
+
+🔴 **It needed its own column, and here is why neither existing switch worked.** **Pause is event-scoped** — a truck with no event today has nothing to pause. **`trucks.active` does too much** — it redirects the KDS to `/login` and drops the truck from `/dashboard`, breaking the readable-dashboard requirement.
+
+**Atomicity:** the truck flags are **ONE `UPDATE … WHERE id IN (…)`**, atomic in Postgres, so a half-pending account across trucks cannot occur. **The operator row is stamped FIRST, deliberately** — a failure between the two leaves an account **pending but still trading** (visible, recoverable, and the cron still finds it) and returns `partial_stamp`, rather than silently stopping trucks with no record explaining why.
+
+## At 30 days — 🔴 NOTHING EXECUTES
+A Vercel cron **emails Dominic and deletes nothing**, re-notifying **every 24h** and stamping `deletion_last_notified_at` **only on a successful send**, so a failed email is retried rather than marked delivered. **Only Dominic can cancel, by email.** There is deliberately no in-app cancel.
+
+⚠️ **Keeping a human in the loop is what makes the non-transactional cascade acceptable** — supabase-js cannot open a transaction, so a mid-sequence failure leaves a partially anonymised account. Under a person that is a visible, resumable error; at 04:00 unattended it is a silent half-deletion.
+
+## The UI
+**Manage → Settings, owner-only, bottom, in a Danger Zone.** 🔴 **NOT Billing** — the Billing tab is hidden for `plan === 'tester'`, and **5.1.1(v) has no plan exemption**.
+
+**Three independent gates:** staff never reach Manage at all; **managers get NO rendered control — not a disabled one**, which would only advertise the action; and both handlers **403 anyone without an `operators` row**.
+
+Typed truck-name confirmation; **no `<form>`, so Enter cannot submit**; focus lands on **Cancel**; Escape dismisses. **Warns on upcoming orders but does not block.** States plainly that **no export exists** and that they must email for a copy **before** confirming.
+
+⚠️ **OPEN: no dashboard banner during the pending 30 days.** Manage → Settings is the only in-app indication.
+
+# 42. Kitchen ticket printing — Phase A (V11.4)
+
+**Renderer, mapper, scheduler, trigger modes and harness are built. 🔴 NOTHING CALLS ANY OF IT** — `usePrintWatcher` and `createStubTransport` have **zero call sites**.
+
+## 🔴 THE PREVIEW WAS LYING, AND IT WAS THE ONLY INSTRUMENT
+Four fidelity gaps, all now fixed: **double-width rendered at 1.727× instead of exactly 2×** (19px against an 11px base); **every large line rendered bold** regardless of `l.bold`; **`invert` used a block-level background**, so every emphasised block previewed as a solid full-width bar rather than the ragged-right cells `GS B` actually produces; and **the character rule was never applied**, so `José` previewed perfectly and prints `Jos?`. **Every ticket review before this — including all of that session's — was of something the printer would not produce.** See the §35 invariant.
+
+## Content
+Everything on the Orders tab **except timing-to-start**, plus the total and payment state. **Payment arrives PRE-RESOLVED** via `paid-step.ts` (its **ninth** consumer) and `getOrderBalance`; the renderer does **no payment arithmetic** and a paid-step-off truck gets **NO payment line at all** — not "unpaid". Order notes and item notes are both emphasised; **item notes invert only their text** so they do not compete with the boxed order-level block.
+
+**`minutesUntilDue` was REMOVED FROM THE TYPE, not just from its use** — a dead input is how a removed thing comes back.
+
+## The result channel
+`onPrint` returns **`printed | failed | unknown`**. A key enters the printed set **only on success**. 🔴 **A thrown transport error is `unknown`, never `failed`** — a throw says the call did not complete, not that paper did not move. **Duplicate-over-missing** was chosen for a kitchen (a duplicate is visible and self-resolving; a missing ticket is invisible until the customer asks), **which makes the reprint marker a requirement rather than a nicety**.
+
+## Trigger modes
+`lead_time` (default) and `on_confirmed`, **both anchored on ACCEPTANCE** via `DEFAULT_ELIGIBLE`. `trucks.print_trigger_mode` is **truck-level** — a workflow policy, not a device capability; the other four printing settings stay **device-local in Preferences**. Dedup persists in Preferences and **carries the mode it was primed under**.
+
+## 🔴 OPEN
+- **Priming vs flush-on-connect are the same event with opposite intended outcomes and nothing distinguishes them.** UNRESOLVED, blocked on a real connection state.
+- **`transport.ts` cannot fail** — `sendBytes` always returns `ok: true` and `status()` hard-codes `connected: true` — so **`failed`/`unknown` are unexercised**.
+- **No retry, backoff or pacing.**
+- **Ordering is acceptance order, not collection-time order** — `selectDueToPrint` does not sort.
+- 🔴 **NOTHING HAS BEEN SEEN ON PAPER.**
+
+The Settings card **no longer manufactures a connection**. ⚠️ The settings were previously gated behind a paired printer, **which is WHY the stub existed** — the only way to reach real settings was to fake a connection.
+
+⚠️ **`lib/plan-features.ts` still marks Kitchen ticket printing as `max: true`** — a live claim for an unbuilt feature, **on Gusto's Billing tab today**. Same class as Online payments (Stripe Connect) marked with a plain check.
+
+**`/dev` is now gated by `app/dev/layout.tsx`, which `notFound()`s in production** — the **directory**, so future dev pages are covered by default. ⚠️ Known limit: **a layout does not gate Route Handlers.**
+
+# 43. Legal, email and domain (V11.4)
+
+**Privacy policy and terms are WRITTEN, PUBLISHED at `/privacy` and `/terms`, and reachable in-app — 5.1.1(i) satisfied.** `content/legal/*.md` are the **source of truth**, byte-identical to the drafts (`shasum` verified), rendered by a purpose-built renderer in which **unsupported constructs pass through as LITERAL TEXT** — the correct failure direction for legal copy, because a dropped clause is invisible and a visible `**` is not. **`lib/legal.ts` is the single source for the routes; zero inline `/privacy` or `/terms` literals.**
+
+**HatchGrab Ltd, company number 17381557.** `privacy@hatchgrab.com` and `hello@hatchgrab.com` are **LIVE AND TESTED as receiving**.
+
+**Retention:** operator accounts 12 months after closure · order personal details anonymised at 12 months · **accounting 6 years** · support 24 months · logs 90 days. **No analytics or tracking cookies, so no consent banner is needed.**
+
+**Infrastructure is now UK:** Supabase `eu-west-2`, Vercel `lhr1` (moved from `iad1` — latency as much as compliance). Brevo EU. Gemini, Apple and Google push are US.
+
+⚠️ **OPEN:** ICO registration is **not yet done** — not an App Store blocker, but a legal one. **Stripe must be added to the privacy policy's provider table** when the account confirms. **Article 28 processor clauses are IN the terms.**
+
+⚠️ **The terms promise an export that does not exist** — see §27.
+
+# 44. Commercial model — fees and pricing suppression (V11.4)
+
+🔴 **Walk-up card payments taken through HatchGrab via Stripe carry 0% PLATFORM FEE on every tier** — the same as the truck's own terminal. **Only Stripe's card fee applies.** The **"Walk-up orders 0%"** claim therefore **stays true and covers both routes**.
+
+**`CARD_FEES` in `lib/plan-features.ts` is the single structured source** — `{pct, pence}`, **not display strings, so payments code can read the numbers**: online **1.5% + 20p** standard UK cards; in-person **1.4% + 10p** UK/EEA cards; **phone/tablet contactless carries an ADDITIONAL 10p per authorisation**; non-UK/EEA costs more. ⚠️ **Figures are from secondary sources, NOT `stripe.com`** — the copy is hedged accordingly.
+
+**`trucks.hide_pricing` is ANDed with `PRICING_PUBLISHED`**, wired via a React context **so a NEW price added later is masked without its author knowing the truck exists**. 🔴 **The defaults are asymmetric on purpose:** the column defaults **false** (visible), the context defaults **TRUE** (hide) — **because over-masking announces itself and under-masking does not**. `NEXT_PUBLIC_PRICING_PUBLISHED` is **TRUE in production**; **Gusto has `hide_pricing = true` and reads TBC, verified live**.
+
+⚠️ **OPEN — literal price copies outside `PLAN_META`:** **13** copies of £29/£49 including `VAN_ADDON_PRICE` **as raw NUMBERS invisible to a grep**; **£1,500/£2,000 six times with no owner**; **0.99% nine times**. `findPlanParityViolations` guards **feature rows only**.
+
+# 45. Offline payments and the conflict signal (V11.4)
+
+## 🔴 A DESIGN DECISION WAS MADE AND REVERSED — the reversal is the record
+A queued payment op **first rendered as a distinct amber dashed "SYNCING" chip with non-tappable buttons**. **WITHDRAWN.** `OFFLINE_STATUS_MAP` already makes offline **status** changes visually identical to online ones — tap Ready offline and the card just advances — so **making payment the one action in the same workflow that looks different is an inconsistency the operator has to learn mid-service**, and they already have a global offline banner telling them the state of the world.
+
+**Queued payments now render IDENTICALLY to confirmed ones**, folded into the resolver's own `isPaid`/`isPartPaid` — **ONE pair of booleans, no second render path**. That is stronger than styling two paths to match: there is no second path to drift.
+
+## Which is why the conflict signal became the entire safety case
+It was assessed as **inadequate** and then rebuilt:
+- **Dismiss no longer deletes ops** — acknowledgement is a **separate additive record**, so nothing the operator taps can destroy the evidence that money was shown as taken and never recorded.
+- **The banner NAMES orders** rather than reporting a count.
+- **Payment conflicts are separated from status conflicts** — money is the louder bar and needs an explicit acknowledgement.
+- **A conflicted card carries a persistent marker fed from the outbox in Preferences**, so **neither a poll nor a drain can clear it** — a drain skips `state === 'conflict'` entirely.
+- **Payment ops are keyed on `body.action` via a shared `isPaymentAction` predicate** — `kind` is `'status'` for **both** money and workflow ops, so `kind` cannot separate them.
+
+## 🔴 STILL OPEN — amount pinning
+**The queued op carries NO AMOUNT**, so a replay charges the balance **as of RECONNECT, not as of the tap**. The outbox **already mints an `op_id` for exactly this purpose and never transmits it**. Needs a second actor editing while the first is offline, **so it cannot fire on a single device today**.
+
+**ALSO FIXED:** the walk-up buzzer prompt was a raw `fetch` and **lost the number offline**; it now reuses the dashboard's `saveBuzzer`.
+
+⚠️ **ALSO OPEN:** the **KDS renders `OrderCard` WITHOUT `ledgerRows`**, so **every order reads unpaid there**, online or offline. Pre-existing, on a live surface. **Drive payment tests from the Orders tab.**
+
+
+HatchGrab Engineering Reference Manual · V11.4

@@ -16,7 +16,7 @@ import { HatchGrabWordmark } from '@/components/brand/HatchGrabWordmark'
 import { DemoModalProvider, DemoCta, DemoModal } from '@/components/landing/DemoUpload'   // client children — the public demo entry point
 import {
   FEATURE_SECTIONS, PLAN_PRICES, PLAN_DESCRIPTIONS, PLAN_ALLOWANCES, FOOTNOTES,
-  CARD_FEE_ONLINE_LABEL, CARD_FEE_IN_PERSON_LABEL, TAP_TO_PAY_SURCHARGE_LABEL,
+  CARD_FEE_ONLINE_LABEL,
   type FeatureValue,
 } from '@/lib/plan-features'
 import { PLAN_META } from '@/lib/features'
@@ -64,7 +64,7 @@ const LANDING_FEE_ROWS: { name: string; footnote?: string; cells: Record<TablePl
 // RENDER-ONLY footnote text overrides for the landing table. The shared FOOTNOTES (lib/plan-features.ts) are
 // NOT modified — Billing/Admin keep the original wording; only the landing table shows this text.
 const FOOTNOTE_TEXT_OVERRIDES: Record<string, string> = {
-  '2': `Standard card processing fees apply to all online orders (currently ${CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. These are Stripe's fees, not ours — your actual rate is confirmed by Stripe when you set up with them.`,
+  '2': `Standard card processing fees apply to all online orders (currently ${CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.`,
 }
 
 // RENDER-ONLY feature-row description overrides for the landing table, keyed by row name. The shared
@@ -270,7 +270,11 @@ export default function LandingPage() {
           <div className="price-head">
             <p className="eyebrow">Pricing</p>
             <h2>Start free. Stay free, if that’s all you need.</h2>
-            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan — use your own card terminal and only your provider&apos;s fees apply, and taking walk-up card payments through HatchGrab via Stripe is coming soon, with no platform fee and only Stripe&apos;s own charge (currently around {CARD_FEE_IN_PERSON_LABEL} on UK and EEA-issued cards, more for cards issued elsewhere, plus {TAP_TO_PAY_SURCHARGE_LABEL} per authorisation if you tap on a phone or tablet without a dedicated reader). Cash is always free.</p>
+            {/* 🔴 THE LEDE STATES THE HEADLINE AND STOPS. The walk-up detail — the in-person rate, the
+                UK/EEA limit, the tap surcharge, "coming soon" — lives ONCE, in footnote 1, which renders
+                further down this same page. Restating any of it here is what made this section read three
+                times over. Figures come from CARD_FEES; never write one as a literal. */}
+            <p className="lede">Pro is £29 a month with £1,500 of online orders included. Max is £49 with £2,000. Anything above that is 0.99%. Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-ups carry no HatchGrab platform fee on any plan.</p>
           </div>
 
           <div className="trial-banner">
@@ -334,7 +338,9 @@ export default function LandingPage() {
           </div>
 
           <div className="price-foot">
-            <p>*Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance. Walk-up card payments taken through HatchGrab via Stripe are coming soon and carry no HatchGrab platform fee — only Stripe&apos;s own charge, currently around {CARD_FEE_IN_PERSON_LABEL} on UK and EEA-issued cards (more for cards issued elsewhere), plus {TAP_TO_PAY_SURCHARGE_LABEL} per authorisation if you tap on a phone or tablet without a dedicated reader. Stripe&apos;s fees are Stripe&apos;s, not ours.</p>
+            {/* ⚠️ THE WALK-UP PARAGRAPH THAT STOOD HERE WAS REMOVED, NOT SHORTENED. Footnote 1 covers it
+                and renders on this same screen, so this restated it a third time. */}
+            <p>*Standard card processing fees apply to all online orders (currently {CARD_FEE_ONLINE_LABEL} on standard UK cards), including those within your allowance.</p>
             <p>Cancel by doing nothing. Even if you’ve added a card for payments, we’ll never charge it for a plan unless you actively choose one.</p>
           </div>
         </div>
