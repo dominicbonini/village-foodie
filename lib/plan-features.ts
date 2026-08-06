@@ -166,16 +166,19 @@ export const FOOTNOTES: { number: string; text: string }[] = [
     // charge" already says whose they are), "your actual rate is confirmed by Stripe", "more for cards
     // issued elsewhere" ("on UK and EEA cards" already limits the claim), and "Cash is always free"
     // (nobody thinks cash carries a platform fee). Each was a second statement of something already said.
-    // ⚠️ 72 words against a 55-word target, and the gap is NOT slack. The four facts this footnote must
-    // carry cost 13 + 15 + 28 + 16 = 72 on their own. Getting under 55 means dropping one of them, or
-    // dropping "without a dedicated reader" — which would make the tap surcharge read as though it always
-    // applies, overstating the cost for every truck that owns a reader. A shorter footnote is not worth an
-    // untrue one. Measured, not estimated; see docs/pricing-dry-report.md.
-    text: `Walk-up orders: HatchGrab charges 0% on every plan, however you take the money. Use your own card `
-      + `terminal (Zettle, Square, etc.) and only your provider's standard fees apply. Card payments through `
-      + `HatchGrab via Stripe are coming soon — still 0% from us, plus Stripe's own charge, currently around `
-      + `${CARD_FEE_IN_PERSON_LABEL} on UK and EEA cards, plus ${TAP_TO_PAY_SURCHARGE_LABEL} per `
-      + `authorisation if you tap on a phone or tablet without a dedicated reader.`,
+    // ⚠️ ALSO CUT, AND NOT TO BE RESTORED (72 words -> 59):
+    //   • "however you take the money" — the next two sentences enumerate exactly that.
+    //   • "(Zettle, Square, etc.)" — examples of a thing every operator already owns.
+    //   • "still 0% from us" — the opening sentence already says 0% on every plan, and repeating it
+    //     invites the reader to go looking for the catch.
+    // 🔴 "without a dedicated reader" IS NOT CUTTABLE. Removing it makes the tap surcharge read as though
+    // it ALWAYS applies, overstating the cost for every truck that owns a reader. That is a false claim,
+    // not a long one. This has now been re-established twice; do not revisit it.
+    text: `Walk-up orders: HatchGrab charges 0% on every plan. Use your own card terminal and only your `
+      + `provider's standard fees apply. Card payments through HatchGrab via Stripe are coming soon — `
+      + `Stripe's own charge, currently around ${CARD_FEE_IN_PERSON_LABEL} on UK and EEA cards, plus `
+      + `${TAP_TO_PAY_SURCHARGE_LABEL} per authorisation if you tap on a phone or tablet without a `
+      + `dedicated reader.`,
   },
   {
     number: '2',
