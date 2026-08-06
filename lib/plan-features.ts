@@ -187,7 +187,18 @@ export const FOOTNOTES: { number: string; text: string }[] = [
   },
   {
     number: '3',
-    text: 'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser. An Apple iPad is recommended for the best experience.',
+    // ⚠️ "An Apple iPad is recommended for the best experience." WAS REMOVED AND MUST NOT BE RESTORED.
+    // It was a PREFERENCE STATED AS A FINDING. The full order flow has never been run on real hardware on
+    // either platform, so there is no basis for preferring one — and on current evidence ANDROID is the
+    // better-validated of the two: FCM push works and a token has landed, while iOS push has never
+    // registered a token at all (§36). It also reads as second-class to a truck that already owns an
+    // Android tablet, for no commercial gain.
+    //
+    // 🔴 DO NOT ADD "coming soon" HERE. The native apps are in the PRESENT TENSE deliberately: the landing
+    // page describes the product AT LAUNCH, and neither app ships before both are ready. This is a
+    // STANDING EDITORIAL RULE for the landing copy, not an oversight. (It is the opposite of footnote 1,
+    // where "coming soon" is correct because Stripe walk-ups are a LATER addition to a shipped product.)
+    text: 'Tablet not supplied. There are native kitchen apps for iPad and Android, and the kitchen screen also runs on any tablet with a modern browser.',
   },
   {
     number: '4',

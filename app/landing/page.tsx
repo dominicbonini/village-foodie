@@ -190,7 +190,16 @@ export default function LandingPage() {
             <div className="does-item"><h3>Never promise a time you can’t hit</h3><p>Set your kitchen’s capacity — how much you can cook at once, and how long it takes. Once a collection time is full, customers can’t pick it.</p></div>
             <div className="does-item"><h3>Works on any device</h3><p>Runs on the phone in your apron, the tablet on the counter, the laptop in the van — and the card machine you already take payment on.</p></div>
             <div className="does-item"><h3>Never type your schedule twice</h3><p>We read your schedule straight from your website — or send the photo you already post to Facebook. You just review and confirm.</p></div>
-            <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re at the grill. Messenger and Instagram coming soon.</p></div>
+            {/* ⚠️ "driving to the pitch or at the grill" — NOT just "at the grill". On its own that is a
+                generic busy-kitchen claim any hospitality product could make. DRIVING is specific to a food
+                truck and is the moment an operator genuinely CANNOT reply, which is the whole point of the
+                feature. Keeping both covers the two states a truck operator is actually in.
+                🔴 THE MIXED TENSES ARE DELIBERATE. WhatsApp is PRESENT tense because it ships at launch;
+                Messenger and Instagram carry "coming soon" because they may not. Same standing editorial
+                rule as FOOTNOTES[3] in lib/plan-features.ts — the landing page describes the product AT
+                LAUNCH — applied to two features with different readiness. It is NOT an inconsistency; do
+                not "harmonise" the tenses. */}
+            <div className="does-item"><h3>Social media auto-replies</h3><p>“Where are you tonight?” “Do you do gluten free?” Your WhatsApp gets answered while you’re driving to the pitch or at the grill. Messenger and Instagram coming soon.</p></div>
             <div className="does-item"><h3>No signal? Keep serving.</h3><p>If you lose signal, online ordering pauses automatically so customers can’t place orders you won’t see. Carry on taking orders with the iPad and Android app.</p></div>
           </div>
         </div>
