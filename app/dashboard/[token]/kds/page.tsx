@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { Preferences } from '@capacitor/preferences'
 import { useParams, useSearchParams } from 'next/navigation'
 import { OrderCard } from '@/components/dashboard/OrderCard'
 import { BuzzerGrid } from '@/components/dashboard/BuzzerGrid'
@@ -17,6 +18,8 @@ import { getAllDayCounts } from '@/components/dashboard/helpers'
 import { supabaseBrowser } from '@/lib/supabase-browser'
 import type { Order, TruckData, TruckEvent, SoundConfig } from '@/components/dashboard/types'
 import { DEFAULT_SOUND_CONFIG } from '@/components/dashboard/types'
+import { getOrderBalance, type LedgerRow } from '@/lib/payments/ledger'
+import { resolvePaidStep } from '@/lib/payments/paid-step'
 import type { CatConfig } from '@/lib/prep-utils'
 import { useFeatures } from '@/lib/useFeatures'
 import { keepAwake, prepareKeepAwake, allowSleep, subscribeWakeState, type WakeState } from '@/lib/native/keepAwake'
@@ -78,6 +81,15 @@ export default function KdsPage() {
   // cooking" button. Defaults off (matches the Settings toggle default) until loaded.
   const [showCookingStep, setShowCookingStep] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
+  // ── THE PAYMENT LEDGER ROWS (order_key → order_payments rows) ───────────────────────────────────
+  // 🔴 PREREQUISITE, NOT A FEATURE. Without this the KDS rendered OrderCard with no `ledgerRows`, so
+  // getOrderBalance(order, undefined ?? []) resolved EVERY order to {paidMinor:0, status:'unpaid'} —
+  // a fully-paid online order included. Latent only because show_paid_step gates every payment-derived
+  // element to null; one tap on the per-event override made it live (docs/kds-payment-report.md).
+  // The rows RIDE ALONG on the /api/dashboard response the KDS already fetches (route.ts:~199/610,
+  // keyed by order_key and already van-scoped) — this surface simply discarded them at setState time.
+  // No extra query, no new endpoint, nothing added to the 60s poll.
+  const [payments, setPayments] = useState<Record<string, LedgerRow[]>>({})
   // Buzzers (phase 1, online only). buzzerCount null ⇒ this van has no buzzers → no chip, no grid.
   const [buzzerCount, setBuzzerCount] = useState<number | null>(null)
   const [buzzerTarget, setBuzzerTarget] = useState<Order | null>(null)
@@ -124,6 +136,23 @@ export default function KdsPage() {
   const [vansWithAutoPause, setVansWithAutoPause] = useState<string[]>([])
   const [viewOverride, setViewOverride] = useState<'window' | 'cook' | null>(null)
   const [layoutOverride, setLayoutOverride] = useState<'list' | 'grid' | null>(null)
+  // ── "TAKE PAYMENTS ON THIS DEVICE" — PER-DEVICE, CAPACITOR PREFERENCES ──────────────────────────
+  // 🔴 PER DEVICE, DELIBERATELY — NOT a trucks column and NOT a per-event override. Two iPads on one
+  // truck must be able to disagree: the window iPad takes money, the grill iPad never shows a price it
+  // could be asked about. A truck-level flag cannot express that, and a per-event one expresses the
+  // wrong axis entirely (it is a property of WHERE THE DEVICE SITS, not of the pitch).
+  //
+  // ⚠️ CAPACITOR PREFERENCES, NOT localStorage, UNLIKE the view/layout/sound prefs beside it. Those
+  // predate the native shell. Preferences persists to UserDefaults on iOS, which survives the hard
+  // navigations and cold-kills that can hand a WKWebView a fresh localStorage (the reasoning is written
+  // out in lib/native/preferencesStorage.ts). On web the plugin falls back to localStorage, so a browser
+  // KDS persists too. This toggle changes which orders LEAVE THE BOARD, so losing it silently is worse
+  // than losing a list/grid preference.
+  //
+  // Keyed by token like every other KDS device pref, so two trucks on one iPad do not collide.
+  // null = not read yet. Resolved as NOT-on (see `hidePayments`): the safe direction is to withhold
+  // money UI for a frame, never to flash it on a device configured not to show it.
+  const [showPaymentsPref, setShowPaymentsPref] = useState<boolean | null>(null)
   // New-order SOUND pref — per DEVICE (localStorage, not DB), default ON. A ref mirrors it for the
   // realtime INSERT callback (set up once), which reads the CURRENT pref without re-subscribing.
   const [soundEnabled, setSoundEnabled] = useState(true)
@@ -209,6 +238,11 @@ export default function KdsPage() {
       setCategoryOrder(data.categoryOrder ?? [])
       setItemCategoryMap(data.itemCategoryMap ?? {})
       setCatConfigs(data.catConfigs ?? {})
+      // Guarded on `!== undefined` — the SAME shape the dashboard uses (page.tsx:~710). An older server
+      // that does not send the field leaves the previous map intact rather than blanking every card to
+      // unpaid; a server that sends an EMPTY map (the payments query failed, route.ts logs it) still
+      // clears it, because that is a real "no rows this poll" and must not be masked by a stale copy.
+      if (data.payments !== undefined) setPayments(data.payments || {})
       setRequiresPin(false)
 
       try {
@@ -264,6 +298,28 @@ export default function KdsPage() {
     if (typeof window === 'undefined' || layoutOverride === null) return
     localStorage.setItem(`hg_kds_layout_${token}`, layoutOverride)
   }, [layoutOverride, token])
+
+  // ── LOAD + PERSIST "take payments on this device" ───────────────────────────────────────────────
+  // Read ONCE on mount. Deliberately NOT a lazy useState initialiser like the localStorage prefs above —
+  // Preferences.get is async and cannot be read synchronously at first render. That is not a hazard here:
+  // the whole board is gated behind `loading`, which does not clear until the /api/dashboard round-trip
+  // returns, and a native-storage read beats a network fetch. Should it ever lose that race, `null`
+  // resolves to NOT-on, which withholds money UI rather than flashing it. Never the unsafe direction.
+  // A read failure (plugin missing, private mode) lands on `false` = OFF = today's behaviour.
+  useEffect(() => {
+    let cancelled = false
+    void Preferences.get({ key: `hg_kds_payments_${token}` })
+      .then(({ value }) => { if (!cancelled) setShowPaymentsPref(value === 'on') })
+      .catch(() => { if (!cancelled) setShowPaymentsPref(false) })
+    return () => { cancelled = true }
+  }, [token])
+
+  // Write-through on toggle. State first so the board responds to the tap immediately; the persist is
+  // fire-and-forget because a failed write costs the operator a re-tap next session, not this one.
+  const togglePayments = useCallback((next: boolean) => {
+    setShowPaymentsPref(next)
+    void Preferences.set({ key: `hg_kds_payments_${token}`, value: next ? 'on' : 'off' }).catch(() => {})
+  }, [token])
 
   // Per-device SOUND pref (hg_kds_sound_<token>): install audio-unlock + restore on mount, persist on
   // change, and mirror into a ref the realtime INSERT callback reads. Default ON when no stored pref.
@@ -662,6 +718,9 @@ export default function KdsPage() {
     setOrders(prev => applyPendingBuzzers(mergeOrders(prev, data.orders ?? []), peekPendingBuzzer))
     setPausedUntil(data.truck?.paused_until ?? null)
     setExtraWaitMins(data.truck?.extra_wait_mins ?? 0)
+    // Seeded here too, not just in fetchAll: this response is the FIRST board an operator sees after
+    // entering the PIN. Without it the first paint would resolve every order unpaid until the next poll.
+    if (data.payments !== undefined) setPayments(data.payments || {})
     setRequiresPin(false)
   }
 
@@ -773,6 +832,22 @@ export default function KdsPage() {
     : 'window'
   const activeLayout = layoutOverride ?? (isDemo ? 'grid' : displayMode)
 
+  // ── DOES THIS DEVICE DO MONEY? ──────────────────────────────────────────────────────────────────
+  // 🔴 TWO GATES, AND THE TRUCK ONE COMES FIRST. `showPaidStep` is resolved by the SHARED resolver over
+  // the same (truck, event) pair the card itself uses — never inline — so this surface and OrderCard
+  // cannot disagree about whether the paid step is split for THIS event (lib/payments/paid-step.ts).
+  //
+  // showPaidStep FALSE ⇒ the truck takes payment as one tap ("Paid & collected") and there is no payment
+  // step to opt out of. The device toggle is not rendered, `hidePayments` is FORCED false, and every line
+  // below collapses to exactly what this file did before. That is what keeps Pizzeria Gusto — and every
+  // other truck on the default — byte-identical.
+  //
+  // ⚠️ `!== true`, not `=== false`. `null` (pref not read yet) resolves to HIDE. Withholding money UI for
+  // a frame is recoverable; flashing a paid chip on a grill screen is the thing this setting exists to
+  // prevent.
+  const { showPaidStep } = resolvePaidStep(truck, activeEvent)
+  const hidePayments = showPaidStep && showPaymentsPref !== true
+
   // FIX 2 — apply the durable offline status overlay (sticky; held until the server reflects it) over the
   // merged orders BEFORE the view split, so an offline-advanced card moves columns and no stale/intermediate
   // read can wipe it. Empty overlay (online) → identity.
@@ -787,8 +862,24 @@ export default function KdsPage() {
 
   // Cook view: cook's job ends at ready — hide ready orders from the kitchen screen
   const cookOrders = activeOrders.filter(o => o.status !== 'ready')
-  // Window view: keep ready orders visible — window person hands over and takes payment
-  const windowOrders = activeOrders
+  // Window view: keep ready orders visible — window person hands over and takes payment.
+  //
+  // ── THE LIFECYCLE HALF OF THE TOGGLE ────────────────────────────────────────────────────────────
+  // 🔴 THIS IS THE POINT OF THE SETTING, AND IT IS NOT A DISPLAY RULE. A device that does not take money
+  // cannot be the device that decides an order is finished — "collected" MEANS "paid and handed over",
+  // and half of that is invisible here. So on such a device the ticket's life ends at READY: the card
+  // offers Ready (see OrderCard's `hidePayments`), the tap advances the order, and the ticket leaves
+  // THIS BOARD. It is the same rule the cook screen has always followed, applied to a window device that
+  // has been told it is not the hatch.
+  //
+  // ⚠️ THE ORDER IS NOT FINISHED — ONLY THIS SCREEN IS FINISHED WITH IT. status becomes 'ready', which is
+  // NOT terminal: it stays in the dashboard's confirmedOrders bucket (page.tsx:~2219 includes 'ready')
+  // and on any other KDS whose device toggle is on. Nothing is written that could hide it there — the
+  // filter is a local render-time predicate over a SHARED status, so two devices disagreeing about what
+  // they show is exactly the intended consequence and costs no state.
+  const windowOrders = hidePayments
+    ? activeOrders.filter(o => o.status !== 'ready')
+    : activeOrders
 
   const displayOrders = (activeView === 'cook' ? cookOrders : windowOrders)
     .slice()
@@ -951,6 +1042,36 @@ export default function KdsPage() {
         >
           {soundEnabled ? '🔔' : '🔕'}
         </button>
+
+        {/* ── TAKE PAYMENTS ON THIS DEVICE ──────────────────────────────────────────────────────────
+            🔴 RENDERED ONLY WHEN THE TRUCK HAS THE PAID STEP ON. With it off there is no payment step to
+            opt out of — "Paid & collected" is one tap — so a toggle here would offer a choice that
+            changes nothing, on the screen where a control that does nothing is most expensive. Gusto and
+            every other default truck never see it.
+            NO PLAN GATE, deliberately: this is where the operator physically stands, not a paid tier.
+            Placed beside Sound because both are per-DEVICE, and away from Window/Cook because those pick
+            a LAYOUT while this decides whether the device handles money. Same chip shape as Sound so it
+            reads as a sibling; the word is spelled out (not icon-only) because it moves tickets off the
+            board and an icon alone cannot carry that.
+            ⚠️ WINDOW VIEW ONLY. Cook view has no prices, no chip and no payment action by design (§9) and
+            is UNCHANGED by this setting in every combination — so on the cook screen this button would be
+            a control that visibly does nothing, which is the same failure as showing it to a truck with
+            the paid step off. `hidePayments` itself is still computed and still passed to cook cards
+            (where it changes nothing), so switching back to Window applies the stored preference. */}
+        {showPaidStep && activeView === 'window' && (
+          <button
+            onClick={() => togglePayments(hidePayments)}
+            title={hidePayments
+              ? 'Payments off — this screen finishes at Ready. Tap to take payment here.'
+              : 'Payments on — tickets stay until paid & collected. Tap to finish at Ready instead.'}
+            className={`flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+              hidePayments ? 'bg-slate-100 text-slate-400' : 'bg-green-100 text-green-700'
+            }`}
+          >
+            <span aria-hidden>💷</span>
+            <span className="hidden sm:inline text-xs">{hidePayments ? 'No payments' : 'Payments'}</span>
+          </button>
+        )}
 
         {/* This device (native app only) — device/user config, reachable from KDS since it's a default-
             screen surface. Not role-gated, not sm:hidden. Uses the dashboard token (this route runs on it),
@@ -1181,6 +1302,15 @@ export default function KdsPage() {
                 categoryOrder={categoryOrder}
                 itemCategoryMap={itemCategoryMap}
                 catConfigs={catConfigs}
+                /* 🔴 PART 1. The card NEVER derives payment state itself — it feeds these straight to
+                   getOrderBalance, the same pure function the server rollup uses. Undefined here (the
+                   state before this line existed) is not "unknown", it is "nothing paid", which is why
+                   its absence was silent. See the payments state above. */
+                ledgerRows={payments[order.order_key]}
+                /* 🔴 PART 2, the DISPLAY half. True ⇒ this device does not do money: no paid chip, no
+                   pay buttons, Ready in their place. Always FALSE when the truck's paid step is off, so
+                   a show_paid_step-false truck renders exactly what it rendered before. */
+                hidePayments={hidePayments}
                 pendingSync={pendingSync.has(order.order_key)}
                 conflict={conflictByOrder.get(order.order_key)}
                 onBuzzer={buzzerCount != null ? setBuzzerTarget : undefined}
@@ -1200,12 +1330,27 @@ export default function KdsPage() {
               <div className="text-xs text-slate-400 uppercase tracking-wide mb-1.5">
                 Done today · {doneOrders.length}
               </div>
-              {doneOrders.map(o => (
-                <div key={o.order_key} className="flex justify-between items-center py-1 text-xs text-slate-400 border-t border-slate-100">
-                  <span>#{o.id} · {o.customer_name}</span>
-                  <span className="text-green-600">✓ paid</span>
-                </div>
-              ))}
+              {doneOrders.map(o => {
+                // 🔴 WAS THE LITERAL STRING "✓ paid", printed for every collected order and derived from
+                // NOTHING — not the ledger, not payment_status, not even show_paid_step. It was the one
+                // payment claim on this screen that survived the paid-step gate, so it was the only one
+                // Gusto could see. Now that Part 1 supplies the rows it is derived like everything else,
+                // through the same resolver the card uses. Accurate in the common case either way (a
+                // collected order has been through recordCollectionPayment) — but "accurate by luck" is
+                // not a property worth keeping on a money label.
+                // Suppressed entirely on a no-payments device: a screen that shows no prices and no pay
+                // buttons must not assert in a footer that money changed hands.
+                const bal = getOrderBalance(o as never, payments[o.order_key] ?? [])
+                const settled = bal.status === 'paid' || bal.status === 'refunded'
+                return (
+                  <div key={o.order_key} className="flex justify-between items-center py-1 text-xs text-slate-400 border-t border-slate-100">
+                    <span>#{o.id} · {o.customer_name}</span>
+                    {hidePayments ? null : settled
+                      ? <span className="text-green-600">✓ paid</span>
+                      : <span className="text-amber-600">£{(bal.balanceMinor / 100).toFixed(2)} due</span>}
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>

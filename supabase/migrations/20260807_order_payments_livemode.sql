@@ -1,0 +1,115 @@
+-- 20260807_order_payments_livemode.sql
+-- The LIVEMODE DISCRIMINATOR on the payment ledger. Prerequisite for ANY Stripe work (§37, and
+-- docs/stripe-connect-report.md). Nothing may write a Stripe payment until this column exists.
+--
+-- ── 🔴 WHY THIS IS THE FIRST THING BUILT, BEFORE ANY STRIPE CODE ────────────────────────────────────
+-- Stripe's own Connect documentation, verbatim: "your production webhook URLs receive BOTH live and test
+-- webhooks. This is because you can perform both live and test transactions under a production
+-- application. We recommend that you check the `livemode` value." A single production endpoint is
+-- therefore a mixed-mode firehose BY DESIGN, not by misconfiguration.
+-- Today `order_payments` has fourteen columns and NONE of them can tell a test £25 from a real one:
+--   • `channel` cannot — a test online payment and a real one are BOTH 'online', which is the exact value
+--     that tells the fee engine to charge the 0.99% platform fee.
+--   • `external_ref` cannot — test and live PaymentIntent ids are not distinguishable by shape.
+--   • `state`, `method`, `currency`, `note` cannot — none of them encodes the mode.
+-- `order_payments` is the six-year accounting record the published privacy policy commits to retaining,
+-- on a truck (Pizzeria Gusto) trading real money today. Mixing test rows into it and separating them
+-- afterwards means unpicking by hand, per-row, with no reliable key to unpick on. This column is what
+-- makes that unnecessary.
+--
+-- ✅ CLASSIFICATION: **ADDITIVE**, and safely so — one new column carrying a NOT NULL DEFAULT that
+-- encodes exactly today's truth. It is safe to run at any time against the CURRENTLY-DEPLOYED app: that
+-- code never names `livemode`, so every insert it makes takes the default and is classified LIVE, which
+-- is correct for every one of them.
+--
+-- 🔴 RUN ORDER: apply BEFORE deploying the accompanying code. **DEPLOY-COUPLED, and in one direction
+-- only.** The new code both SELECTS and FILTERS on `livemode` (lib/payments/ledger.ts readLedger +
+-- reverseCollectionPayment, app/api/dashboard/route.ts). PostgREST returns PGRST204 for a column it
+-- cannot see, so deploying first would make the dashboard's payments fetch fail on every poll — and that
+-- route degrades to an EMPTY payments map, which renders every order as UNPAID on the operator's board.
+-- The reverse order is a no-op: the column is defaulted and the old code never names it.
+--   APPLY THIS FIRST. THEN DEPLOY. Do not do it the other way round.
+--
+-- ── WHY `not null default true` AND NOT NULLABLE ────────────────────────────────────────────────────
+-- Three candidate shapes were considered and two rejected:
+--
+--   ✗ NULLABLE, no default. Every existing row would read NULL, which means "unknown". But they are NOT
+--     unknown — every row in this table today is a real cash or own-PDQ collection taken at a real hatch
+--     (channel is 'in_person_other' on 100% of rows; 'online' has never been written). Recording a known
+--     fact as NULL discards information, and it forces every reader to invent a policy for NULL. A
+--     three-valued money column is how you get two readers disagreeing about the same row.
+--
+--   ✗ NOT NULL, NO DEFAULT (the strictest schema). Attractive, because then an INSERT that forgets
+--     `livemode` fails LOUDLY with 23502 instead of silently defaulting to live. But it cannot be applied
+--     in one step against a live trading truck: the currently-deployed recordPaymentEvent() does not name
+--     the column, so the moment this migration landed, EVERY "Paid & collected" tap at Gusto's hatch
+--     would 23502 until the deploy caught up. A guard that takes the hatch down mid-service is not a
+--     guard. See the two-phase note below — this shape is the DESTINATION, not the first step.
+--
+--   ✅ NOT NULL DEFAULT TRUE. The default is what makes the migration independently safe, and `true` is
+--     the only correct classification for the rows already there. The "silently live by omission" hazard
+--     that the no-default shape would have closed is closed instead IN THE TYPE SYSTEM: recordPaymentEvent
+--     takes `livemode: boolean` as a REQUIRED parameter (not optional, no default), so a future writer
+--     that omits it fails to COMPILE. That is an earlier and louder failure than 23502 at runtime, and it
+--     costs no availability.
+--
+-- ── PHASE TWO, RECORDED SO IT IS NOT FORGOTTEN (NOT DONE HERE, DELIBERATELY) ────────────────────────
+-- Once this migration is applied AND the accompanying deploy is live everywhere — i.e. once no running
+-- code can insert without naming `livemode` — the default should be dropped:
+--     alter table order_payments alter column livemode drop default;
+-- That converts "omission is silently live" into "omission is 23502", closing the hole for raw SQL and
+-- for any future service that is not this TypeScript codebase. It is a SEPARATE migration on purpose:
+-- doing it here would re-introduce exactly the outage described in the rejected shape above, because
+-- both steps cannot be simultaneously true during a rolling deploy. Do not fold it in.
+--
+-- ⚠️ NO BACKFILL STATEMENT IS NEEDED OR WANTED. `add column ... not null default true` populates every
+-- existing row with `true` as part of the ALTER (Postgres 11+ does this without a table rewrite). A
+-- separate `update ... set livemode = true` would be a no-op that touches every row for nothing.
+--
+-- ⚠️ THIS COLUMN AFFECTS NO ARITHMETIC. It is a FILTER, never a term. getOrderBalance still computes
+-- paid = Σcharges − Σrefunds over state='succeeded'; this decides only which rows are eligible to be
+-- summed at all. Same relationship `state` already has to the sum.
+--
+-- ⚠️ IT IS NOT `channel`, AND MUST NOT BE FOLDED INTO IT. `channel` answers "does the platform fee
+-- apply?" (see 20260729_order_payments_ledger.sql). `livemode` answers "is this money real?". A test
+-- online payment is channel='online' AND livemode=false: it WOULD attract a fee if it were real, and it
+-- is not real. Collapsing the two would make every fee query an `in (...)` over a growing list — the
+-- exact mistake 20260730_takes_cash_and_payment_method.sql refused for `method`, for the same reason.
+--
+-- VERIFY AFTER APPLYING (reads resulting STATE, not the statement's return):
+--   -- the column, with its type, nullability and default
+--   select column_name, data_type, is_nullable, column_default
+--     from information_schema.columns
+--    where table_name = 'order_payments' and column_name = 'livemode';
+--   -- expect exactly 1 row: livemode | boolean | NO | true
+--   -- the table is now fifteen columns
+--   select count(*) as col_count from information_schema.columns where table_name = 'order_payments';
+--   -- expect 15
+--   -- 🔴 THE ONE THAT MATTERS: EVERY EXISTING ROW MUST BE LIVE. A single `false` here means the
+--   -- migration ran against data it should not have, and real takings have been reclassified as test.
+--   select livemode, count(*) from order_payments group by 1;
+--   -- expect a SINGLE row: t | <all rows>. If a `f` row appears, STOP.
+--   -- per-truck, so Gusto is checked by name rather than in aggregate
+--   select truck_id, livemode, count(*) from order_payments group by 1, 2 order by 1;
+--   -- expect every truck to have exactly one row, livemode = t
+--   -- the partial index below
+--   select indexname, indexdef from pg_indexes
+--    where tablename = 'order_payments' and indexname = 'order_payments_test_rows_idx';
+
+alter table order_payments add column if not exists livemode boolean not null default true;
+
+-- PARTIAL index, on the MINORITY side. Every row today is live and the overwhelming majority always will
+-- be, so an index over `livemode = true` would be an index over the whole table and would not be used.
+-- The queries that need help are the reconciliation and clean-up ones — "show me the test rows for this
+-- truck", "delete the test rows before go-live" — which are exactly the `not livemode` side. Indexing
+-- only that side keeps the index a few pages rather than a copy of the table.
+-- ⚠️ It deliberately does NOT cover the hot read path. That path is `where order_key = $1 and livemode`,
+-- already served by order_payments_order_key_idx (an order has single-digit payment rows, so the livemode
+-- filter is a cheap recheck on a tiny set, not a scan).
+create index if not exists order_payments_test_rows_idx
+  on order_payments (truck_id, created_at) where not livemode;
+
+comment on column order_payments.livemode is
+  'Is this money REAL? Written from the Stripe event''s own `livemode` field — NEVER from an env var, a key prefix, or which endpoint received the callback, because only the event knows which mode produced it (a production Connect webhook URL receives BOTH live and test events by design). TRUE on every in-person collection: there is no test mode for cash. FALSE rows are excluded from every consumer that means money — getOrderBalance, the payment_status/amount_paid rollup, and the payments map shipped to the operator surface. They are deliberately NOT excluded from the two admin row-COUNTS (delete-truck guard 3, execute-account-deletion paymentsIntact), which protect physical retention rather than reporting money, and must over-count rather than under-count. Affects no arithmetic: it is a filter on which rows are eligible to be summed, never a term in the sum.';
+
+notify pgrst, 'reload schema';

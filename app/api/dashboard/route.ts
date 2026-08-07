@@ -14,6 +14,9 @@ import { generateCollectionTimes } from '@/lib/slot-generation'
 import type { CatConfig } from '@/lib/prep-utils'
 import { isDemoIdentifier } from '@/lib/demo'
 import { resolveBuzzerPrompt, BUZZER_IN_USE_STATUS_SET } from '@/lib/buzzer'
+// Type-only would not work here: LEDGER_ROW_COLUMNS is a VALUE. This route is server-only, so pulling
+// the module in carries no browser-bundle cost (the concern noted at the top of lib/payments/ledger.ts).
+import { LEDGER_ROW_COLUMNS } from '@/lib/payments/ledger'
 
 // ── THE TRUCK PROJECTION — SPREAD-AND-REDACT, NOT A HAND-PICKED INCLUDE LIST (V9.4) ─────────────────
 // 🔴 THIS INVERTS A FAILURE MODE THAT HAS NOW BITTEN THREE TIMES.
@@ -243,8 +246,17 @@ export async function GET(req: NextRequest) {
     if (visibleKeys.length) {
       const { data: payRows, error: payErr } = await supabase
         .from('order_payments')
-        .select('order_key, kind, channel, amount_minor, state, external_ref')
+        // `order_key` (to group by) + the shared LEDGER_ROW_COLUMNS list, so this select can never drift
+        // out of step with what getOrderBalance expects to receive. `livemode` rides in that list.
+        .select(`order_key, ${LEDGER_ROW_COLUMNS}`)
         .in('order_key', visibleKeys)
+        // 🔴 TEST ROWS DO NOT LEAVE THE DATABASE. This response is the ONLY route by which payment rows
+        // reach a browser — the operator's dashboard, the KDS, and through mapOrderToTicket the printed
+        // kitchen ticket. getOrderBalance would discard a test row anyway (isLiveRow), so this filter is
+        // not what makes the figures correct; it is what stops a test payment being visible on an
+        // operator's screen at all, and what keeps the payload honest for anything that might later read
+        // these rows for a purpose other than summing them.
+        .eq('livemode', true)
       if (payErr) {
         // Non-blocking: the dashboard must render. An empty map makes every order read 'unpaid', which
         // is visibly wrong rather than silently wrong, and it self-heals on the next poll.

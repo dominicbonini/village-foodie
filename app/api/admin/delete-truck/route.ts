@@ -148,6 +148,15 @@ export async function POST(req: NextRequest) {
   // ✅ THE DEMO-CLEANUP CRON IS STRUCTURALLY UNAFFECTED: it imports deleteTruckCascade DIRECTLY rather
   // than calling this route, and it is prefix-scoped twice over (`.like('id', 'demo-%')` at the query and
   // `isDemoIdentifier()` re-asserted in sweep()). This guard cannot reach it.
+  // ⚠️ DELIBERATELY NOT FILTERED ON `livemode`, AND THIS IS THE EXCEPTION TO THE EXCLUDE-BY-DEFAULT
+  // RULE — reviewed, not overlooked. Everywhere that MEANS MONEY excludes test rows, because
+  // over-reporting a balance is unrecoverable. This is not a money figure: it is a physical row count
+  // asking "would this delete destroy an accounting record?", and its safe direction is the OPPOSITE.
+  // Adding `.eq('livemode', true)` would let a truck holding only test rows be hard-deleted — and the
+  // cascade takes the WHOLE table for that truck with it, live rows included, if the classification
+  // were ever wrong by a single row. Refusing to delete a truck that turns out to hold only test data
+  // is a mild inconvenience with a documented escape hatch (hand-run SQL). Deleting six years of real
+  // takings is not. Same reasoning as the guard's own "keyed on the data, not on a label" note above.
   const { count: paymentCount, error: paymentCountErr } = await supabase
     .from('order_payments')
     .select('*', { count: 'exact', head: true })

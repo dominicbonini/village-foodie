@@ -96,6 +96,7 @@ export function OrderCard({
   anchorId,
   highlight = false,
   ledgerRows,
+  hidePayments = false,
   pendingPayment,
   conflict,
   onBuzzer,
@@ -167,6 +168,19 @@ export function OrderCard({
   /** This order's order_payments rows, supplied by /api/dashboard. Fed straight to getOrderBalance —
    *  the card NEVER derives payment state itself. Undefined/empty ⇒ nothing paid. */
   ledgerRows?: LedgerRow[]
+  /** ── THIS DEVICE DOES NOT TAKE MONEY (KDS window devices only) ───────────────────────────────────
+   *  Set by the KDS from its per-device "take payments on this device" toggle, and ONLY when the truck's
+   *  paid step is on. DEFAULT FALSE, so the dashboard — which never passes it — is byte-identical.
+   *
+   *  🔴 IT IS NOT A CSS-LEVEL HIDE. It suppresses the paid chip AND swaps the window button set for the
+   *  cook one, so the ticket's life on this screen ends at Ready. Hiding the chip while leaving a "Mark
+   *  paid" button would be the worst of both: an operator taking money on a screen that will not show
+   *  them whether it landed.
+   *
+   *  ⚠️ IT DOES NOT TOUCH `balance`, `effectivePaid` OR ANY ARITHMETIC. getOrderBalance still runs over
+   *  the real ledger rows and still governs everything else — this decides only what is OFFERED. Payment
+   *  state stays derived in one place; a device preference must never be able to change what is true. */
+  hidePayments?: boolean
   /** Open the buzzer grid for this order. UNDEFINED ⇒ this van has no buzzers (or the surface has not
    *  wired it) and the chip is not rendered at all — the card is byte-identical to before. */
   onBuzzer?: (order: Order) => void
@@ -288,7 +302,10 @@ export function OrderCard({
   // It calls `undo_mark_paid`, which is the SAME server path the undo toast already uses: audit FIRST
   // (abort the delete if the audit write fails), then delete the ledger row, then recalc. No second
   // reversal implementation exists.
-  const paidChipStatic = !showPaidStep ? null
+  // `hidePayments` sits alongside `!showPaidStep` rather than wrapping the render: both mean "this
+  // surface has no business stating a payment fact", and folding them into the one null-gate keeps the
+  // chip, its tap target and the remove-payment modal on a single switch. There is no second path.
+  const paidChipStatic = !showPaidStep || hidePayments ? null
     : effectivePaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 flex-shrink-0">PAID</span>
     : effectivePartPaid ? <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 flex-shrink-0 whitespace-nowrap">{money(balance.paidMinor)} / {money(balance.balanceMinor)} due</span>
     : null
@@ -530,7 +547,15 @@ export function OrderCard({
       )
     }
 
-    if (viewMode === 'cook') {
+    // ── COOK'S BUTTON SET, AND WINDOW'S WHEN THIS DEVICE DOES NOT TAKE MONEY ──────────────────────
+    // 🔴 REUSED, NOT DUPLICATED. A window device with payments off has exactly the cook screen's job —
+    // advance the food, stop at Ready — so it gets exactly the cook screen's controls. Inventing a
+    // fourth button vocabulary for it would give the same operator two screens that behave nearly but
+    // not quite alike, which is how a fast-tap surface (§10) gets someone paid twice.
+    // ⚠️ EXPLICITLY `viewMode === 'window'`, never a bare `hidePayments`. Solo is the DASHBOARD's mode;
+    // gating on the mode by name makes it structurally impossible for this prop to reach it, whatever a
+    // future caller passes.
+    if (viewMode === 'cook' || (viewMode === 'window' && hidePayments)) {
       if (['confirmed', 'modified'].includes(order.status)) {
         // Stage 1 (order-ready redesign): the cooking step is now ALWAYS on in cook mode — DE-COUPLED
         // from show_cooking_step (was `kdsMode && showCookingStep`). To re-add the "Show cooking step"

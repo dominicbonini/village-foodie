@@ -49,6 +49,13 @@ export async function POST(req: NextRequest) {
   const truckIds = (trucks ?? []).map(t => t.id as string)
 
   // Counted before, and reported either way — the retained figures are the point of the whole design.
+  // ⚠️ THE PAYMENT COUNT IS DELIBERATELY NOT FILTERED ON `livemode`. This is the second documented
+  // exception to the exclude-test-rows-by-default rule (the other is delete-truck's guard 3), and for
+  // the same reason: `paymentsIntact` below is a REGRESSION DETECTOR for physical retention, not a
+  // report of money. Its entire job is "did this run destroy any row it promised to keep?" — and a
+  // filtered count would be blind to test rows being destroyed, which is exactly the kind of quiet
+  // partial deletion the check exists to catch. It must count everything the table holds.
+  // 🔴 Do not "tidy" this into consistency with the money paths. They answer a different question.
   const counts = { orders: 0, payments: 0, staff: 0 }
   for (const truckId of truckIds) {
     const [o, p, s] = await Promise.all([

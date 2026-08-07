@@ -73,7 +73,12 @@ const SAMPLE_EVENT: TruckEvent = {
   customer_note: null, notes: null, source: null, van_id: null,
 }
 
-const charge = (minor: number): LedgerRow => ({ kind: 'charge', channel: 'in_person_other', amount_minor: minor, state: 'succeeded' })
+// `livemode: true` is REQUIRED for this fixture to count, and its absence being fatal is the point:
+// getOrderBalance treats an unclassified row as test and drops it (isLiveRow), so a hand-built row with
+// no livemode renders every preview scenario as unpaid. That is the exclude-by-default rule working —
+// the fixture had to change to keep meaning what it says, which is the cost of putting the strict check
+// at the chokepoint, and it is the cheap direction to be wrong in.
+const charge = (minor: number): LedgerRow => ({ kind: 'charge', channel: 'in_person_other', amount_minor: minor, state: 'succeeded', livemode: true })
 
 interface Scenario {
   key: string

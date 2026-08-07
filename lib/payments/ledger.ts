@@ -71,6 +71,39 @@ export interface LedgerRow {
   amount_minor: number
   state: PaymentEventState
   external_ref?: string | null
+  /** ── IS THIS MONEY REAL? (20260807_order_payments_livemode.sql) ────────────────────────────────
+   *  NOT NULL in the database, so a row read from Postgres ALWAYS carries a boolean. Optional here for
+   *  exactly one reason: a caller may construct a LedgerRow by hand (the ticket preview does). It is
+   *  NEVER optional because a SELECT might omit it — see LEDGER_ROW_COLUMNS, which exists so that
+   *  cannot happen.
+   *  ⚠️ ABSENT IS TREATED AS TEST, NOT AS LIVE. See isLiveRow for why that direction is the only safe
+   *  one. If you are adding a reader and your rows come back without this field, the fix is to select
+   *  it — not to relax the check. */
+  livemode?: boolean
+}
+
+/** The column list EVERY reader of `order_payments` selects. Exported and shared so the select list
+ *  cannot drift between call sites — a reader that omits `livemode` would hand getOrderBalance rows it
+ *  cannot classify, and isLiveRow would (correctly, but unhelpfully) drop all of them. One list, one
+ *  place, three readers: readLedger below, reverseCollectionPayment below, and /api/dashboard. */
+export const LEDGER_ROW_COLUMNS = 'kind, channel, amount_minor, state, external_ref, livemode'
+
+/**
+ * 🔴 THE SINGLE TEST FOR "THIS ROW IS REAL MONEY", AND THE DEFAULT IS EXCLUDE.
+ *
+ * `livemode === true`, not `!== false`. That strictness is the whole point, and it is chosen for its
+ * FAILURE DIRECTION rather than its elegance:
+ *   • A consumer that forgets to select the column sees every row as ineligible → the order reads
+ *     UNPAID → the operator asks for money that was already taken. Embarrassing, visible, recoverable
+ *     in one tap.
+ *   • The lenient form (`!== false`) fails the other way: a forgotten column makes a TEST payment count
+ *     as real → the customer is shown as PAID → food goes out the hatch against money that does not
+ *     exist, and nothing anywhere reports it. Not visible, and not recoverable.
+ * Between "under-report" and "over-report" on a money column there is no symmetry, so the check is not
+ * symmetric either. DO NOT relax this to `!== false` to make a fixture pass; give the fixture a livemode.
+ */
+export function isLiveRow(row: { livemode?: boolean }): boolean {
+  return row.livemode === true
 }
 
 /** The full stored shape of a collect row, as read immediately before deletion. Every column is
@@ -112,7 +145,20 @@ export function orderTotalMinor(order: BalanceableOrder): number {
  *   balance = total_minor − paid
  */
 export function getOrderBalance(order: BalanceableOrder, ledgerRows: LedgerRow[]): OrderBalance {
-  const succeeded = (ledgerRows ?? []).filter(r => r.state === 'succeeded')
+  // ── 🔴 THE TEST-ROW EXCLUSION LIVES HERE, AND HERE IS WHY ─────────────────────────────────────────
+  // This function is the CHOKEPOINT: OrderCard, the dashboard's confirmedPaid, mapOrderToTicket (the
+  // printed kitchen ticket), recalcOrderPayment (which writes orders.payment_status/amount_paid) and
+  // recordCollectionPayment ALL derive paid-ness by calling it, and nothing derives paid-ness any other
+  // way. Filtering at this one point means a consumer added NEXT YEAR is correct because it called the
+  // resolver, not because its author remembered a rule — which is the only kind of correctness that
+  // survives a codebase.
+  // ⚠️ The SQL filters in readLedger / reverseCollectionPayment / /api/dashboard are the FIRST line, not
+  // the only one: they stop test rows travelling to a browser at all. This is the second, and it is what
+  // makes the guarantee hold for rows that arrive by any route — including a caller that hand-builds
+  // them. Both layers, deliberately.
+  // ⚠️ IT IS A FILTER, NEVER A TERM. Nothing below changes: paid is still Σcharges − Σrefunds. This only
+  // decides which rows are eligible to be summed, exactly as `state === 'succeeded'` already does.
+  const succeeded = (ledgerRows ?? []).filter(r => isLiveRow(r) && r.state === 'succeeded')
   const chargeMinor = succeeded.filter(r => r.kind === 'charge').reduce((s, r) => s + Math.round(r.amount_minor), 0)
   const refundMinor = succeeded.filter(r => r.kind === 'refund').reduce((s, r) => s + Math.round(r.amount_minor), 0)
 
@@ -179,10 +225,15 @@ export function collectIdempotencyKey(orderKey: string, paidBeforeMinor: number,
 async function readLedger(supabase: SupabaseClient, orderKey: string): Promise<LedgerRow[]> {
   const { data, error } = await supabase
     .from('order_payments')
-    .select('kind, channel, amount_minor, state, external_ref')
-    .eq('order_key', orderKey)
+    .select(LEDGER_ROW_COLUMNS)
+    // 🔴 TEST ROWS ARE NOT PART OF THE BALANCE. This read feeds recalcOrderPayment (which WRITES
+    // orders.payment_status and amount_paid) and recordCollectionPayment (which decides how much to
+    // charge). A test row reaching either would put a fabricated figure into the derived caches every
+    // other surface trusts, and would tell an operator to collect less than they are owed.
+    // Filtered in SQL as well as in getOrderBalance — belt and braces on the path that writes.
+    .eq('livemode', true)
   if (error) throw new Error(`[ledger] could not read order_payments for ${orderKey}: ${error.message}`)
-  return (data ?? []) as LedgerRow[]
+  return (data ?? []) as unknown as LedgerRow[]
 }
 
 async function readOrder(supabase: SupabaseClient, orderKey: string): Promise<BalanceableOrder> {
@@ -247,6 +298,22 @@ export async function recordPaymentEvent(
     createdBy?: string | null
     currency?: string
     method?: PaymentMethod | null
+    /** ── 🔴 REQUIRED. NO DEFAULT. NOT OPTIONAL. THIS IS DELIBERATE. ───────────────────────────────
+     *  The database column carries `default true`, which is what makes the migration safe to apply
+     *  ahead of the deploy — but a default is also how a test payment gets silently recorded as real
+     *  by a writer that simply forgot. Making the parameter mandatory here moves that failure from
+     *  runtime (a wrong row, discovered by an accountant) to COMPILE TIME (a red squiggle). A future
+     *  Stripe webhook writer cannot omit it, because the file will not build.
+     *
+     *  🔴 WHEN THAT WRITER EXISTS, THIS VALUE COMES FROM `event.livemode` ON THE STRIPE EVENT ITSELF —
+     *  never from STRIPE_SECRET_KEY, never from an `sk_test_`/`sk_live_` prefix, never from NODE_ENV,
+     *  and never from which endpoint received the callback. Stripe's own documentation is explicit that
+     *  "your production webhook URLs receive BOTH live and test webhooks", so the endpoint proves
+     *  nothing and the key proves nothing about a callback that arrived unbidden. The event is the only
+     *  artefact that knows which mode produced it, and it says so in a field. Read that field.
+     *  Deriving this from configuration would reintroduce the entire defect this column exists to
+     *  prevent, while looking correct. */
+    livemode: boolean
   },
 ): Promise<{ inserted: boolean; balance: OrderBalance }> {
   if (!Number.isInteger(event.amountMinor) || event.amountMinor <= 0) {
@@ -266,6 +333,11 @@ export async function recordPaymentEvent(
     idempotency_key: event.idempotencyKey ?? null,
     created_by: event.createdBy ?? null,
     method: event.method ?? null,
+    // Named EXPLICITLY on every insert rather than left to the column default. The default exists to
+    // classify the rows that were already there; a row written from here always knows its own mode, so
+    // relying on the default would be discarding information we hold. It also means the day the default
+    // is dropped (phase two of the migration), nothing here changes.
+    livemode: event.livemode,
   })
 
   let inserted = true
@@ -322,6 +394,15 @@ export async function recordCollectionPayment(
     note: 'Mark paid & done — taken at the hatch',
     createdBy: opts.createdBy ?? null,
     method: opts.method ?? null,
+    // 🔴 HARDCODED TRUE, AND CORRECTLY SO — NOT A PLACEHOLDER. This function books an IN-PERSON
+    // collection: an operator standing at a hatch, having physically taken cash or run a card through
+    // their own PDQ. There is no test mode for cash. No configuration, no key and no environment can
+    // make this money less real, so there is nothing here to read a flag from — the truth is in what
+    // the function does.
+    // ⚠️ A Stripe payment does NOT come through here (see the header: this hardcodes
+    // channel:'in_person_other' and derives the amount from the balance rather than from a processor).
+    // The Stripe writer will be a separate caller of recordPaymentEvent that passes event.livemode.
+    livemode: true,
   })
 
   // ── EXPECTED-VS-ACTUAL DETECTOR ────────────────────────────────────────────────────────────────
@@ -394,10 +475,22 @@ export async function reverseCollectionPayment(
   // 7-second toast and the paid-chip affordance both mean by "undo".
   const { data: rows, error } = await supabase
     .from('order_payments')
-    .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by')
+    // `livemode` is in this list for TWO reasons, and the second is the load-bearing one: it feeds
+    // `row.livemode` on the compensating-refund path below, AND this exact row shape is what gets
+    // written to action_audit_log.before_state before a delete. That log has to be enough to
+    // reconstruct the destroyed row completely — a reconstruction that could not say whether the
+    // payment was real would be worthless for the six-year record it exists to protect.
+    .select('id, kind, channel, amount_minor, currency, state, external_ref, note, idempotency_key, created_at, created_by, livemode')
     .eq('order_key', opts.orderKey)
     .eq('kind', 'charge')
     .neq('channel', 'online')
+    // 🔴 A TEST ROW MUST NEVER BE THE ROW AN UNDO PICKS. This query takes the NEWEST matching charge, so
+    // without the filter a test row written after a real collection would be selected instead of it —
+    // and the two failure modes are both bad in the same direction: the operator taps undo, a row that
+    // represents no money is deleted, and the REAL payment is left standing on an order the operator now
+    // believes is unpaid. Filtered in SQL because this is a `[0]` pick, not a sum: getOrderBalance never
+    // sees these rows, so the chokepoint cannot save this one. It has to be right here.
+    .eq('livemode', true)
     .order('created_at', { ascending: false })
   if (error) throw new Error(`[ledger] could not read the collect row for ${opts.orderKey}: ${error.message}`)
 
@@ -429,6 +522,13 @@ export async function reverseCollectionPayment(
     state: 'succeeded',
     note: 'Reversal of "Mark paid & done" (undo) — original payment had an external reference',
     createdBy: opts.createdBy ?? null,
+    // Inherited from the row being reversed, never assumed. A compensating refund must sit on the same
+    // side of the live/test line as the charge it cancels — a live refund against a test charge would
+    // subtract money that was never taken, and a test refund against a live charge would leave the real
+    // money standing while appearing to have reversed it. The lookup above already restricts this path
+    // to livemode=true rows, so this reads `true` today; sourcing it from `row` rather than writing the
+    // literal is what keeps it correct if that filter is ever widened.
+    livemode: row.livemode ?? true,
   })
   return { reversal: 'refunded', balance }
 }
