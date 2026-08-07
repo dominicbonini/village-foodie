@@ -1,25 +1,9 @@
-# The livemode discriminator — build report
+# Stripe webhook endpoint — build report
 
 **Date:** 7 August 2026
-**Supersedes:** the Stripe Connect readiness audit previously at this path. Its finding is restated in "What was wrong"; its other conclusions are unchanged and unbuilt.
-**Provenance:** that audit — a production Connect webhook URL receives **both** live and test events, and `order_payments` had no column that could tell them apart.
-**Scope built:** the discriminator column and the filtering. **No Stripe integration** — no webhook endpoint, no PaymentIntent, no onboarding, no keys, no SDK, no env var.
-
----
-
-## 🔴 Operational precondition — read before deploying
-
-**The migration is written and NOT run, as instructed. The accompanying code is deploy-coupled and must not ship until it is applied.**
-
-The new code both selects and filters on `livemode`. PostgREST returns **PGRST204** for a column it cannot see, and `/api/dashboard`'s payments fetch degrades to an **empty map** on error — which renders **every order as unpaid** on the operator's board ([route.ts:255-258](app/api/dashboard/route.ts#L255-L258)).
-
-```
-APPLY THE MIGRATION FIRST.  THEN DEPLOY.  Not the other way round.
-```
-
-The reverse order is a no-op: the column is defaulted and the currently-deployed code never names it, so the migration is safe to apply on its own at any time, including mid-service.
-
-⚠️ **What this means for confidence:** `tsc` and ESLint are clean, and every code path is traced below — but because the migration has not been run, **nothing here has been exercised against a database that has the column.** The reasoning is verified; the round-trip is not.
+**Supersedes:** the livemode-discriminator build report previously at this path.
+**Provenance:** the Stripe Connect readiness audit — no webhook in this repo verified a signature, so there was no pattern to copy.
+**Scope built:** the endpoint, signature verification, and event recording. **No payments.**
 
 ---
 
@@ -27,395 +11,505 @@ The reverse order is a no-op: the column is defaulted and the currently-deployed
 
 | | |
 |---|---|
-| **Column** | `livemode boolean not null default true` — migration written, **not run** |
-| **Existing rows** | 100% classified **live** by the default, with no backfill statement |
-| **Omission hazard** | closed in the **type system** — `recordPaymentEvent` takes `livemode` as a **required** parameter, so a writer that forgets fails to compile |
-| **Exclusion shape** | strict `livemode === true`, enforced at the **chokepoint** (`getOrderBalance`) plus at all three SQL readers |
-| **Consumers audited** | 9 — 7 exclude, **2 deliberately do not** (both are row counts protecting retention, not money) |
-| **`tsc --noEmit`** | exit 0, before and after |
-| **ESLint** | 912 messages / 15 rules, **rule-for-rule identical** to baseline |
-| **Gusto** | every existing row live; nothing they see changes; verified path by path in §Verify |
+| **Stripe SDK** | **Not installed, and not installed by this task.** Verification is hand-rolled from Stripe's documented manual procedure — which means this endpoint needs **no API key at all** |
+| **Files added** | 3, all new. **Zero existing files modified** |
+| **Raw body** | `await req.text()` on the first line; `req.json()` never called on this route |
+| **Env vars needed** | **one** — `STRIPE_WEBHOOK_SECRET` (accepts a comma-separated list) |
+| **Idempotency** | `stripe_webhook_events` table, `UNIQUE (stripe_event_id)`, insert-first and treat 23505 as "already seen" |
+| **Migration** | written, **not run** |
+| **Verification tested** | 15 vectors exercised against real HMACs — 15 pass, including forgery, replay, downgrade and the re-serialisation trap |
+| **`tsc --noEmit`** | exit 0 |
+| **ESLint** | rule-for-rule identical to baseline; **both new files produce zero messages** |
+| **Gusto** | new route, nothing calls it, no payment code touched — verified below, not assumed |
 
-**Nothing in the prompt arrived garbled.** One repeat of last time's minor discrepancy, flagged not assumed: you dated the prior audit 6 August; the file's own header said 7 August (today). The finding is the one I re-verified.
+### 🔴 Two things flagged rather than assumed
 
----
+**1. One premise in the brief needs correcting, and it changes the fix.** The brief says *"Next.js route handlers parse the body by default."* That is true of the **Pages Router** (`pages/api/*`), where you disable it with `export const config = { api: { bodyParser: false } }`. This repo uses the **App Router**, where a route handler receives a Web `Request` and the body is **not** parsed for you — `.text()` and `.json()` are both available, and that config key does nothing.
 
-## What was wrong (re-verified in the current tree, not taken on trust)
+**The hazard is real but has a different mechanism, and it is still the most common silent failure.** Two of them:
 
-```
-$ grep -rn "from('order_payments')" --include='*.ts' . | grep -v node_modules
-```
-returned 8 sites, **none** of which referenced a mode. The table's 14 columns were re-read from
-[20260729_order_payments_ledger.sql:54-84](supabase/migrations/20260729_order_payments_ledger.sql#L54-L84)
-and [20260730_takes_cash_and_payment_method.sql:56](supabase/migrations/20260730_takes_cash_and_payment_method.sql#L56):
-no `livemode`, no `is_test`, no `mode`. Confirmed still true before editing.
+- The body is a **stream that can only be read once**. Call `req.json()` first and a later `req.text()` throws `Body is unusable`. There is no way back.
+- Even if you could, re-serialising is fatal: `JSON.stringify(JSON.parse(body))` is a **different string** — key order, whitespace, unicode escaping, number formatting — so the HMAC differs and verification fails **100% of the time with a perfectly correct secret**, presenting as *"my signing secret must be wrong."*
 
-The three columns that might plausibly have carried the distinction cannot:
+I have proven that second point rather than asserted it — see the `re-serialised body FAILS` vector below. The discipline the brief asks for is exactly right; only the stated cause differs.
 
-- **`channel`** — a test online payment and a real one are both `'online'`, the exact value that tells the fee engine the 0.99% applies ([ledger.sql:24-27](supabase/migrations/20260729_order_payments_ledger.sql#L24-L27)).
-- **`external_ref`** — test and live PaymentIntent ids are not distinguishable by shape.
-- **`state`** / `method` / `currency` — none encodes the mode.
-
-Against Stripe's documented behaviour: *"your production webhook URLs receive both live and test webhooks… We recommend that you check the `livemode` value."* A production endpoint is a mixed-mode firehose **by design**.
+**2. A dating discrepancy on the provenance, carried over from last time.** You date the livemode migration 6 August; the file in the repo is `20260807_order_payments_livemode.sql` and its header is dated 7 August. I take the application and the 50-row figure as given — **I cannot verify either without SQL**, and this audit ran read-only against the database.
 
 ---
 
-## 1. The column
+## Part 1 — Established before writing
 
-### The migration — written, not run
+### 1. Is the Stripe Node SDK installed?
 
-`supabase/migrations/20260807_order_payments_livemode.sql`
+**No.**
+
+```
+$ node -e "console.log(require('./package.json').dependencies.stripe)"
+undefined
+```
+
+Current published version, checked against the registry today:
+
+```
+$ npm view stripe version dist-tags
+version = '22.4.0'
+dist-tags = { latest: '22.4.0', beta: '18.6.0-alpha.2',
+              'public-preview': '22.5.0-beta.1', 'private-preview': '22.5.0-alpha.2' }
+```
+
+**`stripe@22.4.0`** is `latest`, and it is also what Stripe's own current quickstart sample pins (`"stripe": "^22.4.0"`). Node here is v22.22.3 — comfortably above its floor. **Not installed, per the brief.**
+
+**Consequence, and it turned out to be a benefit worth keeping.** Since the SDK is unavailable, `stripe.webhooks.constructEvent` is unavailable, so verification is hand-rolled from [Stripe's documented manual procedure](https://docs.stripe.com/webhooks) — a path Stripe explicitly supports (*"you can create a custom solution by following this section"*).
+
+🔴 **This removes a requirement rather than adding one.** `new Stripe(...)` requires an API key, so importing the SDK would have meant giving the most publicly-reachable route in the app a `STRIPE_SECRET_KEY` **purely to construct a client it never makes an API call with**. Hand-rolling means this endpoint holds **no API key at all** — only the signing secret, which is useless for anything except verifying signatures. When the SDK does land (for PaymentIntents), swapping this module for `constructEvent` is behaviour-identical and the module can be deleted.
+
+### 2. The existing pattern for an inbound API route
+
+Read from `app/api/inbound-schedule/route.ts`, `app/api/webhooks/meta/whatsapp/route.ts` and `app/api/cron/*`. The house shape, followed here:
+
+| Convention | Where seen | Followed |
+|---|---|---|
+| `import { NextRequest, NextResponse } from 'next/server'` | all inbound routes | ✅ |
+| Module-scope service-role client, `createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!)` | [inbound-schedule:8-11](app/api/inbound-schedule/route.ts#L8-L11), [meta/whatsapp:8-11](app/api/webhooks/meta/whatsapp/route.ts#L8-L11) | ✅ |
+| `export async function POST(req: NextRequest)` | all | ✅ |
+| `NextResponse.json({ error: '…' }, { status: N })` | [inbound-schedule:41](app/api/inbound-schedule/route.ts#L41) | ✅ |
+| Bracketed log tag, `console.log('[webhook/meta-whatsapp] …')` | throughout the webhook routes | ✅ as `[webhook/stripe]` |
+| Secrets read from `process.env` at module scope | [inbound-schedule:26](app/api/inbound-schedule/route.ts#L26) | ✅ (read per-request, so a rolled secret takes effect on redeploy without a cold-start dependency) |
+| `export const runtime = 'nodejs'` when Node APIs are needed | [verify-schedule-url:10](app/api/manage/verify-schedule-url/route.ts#L10) | ✅ |
+
+⚠️ **One convention deliberately NOT followed.** The four existing webhook routes do `const body = await req.json()` as their first act and then process it **unauthenticated** — the Meta ones check a shared token only on the `GET` subscription handshake, never on `POST`; the Twilio one checks nothing at all. Copying that shape here would defeat the entire task. This route is written to be the thing those four are eventually fixed *against*, which is why verification lives in a pure, reusable module rather than inline.
+
+⚠️ Also noted while reading, out of scope, but do not copy it into a money route: [meta/whatsapp:22-27](app/api/webhooks/meta/whatsapp/route.ts#L22-L27) logs `process.env.META_WEBHOOK_VERIFY_TOKEN` in plaintext on every verification attempt.
+
+### 3. 🔴 The raw body in this Next.js version
+
+**Next 16.1.6, App Router.** Route handlers receive a Web `Request`; **nothing parses the body for you**.
+
+```ts
+const rawBody = await req.text()      // ✅ the exact bytes Stripe signed
+```
+
+**What happens if the body is parsed first — both failure modes:**
+
+| If you… | What happens |
+|---|---|
+| `await req.json()` then `await req.text()` | **Throws.** The body is a single-use stream; once consumed it cannot be re-read. |
+| `JSON.stringify(await req.json())` as the payload | **Verification fails every time, with a correct secret.** The re-serialised string differs from Stripe's bytes in key order, whitespace, unicode escaping and number formatting, so the HMAC differs. |
+
+The second is the one that wastes an afternoon, because it looks like a configuration problem. **Proven, not asserted** — the `re-serialised body FAILS` vector in the test table below feeds a correctly-signed payload through `JSON.stringify(JSON.parse(body), null, 2)` and gets `signature_mismatch`.
+
+**And the fix that does *not* apply here:** `export const config = { api: { bodyParser: false } }` is a **Pages Router** directive. In the App Router it is inert. Adding it would be cargo-cult and would give false confidence.
+
+**`export const runtime = 'nodejs'` is pinned**, because `node:crypto`'s `createHmac` / `timingSafeEqual` do not exist on the edge runtime. Without it the route would build cleanly and fail at runtime on every single request.
+
+### 4. Environment variables — exactly one new
+
+| Variable | Purpose | Notes |
+|---|---|---|
+| **`STRIPE_WEBHOOK_SECRET`** | The endpoint signing secret(s) used to verify `Stripe-Signature`. | 🔴 **Accepts one OR MORE, comma-separated.** See below — this is not a convenience. |
+
+**Already set, reused unchanged:** `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+
+**Explicitly NOT needed, and deliberately so:** `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, any Connect client id. This route makes no Stripe API calls.
+
+🔴 **Why the secret is plural.** Two independent Stripe behaviours require it:
+
+1. **One URL, two modes.** A production Connect webhook URL receives **both live and test** events. Registering the same URL in test mode and in live mode creates two endpoint objects with **two different signing secrets** — Stripe: *"if you use the same endpoint for both test and live API keys, the secret is different for each one."* A single-secret implementation would verify one mode and reject the other **as a forgery**.
+2. **Secret rolling.** When a secret is rolled, Stripe keeps the previous one active for up to 24 hours and *"generates one signature for each secret"*. Accepting a list makes a roll a zero-downtime config change instead of a cutover.
+
+Both cases are covered by test vectors below (`2 secrets, live one 2nd` and `roll: 2 sigs, old secret`).
+
+---
+
+## Part 2 — What was built
+
+Three new files. **No existing file was modified** — `git status` shows three untracked paths and nothing else.
+
+| File | Role |
+|---|---|
+| [lib/stripe/webhook-signature.ts](lib/stripe/webhook-signature.ts) | Pure, dependency-free signature verification. No I/O, no throw — every failure is a return value. |
+| [app/api/webhooks/stripe/route.ts](app/api/webhooks/stripe/route.ts) | The endpoint. |
+| `supabase/migrations/20260807_stripe_webhook_events.sql` | The receipt log. **Written, not run.** |
+
+### The endpoint's contract
+
+**Verify, always, with no bypass.** [route.ts:88](app/api/webhooks/stripe/route.ts#L88) is the only gate and there is no path around it: no env-var flag, no `NODE_ENV === 'development'` shortcut, and — critically — **no "skip verification if no secret is configured"**. Stripe's own quickstart sample is written `if (endpointSecret) { verify }`, which means a deployment that forgot the variable **accepts any body from anyone**. That is a tutorial convenience and it is refused here: an unset secret is a broken deployment and it fails closed ([webhook-signature.ts:126-131](lib/stripe/webhook-signature.ts#L126-L131)).
+
+**Status codes are a retry instruction, not a formality.** Stripe retries any non-2xx for up to three days:
+
+| Code | When | Why |
+|---|---|---|
+| **400** | not from Stripe, or unparseable | Retrying cannot help, and a forged request must never earn a retry. **Nothing is recorded.** |
+| **500** | verified and well-formed, but the insert failed | 🔴 **Retry is exactly what we want** — we hold no record, so re-delivery is the recovery path. The one branch where a non-2xx is correct rather than a bug. |
+| **200** | recorded / duplicate / unhandled type | All three mean "do not send this again". |
+
+The 2xx is returned as soon as the event is **durably recorded** and no later. Nothing slow and nothing that can throw runs between verification and the response.
+
+**Unrecognised event types are normal.** No handler exists for any type yet — that is this pass's scope, not an oversight. Every verified event is recorded and acknowledged whatever its type ([route.ts:210-216](app/api/webhooks/stripe/route.ts#L210-L216)). Returning non-2xx for an unhandled type would make Stripe retry it for three days to no purpose and eventually disable the endpoint.
+
+**The 7pm-Friday log.** One line per event, bracketed tag, and it names the **cause** rather than saying "unauthorised":
+
+```
+[webhook/stripe] RECEIVED id=evt_1Abc… type=account.updated livemode=false account=acct_1Xyz… apiVersion=2026-…
+[webhook/stripe] DUPLICATE id=evt_1Abc… type=account.updated livemode=false — already recorded, ignoring
+[webhook/stripe] REFUSED reason=signature_mismatch secretsConfigured=1 hasSignature=true bodyBytes=1842
+[webhook/stripe] PERSIST FAILED id=evt_1Abc… … — returning 500 so Stripe retries. 42P01 relation does not exist
+```
+
+The refusal line carries the three facts that separate the realistic causes — `no_secret_configured` (env var missing), `missing_signature_header` (a scanner probing the URL), `signature_mismatch` (wrong secret, or **only the other mode's secret configured**, or a genuine forgery), `timestamp_outside_tolerance` (a real Stripe signature that is stale, or this server's clock has drifted). `secretsConfigured` is a **count, never the values**, and `bodyBytes` distinguishes an empty probe from a real payload **without logging a single byte of an unverified body**.
+
+### 🔴 Idempotency
+
+**Yes — seen event ids are stored, in a new table.** Stripe guarantees at-least-once, retries for up to three days, allows manual resend for 15 days (Dashboard) / 30 days (CLI), and **does not guarantee ordering**. A handler that assumes one delivery per event is wrong on all four counts.
+
+**The mechanism is the UNIQUE constraint, not a read-then-write check.** The route INSERTs first and treats `23505` as *"already seen, acknowledge and stop"* ([route.ts:155-179](app/api/webhooks/stripe/route.ts#L155-L179)). A `select … then insert if absent` would be wrong: two concurrent deliveries of the same event — which is exactly what a retry racing a slow first attempt looks like — would both read "not seen" and both proceed. Only the database can arbitrate that, so it is asked to.
+
+This deliberately mirrors the idiom the payment ledger already uses (`order_payments_idempotency_key_uidx` plus "treat 23505 as a successful no-op"), so idempotency is done **one way** in this codebase rather than two.
+
+### The migration — written, NOT run
 
 ```sql
--- 20260807_order_payments_livemode.sql
--- The LIVEMODE DISCRIMINATOR on the payment ledger. Prerequisite for ANY Stripe work (§37, and
--- docs/stripe-connect-report.md). Nothing may write a Stripe payment until this column exists.
+-- 20260807_stripe_webhook_events.sql
+-- The STRIPE EVENT RECEIPT LOG. One row per webhook event this app has accepted. Groundwork only —
+-- nothing in it moves money, and it is NOT order_payments.
 --
--- ── 🔴 WHY THIS IS THE FIRST THING BUILT, BEFORE ANY STRIPE CODE ────────────────────────────────────
--- Stripe's own Connect documentation, verbatim: "your production webhook URLs receive BOTH live and test
--- webhooks. This is because you can perform both live and test transactions under a production
--- application. We recommend that you check the `livemode` value." A single production endpoint is
--- therefore a mixed-mode firehose BY DESIGN, not by misconfiguration.
--- Today `order_payments` has fourteen columns and NONE of them can tell a test £25 from a real one:
---   • `channel` cannot — a test online payment and a real one are BOTH 'online', which is the exact value
---     that tells the fee engine to charge the 0.99% platform fee.
---   • `external_ref` cannot — test and live PaymentIntent ids are not distinguishable by shape.
---   • `state`, `method`, `currency`, `note` cannot — none of them encodes the mode.
--- `order_payments` is the six-year accounting record the published privacy policy commits to retaining,
--- on a truck (Pizzeria Gusto) trading real money today. Mixing test rows into it and separating them
--- afterwards means unpicking by hand, per-row, with no reliable key to unpick on. This column is what
--- makes that unnecessary.
+-- ✅ CLASSIFICATION: **ADDITIVE**. A brand-new table that nothing currently deployed reads or writes.
+-- Applying it changes nothing for the running app, so it is SAFE TO RUN AT ANY TIME.
+-- RUN ORDER: apply BEFORE deploying /api/webhooks/stripe. That route INSERTs here, and PostgREST returns
+-- PGRST205 for a table it cannot see. The consequence of getting it wrong is bounded but ugly: the route
+-- would verify signatures correctly and then fail to record, returning 500, and Stripe would retry the
+-- same event for three days. No money is involved either way. The reverse order is a no-op — the table
+-- would simply sit empty until the deploy lands.
 --
--- ✅ CLASSIFICATION: **ADDITIVE**, and safely so — one new column carrying a NOT NULL DEFAULT that
--- encodes exactly today's truth. It is safe to run at any time against the CURRENTLY-DEPLOYED app: that
--- code never names `livemode`, so every insert it makes takes the default and is classified LIVE, which
--- is correct for every one of them.
+-- ── WHY THIS TABLE EXISTS: STRIPE GUARANTEES AT-LEAST-ONCE, NOT EXACTLY-ONCE ────────────────────────
+-- Stripe's own words: "Webhook endpoints might occasionally receive the same event more than once. You
+-- can guard against duplicated event receipts by logging the event IDs you've processed, and then not
+-- processing already-logged events." They also automatically retry for UP TO THREE DAYS with exponential
+-- backoff, allow a manual resend for 15 days (Dashboard) or 30 days (CLI), and explicitly do NOT
+-- guarantee ordering. A handler that assumes one delivery per event is wrong on all four counts.
+-- This table is the "logging the event IDs you've processed" half, made durable.
 --
--- 🔴 RUN ORDER: apply BEFORE deploying the accompanying code. **DEPLOY-COUPLED, and in one direction
--- only.** The new code both SELECTS and FILTERS on `livemode` (lib/payments/ledger.ts readLedger +
--- reverseCollectionPayment, app/api/dashboard/route.ts). PostgREST returns PGRST204 for a column it
--- cannot see, so deploying first would make the dashboard's payments fetch fail on every poll — and that
--- route degrades to an EMPTY payments map, which renders every order as UNPAID on the operator's board.
--- The reverse order is a no-op: the column is defaulted and the old code never names it.
---   APPLY THIS FIRST. THEN DEPLOY. Do not do it the other way round.
+-- 🔴 THE UNIQUE CONSTRAINT IS THE IDEMPOTENCY MECHANISM — NOT A READ-THEN-WRITE CHECK.
+-- The route INSERTs FIRST and treats a 23505 unique violation as "already seen, acknowledge and stop".
+-- It deliberately does NOT `select ... then insert`: two concurrent deliveries of the same event (which
+-- is exactly what a retry racing a slow first attempt looks like) would both read "not seen" and both
+-- proceed. The database is the only thing that can arbitrate that, so it is asked to.
+-- This mirrors the idiom the payment ledger already uses — order_payments_idempotency_key_uidx plus
+-- "treat 23505 as a successful no-op" (20260729_order_payments_ledger.sql:29-37) — deliberately, so
+-- there is ONE way idempotency is done in this codebase rather than two.
 --
--- ── WHY `not null default true` AND NOT NULLABLE ────────────────────────────────────────────────────
--- Three candidate shapes were considered and two rejected:
+-- ── 🔴 NO PAYLOAD COLUMN. THE FULL EVENT BODY IS DELIBERATELY NOT STORED. ───────────────────────────
+-- The obvious design is a `payload jsonb` for debugging. It is refused, and the precedent is recorded in
+-- lib/audit/actionAudit.ts: "NOTHING SWEEPS THIS TABLE… the anonymisation pass nulls named COLUMNS on
+-- `orders` — it cannot reach inside a JSONB blob. Anything personal written into these snapshots is
+-- therefore retained indefinitely and would outlive the erasure the privacy policy promises."
+-- A Stripe Checkout/PaymentIntent event carries `customer_details.email`, `.name`, `.phone` and a
+-- billing address. Storing the raw event would put customer identifiers in a table with no foreign keys
+-- and no sweeper — a GDPR erasure hole created for developer convenience.
+-- ✅ THE DEBUGGING NEED IS MET WITHOUT IT: `stripe_event_id` is the join key to Stripe's own Dashboard,
+-- which retains the complete payload and its delivery history. This table answers "did we receive it,
+-- when, and did we act on it"; Stripe answers "what was in it". That split is correct, not a compromise.
+-- ⚠️ DO NOT ADD A PAYLOAD COLUMN LATER WITHOUT SOLVING THE SWEEP. If a future handler genuinely needs
+-- event contents, store the specific scalar fields it needs (ids, amounts, statuses), never the blob.
 --
---   ✗ NULLABLE, no default. Every existing row would read NULL, which means "unknown". But they are NOT
---     unknown — every row in this table today is a real cash or own-PDQ collection taken at a real hatch
---     (channel is 'in_person_other' on 100% of rows; 'online' has never been written). Recording a known
---     fact as NULL discards information, and it forces every reader to invent a policy for NULL. A
---     three-valued money column is how you get two readers disagreeing about the same row.
+-- ── 🔴 livemode IS NOT NULL WITH NO DEFAULT, AND THAT IS THE OPPOSITE OF order_payments.livemode ────
+-- order_payments.livemode carries `default true` because it had to classify 50 pre-existing rows of real
+-- money taken before the column existed (20260807_order_payments_livemode.sql). This table has NO
+-- pre-existing rows and NO legacy writer, so there is nothing a default would rescue and everything it
+-- could hide: every row here is born from a Stripe event, and every Stripe event states its own mode in
+-- a field. A default would let a writer that forgot silently record a test event as live.
+-- NOT NULL, NO DEFAULT ⇒ omission is a 23502 at the database, on top of the value being a required
+-- parameter in TypeScript. Both doors shut, and neither costs availability because no deployed code
+-- inserts here yet.
 --
---   ✗ NOT NULL, NO DEFAULT (the strictest schema). Attractive, because then an INSERT that forgets
---     `livemode` fails LOUDLY with 23502 instead of silently defaulting to live. But it cannot be applied
---     in one step against a live trading truck: the currently-deployed recordPaymentEvent() does not name
---     the column, so the moment this migration landed, EVERY "Paid & collected" tap at Gusto's hatch
---     would 23502 until the deploy caught up. A guard that takes the hatch down mid-service is not a
---     guard. See the two-phase note below — this shape is the DESTINATION, not the first step.
---
---   ✅ NOT NULL DEFAULT TRUE. The default is what makes the migration independently safe, and `true` is
---     the only correct classification for the rows already there. The "silently live by omission" hazard
---     that the no-default shape would have closed is closed instead IN THE TYPE SYSTEM: recordPaymentEvent
---     takes `livemode: boolean` as a REQUIRED parameter (not optional, no default), so a future writer
---     that omits it fails to COMPILE. That is an earlier and louder failure than 23502 at runtime, and it
---     costs no availability.
---
--- ── PHASE TWO, RECORDED SO IT IS NOT FORGOTTEN (NOT DONE HERE, DELIBERATELY) ────────────────────────
--- Once this migration is applied AND the accompanying deploy is live everywhere — i.e. once no running
--- code can insert without naming `livemode` — the default should be dropped:
---     alter table order_payments alter column livemode drop default;
--- That converts "omission is silently live" into "omission is 23502", closing the hole for raw SQL and
--- for any future service that is not this TypeScript codebase. It is a SEPARATE migration on purpose:
--- doing it here would re-introduce exactly the outage described in the rejected shape above, because
--- both steps cannot be simultaneously true during a rolling deploy. Do not fold it in.
---
--- ⚠️ NO BACKFILL STATEMENT IS NEEDED OR WANTED. `add column ... not null default true` populates every
--- existing row with `true` as part of the ALTER (Postgres 11+ does this without a table rewrite). A
--- separate `update ... set livemode = true` would be a no-op that touches every row for nothing.
---
--- ⚠️ THIS COLUMN AFFECTS NO ARITHMETIC. It is a FILTER, never a term. getOrderBalance still computes
--- paid = Σcharges − Σrefunds over state='succeeded'; this decides only which rows are eligible to be
--- summed at all. Same relationship `state` already has to the sum.
---
--- ⚠️ IT IS NOT `channel`, AND MUST NOT BE FOLDED INTO IT. `channel` answers "does the platform fee
--- apply?" (see 20260729_order_payments_ledger.sql). `livemode` answers "is this money real?". A test
--- online payment is channel='online' AND livemode=false: it WOULD attract a fee if it were real, and it
--- is not real. Collapsing the two would make every fee query an `in (...)` over a growing list — the
--- exact mistake 20260730_takes_cash_and_payment_method.sql refused for `method`, for the same reason.
+-- ── NO FOREIGN KEYS ────────────────────────────────────────────────────────────────────────────────
+-- `connected_account` holds a Stripe `acct_...` and is a plain text value. There is nothing to reference
+-- — no Connect account is stored anywhere in this schema yet, deliberately (§37 leaves the account's
+-- home an open decision). Following action_audit_log rather than order_payments here: a receipt log must
+-- survive deletion of whatever it describes, and order_payments cascading on BOTH orders and trucks is
+-- recorded in the audit-log migration as the mistake not to inherit.
 --
 -- VERIFY AFTER APPLYING (reads resulting STATE, not the statement's return):
---   -- the column, with its type, nullability and default
+--   -- table + every column
 --   select column_name, data_type, is_nullable, column_default
---     from information_schema.columns
---    where table_name = 'order_payments' and column_name = 'livemode';
---   -- expect exactly 1 row: livemode | boolean | NO | true
---   -- the table is now fifteen columns
---   select count(*) as col_count from information_schema.columns where table_name = 'order_payments';
---   -- expect 15
---   -- 🔴 THE ONE THAT MATTERS: EVERY EXISTING ROW MUST BE LIVE. A single `false` here means the
---   -- migration ran against data it should not have, and real takings have been reclassified as test.
---   select livemode, count(*) from order_payments group by 1;
---   -- expect a SINGLE row: t | <all rows>. If a `f` row appears, STOP.
---   -- per-truck, so Gusto is checked by name rather than in aggregate
---   select truck_id, livemode, count(*) from order_payments group by 1, 2 order by 1;
---   -- expect every truck to have exactly one row, livemode = t
---   -- the partial index below
+--     from information_schema.columns where table_name = 'stripe_webhook_events' order by ordinal_position;
+--   select count(*) as col_count from information_schema.columns
+--    where table_name = 'stripe_webhook_events';                                  -- expect 9
+--   -- livemode must be NOT NULL with NO default (see the note above)
+--   select is_nullable, column_default from information_schema.columns
+--    where table_name = 'stripe_webhook_events' and column_name = 'livemode';     -- expect NO | null
+--   -- the unique constraint that IS the idempotency mechanism
+--   select conname, pg_get_constraintdef(oid) from pg_constraint
+--    where conrelid = 'stripe_webhook_events'::regclass and contype = 'u';
+--   -- expect stripe_webhook_events_event_id_uniq UNIQUE (stripe_event_id)
+--   -- NO foreign keys
+--   select count(*) as fk_count from information_schema.table_constraints
+--    where table_name = 'stripe_webhook_events' and constraint_type = 'FOREIGN KEY';  -- expect 0
+--   -- indexes
 --   select indexname, indexdef from pg_indexes
---    where tablename = 'order_payments' and indexname = 'order_payments_test_rows_idx';
+--    where tablename = 'stripe_webhook_events' order by indexname;
+--   -- RLS on, ZERO policies — same posture as order_payments and action_audit_log
+--   select relrowsecurity from pg_class where relname = 'stripe_webhook_events';  -- expect t
+--   select count(*) as policy_count from pg_policies
+--    where tablename = 'stripe_webhook_events';                                   -- expect 0
+--   -- and, once the endpoint is live, the sanity read that matters:
+--   select livemode, count(*) from stripe_webhook_events group by 1;
+--   -- during test-mode bring-up expect ONLY `f` rows. A `t` row means a LIVE event reached this app.
 
-alter table order_payments add column if not exists livemode boolean not null default true;
+create table if not exists stripe_webhook_events (
+  id                uuid        primary key default gen_random_uuid(),
+  -- Stripe's own event id (`evt_...`). THE idempotency key, and the join key to Stripe's Dashboard.
+  stripe_event_id   text        not null,
+  -- e.g. 'payment_intent.succeeded', 'account.updated'. Free text, no CHECK: Stripe adds event types
+  -- continuously and a CHECK would make every new one a deploy-coupled migration — the same reasoning
+  -- action_audit_log.action records for the same decision.
+  type              text        not null,
+  -- 🔴 FROM THE EVENT'S OWN `livemode` FIELD. Never from an env var, a key prefix, or which endpoint
+  -- received the callback — a production Connect URL receives BOTH modes, so neither the endpoint nor
+  -- the key can tell you which one this was. See the column comment.
+  livemode          boolean     not null,
+  -- The connected account (`acct_...`) for a Connect event, from the event's top-level `account` field.
+  -- NULL for platform-scoped events. No FK — nothing to reference yet.
+  connected_account text,
+  -- The Stripe API version that shaped this event's payload. Recorded because an event's structure is
+  -- fixed at creation and does NOT follow later API-version changes; without it, a handler debugging an
+  -- unexpected shape has no way to know which schema it was looking at.
+  api_version       text,
+  -- When STRIPE created the event, from the event's `created` (unix seconds). Distinct from received_at
+  -- on purpose: the gap between them IS the delivery delay, and on a retry it can be days.
+  stripe_created_at timestamptz,
+  received_at       timestamptz not null default now(),
+  -- ⚠️ ALWAYS FALSE TODAY, AND THAT IS HONEST RATHER THAN SPECULATIVE. This endpoint records that an
+  -- event arrived; it does not act on one, because no handler exists yet (deliberately out of scope).
+  -- The column exists now because the unique constraint alone cannot distinguish "seen" from
+  -- "finished" — a crash between the INSERT and a future handler would look identical to a completed
+  -- delivery, and the retry would be skipped as a duplicate having done nothing. That is a correctness
+  -- requirement for the next pass, not a guess about it.
+  handled           boolean     not null default false,
 
--- PARTIAL index, on the MINORITY side. Every row today is live and the overwhelming majority always will
--- be, so an index over `livemode = true` would be an index over the whole table and would not be used.
--- The queries that need help are the reconciliation and clean-up ones — "show me the test rows for this
--- truck", "delete the test rows before go-live" — which are exactly the `not livemode` side. Indexing
--- only that side keeps the index a few pages rather than a copy of the table.
--- ⚠️ It deliberately does NOT cover the hot read path. That path is `where order_key = $1 and livemode`,
--- already served by order_payments_order_key_idx (an order has single-digit payment rows, so the livemode
--- filter is a cheap recheck on a tiny set, not a scan).
-create index if not exists order_payments_test_rows_idx
-  on order_payments (truck_id, created_at) where not livemode;
+  constraint stripe_webhook_events_event_id_uniq unique (stripe_event_id)
+);
 
-comment on column order_payments.livemode is
-  'Is this money REAL? Written from the Stripe event''s own `livemode` field — NEVER from an env var, a key prefix, or which endpoint received the callback, because only the event knows which mode produced it (a production Connect webhook URL receives BOTH live and test events by design). TRUE on every in-person collection: there is no test mode for cash. FALSE rows are excluded from every consumer that means money — getOrderBalance, the payment_status/amount_paid rollup, and the payments map shipped to the operator surface. They are deliberately NOT excluded from the two admin row-COUNTS (delete-truck guard 3, execute-account-deletion paymentsIntact), which protect physical retention rather than reporting money, and must over-count rather than under-count. Affects no arithmetic: it is a filter on which rows are eligible to be summed, never a term in the sum.';
+-- "What has arrived recently, in this mode" — the operational read. Ordering by received_at (our clock)
+-- not stripe_created_at (theirs), because when triaging you want arrival order, and a three-day retry
+-- would sort into the distant past under the other column.
+create index if not exists stripe_webhook_events_livemode_received_idx
+  on stripe_webhook_events (livemode, received_at desc);
+
+-- "Everything for this connected account" — the read for diagnosing one truck's onboarding or payments.
+-- Partial: platform-scoped events have a NULL account and are never the subject of this question.
+create index if not exists stripe_webhook_events_account_idx
+  on stripe_webhook_events (connected_account, received_at desc) where connected_account is not null;
+
+alter table stripe_webhook_events enable row level security;
+-- service-role only, no anon policy: the only writer is a server route using the service key
+-- (app/api/webhooks/stripe). No browser and no customer ever touches this table — same posture as
+-- order_payments, action_audit_log, device_notification_prefs, booking_locks and whatsapp_logs.
+
+comment on table stripe_webhook_events is
+  'One row per Stripe webhook event ACCEPTED by /api/webhooks/stripe (signature verified). This is a RECEIPT LOG, not a ledger — it records that an event arrived, never that money moved. order_payments remains the canonical money record and this table must never be summed, joined into a balance, or treated as evidence of payment. The UNIQUE constraint on stripe_event_id IS the idempotency mechanism: the route inserts first and treats 23505 as "already seen", because Stripe guarantees at-least-once delivery and retries for up to three days. Deliberately stores NO event payload — see the migration header for the GDPR reasoning.';
+
+comment on column stripe_webhook_events.livemode is
+  'Copied verbatim from the Stripe event''s own `livemode` field. 🔴 NEVER derived from STRIPE_SECRET_KEY, from an sk_test_/sk_live_ prefix, from NODE_ENV, or from which endpoint received the callback. Stripe documents that a production Connect webhook URL receives BOTH live and test events, so the endpoint proves nothing and the key proves nothing about a callback that arrived unbidden. The event is the only artefact that knows which mode produced it, and it says so in this field. NOT NULL with NO DEFAULT so an omission is a loud 23502 rather than a silent misclassification — unlike order_payments.livemode, which needed a default to classify rows that predated the column.';
+
+comment on column stripe_webhook_events.stripe_event_id is
+  'Stripe''s `evt_...` id. UNIQUE — this is what makes a duplicate delivery a no-op. Also the join key to Stripe''s own Dashboard, which holds the full payload and delivery history this table deliberately does not.';
+
+comment on column stripe_webhook_events.handled is
+  'FALSE on every row today: the endpoint records receipt and does not act. Exists so a future handler can distinguish "seen" from "finished" — the unique constraint alone cannot, and a crash between insert and handling would otherwise be indistinguishable from a completed delivery whose retry is then skipped.';
 
 notify pgrst, 'reload schema';
 ```
 
-### Nullable or NOT NULL, and which default — stated
+**Two design calls in there worth surfacing:**
 
-**`boolean not null default true`.** Three shapes were considered; the reasoning is in the migration header and is summarised here because you asked for it stated:
+🔴 **No payload column.** The obvious design stores the raw event JSON for debugging. It is refused, on the precedent already recorded in [lib/audit/actionAudit.ts](lib/audit/actionAudit.ts): *"NOTHING SWEEPS THIS TABLE… the anonymisation pass nulls named COLUMNS on `orders` — it cannot reach inside a JSONB blob."* A Stripe Checkout event carries `customer_details.email`, `.name`, `.phone` and a billing address. Storing it would create a GDPR erasure hole in a table with no foreign keys and no sweeper, for developer convenience. The debugging need is met instead by `stripe_event_id`, which is the join key to Stripe's own Dashboard — that holds the full payload and delivery history. **This table answers "did we receive it"; Stripe answers "what was in it."**
 
-| Shape | Existing rows | Rejected because |
-|---|---|---|
-| Nullable, no default | NULL = "unknown" | They are **not** unknown. Every row today is `channel='in_person_other'` — a real cash or own-PDQ collection. Recording a known fact as NULL discards information and forces every reader to invent a NULL policy. A three-valued money column is how two readers come to disagree about one row. |
-| `not null`, **no default** | would fail | Strictly better *schema*, but unshippable in one step: the deployed `recordPaymentEvent` does not name the column, so the instant it applied, **every "Paid & collected" tap at Gusto's hatch would 23502** until the deploy caught up. A guard that takes the hatch down mid-service is not a guard. |
-| ✅ `not null default true` | all → `true` | Chosen. |
+🔴 **`livemode` is NOT NULL with NO default here — the opposite of `order_payments.livemode`.** That column needed `default true` to classify 50 rows of real money that predated it. This table has no pre-existing rows and no legacy writer, so a default would rescue nothing and could hide everything: an omission would silently record a test event as live. No default ⇒ omission is a loud 23502.
 
-**`true` is the only correct default for the rows already there** — it is not a convenience, it is the fact. And no backfill statement is needed: `add column … not null default true` populates every existing row as part of the ALTER.
+### 🔴 Livemode
 
-### 🔴 "Must not silently classify a future test row as live by omission"
+Recorded at the write site, [route.ts:157-168](app/api/webhooks/stripe/route.ts#L157-L168):
 
-That is the one thing `default true` cannot do on its own, and it is the reason the requirement is worth stating. It is closed **one layer up, in the type system**:
+> `event.livemode`, copied verbatim. NEVER from `STRIPE_WEBHOOK_SECRET`'s shape, never from an `sk_test_`/`sk_live_` prefix, never from `NODE_ENV`, and never from the fact that this is the production endpoint. Stripe documents that *"your production webhook URLs receive BOTH live and test webhooks… We recommend that you check the `livemode` value"* — so the endpoint proves nothing, and the key proves nothing about a callback that arrived unbidden. The event is the **ONLY** artefact that knows which mode produced it, and it states it in this field. Deriving it from configuration would look correct and be wrong exactly when it mattered: the day a test payment landed on a truck trading real money.
 
-```ts
-    livemode: boolean          // required. no default. not optional.
-```
-— [ledger.ts:316](lib/payments/ledger.ts#L316), on `recordPaymentEvent`'s event parameter.
-
-A future Stripe writer that omits it **does not compile**. That is an earlier and louder failure than a runtime 23502, and unlike the no-default schema it costs no availability. `tsc` exit 0 below is therefore not just a regression check — it is the evidence that both existing writers supply the value.
-
-**Phase two is recorded in the migration and deliberately not folded in:** once the deploy is live everywhere, `alter column livemode drop default` closes the same hole for raw SQL and any future non-TypeScript writer. Doing it in this migration would reintroduce the outage described above, because both steps cannot be true simultaneously during a rolling deploy.
+**Strict boolean, not truthiness** ([route.ts:130](app/api/webhooks/stripe/route.ts#L130)): `typeof event.livemode === 'boolean' ? event.livemode : null`. A payload whose `livemode` is absent or non-boolean is **refused with 400**, not guessed at — there is no safe default for this field, so there isn't one.
 
 ---
 
-## 2. Written from the event, not from config
+## Part 3 — What was deliberately not done
 
-The reasoning is recorded at the write site — [lib/payments/ledger.ts:301-316](lib/payments/ledger.ts#L301-L316):
-
-> 🔴 **WHEN THAT WRITER EXISTS, THIS VALUE COMES FROM `event.livemode` ON THE STRIPE EVENT ITSELF** — never from `STRIPE_SECRET_KEY`, never from an `sk_test_`/`sk_live_` prefix, never from `NODE_ENV`, and never from which endpoint received the callback. Stripe's own documentation is explicit that *"your production webhook URLs receive BOTH live and test webhooks"*, so the endpoint proves nothing and the key proves nothing about a callback that arrived unbidden. The event is the only artefact that knows which mode produced it, and it says so in a field. Read that field. Deriving this from configuration would reintroduce the entire defect this column exists to prevent, **while looking correct.**
-
-Two corollaries are recorded at their own sites:
-
-- **The insert names the column explicitly** ([:336-340](lib/payments/ledger.ts#L336-L340)) rather than leaning on the default: a row written from here always knows its own mode, so relying on the default would discard information we hold — and nothing changes here the day phase two drops the default.
-- **`recordCollectionPayment` hardcodes `true`, and that is correct rather than a placeholder** ([:397-405](lib/payments/ledger.ts#L397-L405)): it books an in-person collection — an operator at a hatch who has physically taken cash or run a card through their own PDQ. **There is no test mode for cash.** No configuration can make that money less real, so there is nothing to read a flag from; the truth is in what the function does. A Stripe payment does not come through this function at all (it hardcodes `channel:'in_person_other'` and derives the amount from the balance, not from a processor).
-
----
-
-## 3. Every consumer of `order_payments`, and whether it excludes
-
-Nine sites, from an exhaustive sweep of `from('order_payments')` and `getOrderBalance(`.
-
-### The shape chosen: chokepoint + shared column list
-
-You asked for a shape where a **new** consumer is correct by default rather than by remembering. Three were available:
-
-| Option | Why not / why |
+| Prohibited | Status |
 |---|---|
-| A Postgres view `order_payments_live` | A new reader that types `order_payments` still gets everything. Renaming does not enforce. |
-| RLS policy | **Impossible here.** Every reader and writer is a service-role server route ([ledger.sql:96-98](supabase/migrations/20260729_order_payments_ledger.sql#L96-L98)), and service-role bypasses RLS. |
-| ✅ **Filter inside `getOrderBalance`** | Chosen. |
+| Write to `order_payments` | **Not done.** The string `order_payments` appears in the new route only inside comments explaining that this table is *not* it. |
+| Create PaymentIntents / Connect accounts / onboarding | **Not done.** No Stripe API call exists anywhere in the repo. |
+| Install the Stripe SDK | **Not done.** `package.json` unmodified. |
+| Touch the customer order path, `resolvePaidStep`, `getOrderBalance`, anything in `lib/payments` | **Not done.** `git status` shows **zero modified files**. |
+| Touch Manage or add a Payments tab | **Not done.** |
 
-**`getOrderBalance` is already the single funnel through which every money-meaning read passes** — `OrderCard`, the dashboard's `confirmedPaid`, `mapOrderToTicket`, `recalcOrderPayment` (which *writes* the derived caches) and `recordCollectionPayment` all derive paid-ness by calling it, and **nothing derives paid-ness any other way.** Filtering there means a consumer added next year is correct *because it called the resolver*, not because its author remembered a rule ([ledger.ts:147-160](lib/payments/ledger.ts#L147-L160)).
-
-Second layer: **`LEDGER_ROW_COLUMNS`** ([ledger.ts:86](lib/payments/ledger.ts#L86)) — one exported select list shared by all three DB readers, so the column list cannot drift and no reader can quietly omit `livemode`.
-
-### The strictness decision: `=== true`, not `!== false`
-
-[ledger.ts:88-104](lib/payments/ledger.ts#L88-L104):
-
-```ts
-export function isLiveRow(row: { livemode?: boolean }): boolean {
-  return row.livemode === true
-}
+```
+$ git status --short
+?? app/api/webhooks/stripe/
+?? lib/stripe/
+?? supabase/migrations/20260807_stripe_webhook_events.sql
 ```
 
-Chosen for its **failure direction**, exactly as the brief requires:
-
-- **Strict:** a consumer that forgets to select the column sees every row as ineligible → the order reads **unpaid** → the operator asks for money already taken. Visible, embarrassing, recoverable in one tap.
-- **Lenient (`!== false`):** a forgotten column makes a **test** payment count as real → the customer shows as **paid** → food leaves the hatch against money that does not exist, and nothing anywhere reports it. Invisible and unrecoverable.
-
-Between under-report and over-report on a money column there is no symmetry, so the check is not symmetric either. **This cost one real change** — the ticket-preview fixture had to gain `livemode: true` ([ticket-preview/page.tsx:76-81](app/dev/ticket-preview/page.tsx#L76-L81)) — and that breakage is the rule working, in the cheap direction.
-
-### The table
-
-| # | Consumer | file:line | Excludes? | Why |
-|---|---|---|---|---|
-| 1 | **`getOrderBalance`** (the chokepoint) | [ledger.ts:159](lib/payments/ledger.ts#L159) | ✅ **YES** | Every paid/part-paid/balance figure in the product. One filter, all consumers. |
-| 2 | **`readLedger`** | [ledger.ts:227-234](lib/payments/ledger.ts#L227-L234) | ✅ **YES** (SQL) | Feeds `recalcOrderPayment`, which **writes** `orders.payment_status` / `amount_paid` — a test row here would put a fabricated figure into the caches every other surface trusts. |
-| 3 | **`recalcOrderPayment`** | [ledger.ts:262](lib/payments/ledger.ts#L262) | ✅ inherits 1+2 | The only writer of the derived caches. |
-| 4 | **`recordCollectionPayment`** | [ledger.ts:377](lib/payments/ledger.ts#L377) | ✅ inherits 1+2 | Decides **how much to charge**. A test row would tell an operator to collect less than they are owed. |
-| 5 | **`reverseCollectionPayment`** lookup | [ledger.ts:477-486](lib/payments/ledger.ts#L477-L486) | ✅ **YES** (SQL) | 🔴 Needed *here specifically*: this is a `[0]` pick of the newest charge, not a sum, so the chokepoint cannot save it. Unfiltered, a test row written after a real collection would be selected **instead of it** — undo deletes a row representing no money and leaves the real payment standing on an order the operator now believes is unpaid. |
-| 6 | **`/api/dashboard`** payments map | [route.ts:248-259](app/api/dashboard/route.ts#L248-L259) | ✅ **YES** (SQL) | The only route by which payment rows reach a browser — dashboard, KDS, and via `mapOrderToTicket` the printed ticket. Stops a test payment being **visible**, not just miscounted. |
-| 7 | **`mapOrderToTicket`** (kitchen ticket) | [mapOrderToTicket.ts:69](lib/printing/mapOrderToTicket.ts#L69) | ✅ inherits 1 | Calls `getOrderBalance`. Its only caller today is the dev preview; when printing is wired to real rows they will come from (6). |
-| 8 | **`delete-truck` guard 3** | [route.ts:161-164](app/api/admin/delete-truck/route.ts#L161-L164) | 🔴 **NO — deliberate** | See below. |
-| 9 | **`execute-account-deletion` `paymentsIntact`** | [route.ts:63](app/api/admin/execute-account-deletion/route.ts#L63), [:91](app/api/admin/execute-account-deletion/route.ts#L91) | 🔴 **NO — deliberate** | See below. |
-
-Plus the writer, [ledger.ts:323](lib/payments/ledger.ts#L323) (`recordPaymentEvent`'s insert), and the delete at [:509](lib/payments/ledger.ts#L509) which operates on a row already selected by (5) and so inherits its filter.
-
-### 🔴 The two documented exceptions, and why the rule does not apply to them
-
-Both are **physical row counts protecting retention**, not reports of money — and their safe direction is the **opposite** of the money paths. Both now carry the reasoning at the site so a later reader does not "tidy" them into consistency.
-
-**8 — `delete-truck` guard 3** ([route.ts:152-160](app/api/admin/delete-truck/route.ts#L152-L160)). It asks *"would this delete destroy an accounting record?"* Adding `.eq('livemode', true)` would let a truck holding only test rows be hard-deleted — and `order_payments` cascades from **both** `orders(order_key)` and `trucks(id)`, so the cascade takes the whole table for that truck, live rows included, if the classification were ever wrong by one row. **Refusing to delete a truck that turns out to hold only test data is a mild inconvenience with a documented escape hatch (hand-run SQL). Deleting six years of real takings is not.** This is the same reasoning as the guard's own *"keyed on the data, not on a label"* note.
-
-**9 — `paymentsIntact`** ([route.ts:151-157](app/api/admin/execute-account-deletion/route.ts#L151-L157)). It is a **regression detector**: *"did this run destroy any row it promised to keep?"* A filtered count would be **blind to test rows being destroyed** — exactly the quiet partial deletion the check exists to catch. It must count everything the table holds.
-
----
-
-## 4. No Stripe integration built
-
-Confirmed by the same greps as the prior audit, re-run after the edits:
-
-| Check | Result |
-|---|---|
-| `stripe` in `package.json` | 0 matches — no SDK added |
-| `process.env.STRIPE_*` anywhere | 0 |
-| Any route under `app/api/webhooks/stripe` | does not exist |
-| PaymentIntent / Checkout Session / Account Link code | none |
-| `application_fee_amount` | 0 |
-
-**Files touched by this task — six:**
-
-| File | Change |
-|---|---|
-| `supabase/migrations/20260807_order_payments_livemode.sql` | **new**, not run |
-| `lib/payments/ledger.ts` | `livemode` on `LedgerRow`; `LEDGER_ROW_COLUMNS`; `isLiveRow`; filter in `getOrderBalance`; SQL filters in `readLedger` + `reverseCollectionPayment`; required `livemode` param; both writers supply it |
-| `app/api/dashboard/route.ts` | shared select list + `.eq('livemode', true)` |
-| `app/api/admin/delete-truck/route.ts` | **comment only** — records why it does not filter |
-| `app/api/admin/execute-account-deletion/route.ts` | **comment only** — same |
-| `app/dev/ticket-preview/page.tsx` | fixture gains `livemode: true` |
-
-⚠️ The working tree also carries **uncommitted changes from the previous KDS task** (`app/dashboard/[token]/kds/page.tsx`, `components/dashboard/OrderCard.tsx`). They are unrelated to this one; `git diff --stat` shows both.
+Three untracked additions. Nothing modified, nothing deleted.
 
 ---
 
 ## Verify
 
-### Before vs after, for a truck with only live rows — **unchanged, path by path**
+### What a forged request receives, and the proof there is no unverified path
 
-Every existing row is `livemode = true` after the migration, so `isLiveRow` admits every one of them and the filtered set equals the unfiltered set. Concretely:
+**HTTP 400 with `{"error":"Invalid signature"}` and nothing else.** The response deliberately does not say *which* check failed — a caller probing the endpoint must not learn whether a secret is configured or which condition it tripped. The precise reason goes to our logs only.
 
-| Consumer | Before | After | Identical? |
-|---|---|---|---|
-| `readLedger` | all rows for the order | all rows (every one `livemode=true`) | ✅ same rows |
-| `getOrderBalance` | filters `state==='succeeded'` | filters `isLiveRow && state==='succeeded'` | ✅ same set → same `paidMinor`, `balanceMinor`, `status` |
-| `recalcOrderPayment` | writes `payment_status`/`amount_paid` | same balance in → same values written | ✅ byte-identical write |
-| `recordCollectionPayment` | `before` from live rows | same `before` | ✅ same `chargedMinor`, **same idempotency key** (it is a function of `paidBefore`+`balance`, both unchanged) |
-| `reverseCollectionPayment` | newest non-online charge | same candidate set, same `[0]` | ✅ same row deleted/reversed |
-| `/api/dashboard` payments map | rows without `livemode` | same rows **plus** `livemode: true` per row | ✅ additive to the payload |
-| `OrderCard` chip / buttons | PAID / part-paid / Mark paid | same | ✅ |
-| KDS card + Done-today strip | same | same | ✅ |
-| dashboard `confirmedPaid` → offline payment overlay | same | same | ✅ |
-| `mapOrderToTicket` printed ticket | same | same | ✅ |
-| admin counts (8, 9) | all rows | all rows — **untouched** | ✅ |
+**No path processes an unverified body.** Between `req.text()` and the verification call, the only thing that happens to `rawBody` is that its **length is measured** for the log line. It is not parsed, not inspected, not stored, and not echoed. `JSON.parse` is called at [route.ts:117](app/api/webhooks/stripe/route.ts#L117) — **after** the `if (!verification.ok) return` at [:98-110](app/api/webhooks/stripe/route.ts#L98-L110). There is no bypass flag, no dev-mode shortcut, and no "skip if unconfigured" branch.
 
-The one field genuinely new anywhere a human can see is `livemode: true` inside the `/api/dashboard` JSON payload. Nothing renders it.
+**Exercised against real HMACs**, not asserted — 15 vectors, all passing:
 
-### If a test row is inserted (`livemode = false`)
-
-Walked for an order with a £25 total and one `livemode=false` charge of £25:
-
-| Observer | What they get |
+| Vector | Result |
 |---|---|
-| **`getOrderBalance`** | `{ paidMinor: 0, balanceMinor: 2500, status: 'unpaid' }` — the row is not summed |
-| **The balance** | **£25.00 still due.** The test row contributes nothing |
-| **The operator** | No PAID chip. The completion button still reads `Mark paid` / `💷 Cash` / `💳 Card` (or `Paid & collected` with the paid step off). The order stays actionable |
-| **The customer** | Sees **unpaid**. Their view derives from `orders.payment_status`, whose only writer is `recalcOrderPayment` ([ledger.ts:2-7](lib/payments/ledger.ts#L2-L7)), which read only live rows |
-| **The kitchen ticket** | Prints as unpaid / balance due — same resolver |
-| **The row itself** | Still in the table, still readable by SQL, correctly labelled. Nothing is hidden from an auditor; it is excluded from *money*, not from *existence* |
-| **`delete-truck`** | Counts it → refuses the delete. Over-protective, by design |
-| **`paymentsIntact`** | Counts it → notices if it is destroyed. By design |
+| valid signature | `ok` |
+| forged: wrong secret | `signature_mismatch` |
+| forged: tampered body (valid sig for the original) | `signature_mismatch` |
+| forged: no `Stripe-Signature` header | `missing_signature_header` |
+| forged: garbage header | `malformed_signature_header` |
+| forged: `t=` present but no `v1` | `no_v1_signature` |
+| no secret configured (valid signature offered) | `no_secret_configured` |
+| replay: 6 minutes stale | `timestamp_outside_tolerance` |
+| replay: 4 minutes stale | `ok` (inside the 5-min tolerance) |
+| downgrade: `v0`-only header | `no_v1_signature` |
+| downgrade: `v0` valid + `v1` garbage | `signature_mismatch` |
+| `v0` garbage + `v1` valid | `ok` (v0 ignored, v1 honoured) |
+| **two secrets, matching one listed second** | `ok` — the live/test-on-one-URL case |
+| **secret roll: two signatures, we hold only the old secret** | `ok` |
+| 🔴 **re-serialised body** (`JSON.stringify(JSON.parse(body), null, 2)`) | `signature_mismatch` — the trap in §Part 1.3, demonstrated |
 
-**The failure direction is the required one:** a test row makes the system say *"not paid yet"*, never *"paid"*.
+⚠️ Honest note on the tenth row: my first run expected `signature_mismatch` there and got `no_v1_signature`. The **code was right and the expectation was wrong** — a `v0`-only header has its v0 discarded (that *is* the downgrade protection) leaving zero v1 signatures, so the more precise refusal is correct. Expectation corrected; no code changed.
 
-### 🔴 Gusto
+### Duplicate delivery of the same event id
 
-The whole point of the task, so verified specifically rather than in aggregate.
+The insert hits `stripe_webhook_events_event_id_uniq`, Postgres returns **23505**, and the route:
 
-**Every existing row is classified live.** Gusto's rows are in-person collections booked by `recordCollectionPayment` — `channel='in_person_other'`, and `'online'` has never been written anywhere in the codebase's history (re-confirmed: the only channel literal in the tree is [ledger.ts:391](lib/payments/ledger.ts#L391)). `add column … not null default true` sets **every** existing row to `true` with no exception and no backfill logic that could get it wrong. The migration's verify block checks this by truck, not just in total:
+1. logs `[webhook/stripe] DUPLICATE id=evt_… type=… livemode=… — already recorded, ignoring`
+2. returns **200** `{"received":true,"duplicate":true}`
+
+**No second row. No error. Stripe stops retrying.** Because the insert is attempted *before* any check, two concurrent deliveries cannot both win — the database arbitrates, not application logic.
+
+### 🔴 Both live and test events on one endpoint
+
+**Handled, and recorded.** Three separate mechanisms:
+
+1. **Verification accepts either mode's secret.** `STRIPE_WEBHOOK_SECRET` takes a comma-separated list and every secret is tried. Without this, one mode would be rejected as a forgery — proven by the `2 secrets, live one 2nd` vector.
+2. **The mode is recorded from the event**, never inferred — `livemode` column, NOT NULL, strict boolean, 400 if absent.
+3. **The mode is on every log line.** During test-mode bring-up, `livemode=true` appearing in the logs means a **real** event has reached this app, and that is visible immediately rather than discovered later in a table.
+
+The migration's verify block includes the standing check:
 
 ```sql
-select truck_id, livemode, count(*) from order_payments group by 1, 2 order by 1;
--- expect every truck to have exactly one row, livemode = t
+select livemode, count(*) from stripe_webhook_events group by 1;
+-- during test-mode bring-up expect ONLY `f` rows. A `t` row means a LIVE event reached this app.
 ```
 
-**Nothing they see changes:**
+### 🔴 Gusto — verified, not assumed
 
-- Their hatch flow is unchanged: `"Paid & collected"` → `'collected'` → `recordCollectionPayment` → one row, now carrying `livemode: true` **explicitly** rather than by default.
-- The idempotency key is unchanged, so the offline outbox's replay-collides-into-a-no-op behaviour is unchanged.
-- `payment_status` / `amount_paid` receive the same values.
-- The card, the KDS and the ticket render identically.
-- Undo still finds and deletes the same row.
-- `show_paid_step` is false for them, so every payment-derived element on the card is `null` or a fixed label regardless — as established in the previous task.
+**Zero effect. Established three ways rather than by reasoning about intent:**
 
-**The only way this could harm them is deploying before applying the migration**, which is why that warning is at the top of this document rather than the bottom.
+1. **Nothing calls it.** A repo-wide grep for `webhooks/stripe`, `webhook-signature` and `stripe_webhook_events` returns **only self-references inside the two new files**. No import, no fetch, no link, no redirect, no config entry anywhere else.
+2. **Nothing existing changed.** `git status` shows three untracked paths and **zero modified files**. Their hatch flow runs entirely through `recordCollectionPayment` → `order_payments`, and neither that function, nor `lib/payments/*`, nor the dashboard, KDS, OrderCard or customer order path was opened for writing.
+3. **The route is inert without configuration.** With `STRIPE_WEBHOOK_SECRET` unset it refuses every request with `no_secret_configured` — so even a mistaken deployment ahead of the migration cannot record anything, and cannot touch money in any case because it has no code path to `order_payments`.
 
-**And the point of it:** after this, a test-mode Stripe payment landing on their truck would be `livemode=false` — excluded from their balances, their board, their tickets and their takings, while still being a real row an auditor can see. That is what makes them safe to onboard in test mode later.
+A new file that nothing imports cannot change a running behaviour. Their live path is byte-identical.
 
 ### Checks
 
 ```
 $ npx tsc --noEmit ; echo $?
-0                                    # identical before and after
-```
+0
 
-`tsc` passing is load-bearing here, not just hygiene: `livemode` is a **required** parameter on `recordPaymentEvent`, so exit 0 is the proof that both existing writers supply it.
+$ npx eslint app/api/webhooks/stripe/route.ts lib/stripe/webhook-signature.ts ; echo $?
+0                                    # zero messages from either new file
 
-ESLint compared **by rule**, not by count:
-
-```
 $ diff lint-before.txt lint-after.txt
-LINT RULE PROFILE IDENTICAL TO BASELINE
-
-TOTAL 912
-568 @typescript-eslint/no-explicit-any        15 react-hooks/refs
-149 @typescript-eslint/no-unused-vars         15 @next/next/no-img-element
- 44 react/no-unescaped-entities                8 @typescript-eslint/no-require-imports
- 42 react-hooks/set-state-in-effect            8 (fatal)
- 25 react-hooks/exhaustive-deps                8 react-hooks/purity
- 17 @typescript-eslint/no-unused-expressions   4 react-hooks/preserve-manual-memoization
-                                               4 react-hooks/immutability
-                                               3 react-hooks/rules-of-hooks
-                                               2 prefer-const
+LINT RULE PROFILE IDENTICAL TO BASELINE     # 912 messages across the same 15 rules
 ```
 
-Zero drift on all 15 rules.
+**Not run, per standing instruction:** the migration, `next build`, `next dev`, `npx cap sync`.
 
-**Not run, per the brief:** the migration itself, `next build`, `next dev`, `npx cap sync`. Restated because it bounds the claim: the code compiles and lints, and every path is traced — but it has not executed against a database carrying the column.
+⚠️ **What that bounds.** The verification logic is genuinely exercised (15 vectors above, real HMACs, real `node:crypto`). The **route** is not: it has never handled an HTTP request, and the insert has never run against a database that has the table. The first end-to-end proof is step 5 below.
 
 ---
 
-## What this unblocks, and what it does not
+## What to set, in order
 
-**Unblocked:** a Stripe webhook writer can now be built, because there is somewhere to put the answer to *"is this money real?"* and every money-meaning consumer already ignores the rows where the answer is no.
+### A. Apply the migration (before deploying)
 
-**Still unbuilt, and still ahead of any first payment** (from the prior audit, unchanged):
+```
+supabase/migrations/20260807_stripe_webhook_events.sql
+```
 
-- **No webhook in this repo verifies a signature.** Four endpoints exist; zero check one. The Stripe route must be built from Stripe's spec — raw body via `req.text()`, `Stripe-Signature`, `v1` scheme only, constant-time compare, non-zero tolerance — and will become the reference implementation for the four that predate it.
-- **The idempotency key is unsafe for a webhook writer.** `collect:{orderKey}:{paidBefore}:{balance}` survives redelivery but collides on a legitimate second charge of the same amount. Use the Stripe object id — which is exactly the "client-minted per-tap key" [ledger.ts:170](lib/payments/ledger.ts#L170) already names as the only complete answer.
-- **The fee columns §37 designed** — `gross_amount`, `fee_computed`, `fee_charged`, `fee_waived_reason`, `rate_applied`, `allowance_applied` — do not exist. Not needed to *prove* a payment; needed before anyone is *billed*.
-- **Phase two of this migration** — `alter column livemode drop default`, after the deploy is live everywhere.
-- **`trucks.currency` / `trucks.country`** remain **unverified**: §37 asserts they exist, no migration in the repo creates them, no code reads them. Same shape as the `operators.stripe_customer_id` error §13 records. Check `information_schema` before anything depends on them.
+Then run its `VERIFY AFTER APPLYING` block — in particular `col_count` = 9 and `livemode` = `NO | null`.
+
+### B. Deploy the code
+
+The endpoint goes live and **refuses everything** with `no_secret_configured` until step D. That is safe and intended — it fails closed.
+
+### C. Stripe Dashboard — **test mode**
+
+1. Switch to **test mode** (the toggle in the Dashboard).
+2. **Workbench → Webhooks → Create an event destination.**
+3. **Events from:** 🔴 the scope matters and there are two. Choose **Connected accounts** for events belonging to trucks (`account.updated`, and direct-charge `payment_intent.succeeded`); choose **Your account** for platform-scoped events. They are separate destinations with separate secrets. **For groundwork, create the *Connected accounts* one first** — that is where Connect onboarding and direct charges will report.
+4. **Endpoint URL:** `https://<your-domain>/api/webhooks/stripe`
+5. **Events:** do not select "all events". Start with `account.updated` (onboarding readiness), plus `checkout.session.completed` and `payment_intent.succeeded` when payments begin. Stripe: *"Listening for extra events puts undue strain on your server and we don't recommend it."*
+6. Create it, then **Click to reveal** the signing secret (`whsec_…`) and copy it.
+
+### D. Vercel
+
+Set, for **Production** (and Preview if you will test there):
+
+```
+STRIPE_WEBHOOK_SECRET = whsec_…            (the value from step C6)
+```
+
+**Then redeploy** — Vercel env vars only take effect on a new deployment.
+
+### E. Prove it end to end
+
+```bash
+stripe login
+stripe listen --forward-connect-to localhost:3000/api/webhooks/stripe   # local
+stripe trigger --stripe-account acct_… account.updated                  # connected-account scope
+```
+
+Against the deployed URL, use the Dashboard's **Send test event**, then check:
+
+- Vercel logs show `[webhook/stripe] RECEIVED id=evt_… type=account.updated livemode=false`
+- `select * from stripe_webhook_events` has exactly one row, `livemode = false`
+- **Resend the same event** from the Dashboard → logs show `DUPLICATE`, still one row
+
+### F. Later, when going live
+
+Create the **live-mode** destination on the **same URL**. It gets a **different** signing secret. Then set both, comma-separated:
+
+```
+STRIPE_WEBHOOK_SECRET = whsec_live_…,whsec_test_…
+```
+
+and redeploy. This is exactly the case the plural-secret design exists for, and the `2 secrets, live one 2nd` vector covers it.
+
+---
+
+## What this unblocks, and what is still ahead
+
+**Unblocked:** verified events now arrive and are recorded idempotently, with their mode. A handler can be written against a trustworthy input.
+
+**Still ahead, unchanged from the readiness audit:**
+
+- **A handler** — a new caller of `recordPaymentEvent` passing `channel: 'online'`, `externalRef: pi_…`, and `livemode` from the event. It must set `handled = true` on the receipt row.
+- **The idempotency key for the money write.** `collect:{orderKey}:{paidBefore}:{balance}` survives redelivery but **collides on a legitimate second charge of the same amount**. Use the Stripe object id — which [ledger.ts:170](lib/payments/ledger.ts#L170) already names as the only complete answer.
+- **Connect onboarding**, and the open decision of where the `acct_…` lives (§37 recommends `operators`; there is no column waiting — §13 records that `operators.stripe_customer_id` has never existed).
+- **The fee columns** §37 designed and nobody built.
+- **Phase two of the livemode migration** — `alter column livemode drop default` on `order_payments`, once the deploy is live everywhere.
+- **`trucks.currency` / `trucks.country`** remain **unverified** — asserted by §37, no migration creates them, no code reads them. Check `information_schema` before anything depends on them.
+- **The four unverified webhook routes.** Meta ×3 and Twilio still process POST bodies with no authentication. Out of scope here; [lib/stripe/webhook-signature.ts](lib/stripe/webhook-signature.ts) is deliberately shaped to be the pattern they are fixed against.
