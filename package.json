@@ -24,6 +24,8 @@
     "@capacitor/status-bar": "^8.0.2",
     "@google/generative-ai": "^0.24.1",
     "@sparticuz/chromium": "148.0.0",
+    "@stripe/connect-js": "^3.4.6",
+    "@stripe/react-connect-js": "^3.4.4",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.1",
     "@types/leaflet": "^1.9.21",
@@ -42,7 +44,8 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-leaflet": "^5.0.0",
-    "rrule": "^2.8.1"
+    "rrule": "^2.8.1",
+    "stripe": "^22.4.0"
   },
   "devDependencies": {
     "@anthropic-ai/claude-code": "^2.1.177",

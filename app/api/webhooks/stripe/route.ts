@@ -204,11 +204,103 @@ export async function POST(req: NextRequest) {
     `${apiVersion ? ` apiVersion=${apiVersion}` : ''}`,
   )
 
+  // ── 🔴 account.updated — THE ONLY HANDLER, AND IT KEEPS A MONEY GATE FRESH ───────────────────────
+  // `operators.stripe_charges_enabled` is the single readiness test for whether a truck may be offered
+  // card payment. Stripe can withdraw `charges_enabled` at any time when a requirement falls due, and
+  // when it does, THIS is what notices. If this branch stops working the failure is silent by
+  // construction: the cached value simply stops changing, and a stale `true` is a truck still being
+  // offered card payment that Stripe has stopped allowing.
+  //
+  // 🔴 LIVEMODE-GUARDED, AND THE GUARD IS `!== false`, NOT `=== true`. `livemode` is parsed strictly
+  // above and is `null` when the payload carried a non-boolean. A null here means "we could not tell",
+  // and an event we cannot classify must NOT be allowed to write a money gate. Only an explicit
+  // `livemode: false` — a sandbox event, which is all this build may act on — proceeds.
+  // ⚠️ When live accounts are switched on, this condition is the thing to change, deliberately and in
+  // its own change. Do not widen it while `lib/stripe/connect.ts` still refuses a live key.
+  //
+  // ⚠️ IT LOOKS THE OPERATOR UP BY ACCOUNT ID, which is why the migration puts a UNIQUE index on
+  // `operators.stripe_account_id`. Without it a duplicated id would make this update an arbitrary row.
+  if (eventType === 'account.updated') {
+    if (livemode !== false) {
+      console.warn(
+        `[webhook/stripe] account.updated IGNORED id=${eventId} livemode=${livemode} — this build acts ` +
+        `on SANDBOX events only, and a null livemode means the payload could not be classified`,
+      )
+      await markHandled(eventId, 'ignored:livemode')
+      return NextResponse.json({ received: true })
+    }
+
+    // The account this event is about. For Connect events Stripe sets `account`; `data.object.id` is the
+    // same account for account.updated. Prefer the envelope, fall back to the object.
+    const dataObject = (event as { data?: { object?: { id?: unknown; charges_enabled?: unknown } } }).data?.object
+    const accountId = connectedAccount ?? (typeof dataObject?.id === 'string' ? dataObject.id : null)
+    // 🔴 STRICT BOOLEAN AGAIN. A missing or non-boolean `charges_enabled` must not be coerced — reading
+    // `undefined` as false would revoke a working truck's readiness on a malformed payload.
+    const chargesEnabled = typeof dataObject?.charges_enabled === 'boolean' ? dataObject.charges_enabled : null
+
+    if (!accountId || chargesEnabled === null) {
+      console.warn(
+        `[webhook/stripe] account.updated INCOMPLETE id=${eventId} account=${accountId ?? 'null'} ` +
+        `charges_enabled=${String(dataObject?.charges_enabled)} — recorded, not acted on`,
+      )
+      await markHandled(eventId, 'incomplete_payload')
+      return NextResponse.json({ received: true })
+    }
+
+    const { data: rows, error: updErr } = await supabase
+      .from('operators')
+      .update({ stripe_charges_enabled: chargesEnabled, stripe_account_synced_at: new Date().toISOString() })
+      .eq('stripe_account_id', accountId)
+      .select('id')
+
+    if (updErr) {
+      // 🔴 500 so Stripe RETRIES. This is the one handler whose failure silently degrades a money gate,
+      // so a lost event is worse than a duplicate delivery — and the update is idempotent, so a retry
+      // costs nothing.
+      console.error(
+        `[webhook/stripe] account.updated PERSIST FAILED id=${eventId} account=${accountId} — returning ` +
+        `500 so Stripe retries:`, updErr.message,
+      )
+      return NextResponse.json({ error: 'persist failed' }, { status: 500 })
+    }
+
+    if (!rows?.length) {
+      // Not an error: an account can exist at Stripe with no operator row pointing at it — a create that
+      // failed to persist (the route logs that case loudly), or an account made in the Dashboard by hand.
+      console.warn(`[webhook/stripe] account.updated NO OPERATOR for account=${accountId} — recorded, not acted on`)
+      await markHandled(eventId, 'no_operator')
+      return NextResponse.json({ received: true })
+    }
+
+    console.log(
+      `[webhook/stripe] account.updated APPLIED account=${accountId} operator=${rows[0].id} ` +
+      `charges_enabled=${chargesEnabled}`,
+    )
+    await markHandled(eventId, `charges_enabled:${chargesEnabled}`)
+    return NextResponse.json({ received: true })
+  }
+
   // ── UNRECOGNISED EVENT TYPES ARE NORMAL, NOT ERRORS ──────────────────────────────────────────────
-  // No handler exists for ANY type yet — that is this pass's scope, not an oversight. Every verified
-  // event is recorded and acknowledged, whatever its type. When handlers arrive they dispatch here on
-  // `eventType`, and the default arm stays exactly this: record, log, 200. Returning non-2xx for a type
+  // Every verified event is recorded and acknowledged, whatever its type. Handlers dispatch above on
+  // `eventType`; this default arm stays exactly as it is: record, log, 200. Returning non-2xx for a type
   // we do not handle would make Stripe retry it for three days to no purpose, and eventually disable
   // the endpoint.
   return NextResponse.json({ received: true })
+}
+
+/**
+ * Record that a handler ran, and what it decided.
+ * ⚠️ BEST-EFFORT AND DELIBERATELY SO. This is a diagnostic, not the work — failing to mark an event
+ * handled must never turn a successful update into a 500 that makes Stripe redeliver it.
+ * ⚠️ `handled_at` / `handler_result` arrive with supabase/migrations/20260810_stripe_webhook_events_
+ * account_updated.sql. Before that migration this write fails harmlessly and logs; the money-gate update
+ * above has already committed either way.
+ */
+async function markHandled(eventId: string | null, result: string) {
+  if (!eventId) return
+  const { error } = await supabase
+    .from('stripe_webhook_events')
+    .update({ handled: true, handled_at: new Date().toISOString(), handler_result: result })
+    .eq('stripe_event_id', eventId)
+  if (error) console.error(`[webhook/stripe] could not mark ${eventId} handled (${result}):`, error.message)
 }

@@ -15,6 +15,7 @@ import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
+import { PaymentsTab } from '@/components/manage/PaymentsTab'
 // (No lib/legal import here by design — this page carries no legal links. They live in the account
 //  dropdown, components/dashboard/UserMenu.tsx, which every role reaches. See the note at the foot of
 //  SettingsTab, and lib/legal.ts for the surface list. If a link is ever added to this page, import the
@@ -67,7 +68,7 @@ interface Van { id: string; truck_id: string; name: string; kds_token: string; a
 interface UpsellRule { id: string; trigger_category: string; suggest_category: string; max_suggestions: number; show_at_checkout: boolean }
 interface TeamMember { id: string; email: string; name: string | null; role: 'owner' | 'manager' | 'staff'; accepted_at: string | null; auth_user_id: string | null; van_names?: string[] }
 
-type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'billing'
+type Tab = 'menu' | 'modifiers' | 'deals' | 'reports' | 'schedule' | 'team' | 'settings' | 'payments' | 'billing'
 type UserRole = 'owner' | 'manager' | 'staff'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -354,7 +355,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
   // Read ?tab= query param on mount and activate that tab
   useEffect(() => {
     const tabParam = new URLSearchParams(window.location.search).get('tab') as Tab | null
-    const allTabIds: Tab[] = ['menu', 'modifiers', 'deals', 'reports', 'schedule', 'team', 'settings', 'billing']
+    const allTabIds: Tab[] = ['menu', 'modifiers', 'deals', 'reports', 'schedule', 'team', 'settings', 'payments', 'billing']
     if (tabParam && allTabIds.includes(tabParam)) setActiveTab(tabParam)
   }, [])
 
@@ -497,6 +498,12 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
     { id: 'reports',   label: 'Reports',   icon: '📊', roles: ['owner', 'manager'] },
     { id: 'team',      label: 'Team',      icon: '👥', roles: ['owner', 'manager'] },
     { id: 'settings',  label: 'Settings',  icon: '🔧', roles: ['owner', 'manager'] },
+    // 🔴 PAYMENTS — OWNER ONLY, AND IT MUST NOT INHERIT BILLING'S EXCLUSION.
+    // The filter below carries `if (t.id === 'billing') return userRole === 'owner' && truck?.plan !== 'tester'`.
+    // That rule is keyed on the ID `'billing'`, so this tab does NOT get the `plan !== 'tester'` test and
+    // falls through to the generic `t.roles.includes(userRole)` arm — owner-only, every plan, tester
+    // included. That is intended: a tester truck still needs to reach Connect onboarding.
+    { id: 'payments',  label: 'Payments',  icon: '💷', roles: ['owner'] },
     { id: 'billing',   label: 'Billing',   icon: '💳', roles: ['owner'] },
   ]
   const tabs = allTabs.filter(t => {
@@ -660,6 +667,7 @@ export default function ManagePage({ params }: { params: Promise<{ token: string
           }}
         />}
         {activeTab === 'settings'  && <SettingsTab  userRole={userRole} truck={truck} token={token} api={api} reload={load} showToast={showToast} onVerifySuccess={handleVerifiedEvents} onSwitchTab={setActiveTab} categories={categories} items={items} subcategories={subcategories} onTruckUpdate={partial => setTruck(prev => prev ? { ...prev, ...partial } : prev)} onItemsPatch={(ids, patch) => setItems(prev => prev.map(i => ids.includes(i.id) ? { ...i, ...patch } : i))} onCategoriesPatch={(ids, patch) => setCategories(prev => prev.map(c => ids.includes(c.id) ? { ...c, ...patch } : c))} onOpenWalkthrough={openWalkthrough} />}
+        {activeTab === 'payments'  && <PaymentsTab  token={token} plan={truck?.plan} showToast={showToast} />}
         {activeTab === 'billing'   && <BillingTab   truck={truck} />}
         </div>
       </main>
@@ -6622,11 +6630,34 @@ function ScheduleTab({ isActive, truck, token, bundles, categories, api, reload,
     // LIVE-TIME GATE (UX): a null-time event can't go live (server enforces too). Instead of a blocked
     // error, route the operator to Edit & Approve with the time field flagged — graceful, never broken.
     const evForTime = events.find(e => e.id === eventId)
+    const openForFix = (ev: typeof evForTime, errors: Record<string, string>) => {
+      if (!ev) return
+      setEditingEventConfirmOnSave(true)
+      setFormErrors(errors)
+      setEditingEvent({ id: ev.id, venue_name: ev.venue_name, town: ev.town || '', postcode: ev.postcode || '', address: ev.address || '', event_date: ev.event_date, start_time: ev.start_time ? ev.start_time.substring(0, 5) : '', end_time: ev.end_time ? ev.end_time.substring(0, 5) : '', notes: ev.notes || '', truck_id: ev.truck_id || truck.id, van_id: ev.van_id || null })
+    }
     if (evForTime && (!evForTime.start_time || !evForTime.end_time)) {
       showToast('Add a start and end time before approving — this event needs a time to go live.', 'error')
-      setEditingEventConfirmOnSave(true)
-      setFormErrors({ start_time: !evForTime.start_time ? 'Add a start time' : '', end_time: !evForTime.end_time ? 'Add an end time' : '' })
-      setEditingEvent({ id: evForTime.id, venue_name: evForTime.venue_name, town: evForTime.town || '', postcode: evForTime.postcode || '', address: evForTime.address || '', event_date: evForTime.event_date, start_time: evForTime.start_time ? evForTime.start_time.substring(0, 5) : '', end_time: evForTime.end_time ? evForTime.end_time.substring(0, 5) : '', notes: evForTime.notes || '', truck_id: evForTime.truck_id || truck.id, van_id: evForTime.van_id || null })
+      openForFix(evForTime, { start_time: !evForTime.start_time ? 'Add a start time' : '', end_time: !evForTime.end_time ? 'Add an end time' : '' })
+      return
+    }
+    // ── 🔴 LIVE-VAN GATE (UX) — SAME TREATMENT AS THE TIME GATE ABOVE ──────────────────────────────
+    // 🔴 MANDATORY ONLY WHEN THERE IS A CHOICE. `vans.length > 1` is the same condition the edit modal
+    // already uses to render the van selector at all: a one-van truck is never shown the field and is
+    // never asked, because the SERVER auto-assigns its sole active van on confirm (getSoleActiveVanId).
+    // Blocking a single-van truck would demand a choice the product does not offer it.
+    // ⚠️ `vans` here is the truck's van list as Manage already holds it; the selector below reads the
+    // same array, so the gate and the field can never disagree about whether there is a choice.
+    //
+    // 🔴 THIS IS NOT COSMETIC. `van_id` resolves KITCHEN CAPACITY at read time — with it null,
+    // `kitchenCapacity` is null and lib/slot-availability.ts treats that as UNLIMITED, so a confirmed
+    // van-less event takes orders with no capacity enforcement at all. Nine such events existed on
+    // test-truck when this gate was written.
+    // ⚠️ The server enforces the same rule and is the actual guard; this exists so the operator gets the
+    // field flagged in Edit & Approve rather than a rejected request.
+    if (evForTime && !evForTime.van_id && vans.length > 1) {
+      showToast('Choose which truck is working this event before approving.', 'error')
+      openForFix(evForTime, { van_id: 'Choose which truck is working this event' })
       return
     }
     setSaving(true)

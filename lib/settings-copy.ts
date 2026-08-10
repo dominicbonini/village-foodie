@@ -58,6 +58,27 @@ export const TRIAL_NOT_STARTED_BY_EVENTS =
 // ⚠️ "every Max feature" is TRUE and is not marketing: PLAN_FEATURES.trial is `[...MAX_FEATURES]`, and
 // canAccess now grants that whole set on a NULL expiry. If the expired branch is ever changed to fall
 // back to Starter, re-read this sentence — it would still be true, but its neighbour would not be.
+// ── 🔴 CONNECTING STRIPE IS NOT A PURCHASE. NEW 10 August 2026, AND IT IS NEW FOR A REASON. ─────────
+// The Payments tab asks a truck to connect Stripe, which LOOKS like a commercial commitment — bank
+// details, ID, a named provider — and is not. A truck on trial must be told so BEFORE they connect.
+//
+// ⚠️ NO EXISTING CONSTANT COULD BE REUSED, AND THAT WAS CHECKED RATHER THAN ASSUMED. The three trial
+// strings beside this one all render ONLY when `trial_expires_at IS NULL` (the not-started state), and
+// TRIAL_NOT_STARTED_BILLING's "nothing is counting down" is FALSE for a truck whose trial has started —
+// which is Pizzeria Gusto today (plan 'trial', expiry 17 Oct 2026). Shipping it to them would be a
+// reassurance that contradicts the countdown on their own Billing tab.
+// 🔴 SO THE SHAPE IS BORROWED, NOT THE SENTENCE. TRIAL_NOT_STARTED_BY_EVENTS above establishes the
+// pattern — "doing X doesn't start your free trial" — and this reuses that construction for a different
+// X, which is the consistency that matters: an operator meets the same reassurance shape twice.
+// ⚠️ TRUE IN BOTH TRIAL STATES, deliberately. Whether the trial has started or not, connecting Stripe
+// neither starts it nor bills anything, so this needs no `trial_expires_at` branch — unlike its
+// neighbours, which do.
+// ⚠️ NO PLATFORM GATE NEEDED. It contains no instruction to buy and no price, so App Store 3.1.1/3.1.3
+// does not reach it — the same reasoning recorded for TRIAL_NOT_STARTED_BILLING at the Billing card.
+export const CONNECTING_STRIPE_NOT_A_CHARGE =
+  "Connecting Stripe doesn't start your subscription or charge you anything — it's how your customers "
+  + 'pay you, not how you pay us.'
+
 export const TRIAL_NOT_STARTED_HEADING = 'Your free trial has not started yet'
 export const TRIAL_NOT_STARTED_BILLING =
   'You have every Max feature while you set up. You choose which event starts your free trial - '

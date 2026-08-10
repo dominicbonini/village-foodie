@@ -56,9 +56,45 @@ export async function POST(req: NextRequest) {
     if (!hasValidEventTimes(ev?.start_time, ev?.end_time)) {
       return NextResponse.json({ error: 'Add a start and end time before this event can go live.' }, { status: 400 })
     }
-    const vanPatch = (!ev?.van_id)
-      ? { van_id: await getSoleActiveVanId(supabase, truck.id) }
-      : {}
+    const soleVanId = ev?.van_id ? null : await getSoleActiveVanId(supabase, truck.id)
+    const vanPatch = (!ev?.van_id) ? { van_id: soleVanId } : {}
+
+    // ── 🔴 LIVE-VAN GATE — A MULTI-VAN TRUCK MUST CHOOSE, 10 August 2026 ─────────────────────────────
+    // The single-van auto-assign above has already run. If the event STILL has no van, the truck has
+    // either zero active vans or more than one — and `getSoleActiveVanId` cannot tell those apart, so it
+    // is counted here rather than inferred.
+    //
+    // 🔴 WHY THIS IS A LIVE-DATA DEFECT AND NOT A BLANK FIELD. `van_id` is what resolves KITCHEN
+    // CAPACITY, and it does so at READ time, not at confirm time: app/api/slots/[truckId]/route.ts only
+    // looks up `truck_vans.kitchen_capacity` when `todayEvent.van_id` is set, and with it null
+    // `kitchenCapacity` stays null — which lib/slot-availability.ts treats as **UNLIMITED**. So a
+    // confirmed van-less event does not merely look unfinished: it takes orders with **no capacity
+    // enforcement at all**, every slot, all day.
+    // ⚠️ THE MANUAL'S §14 SAYS slot_capacity ROWS ARE WRITTEN FROM THE VAN AT CONFIRM. That is no longer
+    // how it works — confirm writes no capacity rows at all (grep this route for `slot_capacity`:
+    // nothing), and the slot route's own comment says the batch cache "is no longer consulted for the
+    // decision". The good news in that is the failure SELF-HEALS: assign a van later and capacity starts
+    // being enforced immediately, because it is computed live.
+    //
+    // 🔴 ENFORCED ON THE SERVER, NOT ONLY IN THE UI. The client gate is the good experience; this is the
+    // rule. It also covers the paths the UI does not go through — anything confirming an event that did
+    // not come from a human pressing Approve in Manage.
+    if (!ev?.van_id && !soleVanId) {
+      const { count } = await supabase
+        .from('truck_vans')
+        .select('id', { count: 'exact', head: true })
+        .eq('truck_id', truck.id)
+        .eq('active', true)
+      if ((count ?? 0) > 1) {
+        return NextResponse.json(
+          { error: 'Choose which truck is working this event before it can go live.' },
+          { status: 400 },
+        )
+      }
+      // Zero active vans falls THROUGH deliberately: there is nothing to choose, so blocking would
+      // strand a truck that has not set a van up yet — the same posture the time gate takes toward
+      // drafts. Capacity is unenforced for such an event, which is what having no van means.
+    }
 
     const { error } = await supabase
       .from('truck_events')
