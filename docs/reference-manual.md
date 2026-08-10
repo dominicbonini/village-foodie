@@ -1,4 +1,4 @@
-HatchGrab Engineering Reference Manual · V11.6
+HatchGrab Engineering Reference Manual · V11.7
 
 **HatchGrab**
 
@@ -6,7 +6,7 @@ Engineering Reference Manual
 
 *Village Foodie · Food Truck Ordering Platform*
 
-**Version 11.6**
+**Version 11.7**
 
 August 2026
 
@@ -15,6 +15,58 @@ August 2026
 **⚠️ STANDING RULE — HOW THIS MANUAL IS MAINTAINED (not just what it records).** Documenting a bug *class* does not fix its existing *instances*. When a new failure class is identified, the entry is **NOT complete** until someone has **swept the codebase for other victims of the same class and recorded the result**. Every class entry must carry a **sweep status** — "CLOSED — N members, all fixed" or "OPEN — swept, M outstanding" — because "we found one and wrote the lesson down" is a *half-finished* entry that reads as done. **Precedent (the reason this rule exists):** V8.9 item 2 documented the `/api/dashboard` hand-picked-subset trap the day `sound_config` bit us — but `keep_screen_on` had **already been broken by the identical bug the entire time**, and it went undiscovered for another full day *because we wrote the lesson and never swept for existing victims*. A documented-but-unswept class is a landmine with a label on it.
 
 # Changelog
+
+## V11.7 — 10 August 2026
+
+**A payment control that was inverted, and the legal-link placement settled.** Same day as V11.6; the version on disk was V11.6, so this is V11.7 and no number was skipped.
+
+### 🔴 THE ADD ORDER INVERSION — the one that mattered
+
+**"Take orders without payment" was INVERTED.** With the setting **OFF** — which means *this truck ALWAYS takes payment at order time* — the panel showed a single **`Confirm order £10`** that placed the order and **recorded nothing**. **It was the one configuration that could never record a payment**, and the operator hit it in testing: place the order, then go to the card and mark it paid and collected.
+
+🔴 **IT WAS BROKEN IN THREE PLACES, AND FIXING ONLY THE VISIBLE ONE WOULD HAVE LOOKED CORRECT AND STILL RECORDED NOTHING:**
+
+| # | Site | What it did |
+|---|---|---|
+| **a** | the OFF button | called `submitManual()` **bare** — never set `takePaymentRef` |
+| **b** | the client payload | `paymentTaken: showPaidStep ? ref : false` — **false whenever the setting was OFF** |
+| **c** | the server | re-checked `showPaidStep` before booking the ledger row |
+
+**PROVEN IN LIVE DATA:** all **12** `manual_paid_at_order` audit rows sit on paid-step-**TRUE** trucks. **The nine OFF trucks have never recorded one — not because nobody tried, but because the server declined.**
+
+**NOW:** OFF gives **one** button, **`Take payment £10.00`**, which **creates AND records**. ON gives **`Take payment`** (primary) plus **`Place order`** (secondary). **Cash/card splits in both states.**
+
+🔴 **SAFETY, VERIFIED:** every button makes **ONE `gatedAction({ kind: 'create' })`**, and the server creates the order and books the ledger row **in the SAME handler** — so a create can never land while a payment conflicts. **Structurally one op, not two.**
+
+⚠️ **ACCEPTED CONSEQUENCE:** with the setting OFF there is **no route to place an unpaid order** from the panel. **The truck chooses** — a truck taking phone pre-orders turns the setting ON.
+
+**LABELS, with the reasoning so they are not re-litigated.** **`Confirm order` was rejected**: "confirm" reads as **THE** primary action, and it is the word the **customer flow** already uses for accepting an order into the queue. **`Place order`** is unambiguous beside a button naming a price. 🔴 **The completion buttons KEEP "Mark"** — "Mark" is what makes them read as **actions**; `Paid & collected` on a card that also carries a **PAID chip** would read as **status**.
+
+⚠️ **`takes_cash`'s enable gate was REMOVED on both surfaces.** The panel now always offers a payment button, so the old gate would have **disabled the toggle for exactly the nine trucks that had just gained a splittable one** — a defect this change would have *introduced*, not one it found.
+
+### 🔴 LEGAL LINK PLACEMENT — settled, in ONE location
+
+**`components/dashboard/UserMenu.tsx`, on the dashboard, UNGATED.** Recorded in §43 so it is not moved again.
+
+**Exactly TWO surfaces are reachable by all three roles — the dashboard and the KDS.** `staff` are **REDIRECTED OUT of Manage entirely** (a redirect, not a hidden tab) and appear in **no tab's `roles` array**. **The KDS renders NO `UserMenu` and never has.**
+
+**Routes:** owner, manager and staff all reach it in **1 tap** from any dashboard tab; a staff member mid-shift on the KDS takes **2**, via the header's unconditional **`← Dashboard`** link — which exists precisely because staff are auto-routed there.
+
+🔴 **THE STYLING IS LOAD-BEARING:** `text-xs text-slate-500` below an `<hr>`, against the actions' `text-sm text-slate-700`. **They are NOT peers of Manage and Sign out** — that is why the original *"too cluttered"* objection dissolves.
+
+**The Manage → Settings Legal card was removed:** Settings is owner/manager only, so a copy there serves nobody the dropdown does not, **and two locations drift**.
+
+⚠️ **CORRECTION — `lib/legal.ts` claimed `UserMenu` covered *"dashboard, KDS, manage, admin"*. IT NEVER COVERED THE KDS.** That overstatement is what made moving the links out look cheap. The file now names the **three real render sites**, states the KDS is **deliberately not covered**, and retracts the claim.
+
+### Other UI fixes
+
+- **Danger zone** — no longer a fully red box: **white card, red heading, inline outline warning triangle**. Still reads destructive. **The deletion flow, the typed-name requirement and every gate are untouched.**
+- **The "New to HatchGrab?" tour card moved to the TOP** of Manage → Settings. It appears in **three** places; the other two — the top-of-page reminder strip and the wizard's completion choice — needed no move.
+- **WhatsApp auto-reply button** — `Save` → **`Connect`**, now using the page's own small-button class instead of a one-off green. ⚠️ **BEHAVIOUR UNCHANGED** — `onClick` and save-on-blur are byte-identical. 🔴 **It is not wired up; do not read the label as a working connection.**
+
+### OPEN
+
+🔴 **The per-event override reset.** The handlers accept `NULL` and 400 otherwise — verified — but **nothing in the UI sends it**. Full entry in §27.
 
 ## V11.6 — 10 August 2026
 
@@ -2859,9 +2911,50 @@ Priority: (1) an event happening now today; (2) an upcoming event today; (3) the
 
 > **RULE — operator dots and customer availability use different reads.** The operator dots (`buildSlotIndicators`, slot-display.ts) and ASAP placement run through the engine — `projectBackwardOccupancy` / `fitOrderBackward` — NOT a parallel calculation (Section 31). The pre-V6.7 `projectOvenOccupancy` name is superseded. The legacy `getSlotIndicator` / `lib/slot-indicator.ts` and `buildSlotAvailability`'s indicator path now serve ONLY the customer available/unavailable flags. Candidates for removal post-trial (Section 27).
 
-## Confirm order button
+## The confirm bar — TAKING PAYMENT IS THE DEFAULT (V11.7)
 
-Label "Confirm order". Disabled until at least one item/deal AND an event is selected (V6). Submits to /api/dashboard/action with action="manual".
+⚠️ **This subsection was titled "Confirm order button" and said: *"Label 'Confirm order'. Disabled until at least one item/deal AND an event is selected (V6). Submits to /api/dashboard/action with action='manual'."*** The disable rule and the endpoint are unchanged; **the label and what the button DOES are not.**
+
+**The bar's shape is decided by `show_paid_step` — "Take orders without payment".** 🔴 **The setting names the OPTION, not the default: taking payment is what the panel does; placing an order unpaid is what the setting adds.**
+
+| Setting | Buttons | Each one |
+|---|---|---|
+| **OFF** | **ONE**, full width — **`Take payment £10.00`** | creates the order **AND records the payment** |
+| **OFF** + `takes_cash` | **`💷 Cash £10.00`** / **`💳 Card £10.00`** | both create **and** record; they differ only in the `method` stored |
+| **ON** | **`Take payment`** over the amount (solid, primary) + **`Place order`** (outline, secondary) | primary records; secondary creates unpaid |
+| **ON** + `takes_cash` | **`💷 Cash`** / **`💳 Card`** + **`Place order`** | as above |
+
+⚠️ **The amount is STACKED under the label in the ON state and INLINE on the OFF single button, and that is not an inconsistency.** In the ON state the button is `flex-1` **sharing the row**, where three buttons across ~343px leave ~110px each and an inline `Take payment £10.00` (~158px) would clip. The OFF button has the whole row: measured at 375px it is ~158px of text in ~343px. **Different constraints, both correct.**
+
+### 🔴 THE INVERSION IT REPLACED, AND WHY THE FIX TOOK THREE EDITS
+
+With the setting **OFF** the bar showed a single **`Confirm order · £10.00`** that placed the order and **recorded nothing** — so the configuration meaning *"we always take payment at order time"* was **the only one that could never record a payment.**
+
+**Three sites, and the visible one was the least of them:**
+
+1. the OFF button called `submitManual()` **bare**, never setting `takePaymentRef`;
+2. the client sent `paymentTaken: showPaidStep ? ref : false` — **forced false** whenever the setting was OFF;
+3. the server re-checked `showPaidStep` before booking the ledger row.
+
+**Fixing (1) alone would have looked correct and still recorded nothing** — (2) would have zeroed it and (3) would have refused it. **All three are gone.**
+
+**PROVEN IN LIVE DATA:** every one of the **12** `manual_paid_at_order` audit rows sits on a paid-step-**TRUE** truck. **The nine OFF trucks have never recorded one.**
+
+### 🔴 ONE PRESS = ONE SERVER ACTION, ONE REQUEST, ONE OUTBOX OP
+
+**Every button calls `submitManual`, which makes exactly ONE `gatedAction({ kind: 'create' })`** carrying `paymentTaken`; the `'manual'` handler creates the order and books the ledger row **inside the same handler**. 🔴 **Nothing dispatches a payment op beside the create** — the outbox marks a conflicted op `conflict`, **skips it and continues**, so a create that landed while a payment conflicted would leave **an unpaid order looking paid**. **Structurally one op. Do not split it.**
+
+**The ledger row is IDENTICAL to the one `Mark paid` writes** — same `recordCollectionPayment`, same `collect:{order_key}:{paidBefore}:{balance}` key, same `channel: 'in_person_other'`. Verified across all 90 live succeeded rows: **one shape, every route.** One order, one ledger, whichever route; only the moment differs.
+
+⚠️ **ACCEPTED CONSEQUENCE:** with the setting OFF there is **no route to place an unpaid order** from this panel. **That is the truck's choice** — the panel serves walk-ups *and* phone pre-orders, and a truck taking pre-orders turns the setting ON. **Do not add a third state or a workaround.**
+
+### The labels, so they are not re-litigated
+
+- 🔴 **NOT `Confirm order`.** Two live reasons: *"confirm"* reads as **THE** primary action — the inversion this bar was rebuilt to remove — and **it is the customer flow's own word** for accepting an order into the queue (the card's `✓ Confirm`, the pending bucket). It already means something else in this product.
+- **`Place order`** is deliberately short. It never stands alone: **it sits beside `Take payment £10.00`, and the contrast carries the meaning — one button names a price, the other does not.** It was briefly *"Place order, pay later"*; that was defensive, and it cost width in a row that is tight on a phone.
+- 🔴 **The COMPLETION buttons keep "Mark", and must.** *"Mark paid" is an instruction; "Paid" is a status* — and the card already carries a **PAID chip**, so `Paid & collected` beside it would read as a state the card is reporting rather than a thing to press. **The Add Order case could be shortened only because the price on the neighbouring button supplies the contrast; nothing on the card does.**
+
+⚠️ **`takes_cash`'s enable gate was REMOVED on both Manage and the dashboard.** The panel now offers a payment button in **every** configuration, so the split always has a live parent. The old gate — *"needs the paid step on, or completion set to two presses"* — would have **disabled the toggle for exactly the nine trucks that had just gained a splittable button**. 🔴 **A defect this change would have introduced, not one it found.** (The order card's **one-press** button is still never split: `Cash & collected` cannot be labelled honestly at a 240px KDS column.)
 
 ## Grace period banner (V4)
 
@@ -5120,7 +5213,9 @@ A truck-level master switch that gates ALL per-item pre-order config without los
 - **The collect idempotency key still swallows a legitimate second charge of the same amount.** `collect:{order_key}:{paidBefore}:{balance}` collides when the ledger returns to a previous position and the same amount is settled again — **true today with cash**, not merely a future Stripe concern. The complete answer is a client-minted per-tap key; a Stripe object id is one.
 - 🔴 **Apple Developer enrolment requested 7 Aug, awaiting confirmation.** ⚠️ **Xcode CANNOT BUILD until it completes** — a personal team cannot sign the Push Notifications capability.
 
-### 🔴 Added V11.6 — the per-event override one-way door
+### 🔴 Added V11.6 — the per-event override one-way door · **STILL OPEN at V11.7**
+
+> ⚠️ **Re-confirmed 10 August 2026 (V11.7) and deliberately NOT duplicated into a new entry** — one backlog item, one place. Nothing about it changed: the handlers still accept `NULL` and 400 otherwise, and nothing in the UI still sends it. **It remains OPEN at the operator's decision**, not through oversight. **Two lines, no migration** — the fix is unchanged from what is written below.
 
 - 🔴 **NOTHING IN THE UI CAN CLEAR A PER-EVENT OVERRIDE.** All three `set_*_override` handlers **accept `NULL`** and return a **400** for anything else — verified — and **92–93 of 95 events already hold `NULL`**, so the sentinel is live and readable. **But nothing sends it.** Both the *"Changed for this event"* pill and the *"Use my usual setting"* control were removed at the operator's instruction — the pill because **dashboard Settings is entirely event-scoped**, so a per-row badge repeats a screen-level fact on every row.
   - **CONSEQUENCE, plainly: an operator who changes a payment setting for one event CANNOT return that event to following the truck default.** They can only **match it by hand** — and 🔴 **a hand-matched event SILENTLY STOPS TRACKING the default when it later changes.** **Coinciding and inheriting are different states**, and only one of them is now reachable.
@@ -5701,6 +5796,14 @@ The cost of writing things down is a few minutes. The cost of not writing them d
 **WHEN ONE SURFACE IS RIGHT AND ANOTHER IS WRONG, THE FIX IS USUALLY THE FIELD THAT WAS DISCARDED, NOT A NEW DESIGN.** `calcAddableRemaining` returns `{ addable, bound }`; `bound` names which constraint produced the number and exists specifically for badge copy. The **customer** page destructures both and phrases the badge against the category. The **operator** panel destructures only `addable` at both of its render sites, which is the whole reason a pooled ceiling of 1 reads as *"(1 left)"* against twenty pizzas. **Before designing a fix for a divergence, diff the two call sites and look for the value one of them threw away.** See §30.
 
 **🔴 RUN CURSOR'S MIGRATION FILE, NEVER A RETYPED VERSION.** On 7 August the planning chat reconstructed a four-column `create table` from a **report summary** when the real file had **nine columns, a unique constraint, two indexes and RLS**. The webhook then verified signatures correctly and **500ed on every insert for an hour**, with zero rows to show for it — a failure that looked like a permissions or key problem and was neither. **Quote files; do not summarise them into SQL.** The report is a description of the migration; **the migration is the migration**.
+
+**🔴 A DEFECT CAN BE BROKEN IN MORE PLACES THAN THE VISIBLE ONE.** *Evidence (V11.7):* the Add Order inversion was **three** defects wearing one symptom — the OFF button called `submitManual()` bare and never set `takePaymentRef`; the client payload forced `paymentTaken: showPaidStep ? ref : false`, i.e. **false in exactly the configuration that always takes payment**; and the server re-checked `showPaidStep` before booking the ledger row. 🔴 **Fixing the button alone would have looked correct and still recorded nothing** — the payload would have zeroed it and the server would have refused it. **When a control does not do what it says, check the PAYLOAD and the SERVER before concluding it is a UI bug.** The cheap diagnostic is to follow one press all the way down: what does the handler set, what goes on the wire, what does the route do with it. Two of those three were invisible from the screen.
+
+**🔴 RECOVER REMOVED CODE FROM GIT; DO NOT RETYPE IT.** *Evidence (V11.7):* the legal links were restored to `UserMenu` **verbatim from commit `32921c6`** — `HEAD` already contained the removal, so the original had to be fetched from the commit before it. Retyping from a description is what produced a **four-column `create table` where the real migration had nine columns, a unique constraint, two indexes and RLS** (§35's *run Cursor's migration file* entry) and an hour of 500s. **A summary of code is not code. `git show <sha>:<path>` costs one command.**
+
+**🔴 A COMMENT ASSERTING REACH MUST BE RE-GREPPED, NOT TRUSTED.** *Evidence (V11.7):* `lib/legal.ts` — a file that **calls itself the specification** — claimed `UserMenu` was present on *"dashboard, KDS, manage, admin"*. **It has three render sites and the KDS is not among them**, which one `grep -rn "<UserMenu"` settles. 🔴 **The overstatement changed a decision**: it made moving the links out of that menu look cheap, because the KDS appeared covered either way. Same class as `setOverlaysWebView`'s *"LOAD-BEARING ON iOS"* note sitting on a call that early-returns — **a claim about where code reaches is a claim about the world, and it decays silently.** Verify reach claims the way you would verify a schema fact.
+
+**WHEN A CONTROL BECOMES AVAILABLE IN MORE STATES, ITS ENABLE GATES GO STALE.** *Evidence (V11.7):* the Add Order bar was changed to offer a payment button in **every** configuration, which made `takes_cash`'s enable gate — *"needs the paid step on, or completion set to two presses"* — **disable the toggle for exactly the nine trucks that had just gained a splittable button.** A defect the change would have **introduced**, not one it found, and invisible unless you ask the question. **After widening where a feature applies, re-read every gate that mentions it** — the gate was written against the old, narrower world and nothing tells it the world moved.
 
 **🔴 A GUARD THAT CANNOT SEE WHAT IT CHECKS IS WORSE THAN NO GUARD.** *Evidence (V11.6):* the new `readLedger` scope assertion — which throws if returned rows do not all belong to the requested order — had a **first draft that was INERT**. `LEDGER_ROW_COLUMNS` did not select `order_key`, so every row's field was `undefined`, and the assertion **silently passed everything**, including exactly the whole-table result it existed to catch. Caught by checking it, fixed by **adding the column to the shared select list**, and the `!== undefined` escape was **deliberately dropped** so the guard now **fails if its own precondition is ever removed**. 🔴 **Nobody re-checks a guard that is already there** — a present-but-blind guard is worse than an absent one, because its presence ends the enquiry. **Whenever you add an assertion, prove it FIRES: feed it the failure it is meant to catch.**
 
@@ -6494,6 +6597,29 @@ The Settings card **no longer manufactures a connection**. ⚠️ The settings w
 
 **Privacy policy and terms are WRITTEN, PUBLISHED at `/privacy` and `/terms`, and reachable in-app — 5.1.1(i) satisfied.** `content/legal/*.md` are the **source of truth**, byte-identical to the drafts (`shasum` verified), rendered by a purpose-built renderer in which **unsupported constructs pass through as LITERAL TEXT** — the correct failure direction for legal copy, because a dropped clause is invisible and a visible `**` is not. **`lib/legal.ts` is the single source for the routes; zero inline `/privacy` or `/terms` literals.**
 
+## 🔴 WHERE THE IN-APP LINKS LIVE — ONE LOCATION, SETTLED V11.7. DO NOT MOVE THEM.
+
+**`components/dashboard/UserMenu.tsx` — the account dropdown, on the DASHBOARD, UNGATED.**
+
+**Why that one and no other: it is the only surface every role reaches.** Established by audit, 10 August 2026, and the role map is the whole argument:
+
+- 🔴 **`staff` are REDIRECTED OUT of Manage entirely** — `if (userRole === 'staff') router.replace('/dashboard/…')` — **a redirect, not a hidden tab** — and `staff` appears in **no tab's `roles` array**, so no part of Manage, Settings included, is reachable by them.
+- **Exactly TWO surfaces are reachable by all three roles: the DASHBOARD and the KDS.**
+- **This menu renders on the dashboard for every role** — its only wrapper there is a demo/breakpoint condition, never a role gate.
+
+| Role | Route | Taps |
+|---|---|---|
+| owner · manager · staff, on the dashboard | avatar → *Privacy policy* | **1** |
+| staff, mid-shift on the KDS | `← Dashboard` → avatar → *Privacy policy* | **2** |
+
+🔴 **The KDS renders NO `UserMenu` and never has** — three render sites only: dashboard, manage, admin. A staff member reaches the links via the KDS header's **unconditional `← Dashboard`** link, which exists precisely because staff are auto-routed to that screen. **No legal link goes in the order screen's own chrome** — an order screen cannot carry a footer.
+
+🔴 **THE STYLING IS LOAD-BEARING, NOT DECORATION.** `text-xs text-slate-500` below an `<hr>`, against the actions' `text-sm text-slate-700`. **They are NOT peers of Manage and Sign out**, and that is exactly why the *"the dropdown is too cluttered"* objection dissolves — it is a quiet block, not two more action items. **Promoting them to the action list is what would make the objection true.**
+
+⚠️ **THEY WERE MOVED TO Manage → Settings ON 10 AUGUST AND MOVED BACK THE SAME DAY.** That placement left **staff with no in-app route at all** — a **5.1.1(i) failure, not a UX preference**. The Manage card was removed rather than kept alongside: Settings is owner/manager only, so a copy there serves nobody the dropdown does not, **and two locations drift.**
+
+⚠️ **CORRECTION — `lib/legal.ts` CLAIMED `UserMenu` COVERED *"dashboard, KDS, manage, admin"*. IT NEVER COVERED THE KDS.** That overstatement is not a footnote: **it is what made moving the links out look cheap**, because the KDS appeared covered either way. The file now names the three real render sites, states the KDS is deliberately not covered, and retracts the claim. 🔴 **`lib/legal.ts` calls itself the specification — so an overstatement there changes decisions. Re-grep a reach claim; do not trust it.**
+
 **HatchGrab Ltd, company number 17381557.** `privacy@hatchgrab.com` and `hello@hatchgrab.com` are **LIVE AND TESTED as receiving**.
 
 **Retention:** operator accounts 12 months after closure · order personal details anonymised at 12 months · **accounting 6 years** · support 24 months · logs 90 days. **No analytics or tracking cookies, so no consent banner is needed.**
@@ -6584,4 +6710,4 @@ It was assessed as **inadequate** and then rebuilt:
 ⚠️ **Residual gap, stated rather than papered:** if the ledger write **and** the best-effort `logAction` both fail, no audit row exists and there is no persistent marker — the toast is the only signal online, and offline there is none. Closing it means making the audit write fail closed on the collect path, which **reverses a deliberate ruling**; not changed.
 
 
-HatchGrab Engineering Reference Manual · V11.6
+HatchGrab Engineering Reference Manual · V11.7

@@ -1,8 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-// (The lib/legal import was dropped with the links themselves — see the note at the former render site.
-//  Re-add it here, do not type a route inline, if a legal link ever returns to this menu.)
+import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Toggle } from '@/components/dashboard/OrderCard'
@@ -229,20 +228,50 @@ export default function UserMenu({
               </Link>
             )}
 
-            {/* ── 🔴 THE LEGAL LINKS MOVED OUT OF THIS MENU — 10 August 2026, AT THE OPERATOR'S REQUEST.
-                THEY WERE NOT DELETED, AND THEY MUST NOT BE. Guideline 5.1.1(i) requires the privacy
-                policy to be reachable INSIDE the app, not only in App Store Connect metadata.
-                🔴 THEY NOW LIVE IN **Manage → Settings**, in a "Legal" card at the foot of the tab
-                (app/manage/[token]/page.tsx). Routes still come from lib/legal.ts — never typed inline.
-                ⚠️ WHAT THIS MENU USED TO BUY, AND WHAT THE MOVE COST. UserMenu is the only chrome
-                present on EVERY operator surface in the native shell (dashboard, KDS, manage, admin), so
-                one placement here covered all four at once. From Settings the policy is two taps from
-                the dashboard, via this menu's own Manage link, and is not reachable without leaving the
-                KDS. That still satisfies "reachable within the app" — the actual requirement — but it is
-                ONE route rather than four.
-                🔴 SO: IF THE SETTINGS CARD IS EVER REMOVED OR THE SETTINGS TAB GATED, THE APP LOSES ITS
-                ONLY IN-APP PRIVACY ROUTE AND BECOMES NON-COMPLIANT. Restore a link here, or provide
-                another one, before touching it. lib/legal.ts carries the full placement list. */}
+            {/* ── 🔴 LEGAL LINKS — AN APP STORE REQUIREMENT, NOT A COURTESY ────────────────────────────
+                Guideline 5.1.1(i) requires the privacy policy to be reachable INSIDE the app, not only in
+                App Store Connect metadata.
+                🔴 THIS IS THE ONLY SURFACE EVERY ROLE REACHES, WHICH IS WHY THE LINKS LIVE HERE.
+                Established by audit, 10 August 2026: `owner` and `manager` reach Manage; `staff` do NOT —
+                app/manage/[token]/page.tsx REDIRECTS them out (`if (userRole === 'staff') router.replace`)
+                and `staff` appears in no tab's `roles` array. The two surfaces all three roles reach are
+                the DASHBOARD and the KDS, and this menu renders on the dashboard for every role (its only
+                wrapper is a demo/breakpoint one, never a role gate). So one placement here serves owner,
+                manager and staff by the SAME route.
+                ⚠️ THEY WERE BRIEFLY MOVED TO Manage → Settings (10 August) AND MOVED BACK THE SAME DAY.
+                That placement left staff with NO in-app route at all, which is a compliance failure, not
+                a UX preference. Do not move them there again.
+                ⚠️ CORRECTION — THIS COMMENT USED TO CLAIM UserMenu IS ON "dashboard, KDS, manage, admin".
+                IT IS NOT ON THE KDS AND NEVER HAS BEEN. Three render sites only: the dashboard, manage and
+                admin (`grep -rn "<UserMenu"`). The KDS has a "This device" sheet and no account menu.
+                🔴 A STAFF MEMBER ON THE KDS REACHES THESE IN ONE EXTRA TAP, via the KDS header's
+                unconditional "← Dashboard" link — which exists precisely because staff are auto-routed to
+                that screen. That is the honest cost, and it is the reason no link is put in the order
+                screen's own chrome.
+                ⚠️ UNCONDITIONAL — no `showSignOut`/`isAdmin`-style gate, and no native check. The same
+                reasoning this component already records for "This device": ungated so a staff member who
+                cannot reach Manage is still served. A demo visitor and a logged-out viewer are also
+                exactly the people most likely to want the privacy policy before committing.
+                🔴 NOT PEERS OF Manage AND Sign out, AND THEY MUST NOT BECOME THEM. Below an `<hr>`, at
+                `text-xs text-slate-500` against the actions' `text-sm text-slate-700` — a quiet block, not
+                two more action items. That styling is the whole reason this placement is unobjectionable;
+                promoting it to the action list is what would make the menu feel cluttered.
+                Routes come from lib/legal.ts; never type them here. */}
+            <hr className="border-slate-100" />
+            <Link
+              href={PRIVACY_PATH}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
+            >
+              Privacy policy
+            </Link>
+            <Link
+              href={TERMS_PATH}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 px-4 py-2.5 text-xs text-slate-500 hover:bg-slate-50"
+            >
+              Terms
+            </Link>
 
             {/* Sign out — every caller EXCEPT the demo dashboard (no session exists to end). The <hr> is
                 tied to the button so a hidden sign-out doesn't leave a dangling divider. */}

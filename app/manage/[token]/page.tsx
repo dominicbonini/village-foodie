@@ -15,8 +15,10 @@ import { isValidEmail, isValidUKPhone } from '@/lib/contact-validation'
 import { PricingPolicyProvider, usePriceMask, usePricesVisible } from '@/components/PricingPolicy'
 import { purchaseCtaAllowed } from '@/lib/commerce-policy'
 import { DeleteAccountSection } from '@/components/manage/DeleteAccountSection'
-// 🔴 Routes for the legal documents — NEVER typed inline. See the Legal card at the foot of Settings.
-import { PRIVACY_PATH, TERMS_PATH } from '@/lib/legal'
+// (No lib/legal import here by design — this page carries no legal links. They live in the account
+//  dropdown, components/dashboard/UserMenu.tsx, which every role reaches. See the note at the foot of
+//  SettingsTab, and lib/legal.ts for the surface list. If a link is ever added to this page, import the
+//  routes from lib/legal.ts — never type them inline.)
 import type { Plan, Feature } from '@/lib/features'
 import { PLAN_PRICES, PLAN_DESCRIPTIONS, TRANSACTION_ROWS, FEATURE_SECTIONS, FOOTNOTES } from '@/lib/plan-features'
 import { FeatureGate } from '@/components/FeatureGate'
@@ -9873,36 +9875,15 @@ function SettingsTab({ userRole, truck, token, api, reload, showToast, onVerifyS
           anywhere near the settings an operator changes routinely. */}
       {userRole === 'owner' && <DeleteAccountSection truckName={truck?.name ?? ''} showToast={showToast} />}
 
-      {/* ── 🔴 LEGAL LINKS — AN APP STORE REQUIREMENT, NOT A COURTESY. MOVED HERE 10 August 2026. ────
-          Guideline 5.1.1(i) requires the privacy policy to be reachable INSIDE the app, not only in App
-          Store Connect metadata. These lived in the account dropdown (components/dashboard/UserMenu.tsx)
-          and were moved out at the operator's request; **they could not simply be deleted**, so this is
-          where they went. Manage → Settings is the conventional home and is reachable in the native
-          shell from the dashboard's account menu (`showManageLink`).
-          ⚠️ WHAT THE MOVE COSTS, RECORDED SO IT IS A KNOWN TRADE AND NOT A DISCOVERY. UserMenu was the
-          only chrome on EVERY operator surface, so one placement there covered dashboard, KDS, manage
-          and admin at once. From here the policy is two taps from the dashboard and is NOT reachable
-          without leaving the KDS. That still satisfies "reachable within the app" — which is the actual
-          requirement — but it is one route, not four, so **do not delete this block without providing
-          another in-app route first.**
-          ⚠️ NOT the marketing footer (components/Footer.tsx): it renders on landing, venues and truck
-          pages only — never on an operator surface — so it was not an option.
-          🔴 Routes come from lib/legal.ts. Never type them here. Update that file's placement list if
-          this moves again. Unconditional and role-independent, exactly as it was in UserMenu: a manager
-          who cannot see the danger zone above must still be able to read the policy. */}
-      <Card className="p-4">
-        <p className="text-base font-bold text-slate-800">Legal</p>
-        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-          <a href={PRIVACY_PATH} target="_blank" rel="noopener noreferrer"
-            className="text-sm text-slate-500 underline underline-offset-2 hover:text-orange-600">
-            Privacy policy
-          </a>
-          <a href={TERMS_PATH} target="_blank" rel="noopener noreferrer"
-            className="text-sm text-slate-500 underline underline-offset-2 hover:text-orange-600">
-            Terms
-          </a>
-        </div>
-      </Card>
+      {/* ── 🔴 THERE IS NO LEGAL CARD HERE, AND THAT IS DELIBERATE — 10 August 2026. ────────────────
+          A "Legal" card briefly sat at the foot of this tab, after the danger zone. It was removed the
+          same day: Manage → Settings is owner/manager only (`staff` are redirected out of this page
+          entirely, and appear in no tab's `roles` array), so putting the privacy policy here left STAFF
+          WITH NO IN-APP ROUTE — a Guideline 5.1.1(i) failure, not a preference.
+          🔴 THE LINKS LIVE IN THE ACCOUNT DROPDOWN — components/dashboard/UserMenu.tsx — which renders
+          on the DASHBOARD for every role. ONE consistent location, reached the same way by owner,
+          manager and staff. Do not add a second copy here: two locations was the thing the operator
+          ruled against, and a duplicate is what drifts. See lib/legal.ts for the full surface list. */}
     </div>
   )
 }
